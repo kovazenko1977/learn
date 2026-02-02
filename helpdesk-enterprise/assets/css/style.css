@@ -1,0 +1,14 @@
+.hd-dashboard { font-family: sans-serif; }
+.hd-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.hd-table th, .hd-table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+.hd-create-request { background: #f9f9f9; padding: 20px; border: 1px solid #ddd; margin-bottom: 20px; }
+.status-new { color: blue; font-weight: bold; }
+.status-completed { color: green; font-weight: bold; }
+.status-rejected { color: red; font-weight: bold; }
+
+#hd-modal { position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+.hd-modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 800px; }
+.hd-close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+
+.hd-comment { border-bottom: 1px solid #eee; padding: 5px 0; }
+.hd-history-list { font-size: 0.9em; color: #666; }
