@@ -1,0 +1,113 @@
+jQuery(document).ready(function($) {
+    // Create request
+    $('#hd-create-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        formData.append('action', 'hd_create_request');
+        formData.append('nonce', hd_vars.nonce);
+
+        $.ajax({
+            url: hd_vars.ajax_url,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    alert(response.data.message);
+                    location.reload();
+                } else {
+                    alert(response.data);
+                }
+            }
+        });
+    });
+
+    // View request details
+    $('.hd-view-request').on('click', function() {
+        var id = $(this).data('id');
+        $.post(hd_vars.ajax_url, {
+            action: 'hd_get_request_details',
+            id: id,
+            nonce: hd_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                $('#hd-request-details').html(response.data.html);
+                $('#hd-modal').show();
+            } else {
+                alert(response.data);
+            }
+        });
+    });
+
+    // Close modal
+    $('.hd-close').on('click', function() {
+        $('#hd-modal').hide();
+    });
+
+    // Save user settings
+    $('#hd-user-settings-form').on('submit', function(e) {
+        e.preventDefault();
+        var data = $(this).serialize() + '&action=hd_save_user_settings&nonce=' + hd_vars.nonce;
+        $.post(hd_vars.ajax_url, data, function(response) {
+            if (response.success) {
+                alert('Settings saved');
+            }
+        });
+    });
+
+    // Add comment
+    $(document).on('click', '#hd-submit-comment', function() {
+        var id = $(this).data('id');
+        var content = $('#hd-comment-content').val();
+        if (!content) return;
+
+        $.post(hd_vars.ajax_url, {
+            action: 'hd_add_comment',
+            request_id: id,
+            content: content,
+            nonce: hd_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                // Refresh details
+                $('.hd-view-request[data-id="' + id + '"]').click();
+            }
+        });
+    });
+
+    // Update status
+    $(document).on('click', '#hd-update-status-btn', function() {
+        var select = $('#hd-status-change');
+        var id = select.data('id');
+        var status = select.val();
+
+        $.post(hd_vars.ajax_url, {
+            action: 'hd_update_status',
+            request_id: id,
+            status: status,
+            nonce: hd_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Status updated');
+                location.reload();
+            }
+        });
+    });
+
+    // Delete photo
+    $(document).on('click', '.hd-delete-photo', function() {
+        if (!confirm('Delete this photo?')) return;
+        var id = $(this).data('id');
+        var requestId = $(this).data('request-id');
+
+        $.post(hd_vars.ajax_url, {
+            action: 'hd_delete_photo',
+            id: id,
+            nonce: hd_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                $('.hd-view-request[data-id="' + requestId + '"]').click();
+            }
+        });
+    });
+});
