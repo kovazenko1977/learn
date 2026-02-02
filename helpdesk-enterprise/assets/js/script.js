@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
         var data = $(this).serialize() + '&action=hd_save_user_settings&nonce=' + hd_vars.nonce;
         $.post(hd_vars.ajax_url, data, function(response) {
             if (response.success) {
-                alert('Settings saved');
+                alert('Настройки сохранены');
             }
         });
     });
@@ -88,7 +88,44 @@ jQuery(document).ready(function($) {
             nonce: hd_vars.nonce
         }, function(response) {
             if (response.success) {
-                alert('Status updated');
+                alert('Статус обновлен');
+                location.reload();
+            }
+        });
+    });
+
+    // Assign executor
+    $(document).on('click', '#hd-assign-executor-btn', function() {
+        var select = $('#hd-executor-change');
+        var id = select.data('id');
+        var executorId = select.val();
+
+        $.post(hd_vars.ajax_url, {
+            action: 'hd_assign_executor',
+            request_id: id,
+            executor_id: executorId,
+            nonce: hd_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Исполнитель назначен');
+                location.reload();
+            }
+        });
+    });
+
+    // Update deadline
+    $(document).on('click', '#hd-update-deadline-btn', function() {
+        var id = $(this).data('id');
+        var deadline = $('#hd-deadline-change').val();
+
+        $.post(hd_vars.ajax_url, {
+            action: 'hd_update_deadline',
+            request_id: id,
+            deadline: deadline,
+            nonce: hd_vars.nonce
+        }, function(response) {
+            if (response.success) {
+                alert('Срок изменен');
                 location.reload();
             }
         });
@@ -96,7 +133,7 @@ jQuery(document).ready(function($) {
 
     // Delete photo
     $(document).on('click', '.hd-delete-photo', function() {
-        if (!confirm('Delete this photo?')) return;
+        if (!confirm('Удалить это фото?')) return;
         var id = $(this).data('id');
         var requestId = $(this).data('request-id');
 

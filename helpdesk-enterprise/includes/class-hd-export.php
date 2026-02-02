@@ -11,7 +11,7 @@ class HD_Export {
 
     public function handle_export() {
         if (!current_user_can('hd_export_dept') && !current_user_can('hd_manage_all')) {
-            wp_die(__('You do not have permission to export.', 'helpdesk-enterprise'));
+            wp_die(__('У вас нет прав для экспорта.', 'helpdesk-enterprise'));
         }
 
         global $wpdb;
@@ -26,7 +26,7 @@ class HD_Export {
             if ($managed_depts) {
                 $query .= " AND r.department_id IN (" . implode(',', array_map('intval', $managed_depts)) . ")";
             } else {
-                wp_die(__('No departments to export.', 'helpdesk-enterprise'));
+                wp_die(__('Нет доступных отделов для экспорта.', 'helpdesk-enterprise'));
             }
         }
 
@@ -37,7 +37,7 @@ class HD_Export {
 
         $output = fopen('php://output', 'w');
         fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM for Excel
-        fputcsv($output, array('ID', 'Title', 'Status', 'Category', 'Department', 'Created At', 'Deadline', 'Completed At'));
+        fputcsv($output, array('ID', 'Заголовок', 'Статус', 'Категория', 'Отдел', 'Создана', 'Срок (SLA)', 'Выполнена'));
 
         foreach ($requests as $row) {
             fputcsv($output, array(

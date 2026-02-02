@@ -6,7 +6,7 @@ if (!defined('ABSPATH')) {
 
 class HD_Roles {
     public static function init() {
-        add_role('hd_administrator', __('HD Administrator', 'helpdesk-enterprise'), array(
+        add_role('hd_administrator', __('Администратор Helpdesk', 'helpdesk-enterprise'), array(
             'read' => true,
             'hd_view_all_requests' => true,
             'hd_manage_all' => true,
@@ -14,14 +14,14 @@ class HD_Roles {
             'hd_manage_settings' => true,
         ));
 
-        add_role('hd_department_head', __('HD Department Head', 'helpdesk-enterprise'), array(
+        add_role('hd_department_head', __('Руководитель отдела', 'helpdesk-enterprise'), array(
             'read' => true,
             'hd_view_dept_requests' => true,
             'hd_manage_dept_requests' => true,
             'hd_export_dept' => true,
         ));
 
-        add_role('hd_executor', __('HD Executor', 'helpdesk-enterprise'), array(
+        add_role('hd_executor', __('Исполнитель', 'helpdesk-enterprise'), array(
             'read' => true,
             'hd_view_own_assigned_requests' => true,
             'hd_update_status' => true,
@@ -29,7 +29,7 @@ class HD_Roles {
             'hd_add_photos' => true,
         ));
 
-        add_role('hd_responsible', __('HD Responsible Employee', 'helpdesk-enterprise'), array(
+        add_role('hd_responsible', __('Ответственный сотрудник', 'helpdesk-enterprise'), array(
             'read' => true,
             'hd_create_requests' => true,
             'hd_view_own_requests' => true,

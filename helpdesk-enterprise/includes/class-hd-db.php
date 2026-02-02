@@ -26,6 +26,7 @@ class HD_DB {
             name varchar(255) NOT NULL,
             department_id bigint(20) NOT NULL,
             base_sla int(11) DEFAULT 0,
+            priority varchar(50) DEFAULT 'medium',
             default_executor_id bigint(20) DEFAULT 0,
             PRIMARY KEY  (id)
         ) $charset_collate;";

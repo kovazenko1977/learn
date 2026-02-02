@@ -12,8 +12,8 @@ class HD_Admin {
 
     public function add_menus() {
         add_menu_page(
-            __('Helpdesk', 'helpdesk-enterprise'),
-            __('Helpdesk', 'helpdesk-enterprise'),
+            __('Поддержка', 'helpdesk-enterprise'),
+            __('Поддержка', 'helpdesk-enterprise'),
             'hd_manage_settings',
             'hd-main',
             array($this, 'render_main_page'),
@@ -23,8 +23,8 @@ class HD_Admin {
 
         add_submenu_page(
             'hd-main',
-            __('Departments', 'helpdesk-enterprise'),
-            __('Departments', 'helpdesk-enterprise'),
+            __('Отделы', 'helpdesk-enterprise'),
+            __('Отделы', 'helpdesk-enterprise'),
             'hd_manage_settings',
             'hd-departments',
             array($this, 'render_departments_page')
@@ -32,8 +32,8 @@ class HD_Admin {
 
         add_submenu_page(
             'hd-main',
-            __('Categories', 'helpdesk-enterprise'),
-            __('Categories', 'helpdesk-enterprise'),
+            __('Категории', 'helpdesk-enterprise'),
+            __('Категории', 'helpdesk-enterprise'),
             'hd_manage_settings',
             'hd-categories',
             array($this, 'render_categories_page')
@@ -41,11 +41,19 @@ class HD_Admin {
 
         add_submenu_page(
             'hd-main',
-            __('Settings', 'helpdesk-enterprise'),
-            __('Settings', 'helpdesk-enterprise'),
+            __('Настройки', 'helpdesk-enterprise'),
+            __('Настройки', 'helpdesk-enterprise'),
             'hd_manage_settings',
             'hd-settings',
             array($this, 'render_settings_page')
+        );
+
+        add_submenu_page(
+            'hd-main',
+            __('Пользователи', 'helpdesk-enterprise'),
+            __('Пользователи', 'helpdesk-enterprise'),
+            'hd_manage_settings',
+            'users.php'
         );
     }
 
@@ -65,6 +73,10 @@ class HD_Admin {
                     'working_hours' => array(
                         'start' => sanitize_text_field($_POST['working_start']),
                         'end' => sanitize_text_field($_POST['working_end']),
+                    ),
+                    'lunch_break' => array(
+                        'start' => sanitize_text_field($_POST['lunch_start']),
+                        'end' => sanitize_text_field($_POST['lunch_end']),
                     ),
                     'weekends' => isset($_POST['weekends']) ? array_map('intval', $_POST['weekends']) : array(),
                     'holidays' => array_filter(array_map('trim', explode("\n", $_POST['holidays']))),
@@ -89,27 +101,31 @@ class HD_Admin {
                 $name = sanitize_text_field($_POST['name']);
                 $department_id = intval($_POST['department_id']);
                 $base_sla = intval($_POST['base_sla']);
+                $priority = sanitize_text_field($_POST['priority']);
                 $default_executor_id = intval($_POST['default_executor_id']);
 
                 if ($id) {
-                    $wpdb->update("{$wpdb->prefix}hd_categories", array('name' => $name, 'department_id' => $department_id, 'base_sla' => $base_sla, 'default_executor_id' => $default_executor_id), array('id' => $id));
+                    $wpdb->update("{$wpdb->prefix}hd_categories", array('name' => $name, 'department_id' => $department_id, 'base_sla' => $base_sla, 'priority' => $priority, 'default_executor_id' => $default_executor_id), array('id' => $id));
                 } else {
-                    $wpdb->insert("{$wpdb->prefix}hd_categories", array('name' => $name, 'department_id' => $department_id, 'base_sla' => $base_sla, 'default_executor_id' => $default_executor_id));
+                    $wpdb->insert("{$wpdb->prefix}hd_categories", array('name' => $name, 'department_id' => $department_id, 'base_sla' => $base_sla, 'priority' => $priority, 'default_executor_id' => $default_executor_id));
                 }
                 wp_redirect(admin_url('admin.php?page=hd-categories&message=saved'));
                 exit;
 
             case 'save_settings':
+                update_option('hd_company_name', sanitize_text_field($_POST['company_name']));
                 update_option('hd_telegram_token', sanitize_text_field($_POST['telegram_token']));
                 update_option('hd_telegram_bot_name', sanitize_text_field($_POST['telegram_bot_name']));
                 update_option('hd_telegram_admin_chat_id', sanitize_text_field($_POST['telegram_admin_chat_id']));
+                update_option('hd_notify_on_create', isset($_POST['notify_on_create']) ? 1 : 0);
+                update_option('hd_notify_on_status', isset($_POST['notify_on_status']) ? 1 : 0);
                 wp_redirect(admin_url('admin.php?page=hd-settings&message=saved'));
                 exit;
         }
     }
 
     public function render_main_page() {
-        echo '<div class="wrap"><h1>' . __('Helpdesk Enterprise', 'helpdesk-enterprise') . '</h1><p>' . __('Welcome to the Helpdesk Enterprise management system.', 'helpdesk-enterprise') . '</p></div>';
+        echo '<div class="wrap"><h1>' . __('Helpdesk Enterprise', 'helpdesk-enterprise') . '</h1><p>' . __('Добро пожаловать в корпоративную систему управления заявками.', 'helpdesk-enterprise') . '</p></div>';
     }
 
     public function render_departments_page() {

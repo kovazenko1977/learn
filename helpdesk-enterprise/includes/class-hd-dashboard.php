@@ -13,6 +13,8 @@ class HD_Dashboard {
         add_action('wp_ajax_hd_get_request_details', array($this, 'ajax_get_request_details'));
         add_action('wp_ajax_hd_add_comment', array($this, 'ajax_add_comment'));
         add_action('wp_ajax_hd_update_status', array($this, 'ajax_update_status'));
+        add_action('wp_ajax_hd_assign_executor', array($this, 'ajax_assign_executor'));
+        add_action('wp_ajax_hd_update_deadline', array($this, 'ajax_update_deadline'));
         add_action('wp_ajax_hd_delete_comment', array($this, 'ajax_delete_comment'));
         add_action('wp_ajax_hd_delete_photo', array($this, 'ajax_delete_photo'));
         add_action('wp_ajax_hd_save_user_settings', array($this, 'ajax_save_user_settings'));
@@ -58,9 +60,9 @@ class HD_Dashboard {
                     HD_Request_Manager::add_photo($id, $upload['url']);
                 }
             }
-            wp_send_json_success(array('id' => $id, 'message' => __('Request created!', 'helpdesk-enterprise')));
+            wp_send_json_success(array('id' => $id, 'message' => __('Заявка создана!', 'helpdesk-enterprise')));
         } else {
-            wp_send_json_error(__('Failed to create request.', 'helpdesk-enterprise'));
+            wp_send_json_error(__('Не удалось создать заявку.', 'helpdesk-enterprise'));
         }
     }
 
@@ -112,6 +114,38 @@ class HD_Dashboard {
         }
     }
 
+    public function ajax_assign_executor() {
+        check_ajax_referer('hd_nonce', 'nonce');
+        $id = intval($_POST['request_id']);
+        $executor_id = intval($_POST['executor_id']);
+
+        if (!current_user_can('hd_manage_dept_requests') && !current_user_can('hd_manage_all')) {
+            wp_send_json_error('Forbidden');
+        }
+
+        if (HD_Request_Manager::assign_executor($id, $executor_id)) {
+            wp_send_json_success();
+        } else {
+            wp_send_json_error();
+        }
+    }
+
+    public function ajax_update_deadline() {
+        check_ajax_referer('hd_nonce', 'nonce');
+        $id = intval($_POST['request_id']);
+        $deadline = sanitize_text_field($_POST['deadline']);
+
+        if (!current_user_can('hd_manage_dept_requests') && !current_user_can('hd_manage_all')) {
+            wp_send_json_error('Forbidden');
+        }
+
+        if (HD_Request_Manager::update_deadline($id, $deadline)) {
+            wp_send_json_success();
+        } else {
+            wp_send_json_error();
+        }
+    }
+
     public function ajax_update_status() {
         check_ajax_referer('hd_nonce', 'nonce');
         $id = intval($_POST['request_id']);
@@ -155,7 +189,7 @@ class HD_Dashboard {
 
     public function render_dashboard() {
         if (!is_user_logged_in()) {
-            return __('Please log in to access the Helpdesk.', 'helpdesk-enterprise');
+            return __('Пожалуйста, войдите в систему для доступа к Helpdesk.', 'helpdesk-enterprise');
         }
 
         global $wpdb;
@@ -178,7 +212,14 @@ class HD_Dashboard {
         } else if (current_user_can('hd_view_own_requests')) {
             $query .= $wpdb->prepare(" AND r.responsible_id = %d", $user_id);
         } else {
-            return __('You do not have permission to view this page.', 'helpdesk-enterprise');
+            return __('У вас нет прав для просмотра этой страницы.', 'helpdesk-enterprise');
+        }
+
+        if (!empty($_GET['status_filter'])) {
+            $query .= $wpdb->prepare(" AND r.status = %s", sanitize_text_field($_GET['status_filter']));
+        }
+        if (!empty($_GET['cat_filter'])) {
+            $query .= $wpdb->prepare(" AND r.category_id = %d", intval($_GET['cat_filter']));
         }
 
         $requests = $wpdb->get_results($query);

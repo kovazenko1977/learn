@@ -31,32 +31,34 @@ class HD_Telegram {
     }
 
     public function notify_request_created($request_id, $data) {
-        $msg = "🆕 <b>New Request #{$request_id}</b>\n";
-        $msg .= "Title: {$data['title']}\n";
-        $msg .= "Deadline: {$data['deadline']}";
+        if (!get_option('hd_notify_on_create', 1)) return;
+        $msg = "🆕 <b>Новая заявка #{$request_id}</b>\n";
+        $msg .= "Заголовок: {$data['title']}\n";
+        $msg .= "Срок (SLA): {$data['deadline']}";
 
         $this->notify_all_relevant($request_id, $msg);
     }
 
     public function notify_status_changed($request_id, $new_status, $old_status) {
-        $msg = "🔄 <b>Request #{$request_id} status changed</b>\n";
-        $msg .= "Old: {$old_status}\n";
-        $msg .= "New: <b>{$new_status}</b>";
+        if (!get_option('hd_notify_on_status', 1)) return;
+        $msg = "🔄 <b>Статус заявки #{$request_id} изменен</b>\n";
+        $msg .= "Старый: {$old_status}\n";
+        $msg .= "Новый: <b>{$new_status}</b>";
 
         $this->notify_all_relevant($request_id, $msg);
     }
 
     public function notify_executor_changed($request_id, $new_executor_id, $old_executor_id) {
         $new_exec = get_userdata($new_executor_id);
-        $msg = "👤 <b>Executor changed for Request #{$request_id}</b>\n";
-        $msg .= "New Executor: " . ($new_exec ? $new_exec->display_name : 'None');
+        $msg = "👤 <b>Исполнитель заявки #{$request_id} изменен</b>\n";
+        $msg .= "Новый исполнитель: " . ($new_exec ? $new_exec->display_name : 'Не назначен');
 
         $this->notify_all_relevant($request_id, $msg);
     }
 
     public function notify_deadline_changed($request_id, $new_deadline, $old_deadline) {
-        $msg = "📅 <b>Deadline updated for Request #{$request_id}</b>\n";
-        $msg .= "New Deadline: {$new_deadline}";
+        $msg = "📅 <b>Срок выполнения заявки #{$request_id} обновлен</b>\n";
+        $msg .= "Новый срок: {$new_deadline}";
 
         $this->notify_all_relevant($request_id, $msg);
     }

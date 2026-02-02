@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Helpdesk Enterprise
- * Description: A corporate helpdesk system for managing requests with SLA and Telegram integration.
+ * Description: Корпоративная система управления заявками с SLA и интеграцией с Telegram.
  * Version: 1.0.0
  * Author: Jules
  * Text Domain: helpdesk-enterprise
