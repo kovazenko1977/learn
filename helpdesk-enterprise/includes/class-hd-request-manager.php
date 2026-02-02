@@ -16,7 +16,7 @@ class HD_Request_Manager {
         $department = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_departments WHERE id = %d", $dept_id));
         $dept_settings = json_decode($department->settings, true);
 
-        $deadline = HD_SLA::calculate_deadline($category->base_sla, $dept_settings);
+        $deadline = HD_SLA::calculate_deadline($category->base_sla, $dept_settings, null, $category->priority);
 
         $request_data = array(
             'title' => sanitize_text_field($data['title']),

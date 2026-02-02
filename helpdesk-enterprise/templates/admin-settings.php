@@ -22,6 +22,10 @@
                 <td><input name="telegram_admin_chat_id" type="text" id="telegram_admin_chat_id" value="<?php echo esc_attr(get_option('hd_telegram_admin_chat_id')); ?>" class="regular-text"></td>
             </tr>
             <tr>
+                <th><label for="default_sla"><?php _e('Дефолтный SLA (часов)', 'helpdesk-enterprise'); ?></label></th>
+                <td><input name="default_sla" type="number" id="default_sla" value="<?php echo esc_attr(get_option('hd_default_sla', 24)); ?>" class="small-text"></td>
+            </tr>
+            <tr>
                 <th><label><?php _e('Уведомления', 'helpdesk-enterprise'); ?></label></th>
                 <td>
                     <label><input type="checkbox" name="notify_on_create" value="1" <?php checked(get_option('hd_notify_on_create'), 1); ?>> <?php _e('Уведомлять о новых заявках', 'helpdesk-enterprise'); ?></label><br>

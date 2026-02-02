@@ -262,6 +262,28 @@ class HD_Dashboard {
         $requests = $wpdb->get_results($query);
         $categories = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}hd_categories");
 
+        // Calculate Stats
+        $stats = array(
+            'total' => count($requests),
+            'new' => 0,
+            'in_progress' => 0,
+            'completed' => 0,
+            'overdue' => 0
+        );
+
+        $now = current_time('timestamp');
+        foreach ($requests as $r) {
+            if (isset($stats[$r->status])) {
+                $stats[$r->status]++;
+            } else if ($r->status === 'new') {
+                $stats['new']++;
+            }
+
+            if ($r->status !== 'completed' && strtotime($r->deadline) < $now) {
+                $stats['overdue']++;
+            }
+        }
+
         ob_start();
         include HD_PATH . 'templates/dashboard.php';
         return ob_get_clean();

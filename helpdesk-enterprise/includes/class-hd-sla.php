@@ -8,7 +8,17 @@ class HD_SLA {
     /**
      * Calculate deadline based on SLA hours and department settings.
      */
-    public static function calculate_deadline($base_hours, $dept_settings, $start_time = null) {
+    public static function calculate_deadline($base_hours, $dept_settings, $start_time = null, $priority = 'medium') {
+        // Priority multipliers
+        $multipliers = array(
+            'low'      => 1.5,
+            'medium'   => 1.0,
+            'high'     => 0.5,
+            'critical' => 0.25
+        );
+        $multiplier = isset($multipliers[$priority]) ? $multipliers[$priority] : 1.0;
+        $base_hours = $base_hours * $multiplier;
+
         if (!$start_time) {
             $start_time = current_time('timestamp');
         } else if (is_string($start_time)) {

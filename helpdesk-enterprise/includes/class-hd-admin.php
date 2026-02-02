@@ -117,6 +117,7 @@ class HD_Admin {
                 update_option('hd_telegram_token', sanitize_text_field($_POST['telegram_token']));
                 update_option('hd_telegram_bot_name', sanitize_text_field($_POST['telegram_bot_name']));
                 update_option('hd_telegram_admin_chat_id', sanitize_text_field($_POST['telegram_admin_chat_id']));
+                update_option('hd_default_sla', intval($_POST['default_sla']));
                 update_option('hd_notify_on_create', isset($_POST['notify_on_create']) ? 1 : 0);
                 update_option('hd_notify_on_status', isset($_POST['notify_on_status']) ? 1 : 0);
                 wp_redirect(admin_url('admin.php?page=hd-settings&message=saved'));
