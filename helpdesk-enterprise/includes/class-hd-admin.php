@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 class HD_Admin {
     public function __construct() {
         add_action('admin_menu', array($this, 'add_menus'));
-        add_action('admin_init', array($this, 'handle_actions'));
+        add_action('init', array($this, 'handle_actions'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
     }
 
@@ -17,11 +17,14 @@ class HD_Admin {
         wp_add_inline_style('hd-admin-style', "
             .wrap h1 { color: #1e293b; font-weight: 800; margin-bottom: 24px; }
             .hd-admin-standalone { padding: 0; }
-            .form-table th { font-weight: 600; color: #64748b; }
-            .wp-list-table { border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-            .hd-create-form-container { border: 1px solid #e2e8f0; }
-            .hd-input, .hd-textarea { background: #fff; border-color: #cbd5e1; }
-            .hd-btn-primary { background: #2563eb !important; }
+            .form-table th { font-weight: 600; color: #64748b; width: 200px; }
+            .wp-list-table { border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+            .hd-create-form-container { border: 1px solid #e2e8f0; background: #fff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); padding: 30px; }
+            .hd-input, .hd-textarea { background: #fff; border-color: #cbd5e1; font-size: 14px; padding: 10px 14px; }
+            .hd-btn-primary { background: #2563eb !important; border: none !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; }
+            .hd-admin-stats-grid .hd-admin-stat-card { border-top-width: 6px !important; }
+            .hd-title { color: #1e293b; font-size: 24px; font-weight: 800; }
+            #adminmenu .wp-has-current-submenu.wp-menu-open { background-color: #2563eb; }
         ");
     }
 
@@ -103,13 +106,13 @@ class HD_Admin {
                 } else {
                     $wpdb->insert("{$wpdb->prefix}hd_departments", array('name' => $name, 'manager_id' => $manager_id, 'settings' => $settings));
                 }
-                wp_redirect(admin_url('admin.php?page=hd-departments&message=saved'));
+                $this->smart_redirect('hd-departments');
                 exit;
 
             case 'delete_department':
                 $id = intval($_POST['id']);
                 $wpdb->delete("{$wpdb->prefix}hd_departments", array('id' => $id));
-                wp_redirect(admin_url('admin.php?page=hd-departments&message=deleted'));
+                $this->smart_redirect('hd-departments');
                 exit;
 
             case 'save_category':
@@ -125,7 +128,7 @@ class HD_Admin {
                 } else {
                     $wpdb->insert("{$wpdb->prefix}hd_categories", array('name' => $name, 'department_id' => $department_id, 'base_sla' => $base_sla, 'priority' => $priority, 'default_executor_id' => $default_executor_id));
                 }
-                wp_redirect(admin_url('admin.php?page=hd-categories&message=saved'));
+                $this->smart_redirect('hd-categories');
                 exit;
 
             case 'save_settings':
@@ -136,7 +139,7 @@ class HD_Admin {
                 update_option('hd_default_sla', intval($_POST['default_sla']));
                 update_option('hd_notify_on_create', isset($_POST['notify_on_create']) ? 1 : 0);
                 update_option('hd_notify_on_status', isset($_POST['notify_on_status']) ? 1 : 0);
-                wp_redirect(admin_url('admin.php?page=hd-settings&message=saved'));
+                $this->smart_redirect('hd-settings');
                 exit;
 
             case 'save_user':
@@ -173,8 +176,17 @@ class HD_Admin {
             case 'delete_user':
                 $id = intval($_POST['id']);
                 $wpdb->delete("{$wpdb->prefix}hd_users", array('id' => $id));
-                wp_redirect(admin_url('admin.php?page=hd-users&message=deleted'));
+                $this->smart_redirect('hd-users');
                 exit;
+        }
+    }
+
+    private function smart_redirect($page) {
+        if (is_admin()) {
+            wp_redirect(admin_url('admin.php?page=' . $page . '&message=success'));
+        } else {
+            // Frontend redirect - back to the same page
+            wp_redirect(remove_query_arg('edit', wp_get_referer()));
         }
     }
 

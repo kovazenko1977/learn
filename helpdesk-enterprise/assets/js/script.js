@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
     // Create request
-    $('#hd-create-form').on('submit', function(e) {
+    $(document).on('submit', '#hd-create-form', function(e) {
         e.preventDefault();
         var formData = new FormData(this);
         formData.append('action', 'hd_create_request');
@@ -24,7 +24,7 @@ jQuery(document).ready(function($) {
     });
 
     // View request details
-    $('.hd-view-request').on('click', function() {
+    $(document).on('click', '.hd-view-request', function() {
         var id = $(this).data('id');
         $.post(hd_vars.ajax_url, {
             action: 'hd_get_request_details',
@@ -41,7 +41,7 @@ jQuery(document).ready(function($) {
     });
 
     // Close modal
-    $('.hd-close').on('click', function() {
+    $(document).on('click', '.hd-close', function() {
         $('#hd-modal').hide();
     });
 
