@@ -58,12 +58,12 @@
             <a href="<?php echo get_permalink(); ?>" class="hd-btn" style="background: var(--hd-border);"><?php _e('Сброс', 'helpdesk-enterprise'); ?></a>
         </form>
 
-        <?php if (current_user_can('hd_export_dept') || current_user_can('hd_manage_all')): ?>
+        <?php if (HD_Auth::current_user_can('hd_export_dept') || HD_Auth::current_user_can('hd_manage_all')): ?>
             <a href="<?php echo admin_url('admin-ajax.php?action=hd_export_requests&nonce=' . wp_create_nonce('hd_nonce')); ?>" class="hd-btn" style="background: var(--hd-secondary); color: white;"><?php _e('Экспорт CSV', 'helpdesk-enterprise'); ?></a>
         <?php endif; ?>
     </section>
 
-    <?php if (current_user_can('hd_create_requests')): ?>
+    <?php if (HD_Auth::current_user_can('hd_create_requests')): ?>
         <section class="hd-create-form-container">
             <h3 style="margin-top: 0;"><?php _e('Создать новую заявку', 'helpdesk-enterprise'); ?></h3>
             <form id="hd-create-form">

@@ -88,7 +88,7 @@ class HD_Dashboard {
 
     public function ajax_delete_request() {
         check_ajax_referer('hd_nonce', 'nonce');
-        if (!current_user_can('hd_delete_data')) wp_send_json_error('Forbidden');
+        if (!HD_Auth::current_user_can('hd_delete_data')) wp_send_json_error('Forbidden');
 
         $id = intval($_POST['id']);
         if (HD_Request_Manager::delete_request($id)) {
@@ -100,7 +100,6 @@ class HD_Dashboard {
 
     public function ajax_delete_photo() {
         check_ajax_referer('hd_nonce', 'nonce');
-        if (!HD_Auth::current_user_can('hd_delete_data')) wp_send_json_error('Forbidden');
         if (!HD_Auth::current_user_can('hd_delete_data')) wp_send_json_error('Forbidden');
 
         $id = intval($_POST['id']);

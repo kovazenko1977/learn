@@ -10,18 +10,18 @@ class HD_Export {
     }
 
     public function handle_export() {
-        if (!current_user_can('hd_export_dept') && !current_user_can('hd_manage_all')) {
+        if (!HD_Auth::current_user_can('hd_export_dept') && !HD_Auth::current_user_can('hd_manage_all')) {
             wp_die(__('У вас нет прав для экспорта.', 'helpdesk-enterprise'));
         }
 
         global $wpdb;
-        $user_id = get_current_user_id();
+        $user_id = HD_Auth::get_user_id();
 
         $query = "SELECT r.*, c.name as cat_name, d.name as dept_name FROM {$wpdb->prefix}hd_requests r
                   LEFT JOIN {$wpdb->prefix}hd_categories c ON r.category_id = c.id
                   LEFT JOIN {$wpdb->prefix}hd_departments d ON r.department_id = d.id WHERE 1=1";
 
-        if (!current_user_can('hd_manage_all')) {
+        if (!HD_Auth::current_user_can('hd_manage_all')) {
             $managed_depts = $wpdb->get_col($wpdb->prepare("SELECT id FROM {$wpdb->prefix}hd_departments WHERE manager_id = %d", $user_id));
             if ($managed_depts) {
                 $query .= " AND r.department_id IN (" . implode(',', array_map('intval', $managed_depts)) . ")";

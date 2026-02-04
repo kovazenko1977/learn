@@ -98,4 +98,18 @@ class HD_DB {
             dbDelta($query);
         }
     }
+
+    public static function reset_all_data() {
+        global $wpdb;
+        $tables = array(
+            "{$wpdb->prefix}hd_requests",
+            "{$wpdb->prefix}hd_history",
+            "{$wpdb->prefix}hd_comments",
+            "{$wpdb->prefix}hd_photos"
+        );
+
+        foreach ($tables as $table) {
+            $wpdb->query("TRUNCATE TABLE $table");
+        }
+    }
 }

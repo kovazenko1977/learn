@@ -178,6 +178,13 @@ class HD_Admin {
                 $wpdb->delete("{$wpdb->prefix}hd_users", array('id' => $id));
                 $this->smart_redirect('hd-users');
                 exit;
+
+            case 'reset_all_data':
+                if (HD_Auth::current_user_can('hd_manage_settings')) {
+                    HD_DB::reset_all_data();
+                    $this->smart_redirect('hd-settings');
+                }
+                exit;
         }
     }
 
