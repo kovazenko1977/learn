@@ -46,13 +46,20 @@ jQuery(document).ready(function($) {
     });
 
     // Save user settings
-    $('#hd-user-settings-form').on('submit', function(e) {
+    $(document).on('submit', '#hd-user-settings-form', function(e) {
         e.preventDefault();
         var data = $(this).serialize() + '&action=hd_save_user_settings&nonce=' + hd_vars.nonce;
         $.post(hd_vars.ajax_url, data, function(response) {
             if (response.success) {
                 alert('Настройки сохранены');
             }
+        });
+    });
+
+    // Logout
+    $(document).on('click', '#hd-logout-btn', function() {
+        $.post(hd_vars.ajax_url, { action: 'hd_logout' }, function() {
+            location.reload();
         });
     });
 

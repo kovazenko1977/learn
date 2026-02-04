@@ -45,8 +45,11 @@
                         <td>
                             <select name="default_executor_id" id="default_executor_id">
                                 <option value="0"><?php _e('Выберите исполнителя', 'helpdesk-enterprise'); ?></option>
-                                <?php foreach ($users as $user): ?>
-                                    <option value="<?php echo $user->ID; ?>" <?php selected($edit_item ? $edit_item->default_executor_id : 0, $user->ID); ?>><?php echo esc_html($user->display_name); ?></option>
+                                <?php
+                                global $wpdb;
+                                $hd_users = $wpdb->get_results("SELECT id, display_name FROM {$wpdb->prefix}hd_users WHERE role IN ('hd_executor', 'hd_department_head', 'hd_administrator')");
+                                foreach ($hd_users as $user): ?>
+                                    <option value="<?php echo $user->id; ?>" <?php selected($edit_item ? $edit_item->default_executor_id : 0, $user->id); ?>><?php echo esc_html($user->display_name); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>

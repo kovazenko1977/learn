@@ -11,6 +11,20 @@ class HD_DB {
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
+        // Users (Autonomous)
+        $sql[] = "CREATE TABLE {$wpdb->prefix}hd_users (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            username varchar(60) NOT NULL,
+            password varchar(255) NOT NULL,
+            email varchar(100) NOT NULL,
+            display_name varchar(250) NOT NULL,
+            role varchar(50) NOT NULL,
+            telegram_chat_id varchar(100) DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            UNIQUE KEY username (username)
+        ) $charset_collate;";
+
         // Departments
         $sql[] = "CREATE TABLE {$wpdb->prefix}hd_departments (
             id bigint(20) NOT NULL AUTO_INCREMENT,

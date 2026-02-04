@@ -1,12 +1,17 @@
 <div class="hd-dashboard-wrapper">
     <header class="hd-header">
         <h2 class="hd-title"><?php _e('Панель управления заявками', 'helpdesk-enterprise'); ?></h2>
-        <div class="hd-user-settings">
-            <form id="hd-user-settings-form" class="hd-controls">
-                <label style="font-size: 13px; color: var(--hd-secondary);"><?php _e('Telegram Chat ID:', 'helpdesk-enterprise'); ?></label>
-                <input type="text" name="telegram_chat_id" class="hd-input" value="<?php echo esc_attr(get_user_meta(get_current_user_id(), 'hd_telegram_chat_id', true)); ?>" style="width: 140px;">
-                <button type="submit" class="hd-btn hd-btn-primary"><?php _e('Сохранить', 'helpdesk-enterprise'); ?></button>
+        <div class="hd-user-settings" style="display: flex; gap: 20px; align-items: center;">
+            <div style="text-align: right; line-height: 1.2;">
+                <div style="font-weight: 700; font-size: 14px;"><?php echo esc_html(HD_Auth::get_user()->display_name); ?></div>
+                <div style="font-size: 12px; color: var(--hd-secondary);"><?php echo esc_html(HD_Auth::get_user()->role); ?></div>
+            </div>
+            <form id="hd-user-settings-form" class="hd-controls" style="margin-bottom: 0;">
+                <label style="font-size: 13px; color: var(--hd-secondary);"><?php _e('TG ID:', 'helpdesk-enterprise'); ?></label>
+                <input type="text" name="telegram_chat_id" class="hd-input" value="<?php echo esc_attr(HD_Auth::get_user()->telegram_chat_id); ?>" style="width: 100px;">
+                <button type="submit" class="hd-btn hd-btn-primary"><?php _e('OK', 'helpdesk-enterprise'); ?></button>
             </form>
+            <button id="hd-logout-btn" class="hd-btn" style="background: var(--hd-danger); color: white; padding: 6px 12px; font-size: 12px;"><?php _e('Выход', 'helpdesk-enterprise'); ?></button>
         </div>
     </header>
 

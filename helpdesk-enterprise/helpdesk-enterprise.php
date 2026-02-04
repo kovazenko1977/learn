@@ -31,6 +31,7 @@ class HelpdeskEnterprise {
 
     private function includes() {
         require_once HD_PATH . 'includes/class-hd-db.php';
+        require_once HD_PATH . 'includes/class-hd-auth.php';
         require_once HD_PATH . 'includes/class-hd-roles.php';
         require_once HD_PATH . 'includes/class-hd-sla.php';
         require_once HD_PATH . 'includes/class-hd-request-manager.php';
@@ -41,12 +42,28 @@ class HelpdeskEnterprise {
     }
 
     private function init_hooks() {
+        add_action('init', array('HD_Auth', 'init'));
         register_activation_hook(__FILE__, array($this, 'activate'));
     }
 
     public function activate() {
         HD_DB::create_tables();
         HD_Roles::init();
+        $this->ensure_default_admin();
+    }
+
+    private function ensure_default_admin() {
+        global $wpdb;
+        $exists = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_users");
+        if (!$exists) {
+            $wpdb->insert("{$wpdb->prefix}hd_users", array(
+                'username' => 'admin',
+                'password' => password_hash('admin', PASSWORD_DEFAULT),
+                'email' => get_option('admin_email'),
+                'display_name' => 'System Admin',
+                'role' => 'hd_administrator'
+            ));
+        }
     }
 }
 

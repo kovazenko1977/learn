@@ -7,7 +7,7 @@
 *   **Database**: MySQL/MariaDB (Custom Tables)
 *   **Frontend**: Vanilla JS, AJAX, Tailwind-inspired CSS
 *   **Integration**: Telegram Bot API (Webhooks/Long polling)
-*   **Security**: WP Role System, Nonces, Capability Checks
+*   **Security**: Autonomous User System (hd_users), PHP Sessions, Custom RBAC
 *   **Extensibility**: Модульная структура, поддержка REST API для будущих мобильных приложений.
 
 ---
@@ -16,13 +16,16 @@
 
 ```mermaid
 erDiagram
+    USERS ||--o{ REQUESTS : "создает/исполняет"
+    USERS ||--o{ COMMENTS : "пишет"
+    USERS ||--o{ PHOTOS : "загружает"
+    USERS ||--o{ HISTORY : "совершает действия"
     DEPARTMENTS ||--o{ CATEGORIES : "содержит"
     DEPARTMENTS ||--o{ REQUESTS : "обрабатывает"
     CATEGORIES ||--o{ REQUESTS : "классифицирует"
     REQUESTS ||--o{ COMMENTS : "имеет"
     REQUESTS ||--o{ PHOTOS : "содержит"
     REQUESTS ||--o{ HISTORY : "логирует"
-    USERS ||--o{ REQUESTS : "создает/исполняет"
 ```
 
 ---
@@ -31,6 +34,8 @@ erDiagram
 
 | Endpoint (Action) | Method | Description | Roles |
 | :--- | :--- | :--- | :--- |
+| `hd_login`          | POST | Авторизация в системе  | Any                |
+| `hd_logout`         | POST | Выход из системы       | Any                |
 | `hd_create_request` | POST | Создание новой заявки | Responsible, Admin |
 | `hd_get_request_details`| POST | Получение данных заявки | All (with limits) |
 | `hd_update_status` | POST | Изменение статуса | Executor, Manager, Admin |
@@ -87,6 +92,19 @@ erDiagram
 ## 7. Структура БД (SQL)
 
 ```sql
+CREATE TABLE `hd_users` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `username` varchar(60) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `display_name` varchar(250) NOT NULL,
+  `role` varchar(50) NOT NULL,
+  `telegram_chat_id` varchar(100) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+);
+
 CREATE TABLE `hd_requests` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,

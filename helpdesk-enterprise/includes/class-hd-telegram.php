@@ -49,7 +49,7 @@ class HD_Telegram {
     }
 
     public function notify_executor_changed($request_id, $new_executor_id, $old_executor_id) {
-        $new_exec = get_userdata($new_executor_id);
+        $new_exec = HD_Auth::get_user_by_id($new_executor_id);
         $msg = "👤 <b>Исполнитель заявки #{$request_id} изменен</b>\n";
         $msg .= "Новый исполнитель: " . ($new_exec ? $new_exec->display_name : 'Не назначен');
 
@@ -69,20 +69,20 @@ class HD_Telegram {
         if (!$request) return;
 
         // Notify responsible
-        $resp_chat = get_user_meta($request->responsible_id, 'hd_telegram_chat_id', true);
-        if ($resp_chat) self::send_message($resp_chat, $message);
+        $resp = HD_Auth::get_user_by_id($request->responsible_id);
+        if ($resp && $resp->telegram_chat_id) self::send_message($resp->telegram_chat_id, $message);
 
         // Notify executor
         if ($request->executor_id) {
-            $exec_chat = get_user_meta($request->executor_id, 'hd_telegram_chat_id', true);
-            if ($exec_chat) self::send_message($exec_chat, $message);
+            $exec = HD_Auth::get_user_by_id($request->executor_id);
+            if ($exec && $exec->telegram_chat_id) self::send_message($exec->telegram_chat_id, $message);
         }
 
         // Notify Dept Head
         $dept = $wpdb->get_row($wpdb->prepare("SELECT manager_id FROM {$wpdb->prefix}hd_departments WHERE id = %d", $request->department_id));
         if ($dept && $dept->manager_id) {
-            $mgr_chat = get_user_meta($dept->manager_id, 'hd_telegram_chat_id', true);
-            if ($mgr_chat) self::send_message($mgr_chat, $message);
+            $mgr = HD_Auth::get_user_by_id($dept->manager_id);
+            if ($mgr && $mgr->telegram_chat_id) self::send_message($mgr->telegram_chat_id, $message);
         }
 
         // Notify Admin (General chat)

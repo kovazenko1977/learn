@@ -53,7 +53,8 @@ class HD_Admin {
             __('Пользователи', 'helpdesk-enterprise'),
             __('Пользователи', 'helpdesk-enterprise'),
             'hd_manage_settings',
-            'users.php'
+            'hd-users',
+            array($this, 'render_users_page')
         );
     }
 
@@ -122,6 +123,39 @@ class HD_Admin {
                 update_option('hd_notify_on_status', isset($_POST['notify_on_status']) ? 1 : 0);
                 wp_redirect(admin_url('admin.php?page=hd-settings&message=saved'));
                 exit;
+
+            case 'save_user':
+                $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+                $username = sanitize_text_field($_POST['username']);
+                $email = sanitize_email($_POST['email']);
+                $display_name = sanitize_text_field($_POST['display_name']);
+                $role = sanitize_text_field($_POST['role']);
+                $password = $_POST['password'];
+
+                $data = array(
+                    'username' => $username,
+                    'email' => $email,
+                    'display_name' => $display_name,
+                    'role' => $role
+                );
+
+                if (!empty($password)) {
+                    $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+                }
+
+                if ($id) {
+                    $wpdb->update("{$wpdb->prefix}hd_users", $data, array('id' => $id));
+                } else {
+                    $wpdb->insert("{$wpdb->prefix}hd_users", $data);
+                }
+                wp_redirect(admin_url('admin.php?page=hd-users&message=saved'));
+                exit;
+
+            case 'delete_user':
+                $id = intval($_POST['id']);
+                $wpdb->delete("{$wpdb->prefix}hd_users", array('id' => $id));
+                wp_redirect(admin_url('admin.php?page=hd-users&message=deleted'));
+                exit;
         }
     }
 
@@ -155,6 +189,16 @@ class HD_Admin {
 
     public function render_settings_page() {
         include HD_PATH . 'templates/admin-settings.php';
+    }
+
+    public function render_users_page() {
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}hd_users");
+
+        $edit_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
+        $edit_item = $edit_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_users WHERE id = %d", $edit_id)) : null;
+
+        include HD_PATH . 'templates/admin-users.php';
     }
 }
 

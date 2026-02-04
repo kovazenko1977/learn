@@ -23,7 +23,7 @@ class HD_Request_Manager {
             'description' => wp_kses_post($data['description']),
             'category_id' => $category_id,
             'department_id' => $dept_id,
-            'responsible_id' => get_current_user_id(),
+            'responsible_id' => HD_Auth::get_user_id(),
             'executor_id' => $category->default_executor_id,
             'status' => 'new',
             'created_at' => current_time('mysql'),
@@ -54,7 +54,7 @@ class HD_Request_Manager {
 
         $wpdb->update("{$wpdb->prefix}hd_requests", $update_data, array('id' => $request_id));
 
-        self::log_history($request_id, 'status_changed', get_current_user_id(), $old_status, $new_status);
+        self::log_history($request_id, 'status_changed', HD_Auth::get_user_id(), $old_status, $new_status);
 
         do_action('hd_status_changed', $request_id, $new_status, $old_status);
 
@@ -70,7 +70,7 @@ class HD_Request_Manager {
 
         $wpdb->update("{$wpdb->prefix}hd_requests", array('executor_id' => $executor_id), array('id' => $request_id));
 
-        self::log_history($request_id, 'executor_changed', get_current_user_id(), $old_executor_id, $executor_id);
+        self::log_history($request_id, 'executor_changed', HD_Auth::get_user_id(), $old_executor_id, $executor_id);
 
         do_action('hd_executor_changed', $request_id, $executor_id, $old_executor_id);
 
@@ -86,7 +86,7 @@ class HD_Request_Manager {
 
         $wpdb->update("{$wpdb->prefix}hd_requests", array('deadline' => $new_deadline), array('id' => $request_id));
 
-        self::log_history($request_id, 'deadline_changed', get_current_user_id(), $old_deadline, $new_deadline);
+        self::log_history($request_id, 'deadline_changed', HD_Auth::get_user_id(), $old_deadline, $new_deadline);
 
         do_action('hd_deadline_changed', $request_id, $new_deadline, $old_deadline);
 
@@ -97,13 +97,13 @@ class HD_Request_Manager {
         global $wpdb;
         $wpdb->insert("{$wpdb->prefix}hd_comments", array(
             'request_id' => $request_id,
-            'user_id' => get_current_user_id(),
+            'user_id' => HD_Auth::get_user_id(),
             'content' => wp_kses_post($content),
             'created_at' => current_time('mysql')
         ));
         $comment_id = $wpdb->insert_id;
 
-        self::log_history($request_id, 'comment_added', get_current_user_id(), null, $content);
+        self::log_history($request_id, 'comment_added', HD_Auth::get_user_id(), null, $content);
 
         do_action('hd_comment_added', $request_id, $comment_id);
 
@@ -114,13 +114,13 @@ class HD_Request_Manager {
         global $wpdb;
         $wpdb->insert("{$wpdb->prefix}hd_photos", array(
             'request_id' => $request_id,
-            'user_id' => get_current_user_id(),
+            'user_id' => HD_Auth::get_user_id(),
             'file_url' => esc_url_raw($file_url),
             'created_at' => current_time('mysql')
         ));
         $photo_id = $wpdb->insert_id;
 
-        self::log_history($request_id, 'photo_added', get_current_user_id(), null, $file_url);
+        self::log_history($request_id, 'photo_added', HD_Auth::get_user_id(), null, $file_url);
 
         do_action('hd_photo_added', $request_id, $photo_id);
 
@@ -133,7 +133,7 @@ class HD_Request_Manager {
         if (!$comment) return false;
 
         $wpdb->delete("{$wpdb->prefix}hd_comments", array('id' => $comment_id));
-        self::log_history($comment->request_id, 'comment_deleted', get_current_user_id(), $comment->content, null);
+        self::log_history($comment->request_id, 'comment_deleted', HD_Auth::get_user_id(), $comment->content, null);
         return true;
     }
 
@@ -143,7 +143,7 @@ class HD_Request_Manager {
         if (!$photo) return false;
 
         $wpdb->delete("{$wpdb->prefix}hd_photos", array('id' => $photo_id));
-        self::log_history($photo->request_id, 'photo_deleted', get_current_user_id(), $photo->file_url, null);
+        self::log_history($photo->request_id, 'photo_deleted', HD_Auth::get_user_id(), $photo->file_url, null);
         return true;
     }
 
@@ -154,7 +154,7 @@ class HD_Request_Manager {
 
         // Log history before deleting the request itself or handle it differently?
         // Usually we log to a separate table so it stays.
-        self::log_history($request_id, 'request_deleted', get_current_user_id(), json_encode($request), null);
+        self::log_history($request_id, 'request_deleted', HD_Auth::get_user_id(), json_encode($request), null);
 
         $wpdb->delete("{$wpdb->prefix}hd_requests", array('id' => $request_id));
         $wpdb->delete("{$wpdb->prefix}hd_comments", array('request_id' => $request_id));

@@ -19,8 +19,11 @@
                         <td>
                             <select name="manager_id" id="manager_id">
                                 <option value="0"><?php _e('Выберите руководителя', 'helpdesk-enterprise'); ?></option>
-                                <?php foreach ($users as $user): ?>
-                                    <option value="<?php echo $user->ID; ?>" <?php selected($edit_item ? $edit_item->manager_id : 0, $user->ID); ?>><?php echo esc_html($user->display_name); ?></option>
+                                <?php
+                                global $wpdb;
+                                $hd_users = $wpdb->get_results("SELECT id, display_name FROM {$wpdb->prefix}hd_users WHERE role = 'hd_department_head'");
+                                foreach ($hd_users as $user): ?>
+                                    <option value="<?php echo $user->id; ?>" <?php selected($edit_item ? $edit_item->manager_id : 0, $user->id); ?>><?php echo esc_html($user->display_name); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>
@@ -80,7 +83,7 @@
                         <tr>
                             <td><?php echo $item->id; ?></td>
                             <td><?php echo esc_html($item->name); ?></td>
-                            <td><?php $m = get_userdata($item->manager_id); echo $m ? esc_html($m->display_name) : '-'; ?></td>
+                            <td><?php $m = HD_Auth::get_user_by_id($item->manager_id); echo $m ? esc_html($m->display_name) : '-'; ?></td>
                             <td>
                                 <a href="?page=hd-departments&edit=<?php echo $item->id; ?>"><?php _e('Редактировать', 'helpdesk-enterprise'); ?></a> |
                                 <form method="post" style="display:inline;">
