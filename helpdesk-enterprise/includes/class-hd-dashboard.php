@@ -29,6 +29,7 @@ class HD_Dashboard {
         add_action('wp_ajax_hd_logout', array($this, 'ajax_logout'));
         add_action('wp_ajax_nopriv_hd_login', array($this, 'ajax_login'));
         add_action('wp_ajax_hd_save_user_settings', array($this, 'ajax_save_user_settings'));
+        add_action('wp_ajax_hd_full_reset', array($this, 'ajax_full_reset'));
     }
 
     public function ajax_login() {
@@ -45,6 +46,31 @@ class HD_Dashboard {
     public function ajax_logout() {
         HD_Auth::logout();
         wp_send_json_success();
+    }
+
+    public function ajax_full_reset() {
+        check_ajax_referer('hd_nonce', 'nonce');
+        if (!HD_Auth::current_user_can('hd_manage_settings')) wp_send_json_error('Forbidden');
+
+        $step = isset($_POST['step']) ? sanitize_text_field($_POST['step']) : '';
+
+        switch ($step) {
+            case 'drop':
+                HD_DB::drop_all_tables();
+                wp_send_json_success(array('message' => __('Таблицы удалены', 'helpdesk-enterprise')));
+                break;
+            case 'create':
+                HD_DB::create_tables();
+                wp_send_json_success(array('message' => __('Таблицы пересозданы', 'helpdesk-enterprise')));
+                break;
+            case 'init':
+                HD_DB::ensure_default_admin();
+                HD_Roles::init();
+                wp_send_json_success(array('message' => __('Система инициализирована', 'helpdesk-enterprise')));
+                break;
+            default:
+                wp_send_json_error('Invalid step');
+        }
     }
 
     public function ajax_save_user_settings() {

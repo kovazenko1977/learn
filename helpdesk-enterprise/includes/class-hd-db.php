@@ -112,4 +112,36 @@ class HD_DB {
             $wpdb->query("TRUNCATE TABLE $table");
         }
     }
+
+    public static function drop_all_tables() {
+        global $wpdb;
+        $tables = array(
+            "{$wpdb->prefix}hd_users",
+            "{$wpdb->prefix}hd_departments",
+            "{$wpdb->prefix}hd_categories",
+            "{$wpdb->prefix}hd_requests",
+            "{$wpdb->prefix}hd_history",
+            "{$wpdb->prefix}hd_comments",
+            "{$wpdb->prefix}hd_photos"
+        );
+
+        foreach ($tables as $table) {
+            $wpdb->query("DROP TABLE IF EXISTS $table");
+        }
+    }
+
+    public static function ensure_default_admin() {
+        global $wpdb;
+        $exists = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_users");
+        if (!$exists) {
+            $wpdb->insert("{$wpdb->prefix}hd_users", array(
+                'username' => 'admin',
+                'password' => password_hash('admin', PASSWORD_DEFAULT),
+                'phone' => '80000000000',
+                'display_name' => 'System Admin',
+                'role' => 'hd_administrator',
+                'api_token' => wp_generate_password(32, false)
+            ));
+        }
+    }
 }

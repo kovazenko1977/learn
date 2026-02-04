@@ -1,4 +1,4 @@
-# Проектная документация: Helpdesk Enterprise v6.0 🧩
+# Проектная документация: Helpdesk Enterprise v7.0 🧩
 **Разработчик:** Kovazenko S.B.
 
 ## 1. Архитектура системы

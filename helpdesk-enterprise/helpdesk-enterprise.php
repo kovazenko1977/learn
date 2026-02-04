@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Helpdesk Enterprise
  * Description: Корпоративная система управления заявками с SLA и интеграцией с Telegram.
- * Version: 6.0
+ * Version: 7.0
  * Author: Kovazenko S.B.
  * Text Domain: helpdesk-enterprise
  */
@@ -50,22 +50,7 @@ class HelpdeskEnterprise {
     public function activate() {
         HD_DB::create_tables();
         HD_Roles::init();
-        $this->ensure_default_admin();
-    }
-
-    private function ensure_default_admin() {
-        global $wpdb;
-        $exists = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_users");
-        if (!$exists) {
-            $wpdb->insert("{$wpdb->prefix}hd_users", array(
-                'username' => 'admin',
-                'password' => password_hash('admin', PASSWORD_DEFAULT),
-                'phone' => '80000000000',
-                'display_name' => 'System Admin',
-                'role' => 'hd_administrator',
-                'api_token' => wp_generate_password(32, false)
-            ));
-        }
+        HD_DB::ensure_default_admin();
     }
 }
 

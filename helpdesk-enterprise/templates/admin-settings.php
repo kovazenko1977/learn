@@ -45,13 +45,22 @@
     </div>
 
     <div class="hd-create-form-container" style="margin-top: 40px; border: 1px solid #fee2e2; background: #fffcfc;">
-        <h3 style="color: var(--hd-danger); margin-top: 0;"><?php _e('Опасная зона', 'helpdesk-enterprise'); ?></h3>
-        <p style="font-size: 14px; color: #64748b;"><?php _e('Вы можете безвозвратно удалить все заявки, комментарии, историю действий и фотографии из системы. Это действие нельзя отменить.', 'helpdesk-enterprise'); ?></p>
+        <h3 style="color: var(--hd-danger); margin-top: 0;"><?php _e('Опасная зона: Полное обнуление (v7.0)', 'helpdesk-enterprise'); ?></h3>
+        <p style="font-size: 14px; color: #64748b;"><?php _e('Данная функция ПОЛНОСТЬЮ удаляет все таблицы базы данных (включая пользователей, отделы и настройки) и пересоздает их заново. Все данные будут стерты навсегда.', 'helpdesk-enterprise'); ?></p>
 
-        <form method="post" action="" onsubmit="return confirm('<?php _e('ВНИМАНИЕ! Вы уверены, что хотите ПОЛНОСТЬЮ ОБНУЛИТЬ базу заявок? Это действие необратимо!', 'helpdesk-enterprise'); ?>');">
-            <?php wp_nonce_field('hd_admin_action'); ?>
-            <input type="hidden" name="hd_action" value="reset_all_data">
-            <button type="submit" class="hd-btn" style="background: var(--hd-danger); color: white; padding: 12px 24px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer;"><?php _e('ОБНУЛИТЬ ВСЕ ЗАЯВКИ И ДАННЫЕ', 'helpdesk-enterprise'); ?></button>
-        </form>
+        <div id="hd-reset-progress-container" style="display: none; margin-bottom: 20px; background: #f1f5f9; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span id="hd-reset-status" style="font-weight: 600; font-size: 14px; color: var(--hd-primary);">Подготовка...</span>
+                <span id="hd-reset-percent" style="font-weight: 700; font-size: 14px;">0%</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #cbd5e1; border-radius: 5px; overflow: hidden;">
+                <div id="hd-reset-bar" style="width: 0%; height: 100%; background: var(--hd-primary); transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+
+        <button id="hd-full-reset-btn" class="hd-btn" style="background: var(--hd-danger); color: white; padding: 14px 28px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+            <span class="dashicons dashicons-warning" style="margin-top: 2px;"></span>
+            <?php _e('ПОЛНОЕ ОБНУЛЕНИЕ И ПЕРЕСОЗДАНИЕ БД', 'helpdesk-enterprise'); ?>
+        </button>
     </div>
 </div>

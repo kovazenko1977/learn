@@ -195,4 +195,59 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    // Full Reset Logic (v7.0)
+    $(document).on('click', '#hd-full-reset-btn', function() {
+        if (!confirm('ВНИМАНИЕ! Это действие удалит ВСЕ таблицы и данные системы. Продолжить?')) return;
+        if (!confirm('ПОСЛЕДНЕЕ ПРЕДУПРЕЖДЕНИЕ! Все настройки, пользователи и заявки будут стерты. Вы точно уверены?')) return;
+
+        var $btn = $(this);
+        var $container = $('#hd-reset-progress-container');
+        var $status = $('#hd-reset-status');
+        var $percent = $('#hd-reset-percent');
+        var $bar = $('#hd-reset-bar');
+
+        $btn.hide();
+        $container.show();
+
+        const steps = [
+            { id: 'drop', label: 'Удаление всех таблиц...', weight: 33 },
+            { id: 'create', label: 'Пересоздание структуры БД...', weight: 66 },
+            { id: 'init', label: 'Инициализация системы...', weight: 100 }
+        ];
+
+        let currentStep = 0;
+
+        function runStep() {
+            if (currentStep >= steps.length) {
+                $status.text('Обнуление завершено! Перенаправление...');
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+                return;
+            }
+
+            var step = steps[currentStep];
+            $status.text(step.label);
+            $bar.css('width', step.weight + '%');
+            $percent.text(step.weight + '%');
+
+            $.post(hd_vars.ajax_url, {
+                action: 'hd_full_reset',
+                step: step.id,
+                nonce: hd_vars.nonce
+            }, function(response) {
+                if (response.success) {
+                    currentStep++;
+                    setTimeout(runStep, 800); // Small delay for visual effect
+                } else {
+                    $status.text('Ошибка: ' + response.data);
+                    $status.css('color', 'var(--hd-danger)');
+                    $bar.css('background', 'var(--hd-danger)');
+                }
+            });
+        }
+
+        runStep();
+    });
 });
