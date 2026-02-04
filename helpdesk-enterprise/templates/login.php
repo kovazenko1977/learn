@@ -1,6 +1,7 @@
-<div class="hd-dashboard-wrapper" style="max-width: 400px; margin: 100px auto;">
-    <header class="hd-header" style="justify-content: center; flex-direction: column;">
-        <h2 class="hd-title" style="margin-bottom: 20px;"><?php _e('Вход в Helpdesk', 'helpdesk-enterprise'); ?></h2>
+<div class="hd-dashboard-wrapper" style="max-width: 400px; margin: 60px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--hd-border);">
+    <header class="hd-header" style="justify-content: center; flex-direction: column; text-align: center;">
+        <h2 class="hd-title" style="margin-bottom: 10px; color: var(--hd-primary);"><?php _e('Helpdesk Enterprise', 'helpdesk-enterprise'); ?></h2>
+        <p style="color: var(--hd-secondary); font-size: 14px; margin-bottom: 20px;"><?php _e('Вход в автономную систему', 'helpdesk-enterprise'); ?></p>
         <?php if (isset($_GET['logout'])): ?>
             <p style="color: var(--hd-success);"><?php _e('Вы успешно вышли из системы.', 'helpdesk-enterprise'); ?></p>
         <?php endif; ?>

@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
 class HD_Dashboard {
     public function __construct() {
         add_shortcode('hd_dashboard', array($this, 'render_dashboard'));
+        add_shortcode('hd_request_form', array($this, 'render_request_form'));
+        add_shortcode('hd_request_list', array($this, 'render_request_list'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
 
         add_action('wp_ajax_hd_create_request', array($this, 'ajax_create_request'));
@@ -256,12 +258,149 @@ class HD_Dashboard {
 
         global $wpdb;
         $user_id = HD_Auth::get_user_id();
+
+        $requests_data = $this->get_filtered_requests();
+        $requests = $requests_data['requests'];
+        $categories = $requests_data['categories'];
+        $stats = $requests_data['stats'];
+
+        ob_start();
+        include HD_PATH . 'templates/dashboard.php';
+        return ob_get_clean();
+    }
+
+    public function render_request_form() {
+        if (!HD_Auth::is_logged_in()) {
+            ob_start();
+            include HD_PATH . 'templates/login.php';
+            return ob_get_clean();
+        }
+
+        if (!HD_Auth::current_user_can('hd_create_requests')) {
+            return __('У вас нет прав для создания заявок.', 'helpdesk-enterprise');
+        }
+
+        global $wpdb;
+        $categories = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}hd_categories");
+
+        ob_start();
+        ?>
+        <div class="hd-dashboard-wrapper standalone-form">
+            <section class="hd-create-form-container">
+                <h3 style="margin-top: 0;"><?php _e('Создать новую заявку', 'helpdesk-enterprise'); ?></h3>
+                <form id="hd-create-form">
+                    <div class="hd-form-group">
+                        <label><?php _e('Заголовок', 'helpdesk-enterprise'); ?></label>
+                        <input type="text" name="title" class="hd-input" required placeholder="<?php _e('Краткая суть проблемы...', 'helpdesk-enterprise'); ?>">
+                    </div>
+                    <div class="hd-form-group">
+                        <label><?php _e('Описание', 'helpdesk-enterprise'); ?></label>
+                        <textarea name="description" class="hd-textarea" rows="6" required placeholder="<?php _e('Подробное описание...', 'helpdesk-enterprise'); ?>"></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="hd-form-group">
+                            <label><?php _e('Категория', 'helpdesk-enterprise'); ?></label>
+                            <select name="category_id" class="hd-input" required>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?php echo $cat->id; ?>"><?php echo esc_html($cat->name); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="hd-form-group">
+                            <label><?php _e('Прикрепить фото', 'helpdesk-enterprise'); ?></label>
+                            <input type="file" name="photo" class="hd-input" accept="image/*">
+                        </div>
+                    </div>
+                    <button type="submit" class="hd-btn hd-btn-primary" style="width: 100%; padding: 12px; font-size: 16px;"><?php _e('Отправить заявку', 'helpdesk-enterprise'); ?></button>
+                </form>
+            </section>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function render_request_list() {
+        if (!HD_Auth::is_logged_in()) {
+            ob_start();
+            include HD_PATH . 'templates/login.php';
+            return ob_get_clean();
+        }
+
+        $requests_data = $this->get_filtered_requests();
+        $requests = $requests_data['requests'];
+        $categories = $requests_data['categories'];
+
+        ob_start();
+        ?>
+        <div class="hd-dashboard-wrapper standalone-list">
+            <section class="hd-controls">
+                <form method="get" style="display: flex; gap: 10px; align-items: center;">
+                    <select name="status_filter" class="hd-filter-select">
+                        <option value=""><?php _e('Все статусы', 'helpdesk-enterprise'); ?></option>
+                        <option value="new" <?php selected(isset($_GET['status_filter']) ? $_GET['status_filter'] : '', 'new'); ?>><?php _e('Новые', 'helpdesk-enterprise'); ?></option>
+                        <option value="in_progress" <?php selected(isset($_GET['status_filter']) ? $_GET['status_filter'] : '', 'in_progress'); ?>><?php _e('В работе', 'helpdesk-enterprise'); ?></option>
+                        <option value="completed" <?php selected(isset($_GET['status_filter']) ? $_GET['status_filter'] : '', 'completed'); ?>><?php _e('Выполнены', 'helpdesk-enterprise'); ?></option>
+                    </select>
+                    <button type="submit" class="hd-btn hd-btn-primary"><?php _e('Фильтр', 'helpdesk-enterprise'); ?></button>
+                </form>
+            </section>
+
+            <div class="hd-table-container">
+                <table class="hd-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th><?php _e('Заявка', 'helpdesk-enterprise'); ?></th>
+                            <th><?php _e('Статус', 'helpdesk-enterprise'); ?></th>
+                            <th><?php _e('Дедлайн', 'helpdesk-enterprise'); ?></th>
+                            <th style="text-align: right;"><?php _e('Действия', 'helpdesk-enterprise'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($requests as $request): ?>
+                            <tr>
+                                <td>#<?php echo $request->id; ?></td>
+                                <td>
+                                    <div style="font-weight: 600;"><?php echo esc_html($request->title); ?></div>
+                                </td>
+                                <td><span class="hd-badge badge-<?php echo $request->status; ?>">
+                                    <?php
+                                        $status_labels = array('new' => 'Новая', 'in_progress' => 'В работе', 'pending' => 'Ожидание', 'completed' => 'Выполнена', 'rejected' => 'Отклонена');
+                                        echo isset($status_labels[$request->status]) ? $status_labels[$request->status] : $request->status;
+                                    ?>
+                                </span></td>
+                                <td><?php echo date('d.m.Y H:i', strtotime($request->deadline)); ?></td>
+                                <td style="text-align: right;">
+                                    <button class="hd-btn hd-view-request" data-id="<?php echo $request->id; ?>" style="background: #f1f5f9; color: var(--hd-primary);"><?php _e('Открыть', 'helpdesk-enterprise'); ?></button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="hd-modal">
+                <div class="hd-modal-content">
+                    <div class="hd-modal-header">
+                        <h3 style="margin: 0;"><?php _e('Детали заявки', 'helpdesk-enterprise'); ?></h3>
+                        <span class="hd-close">&times;</span>
+                    </div>
+                    <div class="hd-modal-body" id="hd-request-details"></div>
+                </div>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private function get_filtered_requests() {
+        global $wpdb;
+        $user_id = HD_Auth::get_user_id();
         $query = "SELECT r.*, c.name as cat_name, d.name as dept_name FROM {$wpdb->prefix}hd_requests r
                   LEFT JOIN {$wpdb->prefix}hd_categories c ON r.category_id = c.id
                   LEFT JOIN {$wpdb->prefix}hd_departments d ON r.department_id = d.id WHERE 1=1";
 
         if (HD_Auth::current_user_can('hd_view_all')) {
-            // No filter
         } else if (HD_Auth::current_user_can('hd_view_dept')) {
             $managed_depts = $wpdb->get_col($wpdb->prepare("SELECT id FROM {$wpdb->prefix}hd_departments WHERE manager_id = %d", $user_id));
             if ($managed_depts) {
@@ -273,8 +412,6 @@ class HD_Dashboard {
             $query .= $wpdb->prepare(" AND r.executor_id = %d", $user_id);
         } else if (HD_Auth::current_user_can('hd_view_own')) {
             $query .= $wpdb->prepare(" AND r.responsible_id = %d", $user_id);
-        } else {
-            return __('У вас нет прав для просмотра этой страницы.', 'helpdesk-enterprise');
         }
 
         if (!empty($_GET['status_filter'])) {
@@ -287,31 +424,15 @@ class HD_Dashboard {
         $requests = $wpdb->get_results($query);
         $categories = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}hd_categories");
 
-        // Calculate Stats
-        $stats = array(
-            'total' => count($requests),
-            'new' => 0,
-            'in_progress' => 0,
-            'completed' => 0,
-            'overdue' => 0
-        );
-
+        $stats = array('total' => count($requests), 'new' => 0, 'in_progress' => 0, 'completed' => 0, 'overdue' => 0);
         $now = current_time('timestamp');
         foreach ($requests as $r) {
-            if (isset($stats[$r->status])) {
-                $stats[$r->status]++;
-            } else if ($r->status === 'new') {
-                $stats['new']++;
-            }
-
-            if ($r->status !== 'completed' && strtotime($r->deadline) < $now) {
-                $stats['overdue']++;
-            }
+            if (isset($stats[$r->status])) $stats[$r->status]++;
+            else if ($r->status === 'new') $stats['new']++;
+            if ($r->status !== 'completed' && strtotime($r->deadline) < $now) $stats['overdue']++;
         }
 
-        ob_start();
-        include HD_PATH . 'templates/dashboard.php';
-        return ob_get_clean();
+        return compact('requests', 'categories', 'stats');
     }
 }
 

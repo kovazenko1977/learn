@@ -7,12 +7,20 @@
 *   **Database**: MySQL/MariaDB (Custom Tables)
 *   **Frontend**: Vanilla JS, AJAX, Tailwind-inspired CSS
 *   **Integration**: Telegram Bot API (Webhooks/Long polling)
-*   **Security**: Autonomous User System (hd_users), PHP Sessions, Custom RBAC
-*   **Extensibility**: Модульная структура, поддержка REST API для будущих мобильных приложений.
+*   **Security**: Autonomous User System (hd_users), PHP Sessions, Custom RBAC, API Tokens
+*   **Extensibility**: Модульная структура, полноценный REST API для Android-приложения.
 
 ---
 
-## 2. ER-диаграмма (Схема сущностей)
+## 2. Шорткоды (Shortcodes)
+Для удобства размещения в личном кабинете предусмотрены следующие шорткоды:
+*   `[hd_dashboard]` — Полный интерфейс (статистика + список + форма).
+*   `[hd_request_form]` — Только форма создания заявки.
+*   `[hd_request_list]` — Только список заявок пользователя.
+
+---
+
+## 3. ER-диаграмма (Схема сущностей)
 
 ```mermaid
 erDiagram
@@ -32,18 +40,48 @@ erDiagram
 
 ## 3. Описание API (Internal AJAX)
 
-| Endpoint (Action) | Method | Description | Roles |
+| Action (AJAX) | Method | Description | Roles |
 | :--- | :--- | :--- | :--- |
 | `hd_login`          | POST | Авторизация в системе  | Any                |
 | `hd_logout`         | POST | Выход из системы       | Any                |
 | `hd_create_request` | POST | Создание новой заявки | Responsible, Admin |
 | `hd_get_request_details`| POST | Получение данных заявки | All (with limits) |
 | `hd_update_status` | POST | Изменение статуса | Executor, Manager, Admin |
-| `hd_assign_executor` | POST | Назначение исполнителя | Manager, Admin |
-| `hd_update_deadline` | POST | Изменение SLA/Deadline | Manager, Admin |
 | `hd_add_comment` | POST | Добавление комментария | All (involved) |
-| `hd_add_photo` | POST | Добавление фото к существующей заявке | All (involved) |
-| `hd_delete_request` | POST | Удаление заявки (только админ) | Admin |
+
+### 4.2. External REST API (для Android)
+Base URL: `/wp-json/hd/v1/`
+Auth: Header `X-HD-Token: <api_token>`
+
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/login` | POST | Обмен username/password на token |
+| `/requests` | GET | Получение списка заявок |
+| `/requests/{id}` | GET | Детальная информация по заявке |
+| `/requests` | POST | Создание новой заявки |
+| `/comments` | POST | Добавление комментария |
+| `/status` | POST | Смена статуса заявки |
+
+#### Примеры запросов (JSON)
+
+**Создание заявки:**
+`POST /wp-json/hd/v1/requests`
+```json
+{
+  "title": "Проблема с доступом",
+  "description": "Не могу войти в систему под своим паролем",
+  "category_id": 5
+}
+```
+
+**Добавление комментария:**
+`POST /wp-json/hd/v1/comments`
+```json
+{
+  "request_id": 1024,
+  "content": "Проверьте почту, мы выслали инструкции."
+}
+```
 
 ---
 

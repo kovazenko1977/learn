@@ -253,3 +253,41 @@
     border: 1px solid var(--hd-border);
     border-radius: 6px;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hd-request-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hd-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .hd-user-settings {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .hd-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hd-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .hd-modal-content {
+        margin: 10px auto;
+        width: 95%;
+        max-height: 95vh;
+    }
+
+    .hd-table th:nth-child(4),
+    .hd-table td:nth-child(4) {
+        display: none;
+    }
+}

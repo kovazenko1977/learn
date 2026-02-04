@@ -7,6 +7,7 @@
                 <div style="font-size: 12px; color: var(--hd-secondary);"><?php echo esc_html(HD_Auth::get_user()->role); ?></div>
             </div>
             <form id="hd-user-settings-form" class="hd-controls" style="margin-bottom: 0;">
+                <label style="font-size: 11px; color: var(--hd-secondary);"><?php _e('API Token:', 'helpdesk-enterprise'); ?> <code style="background: #eee; padding: 2px 4px;"><?php echo esc_html(HD_Auth::get_user()->api_token); ?></code></label>
                 <label style="font-size: 13px; color: var(--hd-secondary);"><?php _e('TG ID:', 'helpdesk-enterprise'); ?></label>
                 <input type="text" name="telegram_chat_id" class="hd-input" value="<?php echo esc_attr(HD_Auth::get_user()->telegram_chat_id); ?>" style="width: 100px;">
                 <button type="submit" class="hd-btn hd-btn-primary"><?php _e('OK', 'helpdesk-enterprise'); ?></button>

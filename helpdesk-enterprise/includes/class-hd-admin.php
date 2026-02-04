@@ -139,6 +139,10 @@ class HD_Admin {
                     'role' => $role
                 );
 
+                if (!$id) {
+                    $data['api_token'] = wp_generate_password(32, false);
+                }
+
                 if (!empty($password)) {
                     $data['password'] = password_hash($password, PASSWORD_DEFAULT);
                 }

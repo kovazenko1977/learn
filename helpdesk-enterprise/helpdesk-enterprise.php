@@ -39,6 +39,7 @@ class HelpdeskEnterprise {
         require_once HD_PATH . 'includes/class-hd-dashboard.php';
         require_once HD_PATH . 'includes/class-hd-telegram.php';
         require_once HD_PATH . 'includes/class-hd-export.php';
+        require_once HD_PATH . 'includes/class-hd-api.php';
     }
 
     private function init_hooks() {

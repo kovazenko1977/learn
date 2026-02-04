@@ -20,6 +20,7 @@ class HD_DB {
             display_name varchar(250) NOT NULL,
             role varchar(50) NOT NULL,
             telegram_chat_id varchar(100) DEFAULT NULL,
+            api_token varchar(100) DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             UNIQUE KEY username (username)
