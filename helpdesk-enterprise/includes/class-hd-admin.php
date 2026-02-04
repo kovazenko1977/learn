@@ -164,7 +164,18 @@ class HD_Admin {
     }
 
     public function render_main_page() {
-        echo '<div class="wrap"><h1>' . __('Helpdesk Enterprise', 'helpdesk-enterprise') . '</h1><p>' . __('Добро пожаловать в корпоративную систему управления заявками.', 'helpdesk-enterprise') . '</p></div>';
+        global $wpdb;
+        $stats = array(
+            'requests'    => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_requests"),
+            'users'       => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_users"),
+            'departments' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_departments"),
+            'categories'  => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_categories"),
+            'new'         => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_requests WHERE status = 'new'"),
+            'in_progress' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}hd_requests WHERE status = 'in_progress'"),
+            'overdue'     => $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}hd_requests WHERE status != 'completed' AND deadline < %s", current_time('mysql'))),
+        );
+
+        include HD_PATH . 'templates/admin-main.php';
     }
 
     public function render_departments_page() {
