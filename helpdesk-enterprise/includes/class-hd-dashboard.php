@@ -9,6 +9,10 @@ class HD_Dashboard {
         add_shortcode('hd_dashboard', array($this, 'render_dashboard'));
         add_shortcode('hd_request_form', array($this, 'render_request_form'));
         add_shortcode('hd_request_list', array($this, 'render_request_list'));
+        add_shortcode('hd_admin_settings', array($this, 'render_admin_settings'));
+        add_shortcode('hd_admin_departments', array($this, 'render_admin_departments'));
+        add_shortcode('hd_admin_categories', array($this, 'render_admin_categories'));
+        add_shortcode('hd_admin_users', array($this, 'render_admin_users'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
 
         add_action('wp_ajax_hd_create_request', array($this, 'ajax_create_request'));
@@ -433,6 +437,57 @@ class HD_Dashboard {
         }
 
         return compact('requests', 'categories', 'stats');
+    }
+
+    public function render_admin_settings() {
+        if (!HD_Auth::is_logged_in() || !HD_Auth::current_user_can('hd_admin_shortcodes')) return $this->admin_forbidden();
+        ob_start();
+        include HD_PATH . 'templates/admin-settings.php';
+        return '<div class="hd-dashboard-wrapper">' . ob_get_clean() . '</div>';
+    }
+
+    public function render_admin_departments() {
+        if (!HD_Auth::is_logged_in() || !HD_Auth::current_user_can('hd_admin_shortcodes')) return $this->admin_forbidden();
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}hd_departments");
+        $edit_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
+        $edit_item = $edit_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_departments WHERE id = %d", $edit_id)) : null;
+        $settings = $edit_item ? json_decode($edit_item->settings, true) : array();
+        ob_start();
+        include HD_PATH . 'templates/admin-departments.php';
+        return '<div class="hd-dashboard-wrapper">' . ob_get_clean() . '</div>';
+    }
+
+    public function render_admin_categories() {
+        if (!HD_Auth::is_logged_in() || !HD_Auth::current_user_can('hd_admin_shortcodes')) return $this->admin_forbidden();
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT c.*, d.name as dept_name FROM {$wpdb->prefix}hd_categories c LEFT JOIN {$wpdb->prefix}hd_departments d ON c.department_id = d.id");
+        $depts = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}hd_departments");
+        $edit_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
+        $edit_item = $edit_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_categories WHERE id = %d", $edit_id)) : null;
+        ob_start();
+        include HD_PATH . 'templates/admin-categories.php';
+        return '<div class="hd-dashboard-wrapper">' . ob_get_clean() . '</div>';
+    }
+
+    public function render_admin_users() {
+        if (!HD_Auth::is_logged_in() || !HD_Auth::current_user_can('hd_admin_shortcodes')) return $this->admin_forbidden();
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}hd_users");
+        $edit_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
+        $edit_item = $edit_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_users WHERE id = %d", $edit_id)) : null;
+        ob_start();
+        include HD_PATH . 'templates/admin-users.php';
+        return '<div class="hd-dashboard-wrapper">' . ob_get_clean() . '</div>';
+    }
+
+    private function admin_forbidden() {
+        if (!HD_Auth::is_logged_in()) {
+            ob_start();
+            include HD_PATH . 'templates/login.php';
+            return ob_get_clean();
+        }
+        return '<div class="hd-dashboard-wrapper"><p style="color:var(--hd-danger)">' . __('Доступ разрешен только администраторам.', 'helpdesk-enterprise') . '</p></div>';
     }
 }
 

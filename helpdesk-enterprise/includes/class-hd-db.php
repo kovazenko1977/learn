@@ -16,7 +16,7 @@ class HD_DB {
             id bigint(20) NOT NULL AUTO_INCREMENT,
             username varchar(60) NOT NULL,
             password varchar(255) NOT NULL,
-            email varchar(100) NOT NULL,
+            phone varchar(20) NOT NULL,
             display_name varchar(250) NOT NULL,
             role varchar(50) NOT NULL,
             telegram_chat_id varchar(100) DEFAULT NULL,

@@ -63,7 +63,7 @@ class HD_Auth {
         if (!$user) return false;
 
         $role_caps = array(
-            'hd_administrator' => array('hd_view_all', 'hd_manage_all', 'hd_delete_data', 'hd_manage_settings', 'hd_create_requests', 'hd_view_own', 'hd_update_status', 'hd_add_comments'),
+            'hd_administrator' => array('hd_view_all', 'hd_manage_all', 'hd_delete_data', 'hd_manage_settings', 'hd_create_requests', 'hd_view_own', 'hd_update_status', 'hd_add_comments', 'hd_admin_shortcodes'),
             'hd_department_head' => array('hd_view_dept', 'hd_manage_dept', 'hd_export_dept', 'hd_update_status', 'hd_add_comments'),
             'hd_executor' => array('hd_view_assigned', 'hd_update_status', 'hd_add_comments'),
             'hd_responsible' => array('hd_create_requests', 'hd_view_own', 'hd_add_comments')

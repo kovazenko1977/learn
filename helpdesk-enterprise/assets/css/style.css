@@ -139,6 +139,11 @@
     font-weight: 600;
 }
 
+.hd-admin-standalone {
+    padding: 24px;
+    background: var(--hd-bg);
+}
+
 .badge-new { background: #dbeafe; color: #1e40af; }
 .badge-in_progress { background: #fef3c7; color: #92400e; }
 .badge-pending { background: #f3f4f6; color: #374151; }

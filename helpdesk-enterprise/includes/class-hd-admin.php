@@ -127,14 +127,14 @@ class HD_Admin {
             case 'save_user':
                 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
                 $username = sanitize_text_field($_POST['username']);
-                $email = sanitize_email($_POST['email']);
+                $phone = sanitize_text_field($_POST['phone']);
                 $display_name = sanitize_text_field($_POST['display_name']);
                 $role = sanitize_text_field($_POST['role']);
                 $password = $_POST['password'];
 
                 $data = array(
                     'username' => $username,
-                    'email' => $email,
+                    'phone' => $phone,
                     'display_name' => $display_name,
                     'role' => $role
                 );
