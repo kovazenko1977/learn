@@ -482,12 +482,15 @@ class HD_Dashboard {
     }
 
     private function admin_forbidden() {
-        if (!HD_Auth::is_logged_in()) {
-            ob_start();
-            include HD_PATH . 'templates/login.php';
-            return ob_get_clean();
+        ob_start();
+        if (HD_Auth::is_logged_in()) {
+            echo '<div class="hd-dashboard-wrapper" style="text-align:center; padding: 20px;">';
+            echo '<p style="color:var(--hd-danger); font-weight:bold; margin-bottom:20px;">' . __('Доступ разрешен только администраторам.', 'helpdesk-enterprise') . '</p>';
+            echo '<p style="font-size:14px; color:var(--hd-secondary);">' . sprintf(__('Вы вошли как %s (%s). Для доступа к настройкам необходимо войти под учетной записью администратора.', 'helpdesk-enterprise'), '<b>'.esc_html(HD_Auth::get_user()->display_name).'</b>', '<i>'.esc_html(HD_Auth::get_user()->role).'</i>') . '</p>';
+            echo '</div>';
         }
-        return '<div class="hd-dashboard-wrapper"><p style="color:var(--hd-danger)">' . __('Доступ разрешен только администраторам.', 'helpdesk-enterprise') . '</p></div>';
+        include HD_PATH . 'templates/login.php';
+        return ob_get_clean();
     }
 }
 

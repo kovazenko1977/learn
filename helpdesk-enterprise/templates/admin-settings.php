@@ -32,8 +32,8 @@
                 </div>
             </div>
 
-            <div class="hd-form-group" style="background: #f1f5f9; padding: 16px; border-radius: 8px;">
-                <label style="margin-bottom: 12px;"><?php _e('Уведомления', 'helpdesk-enterprise'); ?></label>
+            <div class="hd-form-group" style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <label style="margin-bottom: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b;"><?php _e('Системные уведомления', 'helpdesk-enterprise'); ?></label>
                 <div style="display: flex; gap: 24px;">
                     <label style="font-weight: 400;"><input type="checkbox" name="notify_on_create" value="1" <?php checked(get_option('hd_notify_on_create'), 1); ?>> <?php _e('О новых заявках', 'helpdesk-enterprise'); ?></label>
                     <label style="font-weight: 400;"><input type="checkbox" name="notify_on_status" value="1" <?php checked(get_option('hd_notify_on_status'), 1); ?>> <?php _e('О смене статуса', 'helpdesk-enterprise'); ?></label>

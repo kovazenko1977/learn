@@ -1,23 +1,23 @@
 <div class="wrap">
-    <h1><?php _e('Helpdesk Enterprise v5.0', 'helpdesk-enterprise'); ?></h1>
+    <h1><?php _e('Helpdesk Enterprise v6.0', 'helpdesk-enterprise'); ?></h1>
     <p><?php _e('Добро пожаловать в корпоративную систему управления заявками.', 'helpdesk-enterprise'); ?></p>
 
-    <div class="hd-admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 24px;">
-        <div class="hd-admin-stat-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #2563eb;">
-            <span style="font-size: 24px; font-weight: bold; display: block;"><?php echo $stats['requests']; ?></span>
-            <span style="color: #64748b; text-transform: uppercase; font-size: 11px; font-weight: 600;"><?php _e('Всего заявок', 'helpdesk-enterprise'); ?></span>
+    <div class="hd-admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 24px;">
+        <div class="hd-admin-stat-card" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid #2563eb; transition: transform 0.2s;">
+            <span style="font-size: 32px; font-weight: 800; display: block; color: #1e293b;"><?php echo $stats['requests']; ?></span>
+            <span style="color: #64748b; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: 0.05em;"><?php _e('Всего заявок', 'helpdesk-enterprise'); ?></span>
         </div>
-        <div class="hd-admin-stat-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ef4444;">
-            <span style="font-size: 24px; font-weight: bold; display: block;"><?php echo $stats['overdue']; ?></span>
-            <span style="color: #64748b; text-transform: uppercase; font-size: 11px; font-weight: 600;"><?php _e('Просрочено', 'helpdesk-enterprise'); ?></span>
+        <div class="hd-admin-stat-card" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid #ef4444;">
+            <span style="font-size: 32px; font-weight: 800; display: block; color: #ef4444;"><?php echo $stats['overdue']; ?></span>
+            <span style="color: #64748b; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: 0.05em;"><?php _e('Просрочено', 'helpdesk-enterprise'); ?></span>
         </div>
-        <div class="hd-admin-stat-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #22c55e;">
-            <span style="font-size: 24px; font-weight: bold; display: block;"><?php echo $stats['users']; ?></span>
-            <span style="color: #64748b; text-transform: uppercase; font-size: 11px; font-weight: 600;"><?php _e('Сотрудников', 'helpdesk-enterprise'); ?></span>
+        <div class="hd-admin-stat-card" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid #22c55e;">
+            <span style="font-size: 32px; font-weight: 800; display: block; color: #1e293b;"><?php echo $stats['users']; ?></span>
+            <span style="color: #64748b; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: 0.05em;"><?php _e('Сотрудников', 'helpdesk-enterprise'); ?></span>
         </div>
-        <div class="hd-admin-stat-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #f59e0b;">
-            <span style="font-size: 24px; font-weight: bold; display: block;"><?php echo $stats['departments']; ?></span>
-            <span style="color: #64748b; text-transform: uppercase; font-size: 11px; font-weight: 600;"><?php _e('Отделов', 'helpdesk-enterprise'); ?></span>
+        <div class="hd-admin-stat-card" style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid #f59e0b;">
+            <span style="font-size: 32px; font-weight: 800; display: block; color: #1e293b;"><?php echo $stats['departments']; ?></span>
+            <span style="color: #64748b; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: 0.05em;"><?php _e('Отделов', 'helpdesk-enterprise'); ?></span>
         </div>
     </div>
 
@@ -74,6 +74,6 @@
     </div>
 
     <div style="margin-top: 24px; color: #64748b; font-size: 13px;">
-        <p><?php echo sprintf(__('Разработчик: %s | Версия: %s', 'helpdesk-enterprise'), '<strong>Kovazenko S.B.</strong>', '<strong>5.0</strong>'); ?></p>
+        <p><?php echo sprintf(__('Разработчик: %s | Версия: %s', 'helpdesk-enterprise'), '<strong>Kovazenko S.B.</strong>', '<strong>6.0</strong>'); ?></p>
     </div>
 </div>

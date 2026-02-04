@@ -29,7 +29,7 @@
                         </div>
                         <div class="hd-form-group">
                             <label for="phone"><?php _e('Номер телефона', 'helpdesk-enterprise'); ?></label>
-                            <input name="phone" type="text" id="phone" value="<?php echo $edit_item ? esc_attr($edit_item->phone) : ''; ?>" class="hd-input" required placeholder="+7 (___) ___-__-__">
+                            <input name="phone" type="text" id="phone" value="<?php echo $edit_item ? esc_attr($edit_item->phone) : ''; ?>" class="hd-input" required placeholder="<?php _e('В свободном формате...', 'helpdesk-enterprise'); ?>">
                         </div>
                     </div>
 

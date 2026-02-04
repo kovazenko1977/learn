@@ -8,6 +8,21 @@ class HD_Admin {
     public function __construct() {
         add_action('admin_menu', array($this, 'add_menus'));
         add_action('admin_init', array($this, 'handle_actions'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+    }
+
+    public function enqueue_admin_assets() {
+        wp_enqueue_style('hd-admin-style', HD_URL . 'assets/css/style.css');
+        // Add some admin-specific overrides for beautiful forms in console
+        wp_add_inline_style('hd-admin-style', "
+            .wrap h1 { color: #1e293b; font-weight: 800; margin-bottom: 24px; }
+            .hd-admin-standalone { padding: 0; }
+            .form-table th { font-weight: 600; color: #64748b; }
+            .wp-list-table { border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+            .hd-create-form-container { border: 1px solid #e2e8f0; }
+            .hd-input, .hd-textarea { background: #fff; border-color: #cbd5e1; }
+            .hd-btn-primary { background: #2563eb !important; }
+        ");
     }
 
     public function add_menus() {
