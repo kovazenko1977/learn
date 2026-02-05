@@ -7,6 +7,11 @@
     padding: 20px;
     margin-top: 20px;
     border-radius: 4px;
+    max-width: 100%;
+}
+
+.wrap {
+    margin: 20px 20px 0 2px;
 }
 
 .nav-tab-wrapper {
@@ -46,14 +51,30 @@
     letter-spacing: 0.5px;
 }
 
+/* Availability Grid Container */
+.san-availability-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid #ccd0d4;
+}
+
 /* Availability Grid */
+.san-availability-grid {
+    min-width: 1200px; /* Ensure enough space for dates */
+    border-collapse: collapse;
+    margin: 0 !important;
+}
+
 .san-availability-grid th {
     background: #f8f9fa;
     vertical-align: middle;
+    padding: 10px 5px !important;
 }
 
 .san-availability-grid td {
     transition: background-color 0.3s;
+    padding: 2px !important;
 }
 
 .san-status-free { background-color: #e7f9ed !important; }
@@ -69,7 +90,17 @@
 
 /* Forms */
 .form-table th {
-    width: 250px;
+    width: 200px;
+    padding: 15px 10px 15px 0;
+}
+
+.form-table td {
+    padding: 10px 0;
+}
+
+.regular-text {
+    width: 100%;
+    max-width: 500px;
 }
 
 .san-checkbox-list {

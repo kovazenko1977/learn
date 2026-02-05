@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sanatorium Management (Система управления санаторием)
  * Description: Профессиональная система учета для санатория: управление номерами, путевками, процедурами и бронированием.
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: Jules
  * Text Domain: sanatorium-management
  * Domain Path: /languages

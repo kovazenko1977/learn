@@ -366,7 +366,8 @@ if (!function_exists('san_render_availability')) {
 
         <br>
 
-        <table class="wp-list-table widefat fixed striped san-availability-grid" style="border-collapse: collapse;">
+        <div class="san-availability-container">
+        <table class="wp-list-table widefat fixed striped san-availability-grid">
             <thead>
                 <tr>
                     <th style="width: 150px;"><?php _e('Номер', 'sanatorium-management'); ?></th>
@@ -414,6 +415,7 @@ if (!function_exists('san_render_availability')) {
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
 
         <style>
             .san-status-free { background-color: #e7f9ed !important; }
