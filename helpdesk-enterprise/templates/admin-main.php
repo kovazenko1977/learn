@@ -1,5 +1,5 @@
 <div class="wrap">
-    <h1><?php _e('Helpdesk Enterprise v6.0', 'helpdesk-enterprise'); ?></h1>
+    <h1><?php _e('Helpdesk Enterprise v8.0', 'helpdesk-enterprise'); ?></h1>
     <p><?php _e('Добро пожаловать в корпоративную систему управления заявками.', 'helpdesk-enterprise'); ?></p>
 
     <div class="hd-admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 24px;">
@@ -74,6 +74,6 @@
     </div>
 
     <div style="margin-top: 24px; color: #64748b; font-size: 13px;">
-        <p><?php echo sprintf(__('Разработчик: %s | Версия: %s', 'helpdesk-enterprise'), '<strong>Kovazenko S.B.</strong>', '<strong>6.0</strong>'); ?></p>
+        <p><?php echo sprintf(__('Разработчик: %s | Версия: %s', 'helpdesk-enterprise'), '<strong>Kovazenko S.B.</strong>', '<strong>8.0</strong>'); ?></p>
     </div>
 </div>

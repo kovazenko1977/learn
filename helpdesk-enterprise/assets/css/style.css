@@ -1,109 +1,163 @@
 :root {
-    --hd-primary: #2563eb;
-    --hd-secondary: #64748b;
-    --hd-success: #22c55e;
-    --hd-danger: #ef4444;
-    --hd-warning: #f59e0b;
-    --hd-bg: #f8fafc;
-    --hd-card-bg: #ffffff;
-    --hd-text: #1e293b;
-    --hd-border: #e2e8f0;
+    /* Windows 11 Fluent Design Palette */
+    --win-bg: #f3f3f3;
+    --win-mica: rgba(255, 255, 255, 0.7);
+    --win-accent: #0078d4;
+    --win-accent-dark: #005a9e;
+    --win-text: #1b1b1b;
+    --win-text-sec: #5f5f5f;
+    --win-border: rgba(0, 0, 0, 0.08);
+    --win-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    --win-radius: 12px;
+    --win-radius-sm: 6px;
+
+    /* Status Colors */
+    --hd-success: #107c10;
+    --hd-error: #d83b01;
+    --hd-warning: #ffb900;
+    --hd-pending: #8764b8;
 }
 
 .hd-dashboard-wrapper {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: var(--hd-text);
-    background-color: var(--hd-bg);
-    padding: 20px;
-    border-radius: 8px;
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--win-text);
+    background: var(--win-bg);
+    min-height: 800px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 1px solid var(--win-border);
+    border-radius: var(--win-radius);
+    box-shadow: var(--win-shadow);
 }
 
+/* Application Header (System Bar) */
 .hd-header {
+    background: var(--win-mica);
+    backdrop-filter: blur(20px);
+    height: 64px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--win-border);
+    z-index: 100;
 }
 
 .hd-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* Stats Grid */
+.hd-title i { color: var(--win-accent); font-size: 20px; }
+
+/* Sidebar Navigation (Taskbar Style) */
+.hd-desktop-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.hd-sidebar {
+    width: 280px;
+    background: rgba(243, 243, 243, 0.5);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--win-border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hd-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: var(--win-radius-sm);
+    text-decoration: none;
+    color: var(--win-text);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.hd-nav-item:hover { background: rgba(0,0,0,0.04); }
+.hd-nav-item.active { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: var(--win-accent); }
+
+/* Workspace (Main Content) */
+.hd-workspace {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+}
+
+/* Windows Widgets (Stats) */
 .hd-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 16px;
     margin-bottom: 24px;
 }
 
 .hd-stat-card {
-    background: var(--hd-card-bg);
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid var(--hd-border);
-    text-align: center;
+    background: #fff;
+    border: 1px solid var(--win-border);
+    border-radius: var(--win-radius);
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s;
 }
 
-.hd-stat-value {
-    font-size: 20px;
-    font-weight: 700;
-    display: block;
-}
+.hd-stat-card:hover { transform: translateY(-2px); }
 
-.hd-stat-label {
-    font-size: 12px;
-    color: var(--hd-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
+.hd-stat-value { font-size: 28px; font-weight: 700; color: var(--win-accent); }
+.hd-stat-label { font-size: 12px; color: var(--win-text-sec); font-weight: 600; text-transform: uppercase; }
 
-/* Filters and Create Button */
-.hd-controls {
-    display: flex;
-    gap: 12px;
+/* Search Bar (Fluent Style) */
+.hd-search-container {
+    position: relative;
     margin-bottom: 20px;
-    flex-wrap: wrap;
-    align-items: center;
+    max-width: 600px;
 }
 
-.hd-filter-select {
-    padding: 8px 12px;
-    border: 1px solid var(--hd-border);
-    border-radius: 6px;
-    background: white;
-}
-
-.hd-btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
+.hd-search-input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    background: #fff;
+    border: 1px solid var(--win-border);
+    border-bottom: 2px solid var(--win-border);
+    border-radius: var(--win-radius-sm);
+    font-size: 14px;
     transition: all 0.2s;
-    border: none;
-    text-decoration: none;
-    display: inline-block;
 }
 
-.hd-btn-primary {
-    background: var(--hd-primary);
-    color: white;
+.hd-search-input:focus {
+    border-bottom-color: var(--win-accent);
+    outline: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-.hd-btn-primary:hover {
-    background: #1d4ed8;
+.hd-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--win-text-sec);
 }
 
-/* Table */
+/* Fluent Table */
 .hd-table-container {
-    background: var(--hd-card-bg);
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: #fff;
+    border: 1px solid var(--win-border);
+    border-radius: var(--win-radius);
     overflow: hidden;
-    border: 1px solid var(--hd-border);
 }
 
 .hd-table {
@@ -112,187 +166,140 @@
 }
 
 .hd-table th {
-    background: #f1f5f9;
-    padding: 12px 16px;
+    background: #fafafa;
+    padding: 14px 20px;
     text-align: left;
     font-size: 13px;
-    font-weight: 600;
-    color: var(--hd-secondary);
-    border-bottom: 1px solid var(--hd-border);
+    color: var(--win-text-sec);
+    border-bottom: 1px solid var(--win-border);
 }
 
 .hd-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--hd-border);
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f3f3;
     font-size: 14px;
 }
 
-.hd-table tr:last-child td {
-    border-bottom: none;
+.hd-table tr:hover td { background: #f9f9f9; }
+
+/* Window Modal (Windows Style) */
+#hd-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
 }
 
-/* Status Badges */
+.hd-modal-content {
+    background: #fff;
+    width: 900px;
+    height: 80vh;
+    border-radius: var(--win-radius);
+    box-shadow: 0 32px 64px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--win-border);
+    animation: win-popup 0.3s ease-out;
+}
+
+@keyframes win-popup {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.hd-modal-header {
+    height: 48px;
+    background: #f8f8f8;
+    border-bottom: 1px solid var(--win-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    border-top-left-radius: var(--win-radius);
+    border-top-right-radius: var(--win-radius);
+}
+
+.hd-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px;
+}
+
+.hd-close {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.hd-close:hover { background: #e81123; color: #fff; }
+
+/* Status Badges (Windows Style) */
 .hd-badge {
-    padding: 4px 8px;
-    border-radius: 9999px;
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
 }
 
-.hd-admin-standalone {
-    padding: 24px;
-    background: var(--hd-bg);
-}
+.badge-new { background: #e1f0fe; color: #0078d4; }
+.badge-in_progress { background: #fff4ce; color: #9d5d00; }
+.badge-completed { background: #dff6dd; color: #107c10; }
+.badge-rejected { background: #fde7e9; color: #a4262c; }
 
-.badge-new { background: #dbeafe; color: #1e40af; }
-.badge-in_progress { background: #fef3c7; color: #92400e; }
-.badge-pending { background: #f3f4f6; color: #374151; }
-.badge-completed { background: #dcfce7; color: #166534; }
-.badge-rejected { background: #fee2e2; color: #991b1b; }
-
-/* Modal */
-#hd-modal {
-    position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    backdrop-filter: blur(2px);
-}
-
-.hd-modal-content {
-    background: white;
-    margin: 50px auto;
-    width: 90%;
-    max-width: 900px;
-    border-radius: 12px;
-    max-height: 85vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-}
-
-.hd-modal-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--hd-border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-}
-
-.hd-modal-body {
-    padding: 24px;
-}
-
-.hd-close {
-    font-size: 24px;
+/* Buttons */
+.hd-btn {
+    padding: 8px 24px;
+    border-radius: var(--win-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #ccc;
+    background: #fff;
     cursor: pointer;
-    color: var(--hd-secondary);
+    transition: all 0.2s;
 }
 
-/* Request Details Layout */
-.hd-request-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
+.hd-btn-primary {
+    background: var(--win-accent);
+    color: #fff;
+    border: none;
 }
 
-.hd-detail-section {
-    margin-bottom: 24px;
-}
+.hd-btn-primary:hover { background: var(--win-accent-dark); }
 
-.hd-detail-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    border-bottom: 2px solid var(--hd-border);
-    padding-bottom: 4px;
-}
-
-/* History List */
-.hd-history-list {
-    list-style: none;
-    padding: 0;
-    font-size: 13px;
-}
-
-.hd-history-item {
-    padding: 8px 0;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.hd-history-time {
-    color: var(--hd-secondary);
-    font-size: 11px;
-}
-
-/* Create Form */
-.hd-create-form-container {
-    background: white;
-    padding: 24px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    border: 1px solid var(--hd-border);
-}
-
-.hd-form-group {
-    margin-bottom: 16px;
-}
-
-.hd-form-group label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
+/* Forms */
+.hd-form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
 .hd-input, .hd-textarea {
     width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--hd-border);
-    border-radius: 6px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    border-radius: 4px;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .hd-request-grid {
-        grid-template-columns: 1fr;
-    }
+.hd-input:focus { border-bottom-color: var(--win-accent); outline: none; }
 
-    .hd-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
+/* Dark Mode Support (Basic) */
+.hd-dark-theme,
+@media (prefers-color-scheme: dark) {
+    :root {
+        --win-bg: #1c1c1c;
+        --win-text: #ffffff;
+        --win-text-sec: #cccccc;
+        --win-border: rgba(255, 255, 255, 0.1);
+        --win-mica: rgba(28, 28, 28, 0.8);
     }
-
-    .hd-user-settings {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .hd-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .hd-stats-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .hd-modal-content {
-        margin: 10px auto;
-        width: 95%;
-        max-height: 95vh;
-    }
-
-    .hd-table th:nth-child(4),
-    .hd-table td:nth-child(4) {
-        display: none;
-    }
+    .hd-sidebar { background: rgba(0,0,0,0.2); }
+    .hd-stat-card, .hd-table-container, .hd-modal-content { background: #2b2b2b; color: #fff; }
+    .hd-nav-item.active { background: #3b3b3b; color: var(--win-accent); }
+    .hd-table th { background: #333; }
+    .hd-table td { border-bottom-color: #333; }
+    .hd-modal-header { background: #222; }
+    .hd-input, .hd-textarea { background: #333; color: #fff; border-color: #444; }
 }

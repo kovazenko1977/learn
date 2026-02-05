@@ -215,7 +215,7 @@ class HD_Admin {
     public function render_departments_page() {
         global $wpdb;
         $items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}hd_departments");
-        $users = get_users();
+        $users = $wpdb->get_results("SELECT id, display_name FROM {$wpdb->prefix}hd_users WHERE role IN ('hd_administrator', 'hd_department_head')");
 
         $edit_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
         $edit_item = $edit_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_departments WHERE id = %d", $edit_id)) : null;
@@ -228,7 +228,7 @@ class HD_Admin {
         global $wpdb;
         $items = $wpdb->get_results("SELECT c.*, d.name as dept_name FROM {$wpdb->prefix}hd_categories c LEFT JOIN {$wpdb->prefix}hd_departments d ON c.department_id = d.id");
         $depts = $wpdb->get_results("SELECT id, name FROM {$wpdb->prefix}hd_departments");
-        $users = get_users();
+        $users = $wpdb->get_results("SELECT id, display_name FROM {$wpdb->prefix}hd_users WHERE role IN ('hd_administrator', 'hd_executor')");
 
         $edit_id = isset($_GET['edit']) ? intval($_GET['edit']) : 0;
         $edit_item = $edit_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}hd_categories WHERE id = %d", $edit_id)) : null;

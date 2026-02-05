@@ -1,4 +1,35 @@
 jQuery(document).ready(function($) {
+    // Windows Notification Helper
+    function winNotify(title, message, type = 'success') {
+        var id = 'win-toast-' + Date.now();
+        var icon = type === 'success' ? 'check-circle' : 'alert-circle';
+        var color = type === 'success' ? '#107c10' : '#d83b01';
+
+        var html = `
+            <div id="${id}" class="win-toast" style="position: fixed; bottom: 24px; right: 24px; background: #fff; border: 1px solid var(--win-border); box-shadow: 0 16px 32px rgba(0,0,0,0.15); border-radius: 8px; padding: 16px; width: 320px; z-index: 99999; display: flex; gap: 12px; animation: win-toast-in 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);">
+                <div style="color: ${color};"><i data-lucide="${icon}"></i></div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">${title}</div>
+                    <div style="font-size: 13px; color: var(--win-text-sec);">${message}</div>
+                </div>
+            </div>
+        `;
+
+        $('body').append(html);
+        lucide.createIcons();
+
+        setTimeout(function() {
+            $('#' + id).css('animation', 'win-toast-out 0.4s forwards');
+            setTimeout(function() { $('#' + id).remove(); }, 400);
+        }, 5000);
+    }
+
+    // Add required CSS for toasts dynamically
+    $('<style>').text(`
+        @keyframes win-toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes win-toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    `).appendTo('head');
+
     // Create request
     $(document).on('submit', '#hd-create-form', function(e) {
         e.preventDefault();
@@ -14,10 +45,10 @@ jQuery(document).ready(function($) {
             contentType: false,
             success: function(response) {
                 if (response.success) {
-                    alert(response.data.message);
-                    location.reload();
+                    winNotify('Заявка создана', response.data.message);
+                    setTimeout(() => location.reload(), 1500);
                 } else {
-                    alert(response.data);
+                    winNotify('Ошибка', response.data, 'error');
                 }
             }
         });

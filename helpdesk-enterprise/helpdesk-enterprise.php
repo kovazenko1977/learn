@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Helpdesk Enterprise
  * Description: Корпоративная система управления заявками с SLA и интеграцией с Telegram.
- * Version: 7.0
+ * Version: 8.0
  * Author: Kovazenko S.B.
  * Text Domain: helpdesk-enterprise
  */

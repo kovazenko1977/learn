@@ -1,4 +1,4 @@
-# Проектная документация: Helpdesk Enterprise v7.0 🧩
+# Проектная документация: Helpdesk Enterprise v8.0 🧩
 **Разработчик:** Kovazenko S.B.
 
 ## 1. Архитектура системы
@@ -135,13 +135,32 @@ CREATE TABLE `hd_users` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `username` varchar(60) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
   `display_name` varchar(250) NOT NULL,
   `role` varchar(50) NOT NULL,
   `telegram_chat_id` varchar(100) DEFAULT NULL,
+  `api_token` varchar(100) DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
+);
+
+CREATE TABLE `hd_departments` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `manager_id` bigint(20) DEFAULT 0,
+  `settings` longtext DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `hd_categories` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `department_id` bigint(20) NOT NULL,
+  `base_sla` int(11) DEFAULT 0,
+  `priority` varchar(50) DEFAULT 'medium',
+  `default_executor_id` bigint(20) DEFAULT 0,
+  PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `hd_requests` (
@@ -200,9 +219,11 @@ CREATE TABLE `hd_requests` (
 ## 10. Интерфейсы (UX/UI)
 
 ### 10.1. Dashboard
-Центральный хаб с **блоками статистики** (Всего, Новые, В работе, Выполнено, Просрочено). Включает фильтры по статусам и категориям. Цветовая индикация сроков:
-*   **Обычный**: В рамках SLA.
-*   **Красный/Жирный**: Просрочено.
+Центральный хаб в стиле **Windows 11 Desktop**.
+*   **Виджеты**: Живая лента активности, статистика, инфо о системе.
+*   **Поиск**: Глобальный поиск в реальном времени.
+*   **Темы**: Поддержка светлой и темной тем.
+*   **Уведомления**: Всплывающие Toast-уведомления (Windows style).
 
 ### 10.2. Карточка заявки
 Разделена на блоки: Инфо (с расчетом факта и просрочки), Вложения (фото с возможностью удаления), Комментарии и Таймлайн истории. История защищена от изменений — "Immutable Audit Log". Фиксируются все действия, включая удаления.

@@ -293,6 +293,11 @@ class HD_Dashboard {
         $categories = $requests_data['categories'];
         $stats = $requests_data['stats'];
 
+        // Latest Activity Feed
+        $recent_activity = $wpdb->get_results("SELECT h.*, r.title FROM {$wpdb->prefix}hd_history h
+            LEFT JOIN {$wpdb->prefix}hd_requests r ON h.request_id = r.id
+            ORDER BY h.created_at DESC LIMIT 10");
+
         ob_start();
         include HD_PATH . 'templates/dashboard.php';
         return ob_get_clean();
