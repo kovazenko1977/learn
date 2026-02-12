@@ -1,0 +1,157 @@
+[Thu Feb 12 13:24:30 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
+[Thu Feb 12 13:24:48 2026] [::1]:48434 Accepted
+[Thu Feb 12 13:24:48 2026] [::1]:48434 [200]: GET /public/index.php
+[Thu Feb 12 13:24:48 2026] [::1]:48434 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48446 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48452 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48446 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:24:49 2026] [::1]:48446 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48452 [200]: GET /public/assets/js/booking.js
+[Thu Feb 12 13:24:49 2026] [::1]:48452 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48456 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48462 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48456 [200]: GET /api/v1.php?action=procedures
+[Thu Feb 12 13:24:49 2026] [::1]:48456 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48462 [200]: GET /api/v1.php?action=packages
+[Thu Feb 12 13:24:49 2026] [::1]:48462 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48466 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48466 [200]: GET /admin/login.php
+[Thu Feb 12 13:24:49 2026] [::1]:48466 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48480 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48480 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:24:49 2026] [::1]:48480 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48488 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48488 [302]: POST /admin/login.php
+[Thu Feb 12 13:24:49 2026] [::1]:48488 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48500 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48500 [200]: GET /admin/dashboard.php
+[Thu Feb 12 13:24:49 2026] [::1]:48500 Closing
+[Thu Feb 12 13:24:49 2026] [::1]:48506 Accepted
+[Thu Feb 12 13:24:49 2026] [::1]:48506 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:24:49 2026] [::1]:48506 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41182 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41182 [200]: GET /admin/login.php
+[Thu Feb 12 13:26:50 2026] [::1]:41182 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41194 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41194 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:26:50 2026] [::1]:41194 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41200 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41200 [302]: POST /admin/login.php
+[Thu Feb 12 13:26:50 2026] [::1]:41200 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41208 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41208 [200]: GET /admin/dashboard.php
+[Thu Feb 12 13:26:50 2026] [::1]:41208 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41222 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41222 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:26:50 2026] [::1]:41222 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41224 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41224 [200]: GET /admin/rooms.php
+[Thu Feb 12 13:26:50 2026] [::1]:41224 Closing
+[Thu Feb 12 13:26:50 2026] [::1]:41240 Accepted
+[Thu Feb 12 13:26:50 2026] [::1]:41240 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:26:50 2026] [::1]:41240 Closing
+[Thu Feb 12 13:26:51 2026] [::1]:41244 Accepted
+[Thu Feb 12 13:26:51 2026] [::1]:41244 [200]: GET /admin/analytics.php
+[Thu Feb 12 13:26:51 2026] [::1]:41244 Closing
+[Thu Feb 12 13:26:51 2026] [::1]:41254 Accepted
+[Thu Feb 12 13:26:51 2026] [::1]:41254 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:26:51 2026] [::1]:41254 Closing
+[Thu Feb 12 13:26:51 2026] [::1]:41266 Accepted
+[Thu Feb 12 13:26:51 2026] [::1]:41266 [200]: GET /admin/calendar.php
+[Thu Feb 12 13:26:51 2026] [::1]:41266 Closing
+[Thu Feb 12 13:26:51 2026] [::1]:41274 Accepted
+[Thu Feb 12 13:26:51 2026] [::1]:41274 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:26:51 2026] [::1]:41274 Closing
+[Thu Feb 12 13:27:17 2026] [::1]:52020 Accepted
+[Thu Feb 12 13:27:17 2026] [::1]:52020 [200]: GET /public/index.php
+[Thu Feb 12 13:27:17 2026] [::1]:52020 Closing
+[Thu Feb 12 13:27:17 2026] [::1]:52036 Accepted
+[Thu Feb 12 13:27:17 2026] [::1]:52040 Accepted
+[Thu Feb 12 13:27:17 2026] [::1]:52036 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:27:17 2026] [::1]:52036 Closing
+[Thu Feb 12 13:27:17 2026] [::1]:52040 [200]: GET /public/assets/js/booking.js
+[Thu Feb 12 13:27:17 2026] [::1]:52040 Closing
+[Thu Feb 12 13:27:17 2026] [::1]:52056 Accepted
+[Thu Feb 12 13:27:17 2026] [::1]:52068 Accepted
+[Thu Feb 12 13:27:17 2026] [::1]:52056 [200]: GET /api/v1.php?action=procedures
+[Thu Feb 12 13:27:17 2026] [::1]:52056 Closing
+[Thu Feb 12 13:27:17 2026] [::1]:52068 [200]: GET /api/v1.php?action=packages
+[Thu Feb 12 13:27:17 2026] [::1]:52068 Closing
+[Thu Feb 12 13:27:17 2026] [::1]:52072 Accepted
+[Thu Feb 12 13:27:17 2026] [::1]:52072 [200]: GET /api/v1.php?action=rooms/available&check_in=2026-02-12&check_out=2026-02-12&persons=1
+[Thu Feb 12 13:27:17 2026] [::1]:52072 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52088 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52088 [200]: POST /api/v1.php?action=calculate
+[Thu Feb 12 13:27:18 2026] [::1]:52088 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52104 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52104 [200]: POST /api/v1.php?action=booking/create
+[Thu Feb 12 13:27:18 2026] [::1]:52104 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52112 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52112 [200]: GET /admin/login.php
+[Thu Feb 12 13:27:18 2026] [::1]:52112 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52128 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52128 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:27:18 2026] [::1]:52128 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52140 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52140 [302]: POST /admin/login.php
+[Thu Feb 12 13:27:18 2026] [::1]:52140 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52150 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52150 [200]: GET /admin/dashboard.php
+[Thu Feb 12 13:27:18 2026] [::1]:52150 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52160 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52160 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:27:18 2026] [::1]:52160 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52176 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52176 [200]: GET /admin/calendar.php
+[Thu Feb 12 13:27:18 2026] [::1]:52176 Closing
+[Thu Feb 12 13:27:18 2026] [::1]:52184 Accepted
+[Thu Feb 12 13:27:18 2026] [::1]:52184 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:27:18 2026] [::1]:52184 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:52942 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:52942 [200]: GET /public/index.php
+[Thu Feb 12 13:27:59 2026] [::1]:52942 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:52950 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:52950 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:27:59 2026] [::1]:52962 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:52950 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:52962 [200]: GET /public/assets/js/booking.js
+[Thu Feb 12 13:27:59 2026] [::1]:52962 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:52978 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:52984 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:52978 [200]: GET /api/v1.php?action=procedures
+[Thu Feb 12 13:27:59 2026] [::1]:52978 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:52984 [200]: GET /api/v1.php?action=packages
+[Thu Feb 12 13:27:59 2026] [::1]:52984 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:52990 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:52990 [200]: GET /api/v1.php?action=rooms/available&check_in=2026-02-12&check_out=2026-02-14&persons=1
+[Thu Feb 12 13:27:59 2026] [::1]:52990 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53002 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53002 [200]: POST /api/v1.php?action=calculate
+[Thu Feb 12 13:27:59 2026] [::1]:53002 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53014 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53014 [200]: POST /api/v1.php?action=booking/create
+[Thu Feb 12 13:27:59 2026] [::1]:53014 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53024 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53024 [200]: GET /admin/login.php
+[Thu Feb 12 13:27:59 2026] [::1]:53024 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53026 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53040 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53026 [200]: GET /public/index.php
+[Thu Feb 12 13:27:59 2026] [::1]:53026 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53040 [200]: GET /public/assets/css/style.css
+[Thu Feb 12 13:27:59 2026] [::1]:53040 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53052 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53052 [302]: POST /admin/login.php
+[Thu Feb 12 13:27:59 2026] [::1]:53052 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53062 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53062 [200]: GET /admin/dashboard.php
+[Thu Feb 12 13:27:59 2026] [::1]:53062 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53074 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53074 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:27:59 2026] [::1]:53074 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53084 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53084 [200]: GET /admin/calendar.php
+[Thu Feb 12 13:27:59 2026] [::1]:53084 Closing
+[Thu Feb 12 13:27:59 2026] [::1]:53092 Accepted
+[Thu Feb 12 13:27:59 2026] [::1]:53092 [200]: GET /public/assets/css/admin.css
+[Thu Feb 12 13:27:59 2026] [::1]:53092 Closing

@@ -1,0 +1,44 @@
+[
+    {
+        "room_id": 1,
+        "date": "2023-10-01",
+        "status": "booked",
+        "booking_id": 1,
+        "id": 1
+    },
+    {
+        "room_id": 1,
+        "date": "2023-10-02",
+        "status": "booked",
+        "booking_id": 1,
+        "id": 2
+    },
+    {
+        "room_id": 1,
+        "date": "2023-10-03",
+        "status": "booked",
+        "booking_id": 1,
+        "id": 3
+    },
+    {
+        "room_id": 1,
+        "date": "2023-10-04",
+        "status": "booked",
+        "booking_id": 1,
+        "id": 4
+    },
+    {
+        "room_id": 1,
+        "date": "2026-02-12",
+        "status": "booked",
+        "booking_id": 3,
+        "id": 5
+    },
+    {
+        "room_id": 1,
+        "date": "2026-02-13",
+        "status": "booked",
+        "booking_id": 3,
+        "id": 6
+    }
+]
