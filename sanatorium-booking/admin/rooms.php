@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 $rooms = $store->findAll('rooms');
+$classes = $store->findAll('room_classes');
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -38,7 +39,12 @@ $rooms = $store->findAll('rooms');
         <h1>Управление Санаторием</h1>
         <nav>
             <a href="dashboard.php">Бронирования</a>
+            <a href="create_booking.php">Новое бронирование</a>
             <a href="rooms.php">Номера</a>
+            <a href="room_classes.php">Классы</a>
+            <a href="procedures.php">Процедуры</a>
+            <a href="services.php">Услуги</a>
+            <a href="packages.php">Пакеты</a>
             <a href="calendar.php">Календарь</a>
             <a href="analytics.php">Аналитика</a>
             <a href="logout.php">Выход</a>
@@ -85,7 +91,11 @@ $rooms = $store->findAll('rooms');
                     </div>
                     <div>
                         <label>Класс номера</label>
-                        <input type="text" name="room_class" required style="width:100%; padding:8px;">
+                        <select name="room_class" required style="width:100%; padding:8px;">
+                            <?php foreach ($classes as $c): ?>
+                                <option value="<?php echo htmlspecialchars($c['name']); ?>"><?php echo htmlspecialchars($c['name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div>
                         <label>Цена за сутки</label>

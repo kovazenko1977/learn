@@ -24,7 +24,12 @@ $rooms = $store->findAll('rooms');
         <h1>Управление Санаторием</h1>
         <nav>
             <a href="dashboard.php">Бронирования</a>
+            <a href="create_booking.php">Новое бронирование</a>
             <a href="rooms.php">Номера</a>
+            <a href="room_classes.php">Классы</a>
+            <a href="procedures.php">Процедуры</a>
+            <a href="services.php">Услуги</a>
+            <a href="packages.php">Пакеты</a>
             <a href="calendar.php">Календарь</a>
             <a href="analytics.php">Аналитика</a>
             <a href="logout.php">Выход</a>
@@ -34,7 +39,10 @@ $rooms = $store->findAll('rooms');
         <section>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h2>Список заявок</h2>
-                <a href="export_csv.php" class="btn">Экспорт в CSV</a>
+                <div>
+                    <a href="create_booking.php" class="btn" style="background: #007bff; margin-right: 10px;">Новое бронирование</a>
+                    <a href="export_csv.php" class="btn">Экспорт в CSV</a>
+                </div>
             </div>
             <table>
                 <thead>

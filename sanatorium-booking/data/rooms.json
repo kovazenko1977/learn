@@ -2,7 +2,7 @@
     {
         "id": 1,
         "room_number": "101",
-        "room_class": "Standard",
+        "room_class": "Стандарт",
         "price_per_day": 3000,
         "capacity": 2,
         "status": "free"
@@ -10,7 +10,7 @@
     {
         "id": 2,
         "room_number": "201",
-        "room_class": "Lux",
+        "room_class": "Люкс",
         "price_per_day": 7000,
         "capacity": 2,
         "status": "free"
