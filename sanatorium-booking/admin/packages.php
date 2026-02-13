@@ -45,7 +45,7 @@ include 'includes/header.php';
         <tbody>
             <?php foreach ($items as $i): if (!is_array($i)) continue; ?>
             <tr>
-                <td><?php echo $i['id']; ?></td>
+                <td><?php echo $i['id'] ?? ''; ?></td>
                 <td><strong><?php echo htmlspecialchars($i['name']); ?></strong></td>
                 <td><?php echo $i['duration_days']; ?></td>
                 <td><?php echo number_format($i['base_price'], 0, ',', ' '); ?> ₽</td>
@@ -62,7 +62,7 @@ include 'includes/header.php';
                     <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить путёвку?');">
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="id" value="<?php echo $i['id']; ?>">
+                        <input type="hidden" name="id" value="<?php echo $i['id'] ?? ''; ?>">
                         <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">Удалить</button>
                     </form>
                 </td>

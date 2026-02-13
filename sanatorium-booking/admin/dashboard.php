@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $bookingManager->cancelBooking($id);
     } else {
         $booking = $store->findOne('bookings', $id);
-        if ($booking) {
+        if ($booking && is_array($booking)) {
             $booking['status'] = $status;
             $store->save('bookings', $booking);
         }
@@ -64,17 +64,17 @@ include 'includes/header.php';
             <?php foreach (array_reverse($bookings) as $b):
                 if (!is_array($b)) continue; ?>
             <tr>
-                <td><?php echo $b['id']; ?></td>
+                <td><?php echo $b['id'] ?? '' ?? ''; ?></td>
                 <td><strong><?php echo htmlspecialchars($b['client_name'] ?? 'N/A'); ?></strong></td>
-                <td><?php echo $b['check_in']; ?> — <?php echo $b['check_out']; ?></td>
-                <td><?php echo htmlspecialchars($roomMap[$b['room_id']] ?? 'Room '.$b['room_id']); ?></td>
-                <td><?php echo htmlspecialchars($b['phone']); ?></td>
-                <td><?php echo number_format($b['total_price'], 0, ',', ' '); ?> ₽</td>
-                <td><span class="status-badge status-<?php echo $b['status']; ?>"><?php echo $statusLabels[$b['status']] ?? $b['status']; ?></span></td>
+                <td><?php echo $b['check_in'] ?? ''; ?> — <?php echo $b['check_out'] ?? ''; ?></td>
+                <td><?php echo htmlspecialchars($roomMap[$b['room_id'] ?? 0] ?? 'Room '.($b['room_id'] ?? '')); ?></td>
+                <td><?php echo htmlspecialchars($b['phone'] ?? ''); ?></td>
+                <td><?php echo number_format($b['total_price'] ?? 0, 0, ',', ' '); ?> ₽</td>
+                <td><span class="status-badge status-<?php echo $b['status'] ?? 'new'; ?>"><?php echo $statusLabels[$b['status'] ?? 'new'] ?? ($b['status'] ?? 'new'); ?></span></td>
                 <td>
                     <form method="post" style="display:inline;">
                         <input type="hidden" name="action" value="update_status">
-                        <input type="hidden" name="id" value="<?php echo $b['id']; ?>">
+                        <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
                         <select name="status" onchange="this.form.submit()" style="font-size:0.8em; padding:4px; width: auto; margin-bottom: 0;">
                             <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
                             <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтверждено</option>

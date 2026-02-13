@@ -52,8 +52,9 @@ include 'includes/header.php';
 
         <label>Доступный номер</label>
         <select name="room_id" required>
-            <?php foreach($rooms as $r): ?>
-                <option value="<?php echo $r['id']; ?>">Номер <?php echo $r['room_number']; ?> (<?php echo number_format($r['price_per_day'], 0, ',', ' '); ?> ₽/сут)</option>
+            <?php foreach($rooms as $r):
+                if (!is_array($r)) continue; ?>
+                <option value="<?php echo $r['id'] ?? ''; ?>">Номер <?php echo $r['room_number'] ?? 'N/A'; ?> (<?php echo number_format($r['price_per_day'] ?? 0, 0, ',', ' '); ?> ₽/сут)</option>
             <?php endforeach; ?>
         </select>
 

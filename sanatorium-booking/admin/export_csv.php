@@ -21,17 +21,20 @@ fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 // Headers
 fputcsv($output, ['ID', 'Check-in', 'Check-out', 'Room ID', 'Phone', 'Status', 'Total Price', 'Created At']);
 
-foreach ($bookings as $b) {
-    fputcsv($output, [
-        $b['id'],
-        $b['check_in'],
-        $b['check_out'],
-        $b['room_id'],
-        $b['phone'],
-        $b['status'],
-        $b['total_price'],
-        $b['created_at']
-    ]);
+if (is_array($bookings)) {
+    foreach ($bookings as $b) {
+        if (!is_array($b)) continue;
+        fputcsv($output, [
+            $b['id'] ?? '',
+            $b['check_in'] ?? '',
+            $b['check_out'] ?? '',
+            $b['room_id'] ?? '',
+            $b['phone'] ?? '',
+            $b['status'] ?? '',
+            $b['total_price'] ?? '',
+            $b['created_at'] ?? ''
+        ]);
+    }
 }
 
 fclose($output);
