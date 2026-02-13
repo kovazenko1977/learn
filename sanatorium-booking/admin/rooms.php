@@ -23,7 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 $items = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
 $classMap = [];
-foreach($classes as $c) $classMap[$c['id']] = $c['name'];
+if (is_array($classes)) {
+    foreach($classes as $c) {
+        if (isset($c['id'])) $classMap[$c['id']] = $c['name'] ?? 'N/A';
+    }
+}
+if (!is_array($items)) $items = [];
 
 $pageTitle = 'Управление номерами';
 include 'includes/header.php';

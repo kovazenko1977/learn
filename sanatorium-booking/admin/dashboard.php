@@ -9,7 +9,12 @@ $bookings = $store->findAll('bookings');
 $rooms = $store->findAll('rooms');
 
 $roomMap = [];
-foreach ($rooms as $r) { $roomMap[$r['id']] = $r['room_number']; }
+if (is_array($rooms)) {
+    foreach ($rooms as $r) {
+        if (isset($r['id'])) $roomMap[$r['id']] = $r['room_number'] ?? ('ID '.$r['id']);
+    }
+}
+if (!is_array($bookings)) $bookings = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
     $id = (int)$_POST['id'];

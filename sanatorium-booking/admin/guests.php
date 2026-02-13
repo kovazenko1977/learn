@@ -3,11 +3,17 @@ require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Guests\GuestManager;
 
-$store = new JsonStore(__DIR__ . '/../data');
-$guestManager = new GuestManager($store);
+try {
+    $store = new JsonStore(__DIR__ . '/../data');
+    $guestManager = new GuestManager($store);
+    $guests = $guestManager->getAll();
+    $bookings = $store->findAll('bookings');
+} catch (Exception $e) {
+    die("Database Error: " . htmlspecialchars($e->getMessage()));
+}
 
-$guests = $guestManager->getAll();
-$bookings = $store->findAll('bookings');
+if (!is_array($guests)) $guests = [];
+if (!is_array($bookings)) $bookings = [];
 
 // Filters
 $filterName = $_GET['name'] ?? '';
@@ -15,6 +21,9 @@ $filterPhone = $_GET['phone'] ?? '';
 $filterStatus = $_GET['status'] ?? ''; // 'staying', 'not_staying'
 
 if ($filterName || $filterPhone || $filterStatus) {
+    $guests = array_filter($guests, function($g) {
+        return is_array($g);
+    });
     $guests = array_filter($guests, function($g) use ($filterName, $filterPhone, $filterStatus, $guestManager, $bookings) {
         $name = $g['name'] ?? '';
         $phone = $g['phone'] ?? '';
@@ -23,7 +32,11 @@ if ($filterName || $filterPhone || $filterStatus) {
         if ($filterName && stripos($name, $filterName) === false) return false;
         if ($filterPhone && strpos($phone, $filterPhone) === false) return false;
 
-        $isStaying = $id ? $guestManager->isCurrentlyStaying($id, $bookings) : false;
+        $isStaying = false;
+        try {
+            $isStaying = $id ? $guestManager->isCurrentlyStaying($id, $bookings) : false;
+        } catch (Exception $e) {}
+
         if ($filterStatus === 'staying' && !$isStaying) return false;
         if ($filterStatus === 'not_staying' && $isStaying) return false;
 

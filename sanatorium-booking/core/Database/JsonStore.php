@@ -21,15 +21,18 @@ class JsonStore {
             return [];
         }
 
-        $fp = fopen($filePath, 'rb');
-        if (!$fp) return [];
+        $fp = @fopen($filePath, 'rb');
+        if (!$fp) {
+            return [];
+        }
 
         flock($fp, LOCK_SH);
         $content = stream_get_contents($fp);
         flock($fp, LOCK_UN);
         fclose($fp);
 
-        return json_decode($content, true) ?: [];
+        $data = json_decode($content, true);
+        return is_array($data) ? $data : [];
     }
 
     public function findOne($table, $id) {
