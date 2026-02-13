@@ -24,6 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $rooms = $store->findAll('rooms');
 $calendar = $store->findAll('room_calendar');
+$bookings = $store->findAll('bookings');
+
+$bookingMap = [];
+foreach ($bookings as $b) {
+    $bookingMap[$b['id']] = $b;
+}
 
 $startDate = $_GET['start_date'] ?? date('Y-m-01');
 $endDate = $_GET['end_date'] ?? date('Y-m-t');
@@ -33,7 +39,12 @@ $dates = [];
 foreach ($period as $date) { $dates[] = $date->format('Y-m-d'); }
 
 $occupancy = [];
-foreach ($calendar as $entry) { $occupancy[$entry['room_id']][$entry['date']] = $entry['status']; }
+foreach ($calendar as $entry) {
+    $occupancy[$entry['room_id']][$entry['date']] = [
+        'status' => $entry['status'],
+        'booking_id' => $entry['booking_id'] ?? null
+    ];
+}
 
 $pageTitle = 'Календарь занятости';
 include 'includes/header.php';
@@ -67,11 +78,19 @@ include 'includes/header.php';
                         <?php echo htmlspecialchars($room['room_number']); ?>
                     </td>
                     <?php foreach ($dates as $date):
-                        $status = $occupancy[$room['id']][$date] ?? 'free';
+                        $occ = $occupancy[$room['id']][$date] ?? ['status' => 'free'];
+                        $status = $occ['status'];
+                        $bookingId = $occ['booking_id'] ?? null;
+                        $clientInfo = "";
+                        if ($bookingId && isset($bookingMap[$bookingId])) {
+                            $b = $bookingMap[$bookingId];
+                            $clientInfo = htmlspecialchars(($b['client_name'] ?? 'N/A') . " (" . $b['phone'] . ")");
+                        }
                         $onclick = ($status === 'free') ? "openModal({$room['id']}, '{$room['room_number']}', '{$date}')" : "";
                     ?>
                         <td class="cal-status-<?php echo $status; ?>"
                             onclick="<?php echo $onclick; ?>"
+                            title="<?php echo $clientInfo; ?>"
                             style="text-align: center; padding: 12px 4px; border-left: 1px solid rgba(0,0,0,0.02); transition: background 0.2s; cursor: <?php echo $status === 'free' ? 'pointer' : 'default'; ?>;">
                             <?php if ($status !== 'free'): ?>
                                 <div style="width: 10px; height: 10px; background: currentColor; border-radius: 50%; margin: 0 auto; opacity: 0.6;"></div>
