@@ -1,5 +1,4 @@
 <?php require_once "auth.php";
-
 require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Booking\BookingManager;
@@ -35,47 +34,48 @@ foreach ($period as $date) { $dates[] = $date->format('Y-m-d'); }
 
 $occupancy = [];
 foreach ($calendar as $entry) { $occupancy[$entry['room_id']][$entry['date']] = $entry['status']; }
+
+$pageTitle = 'Календарь занятости';
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Календарь занятости</title>
-    <link rel="stylesheet" href="../public/assets/css/admin.css">
-    <style>
-        .calendar-table { border-collapse: collapse; width: 100%; }
-        .calendar-table th, .calendar-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        .status-booked { background: #f8d7da; color: #721c24; }
-        .status-free { background: #d4edda; color: #155724; cursor: pointer; }
-        #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; }
-        .modal-content { background:#fff; padding:20px; border-radius:8px; width:300px; }
-    </style>
-</head>
-<body>
-    <div class="mica-card">
-        <h2>📅 Календарь занятости</h2>
-        <form method="get" style="margin-bottom:20px;">
-            <input type="date" name="start_date" value="<?php echo $startDate; ?>">
-            <input type="date" name="end_date" value="<?php echo $endDate; ?>">
-            <button type="submit">Показать</button>
+
+<div class="mica-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <h2>📅 Сетка занятости номеров</h2>
+        <form method="get" style="display:flex; gap:10px; align-items: center;">
+            <input type="date" name="start_date" value="<?php echo $startDate; ?>" style="width:auto; margin-bottom:0;">
+            <span>—</span>
+            <input type="date" name="end_date" value="<?php echo $endDate; ?>" style="width:auto; margin-bottom:0;">
+            <button type="submit" class="btn">Показать</button>
         </form>
-        <table class="calendar-table">
+    </div>
+
+    <div style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px;">
+        <table style="margin-top: 0;">
             <thead>
-                <tr>
-                    <th>Номер</th>
-                    <?php foreach ($dates as $date): ?><th><?php echo date('d.m', strtotime($date)); ?></th><?php endforeach; ?>
+                <tr style="background: rgba(0,0,0,0.02);">
+                    <th style="position: sticky; left: 0; background: #fff; z-index: 10;">Номер</th>
+                    <?php foreach ($dates as $date): ?>
+                        <th style="text-align: center; min-width: 45px;"><?php echo date('d.m', strtotime($date)); ?></th>
+                    <?php endforeach; ?>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($rooms as $room): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($room['room_number']); ?></td>
+                    <td style="position: sticky; left: 0; background: #fff; z-index: 10; font-weight: 600;">
+                        <?php echo htmlspecialchars($room['room_number']); ?>
+                    </td>
                     <?php foreach ($dates as $date):
                         $status = $occupancy[$room['id']][$date] ?? 'free';
                         $onclick = ($status === 'free') ? "openModal({$room['id']}, '{$room['room_number']}', '{$date}')" : "";
                     ?>
-                        <td class="status-<?php echo $status; ?>" onclick="<?php echo $onclick; ?>">
-                            <?php echo ($status !== 'free' ? 'X' : ''); ?>
+                        <td class="cal-status-<?php echo $status; ?>"
+                            onclick="<?php echo $onclick; ?>"
+                            style="text-align: center; padding: 12px 4px; border-left: 1px solid rgba(0,0,0,0.02); transition: background 0.2s; cursor: <?php echo $status === 'free' ? 'pointer' : 'default'; ?>;">
+                            <?php if ($status !== 'free'): ?>
+                                <div style="width: 10px; height: 10px; background: currentColor; border-radius: 50%; margin: 0 auto; opacity: 0.6;"></div>
+                            <?php endif; ?>
                         </td>
                     <?php endforeach; ?>
                 </tr>
@@ -84,31 +84,62 @@ foreach ($calendar as $entry) { $occupancy[$entry['room_id']][$entry['date']] = 
         </table>
     </div>
 
-    <div id="modal">
-        <div class="modal-content">
-            <h3>Бронирование</h3>
-            <p>Номер: <span id="m-num"></span> | Дата: <span id="m-date"></span></p>
-            <form method="post">
-                <input type="hidden" name="action" value="quick_booking">
-                <input type="hidden" name="room_id" id="m-id">
-                <input type="hidden" name="date" id="m-input-date">
-                <p>Имя гостя:<br><input type="text" name="client_name" required style="width:100%;"></p>
-                <p>Телефон:<br><input type="tel" name="phone" required style="width:100%;"></p>
-                <p>Количество дней:<br><input type="number" name="duration" value="1" min="1" required style="width:100%;"></p>
-                <button type="submit">Забронировать</button>
-                <button type="button" onclick="document.getElementById('modal').style.display='none'">Отмена</button>
-            </form>
+    <div style="margin-top: 20px; display: flex; gap: 20px; font-size: 0.85rem; color: #666;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 12px; height: 12px; border: 1px solid var(--border-color); border-radius: 2px;"></div> Свободно
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 12px; height: 12px; background: #cfe2ff; border-radius: 2px;"></div> Забронировано
         </div>
     </div>
+</div>
 
-    <script>
-        function openModal(id, num, date) {
-            document.getElementById('m-id').value = id;
-            document.getElementById('m-input-date').value = date;
-            document.getElementById('m-num').textContent = num;
-            document.getElementById('m-date').textContent = date;
-            document.getElementById('modal').style.display = 'flex';
+<!-- Modal Overlay -->
+<div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index:1000; align-items:center; justify-content:center;">
+    <div class="mica-card" style="width: 400px; margin-bottom: 0;">
+        <h3>🆕 Быстрое бронирование</h3>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">
+            Номер: <strong id="m-num"></strong> | Дата: <strong id="m-date"></strong>
+        </p>
+        <form method="post">
+            <input type="hidden" name="action" value="quick_booking">
+            <input type="hidden" name="room_id" id="m-id">
+            <input type="hidden" name="date" id="m-input-date">
+
+            <label>Имя гостя</label>
+            <input type="text" name="client_name" required placeholder="Иванов Иван">
+
+            <label>Телефон</label>
+            <input type="tel" name="phone" required placeholder="+7 (___) ___-__-__">
+
+            <label>Количество дней</label>
+            <input type="number" name="duration" value="1" min="1" required>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                <button type="submit" class="btn">Забронировать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id, num, date) {
+        document.getElementById('m-id').value = id;
+        document.getElementById('m-input-date').value = date;
+        document.getElementById('m-num').textContent = num;
+        document.getElementById('m-date').textContent = date;
+        document.getElementById('modal-overlay').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('modal-overlay').style.display = 'none';
+    }
+    // Close modal on click outside
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('modal-overlay')) {
+            closeModal();
         }
-    </script>
-</body>
-</html>
+    }
+</script>
+
+<?php include 'includes/footer.php'; ?>

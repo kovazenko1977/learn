@@ -22,6 +22,22 @@ class TextBlockManager {
         return '';
     }
 
+    public function set($slug, $content) {
+        $blocks = $this->getAll();
+        $targetBlock = null;
+        foreach ($blocks as $b) {
+            if ($b['slug'] === $slug) {
+                $targetBlock = $b;
+                break;
+            }
+        }
+
+        $data = $targetBlock ?: ['slug' => $slug];
+        $data['content'] = $content;
+
+        return $this->store->save('text_blocks', $data);
+    }
+
     public function save($data) {
         return $this->store->save('text_blocks', $data);
     }

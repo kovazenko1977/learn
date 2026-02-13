@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '/../core/autoload.php';
+use Sanatorium\Core\Database\JsonStore;
+use Sanatorium\Core\Helpers\TextBlockManager;
+
+$store = new JsonStore(__DIR__ . '/../data');
+$textManager = new TextBlockManager($store);
+$intro = $textManager->getBySlug('booking_intro');
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,6 +17,16 @@
 <body>
     <div class="container">
         <h1>Онлайн-бронирование</h1>
+        <?php if ($intro): ?>
+            <div class="intro-text" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0078d4;">
+                <?php echo $intro; ?>
+            </div>
+        <?php endif; ?>
+
+        <div id="success-msg-template" style="display:none;">
+            <?php echo $textManager->getBySlug('booking_success'); ?>
+        </div>
+
         <form id="booking-form">
             <div class="form-group">
                 <label>Дата заезда</label>

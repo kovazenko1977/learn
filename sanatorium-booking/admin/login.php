@@ -22,22 +22,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход в систему</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход | Sanatorium Booking</title>
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <style>
-        .login-box { width: 300px; margin: 100px auto; }
-        .error { color: red; margin-bottom: 10px; }
+        body.login-body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 360px;
+        }
+        .error {
+            background: rgba(216, 59, 1, 0.1);
+            color: #d83b01;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(216, 59, 1, 0.2);
+        }
     </style>
 </head>
-<body>
+<body class="admin-body login-body">
     <div class="mica-card login-box">
-        <h2>Вход в админку</h2>
-        <?php if (isset($error)): ?><div class="error"><?php echo $error; ?></div><?php endif; ?>
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="color: var(--primary-color); margin-bottom: 10px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <h2 style="margin-bottom: 5px;">Sanatorium</h2>
+            <p style="color: #666; font-size: 0.9rem;">Вход в панель управления</p>
+        </div>
+
+        <?php if (isset($error)): ?>
+            <div class="error"><?php echo $error; ?></div>
+        <?php endif; ?>
+
         <form method="post">
-            <p>Логин:<br><input type="text" name="username" required style="width:100%;"></p>
-            <p>Пароль:<br><input type="password" name="password" required style="width:100%;"></p>
-            <button type="submit" style="width:100%;">Войти</button>
+            <label>Логин</label>
+            <input type="text" name="username" required autofocus placeholder="admin">
+
+            <label>Пароль</label>
+            <input type="password" name="password" required placeholder="••••••••">
+
+            <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">Войти в систему</button>
         </form>
+
+        <div style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: #888;">
+            &copy; <?php echo date('Y'); ?> Sanatorium Booking System
+        </div>
     </div>
 </body>
 </html>

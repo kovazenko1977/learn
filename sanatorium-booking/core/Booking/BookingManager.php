@@ -60,6 +60,15 @@ class BookingManager {
         return $bookingId;
     }
 
+    public function releaseCalendar($bookingId) {
+        $calendar = $this->store->findAll('room_calendar');
+        foreach ($calendar as $entry) {
+            if (isset($entry['booking_id']) && $entry['booking_id'] == $bookingId) {
+                $this->store->delete('room_calendar', $entry['id']);
+            }
+        }
+    }
+
     private function updateCalendar($roomId, $checkIn, $checkOut, $bookingId) {
         $start = new \DateTime($checkIn);
         $end = new \DateTime($checkOut);

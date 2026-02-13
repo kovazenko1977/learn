@@ -17,6 +17,9 @@ class RoomManager {
     public function getAvailableRooms($checkIn, $checkOut, $persons = 0) {
         $allRooms = $this->getAllRooms();
         $calendar = $this->store->findAll('room_calendar');
+        $classes = $this->store->findAll('room_classes');
+        $classMap = [];
+        foreach ($classes as $c) $classMap[$c['id']] = $c['name'];
 
         $availableRooms = [];
         foreach ($allRooms as $room) {
@@ -41,6 +44,7 @@ class RoomManager {
             }
 
             if ($isAvailable) {
+                $room['room_class_name'] = $classMap[$room['room_class_id'] ?? 0] ?? 'N/A';
                 $availableRooms[] = $room;
             }
         }

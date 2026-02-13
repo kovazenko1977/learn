@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 div.style.border = '1px solid #ccc';
                 div.style.margin = '5px 0';
                 div.style.cursor = 'pointer';
-                div.innerHTML = `<strong>${room.room_number}</strong> - ${room.price_per_day} руб/сут`;
+                div.innerHTML = `<strong>${room.room_number}</strong> (${room.room_class_name}) - ${room.price_per_day} руб/сут`;
                 div.onclick = () => selectRoom(room.id, div);
                 div.dataset.id = room.id;
                 roomsList.appendChild(div);
@@ -137,7 +137,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         const result = await res.json();
         if (result.success) {
-            alert('Бронирование успешно создано! ID: ' + result.booking_id);
+            const successTpl = document.getElementById('success-msg-template').textContent.trim();
+            const msg = successTpl || ('Бронирование успешно создано! ID: ' + result.booking_id);
+            alert(msg);
             location.reload();
         } else {
             alert('Ошибка');

@@ -1,5 +1,4 @@
 <?php require_once "auth.php";
-
 require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Booking\BookingManager;
@@ -18,33 +17,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $check_in = $_GET['check_in'] ?? '';
 $check_out = $_GET['check_out'] ?? '';
 $rooms = ($check_in && $check_out) ? $roomManager->getAvailableRooms($check_in, $check_out) : [];
+
+$pageTitle = 'Новое бронирование';
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="ru">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="../public/assets/css/admin.css"></head>
-<body>
-<div class="mica-card">
-    <h2>Новое бронирование</h2>
-    <form method="get">
-        <p>Заезд: <input type="date" name="check_in" value="<?php echo $check_in; ?>"></p>
-        <p>Выезд: <input type="date" name="check_out" value="<?php echo $check_out; ?>"></p>
-        <button type="submit">Найти номера</button>
+
+<div class="mica-card" style="max-width: 600px;">
+    <h2>📅 Создание новой заявки</h2>
+    <form method="get" style="margin-top: 20px;">
+        <div class="grid-2">
+            <div>
+                <label>Дата заезда</label>
+                <input type="date" name="check_in" value="<?php echo $check_in; ?>" required>
+            </div>
+            <div>
+                <label>Дата выезда</label>
+                <input type="date" name="check_out" value="<?php echo $check_out; ?>" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-secondary">🔍 Найти свободные номера</button>
     </form>
+
+    <?php if ($_GET && !$rooms && $check_in && $check_out): ?>
+        <p style="color: #d83b01; margin-top: 20px;">Нет свободных номеров на выбранные даты.</p>
+    <?php endif; ?>
+
     <?php if ($rooms): ?>
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border-color);">
+
     <form method="post">
         <input type="hidden" name="action" value="create">
         <input type="hidden" name="check_in" value="<?php echo $check_in; ?>">
         <input type="hidden" name="check_out" value="<?php echo $check_out; ?>">
-        <p>Выберите номер:
-        <select name="room_id">
+
+        <label>Доступный номер</label>
+        <select name="room_id" required>
             <?php foreach($rooms as $r): ?>
-                <option value="<?php echo $r['id']; ?>"><?php echo $r['room_number']; ?></option>
+                <option value="<?php echo $r['id']; ?>">Номер <?php echo $r['room_number']; ?> (<?php echo number_format($r['price_per_day'], 0, ',', ' '); ?> ₽/сут)</option>
             <?php endforeach; ?>
-        </select></p>
-        <p>Телефон: <input type="tel" name="phone" required></p>
-        <button type="submit">Забронировать</button>
+        </select>
+
+        <label>Имя гостя</label>
+        <input type="text" name="client_name" required placeholder="Иванов Иван">
+
+        <label>Контактный телефон</label>
+        <input type="tel" name="phone" required placeholder="+7 (___) ___-__-__">
+
+        <label>Количество человек</label>
+        <input type="number" name="persons" value="1" min="1" required>
+
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn" style="width: 100%;">✅ Подтвердить бронирование</button>
+        </div>
     </form>
     <?php endif; ?>
 </div>
-</body>
-</html>
+
+<?php include 'includes/footer.php'; ?>
