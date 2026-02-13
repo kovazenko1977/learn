@@ -75,5 +75,12 @@
         "status": "booked",
         "booking_id": 4,
         "id": 11
+    },
+    {
+        "room_id": 1,
+        "date": "2026-02-01",
+        "status": "booked",
+        "booking_id": 5,
+        "id": 12
     }
 ]
