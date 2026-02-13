@@ -72,7 +72,17 @@ $intro = $textManager->getBySlug('booking_intro');
 
             <div class="form-group">
                 <label>Телефон</label>
-                <input type="tel" name="phone" id="phone" required>
+                <input type="tel" name="phone" id="phone" required placeholder="+...">
+            </div>
+
+            <div class="form-group">
+                <label>Гражданство</label>
+                <input type="text" name="citizenship" id="citizenship" placeholder="РФ, РБ и т.д.">
+            </div>
+
+            <div class="form-group">
+                <label>Адрес проживания</label>
+                <input type="text" name="address" id="address">
             </div>
 
             <div id="price-display">

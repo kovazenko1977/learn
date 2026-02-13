@@ -47,6 +47,33 @@ class BookingManager {
             return false;
         }
 
+        // Handle Guest association
+        $guestsData = [
+            'name' => $data['client_name'] ?? 'N/A',
+            'phone' => $data['phone'],
+            'citizenship' => $data['citizenship'] ?? '',
+            'address' => $data['address'] ?? ''
+        ];
+
+        $guests = $this->store->findAll('guests');
+        $guestId = null;
+        foreach ($guests as $g) {
+            if ($g['phone'] === $data['phone']) {
+                $guestId = $g['id'];
+                // Update guest info if provided
+                if (!empty($data['citizenship'])) $g['citizenship'] = $data['citizenship'];
+                if (!empty($data['address'])) $g['address'] = $data['address'];
+                $g['name'] = $data['client_name'];
+                $this->store->save('guests', $g);
+                break;
+            }
+        }
+
+        if (!$guestId) {
+            $guestId = $this->store->save('guests', $guestsData);
+        }
+        $data['guest_id'] = $guestId;
+
         $data['total_price'] = $this->calculatePrice($data);
         $data['status'] = $data['status'] ?? 'new';
         $data['created_at'] = date('Y-m-d H:i:s');

@@ -126,6 +126,8 @@ document.addEventListener('DOMContentLoaded', function() {
             persons: document.getElementById('persons').value,
             phone: document.getElementById('phone').value,
             client_name: document.getElementById('client_name').value,
+            citizenship: document.getElementById('citizenship').value,
+            address: document.getElementById('address').value,
             package_id: document.getElementById('package_id').value,
             procedure_ids: Array.from(document.querySelectorAll('input[name="procedures"]:checked')).map(el => el.value),
             service_ids: Array.from(document.querySelectorAll('input[name="services"]:checked')).map(el => el.value)

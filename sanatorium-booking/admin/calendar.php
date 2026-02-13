@@ -15,7 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'persons' => 1,
         'phone' => $_POST['phone'],
         'status' => 'confirmed',
-        'client_name' => $_POST['client_name']
+        'client_name' => $_POST['client_name'],
+        'citizenship' => $_POST['citizenship'] ?? '',
+        'address' => $_POST['address'] ?? ''
     ];
     $bookingManager->createBooking($bookingData);
     header('Location: calendar.php?success=1');
@@ -129,10 +131,21 @@ include 'includes/header.php';
             <input type="text" name="client_name" required placeholder="Иванов Иван">
 
             <label>Телефон</label>
-            <input type="tel" name="phone" required placeholder="+7 (___) ___-__-__">
+            <input type="tel" name="phone" required placeholder="+...">
 
-            <label>Количество дней</label>
-            <input type="number" name="duration" value="1" min="1" required>
+            <div class="grid-2">
+                <div>
+                    <label>Гражданство</label>
+                    <input type="text" name="citizenship">
+                </div>
+                <div>
+                    <label>Количество дней</label>
+                    <input type="number" name="duration" value="1" min="1" required>
+                </div>
+            </div>
+
+            <label>Адрес</label>
+            <input type="text" name="address">
 
             <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
