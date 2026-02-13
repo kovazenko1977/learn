@@ -7,7 +7,7 @@ class JsonStore {
     public function __construct($dataDir) {
         $this->dataDir = rtrim($dataDir, '/') . '/';
         if (!is_dir($this->dataDir)) {
-            mkdir($this->dataDir, 0755, true);
+            @mkdir($this->dataDir, 0755, true);
         }
     }
 
@@ -26,9 +26,9 @@ class JsonStore {
             return [];
         }
 
-        flock($fp, LOCK_SH);
+        @flock($fp, LOCK_SH);
         $content = stream_get_contents($fp);
-        flock($fp, LOCK_UN);
+        @flock($fp, LOCK_UN);
         fclose($fp);
 
         $data = json_decode($content, true);
@@ -37,8 +37,9 @@ class JsonStore {
 
     public function findOne($table, $id) {
         $data = $this->findAll($table);
+        if (!is_array($data)) return null;
         foreach ($data as $item) {
-            if (isset($item['id']) && $item['id'] == $id) {
+            if (is_array($item) && isset($item['id']) && $item['id'] == $id) {
                 return $item;
             }
         }
@@ -50,20 +51,20 @@ class JsonStore {
 
         // Ensure file exists
         if (!file_exists($filePath)) {
-            file_put_contents($filePath, '[]');
+            @file_put_contents($filePath, '[]');
         }
 
-        $fp = fopen($filePath, 'c+b');
+        $fp = @fopen($filePath, 'c+b');
         if (!$fp) return false;
 
-        if (flock($fp, LOCK_EX)) {
+        if (@flock($fp, LOCK_EX)) {
             $content = stream_get_contents($fp);
             $allData = json_decode($content, true) ?: [];
 
             if (isset($data['id'])) {
                 $found = false;
                 foreach ($allData as &$item) {
-                    if ($item['id'] == $data['id']) {
+                    if (is_array($item) && isset($item['id']) && $item['id'] == $data['id']) {
                         $item = array_merge($item, $data);
                         $found = true;
                         break;
@@ -74,7 +75,7 @@ class JsonStore {
             } else {
                 $maxId = 0;
                 foreach ($allData as $item) {
-                    if (isset($item['id']) && $item['id'] > $maxId) $maxId = $item['id'];
+                    if (is_array($item) && isset($item['id']) && $item['id'] > $maxId) $maxId = $item['id'];
                 }
                 $data['id'] = $maxId + 1;
                 $allData[] = $data;
@@ -85,7 +86,7 @@ class JsonStore {
             rewind($fp);
             fwrite($fp, json_encode($allData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             fflush($fp);
-            flock($fp, LOCK_UN);
+            @flock($fp, LOCK_UN);
             fclose($fp);
             return $savedId;
         } else {
@@ -98,21 +99,21 @@ class JsonStore {
         $filePath = $this->getFilePath($table);
         if (!file_exists($filePath)) return false;
 
-        $fp = fopen($filePath, 'c+b');
+        $fp = @fopen($filePath, 'c+b');
         if (!$fp) return false;
 
-        if (flock($fp, LOCK_EX)) {
+        if (@flock($fp, LOCK_EX)) {
             $content = stream_get_contents($fp);
             $allData = json_decode($content, true) ?: [];
             $filteredData = array_values(array_filter($allData, function($item) use ($id) {
-                return !isset($item['id']) || $item['id'] != $id;
+                return is_array($item) && (!isset($item['id']) || $item['id'] != $id);
             }));
 
             ftruncate($fp, 0);
             rewind($fp);
             fwrite($fp, json_encode($filteredData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             fflush($fp);
-            flock($fp, LOCK_UN);
+            @flock($fp, LOCK_UN);
             fclose($fp);
             return true;
         } else {

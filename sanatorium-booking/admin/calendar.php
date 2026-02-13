@@ -31,8 +31,12 @@ $calendar = $store->findAll('room_calendar');
 $bookings = $store->findAll('bookings');
 
 $bookingMap = [];
-foreach ($bookings as $b) {
-    $bookingMap[$b['id']] = $b;
+if (is_array($bookings)) {
+    foreach ($bookings as $b) {
+        if (is_array($b) && isset($b['id'])) {
+            $bookingMap[$b['id']] = $b;
+        }
+    }
 }
 
 $startDate = !empty($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
@@ -67,7 +71,8 @@ include 'includes/header.php';
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($rooms as $room): ?>
+                <?php foreach ($rooms as $room):
+                    if (!is_array($room)) continue; ?>
                 <tr>
                     <td style="position: sticky; left: 0; background: #fff; z-index: 10; font-weight: 600;">
                         <?php echo htmlspecialchars($room['room_number']); ?>

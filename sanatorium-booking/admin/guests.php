@@ -8,7 +8,7 @@ try {
     $guestManager = new GuestManager($store);
     $guests = $guestManager->getAll();
     $bookings = $store->findAll('bookings');
-} catch (Exception $e) {
+} catch (Throwable $e) {
     die("Database Error: " . htmlspecialchars($e->getMessage()));
 }
 
@@ -90,6 +90,7 @@ include 'includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($guests as $g):
+                if (!is_array($g)) continue;
                 $gid = $g['id'] ?? 0;
                 $isStaying = $gid ? $guestManager->isCurrentlyStaying($gid, $bookings) : false;
                 $history = $gid ? $guestManager->getStayHistory($gid, $bookings) : [];

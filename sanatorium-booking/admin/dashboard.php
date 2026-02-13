@@ -11,7 +11,7 @@ $rooms = $store->findAll('rooms');
 $roomMap = [];
 if (is_array($rooms)) {
     foreach ($rooms as $r) {
-        if (isset($r['id'])) $roomMap[$r['id']] = $r['room_number'] ?? ('ID '.$r['id']);
+        if (is_array($r) && isset($r['id'])) $roomMap[$r['id']] = $r['room_number'] ?? ('ID '.$r['id']);
     }
 }
 if (!is_array($bookings)) $bookings = [];
@@ -61,7 +61,8 @@ include 'includes/header.php';
             </tr>
         </thead>
         <tbody>
-            <?php foreach (array_reverse($bookings) as $b): ?>
+            <?php foreach (array_reverse($bookings) as $b):
+                if (!is_array($b)) continue; ?>
             <tr>
                 <td><?php echo $b['id']; ?></td>
                 <td><strong><?php echo htmlspecialchars($b['client_name'] ?? 'N/A'); ?></strong></td>

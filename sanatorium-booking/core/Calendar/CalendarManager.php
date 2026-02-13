@@ -13,12 +13,14 @@ class CalendarManager {
     public function getOccupancyData($startDate, $endDate) {
         $calendar = $this->store->findAll('room_calendar');
         $occupancy = [];
-        foreach ($calendar as $entry) {
-            if ($entry['date'] >= $startDate && $entry['date'] <= $endDate) {
-                $occupancy[$entry['room_id']][$entry['date']] = [
-                    'status' => $entry['status'] ?? 'booked',
-                    'booking_id' => $entry['booking_id'] ?? null
-                ];
+        if (is_array($calendar)) {
+            foreach ($calendar as $entry) {
+                if (is_array($entry) && isset($entry['date']) && $entry['date'] >= $startDate && $entry['date'] <= $endDate) {
+                    $occupancy[$entry['room_id']][$entry['date']] = [
+                        'status' => $entry['status'] ?? 'booked',
+                        'booking_id' => $entry['booking_id'] ?? null
+                    ];
+                }
             }
         }
         return $occupancy;

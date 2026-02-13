@@ -19,33 +19,42 @@ class RoomManager {
         $calendar = $this->store->findAll('room_calendar');
         $classes = $this->store->findAll('room_classes');
         $classMap = [];
-        foreach ($classes as $c) $classMap[$c['id']] = $c['name'];
+        if (is_array($classes)) {
+            foreach ($classes as $c) {
+                if (is_array($c) && isset($c['id'])) $classMap[$c['id']] = $c['name'] ?? 'N/A';
+            }
+        }
 
         $availableRooms = [];
-        foreach ($allRooms as $room) {
-            if ($persons > 0 && $room['capacity'] < $persons) {
-                continue;
-            }
+        if (is_array($allRooms)) {
+            foreach ($allRooms as $room) {
+                if (!is_array($room)) continue;
+                if ($persons > 0 && ($room['capacity'] ?? 0) < $persons) {
+                    continue;
+                }
 
-            $isAvailable = true;
-            foreach ($calendar as $entry) {
-                if ($entry['room_id'] == $room['id']) {
-                    $entryDate = strtotime($entry['date']);
-                    $start = strtotime($checkIn);
-                    $end = strtotime($checkOut);
+                $isAvailable = true;
+                if (is_array($calendar)) {
+                    foreach ($calendar as $entry) {
+                        if (is_array($entry) && isset($entry['room_id']) && $entry['room_id'] == $room['id']) {
+                            $entryDate = strtotime($entry['date'] ?? '');
+                            $start = strtotime($checkIn);
+                            $end = strtotime($checkOut);
 
-                    if ($entryDate >= $start && $entryDate < $end) {
-                        if ($entry['status'] !== 'free') {
-                            $isAvailable = false;
-                            break;
+                            if ($entryDate && $start && $end && $entryDate >= $start && $entryDate < $end) {
+                                if (($entry['status'] ?? 'free') !== 'free') {
+                                    $isAvailable = false;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
-            }
 
-            if ($isAvailable) {
-                $room['room_class_name'] = $classMap[$room['room_class_id'] ?? 0] ?? 'N/A';
-                $availableRooms[] = $room;
+                if ($isAvailable) {
+                    $room['room_class_name'] = $classMap[$room['room_class_id'] ?? 0] ?? 'N/A';
+                    $availableRooms[] = $room;
+                }
             }
         }
         return $availableRooms;

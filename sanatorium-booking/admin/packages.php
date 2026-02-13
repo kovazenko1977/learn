@@ -43,7 +43,7 @@ include 'includes/header.php';
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($items as $i): ?>
+            <?php foreach ($items as $i): if (!is_array($i)) continue; ?>
             <tr>
                 <td><?php echo $i['id']; ?></td>
                 <td><strong><?php echo htmlspecialchars($i['name']); ?></strong></td>

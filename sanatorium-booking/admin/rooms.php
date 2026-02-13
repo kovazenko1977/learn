@@ -25,7 +25,7 @@ $classes = $store->findAll('room_classes');
 $classMap = [];
 if (is_array($classes)) {
     foreach($classes as $c) {
-        if (isset($c['id'])) $classMap[$c['id']] = $c['name'] ?? 'N/A';
+        if (is_array($c) && isset($c['id'])) $classMap[$c['id']] = $c['name'] ?? 'N/A';
     }
 }
 if (!is_array($items)) $items = [];
@@ -51,7 +51,8 @@ include 'includes/header.php';
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($items as $i): ?>
+            <?php foreach ($items as $i):
+                if (!is_array($i)) continue; ?>
             <tr>
                 <td><?php echo $i['id']; ?></td>
                 <td><strong><?php echo htmlspecialchars($i['room_number']); ?></strong></td>

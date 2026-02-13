@@ -21,25 +21,28 @@ class AnalyticsManager {
         $procedurePopularity = [];
         $servicePopularity = [];
 
-        foreach ($bookings as $b) {
-            if (($b['status'] ?? '') !== 'cancelled') {
-                $totalIncome += (float)($b['total_price'] ?? 0);
-            }
-            $status = $b['status'] ?? 'new';
-            $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
-
-            if (isset($b['room_id'])) {
-                $roomPopularity[$b['room_id']] = ($roomPopularity[$b['room_id']] ?? 0) + 1;
-            }
-
-            if (!empty($b['procedure_ids'])) {
-                foreach($b['procedure_ids'] as $pid) {
-                    $procedurePopularity[$pid] = ($procedurePopularity[$pid] ?? 0) + 1;
+        if (is_array($bookings)) {
+            foreach ($bookings as $b) {
+                if (!is_array($b)) continue;
+                if (($b['status'] ?? '') !== 'cancelled') {
+                    $totalIncome += (float)($b['total_price'] ?? 0);
                 }
-            }
-            if (!empty($b['service_ids'])) {
-                foreach($b['service_ids'] as $sid) {
-                    $servicePopularity[$sid] = ($servicePopularity[$sid] ?? 0) + 1;
+                $status = $b['status'] ?? 'new';
+                $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
+
+                if (isset($b['room_id'])) {
+                    $roomPopularity[$b['room_id']] = ($roomPopularity[$b['room_id']] ?? 0) + 1;
+                }
+
+                if (!empty($b['procedure_ids']) && is_array($b['procedure_ids'])) {
+                    foreach($b['procedure_ids'] as $pid) {
+                        $procedurePopularity[$pid] = ($procedurePopularity[$pid] ?? 0) + 1;
+                    }
+                }
+                if (!empty($b['service_ids']) && is_array($b['service_ids'])) {
+                    foreach($b['service_ids'] as $sid) {
+                        $servicePopularity[$sid] = ($servicePopularity[$sid] ?? 0) + 1;
+                    }
                 }
             }
         }
@@ -52,11 +55,13 @@ class AnalyticsManager {
         $occupiedSlots = 0;
         $today = time();
         $totalRooms = count($rooms);
-        for ($i = 0; $i < 30; $i++) {
-            $date = date('Y-m-d', $today - ($i * 86400));
-            foreach ($calendar as $entry) {
-                if ($entry['date'] === $date && ($entry['status'] ?? 'free') !== 'free') {
-                    $occupiedSlots++;
+        if (is_array($calendar)) {
+            for ($i = 0; $i < 30; $i++) {
+                $date = date('Y-m-d', $today - ($i * 86400));
+                foreach ($calendar as $entry) {
+                    if (is_array($entry) && isset($entry['date']) && $entry['date'] === $date && ($entry['status'] ?? 'free') !== 'free') {
+                        $occupiedSlots++;
+                    }
                 }
             }
         }

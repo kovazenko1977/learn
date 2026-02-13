@@ -25,17 +25,17 @@ class BookingManager {
             if ($package) $totalPrice += $package['base_price'];
         }
 
-        if (!empty($data['procedure_ids'])) {
+        if (!empty($data['procedure_ids']) && is_array($data['procedure_ids'])) {
             foreach ($data['procedure_ids'] as $pid) {
                 $proc = $this->store->findOne('procedures', $pid);
-                if ($proc) $totalPrice += $proc['price'];
+                if ($proc && is_array($proc)) $totalPrice += ($proc['price'] ?? 0);
             }
         }
 
-        if (!empty($data['service_ids'])) {
+        if (!empty($data['service_ids']) && is_array($data['service_ids'])) {
             foreach ($data['service_ids'] as $sid) {
                 $service = $this->store->findOne('extra_services', $sid);
-                if ($service) $totalPrice += $service['price'];
+                if ($service && is_array($service)) $totalPrice += ($service['price'] ?? 0);
             }
         }
 
@@ -89,9 +89,11 @@ class BookingManager {
 
     public function releaseCalendar($bookingId) {
         $calendar = $this->store->findAll('room_calendar');
-        foreach ($calendar as $entry) {
-            if (isset($entry['booking_id']) && $entry['booking_id'] == $bookingId) {
-                $this->store->delete('room_calendar', $entry['id']);
+        if (is_array($calendar)) {
+            foreach ($calendar as $entry) {
+                if (is_array($entry) && isset($entry['booking_id']) && $entry['booking_id'] == $bookingId) {
+                    $this->store->delete('room_calendar', $entry['id']);
+                }
             }
         }
     }

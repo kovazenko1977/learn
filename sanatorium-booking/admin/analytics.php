@@ -39,7 +39,12 @@ include 'includes/header.php';
         <div style="margin-top: 20px;">
             <?php
             $servicesData = $store->findAll('extra_services');
-            $svcMap = []; foreach($servicesData as $s) $svcMap[$s['id']] = $s['name'];
+            $svcMap = [];
+            if (is_array($servicesData)) {
+                foreach($servicesData as $s) {
+                    if (is_array($s) && isset($s['id'])) $svcMap[$s['id']] = $s['name'] ?? 'N/A';
+                }
+            }
             $i = 1;
             foreach (array_slice($servicePopularity, 0, 5, true) as $id => $count): ?>
                 <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
@@ -56,7 +61,12 @@ include 'includes/header.php';
         <div style="margin-top: 20px;">
             <?php
             $procData = $store->findAll('procedures');
-            $procMap = []; foreach($procData as $p) $procMap[$p['id']] = $p['name'];
+            $procMap = [];
+            if (is_array($procData)) {
+                foreach($procData as $p) {
+                    if (is_array($p) && isset($p['id'])) $procMap[$p['id']] = $p['name'] ?? 'N/A';
+                }
+            }
             $i = 1;
             foreach (array_slice($procedurePopularity, 0, 5, true) as $id => $count): ?>
                 <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05);">
@@ -74,7 +84,12 @@ include 'includes/header.php';
     <div style="margin-top: 20px;">
         <?php
         $rooms = $store->findAll('rooms');
-        $roomNames = []; foreach($rooms as $r) $roomNames[$r['id']] = $r['room_number'];
+        $roomNames = [];
+        if (is_array($rooms)) {
+            foreach($rooms as $r) {
+                if (is_array($r) && isset($r['id'])) $roomNames[$r['id']] = $r['room_number'] ?? 'N/A';
+            }
+        }
         foreach (array_slice($roomPopularity, 0, 10, true) as $id => $count):
             $percentage = $totalBookings > 0 ? ($count / $totalBookings) * 100 : 0;
         ?>
