@@ -15,23 +15,46 @@ $roomManager = new RoomManager($store);
 $bookingManager = new BookingManager($store);
 
 $classes = $store->findAll('room_classes');
-$availableRooms = [];
-$searchDone = false;
+$allRooms = $store->findAll('rooms');
+$calendar = $store->findAll('room_calendar');
 
-$checkIn = $_GET['check_in'] ?? '';
-$checkOut = $_GET['check_out'] ?? '';
-$classFilter = $_GET['room_class'] ?? '';
+$checkIn = $_GET['check_in'] ?? date('Y-m-d');
+$checkOut = $_GET['check_out'] ?? date('Y-m-d', strtotime('+1 day'));
 $persons = (int)($_GET['persons'] ?? 1);
 
-if ($checkIn && $checkOut) {
-    $rooms = $roomManager->getAvailableRooms($checkIn, $checkOut, $persons);
-    foreach ($rooms as $room) {
-        if ($classFilter && $room['room_class'] !== $classFilter) {
-            continue;
+// Calculate status for each room in the selected range
+$roomStatuses = [];
+foreach ($allRooms as $room) {
+    $status = 'free'; // Default
+    $bookingId = null;
+
+    foreach ($calendar as $entry) {
+        if ($entry['room_id'] == $room['id']) {
+            $entryDate = strtotime($entry['date']);
+            $start = strtotime($checkIn);
+            $end = strtotime($checkOut);
+
+            if ($entryDate >= $start && $entryDate < $end) {
+                if ($entry['status'] === 'booked') {
+                    $status = 'booked';
+                    $bookingId = $entry['booking_id'];
+                    break;
+                } elseif ($entry['status'] === 'reserved' && $status !== 'booked') {
+                    $status = 'reserved';
+                }
+            }
         }
-        $availableRooms[] = $room;
     }
-    $searchDone = true;
+    $roomStatuses[$room['id']] = [
+        'status' => $status,
+        'booking_id' => $bookingId
+    ];
+}
+
+// Group rooms by class
+$groupedRooms = [];
+foreach ($allRooms as $room) {
+    $groupedRooms[$room['room_class']][] = $room;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_booking') {
@@ -41,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'check_out' => $_POST['check_out'],
         'persons' => (int)$_POST['persons'],
         'phone' => $_POST['phone'],
-        'status' => 'confirmed', // Admin bookings are confirmed by default
+        'status' => 'confirmed',
         'client_name' => $_POST['client_name']
     ];
     $bookingId = $bookingManager->createBooking($bookingData);
@@ -50,19 +73,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit;
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Создание бронирования</title>
+    <title>Интерактивное бронирование</title>
     <link rel="stylesheet" href="../public/assets/css/admin.css">
     <style>
-        .search-box { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .room-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
-        .room-card h4 { margin-top: 0; }
+        .status-board { margin-top: 20px; }
+        .class-group { margin-bottom: 30px; }
+        .class-title { font-size: 1.2rem; color: #2c3e50; border-bottom: 2px solid #3498db; display: inline-block; margin-bottom: 15px; padding-bottom: 5px; }
+        .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+
+        .room-visual { padding: 15px; border-radius: 10px; text-align: center; transition: all 0.3s ease; position: relative; border: 2px solid transparent; cursor: pointer; }
+        .room-visual.free { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+        .room-visual.booked { background: #ffebee; color: #c62828; border-color: #ffcdd2; cursor: not-allowed; opacity: 0.8; }
+        .room-visual.reserved { background: #fff3e0; color: #ef6c00; border-color: #ffe0b2; }
+
+        .room-visual:hover.free { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(46, 125, 50, 0.2); border-color: #2e7d32; }
+        .room-visual.selected { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; transform: scale(1.05); z-index: 10; }
+
+        .room-num { font-size: 1.4rem; font-weight: bold; display: block; }
+        .room-info { font-size: 0.85rem; }
+        .room-status-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; display: block; }
+
+        #booking-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: #fff; width: 400px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .btn-blue { background: #1a73e8; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { background: #ccc; color: #333; margin-right: 10px; }
     </style>
 </head>
 <body>
@@ -82,75 +121,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </nav>
     </header>
     <main>
-        <h2>Административное бронирование</h2>
-
-        <div class="search-box">
-            <form method="get">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; align-items: end;">
+        <div class="mica-card">
+            <h2>Визуальный выбор номеров</h2>
+            <form method="get" id="filter-form">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
                     <div>
                         <label>Дата заезда</label>
-                        <input type="date" name="check_in" value="<?php echo htmlspecialchars($checkIn); ?>" required style="width:100%; padding:8px;">
+                        <input type="date" name="check_in" value="<?php echo htmlspecialchars($checkIn); ?>" onchange="this.form.submit()">
                     </div>
                     <div>
                         <label>Дата выезда</label>
-                        <input type="date" name="check_out" value="<?php echo htmlspecialchars($checkOut); ?>" required style="width:100%; padding:8px;">
+                        <input type="date" name="check_out" value="<?php echo htmlspecialchars($checkOut); ?>" onchange="this.form.submit()">
                     </div>
                     <div>
-                        <label>Класс номера</label>
-                        <select name="room_class" style="width:100%; padding:8px;">
-                            <option value="">Все классы</option>
-                            <?php foreach ($classes as $c): ?>
-                                <option value="<?php echo htmlspecialchars($c['name']); ?>" <?php echo $classFilter === $c['name'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($c['name']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Человек</label>
-                        <input type="number" name="persons" value="<?php echo $persons; ?>" min="1" style="width:100%; padding:8px;">
-                    </div>
-                    <div style="grid-column: span 4; text-align: right;">
-                        <button type="submit" class="btn">Поиск свободных номеров</button>
+                        <label>Кол-во человек</label>
+                        <input type="number" name="persons" value="<?php echo $persons; ?>" min="1" onchange="this.form.submit()">
                     </div>
                 </div>
             </form>
         </div>
 
-        <?php if ($searchDone): ?>
-            <h3>Доступные номера</h3>
-            <?php if (empty($availableRooms)): ?>
-                <p>Нет подходящих свободных номеров.</p>
-            <?php else: ?>
-                <div class="results-grid">
-                    <?php foreach ($availableRooms as $room): ?>
-                        <div class="room-card">
-                            <h4>Номер <?php echo htmlspecialchars($room['room_number']); ?></h4>
-                            <p>Класс: <?php echo htmlspecialchars($room['room_class']); ?></p>
-                            <p>Вместимость: <?php echo htmlspecialchars($room['capacity']); ?> чел.</p>
-                            <p>Цена: <strong><?php echo htmlspecialchars($room['price_per_day']); ?> руб/сут</strong></p>
-
-                            <hr>
-                            <form method="post">
-                                <input type="hidden" name="action" value="create_booking">
-                                <input type="hidden" name="room_id" value="<?php echo $room['id']; ?>">
-                                <input type="hidden" name="check_in" value="<?php echo htmlspecialchars($checkIn); ?>">
-                                <input type="hidden" name="check_out" value="<?php echo htmlspecialchars($checkOut); ?>">
-                                <input type="hidden" name="persons" value="<?php echo $persons; ?>">
-
-                                <label>ФИО Клиента</label>
-                                <input type="text" name="client_name" required style="width:100%; padding:5px; margin-bottom:10px;">
-
-                                <label>Телефон</label>
-                                <input type="tel" name="phone" required style="width:100%; padding:5px; margin-bottom:10px;">
-
-                                <button type="submit" class="btn" style="width:100%; background:#007bff;">Забронировать</button>
-                            </form>
-                        </div>
-                    <?php endforeach; ?>
+        <div class="status-board">
+            <?php foreach ($groupedRooms as $className => $rooms): ?>
+                <div class="class-group">
+                    <h3 class="class-title"><?php echo htmlspecialchars($className); ?></h3>
+                    <div class="rooms-grid">
+                        <?php foreach ($rooms as $room):
+                            $info = $roomStatuses[$room['id']];
+                            $status = $info['status'];
+                            $isTooSmall = ($persons > 0 && $room['capacity'] < $persons);
+                            if ($isTooSmall && $status === 'free') {
+                                $statusLabel = 'Мало места';
+                                $statusClass = 'reserved';
+                            } else {
+                                $statusLabels = ['free' => 'Свободен', 'booked' => 'Занят', 'reserved' => 'Резерв'];
+                                $statusLabel = $statusLabels[$status];
+                                $statusClass = $status;
+                            }
+                        ?>
+                            <div class="room-visual <?php echo $statusClass; ?>"
+                                 onclick="<?php echo ($status === 'free' && !$isTooSmall) ? "openBooking({$room['id']}, '{$room['room_number']}', '{$room['room_class']}')" : ""; ?>">
+                                <span class="room-num">№<?php echo htmlspecialchars($room['room_number']); ?></span>
+                                <span class="room-info" style="display:block; font-style:italic;"><?php echo htmlspecialchars($room['room_class']); ?></span>
+                                <span class="room-info"><?php echo $room['capacity']; ?>-местный</span>
+                                <span class="room-status-label"><?php echo $statusLabel; ?></span>
+                                <?php if ($status === 'free'): ?>
+                                    <div style="margin-top:5px; font-weight:bold;"><?php echo $room['price_per_day']; ?> ₽</div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-            <?php endif; ?>
-        <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Модальное окно бронирования -->
+        <div id="booking-modal">
+            <div class="modal-content">
+                <h3>Бронирование номера <span id="m-room-num"></span></h3>
+                <p id="m-room-class" style="color:#666; margin-bottom:20px;"></p>
+                <form method="post">
+                    <input type="hidden" name="action" value="create_booking">
+                    <input type="hidden" name="room_id" id="m-room-id">
+                    <input type="hidden" name="check_in" value="<?php echo htmlspecialchars($checkIn); ?>">
+                    <input type="hidden" name="check_out" value="<?php echo htmlspecialchars($checkOut); ?>">
+                    <input type="hidden" name="persons" value="<?php echo $persons; ?>">
+
+                    <div class="form-group">
+                        <label>ФИО Гостя</label>
+                        <input type="text" name="client_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+
+                    <div style="margin-top: 30px; text-align: right;">
+                        <button type="button" class="btn btn-cancel" onclick="closeBooking()">Отмена</button>
+                        <button type="submit" class="btn btn-blue">Подтвердить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
+
+    <script>
+        function openBooking(id, num, className) {
+            document.getElementById('m-room-id').value = id;
+            document.getElementById('m-room-num').textContent = num;
+            document.getElementById('m-room-class').textContent = className;
+            document.getElementById('booking-modal').style.display = 'flex';
+        }
+
+        function closeBooking() {
+            document.getElementById('booking-modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('booking-modal')) {
+                closeBooking();
+            }
+        }
+    </script>
 </body>
 </html>

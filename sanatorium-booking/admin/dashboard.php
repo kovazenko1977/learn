@@ -36,12 +36,49 @@ $rooms = $store->findAll('rooms');
         </nav>
     </header>
     <main>
-        <section>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>Список заявок</h2>
+        <?php if (isset($_GET['success'])): ?>
+            <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                ✅ Бронирование успешно создано!
+            </div>
+        <?php endif; ?>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+            <div class="stat-card">
+                <span class="stat-label">Всего заявок</span>
+                <span class="stat-value"><?php echo count($bookings); ?></span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Свободно номеров</span>
+                <span class="stat-value"><?php
+                    $freeCount = 0;
+                    foreach($rooms as $r) if($r['status'] == 'free') $freeCount++;
+                    echo $freeCount;
+                ?></span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Новые (New)</span>
+                <span class="stat-value" style="color: #007bff;"><?php
+                    $newCount = 0;
+                    foreach($bookings as $b) if($b['status'] == 'new') $newCount++;
+                    echo $newCount;
+                ?></span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Доход</span>
+                <span class="stat-value" style="color: #28a745;"><?php
+                    $income = 0;
+                    foreach($bookings as $b) if($b['status'] != 'cancelled') $income += $b['total_price'];
+                    echo number_format($income, 0, ',', ' ');
+                ?> ₽</span>
+            </div>
+        </div>
+
+        <section class="mica-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin:0;">📋 Список заявок</h2>
                 <div>
-                    <a href="create_booking.php" class="btn" style="background: #007bff; margin-right: 10px;">Новое бронирование</a>
-                    <a href="export_csv.php" class="btn">Экспорт в CSV</a>
+                    <a href="create_booking.php" class="btn" style="background: #007bff; margin-right: 10px;">✨ Новое бронирование</a>
+                    <a href="export_csv.php" class="btn">📥 Экспорт в CSV</a>
                 </div>
             </div>
             <table>

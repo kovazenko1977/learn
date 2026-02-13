@@ -51,7 +51,7 @@ $services = $store->findAll('extra_services');
         </nav>
     </header>
     <main>
-        <section>
+        <section class="mica-card">
             <h2>Дополнительные услуги</h2>
             <table>
                 <thead>

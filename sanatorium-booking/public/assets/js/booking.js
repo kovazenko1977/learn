@@ -71,7 +71,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.updatePrice = async function() {
-        if (!selectedRoomId) return;
+        if (!selectedRoomId) {
+            totalPriceSpan.textContent = '0';
+            return;
+        }
 
         const checkIn = document.getElementById('check_in').value;
         const checkOut = document.getElementById('check_out').value;

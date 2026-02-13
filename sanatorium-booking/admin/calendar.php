@@ -54,7 +54,8 @@ foreach ($calendar as $entry) {
         </nav>
     </header>
     <main>
-        <h2>Календарь занятость номеров (<?php echo date('F Y'); ?>)</h2>
+        <div class="mica-card">
+        <h2 style="margin-top:0;">📅 Календарь занятости (<?php echo date('F Y'); ?>)</h2>
         <div class="calendar-grid">
             <table class="calendar-table">
                 <thead>
@@ -85,6 +86,7 @@ foreach ($calendar as $entry) {
             <span class="status-free" style="padding: 5px 10px; border-radius: 4px;">Свободно</span>
             <span class="status-booked" style="padding: 5px 10px; border-radius: 4px; margin-left: 10px;">Занято</span>
             <span class="status-reserved" style="padding: 5px 10px; border-radius: 4px; margin-left: 10px;">Резерв</span>
+        </div>
         </div>
     </main>
 </body>

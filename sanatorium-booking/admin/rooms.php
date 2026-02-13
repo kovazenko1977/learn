@@ -51,7 +51,7 @@ $classes = $store->findAll('room_classes');
         </nav>
     </header>
     <main>
-        <section>
+        <section class="mica-card">
             <h2>Номера</h2>
             <table>
                 <thead>
@@ -79,7 +79,7 @@ $classes = $store->findAll('room_classes');
             </table>
         </section>
 
-        <section style="margin-top: 40px; background: #fff; padding: 20px; border-radius: 8px;">
+        <section class="mica-card" style="margin-top: 40px;">
             <h3>Добавить / Редактировать номер</h3>
             <form method="post">
                 <input type="hidden" name="action" value="save_room">

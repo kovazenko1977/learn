@@ -40,5 +40,40 @@
         "status": "booked",
         "booking_id": 3,
         "id": 6
+    },
+    {
+        "room_id": 1,
+        "date": "2026-03-10",
+        "status": "booked",
+        "booking_id": 4,
+        "id": 7
+    },
+    {
+        "room_id": 1,
+        "date": "2026-03-11",
+        "status": "booked",
+        "booking_id": 4,
+        "id": 8
+    },
+    {
+        "room_id": 1,
+        "date": "2026-03-12",
+        "status": "booked",
+        "booking_id": 4,
+        "id": 9
+    },
+    {
+        "room_id": 1,
+        "date": "2026-03-13",
+        "status": "booked",
+        "booking_id": 4,
+        "id": 10
+    },
+    {
+        "room_id": 1,
+        "date": "2026-03-14",
+        "status": "booked",
+        "booking_id": 4,
+        "id": 11
     }
 ]

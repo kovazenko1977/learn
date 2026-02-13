@@ -23,7 +23,7 @@ switch ($action) {
         $persons = (int)($_GET['persons'] ?? 0);
 
         if (!$checkIn || !$checkOut) {
-            echo json_encode(['error' => 'Missing dates']);
+            echo json_encode(['error' => 'Отсутствуют даты']);
             exit;
         }
 
@@ -49,7 +49,7 @@ switch ($action) {
         $bookingManager = new BookingManager($store);
         $postData = json_decode(file_get_contents('php://input'), true);
         if (!$postData) {
-            echo json_encode(['error' => 'Invalid data']);
+            echo json_encode(['error' => 'Некорректные данные']);
             exit;
         }
         echo json_encode(['total_price' => $bookingManager->calculatePrice($postData)]);
@@ -57,7 +57,7 @@ switch ($action) {
 
     case 'booking/create':
         if ($method !== 'POST') {
-            echo json_encode(['error' => 'POST method required']);
+            echo json_encode(['error' => 'Требуется метод POST']);
             exit;
         }
         $bookingManager = new BookingManager($store);
@@ -67,6 +67,6 @@ switch ($action) {
         break;
 
     default:
-        echo json_encode(['error' => 'Action not found']);
+        echo json_encode(['error' => 'Действие не найдено']);
         break;
 }

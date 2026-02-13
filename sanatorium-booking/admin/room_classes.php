@@ -50,7 +50,7 @@ $classes = $store->findAll('room_classes');
         </nav>
     </header>
     <main>
-        <section>
+        <section class="mica-card">
             <h2>Классы номеров</h2>
             <table>
                 <thead>

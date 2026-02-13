@@ -53,7 +53,7 @@ $procedures = $store->findAll('procedures');
         </nav>
     </header>
     <main>
-        <section>
+        <section class="mica-card">
             <h2>Медицинские процедуры</h2>
             <table>
                 <thead>
