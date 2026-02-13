@@ -40,9 +40,9 @@ include 'includes/header.php';
             <?php foreach ($items as $i): if (!is_array($i)) continue; ?>
             <tr>
                 <td><?php echo $i['id'] ?? ''; ?></td>
-                <td><strong><?php echo htmlspecialchars($i['name']); ?></strong></td>
-                <td><?php echo number_format($i['price'], 0, ',', ' '); ?> ₽</td>
-                <td><?php echo $i['duration']; ?> мин.</td>
+                <td><strong><?php echo htmlspecialchars($i['name'] ?? ''); ?></strong></td>
+                <td><?php echo number_format((float)($i['price'] ?? 0), 0, ',', ' '); ?> ₽</td>
+                <td><?php echo htmlspecialchars($i['duration'] ?? 0); ?> мин.</td>
                 <td>
                     <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить процедуру?');">

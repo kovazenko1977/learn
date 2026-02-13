@@ -55,11 +55,11 @@ include 'includes/header.php';
                 if (!is_array($i)) continue; ?>
             <tr>
                 <td><?php echo $i['id'] ?? ''; ?></td>
-                <td><strong><?php echo htmlspecialchars($i['room_number']); ?></strong></td>
+                <td><strong><?php echo htmlspecialchars($i['room_number'] ?? ''); ?></strong></td>
                 <td><?php echo htmlspecialchars($classMap[$i['room_class_id'] ?? 0] ?? 'N/A'); ?></td>
-                <td><?php echo number_format($i['price_per_day'], 0, ',', ' '); ?> ₽</td>
-                <td><?php echo $i['capacity']; ?></td>
-                <td><span class="status-badge" style="background:rgba(0,0,0,0.05); color:#333;"><?php echo $i['status']; ?></span></td>
+                <td><?php echo number_format((float)($i['price_per_day'] ?? 0), 0, ',', ' '); ?> ₽</td>
+                <td><?php echo htmlspecialchars($i['capacity'] ?? 0); ?></td>
+                <td><span class="status-badge" style="background:rgba(0,0,0,0.05); color:#333;"><?php echo htmlspecialchars($i['status'] ?? 'free'); ?></span></td>
                 <td>
                     <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить этот номер?');">

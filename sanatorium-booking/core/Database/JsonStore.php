@@ -59,7 +59,8 @@ class JsonStore {
 
         if (@flock($fp, LOCK_EX)) {
             $content = stream_get_contents($fp);
-            $allData = json_decode($content, true) ?: [];
+            $allData = json_decode($content, true);
+            if (!is_array($allData)) $allData = [];
 
             if (isset($data['id'])) {
                 $found = false;
@@ -104,7 +105,8 @@ class JsonStore {
 
         if (@flock($fp, LOCK_EX)) {
             $content = stream_get_contents($fp);
-            $allData = json_decode($content, true) ?: [];
+            $allData = json_decode($content, true);
+            if (!is_array($allData)) $allData = [];
             $filteredData = array_values(array_filter($allData, function($item) use ($id) {
                 return is_array($item) && (!isset($item['id']) || $item['id'] != $id);
             }));

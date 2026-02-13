@@ -64,13 +64,13 @@ include 'includes/header.php';
             <?php foreach (array_reverse($bookings) as $b):
                 if (!is_array($b)) continue; ?>
             <tr>
-                <td><?php echo $b['id'] ?? '' ?? ''; ?></td>
+                <td><?php echo $b['id'] ?? ''; ?></td>
                 <td><strong><?php echo htmlspecialchars($b['client_name'] ?? 'N/A'); ?></strong></td>
-                <td><?php echo $b['check_in'] ?? ''; ?> — <?php echo $b['check_out'] ?? ''; ?></td>
+                <td><?php echo htmlspecialchars($b['check_in'] ?? ''); ?> — <?php echo htmlspecialchars($b['check_out'] ?? ''); ?></td>
                 <td><?php echo htmlspecialchars($roomMap[$b['room_id'] ?? 0] ?? 'Room '.($b['room_id'] ?? '')); ?></td>
                 <td><?php echo htmlspecialchars($b['phone'] ?? ''); ?></td>
-                <td><?php echo number_format($b['total_price'] ?? 0, 0, ',', ' '); ?> ₽</td>
-                <td><span class="status-badge status-<?php echo $b['status'] ?? 'new'; ?>"><?php echo $statusLabels[$b['status'] ?? 'new'] ?? ($b['status'] ?? 'new'); ?></span></td>
+                <td><?php echo number_format((float)($b['total_price'] ?? 0), 0, ',', ' '); ?> ₽</td>
+                <td><span class="status-badge status-<?php echo htmlspecialchars($b['status'] ?? 'new'); ?>"><?php echo htmlspecialchars($statusLabels[$b['status'] ?? 'new'] ?? ($b['status'] ?? 'new')); ?></span></td>
                 <td>
                     <form method="post" style="display:inline;">
                         <input type="hidden" name="action" value="update_status">

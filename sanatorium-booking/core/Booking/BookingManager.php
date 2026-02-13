@@ -11,14 +11,17 @@ class BookingManager {
     }
 
     public function calculatePrice($data) {
-        $checkIn = strtotime($data['check_in']);
-        $checkOut = strtotime($data['check_out']);
+        if (!is_array($data)) return 0;
+        $checkIn = strtotime($data['check_in'] ?? '');
+        $checkOut = strtotime($data['check_out'] ?? '');
+        if (!$checkIn || !$checkOut) return 0;
+
         $days = max(1, ($checkOut - $checkIn) / (60 * 60 * 24));
 
-        $room = $this->store->findOne('rooms', $data['room_id']);
-        if (!$room) return 0;
+        $room = $this->store->findOne('rooms', $data['room_id'] ?? 0);
+        if (!$room || !is_array($room)) return 0;
 
-        $totalPrice = $room['price_per_day'] * $days;
+        $totalPrice = (float)($room['price_per_day'] ?? 0) * $days;
 
         if (!empty($data['package_id'])) {
             $package = $this->store->findOne('packages', $data['package_id']);
@@ -57,15 +60,18 @@ class BookingManager {
 
         $guests = $this->store->findAll('guests');
         $guestId = null;
-        foreach ($guests as $g) {
-            if ($g['phone'] === $data['phone']) {
-                $guestId = $g['id'];
-                // Update guest info if provided
-                if (!empty($data['citizenship'])) $g['citizenship'] = $data['citizenship'];
-                if (!empty($data['address'])) $g['address'] = $data['address'];
-                $g['name'] = $data['client_name'];
-                $this->store->save('guests', $g);
-                break;
+        if (is_array($guests)) {
+            foreach ($guests as $g) {
+                if (!is_array($g)) continue;
+                if (($g['phone'] ?? '') === $data['phone']) {
+                    $guestId = $g['id'];
+                    // Update guest info if provided
+                    if (!empty($data['citizenship'])) $g['citizenship'] = $data['citizenship'];
+                    if (!empty($data['address'])) $g['address'] = $data['address'];
+                    $g['name'] = $data['client_name'];
+                    $this->store->save('guests', $g);
+                    break;
+                }
             }
         }
 
