@@ -37,7 +37,7 @@ include 'includes/header.php';
                 <td style="font-family: monospace; color: #0078d4;"><?php echo htmlspecialchars($block['slug']); ?></td>
                 <td><?php echo nl2br(htmlspecialchars(mb_strimwidth($block['content'], 0, 100, "..."))); ?></td>
                 <td>
-                    <button class="btn btn-secondary" onclick="editBlock('<?php echo addslashes($block['slug']); ?>', '<?php echo addslashes(str_replace("\n", "\\n", str_replace("\r", "", $block['content']))); ?>')" style="padding: 4px 10px; font-size: 0.8rem;">Edit</button>
+                    <button class="btn btn-secondary" onclick="editBlock('<?php echo addslashes($block['slug']); ?>', '<?php echo addslashes(str_replace("\n", "\\n", str_replace("\r", "", $block['content']))); ?>')" style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                 </td>
             </tr>
             <?php endforeach; ?>

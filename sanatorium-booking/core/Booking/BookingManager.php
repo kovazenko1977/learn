@@ -97,18 +97,25 @@ class BookingManager {
     }
 
     private function updateCalendar($roomId, $checkIn, $checkOut, $bookingId) {
-        $start = new \DateTime($checkIn);
-        $end = new \DateTime($checkOut);
-        $interval = new \DateInterval('P1D');
-        $period = new \DatePeriod($start, $interval, $end);
+        try {
+            $start = new \DateTime($checkIn);
+            $end = new \DateTime($checkOut);
 
-        foreach ($period as $date) {
-            $this->store->save('room_calendar', [
-                'room_id' => $roomId,
-                'date' => $date->format('Y-m-d'),
-                'status' => 'booked',
-                'booking_id' => $bookingId
-            ]);
+            if ($start >= $end) return;
+
+            $interval = new \DateInterval('P1D');
+            $period = new \DatePeriod($start, $interval, $end);
+
+            foreach ($period as $date) {
+                $this->store->save('room_calendar', [
+                    'room_id' => $roomId,
+                    'date' => $date->format('Y-m-d'),
+                    'status' => 'booked',
+                    'booking_id' => $bookingId
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log error or ignore
         }
     }
 }

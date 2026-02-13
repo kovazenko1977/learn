@@ -16,10 +16,14 @@ $filterStatus = $_GET['status'] ?? ''; // 'staying', 'not_staying'
 
 if ($filterName || $filterPhone || $filterStatus) {
     $guests = array_filter($guests, function($g) use ($filterName, $filterPhone, $filterStatus, $guestManager, $bookings) {
-        if ($filterName && stripos($g['name'], $filterName) === false) return false;
-        if ($filterPhone && strpos($g['phone'], $filterPhone) === false) return false;
+        $name = $g['name'] ?? '';
+        $phone = $g['phone'] ?? '';
+        $id = $g['id'] ?? 0;
 
-        $isStaying = $guestManager->isCurrentlyStaying($g['id'], $bookings);
+        if ($filterName && stripos($name, $filterName) === false) return false;
+        if ($filterPhone && strpos($phone, $filterPhone) === false) return false;
+
+        $isStaying = $id ? $guestManager->isCurrentlyStaying($id, $bookings) : false;
         if ($filterStatus === 'staying' && !$isStaying) return false;
         if ($filterStatus === 'not_staying' && $isStaying) return false;
 
@@ -73,13 +77,14 @@ include 'includes/header.php';
         </thead>
         <tbody>
             <?php foreach ($guests as $g):
-                $isStaying = $guestManager->isCurrentlyStaying($g['id'], $bookings);
-                $history = $guestManager->getStayHistory($g['id'], $bookings);
+                $gid = $g['id'] ?? 0;
+                $isStaying = $gid ? $guestManager->isCurrentlyStaying($gid, $bookings) : false;
+                $history = $gid ? $guestManager->getStayHistory($gid, $bookings) : [];
             ?>
             <tr>
-                <td><?php echo $g['id']; ?></td>
-                <td><strong><?php echo htmlspecialchars($g['name']); ?></strong><br><small style="color:#888;"><?php echo htmlspecialchars($g['address'] ?? ''); ?></small></td>
-                <td><?php echo htmlspecialchars($g['phone']); ?></td>
+                <td><?php echo $gid; ?></td>
+                <td><strong><?php echo htmlspecialchars($g['name'] ?? 'N/A'); ?></strong><br><small style="color:#888;"><?php echo htmlspecialchars($g['address'] ?? ''); ?></small></td>
+                <td><?php echo htmlspecialchars($g['phone'] ?? 'N/A'); ?></td>
                 <td><?php echo htmlspecialchars($g['citizenship'] ?? '—'); ?></td>
                 <td>
                     <?php if ($isStaying): ?>
@@ -100,7 +105,7 @@ include 'includes/header.php';
                     <?php endif; ?>
                 </td>
                 <td>
-                    <button class="btn btn-secondary" onclick='editGuest(<?php echo json_encode($g); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Edit</button>
+                    <button class="btn btn-secondary" onclick='editGuest(<?php echo htmlspecialchars(json_encode($g), ENT_QUOTES, 'UTF-8'); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                 </td>
             </tr>
             <?php endforeach; ?>

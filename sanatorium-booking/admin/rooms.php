@@ -55,7 +55,7 @@ include 'includes/header.php';
                 <td><?php echo $i['capacity']; ?></td>
                 <td><span class="status-badge" style="background:rgba(0,0,0,0.05); color:#333;"><?php echo $i['status']; ?></span></td>
                 <td>
-                    <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Edit</button>
+                    <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить этот номер?');">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?php echo $i['id']; ?>">

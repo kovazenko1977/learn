@@ -65,9 +65,9 @@ include 'includes/header.php';
                         <input type="hidden" name="action" value="update_status">
                         <input type="hidden" name="id" value="<?php echo $b['id']; ?>">
                         <select name="status" onchange="this.form.submit()" style="font-size:0.8em; padding:4px; width: auto; margin-bottom: 0;">
-                            <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>New</option>
-                            <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Confirm</option>
-                            <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Cancel</option>
+                            <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
+                            <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтвердить</option>
+                            <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отмена</option>
                         </select>
                     </form>
                 </td>

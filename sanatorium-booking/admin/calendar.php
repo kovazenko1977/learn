@@ -33,10 +33,16 @@ foreach ($bookings as $b) {
     $bookingMap[$b['id']] = $b;
 }
 
-$startDate = $_GET['start_date'] ?? date('Y-m-01');
-$endDate = $_GET['end_date'] ?? date('Y-m-t');
+$startDate = !empty($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
+$endDate = !empty($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-t');
 
-$period = new DatePeriod(new DateTime($startDate), new DateInterval('P1D'), (new DateTime($endDate))->modify('+1 day'));
+try {
+    $period = new DatePeriod(new DateTime($startDate), new DateInterval('P1D'), (new DateTime($endDate))->modify('+1 day'));
+} catch (Exception $e) {
+    $startDate = date('Y-m-01');
+    $endDate = date('Y-m-t');
+    $period = new DatePeriod(new DateTime($startDate), new DateInterval('P1D'), (new DateTime($endDate))->modify('+1 day'));
+}
 $dates = [];
 foreach ($period as $date) { $dates[] = $date->format('Y-m-d'); }
 
@@ -80,15 +86,18 @@ include 'includes/header.php';
                         <?php echo htmlspecialchars($room['room_number']); ?>
                     </td>
                     <?php foreach ($dates as $date):
-                        $occ = $occupancy[$room['id']][$date] ?? ['status' => 'free'];
+                        $rid = $room['id'] ?? 0;
+                        $occ = $occupancy[$rid][$date] ?? ['status' => 'free'];
                         $status = $occ['status'];
                         $bookingId = $occ['booking_id'] ?? null;
                         $clientInfo = "";
                         if ($bookingId && isset($bookingMap[$bookingId])) {
                             $b = $bookingMap[$bookingId];
-                            $clientInfo = htmlspecialchars(($b['client_name'] ?? 'N/A') . " (" . $b['phone'] . ")");
+                            $cname = $b['client_name'] ?? 'N/A';
+                            $cphone = $b['phone'] ?? 'N/A';
+                            $clientInfo = htmlspecialchars($cname . " (" . $cphone . ")", ENT_QUOTES, 'UTF-8');
                         }
-                        $onclick = ($status === 'free') ? "openModal({$room['id']}, '{$room['room_number']}', '{$date}')" : "";
+                        $onclick = ($status === 'free' && $rid) ? "openModal({$rid}, '" . addslashes($room['room_number'] ?? '') . "', '{$date}')" : "";
                     ?>
                         <td class="cal-status-<?php echo $status; ?>"
                             onclick="<?php echo $onclick; ?>"

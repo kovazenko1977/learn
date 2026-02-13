@@ -59,7 +59,7 @@ include 'includes/header.php';
                     ?>
                 </td>
                 <td>
-                    <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Edit</button>
+                    <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить путёвку?');">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?php echo $i['id']; ?>">

@@ -61,7 +61,7 @@ include 'includes/header.php';
         <input type="text" name="client_name" required placeholder="Иванов Иван">
 
         <label>Контактный телефон</label>
-        <input type="tel" name="phone" required placeholder="+7 (___) ___-__-__">
+        <input type="tel" name="phone" required placeholder="+...">
 
         <label>Количество человек</label>
         <input type="number" name="persons" value="1" min="1" required>

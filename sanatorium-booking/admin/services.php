@@ -40,7 +40,7 @@ include 'includes/header.php';
                 <td><strong><?php echo htmlspecialchars($i['name']); ?></strong></td>
                 <td><?php echo number_format($i['price'], 0, ',', ' '); ?> ₽</td>
                 <td>
-                    <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Edit</button>
+                    <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить услугу?');">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?php echo $i['id']; ?>">
