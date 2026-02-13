@@ -1,30 +1,12 @@
-<?php
-session_start();
-if (!isset($_SESSION['admin_logged_in'])) {
-    header('Location: login.php');
-    exit;
-}
+<?php require_once "auth.php";
 
 require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
-
 $store = new JsonStore(__DIR__ . '/../data');
 $bookings = $store->findAll('bookings');
 $rooms = $store->findAll('rooms');
-
 $totalIncome = 0;
-$statusCounts = ['new' => 0, 'confirmed' => 0, 'cancelled' => 0];
-$roomPopularity = [];
-
-foreach ($bookings as $b) {
-    if ($b['status'] !== 'cancelled') {
-        $totalIncome += (float)$b['total_price'];
-    }
-    $statusCounts[$b['status']] = ($statusCounts[$b['status']] ?? 0) + 1;
-    $roomPopularity[$b['room_id']] = ($roomPopularity[$b['room_id']] ?? 0) + 1;
-}
-
-arsort($roomPopularity);
+foreach ($bookings as $b) { if ($b['status'] !== 'cancelled') $totalIncome += (float)$b['total_price']; }
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -34,56 +16,10 @@ arsort($roomPopularity);
     <link rel="stylesheet" href="../public/assets/css/admin.css">
 </head>
 <body>
-    <header>
-        <h1>Управление Санаторием</h1>
-        <nav>
-            <a href="dashboard.php">Бронирования</a>
-            <a href="create_booking.php">Новое бронирование</a>
-            <a href="rooms.php">Номера</a>
-            <a href="room_classes.php">Классы</a>
-            <a href="procedures.php">Процедуры</a>
-            <a href="services.php">Услуги</a>
-            <a href="packages.php">Пакеты</a>
-            <a href="calendar.php">Календарь</a>
-            <a href="analytics.php">Аналитика</a>
-            <a href="logout.php">Выход</a>
-        </nav>
-    </header>
-    <main>
-        <h2>📊 Аналитика системы</h2>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;">
-            <div class="stat-card">
-                <span class="stat-label">Общий доход</span>
-                <span class="stat-value" style="color: #28a745;"><?php echo number_format($totalIncome, 0, ',', ' '); ?> ₽</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Всего заявок</span>
-                <span class="stat-value"><?php echo count($bookings); ?></span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Номера в базе</span>
-                <span class="stat-value"><?php echo count($rooms); ?></span>
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div class="mica-card">
-                <h3>🔄 Статусы бронирований</h3>
-                <ul>
-                    <?php foreach ($statusCounts as $status => $count): ?>
-                        <li><strong><?php echo htmlspecialchars($status); ?>:</strong> <?php echo $count; ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            <div class="mica-card">
-                <h3>🏆 Популярность номеров (ID)</h3>
-                <ol>
-                    <?php foreach ($roomPopularity as $roomId => $count): ?>
-                        <li>Номер ID <?php echo htmlspecialchars($roomId); ?>: <?php echo $count; ?> раз</li>
-                    <?php endforeach; ?>
-                </ol>
-            </div>
-        </div>
-    </main>
+    <div class="mica-card">
+        <h2>📊 Аналитика</h2>
+        <p>Общий доход: <strong><?php echo number_format($totalIncome, 0, ',', ' '); ?> ₽</strong></p>
+        <p>Всего бронирований: <strong><?php echo count($bookings); ?></strong></p>
+    </div>
 </body>
 </html>

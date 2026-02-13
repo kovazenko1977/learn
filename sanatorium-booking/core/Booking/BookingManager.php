@@ -20,31 +20,22 @@ class BookingManager {
 
         $totalPrice = $room['price_per_day'] * $days;
 
-        // Add packages
         if (!empty($data['package_id'])) {
             $package = $this->store->findOne('packages', $data['package_id']);
-            if ($package) {
-                $totalPrice += $package['base_price'];
-            }
+            if ($package) $totalPrice += $package['base_price'];
         }
 
-        // Add procedures
         if (!empty($data['procedure_ids'])) {
             foreach ($data['procedure_ids'] as $pid) {
                 $proc = $this->store->findOne('procedures', $pid);
-                if ($proc) {
-                    $totalPrice += $proc['price'];
-                }
+                if ($proc) $totalPrice += $proc['price'];
             }
         }
 
-        // Add services
         if (!empty($data['service_ids'])) {
             foreach ($data['service_ids'] as $sid) {
                 $service = $this->store->findOne('extra_services', $sid);
-                if ($service) {
-                    $totalPrice += $service['price'];
-                }
+                if ($service) $totalPrice += $service['price'];
             }
         }
 
@@ -57,16 +48,13 @@ class BookingManager {
         }
 
         $data['total_price'] = $this->calculatePrice($data);
-        $data['status'] = 'new';
+        $data['status'] = $data['status'] ?? 'new';
         $data['created_at'] = date('Y-m-d H:i:s');
 
         $bookingId = $this->store->save('bookings', $data);
 
         if ($bookingId) {
             $this->updateCalendar($data['room_id'], $data['check_in'], $data['check_out'], $bookingId);
-
-            $logger = new \Sanatorium\Core\Helpers\Logger(__DIR__ . '/../../logs');
-            $logger->log("New booking created: ID $bookingId, Room {$data['room_id']}, Total {$data['total_price']}");
         }
 
         return $bookingId;

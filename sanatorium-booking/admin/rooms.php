@@ -1,122 +1,56 @@
-<?php
-session_start();
-if (!isset($_SESSION['admin_logged_in'])) {
-    header('Location: login.php');
-    exit;
-}
-
+<?php require_once "auth.php";
 require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
-
 $store = new JsonStore(__DIR__ . '/../data');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_room') {
-    $roomData = [
+    $store->save('rooms', [
         'id' => !empty($_POST['id']) ? (int)$_POST['id'] : null,
         'room_number' => $_POST['room_number'],
-        'room_class' => $_POST['room_class'],
+        'room_class_id' => (int)$_POST['room_class_id'],
         'price_per_day' => (float)$_POST['price_per_day'],
         'capacity' => (int)$_POST['capacity'],
-        'status' => $_POST['status']
-    ];
-    $store->save('rooms', $roomData);
+        'status' => 'free'
+    ]);
     header('Location: rooms.php');
     exit;
 }
-
 $rooms = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
 ?>
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Управление номерами</title>
-    <link rel="stylesheet" href="../public/assets/css/admin.css">
-</head>
+<head><meta charset="UTF-8"><title>Номера</title><link rel="stylesheet" href="../public/assets/css/admin.css"></head>
 <body>
-    <header>
-        <h1>Управление Санаторием</h1>
-        <nav>
-            <a href="dashboard.php">Бронирования</a>
-            <a href="create_booking.php">Новое бронирование</a>
-            <a href="rooms.php">Номера</a>
-            <a href="room_classes.php">Классы</a>
-            <a href="procedures.php">Процедуры</a>
-            <a href="services.php">Услуги</a>
-            <a href="packages.php">Пакеты</a>
-            <a href="calendar.php">Календарь</a>
-            <a href="analytics.php">Аналитика</a>
-            <a href="logout.php">Выход</a>
-        </nav>
-    </header>
-    <main>
-        <section class="mica-card">
-            <h2>Номера</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Номер</th>
-                        <th>Класс</th>
-                        <th>Цена/сут</th>
-                        <th>Вместимость</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($rooms as $room): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($room['id']); ?></td>
-                        <td><?php echo htmlspecialchars($room['room_number']); ?></td>
-                        <td><?php echo htmlspecialchars($room['room_class']); ?></td>
-                        <td><?php echo htmlspecialchars($room['price_per_day']); ?> руб.</td>
-                        <td><?php echo htmlspecialchars($room['capacity']); ?> чел.</td>
-                        <td><?php echo htmlspecialchars($room['status']); ?></td>
-                    </tr>
+    <header><nav><a href="dashboard.php">Бронирования</a> <a href="rooms.php">Номера</a> <a href="room_classes.php">Классы</a> <a href="calendar.php">Календарь</a></nav></header>
+    <div class="mica-card">
+        <h2>Номера</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Номер</th><th>Класс</th><th>Цена</th><th>Мест</th></tr></thead>
+            <tbody>
+                <?php foreach ($rooms as $r):
+                    $className = "Неизвестно";
+                    foreach($classes as $c) if($c['id'] == $r['room_class_id']) $className = $c['name'];
+                ?>
+                <tr><td><?php echo $r['id']; ?></td><td><?php echo $r['room_number']; ?></td><td><?php echo $className; ?></td><td><?php echo $r['price_per_day']; ?></td><td><?php echo $r['capacity']; ?></td></tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <h3>Добавить номер</h3>
+        <form method="post">
+            <input type="hidden" name="action" value="save_room">
+            <p>Номер: <input type="text" name="room_number" required></p>
+            <p>Класс:
+                <select name="room_class_id">
+                    <?php foreach($classes as $c): ?>
+                        <option value="<?php echo $c['id']; ?>"><?php echo $c['name']; ?></option>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
-        </section>
-
-        <section class="mica-card" style="margin-top: 40px;">
-            <h3>Добавить / Редактировать номер</h3>
-            <form method="post">
-                <input type="hidden" name="action" value="save_room">
-                <input type="hidden" name="id" id="room_id">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div>
-                        <label>Номер комнаты</label>
-                        <input type="text" name="room_number" required style="width:100%; padding:8px;">
-                    </div>
-                    <div>
-                        <label>Класс номера</label>
-                        <select name="room_class" required style="width:100%; padding:8px;">
-                            <?php foreach ($classes as $c): ?>
-                                <option value="<?php echo htmlspecialchars($c['name']); ?>"><?php echo htmlspecialchars($c['name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Цена за сутки</label>
-                        <input type="number" name="price_per_day" required style="width:100%; padding:8px;">
-                    </div>
-                    <div>
-                        <label>Вместимость</label>
-                        <input type="number" name="capacity" required style="width:100%; padding:8px;">
-                    </div>
-                    <div>
-                        <label>Статус</label>
-                        <select name="status" style="width:100%; padding:8px;">
-                            <option value="free">Свободен</option>
-                            <option value="reserved">Резерв</option>
-                            <option value="booked">Занят</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn" style="margin-top: 20px;">Сохранить</button>
-            </form>
-        </section>
-    </main>
+                </select>
+            </p>
+            <p>Цена: <input type="number" name="price_per_day" required></p>
+            <p>Мест: <input type="number" name="capacity" required></p>
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
 </body>
 </html>

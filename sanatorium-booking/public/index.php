@@ -40,6 +40,15 @@
                     <label>Процедуры</label>
                     <div id="procedures-list"></div>
                 </div>
+                <div class="form-group">
+                    <label>Дополнительные услуги</label>
+                    <div id="services-list"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Ваше имя</label>
+                <input type="text" name="client_name" id="client_name" required>
             </div>
 
             <div class="form-group">

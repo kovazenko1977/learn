@@ -82,5 +82,26 @@
         "status": "booked",
         "booking_id": 5,
         "id": 12
+    },
+    {
+        "room_id": 1,
+        "date": "2026-05-01",
+        "status": "booked",
+        "booking_id": 6,
+        "id": 13
+    },
+    {
+        "room_id": 1,
+        "date": "2026-05-02",
+        "status": "booked",
+        "booking_id": 6,
+        "id": 14
+    },
+    {
+        "room_id": 1,
+        "date": "2026-05-03",
+        "status": "booked",
+        "booking_id": 6,
+        "id": 15
     }
 ]

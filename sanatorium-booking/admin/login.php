@@ -9,9 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // Hardcoded for demo/standalone purposes, in real app use hash
-    if ($username === 'admin' && $password === 'admin123') {
-        session_regenerate_id(true);
+    if ($username === 'admin' && $password === 'admin') {
         $_SESSION['admin_logged_in'] = true;
         header('Location: dashboard.php');
         exit;
@@ -24,17 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход в админ-панель</title>
-    <link rel="stylesheet" href="../public/assets/css/style.css">
+    <title>Вход в систему</title>
+    <link rel="stylesheet" href="../public/assets/css/admin.css">
+    <style>
+        .login-box { width: 300px; margin: 100px auto; }
+        .error { color: red; margin-bottom: 10px; }
+    </style>
 </head>
-<body class="login-page">
-    <div class="login-container">
-        <h1>Вход</h1>
-        <?php if (isset($error)): ?><p style="color:red;"><?php echo $error; ?></p><?php endif; ?>
+<body>
+    <div class="mica-card login-box">
+        <h2>Вход в админку</h2>
+        <?php if (isset($error)): ?><div class="error"><?php echo $error; ?></div><?php endif; ?>
         <form method="post">
-            <input type="text" name="username" placeholder="Логин" required>
-            <input type="password" name="password" placeholder="Пароль" required>
-            <button type="submit">Войти</button>
+            <p>Логин:<br><input type="text" name="username" required style="width:100%;"></p>
+            <p>Пароль:<br><input type="password" name="password" required style="width:100%;"></p>
+            <button type="submit" style="width:100%;">Войти</button>
         </form>
     </div>
 </body>

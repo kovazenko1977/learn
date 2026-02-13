@@ -29,8 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
             rooms.forEach(room => {
                 const div = document.createElement('div');
                 div.className = 'room-item';
-                div.innerHTML = `<strong>${room.room_number}</strong> (${room.room_class}) - ${room.price_per_day} руб/сут`;
-                div.onclick = () => selectRoom(room.id);
+                div.style.padding = '10px';
+                div.style.border = '1px solid #ccc';
+                div.style.margin = '5px 0';
+                div.style.cursor = 'pointer';
+                div.innerHTML = `<strong>${room.room_number}</strong> - ${room.price_per_day} руб/сут`;
+                div.onclick = () => selectRoom(room.id, div);
                 div.dataset.id = room.id;
                 roomsList.appendChild(div);
             });
@@ -38,27 +42,38 @@ document.addEventListener('DOMContentLoaded', function() {
         roomsSelection.style.display = 'block';
     });
 
-    function selectRoom(id) {
+    function selectRoom(id, el) {
         selectedRoomId = id;
-        document.querySelectorAll('.room-item').forEach(el => el.classList.remove('selected'));
-        document.querySelector(`.room-item[data-id="${id}"]`).classList.add('selected');
+        document.querySelectorAll('.room-item').forEach(item => item.style.background = '#fff');
+        el.style.background = '#e7f3ff';
         extraOptions.style.display = 'block';
         updatePrice();
     }
 
     async function loadOptions() {
-        const [procRes, packRes] = await Promise.all([
+        const [procRes, packRes, svcRes] = await Promise.all([
             fetch(`${apiBase}?action=procedures`),
-            fetch(`${apiBase}?action=packages`)
+            fetch(`${apiBase}?action=packages`),
+            fetch(`${apiBase}?action=services`)
         ]);
         const procedures = await procRes.json();
         const packages = await packRes.json();
+        const services = await svcRes.json();
 
         const procList = document.getElementById('procedures-list');
         procedures.forEach(p => {
             const label = document.createElement('label');
+            label.style.display = 'block';
             label.innerHTML = `<input type="checkbox" name="procedures" value="${p.id}" onchange="updatePrice()"> ${p.name} (${p.price} руб)`;
             procList.appendChild(label);
+        });
+
+        const svcList = document.getElementById('services-list');
+        services.forEach(s => {
+            const label = document.createElement('label');
+            label.style.display = 'block';
+            label.innerHTML = `<input type="checkbox" name="services" value="${s.id}" onchange="updatePrice()"> ${s.name} (${s.price} руб)`;
+            svcList.appendChild(label);
         });
 
         const packSelect = document.getElementById('package_id');
@@ -80,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const checkOut = document.getElementById('check_out').value;
         const packageId = document.getElementById('package_id').value;
         const procedureIds = Array.from(document.querySelectorAll('input[name="procedures"]:checked')).map(el => el.value);
+        const serviceIds = Array.from(document.querySelectorAll('input[name="services"]:checked')).map(el => el.value);
 
         const res = await fetch(`${apiBase}?action=calculate`, {
             method: 'POST',
@@ -88,7 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 check_in: checkIn,
                 check_out: checkOut,
                 package_id: packageId,
-                procedure_ids: procedureIds
+                procedure_ids: procedureIds,
+                service_ids: serviceIds
             })
         });
         const result = await res.json();
@@ -108,8 +125,10 @@ document.addEventListener('DOMContentLoaded', function() {
             check_out: document.getElementById('check_out').value,
             persons: document.getElementById('persons').value,
             phone: document.getElementById('phone').value,
+            client_name: document.getElementById('client_name').value,
             package_id: document.getElementById('package_id').value,
-            procedure_ids: Array.from(document.querySelectorAll('input[name="procedures"]:checked')).map(el => el.value)
+            procedure_ids: Array.from(document.querySelectorAll('input[name="procedures"]:checked')).map(el => el.value),
+            service_ids: Array.from(document.querySelectorAll('input[name="services"]:checked')).map(el => el.value)
         };
 
         const res = await fetch(`${apiBase}?action=booking/create`, {
@@ -118,12 +137,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         const result = await res.json();
         if (result.success) {
-            alert('Бронирование успешно создано! Номер заявки: ' + result.booking_id);
+            alert('Бронирование успешно создано! ID: ' + result.booking_id);
             location.reload();
         } else {
-            alert('Ошибка при бронировании');
+            alert('Ошибка');
         }
     });
 
+    document.getElementById('package_id').addEventListener('change', updatePrice);
     loadOptions();
 });

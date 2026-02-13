@@ -13,60 +13,33 @@ $dataDir = __DIR__ . '/../data';
 $store = new JsonStore($dataDir);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'rooms/available':
         $roomManager = new RoomManager($store);
-        $checkIn = $_GET['check_in'] ?? '';
-        $checkOut = $_GET['check_out'] ?? '';
-        $persons = (int)($_GET['persons'] ?? 0);
-
-        if (!$checkIn || !$checkOut) {
-            echo json_encode(['error' => 'Отсутствуют даты']);
-            exit;
-        }
-
-        echo json_encode($roomManager->getAvailableRooms($checkIn, $checkOut, $persons));
+        echo json_encode($roomManager->getAvailableRooms($_GET['check_in'] ?? '', $_GET['check_out'] ?? '', (int)($_GET['persons'] ?? 0)));
         break;
-
     case 'procedures':
-        $manager = new ProcedureManager($store);
-        echo json_encode($manager->getAll());
+        echo json_encode((new ProcedureManager($store))->getAll());
         break;
-
     case 'packages':
-        $manager = new PackageManager($store);
-        echo json_encode($manager->getAll());
+        echo json_encode((new PackageManager($store))->getAll());
         break;
-
     case 'services':
-        $manager = new ServiceManager($store);
-        echo json_encode($manager->getAll());
+        echo json_encode((new ServiceManager($store))->getAll());
         break;
-
     case 'calculate':
         $bookingManager = new BookingManager($store);
         $postData = json_decode(file_get_contents('php://input'), true);
-        if (!$postData) {
-            echo json_encode(['error' => 'Некорректные данные']);
-            exit;
-        }
         echo json_encode(['total_price' => $bookingManager->calculatePrice($postData)]);
         break;
-
     case 'booking/create':
-        if ($method !== 'POST') {
-            echo json_encode(['error' => 'Требуется метод POST']);
-            exit;
-        }
         $bookingManager = new BookingManager($store);
         $postData = json_decode(file_get_contents('php://input'), true);
         $bookingId = $bookingManager->createBooking($postData);
         echo json_encode(['success' => (bool)$bookingId, 'booking_id' => $bookingId]);
         break;
-
     default:
-        echo json_encode(['error' => 'Действие не найдено']);
-        break;
+        echo json_encode(['error' => 'Not found']);
 }

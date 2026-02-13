@@ -20,7 +20,15 @@ class JsonStore {
         if (!file_exists($filePath)) {
             return [];
         }
-        $content = file_get_contents($filePath);
+
+        $fp = fopen($filePath, 'rb');
+        if (!$fp) return [];
+
+        flock($fp, LOCK_SH);
+        $content = stream_get_contents($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
         return json_decode($content, true) ?: [];
     }
 
@@ -36,52 +44,70 @@ class JsonStore {
 
     public function save($table, $data) {
         $filePath = $this->getFilePath($table);
-        $allData = $this->findAll($table);
 
-        if (isset($data['id'])) {
-            $found = false;
-            foreach ($allData as &$item) {
-                if ($item['id'] == $data['id']) {
-                    $item = array_merge($item, $data);
-                    $found = true;
-                    break;
-                }
-            }
-            if (!$found) {
-                $allData[] = $data;
-            }
-        } else {
-            $maxId = 0;
-            foreach ($allData as $item) {
-                if (isset($item['id']) && $item['id'] > $maxId) {
-                    $maxId = $item['id'];
-                }
-            }
-            $data['id'] = $maxId + 1;
-            $allData[] = $data;
+        // Ensure file exists
+        if (!file_exists($filePath)) {
+            file_put_contents($filePath, '[]');
         }
 
-        return $this->write($table, $allData) ? $data['id'] : false;
+        $fp = fopen($filePath, 'c+b');
+        if (!$fp) return false;
+
+        if (flock($fp, LOCK_EX)) {
+            $content = stream_get_contents($fp);
+            $allData = json_decode($content, true) ?: [];
+
+            if (isset($data['id'])) {
+                $found = false;
+                foreach ($allData as &$item) {
+                    if ($item['id'] == $data['id']) {
+                        $item = array_merge($item, $data);
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) $allData[] = $data;
+                $savedId = $data['id'];
+            } else {
+                $maxId = 0;
+                foreach ($allData as $item) {
+                    if (isset($item['id']) && $item['id'] > $maxId) $maxId = $item['id'];
+                }
+                $data['id'] = $maxId + 1;
+                $allData[] = $data;
+                $savedId = $data['id'];
+            }
+
+            ftruncate($fp, 0);
+            rewind($fp);
+            fwrite($fp, json_encode($allData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            fflush($fp);
+            flock($fp, LOCK_UN);
+            fclose($fp);
+            return $savedId;
+        } else {
+            fclose($fp);
+            return false;
+        }
     }
 
     public function delete($table, $id) {
-        $allData = $this->findAll($table);
-        $filteredData = array_filter($allData, function($item) use ($id) {
-            return !isset($item['id']) || $item['id'] != $id;
-        });
-
-        if (count($allData) === count($filteredData)) {
-            return false;
-        }
-
-        return $this->write($table, array_values($filteredData));
-    }
-
-    private function write($table, $data) {
         $filePath = $this->getFilePath($table);
-        $fp = fopen($filePath, 'w');
+        if (!file_exists($filePath)) return false;
+
+        $fp = fopen($filePath, 'c+b');
+        if (!$fp) return false;
+
         if (flock($fp, LOCK_EX)) {
-            fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $content = stream_get_contents($fp);
+            $allData = json_decode($content, true) ?: [];
+            $filteredData = array_values(array_filter($allData, function($item) use ($id) {
+                return !isset($item['id']) || $item['id'] != $id;
+            }));
+
+            ftruncate($fp, 0);
+            rewind($fp);
+            fwrite($fp, json_encode($filteredData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             fflush($fp);
             flock($fp, LOCK_UN);
             fclose($fp);

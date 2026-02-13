@@ -1,5 +1,5 @@
-<?php
-session_start();
+<?php require_once "auth.php";
+
 if (!isset($_SESSION['admin_logged_in'])) {
     exit('Access denied');
 }
