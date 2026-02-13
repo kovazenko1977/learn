@@ -96,6 +96,17 @@ class BookingManager {
         }
     }
 
+    public function cancelBooking($bookingId) {
+        $booking = $this->store->findOne('bookings', $bookingId);
+        if ($booking) {
+            $booking['status'] = 'cancelled';
+            $this->store->save('bookings', $booking);
+            $this->releaseCalendar($bookingId);
+            return true;
+        }
+        return false;
+    }
+
     private function updateCalendar($roomId, $checkIn, $checkOut, $bookingId) {
         try {
             $start = new \DateTime($checkIn);

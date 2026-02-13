@@ -1,54 +1,18 @@
 <?php require_once "auth.php";
 require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
+use Sanatorium\Core\Analytics\AnalyticsManager;
+
 $store = new JsonStore(__DIR__ . '/../data');
+$analyticsManager = new AnalyticsManager($store);
+$stats = $analyticsManager->getStats();
 
-$bookings = $store->findAll('bookings');
-$rooms = $store->findAll('rooms');
-$calendar = $store->findAll('room_calendar');
-
-$totalIncome = 0;
-$statusCounts = ['new' => 0, 'confirmed' => 0, 'cancelled' => 0];
-$roomPopularity = [];
-$procedurePopularity = [];
-$servicePopularity = [];
-
-foreach ($bookings as $b) {
-    if ($b['status'] !== 'cancelled') {
-        $totalIncome += (float)$b['total_price'];
-    }
-    $statusCounts[$b['status']] = ($statusCounts[$b['status']] ?? 0) + 1;
-    $roomPopularity[$b['room_id']] = ($roomPopularity[$b['room_id']] ?? 0) + 1;
-
-    if (!empty($b['procedure_ids'])) {
-        foreach($b['procedure_ids'] as $pid) {
-            $procedurePopularity[$pid] = ($procedurePopularity[$pid] ?? 0) + 1;
-        }
-    }
-    if (!empty($b['service_ids'])) {
-        foreach($b['service_ids'] as $sid) {
-            $servicePopularity[$sid] = ($servicePopularity[$sid] ?? 0) + 1;
-        }
-    }
-}
-
-arsort($roomPopularity);
-arsort($procedurePopularity);
-arsort($servicePopularity);
-
-// Occupancy calculation for last 30 days
-$totalSlots = count($rooms) * 30;
-$occupiedSlots = 0;
-$today = time();
-for ($i = 0; $i < 30; $i++) {
-    $date = date('Y-m-d', $today - ($i * 86400));
-    foreach ($calendar as $entry) {
-        if ($entry['date'] === $date && $entry['status'] !== 'free') {
-            $occupiedSlots++;
-        }
-    }
-}
-$occupancyRate = $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
+$totalIncome = $stats['totalIncome'];
+$occupancyRate = $stats['occupancyRate'];
+$totalBookings = $stats['totalBookings'];
+$servicePopularity = $stats['servicePopularity'];
+$procedurePopularity = $stats['procedurePopularity'];
+$roomPopularity = $stats['roomPopularity'];
 
 $pageTitle = 'Аналитика и статистика';
 include 'includes/header.php';
@@ -65,7 +29,7 @@ include 'includes/header.php';
     </div>
     <div class="mica-card stat-card">
         <h3>📊 Всего заявок</h3>
-        <h2><?php echo count($bookings); ?></h2>
+        <h2><?php echo $totalBookings; ?></h2>
     </div>
 </div>
 
@@ -109,9 +73,10 @@ include 'includes/header.php';
     <h3>🏥 Загрузка по номерам (заявок)</h3>
     <div style="margin-top: 20px;">
         <?php
+        $rooms = $store->findAll('rooms');
         $roomNames = []; foreach($rooms as $r) $roomNames[$r['id']] = $r['room_number'];
         foreach (array_slice($roomPopularity, 0, 10, true) as $id => $count):
-            $percentage = count($bookings) > 0 ? ($count / count($bookings)) * 100 : 0;
+            $percentage = $totalBookings > 0 ? ($count / $totalBookings) * 100 : 0;
         ?>
             <div style="margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">

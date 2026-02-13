@@ -40,6 +40,13 @@ switch ($action) {
         $bookingId = $bookingManager->createBooking($postData);
         echo json_encode(['success' => (bool)$bookingId, 'booking_id' => $bookingId]);
         break;
+    case 'booking/cancel':
+        $bookingManager = new BookingManager($store);
+        $postData = json_decode(file_get_contents('php://input'), true);
+        $bookingId = $postData['booking_id'] ?? $_GET['booking_id'] ?? null;
+        $success = $bookingId ? $bookingManager->cancelBooking($bookingId) : false;
+        echo json_encode(['success' => $success]);
+        break;
     default:
         echo json_encode(['error' => 'Not found']);
 }

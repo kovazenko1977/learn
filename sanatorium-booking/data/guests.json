@@ -5,5 +5,12 @@
         "citizenship": "Беларусь",
         "address": "Минск, пр. Независимости 1",
         "id": 1
+    },
+    {
+        "name": "Audit Test Guest",
+        "phone": "+79990001122",
+        "citizenship": "",
+        "address": "",
+        "id": 2
     }
 ]

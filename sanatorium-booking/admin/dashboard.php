@@ -16,17 +16,22 @@ if (is_array($rooms)) {
 }
 if (!is_array($bookings)) $bookings = [];
 
+$statusLabels = [
+    'new' => 'Новое',
+    'confirmed' => 'Подтверждено',
+    'cancelled' => 'Отменено'
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
     $id = (int)$_POST['id'];
     $status = $_POST['status'];
-    $booking = $store->findOne('bookings', $id);
-    if ($booking) {
-        $oldStatus = $booking['status'];
-        $booking['status'] = $status;
-        $store->save('bookings', $booking);
-
-        if ($status === 'cancelled' && $oldStatus !== 'cancelled') {
-            $bookingManager->releaseCalendar($id);
+    if ($status === 'cancelled') {
+        $bookingManager->cancelBooking($id);
+    } else {
+        $booking = $store->findOne('bookings', $id);
+        if ($booking) {
+            $booking['status'] = $status;
+            $store->save('bookings', $booking);
         }
     }
     header('Location: dashboard.php');
@@ -64,15 +69,15 @@ include 'includes/header.php';
                 <td><?php echo htmlspecialchars($roomMap[$b['room_id']] ?? 'Room '.$b['room_id']); ?></td>
                 <td><?php echo htmlspecialchars($b['phone']); ?></td>
                 <td><?php echo number_format($b['total_price'], 0, ',', ' '); ?> ₽</td>
-                <td><span class="status-badge status-<?php echo $b['status']; ?>"><?php echo $b['status']; ?></span></td>
+                <td><span class="status-badge status-<?php echo $b['status']; ?>"><?php echo $statusLabels[$b['status']] ?? $b['status']; ?></span></td>
                 <td>
                     <form method="post" style="display:inline;">
                         <input type="hidden" name="action" value="update_status">
                         <input type="hidden" name="id" value="<?php echo $b['id']; ?>">
                         <select name="status" onchange="this.form.submit()" style="font-size:0.8em; padding:4px; width: auto; margin-bottom: 0;">
                             <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
-                            <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтвердить</option>
-                            <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отмена</option>
+                            <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтверждено</option>
+                            <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отменено</option>
                         </select>
                     </form>
                 </td>

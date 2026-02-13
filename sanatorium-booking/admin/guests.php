@@ -111,8 +111,10 @@ include 'includes/header.php';
                         Нет записей
                     <?php else: ?>
                         <div style="max-height: 60px; overflow-y: auto;">
-                            <?php foreach (array_reverse($history) as $h): ?>
-                                <div><?php echo $h['check_in']; ?> — <?php echo $h['check_out']; ?> (<?php echo $h['status']; ?>)</div>
+                            <?php
+                            $statusMap = ['new' => 'новое', 'confirmed' => 'подтверждено', 'cancelled' => 'отменено'];
+                            foreach (array_reverse($history) as $h): ?>
+                                <div><?php echo $h['check_in']; ?> — <?php echo $h['check_out']; ?> (<?php echo $statusMap[$h['status']] ?? $h['status']; ?>)</div>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>

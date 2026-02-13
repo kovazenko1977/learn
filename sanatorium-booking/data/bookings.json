@@ -90,5 +90,17 @@
         "status": "new",
         "created_at": "2026-02-13 08:58:10",
         "id": 7
+    },
+    {
+        "room_id": 1,
+        "check_in": "2027-01-01",
+        "check_out": "2027-01-05",
+        "phone": "+79990001122",
+        "client_name": "Audit Test Guest",
+        "status": "cancelled",
+        "guest_id": 2,
+        "total_price": 12000,
+        "created_at": "2026-02-13 12:37:33",
+        "id": 8
     }
 ]

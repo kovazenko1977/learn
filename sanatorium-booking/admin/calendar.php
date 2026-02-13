@@ -2,9 +2,11 @@
 require_once __DIR__ . '/../core/autoload.php';
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Booking\BookingManager;
+use Sanatorium\Core\Calendar\CalendarManager;
 
 $store = new JsonStore(__DIR__ . '/../data');
 $bookingManager = new BookingManager($store);
+$calendarManager = new CalendarManager($store);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'quick_booking') {
     $duration = (int)($_POST['duration'] ?? 1);
@@ -36,23 +38,8 @@ foreach ($bookings as $b) {
 $startDate = !empty($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
 $endDate = !empty($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-t');
 
-try {
-    $period = new DatePeriod(new DateTime($startDate), new DateInterval('P1D'), (new DateTime($endDate))->modify('+1 day'));
-} catch (Exception $e) {
-    $startDate = date('Y-m-01');
-    $endDate = date('Y-m-t');
-    $period = new DatePeriod(new DateTime($startDate), new DateInterval('P1D'), (new DateTime($endDate))->modify('+1 day'));
-}
-$dates = [];
-foreach ($period as $date) { $dates[] = $date->format('Y-m-d'); }
-
-$occupancy = [];
-foreach ($calendar as $entry) {
-    $occupancy[$entry['room_id']][$entry['date']] = [
-        'status' => $entry['status'],
-        'booking_id' => $entry['booking_id'] ?? null
-    ];
-}
+$dates = $calendarManager->getDateRange($startDate, $endDate);
+$occupancy = $calendarManager->getOccupancyData($startDate, $endDate);
 
 $pageTitle = 'Календарь занятости';
 include 'includes/header.php';

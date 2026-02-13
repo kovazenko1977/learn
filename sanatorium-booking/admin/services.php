@@ -44,7 +44,7 @@ include 'includes/header.php';
                     <form method="post" style="display:inline;" onsubmit="return confirm('Удалить услугу?');">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?php echo $i['id']; ?>">
-                        <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">Delete</button>
+                        <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">Удалить</button>
                     </form>
                 </td>
             </tr>
