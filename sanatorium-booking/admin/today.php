@@ -194,6 +194,7 @@ include 'includes/header.php';
         <?php if(empty($departures)): ?>
             <p style="color:#888; padding: 20px 0;">Выездов не запланировано</p>
         <?php else: ?>
+            <div class="table-responsive">
             <table style="font-size: 0.9rem;">
                 <thead>
                     <tr>
@@ -226,6 +227,7 @@ include 'includes/header.php';
                     <?php endforeach; ?>
                 </tbody>
             </table>
+            </div>
         <?php endif; ?>
     </div>
 

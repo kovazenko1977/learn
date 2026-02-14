@@ -41,7 +41,7 @@ include 'includes/header.php';
         <button class="btn" onclick="openPlanModal()">+ Новый план</button>
     </div>
 
-    <table>
+    <div class="table-responsive"><table>
         <thead>
             <tr>
                 <th>Дата</th>
@@ -94,7 +94,7 @@ include 'includes/header.php';
             </tr>
             <?php endif; ?>
         </tbody>
-    </table>
+    </table></div>
 </div>
 
 <div id="modal-plan" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index:1000; align-items:center; justify-content:center;">

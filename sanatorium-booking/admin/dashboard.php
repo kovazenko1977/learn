@@ -47,6 +47,7 @@ include 'includes/header.php';
         <h2>📋 Активные заявки</h2>
         <a href="export_csv.php" class="btn" style="background:#28a745;">📥 Экспорт в CSV</a>
     </div>
+    <div class="table-responsive">
     <table>
         <thead>
             <tr>
@@ -122,6 +123,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>
 
 <?php include 'includes/footer.php'; ?>

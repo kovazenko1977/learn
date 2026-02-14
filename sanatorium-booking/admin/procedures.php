@@ -26,7 +26,7 @@ include 'includes/header.php';
 
 <div class="mica-card">
     <h2>📋 Список процедур</h2>
-    <table>
+    <div class="table-responsive"><table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -54,7 +54,7 @@ include 'includes/header.php';
             </tr>
             <?php endforeach; ?>
         </tbody>
-    </table>
+    </table></div>
 </div>
 
 <div class="mica-card">

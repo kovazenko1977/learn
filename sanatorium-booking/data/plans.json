@@ -1,11 +1,1 @@
-[
-    {
-        "id": 1,
-        "title": "Test Daily Task",
-        "description": "This is a test task for today",
-        "date": "2026-02-14",
-        "priority": "medium",
-        "status": "pending",
-        "created_at": "2026-02-14 18:40:49"
-    }
-]
+[]

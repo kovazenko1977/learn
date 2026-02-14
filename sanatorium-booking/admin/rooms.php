@@ -38,7 +38,7 @@ include 'includes/header.php';
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <h2>📋 Список номеров</h2>
     </div>
-    <table>
+    <div class="table-responsive"><table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -71,7 +71,7 @@ include 'includes/header.php';
             </tr>
             <?php endforeach; ?>
         </tbody>
-    </table>
+    </table></div>
 </div>
 
 <div class="mica-card">

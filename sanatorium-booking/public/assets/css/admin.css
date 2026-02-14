@@ -290,3 +290,69 @@ input:focus, select:focus {
 .cal-status-reserved { background: #fff3cd; color: #856404; }
 .cal-status-booked { background: #fde2e1; color: #a4262c; }
 .cal-status-occupied { background: #f8d7da; color: #842029; }
+
+/* Responsive Styles */
+.mobile-only { display: none; }
+
+@media (max-width: 1024px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    :root { --sidebar-width: 240px; }
+
+    .sidebar {
+        position: fixed;
+        left: calc(-1 * var(--sidebar-width));
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .content-header { padding: 15px 20px; }
+    .content-body { padding: 0 20px 20px; }
+
+    .mobile-only {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        padding: 5px;
+        margin-right: 10px;
+        cursor: pointer;
+        color: var(--text-color);
+    }
+
+    .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .mica-card { padding: 16px; margin-bottom: 16px; }
+
+    /* Horizontal scroll for tables */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 15px;
+    }
+
+    table { min-width: 600px; }
+
+    .user-profile span { display: none; }
+
+    h1 { font-size: 1.2rem !important; }
+}
+
+@media (max-width: 480px) {
+    .content-header h1 { font-size: 1.1rem !important; }
+}

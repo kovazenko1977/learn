@@ -2,9 +2,24 @@
         </main>
     </div> <!-- .app-container -->
     <script>
-        // Simple script to handle any dynamic UI elements if needed
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Sanatorium Admin UI Loaded');
+            const toggle = document.getElementById('mobile-toggle');
+            const sidebar = document.querySelector('.sidebar');
+
+            if (toggle && sidebar) {
+                toggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (sidebar.classList.contains('active') &&
+                    !sidebar.contains(e.target) &&
+                    !toggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>

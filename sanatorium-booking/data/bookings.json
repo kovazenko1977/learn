@@ -1,14 +1,1 @@
-[
-  {
-    "id": 99,
-    "room_id": 1,
-    "check_in": "2026-02-14",
-    "check_out": "2026-02-17",
-    "persons": 1,
-    "phone": "+123456789",
-    "status": "reserved",
-    "total_price": 5000,
-    "client_name": "Today Guest",
-    "admin_notes": ""
-  }
-]
+[]

@@ -1,18 +1,1 @@
-[
-    {
-        "id": 1,
-        "room_number": "101",
-        "room_class_id": 1,
-        "price_per_day": 3000,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 2,
-        "room_number": "201",
-        "room_class_id": 2,
-        "price_per_day": 7000,
-        "capacity": 2,
-        "status": "free"
-    }
-]
+[]

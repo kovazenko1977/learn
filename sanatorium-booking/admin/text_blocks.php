@@ -23,7 +23,7 @@ include 'includes/header.php';
     <h2>📝 Редактирование текстов для посетителей</h2>
     <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Эти тексты отображаются в форме бронирования на фронтенде.</p>
 
-    <table>
+    <div class="table-responsive"><table>
         <thead>
             <tr>
                 <th>Ключ (Slug)</th>
@@ -42,7 +42,7 @@ include 'includes/header.php';
             </tr>
             <?php endforeach; ?>
         </tbody>
-    </table>
+    </table></div>
 </div>
 
 <div class="mica-card">
