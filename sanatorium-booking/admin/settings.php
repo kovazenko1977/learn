@@ -3,6 +3,7 @@ require_once "auth.php";
 require_once "../core/autoload.php";
 
 use Sanatorium\Core\Helpers\WebParser;
+use Sanatorium\Core\Helpers\DemoDataLoader;
 
 $pageTitle = 'Настройки';
 $successMessage = '';
@@ -29,6 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $successMessage = "Все данные успешно удалены. Очищено файлов: $successCount.";
         } else {
             $errorMessage = "Неверный пароль подтверждения.";
+        }
+    } elseif ($_POST['action'] === 'load_demo') {
+        $loader = new DemoDataLoader();
+        if ($loader->load()) {
+            $successMessage = "Демонстрационные данные успешно загружены! Теперь вы можете в полной мере оценить возможности системы.";
+        } else {
+            $errorMessage = "Произошла ошибка при загрузке демо-данных.";
         }
     } elseif ($_POST['action'] === 'import_website') {
         $url = $_POST['import_url'] ?? '';
@@ -99,6 +107,27 @@ include 'includes/header.php';
         <button type="button" onclick="showImportModal()" class="btn btn-primary">
             <i class="lucide-globe"></i> Начать импорт с сайта
         </button>
+    </div>
+
+    <!-- Демо-данные -->
+    <div class="mica-card" style="grid-column: span 2;">
+        <h2>✨ Демонстрационный режим</h2>
+        <p style="color: #666; margin-bottom: 20px;">
+            Хотите быстро увидеть систему в действии? Нажмите кнопку ниже, чтобы наполнить базу данных примерами: 30 номеров различных классов, 25 лечебных процедур, 30 анкет клиентов, готовые путевки и активные бронирования в календаре.
+        </p>
+
+        <?php if ($successMessage && strpos($successMessage, 'Демонстрационные') !== false): ?>
+            <div class="alert alert-success">
+                <?php echo $successMessage; ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" onsubmit="return confirm('Это действие удалит текущие данные и заменит их на демонстрационные. Продолжить?');">
+            <input type="hidden" name="action" value="load_demo">
+            <button type="submit" class="btn btn-secondary" style="background: #6264a7; color: white;">
+                <i class="lucide-sparkles"></i> Загрузить демонстрационные данные
+            </button>
+        </form>
     </div>
 </div>
 
