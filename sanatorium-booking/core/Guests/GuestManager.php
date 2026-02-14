@@ -43,7 +43,8 @@ class GuestManager {
     public function isCurrentlyStaying($guestId, $bookings) {
         $today = date('Y-m-d');
         foreach ($bookings as $b) {
-            if (isset($b['guest_id']) && $b['guest_id'] == $guestId && ($b['status'] ?? '') === 'confirmed') {
+            $status = $b['status'] ?? '';
+            if (isset($b['guest_id']) && $b['guest_id'] == $guestId && ($status === 'confirmed' || $status === 'booked')) {
                 $checkIn = $b['check_in'] ?? '';
                 $checkOut = $b['check_out'] ?? '';
                 if ($checkIn && $checkOut && $today >= $checkIn && $today < $checkOut) {

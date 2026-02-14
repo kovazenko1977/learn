@@ -21,6 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'citizenship' => $_POST['citizenship'] ?? '',
         'address' => $_POST['address'] ?? ''
     ];
+    $bookingData['package_id'] = !empty($_POST['package_id']) ? (int)$_POST['package_id'] : null;
+    $bookingData['procedure_ids'] = !empty($_POST['procedure_ids']) ? array_map('intval', $_POST['procedure_ids']) : [];
+    $bookingData['service_ids'] = !empty($_POST['service_ids']) ? array_map('intval', $_POST['service_ids']) : [];
+
     $bookingId = $bookingManager->createBooking($bookingData);
     if ($bookingId) {
         header('Location: calendar.php?success=1');
@@ -33,6 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $rooms = $store->findAll('rooms');
 $calendar = $store->findAll('room_calendar');
 $bookings = $store->findAll('bookings');
+$allPackages = $store->findAll('packages');
+$allProcedures = $store->findAll('procedures');
+$allServices = $store->findAll('extra_services');
+
+$packageMap = [];
+if (is_array($allPackages)) foreach ($allPackages as $p) if(isset($p['id'])) $packageMap[$p['id']] = $p['name'];
+$procedureMap = [];
+if (is_array($allProcedures)) foreach ($allProcedures as $p) if(isset($p['id'])) $procedureMap[$p['id']] = $p['name'];
+$serviceMap = [];
+if (is_array($allServices)) foreach ($allServices as $s) if(isset($s['id'])) $serviceMap[$s['id']] = $s['name'];
 
 $bookingMap = [];
 if (is_array($bookings)) {
@@ -152,6 +166,11 @@ include 'includes/header.php';
                 <p style="margin:5px 0;"><span style="color:#666;">Период:</span> <strong id="d-period"></strong></p>
                 <p style="margin:5px 0;"><span style="color:#666;">Статус:</span> <span id="d-status" class="status-badge"></span></p>
             </div>
+            <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #eee;">
+                <p style="margin:5px 0;"><span style="color:#666;">Пакет:</span> <strong id="d-package"></strong></p>
+                <p style="margin:5px 0; color:#666;">Доп. услуги и процедуры:</p>
+                <div id="d-extras" style="font-size: 0.85rem; padding-left: 10px; color: #444;"></div>
+            </div>
             <div style="margin-bottom:10px;">
                 <p style="margin:5px 0; color:#666;">Заметки администратора:</p>
                 <div id="d-notes" style="background:rgba(0,0,0,0.03); padding:10px; border-radius:4px; font-style:italic; min-height:40px;"></div>
@@ -165,7 +184,7 @@ include 'includes/header.php';
 
 <!-- Modal Overlay -->
 <div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index:1000; align-items:center; justify-content:center;">
-    <div class="mica-card" style="width: 400px; margin-bottom: 0;">
+    <div class="mica-card" style="width: 500px; margin-bottom: 0; max-height: 90vh; overflow-y: auto;">
         <h3>🆕 Быстрое бронирование</h3>
         <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">
             Номер: <strong id="m-num"></strong> | Дата: <strong id="m-date"></strong>
@@ -195,6 +214,39 @@ include 'includes/header.php';
             <label>Адрес</label>
             <input type="text" name="address">
 
+            <label>Пакет (Путёвка)</label>
+            <select name="package_id" style="margin-bottom: 15px;">
+                <option value="">Без пакета</option>
+                <?php if(is_array($allPackages)) foreach($allPackages as $p): ?>
+                    <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name'] ?? ''); ?></option>
+                <?php endforeach; ?>
+            </select>
+
+            <div class="grid-2" style="margin-bottom: 15px;">
+                <div>
+                    <label>Доп. процедуры</label>
+                    <div style="max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <?php if(is_array($allProcedures)) foreach($allProcedures as $p): ?>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; margin-bottom: 5px; cursor: pointer; font-size: 0.85rem;">
+                                <input type="checkbox" name="procedure_ids[]" value="<?php echo $p['id']; ?>" style="margin-bottom: 0; width: auto;"> <?php echo htmlspecialchars($p['name'] ?? ''); ?>
+                            </label>
+                        <?php endforeach; ?>
+                        <?php if(empty($allProcedures)): ?><div style="color:#999; font-size:0.8rem;">Нет процедур</div><?php endif; ?>
+                    </div>
+                </div>
+                <div>
+                    <label>Доп. услуги</label>
+                    <div style="max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <?php if(is_array($allServices)) foreach($allServices as $s): ?>
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; margin-bottom: 5px; cursor: pointer; font-size: 0.85rem;">
+                                <input type="checkbox" name="service_ids[]" value="<?php echo $s['id']; ?>" style="margin-bottom: 0; width: auto;"> <?php echo htmlspecialchars($s['name'] ?? ''); ?>
+                            </label>
+                        <?php endforeach; ?>
+                        <?php if(empty($allServices)): ?><div style="color:#999; font-size:0.8rem;">Нет услуг</div><?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
             <label>Статус</label>
             <select name="status">
                 <option value="reserved">Зарезервировано</option>
@@ -211,6 +263,9 @@ include 'includes/header.php';
 
 <script>
     const bookingData = <?php echo json_encode($bookingMap); ?>;
+    const packageMap = <?php echo json_encode($packageMap); ?>;
+    const procedureMap = <?php echo json_encode($procedureMap); ?>;
+    const serviceMap = <?php echo json_encode($serviceMap); ?>;
     const statusLabels = {
         'new': 'Новое',
         'reserved': 'Зарезервировано',
@@ -231,6 +286,19 @@ include 'includes/header.php';
         const statusEl = document.getElementById('d-status');
         statusEl.textContent = statusLabels[b.status] || b.status;
         statusEl.className = 'status-badge status-' + (b.status || 'new');
+
+        document.getElementById('d-package').textContent = packageMap[b.package_id] || 'Без пакета';
+
+        const extrasEl = document.getElementById('d-extras');
+        extrasEl.innerHTML = '';
+        let extras = [];
+        if (b.procedure_ids && Array.isArray(b.procedure_ids)) {
+            b.procedure_ids.forEach(id => { if(procedureMap[id]) extras.push('• ' + procedureMap[id]); });
+        }
+        if (b.service_ids && Array.isArray(b.service_ids)) {
+            b.service_ids.forEach(id => { if(serviceMap[id]) extras.push('• ' + serviceMap[id]); });
+        }
+        extrasEl.innerHTML = extras.length > 0 ? extras.join('<br>') : '—';
 
         document.getElementById('d-notes').textContent = b.admin_notes || 'Нет заметок';
 

@@ -19,5 +19,12 @@
         "citizenship": "",
         "address": "",
         "id": 3
+    },
+    {
+        "name": "Test Guest Extended",
+        "phone": "+375299998877",
+        "citizenship": "",
+        "address": "",
+        "id": 4
     }
 ]
