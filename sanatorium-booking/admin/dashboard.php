@@ -80,17 +80,38 @@ include 'includes/header.php';
                 </td>
                 <td><span class="status-badge status-<?php echo htmlspecialchars($b['status'] ?? 'new'); ?>"><?php echo htmlspecialchars($statusLabels[$b['status'] ?? 'new'] ?? ($b['status'] ?? 'new')); ?></span></td>
                 <td>
-                    <form method="post" style="display:inline;">
-                        <input type="hidden" name="action" value="update_status">
-                        <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
-                        <select name="status" onchange="this.form.submit()" style="font-size:0.8em; padding:4px; width: auto; margin-bottom: 0;">
-                            <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
-                            <option value="reserved" <?php if($b['status']=='reserved') echo 'selected'; ?>>Зарезервировано</option>
-                            <option value="booked" <?php if($b['status']=='booked') echo 'selected'; ?>>Занято (заехали)</option>
-                            <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтверждено</option>
-                            <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отменено</option>
-                        </select>
-                    </form>
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <?php
+                            $today = date('Y-m-d');
+                            if (($b['check_in'] ?? '') === $today && ($b['status'] ?? '') === 'reserved'):
+                        ?>
+                            <form method="post" style="margin:0;">
+                                <input type="hidden" name="action" value="update_status">
+                                <input type="hidden" name="id" value="<?php echo $b['id']; ?>">
+                                <input type="hidden" name="status" value="booked">
+                                <button type="submit" class="btn" style="padding: 4px 8px; font-size: 0.75rem;">Заселить</button>
+                            </form>
+                        <?php elseif (($b['check_out'] ?? '') === $today && ($b['status'] ?? '') === 'booked'): ?>
+                            <form method="post" style="margin:0;">
+                                <input type="hidden" name="action" value="update_status">
+                                <input type="hidden" name="id" value="<?php echo $b['id']; ?>">
+                                <input type="hidden" name="status" value="confirmed">
+                                <button type="submit" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;">Выселить</button>
+                            </form>
+                        <?php endif; ?>
+
+                        <form method="post" style="display:inline; margin:0;">
+                            <input type="hidden" name="action" value="update_status">
+                            <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
+                            <select name="status" onchange="this.form.submit()" style="font-size:0.75rem; padding:4px; width: auto; margin-bottom: 0;">
+                                <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
+                                <option value="reserved" <?php if($b['status']=='reserved') echo 'selected'; ?>>Зарезервировано</option>
+                                <option value="booked" <?php if($b['status']=='booked') echo 'selected'; ?>>Занято (заехали)</option>
+                                <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтверждено</option>
+                                <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отменено</option>
+                            </select>
+                        </form>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>

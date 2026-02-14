@@ -256,13 +256,14 @@ input:focus, select:focus {
 
 .status-new { background: #e2e2e2; color: #333; }
 .status-reserved { background: #fff3cd; color: #856404; }
-.status-booked { background: #cfe2ff; color: #084298; }
+.status-booked { background: #fde2e1; color: #a4262c; }
 .status-confirmed { background: #d1e7dd; color: #0f5132; }
 .status-cancelled { background: #f8d7da; color: #842029; }
 
 /* Grid helper */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
 
 /* Dashboard specific */
 .stat-card h3 { font-size: 0.9rem; color: #666; margin-bottom: 8px; }
@@ -287,5 +288,5 @@ input:focus, select:focus {
 .cal-status-free { background: #fff; cursor: pointer; }
 .cal-status-free:hover { background: #f0f7ff; }
 .cal-status-reserved { background: #fff3cd; color: #856404; }
-.cal-status-booked { background: #cfe2ff; color: #084298; }
+.cal-status-booked { background: #fde2e1; color: #a4262c; }
 .cal-status-occupied { background: #f8d7da; color: #842029; }

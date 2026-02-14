@@ -162,7 +162,7 @@ include 'includes/header.php';
             <div style="width: 12px; height: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 2px;"></div> Зарезервировано
         </div>
         <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 12px; height: 12px; background: #cfe2ff; border: 1px solid #b6d4fe; border-radius: 2px;"></div> Занято (заехали)
+            <div style="width: 12px; height: 12px; background: #fde2e1; border: 1px solid #f9bdbb; border-radius: 2px;"></div> Занято (заехали)
         </div>
     </div>
 </div>

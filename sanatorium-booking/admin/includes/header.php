@@ -20,6 +20,10 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
             <nav class="sidebar-nav">
+                <a href="today.php" class="<?php echo $currentFile == 'today.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>Сегодня</span>
+                </a>
                 <a href="dashboard.php" class="<?php echo $currentFile == 'dashboard.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     <span>Бронирования</span>
@@ -33,6 +37,10 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                     <span>Аналитика</span>
                 </a>
                 <div class="nav-divider">Ресурсы</div>
+                <a href="planning.php" class="<?php echo $currentFile == 'planning.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <span>Планирование</span>
+                </a>
                 <a href="guests.php" class="<?php echo $currentFile == 'guests.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                     <span>Гости</span>
