@@ -99,12 +99,18 @@ include 'includes/header.php';
                             $cphone = $b['phone'] ?? 'N/A';
                             $clientInfo = htmlspecialchars($cname . " (" . $cphone . ")", ENT_QUOTES, 'UTF-8');
                         }
-                        $onclick = ($status === 'free' && $rid) ? "openModal({$rid}, '" . addslashes($room['room_number'] ?? '') . "', '{$date}')" : "";
+                        if ($status === 'free' && $rid) {
+                            $onclick = "openModal({$rid}, '" . addslashes($room['room_number'] ?? '') . "', '{$date}')";
+                        } elseif ($bookingId) {
+                            $onclick = "viewBookingDetails({$bookingId}, '" . addslashes($room['room_number'] ?? '') . "')";
+                        } else {
+                            $onclick = "";
+                        }
                     ?>
                         <td class="cal-status-<?php echo $status; ?>"
                             onclick="<?php echo $onclick; ?>"
                             title="<?php echo $clientInfo; ?>"
-                            style="text-align: center; padding: 12px 4px; border-left: 1px solid rgba(0,0,0,0.02); transition: background 0.2s; cursor: <?php echo $status === 'free' ? 'pointer' : 'default'; ?>;">
+                            style="text-align: center; padding: 12px 4px; border-left: 1px solid rgba(0,0,0,0.02); transition: background 0.2s; cursor: pointer;">
                             <?php if ($status !== 'free'): ?>
                                 <div style="width: 10px; height: 10px; background: currentColor; border-radius: 50%; margin: 0 auto; opacity: 0.6;"></div>
                             <?php endif; ?>
@@ -125,6 +131,34 @@ include 'includes/header.php';
         </div>
         <div style="display: flex; align-items: center; gap: 6px;">
             <div style="width: 12px; height: 12px; background: #cfe2ff; border: 1px solid #b6d4fe; border-radius: 2px;"></div> Занято (заехали)
+        </div>
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div id="details-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index:1100; align-items:center; justify-content:center;">
+    <div class="mica-card" style="width: 450px; margin-bottom: 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3>ℹ️ Детали бронирования</h3>
+            <button type="button" onclick="closeDetails()" style="background:none; border:none; cursor:pointer; font-size:1.5rem; line-height:1;">&times;</button>
+        </div>
+        <div id="details-content" style="font-size: 0.95rem;">
+            <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #eee;">
+                <p style="margin:5px 0;"><span style="color:#666;">Гость:</span> <strong id="d-guest"></strong></p>
+                <p style="margin:5px 0;"><span style="color:#666;">Телефон:</span> <strong id="d-phone"></strong></p>
+            </div>
+            <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #eee;">
+                <p style="margin:5px 0;"><span style="color:#666;">Номер:</span> <strong id="d-room"></strong></p>
+                <p style="margin:5px 0;"><span style="color:#666;">Период:</span> <strong id="d-period"></strong></p>
+                <p style="margin:5px 0;"><span style="color:#666;">Статус:</span> <span id="d-status" class="status-badge"></span></p>
+            </div>
+            <div style="margin-bottom:10px;">
+                <p style="margin:5px 0; color:#666;">Заметки администратора:</p>
+                <div id="d-notes" style="background:rgba(0,0,0,0.03); padding:10px; border-radius:4px; font-style:italic; min-height:40px;"></div>
+            </div>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button" class="btn" onclick="closeDetails()">Закрыть</button>
         </div>
     </div>
 </div>
@@ -176,6 +210,37 @@ include 'includes/header.php';
 </div>
 
 <script>
+    const bookingData = <?php echo json_encode($bookingMap); ?>;
+    const statusLabels = {
+        'new': 'Новое',
+        'reserved': 'Зарезервировано',
+        'booked': 'Занято (заехали)',
+        'confirmed': 'Подтверждено',
+        'cancelled': 'Отменено'
+    };
+
+    function viewBookingDetails(id, roomNum) {
+        const b = bookingData[id];
+        if (!b) return;
+
+        document.getElementById('d-guest').textContent = b.client_name || 'N/A';
+        document.getElementById('d-phone').textContent = b.phone || 'N/A';
+        document.getElementById('d-room').textContent = roomNum;
+        document.getElementById('d-period').textContent = (b.check_in || '') + ' — ' + (b.check_out || '');
+
+        const statusEl = document.getElementById('d-status');
+        statusEl.textContent = statusLabels[b.status] || b.status;
+        statusEl.className = 'status-badge status-' + (b.status || 'new');
+
+        document.getElementById('d-notes').textContent = b.admin_notes || 'Нет заметок';
+
+        document.getElementById('details-overlay').style.display = 'flex';
+    }
+
+    function closeDetails() {
+        document.getElementById('details-overlay').style.display = 'none';
+    }
+
     function openModal(id, num, date) {
         document.getElementById('m-id').value = id;
         document.getElementById('m-input-date').value = date;
@@ -190,6 +255,9 @@ include 'includes/header.php';
     window.onclick = function(event) {
         if (event.target == document.getElementById('modal-overlay')) {
             closeModal();
+        }
+        if (event.target == document.getElementById('details-overlay')) {
+            closeDetails();
         }
     }
 </script>
