@@ -9,8 +9,12 @@ $bookingManager = new BookingManager($store);
 $roomManager = new RoomManager($store);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create') {
-    $bookingManager->createBooking($_POST);
-    header('Location: dashboard.php?success=1');
+    $bookingId = $bookingManager->createBooking($_POST);
+    if ($bookingId) {
+        header('Location: dashboard.php?success=1');
+    } else {
+        header('Location: create_booking.php?error=overlap&check_in='.$_POST['check_in'].'&check_out='.$_POST['check_out']);
+    }
     exit;
 }
 
@@ -24,6 +28,12 @@ include 'includes/header.php';
 
 <div class="mica-card" style="max-width: 600px;">
     <h2>📅 Создание новой заявки</h2>
+    <?php if (isset($_GET['error']) && $_GET['error'] === 'overlap'): ?>
+        <div class="error" style="margin-top: 20px; background: rgba(216, 59, 1, 0.1); color: #d83b01; padding: 10px; border-radius: 6px; border: 1px solid rgba(216, 59, 1, 0.2);">
+            ⚠️ Ошибка: Этот номер уже забронирован на выбранные даты другими гостями! Пожалуйста, выберите другой номер.
+        </div>
+    <?php endif; ?>
+
     <form method="get" style="margin-top: 20px;">
         <div class="grid-2">
             <div>
@@ -66,6 +76,9 @@ include 'includes/header.php';
 
         <label>Количество человек</label>
         <input type="number" name="persons" value="1" min="1" required>
+
+        <label>Заметки администратора</label>
+        <textarea name="admin_notes" rows="3" placeholder="Дополнительная информация..."></textarea>
 
         <div style="margin-top: 20px;">
             <button type="submit" class="btn" style="width: 100%;">✅ Подтвердить бронирование</button>

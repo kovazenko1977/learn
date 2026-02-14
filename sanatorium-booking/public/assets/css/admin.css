@@ -254,7 +254,9 @@ input:focus, select:focus {
     font-weight: 600;
 }
 
-.status-new { background: #cfe2ff; color: #004a99; }
+.status-new { background: #e2e2e2; color: #333; }
+.status-reserved { background: #fff3cd; color: #856404; }
+.status-booked { background: #cfe2ff; color: #084298; }
 .status-confirmed { background: #d1e7dd; color: #0f5132; }
 .status-cancelled { background: #f8d7da; color: #842029; }
 
@@ -284,5 +286,6 @@ input:focus, select:focus {
 .cal-header { background: #f9f9f9; font-weight: bold; }
 .cal-status-free { background: #fff; cursor: pointer; }
 .cal-status-free:hover { background: #f0f7ff; }
-.cal-status-reserved { background: #fff3cd; color: #856404; font-size: 10px; }
-.cal-status-booked { background: #d1e7dd; color: #0f5132; font-size: 10px; }
+.cal-status-reserved { background: #fff3cd; color: #856404; }
+.cal-status-booked { background: #cfe2ff; color: #084298; }
+.cal-status-occupied { background: #f8d7da; color: #842029; }

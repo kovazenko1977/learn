@@ -16,13 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'check_out' => date('Y-m-d', strtotime($_POST['date'] . " +$duration days")),
         'persons' => 1,
         'phone' => $_POST['phone'],
-        'status' => 'confirmed',
+        'status' => $_POST['status'] ?? 'reserved',
         'client_name' => $_POST['client_name'],
         'citizenship' => $_POST['citizenship'] ?? '',
         'address' => $_POST['address'] ?? ''
     ];
-    $bookingManager->createBooking($bookingData);
-    header('Location: calendar.php?success=1');
+    $bookingId = $bookingManager->createBooking($bookingData);
+    if ($bookingId) {
+        header('Location: calendar.php?success=1');
+    } else {
+        header('Location: calendar.php?error=overlap');
+    }
     exit;
 }
 
@@ -50,6 +54,12 @@ include 'includes/header.php';
 ?>
 
 <div class="mica-card">
+    <?php if (isset($_GET['error']) && $_GET['error'] === 'overlap'): ?>
+        <div class="error" style="margin-bottom: 20px; background: rgba(216, 59, 1, 0.1); color: #d83b01; padding: 10px; border-radius: 6px; border: 1px solid rgba(216, 59, 1, 0.2);">
+            ⚠️ Ошибка: Номер уже забронирован на некоторые из выбранных дат!
+        </div>
+    <?php endif; ?>
+
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <h2>📅 Сетка занятости номеров</h2>
         <form method="get" style="display:flex; gap:10px; align-items: center;">
@@ -111,7 +121,10 @@ include 'includes/header.php';
             <div style="width: 12px; height: 12px; border: 1px solid var(--border-color); border-radius: 2px;"></div> Свободно
         </div>
         <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 12px; height: 12px; background: #cfe2ff; border-radius: 2px;"></div> Забронировано
+            <div style="width: 12px; height: 12px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 2px;"></div> Зарезервировано
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 12px; height: 12px; background: #cfe2ff; border: 1px solid #b6d4fe; border-radius: 2px;"></div> Занято (заехали)
         </div>
     </div>
 </div>
@@ -147,6 +160,12 @@ include 'includes/header.php';
 
             <label>Адрес</label>
             <input type="text" name="address">
+
+            <label>Статус</label>
+            <select name="status">
+                <option value="reserved">Зарезервировано</option>
+                <option value="booked">Занято (заехали)</option>
+            </select>
 
             <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>

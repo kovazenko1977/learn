@@ -50,6 +50,25 @@ class BookingManager {
             return false;
         }
 
+        // Check availability strictly
+        $start = strtotime($data['check_in']);
+        $end = strtotime($data['check_out']);
+        $calendar = $this->store->findAll('room_calendar');
+        if (is_array($calendar)) {
+            foreach ($calendar as $entry) {
+                if (!is_array($entry)) continue;
+                if (($entry['room_id'] ?? 0) == $data['room_id']) {
+                    $entryDate = strtotime($entry['date'] ?? '');
+                    if ($entryDate && $entryDate >= $start && $entryDate < $end) {
+                        if (($entry['status'] ?? 'free') !== 'free') {
+                            // Overlap found!
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
         // Handle Guest association
         $guestsData = [
             'name' => $data['client_name'] ?? 'N/A',
@@ -87,7 +106,7 @@ class BookingManager {
         $bookingId = $this->store->save('bookings', $data);
 
         if ($bookingId) {
-            $this->updateCalendar($data['room_id'], $data['check_in'], $data['check_out'], $bookingId);
+            $this->updateCalendar($data['room_id'], $data['check_in'], $data['check_out'], $bookingId, $data['status'] ?? 'booked');
         }
 
         return $bookingId;
@@ -104,18 +123,36 @@ class BookingManager {
         }
     }
 
-    public function cancelBooking($bookingId) {
+    public function updateBookingStatus($bookingId, $status) {
         $booking = $this->store->findOne('bookings', $bookingId);
-        if ($booking) {
-            $booking['status'] = 'cancelled';
+        if ($booking && is_array($booking)) {
+            $booking['status'] = $status;
             $this->store->save('bookings', $booking);
-            $this->releaseCalendar($bookingId);
+            if ($status === 'cancelled') {
+                $this->releaseCalendar($bookingId);
+            } else {
+                $this->updateCalendar($booking['room_id'], $booking['check_in'], $booking['check_out'], $bookingId, $status);
+            }
             return true;
         }
         return false;
     }
 
-    private function updateCalendar($roomId, $checkIn, $checkOut, $bookingId) {
+    public function cancelBooking($bookingId) {
+        return $this->updateBookingStatus($bookingId, 'cancelled');
+    }
+
+    public function updateBookingNotes($bookingId, $notes) {
+        $booking = $this->store->findOne('bookings', $bookingId);
+        if ($booking && is_array($booking)) {
+            $booking['admin_notes'] = $notes;
+            $this->store->save('bookings', $booking);
+            return true;
+        }
+        return false;
+    }
+
+    public function updateCalendar($roomId, $checkIn, $checkOut, $bookingId, $status = 'booked') {
         try {
             $start = new \DateTime($checkIn);
             $end = new \DateTime($checkOut);
@@ -125,11 +162,25 @@ class BookingManager {
             $interval = new \DateInterval('P1D');
             $period = new \DatePeriod($start, $interval, $end);
 
+            $calendar = $this->store->findAll('room_calendar');
+
             foreach ($period as $date) {
+                $formattedDate = $date->format('Y-m-d');
+                $existingId = null;
+                if (is_array($calendar)) {
+                    foreach ($calendar as $entry) {
+                        if (is_array($entry) && ($entry['room_id'] ?? 0) == $roomId && ($entry['date'] ?? '') === $formattedDate) {
+                            $existingId = $entry['id'];
+                            break;
+                        }
+                    }
+                }
+
                 $this->store->save('room_calendar', [
+                    'id' => $existingId,
                     'room_id' => $roomId,
-                    'date' => $date->format('Y-m-d'),
-                    'status' => 'booked',
+                    'date' => $formattedDate,
+                    'status' => $status,
                     'booking_id' => $bookingId
                 ]);
             }

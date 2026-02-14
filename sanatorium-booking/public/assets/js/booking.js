@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(msg);
             location.reload();
         } else {
-            alert('Ошибка');
+            alert('Извините, этот номер уже забронирован на выбранные даты. Пожалуйста, попробуйте найти другие номера.');
         }
     });
 

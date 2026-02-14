@@ -18,21 +18,21 @@ if (!is_array($bookings)) $bookings = [];
 
 $statusLabels = [
     'new' => 'Новое',
+    'reserved' => 'Зарезервировано',
+    'booked' => 'Занято (заехали)',
     'confirmed' => 'Подтверждено',
     'cancelled' => 'Отменено'
 ];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
-    $id = (int)$_POST['id'];
-    $status = $_POST['status'];
-    if ($status === 'cancelled') {
-        $bookingManager->cancelBooking($id);
-    } else {
-        $booking = $store->findOne('bookings', $id);
-        if ($booking && is_array($booking)) {
-            $booking['status'] = $status;
-            $store->save('bookings', $booking);
-        }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'update_status') {
+        $id = (int)$_POST['id'];
+        $status = $_POST['status'];
+        $bookingManager->updateBookingStatus($id, $status);
+    } elseif ($_POST['action'] === 'update_notes') {
+        $id = (int)$_POST['id'];
+        $notes = $_POST['admin_notes'];
+        $bookingManager->updateBookingNotes($id, $notes);
     }
     header('Location: dashboard.php');
     exit;
@@ -56,6 +56,7 @@ include 'includes/header.php';
                 <th>Номер</th>
                 <th>Телефон</th>
                 <th>Сумма</th>
+                <th>Заметки</th>
                 <th>Статус</th>
                 <th>Действие</th>
             </tr>
@@ -70,6 +71,13 @@ include 'includes/header.php';
                 <td><?php echo htmlspecialchars($roomMap[$b['room_id'] ?? 0] ?? 'Room '.($b['room_id'] ?? '')); ?></td>
                 <td><?php echo htmlspecialchars($b['phone'] ?? ''); ?></td>
                 <td><?php echo number_format((float)($b['total_price'] ?? 0), 0, ',', ' '); ?> ₽</td>
+                <td style="font-size: 0.85rem; max-width: 200px; color: #666;">
+                    <form method="post" style="margin-bottom:0;">
+                        <input type="hidden" name="action" value="update_notes">
+                        <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
+                        <textarea name="admin_notes" onblur="this.form.submit()" style="font-size: 0.8rem; margin:0; padding:4px; height:40px; border:none; background:transparent; resize:none; overflow-y:auto;"><?php echo htmlspecialchars($b['admin_notes'] ?? ''); ?></textarea>
+                    </form>
+                </td>
                 <td><span class="status-badge status-<?php echo htmlspecialchars($b['status'] ?? 'new'); ?>"><?php echo htmlspecialchars($statusLabels[$b['status'] ?? 'new'] ?? ($b['status'] ?? 'new')); ?></span></td>
                 <td>
                     <form method="post" style="display:inline;">
@@ -77,6 +85,8 @@ include 'includes/header.php';
                         <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
                         <select name="status" onchange="this.form.submit()" style="font-size:0.8em; padding:4px; width: auto; margin-bottom: 0;">
                             <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
+                            <option value="reserved" <?php if($b['status']=='reserved') echo 'selected'; ?>>Зарезервировано</option>
+                            <option value="booked" <?php if($b['status']=='booked') echo 'selected'; ?>>Занято (заехали)</option>
                             <option value="confirmed" <?php if($b['status']=='confirmed') echo 'selected'; ?>>Подтверждено</option>
                             <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отменено</option>
                         </select>
