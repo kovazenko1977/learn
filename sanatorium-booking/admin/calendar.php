@@ -34,6 +34,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_notes') {
+    $bookingId = (int)$_POST['booking_id'];
+    $notes = $_POST['admin_notes'] ?? '';
+
+    if ($bookingManager->updateBookingNotes($bookingId, $notes)) {
+        header("Location: calendar.php?success=notes_updated");
+    } else {
+        header("Location: calendar.php?error=save_failed");
+    }
+    exit;
+}
+
 $rooms = $store->findAll('rooms');
 $calendar = $store->findAll('room_calendar');
 $bookings = $store->findAll('bookings');
@@ -71,6 +83,12 @@ include 'includes/header.php';
     <?php if (isset($_GET['error']) && $_GET['error'] === 'overlap'): ?>
         <div class="error" style="margin-bottom: 20px; background: rgba(216, 59, 1, 0.1); color: #d83b01; padding: 10px; border-radius: 6px; border: 1px solid rgba(216, 59, 1, 0.2);">
             ⚠️ Ошибка: Номер уже забронирован на некоторые из выбранных дат!
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['success']) && $_GET['success'] === 'notes_updated'): ?>
+        <div style="margin-bottom: 20px; background: rgba(16, 124, 16, 0.1); color: #107c10; padding: 10px; border-radius: 6px; border: 1px solid rgba(16, 124, 16, 0.2);">
+            ✅ Заметки успешно обновлены!
         </div>
     <?php endif; ?>
 
@@ -172,11 +190,19 @@ include 'includes/header.php';
                 <div id="d-extras" style="font-size: 0.85rem; padding-left: 10px; color: #444;"></div>
             </div>
             <div style="margin-bottom:10px;">
-                <p style="margin:5px 0; color:#666;">Заметки администратора:</p>
-                <div id="d-notes" style="background:rgba(0,0,0,0.03); padding:10px; border-radius:4px; font-style:italic; min-height:40px;"></div>
+                <form method="post" id="notes-form">
+                    <input type="hidden" name="action" value="update_notes">
+                    <input type="hidden" name="booking_id" id="d-booking-id">
+                    <p style="margin:5px 0; color:#666;">Заметки администратора:</p>
+                    <textarea name="admin_notes" id="d-notes" style="width:100%; height:80px; font-size:0.9rem; margin-bottom:10px;" placeholder="Введите заметки..."></textarea>
+                    <div style="text-align: right; display:flex; justify-content:space-between; align-items:center;">
+                        <span id="notes-status" style="font-size:0.8rem; color:green; display:none;">Сохранено!</span>
+                        <button type="submit" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.8rem;">Сохранить заметки</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <div style="margin-top: 20px; text-align: right;">
+        <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
             <button type="button" class="btn" onclick="closeDetails()">Закрыть</button>
         </div>
     </div>
@@ -278,6 +304,7 @@ include 'includes/header.php';
         const b = bookingData[id];
         if (!b) return;
 
+        document.getElementById('d-booking-id').value = id;
         document.getElementById('d-guest').textContent = b.client_name || 'N/A';
         document.getElementById('d-phone').textContent = b.phone || 'N/A';
         document.getElementById('d-room').textContent = roomNum;
@@ -300,7 +327,7 @@ include 'includes/header.php';
         }
         extrasEl.innerHTML = extras.length > 0 ? extras.join('<br>') : '—';
 
-        document.getElementById('d-notes').textContent = b.admin_notes || 'Нет заметок';
+        document.getElementById('d-notes').value = b.admin_notes || '';
 
         document.getElementById('details-overlay').style.display = 'flex';
     }
