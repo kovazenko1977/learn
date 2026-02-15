@@ -3,7 +3,7 @@ require_once "../core/autoload.php";
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Booking\BookingManager;
 
-$store = new JsonStore(__DIR__ . '/../../data');
+$store = new JsonStore(__DIR__ . '/../data');
 $bookingManager = new BookingManager($store);
 $bookings = $store->findAll('bookings');
 $rooms = $store->findAll('rooms');

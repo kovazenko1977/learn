@@ -78,4 +78,8 @@ class AnalyticsManager {
             'servicePopularity' => $servicePopularity
         ];
     }
+
+    public function getBasicStats() {
+        return $this->getStats();
+    }
 }
