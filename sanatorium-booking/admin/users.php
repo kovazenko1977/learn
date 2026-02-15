@@ -149,12 +149,21 @@ require_once 'includes/header.php';
 </div>
 
 <style>
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
-.modal-content { background: var(--glass-bg); margin: 5% auto; padding: 25px; border-radius: 16px; border: 1px solid var(--glass-border); color: white; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.close { cursor: pointer; font-size: 24px; }
+:root {
+    --glass-bg: rgba(30, 30, 30, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+.modal-content { background: var(--glass-bg); margin: 5% auto; padding: 30px; border-radius: 16px; border: 1px solid var(--glass-border); color: white !important; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
+.modal-header h2 { margin: 0; color: white !important; }
+.close { cursor: pointer; font-size: 24px; color: rgba(255,255,255,0.7); }
+.close:hover { color: white; }
 .form-group { margin-bottom: 15px; }
-.form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white; }
+.form-group label { display: block; margin-bottom: 5px; color: white !important; }
+.form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white !important; }
+.form-control option { background: #333; color: white; }
+#permissions-section label { color: white !important; font-weight: normal; }
 .btn-sm { padding: 4px 8px; font-size: 12px; }
 .alert { padding: 10px; border-radius: 8px; margin-bottom: 15px; }
 .alert-success { background: rgba(40, 167, 69, 0.2); border: 1px solid #28a745; color: #28a745; }

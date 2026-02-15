@@ -154,16 +154,16 @@ class DemoDataLoader {
                 'description' => 'Плановая задача для персонала.',
                 'date' => $today,
                 'priority' => $priorities[rand(0, 2)],
-                'is_completed' => (bool)rand(0, 1)
+                'status' => (rand(0, 1) ? 'completed' : 'pending')
             ];
         }
         file_put_contents(__DIR__ . '/../../data/plans.json', json_encode($plans, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         // 9. Text Blocks
         $textBlocks = [
-            ['id' => 1, 'key' => 'welcome_title', 'content' => 'Добро пожаловать в Sanatorium'],
-            ['id' => 2, 'key' => 'welcome_subtitle', 'content' => 'Лучший отдых и лечение для вас и вашей семьи'],
-            ['id' => 3, 'key' => 'footer_text', 'content' => '© 2024 Sanatorium Booking System']
+            ['id' => 1, 'slug' => 'booking_intro', 'content' => 'Выберите даты заезда и выезда, чтобы найти подходящий номер. В стоимость многих путевок уже включены лечебные процедуры.'],
+            ['id' => 2, 'slug' => 'booking_success', 'content' => 'Спасибо! Ваша заявка успешно отправлена. Наш менеджер свяжется с вами в ближайшее время.'],
+            ['id' => 3, 'slug' => 'footer_text', 'content' => '© 2026 Sanatorium Booking System']
         ];
         file_put_contents(__DIR__ . '/../../data/text_blocks.json', json_encode($textBlocks, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 

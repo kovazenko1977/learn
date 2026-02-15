@@ -233,7 +233,7 @@ include 'includes/header.php';
                 </div>
                 <div>
                     <label>Количество дней</label>
-                    <input type="number" name="duration" value="1" min="1" required>
+                    <input type="number" name="duration" id="m-duration" value="1" min="1" required>
                 </div>
             </div>
 
@@ -241,7 +241,7 @@ include 'includes/header.php';
             <input type="text" name="address">
 
             <label>Пакет (Путёвка)</label>
-            <select name="package_id" style="margin-bottom: 15px;">
+            <select name="package_id" id="m-package" onchange="updateDuration()" style="margin-bottom: 15px;">
                 <option value="">Без пакета</option>
                 <?php if(is_array($allPackages)) foreach($allPackages as $p): ?>
                     <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name'] ?? ''); ?></option>
@@ -289,6 +289,7 @@ include 'includes/header.php';
 
 <script>
     const bookingData = <?php echo json_encode($bookingMap); ?>;
+    const allPackages = <?php echo json_encode($allPackages); ?>;
     const packageMap = <?php echo json_encode($packageMap); ?>;
     const procedureMap = <?php echo json_encode($procedureMap); ?>;
     const serviceMap = <?php echo json_encode($serviceMap); ?>;
@@ -345,6 +346,18 @@ include 'includes/header.php';
     }
     function closeModal() {
         document.getElementById('modal-overlay').style.display = 'none';
+    }
+
+    function updateDuration() {
+        const packageId = document.getElementById('m-package').value;
+        const durationInput = document.getElementById('m-duration');
+
+        if (packageId && Array.isArray(allPackages)) {
+            const pkg = allPackages.find(p => p.id == packageId);
+            if (pkg && pkg.duration_days) {
+                durationInput.value = pkg.duration_days;
+            }
+        }
     }
     // Close modal on click outside
     window.onclick = function(event) {
