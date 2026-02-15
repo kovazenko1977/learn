@@ -4,6 +4,7 @@ require_once "../core/autoload.php";
 
 use Sanatorium\Core\Helpers\WebParser;
 use Sanatorium\Core\Helpers\DemoDataLoader;
+use Sanatorium\Core\Helpers\BackupManager;
 
 $pageTitle = 'Настройки';
 $successMessage = '';
@@ -11,7 +12,32 @@ $errorMessage = '';
 $importResults = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] === 'reset_all') {
+    if ($_POST['action'] === 'export_backup') {
+        $backup = new BackupManager(__DIR__ . '/../data');
+        $zipPath = $backup->createBackup();
+        if ($zipPath && file_exists($zipPath)) {
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="sanatorium_backup_' . date('Y-m-d_H-i') . '.zip"');
+            header('Content-Length: ' . filesize($zipPath));
+            readfile($zipPath);
+            unlink($zipPath);
+            exit;
+        } else {
+            $errorMessage = "Не удалось создать резервную копию.";
+        }
+    } elseif ($_POST['action'] === 'restore_backup') {
+        if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
+            $backup = new BackupManager(__DIR__ . '/../data');
+            $result = $backup->restoreBackup($_FILES['backup_file']['tmp_name']);
+            if ($result['success']) {
+                $successMessage = "Данные успешно восстановлены! Обновлено файлов: " . $result['count'];
+            } else {
+                $errorMessage = "Ошибка восстановления: " . $result['message'];
+            }
+        } else {
+            $errorMessage = "Пожалуйста, выберите корректный файл архива.";
+        }
+    } elseif ($_POST['action'] === 'reset_all') {
         if ($_POST['confirm_password'] === '12345') {
             $dataFiles = [
                 'bookings.json', 'room_calendar.json', 'guests.json', 'plans.json',
@@ -71,6 +97,34 @@ include 'includes/header.php';
             <button type="button" class="btn btn-outline" onclick="location.href='users.php?action=new'">
                 <i class="lucide-user-plus"></i> Быстрое добавление
             </button>
+        </div>
+    </div>
+
+    <!-- Резервное копирование -->
+    <div class="mica-card">
+        <h2>💾 Резервное копирование</h2>
+        <p style="color: #666; margin-bottom: 20px;">
+            Сохраните все данные системы (бронирования, гости, справочники) в один архив или восстановите их из ранее созданной копии.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <form method="POST">
+                <input type="hidden" name="action" value="export_backup">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="lucide-download"></i> Скачать резервную копию (.zip)
+                </button>
+            </form>
+
+            <div style="border-top: 1px solid rgba(0,0,0,0.05); pt: 15px; margin-top: 5px;">
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">Восстановление из файла:</p>
+                <form method="POST" enctype="multipart/form-data" onsubmit="return confirm('Внимание! Восстановление из резервной копии перезапишет текущие данные. Продолжить?');">
+                    <input type="hidden" name="action" value="restore_backup">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="file" name="backup_file" accept=".zip" required class="form-control" style="flex-grow: 1; padding: 5px;">
+                        <button type="submit" class="btn btn-outline">Восстановить</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
