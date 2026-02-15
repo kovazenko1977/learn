@@ -1,0 +1,57 @@
+.san-booking-form-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+.san-form-group {
+    margin-bottom: 15px;
+}
+.san-form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.san-form-group input[type="text"],
+.san-form-group input[type="date"],
+.san-form-group input[type="number"],
+.san-form-group input[type="tel"],
+.san-form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.san-checkbox-group {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 4px;
+}
+.san-checkbox-group label {
+    font-weight: normal;
+    display: block;
+}
+.san-submit-button {
+    background-color: #0073aa;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.san-submit-button:hover {
+    background-color: #005177;
+}
+#san-booking-message {
+    margin: 10px 0;
+    padding: 10px;
+    display: none;
+}
+.san-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.san-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }

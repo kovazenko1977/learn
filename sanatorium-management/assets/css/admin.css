@@ -1,0 +1,116 @@
+/* Professional Admin Styling for Sanatorium Management */
+
+.san-content.card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 4px;
+    max-width: 100%;
+}
+
+.wrap {
+    margin: 20px 20px 0 2px;
+}
+
+.nav-tab-wrapper {
+    margin-bottom: 0;
+}
+
+.san-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.san-header-actions h3 {
+    margin: 0;
+}
+
+/* Dashboard Widgets */
+.san-dashboard-widgets .san-widget {
+    background: #fff;
+    border-left: 4px solid #0073aa;
+    transition: transform 0.2s;
+}
+
+.san-dashboard-widgets .san-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.san-dashboard-widgets h4 {
+    margin-top: 0;
+    color: #555;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Availability Grid Container */
+.san-availability-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+    border: 1px solid #ccd0d4;
+}
+
+/* Availability Grid */
+.san-availability-grid {
+    min-width: 1200px; /* Ensure enough space for dates */
+    border-collapse: collapse;
+    margin: 0 !important;
+}
+
+.san-availability-grid th {
+    background: #f8f9fa;
+    vertical-align: middle;
+    padding: 10px 5px !important;
+}
+
+.san-availability-grid td {
+    transition: background-color 0.3s;
+    padding: 2px !important;
+}
+
+.san-status-free { background-color: #e7f9ed !important; }
+.san-status-reserved { background-color: #fff9e7 !important; }
+.san-status-occupied { background-color: #fce7e7 !important; }
+
+.san-availability-grid select {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Forms */
+.form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+}
+
+.form-table td {
+    padding: 10px 0;
+}
+
+.regular-text {
+    width: 100%;
+    max-width: 500px;
+}
+
+.san-checkbox-list {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    padding: 10px;
+}
+
+/* Lists */
+.wp-list-table th {
+    font-weight: 600;
+}
