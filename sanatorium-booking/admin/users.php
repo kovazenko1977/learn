@@ -105,32 +105,36 @@ require_once 'includes/header.php';
             <input type="hidden" name="action" id="user-action" value="add">
             <input type="hidden" name="id" id="user-id" value="">
 
-            <div class="form-group">
-                <label>Логин</label>
-                <input type="text" name="username" id="user-username" required class="form-control">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" name="username" id="user-username" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" name="password" id="user-password" class="form-control" placeholder="Оставьте пустым...">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Пароль (оставьте пустым, чтобы не менять)</label>
-                <input type="password" name="password" id="user-password" class="form-control">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>ФИО</label>
+                    <input type="text" name="full_name" id="user-full_name" required class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Роль</label>
+                    <select name="role" id="user-role" class="form-control" onchange="togglePermissions()">
+                        <option value="user">Пользователь</option>
+                        <option value="administrator">Администратор</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>ФИО</label>
-                <input type="text" name="full_name" id="user-full_name" required class="form-control">
-            </div>
-
-            <div class="form-group">
-                <label>Роль</label>
-                <select name="role" id="user-role" class="form-control" onchange="togglePermissions()">
-                    <option value="user">Пользователь</option>
-                    <option value="administrator">Администратор (все права)</option>
-                </select>
-            </div>
-
-            <div id="permissions-section">
-                <label>Права доступа</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+            <div id="permissions-section" style="border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                <label style="font-weight: 600;">Доступ к разделам:</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px;">
                     <?php foreach ($allPermissions as $key => $label): ?>
                         <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
                             <input type="checkbox" name="permissions[]" value="<?php echo $key; ?>" class="permission-checkbox" style="margin-right: 8px;">
@@ -154,12 +158,12 @@ require_once 'includes/header.php';
     --glass-border: rgba(255, 255, 255, 0.1);
 }
 .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-.modal-content { background: var(--glass-bg); margin: 5% auto; padding: 30px; border-radius: 16px; border: 1px solid var(--glass-border); color: white !important; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
-.modal-header h2 { margin: 0; color: white !important; }
+.modal-content { background: var(--glass-bg); margin: 2vh auto; padding: 25px; border-radius: 16px; border: 1px solid var(--glass-border); color: white !important; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-height: 94vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+.modal-header h2 { margin: 0; color: white !important; font-size: 1.25rem; }
 .close { cursor: pointer; font-size: 24px; color: rgba(255,255,255,0.7); }
 .close:hover { color: white; }
-.form-group { margin-bottom: 15px; }
+.form-group { margin-bottom: 12px; }
 .form-group label { display: block; margin-bottom: 5px; color: white !important; }
 .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white !important; }
 .form-control option { background: #333; color: white; }

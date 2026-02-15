@@ -1,0 +1,59 @@
+ИНСТРУКЦИЯ И ПРОМТ ДЛЯ РАЗРАБОТКИ МОБИЛЬНОГО ПРИЛОЖЕНИЯ
+=====================================================
+
+Это руководство содержит полный промт для нейросети (ChatGPT, Claude, Cursor), который позволит сгенерировать архитектуру и основной код мобильного приложения для системы "Sanatorium Booking".
+
+ТЕХНИЧЕСКИЙ КОНТЕКСТ ДЛЯ РАЗРАБОТКИ:
+-----------------------------------
+1. Бэкенд: Standalone PHP 8.3 приложение.
+2. База данных: JSON-файлы (JsonStore).
+3. API: /sanatorium-booking/api/v1.php
+4. Авторизация: Через заголовок "X-API-Token" или GET-параметр "api_token".
+5. Формат обмена: JSON.
+
+--- НАЧАЛО ПРОМТА ДЛЯ ИИ ---
+
+Role: Senior Mobile Developer (React Native / Flutter)
+
+Task: Разработать мобильное приложение для сотрудников санатория "Sanatorium Booking System".
+
+App Name: Sanatorium Admin
+Style: Современный минимализм, Glassmorphism (эффект стекла), иконки Lucide, цветовая схема: #0078d4 (Primary), #ffffff, #f3f3f3 (Background).
+
+Core Features:
+1. Авторизация по логину/паролю (через API action=auth/login).
+2. Дашборд с показателями (action=dashboard/stats).
+3. Список активных бронирований (action=booking/list).
+4. Профиль пользователя и просмотр API-токена.
+
+API Reference (Endpoint: /api/v1.php):
+- POST ?action=auth/login (body: {username, password}) -> возвращает {token, user_data}.
+- GET ?action=auth/me (header: X-API-Token) -> данные текущего пользователя.
+- GET ?action=dashboard/stats (header: X-API-Token) -> статистика (заезды, выезды, доход).
+- GET ?action=booking/list (header: X-API-Token) -> список всех бронирований.
+- POST ?action=booking/cancel (header: X-API-Token, body: {booking_id}) -> отмена брони.
+
+Implementation Requirements:
+- Использовать Expo (если React Native) или стандартный проект Flutter.
+- Реализовать защищенное хранение токена (SecureStore / Shared Preferences).
+- Глобальное состояние (Redux Toolkit / Provider / Riverpod).
+- Качественная обработка ошибок сети и 401 статусов.
+- Локализация интерфейса: Русский язык.
+
+Project Structure Request:
+1. Опиши архитектуру папок.
+2. Напиши код API-клиента (Axios или Dio) с интерцептором для подстановки токена.
+3. Напиши экран авторизации с валидацией.
+4. Напиши главный экран с карточками статистики.
+
+--- КОНЕЦ ПРОМТА ДЛЯ ИИ ---
+
+РЕКОМЕНДАЦИИ ПО ВНЕДРЕНИЮ:
+--------------------------
+1. Убедитесь, что ваш сервер поддерживает CORS, если планируется разработка веб-версии приложения. В api/v1.php уже добавлены соответствующие заголовки:
+   header("Access-Control-Allow-Origin: *");
+   header("Access-Control-Allow-Headers: Content-Type, X-API-Token");
+
+2. Для уведомлений (Push) рекомендуется интегрировать Firebase Cloud Messaging (FCM) или использовать Telegram Bot API, который уже частично поддерживается ядром системы.
+
+3. Токены пользователей в системе постоянные (статичные), что упрощает разработку на первом этапе, но требует их бережного хранения на стороне приложения.
