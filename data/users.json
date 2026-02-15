@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Администратор",
+    "role": "admin",
+    "code": "1111",
+    "service_id": null
+  },
+  {
+    "id": 2,
+    "name": "Инициатор Тест",
+    "role": "initiator",
+    "code": "2222",
+    "service_id": null
+  },
+  {
+    "id": 3,
+    "name": "Исполнитель Тест",
+    "role": "performer",
+    "code": "3333",
+    "service_id": 1
+  }
+]

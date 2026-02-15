@@ -1,0 +1,101 @@
+[
+    {
+        "initiator_id": 2,
+        "description": "Test Request",
+        "service_id": 1,
+        "location": {
+            "building": "1",
+            "floor": "2",
+            "room": "3"
+        },
+        "priority": "medium",
+        "id": 1,
+        "status": "completed",
+        "created_at": "2026-02-15 19:19:12",
+        "history": [
+            {
+                "status": "new",
+                "user_id": 2,
+                "timestamp": "2026-02-15 19:19:12",
+                "comment": "Заявка создана"
+            },
+            {
+                "status": "assigned",
+                "user_id": 1,
+                "timestamp": "2026-02-15 19:19:12",
+                "comment": "Назначен исполнитель"
+            },
+            {
+                "status": "working",
+                "user_id": 3,
+                "timestamp": "2026-02-15 19:19:12",
+                "comment": "Приступил"
+            },
+            {
+                "status": "checking",
+                "user_id": 3,
+                "timestamp": "2026-02-15 19:19:12",
+                "comment": "Готово, проверяйте"
+            },
+            {
+                "status": "returned",
+                "user_id": 1,
+                "timestamp": "2026-02-15 19:19:12",
+                "comment": "Плохо сделано"
+            },
+            {
+                "status": "completed",
+                "user_id": 1,
+                "timestamp": "2026-02-15 19:19:12",
+                "comment": "Теперь хорошо"
+            }
+        ],
+        "performer_id": 3
+    },
+    {
+        "initiator_id": 1,
+        "description": "Протечка крана в 204 палате",
+        "service_id": 1,
+        "location": {
+            "building": "А",
+            "floor": "2",
+            "room": "204"
+        },
+        "priority": "medium",
+        "photo": "",
+        "id": 2,
+        "status": "new",
+        "created_at": "2026-02-15 19:20:22",
+        "history": [
+            {
+                "status": "new",
+                "user_id": 1,
+                "timestamp": "2026-02-15 19:20:22",
+                "comment": "Заявка создана"
+            }
+        ]
+    },
+    {
+        "initiator_id": 1,
+        "description": "Протечка крана в 204 палате",
+        "service_id": 1,
+        "location": {
+            "building": "А",
+            "floor": "2",
+            "room": "204"
+        },
+        "priority": "medium",
+        "photo": "",
+        "id": 3,
+        "status": "new",
+        "created_at": "2026-02-15 19:20:37",
+        "history": [
+            {
+                "status": "new",
+                "user_id": 1,
+                "timestamp": "2026-02-15 19:20:37",
+                "comment": "Заявка создана"
+            }
+        ]
+    }
+]

@@ -1,0 +1,11 @@
+{
+  "hospital_name": "Городская Больница",
+  "sla": {
+    "low": 48,
+    "medium": 24,
+    "high": 4,
+    "critical": 1
+  },
+  "telegram_token": "",
+  "telegram_chat_id": ""
+}
