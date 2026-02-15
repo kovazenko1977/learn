@@ -1,16 +1,35 @@
 <?php
-session_start();
+require_once '../core/autoload.php';
+
+use Sanatorium\Core\Database\JsonStore;
+use Sanatorium\Core\Users\UserManager;
+
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+
 if (isset($_SESSION['admin_logged_in'])) {
     header('Location: dashboard.php');
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $store = new JsonStore(__DIR__ . '/../data');
+    $userManager = new UserManager($store);
+
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    if ($username === 'admin' && $password === 'admin') {
+    $user = $userManager->authenticate($username, $password);
+
+    if ($user) {
         $_SESSION['admin_logged_in'] = true;
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['full_name'] = $user['full_name'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['permissions'] = $user['permissions'] ?? [];
+
         header('Location: dashboard.php');
         exit;
     } else {

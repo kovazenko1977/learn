@@ -58,6 +58,22 @@ include 'includes/header.php';
 ?>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <!-- Управление пользователями -->
+    <div class="mica-card" style="grid-column: span 2;">
+        <h2>👥 Управление пользователями и правами</h2>
+        <p style="color: #666; margin-bottom: 20px;">
+            Настройте доступ сотрудников к различным разделам программы. Вы можете добавить неограниченное количество пользователей, назначить им роли и выдать персональные API-токены для мобильного приложения.
+        </p>
+        <div style="display: flex; gap: 15px;">
+            <a href="users.php" class="btn btn-primary">
+                <i class="lucide-users"></i> Открыть справочник пользователей
+            </a>
+            <button type="button" class="btn btn-outline" onclick="location.href='users.php?action=new'">
+                <i class="lucide-user-plus"></i> Быстрое добавление
+            </button>
+        </div>
+    </div>
+
     <!-- Сброс данных -->
     <div class="mica-card">
         <h2 style="color: #d83b01;">⚠️ Опасная зона</h2>
