@@ -136,8 +136,43 @@ function applyTemplate() {
     if (option.value) {
         document.getElementById('description').value = option.dataset.desc;
         document.getElementById('service_id').value = option.dataset.svc;
+        saveDraft();
     }
 }
+
+const formFields = ['description', 'service_id', 'building', 'floor', 'room', 'priority'];
+
+function saveDraft() {
+    const draft = {};
+    formFields.forEach(id => {
+        const el = document.getElementsByName(id)[0] || document.getElementById(id);
+        if (el) draft[id] = el.value;
+    });
+    localStorage.setItem('hop_request_draft', JSON.stringify(draft));
+}
+
+function loadDraft() {
+    const draftJson = localStorage.getItem('hop_request_draft');
+    if (draftJson) {
+        const draft = JSON.parse(draftJson);
+        formFields.forEach(id => {
+            if (draft[id]) {
+                const el = document.getElementsByName(id)[0] || document.getElementById(id);
+                if (el) el.value = draft[id];
+            }
+        });
+    }
+}
+
+document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', saveDraft);
+});
+
+document.querySelector('form').addEventListener('submit', () => {
+    localStorage.removeItem('hop_request_draft');
+});
+
+window.addEventListener('load', loadDraft);
 </script>
 
 <?php include 'includes/footer.php'; ?>
