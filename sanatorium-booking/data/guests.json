@@ -238,5 +238,12 @@
         "citizenship": "Беларусь",
         "address": "г. Минск, ул. Примерная, д. 30",
         "passport": "MP1635390"
+    },
+    {
+        "name": "Test User",
+        "phone": "+375000000000",
+        "citizenship": "",
+        "address": "",
+        "id": 31
     }
 ]
