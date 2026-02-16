@@ -5,15 +5,27 @@ use Hop\Core\JsonStore;
 use Hop\Core\NotificationManager;
 
 $settingsStore = new JsonStore('data/settings.json');
-$notifier = new NotificationManager($settingsStore, 'data/logs/notifications.json');
+$notificationStore = new JsonStore('data/logs/notifications.json');
+$notifier = new NotificationManager($settingsStore, $notificationStore);
 $notifications = $notifier->getForUser($_SESSION['user_id']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_read'])) {
+    $notifier->markAsRead($_SESSION['user_id']);
+    header('Location: notifications.php');
+    exit;
+}
 
 include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header">
+    <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
         <h1>Уведомления</h1>
+        <?php if (!empty($notifications)): ?>
+        <form method="POST">
+            <button type="submit" name="mark_read" class="filter-btn">Прочитать всё</button>
+        </form>
+        <?php endif; ?>
     </div>
 
     <?php if (empty($notifications)): ?>

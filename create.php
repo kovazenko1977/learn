@@ -16,6 +16,7 @@ $requestManager = new RequestManager($requestStore);
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    checkCsrf();
     $photoPath = '';
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
@@ -59,6 +60,7 @@ include 'includes/header.php';
     </div>
 
     <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
         <section class="card">
             <div class="form-group">
                 <label>Типовая заявка (шаблон)</label>

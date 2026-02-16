@@ -83,9 +83,19 @@ include 'includes/header.php';
 
     <section class="card">
         <h2>Эффективность</h2>
-        <p style="color:var(--win-text-secondary); font-size:14px;">Среднее время выполнения и нагрузка (в разработке)</p>
-        <div style="height:200px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.02); border-radius:8px;">
-            <i data-lucide="bar-chart-3" style="width:48px; height:48px; color:var(--win-text-secondary); opacity:0.3;"></i>
+        <div class="form-grid">
+            <div>
+                <div style="font-size: 32px; font-weight: 700; color: var(--win-accent);">
+                    <?php echo $stats['avg_hours']; ?> ч.
+                </div>
+                <div style="font-size: 14px; color: var(--win-text-secondary);">ср. время выполнения</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; font-weight: 700; color: var(--status-completed);">
+                    <?php echo $stats['completed_count']; ?>
+                </div>
+                <div style="font-size: 14px; color: var(--win-text-secondary);">выполнено заявок</div>
+            </div>
         </div>
     </section>
 </div>

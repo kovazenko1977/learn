@@ -63,12 +63,44 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
 
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:12px; margin-bottom:20px;">
+            <?php
+                $newCount = 0; $workCount = 0; $overdueCount = 0;
+                foreach($filteredRequests as $r) {
+                    if ($r['status'] === 'new') $newCount++;
+                    if ($r['status'] === 'working') $workCount++;
+                    // Reuse overdue logic
+                    $hoursLimit = $slaConfig[$r['priority']] ?? 24;
+                    if (!in_array($r['status'], ['completed', 'closed']) && time() > (strtotime($r['created_at']) + ($hoursLimit * 3600))) {
+                        $overdueCount++;
+                    }
+                }
+            ?>
+            <div class="card mica" style="padding:12px; margin-bottom:0; text-align:center;">
+                <div style="font-size:20px; font-weight:700; color:var(--status-new);"><?php echo $newCount; ?></div>
+                <div style="font-size:12px; color:var(--win-text-secondary);">Новые</div>
+            </div>
+            <div class="card mica" style="padding:12px; margin-bottom:0; text-align:center;">
+                <div style="font-size:20px; font-weight:700; color:var(--status-working);"><?php echo $workCount; ?></div>
+                <div style="font-size:12px; color:var(--win-text-secondary);">В работе</div>
+            </div>
+            <div class="card mica" style="padding:12px; margin-bottom:0; text-align:center;">
+                <div style="font-size:20px; font-weight:700; color:var(--priority-critical);"><?php echo $overdueCount; ?></div>
+                <div style="font-size:12px; color:var(--win-text-secondary);">SLA!</div>
+            </div>
+        </div>
+
         <div class="card mica" style="padding:12px; margin-bottom:20px;">
             <div style="display:flex; gap:8px; margin-bottom:12px;">
                 <div style="flex:1; position:relative;">
                     <i data-lucide="search" style="position:absolute; left:8px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--win-text-secondary);"></i>
                     <input type="text" id="search-input" placeholder="Поиск по описанию..." style="padding-left:32px; font-size:14px;">
                 </div>
+                <select id="sort-select" style="width:auto; font-size:14px; padding:4px 8px;">
+                    <option value="date-desc">Сначала новые</option>
+                    <option value="date-asc">Сначала старые</option>
+                    <option value="priority">По приоритету</option>
+                </select>
             </div>
             <div style="display:flex; gap:4px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch;">
                 <button class="filter-btn active" data-status="all">Все</button>
@@ -97,10 +129,15 @@ include 'includes/header.php';
                         }
                     }
                 ?>
+                <?php
+                    $priorityMap = ['critical' => 4, 'high' => 3, 'medium' => 2, 'low' => 1];
+                ?>
                 <a href="view.php?id=<?php echo $req['id']; ?>"
                    class="card p-<?php echo $req['priority']; ?> request-card"
                    data-status="<?php echo $req['status']; ?>"
                    data-desc="<?php echo htmlspecialchars(mb_strtolower($req['description'])); ?>"
+                   data-timestamp="<?php echo strtotime($req['created_at']); ?>"
+                   data-priority="<?php echo $priorityMap[$req['priority']] ?? 0; ?>"
                    style="display:block; text-decoration:none; color:inherit; <?php echo $isOverdue ? 'border: 1px solid var(--priority-critical);' : ''; ?>">
                     <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
                         <div>
@@ -134,6 +171,7 @@ include 'includes/header.php';
 <?php if ($userRole === 'admin'): ?>
     <div class="container" style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
         <a href="users.php" class="btn-primary" style="display:inline-block; text-align:center;">Пользователи</a>
+        <a href="services_manage.php" class="btn-primary" style="display:inline-block; text-align:center; background:var(--status-working);">Службы</a>
         <a href="settings.php" class="btn-primary" style="display:inline-block; text-align:center; background:var(--status-assigned);">Настройки</a>
         <a href="templates_manage.php" class="btn-primary" style="display:inline-block; text-align:center; background:var(--status-checking);">Шаблоны</a>
     </div>
@@ -142,8 +180,10 @@ include 'includes/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
+    const sortSelect = document.getElementById('sort-select');
     const filterBtns = document.querySelectorAll('.filter-btn');
-    const cards = document.querySelectorAll('.request-card');
+    const list = document.getElementById('request-list');
+    let cards = Array.from(document.querySelectorAll('.request-card'));
 
     function filterCards() {
         const searchTerm = searchInput.value.toLowerCase();
@@ -161,7 +201,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function sortCards() {
+        const val = sortSelect.value;
+        cards.sort((a, b) => {
+            if (val === 'date-desc') return b.dataset.timestamp - a.dataset.timestamp;
+            if (val === 'date-asc') return a.dataset.timestamp - b.dataset.timestamp;
+            if (val === 'priority') return b.dataset.priority - a.dataset.priority;
+            return 0;
+        });
+        cards.forEach(card => list.appendChild(card));
+    }
+
     searchInput.addEventListener('input', filterCards);
+    sortSelect.addEventListener('change', sortCards);
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {

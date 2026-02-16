@@ -8,17 +8,63 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+    <?php if (isset($_SESSION['user_role'])): ?>
+    <aside class="sidebar mica">
+        <a href="index.php" class="sidebar-logo">ХОП</a>
+        <nav class="sidebar-nav">
+            <a href="index.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Заявки</span>
+            </a>
+            <?php if ($_SESSION['user_role'] === 'initiator' || $_SESSION['user_role'] === 'admin'): ?>
+            <a href="create.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'create.php' ? 'active' : ''; ?>">
+                <i data-lucide="plus-circle"></i>
+                <span>Создать заявку</span>
+            </a>
+            <?php endif; ?>
+            <?php if (in_array($_SESSION['user_role'], ['manager', 'admin'])): ?>
+            <a href="analytics.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'analytics.php' ? 'active' : ''; ?>">
+                <i data-lucide="bar-chart-3"></i>
+                <span>Аналитика</span>
+            </a>
+            <?php endif; ?>
+            <a href="notifications.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>">
+                <i data-lucide="bell"></i>
+                <span>Уведомления</span>
+            </a>
+            <a href="profile.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+                <i data-lucide="user"></i>
+                <span>Профиль</span>
+            </a>
+            <?php if ($_SESSION['user_role'] === 'admin'): ?>
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid var(--win-border);">
+                <a href="users.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>">
+                    <i data-lucide="users"></i>
+                    <span>Пользователи</span>
+                </a>
+                <a href="services_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'services_manage.php' ? 'active' : ''; ?>">
+                    <i data-lucide="briefcase"></i>
+                    <span>Службы</span>
+                </a>
+                <a href="settings.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">
+                    <i data-lucide="settings"></i>
+                    <span>Настройки</span>
+                </a>
+            </div>
+            <?php endif; ?>
+        </nav>
+    </aside>
+
     <header class="mica">
-        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-            <h1>ХОП</h1>
-            <div class="user-info" style="font-size: 14px;">
-                <?php echo $_SESSION['user_name'] ?? ''; ?>
-                <a href="logout.php" style="margin-left:10px; color:var(--win-accent); text-decoration:none;">Выход</a>
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%; margin:0 auto;">
+            <h1 class="mobile-only-header" style="font-size: 18px; margin: 0; font-weight: 600;">ХОП</h1>
+            <div class="user-info" style="font-size: 14px; margin-left: auto;">
+                <span class="desktop-only"><?php echo $_SESSION['user_name'] ?? ''; ?></span>
+                <a href="logout.php" style="margin-left:10px; color:var(--win-accent); text-decoration:none;"><i data-lucide="log-out" style="width:16px; vertical-align:middle;"></i> <span class="desktop-only">Выход</span></a>
             </div>
         </div>
     </header>
 
-    <?php if (isset($_SESSION['user_role'])): ?>
     <nav class="bottom-nav mica">
         <a href="index.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
             <i data-lucide="layout-dashboard"></i>
@@ -32,7 +78,7 @@
         <?php endif; ?>
         <a href="notifications.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>">
             <i data-lucide="bell"></i>
-            <span>Уведомления</span>
+            <span>Увед.</span>
         </a>
         <a href="profile.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
             <i data-lucide="user"></i>

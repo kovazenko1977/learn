@@ -3,20 +3,16 @@ namespace Hop\Core;
 
 class NotificationManager {
     private JsonStore $settingsStore;
-    private string $logPath;
+    private JsonStore $notificationStore;
 
-    public function __construct(JsonStore $settingsStore, string $logPath) {
+    public function __construct(JsonStore $settingsStore, JsonStore $notificationStore) {
         $this->settingsStore = $settingsStore;
-        $this->logPath = $logPath;
+        $this->notificationStore = $notificationStore;
     }
 
     public function send(int $userId, string $message, string $type = 'info'): bool {
         // Internal log
-        $notifications = [];
-        if (file_exists($this->logPath)) {
-            $content = file_get_contents($this->logPath);
-            $notifications = json_decode($content, true) ?: [];
-        }
+        $notifications = $this->notificationStore->read();
 
         $notifications[] = [
             'user_id' => $userId,
@@ -26,7 +22,7 @@ class NotificationManager {
             'read' => false
         ];
 
-        file_put_contents($this->logPath, json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $this->notificationStore->write($notifications);
 
         // Telegram Mock
         $settings = $this->settingsStore->read();
@@ -38,9 +34,17 @@ class NotificationManager {
     }
 
     public function getForUser(int $userId): array {
-        if (!file_exists($this->logPath)) return [];
-        $content = file_get_contents($this->logPath);
-        $notifications = json_decode($content, true) ?: [];
+        $notifications = $this->notificationStore->read();
         return array_values(array_filter($notifications, fn($n) => $n['user_id'] === $userId));
+    }
+
+    public function markAsRead(int $userId): void {
+        $notifications = $this->notificationStore->read();
+        foreach ($notifications as &$n) {
+            if ($n['user_id'] === $userId) {
+                $n['read'] = true;
+            }
+        }
+        $this->notificationStore->write($notifications);
     }
 }

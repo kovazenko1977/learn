@@ -24,6 +24,7 @@ if ($_SESSION['user_role'] === 'service_lead' && $req['service_id'] !== $current
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    checkCsrf();
     $performerId = (int)$_POST['performer_id'];
     if ($requestManager->assign($requestId, $performerId, $_SESSION['user_id'])) {
         header("Location: view.php?id=$requestId");
@@ -48,6 +49,7 @@ include 'includes/header.php';
         <p><strong>Описание:</strong> <?php echo htmlspecialchars($req['description']); ?></p>
 
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
             <div class="form-group">
                 <label>Выберите сотрудника</label>
                 <select name="performer_id" required>

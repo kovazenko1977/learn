@@ -21,6 +21,7 @@ $performer = isset($req['performer_id']) ? $userManager->getById($req['performer
 
 // Handle status updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    checkCsrf();
     $action = $_POST['action'];
 
     // Server-side authorization
@@ -82,9 +83,15 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header" style="display:flex; align-items:center; gap:12px;">
-        <a href="index.php" style="color:var(--win-text);"><i data-lucide="arrow-left"></i></a>
-        <h1>Заявка #<?php echo $req['id']; ?></h1>
+    <div class="page-header" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <a href="index.php" style="color:var(--win-text);"><i data-lucide="arrow-left"></i></a>
+            <h1>Заявка #<?php echo $req['id']; ?></h1>
+        </div>
+        <button onclick="window.print()" class="btn-primary" style="background:var(--win-text-secondary); display:flex; align-items:center; gap:8px;">
+            <i data-lucide="printer" style="width:16px;"></i>
+            <span class="desktop-only">Печать</span>
+        </button>
     </div>
 
     <section class="card">
@@ -125,7 +132,7 @@ include 'includes/header.php';
         <?php if (!empty($req['photo'])): ?>
             <div style="margin-top:16px;">
                 <strong>Фото проблемы:</strong><br>
-                <img src="<?php echo $req['photo']; ?>" style="width:100%; max-width:400px; border-radius:8px; margin-top:8px;">
+                <img src="<?php echo $req['photo']; ?>" style="width:100%; max-width:400px; border-radius:8px; margin-top:8px;" loading="lazy">
             </div>
         <?php endif; ?>
     </section>
@@ -141,12 +148,14 @@ include 'includes/header.php';
         <?php if (($_SESSION['user_role'] === 'performer' && ($req['performer_id'] ?? 0) === $_SESSION['user_id']) || $_SESSION['user_role'] === 'admin'): ?>
             <?php if ($req['status'] === 'assigned' || $req['status'] === 'returned'): ?>
                 <form method="POST" class="card">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                     <input type="hidden" name="action" value="working">
                     <p>Принять заявку в работу?</p>
                     <button type="submit" class="btn-primary">В работу</button>
                 </form>
             <?php elseif ($req['status'] === 'working'): ?>
                 <form method="POST" enctype="multipart/form-data" class="card">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                     <input type="hidden" name="action" value="checking">
                     <h3>Завершить работу</h3>
                     <div class="form-group">
@@ -165,6 +174,7 @@ include 'includes/header.php';
         <?php if ($_SESSION['user_role'] === 'controller' || $_SESSION['user_role'] === 'admin'): ?>
             <?php if ($req['status'] === 'checking'): ?>
                 <form method="POST" class="card">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                     <h3>Проверка выполнения</h3>
                     <div class="form-group">
                         <label>Замечания (если возвращаете)</label>
@@ -177,6 +187,7 @@ include 'includes/header.php';
                 </form>
             <?php elseif ($req['status'] === 'completed'): ?>
                 <form method="POST" class="card">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                     <input type="hidden" name="action" value="closed">
                     <p>Заявка выполнена. Закрыть и отправить в архив?</p>
                     <button type="submit" class="btn-primary" style="background:var(--status-closed);">Закрыть заявку</button>
@@ -187,23 +198,26 @@ include 'includes/header.php';
 
     <section class="card">
         <h2>История действий</h2>
-        <div class="history-list">
+        <div class="timeline">
             <?php foreach (array_reverse($req['history']) as $entry): ?>
-                <div style="padding:12px 0; border-bottom:1px solid var(--win-border);">
-                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--win-text-secondary); margin-bottom:4px;">
-                        <span><?php echo $statusNames[$entry['status']] ?? $entry['status']; ?></span>
-                        <span><?php echo date('d.m H:i', strtotime($entry['timestamp'])); ?></span>
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">
+                            <?php echo date('d.m.Y H:i', strtotime($entry['timestamp'])); ?> —
+                            <?php echo $statusNames[$entry['status']] ?? $entry['status']; ?>
+                        </div>
+                        <div>
+                            <strong><?php
+                                $u = $userManager->getById($entry['user_id']);
+                                echo htmlspecialchars($u['name'] ?? 'Система');
+                            ?>:</strong>
+                            <?php echo htmlspecialchars($entry['comment'] ?? ''); ?>
+                        </div>
+                        <?php if (isset($entry['photo'])): ?>
+                            <img src="<?php echo $entry['photo']; ?>" style="width:100%; max-width:200px; border-radius:4px; margin-top:8px; display:block;" loading="lazy">
+                        <?php endif; ?>
                     </div>
-                    <div style="font-size:14px;">
-                        <strong><?php
-                            $u = $userManager->getById($entry['user_id']);
-                            echo $u['name'] ?? 'Система';
-                        ?>:</strong>
-                        <?php echo htmlspecialchars($entry['comment']); ?>
-                    </div>
-                    <?php if (isset($entry['photo'])): ?>
-                        <img src="<?php echo $entry['photo']; ?>" style="width:100px; height:100px; object-fit:cover; border-radius:4px; margin-top:8px;">
-                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>

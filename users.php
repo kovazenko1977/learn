@@ -11,6 +11,7 @@ $userManager = new UserManager($userStore);
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    checkCsrf();
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $userManager->create([
@@ -45,6 +46,7 @@ include 'includes/header.php';
     <section class="card">
         <h2>Добавить пользователя</h2>
         <form method="POST" class="form-grid">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
             <input type="hidden" name="action" value="create">
             <div class="form-group">
                 <label>ФИО</label>
@@ -108,6 +110,7 @@ include 'includes/header.php';
                         ?></td>
                         <td>
                             <form method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?php echo $u['id']; ?>">
                                 <button type="submit" class="btn-danger btn-sm" onclick="return confirm('Удалить?')">Удалить</button>
