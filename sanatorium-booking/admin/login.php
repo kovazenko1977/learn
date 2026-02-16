@@ -19,8 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
+    $access_code = $_POST['access_code'] ?? '';
 
-    $user = $userManager->authenticate($username, $password);
+    $user = null;
+    if (!empty($access_code)) {
+        $user = $userManager->authenticateByCode($access_code);
+    } elseif (!empty($username) && !empty($password)) {
+        $user = $userManager->authenticate($username, $password);
+    }
 
     if ($user) {
         $_SESSION['admin_logged_in'] = true;
@@ -82,15 +88,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="error"><?php echo $error; ?></div>
         <?php endif; ?>
 
-        <form method="post">
-            <label>Логин</label>
-            <input type="text" name="username" required autofocus placeholder="admin">
+        <div id="code-login-form">
+            <form method="post">
+                <label>Введите 6-значный код доступа</label>
+                <input type="text" name="access_code" maxlength="6" pattern="\d{6}" required autofocus placeholder="123456" style="font-size: 1.5rem; text-align: center; letter-spacing: 0.5rem;">
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">Войти по коду</button>
+            </form>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="#" onclick="document.getElementById('code-login-form').style.display='none'; document.getElementById('standard-login-form').style.display='block'; return false;" style="font-size: 0.85rem; color: var(--primary-color);">Вход по логину/паролю</a>
+            </div>
+        </div>
 
-            <label>Пароль</label>
-            <input type="password" name="password" required placeholder="••••••••">
+        <div id="standard-login-form" style="display: none;">
+            <form method="post">
+                <label>Логин</label>
+                <input type="text" name="username" placeholder="admin">
 
-            <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">Войти в систему</button>
-        </form>
+                <label>Пароль</label>
+                <input type="password" name="password" placeholder="••••••••">
+
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">Войти в систему</button>
+            </form>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="#" onclick="document.getElementById('standard-login-form').style.display='none'; document.getElementById('code-login-form').style.display='block'; return false;" style="font-size: 0.85rem; color: var(--primary-color);">Вход по коду доступа</a>
+            </div>
+        </div>
 
         <div style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: #888;">
             &copy; <?php echo date('Y'); ?> Sanatorium Booking System

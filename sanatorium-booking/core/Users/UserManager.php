@@ -65,6 +65,18 @@ class UserManager {
         return null;
     }
 
+    public function getUserByCode(string $code): ?array {
+        $users = $this->getUsers();
+        if (is_array($users)) {
+            foreach ($users as $user) {
+                if (is_array($user) && ($user['access_code'] ?? '') === $code) {
+                    return $user;
+                }
+            }
+        }
+        return null;
+    }
+
     public function getUserByToken(string $token): ?array {
         $users = $this->getUsers();
         if (is_array($users)) {
@@ -75,6 +87,13 @@ class UserManager {
             }
         }
         return null;
+    }
+
+    public function authenticateByCode(string $code): ?array {
+        if (strlen($code) !== 6 || !is_numeric($code)) {
+            return null;
+        }
+        return $this->getUserByCode($code);
     }
 
     public function addUser(array $data): int {
