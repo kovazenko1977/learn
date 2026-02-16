@@ -24,14 +24,21 @@ class RequestManager {
         $requests = $this->getAll();
         $id = $this->store->getNextId();
         $data['id'] = $id;
-        $data['status'] = 'new'; // Новая
+        $status = $data['status'] ?? 'new';
+        $data['status'] = $status;
         $data['created_at'] = date('Y-m-d H:i:s');
+
+        $historyComment = 'Заявка создана';
+        if (isset($data['performer_id']) && $status === 'assigned') {
+            $historyComment = 'Заявка создана и автоматически назначена';
+        }
+
         $data['history'] = [
             [
-                'status' => 'new',
+                'status' => $status,
                 'user_id' => $data['initiator_id'],
                 'timestamp' => $data['created_at'],
-                'comment' => 'Заявка создана'
+                'comment' => $historyComment
             ]
         ];
         $requests[] = $data;

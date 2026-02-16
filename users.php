@@ -64,8 +64,8 @@ include 'includes/header.php';
                 </select>
             </div>
             <div class="form-group">
-                <label>Код (4 цифры)</label>
-                <input type="text" name="code" maxlength="4" required>
+                <label>Код (6 цифр)</label>
+                <input type="text" name="code" maxlength="6" pattern="\d{6}" required>
             </div>
             <div class="form-group">
                 <label>Служба (для исполнителей)</label>

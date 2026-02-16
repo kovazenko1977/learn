@@ -29,10 +29,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    $serviceId = (int)$_POST['service_id'];
+    $performerId = null;
+    $initialStatus = 'new';
+
+    // Auto-assignment logic: Find the first performer for this service
+    $userStore = new JsonStore('data/users.json');
+    $allUsers = $userStore->read();
+    foreach ($allUsers as $u) {
+        if ($u['role'] === 'performer' && $u['service_id'] === $serviceId) {
+            $performerId = $u['id'];
+            $initialStatus = 'assigned';
+            break;
+        }
+    }
+
     $requestId = $requestManager->create([
         'initiator_id' => $_SESSION['user_id'],
         'description' => $_POST['description'],
-        'service_id' => (int)$_POST['service_id'],
+        'service_id' => $serviceId,
+        'performer_id' => $performerId,
+        'status' => $initialStatus,
         'location' => [
             'building' => $_POST['building'],
             'floor' => $_POST['floor'],

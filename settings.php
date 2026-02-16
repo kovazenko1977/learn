@@ -50,8 +50,9 @@ if (isset($_GET['action'])) {
         $requestStore = new JsonStore('data/requests.json');
         $serviceStore = new JsonStore('data/services.json');
         $userStore = new JsonStore('data/users.json');
-        $loader = new DemoDataLoader($requestStore, $serviceStore, $userStore);
-        $loader->load();
+        $tmplStore = new JsonStore('data/templates.json');
+        $loader = new DemoDataLoader();
+        $loader->load($serviceStore, $userStore, $requestStore, $tmplStore);
         header('Location: settings.php?msg=demo_ok');
         exit;
     }

@@ -14,7 +14,7 @@ class DemoDataLoader {
 
         // 2. Users (Generating 30 users)
         $users = [];
-        $users[] = ['id' => 1, 'name' => 'Администратор', 'role' => 'admin', 'code' => '1111', 'service_id' => null];
+        $users[] = ['id' => 1, 'name' => 'Администратор', 'role' => 'admin', 'code' => '123456', 'service_id' => null];
 
         $firstNames = ['Иван', 'Петр', 'Сергей', 'Алексей', 'Дмитрий', 'Андрей', 'Николай', 'Михаил', 'Александр', 'Виктор'];
         $lastNames = ['Иванов', 'Петров', 'Сидоров', 'Кузнецов', 'Попов', 'Васильев', 'Соколов', 'Михайлов', 'Новиков', 'Федоров'];
@@ -25,7 +25,7 @@ class DemoDataLoader {
                 'id' => $i,
                 'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'initiator',
-                'code' => (string)(2000 + $i),
+                'code' => (string)rand(200000, 299999),
                 'service_id' => null
             ];
         }
@@ -37,7 +37,7 @@ class DemoDataLoader {
                 'id' => $i,
                 'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'performer',
-                'code' => (string)(3000 + $i),
+                'code' => (string)rand(300000, 399999),
                 'service_id' => $svcId
             ];
         }
@@ -49,7 +49,7 @@ class DemoDataLoader {
                 'id' => $i,
                 'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'service_lead',
-                'code' => (string)(4000 + $i),
+                'code' => (string)rand(400000, 499999),
                 'service_id' => $svcId
             ];
         }
@@ -60,13 +60,13 @@ class DemoDataLoader {
                 'id' => $i,
                 'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'controller',
-                'code' => (string)(5000 + $i),
+                'code' => (string)rand(500000, 599999),
                 'service_id' => null
             ];
         }
 
         // 1 Manager
-        $users[] = ['id' => 30, 'name' => 'Главврач', 'role' => 'manager', 'code' => '7777', 'service_id' => null];
+        $users[] = ['id' => 30, 'name' => 'Главврач', 'role' => 'manager', 'code' => '777777', 'service_id' => null];
 
         $userStore->save($users);
 

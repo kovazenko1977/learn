@@ -151,7 +151,7 @@ include 'includes/header.php';
                     <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                     <input type="hidden" name="action" value="working">
                     <p>Принять заявку в работу?</p>
-                    <button type="submit" class="btn-primary">В работу</button>
+                    <button type="submit" class="btn-primary">Принято</button>
                 </form>
             <?php elseif ($req['status'] === 'working'): ?>
                 <form method="POST" enctype="multipart/form-data" class="card">

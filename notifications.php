@@ -5,7 +5,7 @@ use Hop\Core\JsonStore;
 use Hop\Core\NotificationManager;
 
 $settingsStore = new JsonStore('data/settings.json');
-$notificationStore = new JsonStore('data/logs/notifications.json');
+$notificationStore = new JsonStore('data/notifications.json');
 $notifier = new NotificationManager($settingsStore, $notificationStore);
 $notifications = $notifier->getForUser($_SESSION['user_id']);
 

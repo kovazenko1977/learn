@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Хозяйственно-Оперативные Поручения</p>
         <form method="POST">
             <div class="form-group">
-                <input type="password" name="code" placeholder="Введите ваш код" required autofocus maxlength="4" pattern="\d*">
+                <input type="password" name="code" placeholder="Введите ваш код" required autofocus maxlength="6" pattern="\d{6}">
             </div>
             <?php if ($error): ?>
                 <div class="error-message"><?php echo $error; ?></div>
