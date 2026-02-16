@@ -1,0 +1,37 @@
+[
+    {
+        "name": "Грязелечение",
+        "type": "free",
+        "price": 0,
+        "duration": 30,
+        "id": "69937ff3e10a8"
+    },
+    {
+        "name": "Массаж спины",
+        "type": "paid",
+        "price": 1500,
+        "duration": 20,
+        "id": "69937ff3e12ad"
+    },
+    {
+        "name": "Электрофорез",
+        "type": "free",
+        "price": 0,
+        "duration": 15,
+        "id": "69937ff3e1434"
+    },
+    {
+        "name": "Ингаляция",
+        "type": "free",
+        "price": 0,
+        "duration": 10,
+        "id": "69937ff3e15a9"
+    },
+    {
+        "name": "Подводный душ-массаж",
+        "type": "paid",
+        "price": 2500,
+        "duration": 40,
+        "id": "69937ff3e16e1"
+    }
+]

@@ -1,0 +1,115 @@
+:root {
+    --win-bg: #f3f3f3;
+    --win-card-bg: rgba(255, 255, 255, 0.7);
+    --win-accent: #0078d4;
+    --win-text: #1a1a1a;
+    --win-border: rgba(0, 0, 0, 0.1);
+    --win-radius: 8px;
+    --win-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+body {
+    background-color: var(--win-bg);
+    background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 0%, rgba(243, 243, 243, 1) 100%);
+    background-attachment: fixed;
+    font-family: 'Segoe UI Variable Display', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--win-text);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.mica-effect {
+    background: var(--win-card-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.card {
+    background: var(--win-card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--win-radius);
+    border: 1px solid var(--win-border);
+    box-shadow: var(--win-shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn {
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    border: 1px solid var(--win-border);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--win-accent);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #005a9e;
+}
+
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    border-right: 1px solid var(--win-border);
+}
+
+.main-content {
+    margin-left: 260px;
+    padding: 40px;
+}
+
+.status-gray { color: #666; background: #eee; padding: 2px 8px; border-radius: 4px; }
+.status-red { color: #d83b01; background: #fde7e9; padding: 2px 8px; border-radius: 4px; }
+.status-green { color: #107c10; background: #dff6dd; padding: 2px 8px; border-radius: 4px; }
+
+input, select, textarea {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--win-border);
+    background: rgba(255,255,255,0.8);
+}
+
+h1, h2, h3 {
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.navbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--win-border);
+    margin-bottom: 20px;
+}
+
+/* Lucide Icons support */
+.icon {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+@media print {
+    .sidebar, .btn, .navbar { display: none !important; }
+    .main-content { margin-left: 0; padding: 0; }
+}
