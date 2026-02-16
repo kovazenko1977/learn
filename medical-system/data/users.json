@@ -1,0 +1,34 @@
+[
+    {
+        "username": "admin",
+        "password": "$2y$10$qxyIf4ydNQD1zPPM2bhJF.AuVQHzPvCx8gkG5DViiMl83znnC91K2",
+        "role": "admin",
+        "name": "Администратор",
+        "access_code": "123456",
+        "id": 1
+    },
+    {
+        "username": "doctor",
+        "password": "$2y$10$qx9ccTnP6RbjQuoAWady.eWFwQIbWhbguuv\/gVPmfvK2upsXlGKkC",
+        "role": "doctor",
+        "name": "Врач Терапевт",
+        "access_code": "101010",
+        "id": 2
+    },
+    {
+        "username": "cashier",
+        "password": "$2y$10$8L.q0McuMtGMpwnn4p7dbuguEIYzeBHUCsPWXbGLvGL.3\/CnlSS1i",
+        "role": "cashier",
+        "name": "Кассир",
+        "access_code": "202020",
+        "id": 3
+    },
+    {
+        "username": "nurse",
+        "password": "$2y$10$cyQG8bGwc4RuPQIM9ytdtuf3XPofix2G44B.cejHjrHWpp7hE\/DHC",
+        "role": "nurse",
+        "name": "Медсестра",
+        "access_code": "303030",
+        "id": 4
+    }
+]

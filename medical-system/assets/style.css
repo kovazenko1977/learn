@@ -1,0 +1,113 @@
+:root {
+    --win-bg: #f3f3f3;
+    --win-accent: #0078d4;
+    --win-card: rgba(255, 255, 255, 0.7);
+    --win-border: rgba(0, 0, 0, 0.05);
+    --mica-bg: rgba(243, 243, 243, 0.85);
+    --text-main: #1a1a1a;
+    --text-sec: #5c5c5c;
+    --success: #107c10;
+    --danger: #d13438;
+    --warning: #ffb900;
+}
+
+body {
+    font-family: 'Segoe UI Variable', 'Segoe UI', sans-serif;
+    background-color: var(--win-bg);
+    background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(243,243,243,1) 100%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    margin: 0;
+    min-height: 100vh;
+}
+
+.mica-effect {
+    background: var(--mica-bg);
+    backdrop-filter: blur(30px) saturate(125%);
+    border: 1px solid var(--win-border);
+}
+
+.win-card {
+    background: var(--win-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--win-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.btn-win {
+    background-color: var(--win-accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-win:hover {
+    filter: brightness(110%);
+}
+
+.btn-win-sec {
+    background-color: white;
+    color: var(--text-main);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 16px;
+}
+
+.form-win {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 6px 12px;
+    width: 100%;
+}
+
+.status-gray { background-color: #f0f0f0; color: #666; }
+.status-red { background-color: #fee2e2; color: #991b1b; }
+.status-green { background-color: #dcfce7; color: #166534; }
+
+/* Preloader */
+#preloader {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FFF;
+    border-bottom-color: var(--win-accent);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+nav.win-nav {
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--win-border);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+}
