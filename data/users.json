@@ -3,7 +3,210 @@
         "id": 1,
         "name": "Администратор",
         "role": "admin",
-        "code": "0000",
+        "code": "1111",
+        "service_id": null
+    },
+    {
+        "id": 2,
+        "name": "Сергей Михайлов",
+        "role": "initiator",
+        "code": "2002",
+        "service_id": null
+    },
+    {
+        "id": 3,
+        "name": "Дмитрий Попов",
+        "role": "initiator",
+        "code": "2003",
+        "service_id": null
+    },
+    {
+        "id": 4,
+        "name": "Александр Сидоров",
+        "role": "initiator",
+        "code": "2004",
+        "service_id": null
+    },
+    {
+        "id": 5,
+        "name": "Андрей Петров",
+        "role": "initiator",
+        "code": "2005",
+        "service_id": null
+    },
+    {
+        "id": 6,
+        "name": "Андрей Васильев",
+        "role": "initiator",
+        "code": "2006",
+        "service_id": null
+    },
+    {
+        "id": 7,
+        "name": "Сергей Кузнецов",
+        "role": "initiator",
+        "code": "2007",
+        "service_id": null
+    },
+    {
+        "id": 8,
+        "name": "Иван Федоров",
+        "role": "initiator",
+        "code": "2008",
+        "service_id": null
+    },
+    {
+        "id": 9,
+        "name": "Иван Петров",
+        "role": "initiator",
+        "code": "2009",
+        "service_id": null
+    },
+    {
+        "id": 10,
+        "name": "Александр Михайлов",
+        "role": "initiator",
+        "code": "2010",
+        "service_id": null
+    },
+    {
+        "id": 11,
+        "name": "Алексей Михайлов",
+        "role": "initiator",
+        "code": "2011",
+        "service_id": null
+    },
+    {
+        "id": 12,
+        "name": "Андрей Соколов",
+        "role": "performer",
+        "code": "3012",
+        "service_id": 1
+    },
+    {
+        "id": 13,
+        "name": "Александр Попов",
+        "role": "performer",
+        "code": "3013",
+        "service_id": 2
+    },
+    {
+        "id": 14,
+        "name": "Дмитрий Васильев",
+        "role": "performer",
+        "code": "3014",
+        "service_id": 3
+    },
+    {
+        "id": 15,
+        "name": "Виктор Петров",
+        "role": "performer",
+        "code": "3015",
+        "service_id": 4
+    },
+    {
+        "id": 16,
+        "name": "Николай Васильев",
+        "role": "performer",
+        "code": "3016",
+        "service_id": 1
+    },
+    {
+        "id": 17,
+        "name": "Александр Соколов",
+        "role": "performer",
+        "code": "3017",
+        "service_id": 2
+    },
+    {
+        "id": 18,
+        "name": "Михаил Кузнецов",
+        "role": "performer",
+        "code": "3018",
+        "service_id": 3
+    },
+    {
+        "id": 19,
+        "name": "Сергей Кузнецов",
+        "role": "performer",
+        "code": "3019",
+        "service_id": 4
+    },
+    {
+        "id": 20,
+        "name": "Дмитрий Иванов",
+        "role": "performer",
+        "code": "3020",
+        "service_id": 1
+    },
+    {
+        "id": 21,
+        "name": "Сергей Иванов",
+        "role": "performer",
+        "code": "3021",
+        "service_id": 2
+    },
+    {
+        "id": 22,
+        "name": "Алексей Иванов",
+        "role": "performer",
+        "code": "3022",
+        "service_id": 3
+    },
+    {
+        "id": 23,
+        "name": "Дмитрий Новиков",
+        "role": "performer",
+        "code": "3023",
+        "service_id": 4
+    },
+    {
+        "id": 24,
+        "name": "Николай Сидоров",
+        "role": "service_lead",
+        "code": "4024",
+        "service_id": 1
+    },
+    {
+        "id": 25,
+        "name": "Андрей Сидоров",
+        "role": "service_lead",
+        "code": "4025",
+        "service_id": 2
+    },
+    {
+        "id": 26,
+        "name": "Николай Кузнецов",
+        "role": "service_lead",
+        "code": "4026",
+        "service_id": 3
+    },
+    {
+        "id": 27,
+        "name": "Сергей Петров",
+        "role": "service_lead",
+        "code": "4027",
+        "service_id": 4
+    },
+    {
+        "id": 28,
+        "name": "Алексей Кузнецов",
+        "role": "controller",
+        "code": "5028",
+        "service_id": null
+    },
+    {
+        "id": 29,
+        "name": "Петр Михайлов",
+        "role": "controller",
+        "code": "5029",
+        "service_id": null
+    },
+    {
+        "id": 30,
+        "name": "Главврач",
+        "role": "manager",
+        "code": "7777",
         "service_id": null
     }
 ]

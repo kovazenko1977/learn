@@ -12,16 +12,62 @@ class DemoDataLoader {
         ];
         $svcStore->save($services);
 
-        // 2. Users
-        $users = [
-            ['id' => 1, 'name' => 'Администратор', 'role' => 'admin', 'code' => '1111', 'service_id' => null],
-            ['id' => 2, 'name' => 'Иванов Иван (Медсестра)', 'role' => 'initiator', 'code' => '2222', 'service_id' => null],
-            ['id' => 3, 'name' => 'Петров Петр (Электрик)', 'role' => 'performer', 'code' => '2222', 'service_id' => 1],
-            ['id' => 4, 'name' => 'Сидоров Сидор (ИТ-специалист)', 'role' => 'performer', 'code' => '3333', 'service_id' => 2],
-            ['id' => 5, 'name' => 'Козлов К. (Завхоз)', 'role' => 'service_lead', 'code' => '4444', 'service_id' => 1],
-            ['id' => 6, 'name' => 'Смирнова С. (Контролер)', 'role' => 'controller', 'code' => '5555', 'service_id' => null],
-            ['id' => 7, 'name' => 'Главврач', 'role' => 'manager', 'code' => '7777', 'service_id' => null],
-        ];
+        // 2. Users (Generating 30 users)
+        $users = [];
+        $users[] = ['id' => 1, 'name' => 'Администратор', 'role' => 'admin', 'code' => '1111', 'service_id' => null];
+
+        $firstNames = ['Иван', 'Петр', 'Сергей', 'Алексей', 'Дмитрий', 'Андрей', 'Николай', 'Михаил', 'Александр', 'Виктор'];
+        $lastNames = ['Иванов', 'Петров', 'Сидоров', 'Кузнецов', 'Попов', 'Васильев', 'Соколов', 'Михайлов', 'Новиков', 'Федоров'];
+
+        // 10 Initiators
+        for ($i = 2; $i <= 11; $i++) {
+            $users[] = [
+                'id' => $i,
+                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'role' => 'initiator',
+                'code' => (string)(2000 + $i),
+                'service_id' => null
+            ];
+        }
+
+        // 12 Performers (3 per service)
+        for ($i = 12; $i <= 23; $i++) {
+            $svcId = (($i - 12) % 4) + 1;
+            $users[] = [
+                'id' => $i,
+                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'role' => 'performer',
+                'code' => (string)(3000 + $i),
+                'service_id' => $svcId
+            ];
+        }
+
+        // 4 Service Leads
+        for ($i = 24; $i <= 27; $i++) {
+            $svcId = $i - 23;
+            $users[] = [
+                'id' => $i,
+                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'role' => 'service_lead',
+                'code' => (string)(4000 + $i),
+                'service_id' => $svcId
+            ];
+        }
+
+        // 2 Controllers
+        for ($i = 28; $i <= 29; $i++) {
+            $users[] = [
+                'id' => $i,
+                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'role' => 'controller',
+                'code' => (string)(5000 + $i),
+                'service_id' => null
+            ];
+        }
+
+        // 1 Manager
+        $users[] = ['id' => 30, 'name' => 'Главврач', 'role' => 'manager', 'code' => '7777', 'service_id' => null];
+
         $userStore->save($users);
 
         // 3. Templates
@@ -29,41 +75,100 @@ class DemoDataLoader {
             ['id' => 1, 'title' => 'Протечка крана', 'description' => 'В палате капает кран, требуется замена прокладки.', 'service_id' => 1],
             ['id' => 2, 'title' => 'Не работает ПК', 'description' => 'Компьютер не включается, черный экран.', 'service_id' => 2],
             ['id' => 3, 'title' => 'Сломана кровать', 'description' => 'Механизм регулировки высоты кровати заклинило.', 'service_id' => 3],
+            ['id' => 4, 'title' => 'Замена картриджа', 'description' => 'Закончился тонер в принтере.', 'service_id' => 2],
+            ['id' => 5, 'title' => 'Ремонт ИВЛ', 'description' => 'Ошибка датчика потока на аппарате ИВЛ.', 'service_id' => 4],
         ];
         $tmplStore->save($templates);
 
-        // 4. Requests
-        $requests = [
-            [
-                'id' => 1,
-                'initiator_id' => 2,
-                'description' => 'Замена лампочки в коридоре 2 этажа',
-                'service_id' => 1,
-                'location' => ['building' => 'A', 'floor' => '2', 'room' => 'Коридор'],
-                'priority' => 'medium',
-                'status' => 'completed',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-2 days')),
-                'performer_id' => 3,
-                'history' => [
-                    ['timestamp' => date('Y-m-d H:i:s', strtotime('-2 days')), 'status' => 'new', 'user_id' => 2, 'comment' => 'Создана'],
-                    ['timestamp' => date('Y-m-d H:i:s', strtotime('-2 days +1h')), 'status' => 'assigned', 'user_id' => 5, 'comment' => 'Назначен Петров'],
-                    ['timestamp' => date('Y-m-d H:i:s', strtotime('-1 day')), 'status' => 'completed', 'user_id' => 3, 'comment' => 'Заменено']
-                ]
-            ],
-            [
-                'id' => 2,
-                'initiator_id' => 2,
-                'description' => 'Протечка крана в 204 палате',
-                'service_id' => 1,
-                'location' => ['building' => 'Корп. А', 'floor' => '2', 'room' => '204'],
-                'priority' => 'high',
-                'status' => 'new',
-                'created_at' => date('Y-m-d H:i:s'),
-                'history' => [
-                    ['timestamp' => date('Y-m-d H:i:s'), 'status' => 'new', 'user_id' => 2, 'comment' => 'Создана через шаблон']
-                ]
-            ]
+        // 4. Requests (Generating 120 requests)
+        $requests = [];
+        $statuses = ['new', 'assigned', 'working', 'checking', 'returned', 'completed', 'closed'];
+        $priorities = ['low', 'medium', 'high', 'critical'];
+        $problems = [
+            'Не работает розетка', 'Протечка трубы', 'Сломался стул', 'Нужен картридж',
+            'Ошибка в программе', 'Плохо греет батарея', 'Перегорела лампа', 'Засор в раковине',
+            'Скрипит дверь', 'Оторвался плинтус', 'Нужна уборка после ремонта', 'Не работает лифт'
         ];
+
+        for ($i = 1; $i <= 120; $i++) {
+            $initiator = $users[array_rand(array_slice($users, 1, 10))];
+            $svcId = rand(1, 4);
+            $priority = $priorities[array_rand($priorities)];
+            $status = $statuses[array_rand($statuses)];
+            $createdAt = date('Y-m-d H:i:s', strtotime('-' . rand(0, 30) . ' days -' . rand(0, 23) . ' hours'));
+
+            $req = [
+                'id' => $i,
+                'initiator_id' => $initiator['id'],
+                'description' => $problems[array_rand($problems)] . ' (Заявка №' . $i . ')',
+                'service_id' => $svcId,
+                'location' => [
+                    'building' => ['A', 'B', 'C'][rand(0, 2)],
+                    'floor' => (string)rand(1, 5),
+                    'room' => (string)rand(100, 599)
+                ],
+                'priority' => $priority,
+                'status' => $status,
+                'created_at' => $createdAt,
+                'history' => [
+                    ['timestamp' => $createdAt, 'status' => 'new', 'user_id' => $initiator['id'], 'comment' => 'Создана']
+                ]
+            ];
+
+            if ($status !== 'new') {
+                // Assign a performer for this service
+                $possiblePerformers = array_filter($users, fn($u) => $u['role'] === 'performer' && $u['service_id'] === $svcId);
+                if (!empty($possiblePerformers)) {
+                    $performer = $possiblePerformers[array_rand($possiblePerformers)];
+                    $req['performer_id'] = $performer['id'];
+                    $req['history'][] = [
+                        'timestamp' => date('Y-m-d H:i:s', strtotime($createdAt . ' + ' . rand(1, 5) . ' hours')),
+                        'status' => 'assigned',
+                        'user_id' => 23 + $svcId, // Service Lead
+                        'comment' => 'Назначен исполнитель ' . $performer['name']
+                    ];
+                }
+            }
+
+            if (in_array($status, ['working', 'checking', 'completed', 'closed'])) {
+                $req['history'][] = [
+                    'timestamp' => date('Y-m-d H:i:s', strtotime($createdAt . ' + ' . rand(6, 12) . ' hours')),
+                    'status' => 'working',
+                    'user_id' => $req['performer_id'] ?? 12,
+                    'comment' => 'Принято в работу'
+                ];
+            }
+
+            if (in_array($status, ['checking', 'completed', 'closed'])) {
+                $req['history'][] = [
+                    'timestamp' => date('Y-m-d H:i:s', strtotime($createdAt . ' + ' . rand(13, 24) . ' hours')),
+                    'status' => 'checking',
+                    'user_id' => $req['performer_id'] ?? 12,
+                    'comment' => 'Работы выполнены, прошу проверить'
+                ];
+            }
+
+            if (in_array($status, ['completed', 'closed'])) {
+                $req['history'][] = [
+                    'timestamp' => date('Y-m-d H:i:s', strtotime($createdAt . ' + ' . rand(25, 48) . ' hours')),
+                    'status' => 'completed',
+                    'user_id' => rand(28, 29), // Controller
+                    'comment' => 'Проверка пройдена успешно'
+                ];
+            }
+
+            if ($status === 'closed') {
+                $req['history'][] = [
+                    'timestamp' => date('Y-m-d H:i:s', strtotime($createdAt . ' + ' . rand(49, 72) . ' hours')),
+                    'status' => 'closed',
+                    'user_id' => rand(28, 29),
+                    'comment' => 'Закрыто в архив'
+                ];
+            }
+
+            $requests[] = $req;
+        }
+
         $reqStore->save($requests);
     }
 }

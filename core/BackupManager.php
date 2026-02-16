@@ -1,45 +1,64 @@
 <?php
 namespace Hop\Core;
 
-use ZipArchive;
-
 class BackupManager {
     private string $dataDir;
+    private string $uploadDir;
 
-    public function __construct(string $dataDir) {
+    public function __construct(string $dataDir, string $uploadDir) {
         $this->dataDir = rtrim($dataDir, '/') . '/';
+        $this->uploadDir = rtrim($uploadDir, '/') . '/';
     }
 
-    public function createBackup(): ?string {
-        $zipFile = sys_get_temp_dir() . '/hop_backup_' . date('Ymd_His') . '.zip';
-        $zip = new ZipArchive();
-
-        if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            return null;
+    public function createBackup(): string {
+        $zipFile = 'backup_' . date('Y-m-d_H-i-s') . '.zip';
+        $zip = new \ZipArchive();
+        if ($zip->open($zipFile, \ZipArchive::CREATE) !== TRUE) {
+            throw new \Exception("Cannot create zip file");
         }
 
-        $files = glob($this->dataDir . '*.json');
-        foreach ($files as $file) {
-            $zip->addFile($file, basename($file));
+        // Add JSON files
+        foreach (glob($this->dataDir . "*.json") as $file) {
+            $zip->addFile($file, 'data/' . basename($file));
+        }
+
+        // Add uploads
+        foreach (glob($this->uploadDir . "*") as $file) {
+            if (is_file($file)) {
+                $zip->addFile($file, 'uploads/' . basename($file));
+            }
         }
 
         $zip->close();
         return $zipFile;
     }
 
-    public function restoreBackup(string $zipPath): bool {
-        $zip = new ZipArchive();
-        if ($zip->open($zipPath) === true) {
-            // Only extract .json files to prevent security issues
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $filename = $zip->getNameIndex($i);
-                if (pathinfo($filename, PATHINFO_EXTENSION) === 'json') {
-                    $zip->extractTo($this->dataDir, $filename);
-                }
-            }
+    public function restoreBackup(string $zipFilePath): bool {
+        $zip = new \ZipArchive();
+        if ($zip->open($zipFilePath) === TRUE) {
+            $zip->extractTo('.');
             $zip->close();
             return true;
         }
         return false;
+    }
+
+    public function resetData(string $password): bool {
+        if ($password !== '12345') return false;
+
+        // Transactions to clear
+        $filesToClear = ['requests.json', 'notifications.json'];
+        foreach ($filesToClear as $f) {
+            if (file_exists($this->dataDir . $f)) {
+                file_put_contents($this->dataDir . $f, json_encode([]));
+            }
+        }
+
+        // Clear uploads
+        foreach (glob($this->uploadDir . "*") as $file) {
+            if (is_file($file)) unlink($file);
+        }
+
+        return true;
     }
 }

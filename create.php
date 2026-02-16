@@ -4,7 +4,6 @@ require_once 'includes/auth.php';
 use Hop\Core\JsonStore;
 use Hop\Core\RequestManager;
 use Hop\Core\ServiceManager;
-use Hop\Core\NotificationManager;
 
 checkRole(['initiator', 'admin']);
 
@@ -13,10 +12,7 @@ $templatesStore = new JsonStore('data/templates.json');
 $serviceManager = new ServiceManager($servicesStore, $templatesStore);
 
 $requestStore = new JsonStore('data/requests.json');
-$settingsStore = new JsonStore('data/settings.json');
-$notificationStore = new JsonStore('data/logs/notifications.json');
-$notifier = new NotificationManager($settingsStore, $notificationStore);
-$requestManager = new RequestManager($requestStore, $notifier);
+$requestManager = new RequestManager($requestStore);
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

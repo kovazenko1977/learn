@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ХОП - Хозяйственно-Оперативные Поручения</title>
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0078d4">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+    </script>
 </head>
 <body>
     <?php if (isset($_SESSION['user_role'])): ?>
@@ -52,6 +61,10 @@
                 </a>
             </div>
             <?php endif; ?>
+            <div style="margin-top:auto; padding-top:20px; font-size:10px; color:var(--win-text-secondary); text-align:center;">
+                Разработка: <a href="https://wes.by" target="_blank" style="color:inherit;">WES.BY</a><br>
+                Коваженко С.Б.
+            </div>
         </nav>
     </aside>
 

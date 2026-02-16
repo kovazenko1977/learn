@@ -4,14 +4,10 @@ require_once 'includes/auth.php';
 use Hop\Core\JsonStore;
 use Hop\Core\RequestManager;
 use Hop\Core\UserManager;
-use Hop\Core\NotificationManager;
 
 $id = (int)($_GET['id'] ?? 0);
 $requestStore = new JsonStore('data/requests.json');
-$settingsStore = new JsonStore('data/settings.json');
-$notificationStore = new JsonStore('data/logs/notifications.json');
-$notifier = new NotificationManager($settingsStore, $notificationStore);
-$requestManager = new RequestManager($requestStore, $notifier);
+$requestManager = new RequestManager($requestStore);
 $req = $requestManager->getById($id);
 
 if (!$req) {
