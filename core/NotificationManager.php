@@ -22,7 +22,7 @@ class NotificationManager {
             'read' => false
         ];
 
-        $this->notificationStore->write($notifications);
+        $this->notificationStore->save($notifications);
 
         // Telegram Mock
         $settings = $this->settingsStore->read();
@@ -45,6 +45,6 @@ class NotificationManager {
                 $n['read'] = true;
             }
         }
-        $this->notificationStore->write($notifications);
+        $this->notificationStore->save($notifications);
     }
 }

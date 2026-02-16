@@ -48,7 +48,7 @@ class AnalyticsManager {
                 $stats['completed_count']++;
                 $completedAt = null;
                 foreach ($req['history'] as $h) {
-                    if ($h['to'] === 'completed') {
+                    if ($h['status'] === 'completed' || $h['status'] === 'closed') {
                         $completedAt = strtotime($h['timestamp']);
                         break;
                     }

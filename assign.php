@@ -4,6 +4,7 @@ require_once 'includes/auth.php';
 use Hop\Core\JsonStore;
 use Hop\Core\RequestManager;
 use Hop\Core\UserManager;
+use Hop\Core\NotificationManager;
 
 checkRole(['service_lead', 'admin']);
 
@@ -14,7 +15,10 @@ $userManager = new UserManager($userStore);
 $currentUser = $userManager->getById($_SESSION['user_id']);
 
 $requestStore = new JsonStore('data/requests.json');
-$requestManager = new RequestManager($requestStore);
+$settingsStore = new JsonStore('data/settings.json');
+$notificationStore = new JsonStore('data/logs/notifications.json');
+$notifier = new NotificationManager($settingsStore, $notificationStore);
+$requestManager = new RequestManager($requestStore, $notifier);
 $req = $requestManager->getById($requestId);
 
 if (!$req) die('Заявка не найдена');
