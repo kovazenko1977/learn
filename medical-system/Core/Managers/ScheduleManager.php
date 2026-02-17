@@ -6,9 +6,11 @@ use Medical\Core\JsonStore;
 
 class ScheduleManager {
     private $store;
+    private $procedureManager;
 
     public function __construct() {
         $this->store = new JsonStore('appointments');
+        $this->procedureManager = new ProcedureManager();
     }
 
     public function getAll() {
@@ -20,11 +22,30 @@ class ScheduleManager {
     }
 
     public function assign($data) {
+        $proc = $this->procedureManager->getById($data['procedure_id']);
+        if (!$proc) return ['error' => 'Процедура не найдена'];
+
+        $duration = (int)$proc['duration'];
+        $prepTime = (int)($proc['prep_time'] ?? 0);
+        $totalBlock = $duration + $prepTime;
+
+        $newStart = strtotime($data['date'] . ' ' . $data['time']);
+        $newEnd = $newStart + ($totalBlock * 60);
+
         // Collision detection
         $existing = $this->getByCabinet($data['cabinet_id'], $data['date']);
         foreach ($existing as $app) {
-            if ($app['time'] == $data['time']) {
-                return ['error' => 'Это время в данном кабинете уже занято!'];
+            $eProc = $this->procedureManager->getById($app['procedure_id']);
+            $eDuration = $eProc ? (int)$eProc['duration'] : 20;
+            $ePrep = $eProc ? (int)($eProc['prep_time'] ?? 0) : 5;
+            $eTotal = $eDuration + $ePrep;
+
+            $eStart = strtotime($app['date'] . ' ' . $app['time']);
+            $eEnd = $eStart + ($eTotal * 60);
+
+            // Check overlap
+            if (($newStart >= $eStart && $newStart < $eEnd) || ($newEnd > $eStart && $newEnd <= $eEnd) || ($newStart <= $eStart && $newEnd >= $eEnd)) {
+                return ['error' => "Это время занято процедурой '" . ($app['procedure_name'] ?? '...') . "' до " . date('H:i', $eEnd)];
             }
         }
 
@@ -41,27 +62,30 @@ class ScheduleManager {
 
     public function getByPatient($patientId) {
         $all = $this->getAll();
-        return array_filter($all, function($item) use ($patientId) {
+        $results = array_filter($all, function($item) use ($patientId) {
             return $item['patient_id'] == $patientId;
         });
+        return array_values($results);
     }
 
     public function getByDate($date) {
         $all = $this->getAll();
-        return array_filter($all, function($item) use ($date) {
+        $results = array_filter($all, function($item) use ($date) {
             return $item['date'] == $date;
         });
+        return array_values($results);
     }
 
     public function getByCabinet($cabinetId, $date = null) {
         $all = $this->getAll();
-        return array_filter($all, function($item) use ($cabinetId, $date) {
+        $results = array_filter($all, function($item) use ($cabinetId, $date) {
             $match = $item['cabinet_id'] == $cabinetId;
             if ($date) {
                 $match = $match && $item['date'] == $date;
             }
             return $match;
         });
+        return array_values($results);
     }
 
     public function markAttended($id, $nurseName) {

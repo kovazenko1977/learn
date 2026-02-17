@@ -50,10 +50,12 @@ $user = \Medical\Core\Auth::getUser();
         </div>
         <?php endif; ?>
 
+        <?php if (\Medical\Core\Auth::hasRole('admin')): ?>
         <div style="margin-top: 2rem; border-top: 1px solid var(--win-border); padding-top: 1rem;">
             <a href="settings.php" class="btn" style="display: block; width: 100%; text-align: left; margin-bottom: 5px;">
                 <i data-lucide="settings" class="icon"></i> Настройки
             </a>
         </div>
+        <?php endif; ?>
     </nav>
 </div>

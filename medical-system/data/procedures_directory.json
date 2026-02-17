@@ -1,53 +1,13 @@
 [
     {
-        "name": "Грязелечение",
-        "type": "free",
-        "price": 0,
-        "duration": 30,
-        "staff": [
-            "Медсестра"
-        ],
-        "id": "6993ebdfdb6dd"
-    },
-    {
-        "name": "Массаж спины",
-        "type": "paid",
-        "price": 1500,
-        "duration": 20,
-        "staff": [
-            "Медсестра",
-            "Администратор"
-        ],
-        "id": "6993ebdfdba29"
-    },
-    {
-        "name": "Электрофорез",
-        "type": "free",
-        "price": 0,
+        "name": "ЭКГ",
         "duration": 15,
-        "staff": [
-            "Медсестра"
+        "prep_time": 5,
+        "price": 500,
+        "is_paid": true,
+        "assigned_staff": [
+            "doctor_1"
         ],
-        "id": "6993ebdfdbcef"
-    },
-    {
-        "name": "Ингаляция",
-        "type": "free",
-        "price": 0,
-        "duration": 10,
-        "staff": [
-            "Медсестра"
-        ],
-        "id": "6993ebdfdbef8"
-    },
-    {
-        "name": "Подводный душ-массаж",
-        "type": "paid",
-        "price": 2500,
-        "duration": 40,
-        "staff": [
-            "Медсестра"
-        ],
-        "id": "6993ebdfdc13d"
+        "id": "699458e712e1e"
     }
 ]

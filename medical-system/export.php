@@ -2,6 +2,7 @@
 require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
+\Medical\Core\Auth::requireLogin();
 
 $action = $_GET['action'] ?? '';
 
@@ -138,4 +139,26 @@ if ($action === 'print_schedule') {
     </body>
     </html>
     <?php
+} elseif ($action === 'analytics_csv') {
+    $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
+    $apps = $scheduleManager->getAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="analytics_'.date('Y-m-d').'.csv"');
+    $output = fopen('php://output', 'w');
+    // UTF-8 BOM for Excel
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fputcsv($output, ['Дата', 'Время', 'Пациент', 'Процедура', 'Врач', 'Кабинет', 'Статус', 'Цена']);
+    foreach ($apps as $a) {
+        fputcsv($output, [
+            $a['date'],
+            $a['time'],
+            $a['patient_name'],
+            $a['procedure_name'],
+            $a['doctor'],
+            $a['cabinet_id'],
+            $a['status'],
+            $a['price']
+        ]);
+    }
+    fclose($output);
 }

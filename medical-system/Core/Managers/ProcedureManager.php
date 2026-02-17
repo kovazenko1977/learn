@@ -35,11 +35,11 @@ class ProcedureManager {
 
     public function getStaffForProcedure($procedureId) {
         $proc = $this->getById($procedureId);
-        return $proc['staff'] ?? [];
+        return $proc['assigned_staff'] ?? [];
     }
 
-    public function isStaffAssigned($procedureId, $staffName) {
+    public function isStaffAssigned($procedureId, $staffId) {
         $staff = $this->getStaffForProcedure($procedureId);
-        return in_array($staffName, $staff);
+        return in_array($staffId, $staff);
     }
 }

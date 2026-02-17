@@ -30,9 +30,13 @@ $summary = $analytics->getSummary();
     <div class="card mica-effect">
         <h2>Быстрые действия</h2>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="patients.php" class="btn btn-primary"><i data-lucide="user-plus" class="icon"></i> Новый пациент</a>
-            <a href="procedures_doctor.php" class="btn"><i data-lucide="calendar" class="icon"></i> Расписание</a>
-            <a href="analytics.php" class="btn"><i data-lucide="download" class="icon"></i> Отчеты</a>
+            <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor'])): ?>
+            <a href="patients.php" class="btn btn-primary"><i data-lucide="user-plus" class="icon"></i> Регистрация пациента</a>
+            <?php endif; ?>
+            <a href="procedures_doctor.php" class="btn"><i data-lucide="calendar" class="icon"></i> График процедур</a>
+            <?php if (\Medical\Core\Auth::hasRole(['admin', 'head'])): ?>
+            <a href="analytics.php" class="btn"><i data-lucide="bar-chart-3" class="icon"></i> Аналитика</a>
+            <?php endif; ?>
         </div>
     </div>
     <div class="card mica-effect">

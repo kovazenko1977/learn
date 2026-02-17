@@ -22,9 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         'date' => $_POST['date'],
         'time' => $_POST['time'],
         'cabinet_id' => $_POST['cabinet_id'],
-        'type' => $proc['type'], // paid/free
         'price' => $proc['price'] ?? 0,
-        'is_paid' => false,
+        'is_paid' => $proc['is_paid'] ?? false,
         'attended' => false,
         'doctor' => \Medical\Core\Auth::getUser()['name']
     ];
@@ -74,8 +73,9 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     <div style="margin-bottom: 15px;">
                         <label style="display:block;">Процедура</label>
                         <select name="procedure_id" style="width: 100%;" required>
+                            <option value="">-- Выберите процедуру --</option>
                             <?php foreach ($procedures as $proc): ?>
-                                <option value="<?php echo $proc['id']; ?>"><?php echo htmlspecialchars($proc['name']); ?> (<?php echo $proc['type'] === 'paid' ? 'платно' : 'бесплатно'; ?>)</option>
+                                <option value="<?php echo $proc['id']; ?>"><?php echo htmlspecialchars($proc['name']); ?> (<?php echo ($proc['is_paid'] ?? false) ? 'платно' : 'бесплатно'; ?>)</option>
                             <?php endforeach; ?>
                         </select>
                     </div>

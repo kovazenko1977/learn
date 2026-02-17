@@ -16,11 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $date = $_GET['date'] ?? date('Y-m-d');
 $allAppointments = $scheduleManager->getByDate($date);
 
-// Filter: nurse only sees procedures she is assigned to (unless admin)
-$appointments = array_filter($allAppointments, function($app) use ($procedureManager, $currentUser) {
-    if ($currentUser['role'] === 'admin') return true;
-    return $procedureManager->isStaffAssigned($app['procedure_id'], $currentUser['name']);
-});
+// Filter: nurse only sees procedures for today
+$appointments = $allAppointments;
 ?>
 
 <h1>Процедурный кабинет - Прием пациентов</h1>

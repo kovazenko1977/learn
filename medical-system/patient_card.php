@@ -114,7 +114,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <div>
         <div class="card mica-effect">
             <h3>История болезни (Электронная карта)</h3>
+            <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor'])): ?>
             <button class="btn" onclick="document.getElementById('historyModal').style.display='block'" style="margin-bottom: 20px;">+ Добавить запись</button>
+            <?php endif; ?>
 
             <div class="history-list">
                 <?php if (isset($patient['history']) && is_array($patient['history'])): ?>
