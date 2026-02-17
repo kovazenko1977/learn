@@ -26,7 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $staffManager->create([
             'name' => $_POST['name'],
             'role' => $_POST['role'],
-            'specialization' => $_POST['specialization']
+            'specialization' => $_POST['specialization'],
+            'access_code' => $_POST['access_code']
         ]);
         $message = 'Сотрудник добавлен';
     } elseif ($action === 'delete_staff') {
@@ -162,7 +163,7 @@ $allProcedures = $procedureManager->getAll();
 <?php elseif ($activeSub === 'staff'): ?>
     <div class="card mica-effect mb-4">
         <h2>Добавить сотрудника</h2>
-        <form method="POST" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
+        <form method="POST" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 15px; align-items: end;">
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="add_staff">
 
@@ -175,12 +176,18 @@ $allProcedures = $procedureManager->getAll();
                 <select name="role" class="form-control">
                     <option value="doctor">Врач</option>
                     <option value="nurse">Медсестра</option>
-                    <option value="specialist">Специалист</option>
+                    <option value="cashier">Кассир</option>
+                    <option value="head">Начмед</option>
+                    <option value="admin">Админ</option>
                 </select>
             </div>
             <div>
                 <label>Специализация</label>
-                <input type="text" name="specialization" class="form-control" placeholder="например, Терапевт">
+                <input type="text" name="specialization" class="form-control" placeholder="Терапевт">
+            </div>
+            <div>
+                <label>Код доступа</label>
+                <input type="text" name="access_code" class="form-control" placeholder="6 цифр" maxlength="6" required>
             </div>
 
             <button type="submit" class="btn btn-primary" style="height: 40px;">Добавить</button>
@@ -195,6 +202,7 @@ $allProcedures = $procedureManager->getAll();
                     <th style="padding: 10px;">ФИО</th>
                     <th style="padding: 10px;">Роль</th>
                     <th style="padding: 10px;">Специализация</th>
+                    <th style="padding: 10px;">Код доступа</th>
                     <th style="padding: 10px; text-align: right;">Действие</th>
                 </tr>
             </thead>
@@ -204,6 +212,7 @@ $allProcedures = $procedureManager->getAll();
                         <td style="padding: 10px; font-weight: 500;"><?php echo htmlspecialchars($s['name']); ?></td>
                         <td style="padding: 10px;"><?php echo $s['role']; ?></td>
                         <td style="padding: 10px;"><?php echo htmlspecialchars($s['specialization']); ?></td>
+                        <td style="padding: 10px;"><code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px;"><?php echo $s['access_code'] ?? '------'; ?></code></td>
                         <td style="padding: 10px; text-align: right;">
                             <form method="POST" style="display: inline;" onsubmit="return confirm('Удалить сотрудника?')">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">

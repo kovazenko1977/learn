@@ -50,7 +50,10 @@ class ScheduleManager {
         }
 
         $data['id'] = uniqid();
-        $data['status'] = $data['is_paid'] ? 'paid' : ($data['type'] === 'free' ? 'free' : 'unpaid');
+        // Status should be already set in $data, but provide a default
+        if (!isset($data['status'])) {
+            $data['status'] = 'free';
+        }
         $data['created_at'] = date('Y-m-d H:i:s');
         $this->store->add($data);
         return ['id' => $data['id']];
@@ -63,7 +66,7 @@ class ScheduleManager {
     public function getByPatient($patientId) {
         $all = $this->getAll();
         $results = array_filter($all, function($item) use ($patientId) {
-            return $item['patient_id'] == $patientId;
+            return isset($item['patient_id']) && $item['patient_id'] == $patientId;
         });
         return array_values($results);
     }
@@ -71,7 +74,7 @@ class ScheduleManager {
     public function getByDate($date) {
         $all = $this->getAll();
         $results = array_filter($all, function($item) use ($date) {
-            return $item['date'] == $date;
+            return isset($item['date']) && $item['date'] == $date;
         });
         return array_values($results);
     }
@@ -79,9 +82,9 @@ class ScheduleManager {
     public function getByCabinet($cabinetId, $date = null) {
         $all = $this->getAll();
         $results = array_filter($all, function($item) use ($cabinetId, $date) {
-            $match = $item['cabinet_id'] == $cabinetId;
+            $match = isset($item['cabinet_id']) && $item['cabinet_id'] == $cabinetId;
             if ($date) {
-                $match = $match && $item['date'] == $date;
+                $match = $match && isset($item['date']) && $item['date'] == $date;
             }
             return $match;
         });

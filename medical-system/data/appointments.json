@@ -1,18 +1,17 @@
 [
     {
-        "patient_id": "699458e7933fc",
-        "patient_name": "Петров Петр Петрович",
-        "procedure_id": "699458e712e1e",
-        "procedure_name": "ЭКГ",
+        "patient_id": "69945d7af09eb",
+        "patient_name": "Пациент Тест",
+        "procedure_id": "69945d7a1235d",
+        "procedure_name": "Процедура X",
         "date": "2026-02-17",
-        "time": "11:00",
-        "cabinet_id": "101",
-        "price": 500,
-        "is_paid": true,
+        "time": "12:00",
+        "cabinet_id": "202",
+        "price": 1500,
+        "status": "unpaid",
         "attended": false,
-        "doctor": "Администратор",
-        "id": "699458e8a2adf",
-        "status": "paid",
-        "created_at": "2026-02-17 12:02:48"
+        "doctor": "Доктор Тест",
+        "id": "69945d7b8c4b3",
+        "created_at": "2026-02-17 12:22:19"
     }
 ]

@@ -12,36 +12,19 @@ class Auth {
         }
     }
 
-    public static function login($username, $password) {
-        // Default credentials for demo
-        if ($username === 'admin' && $password === 'admin') {
-            $_SESSION['user'] = [
-                'username' => 'admin',
-                'role' => 'admin',
-                'name' => 'Администратор'
-            ];
-            return true;
-        }
-        return false;
-    }
-
     public static function loginByCode($code) {
-        $codes = [
-            '123456' => ['role' => 'admin', 'name' => 'Администратор'],
-            '101010' => ['role' => 'doctor', 'name' => 'Лечащий врач'],
-            '111111' => ['role' => 'consultant', 'name' => 'Врач-консультант'],
-            '202020' => ['role' => 'cashier', 'name' => 'Кассир'],
-            '303030' => ['role' => 'nurse', 'name' => 'Медсестра'],
-            '404040' => ['role' => 'head', 'name' => 'Начальник медчасти'],
-        ];
+        $jsonStore = new JsonStore('staff');
+        $staff = $jsonStore->getAll();
 
-        if (isset($codes[$code])) {
-            $_SESSION['user'] = [
-                'username' => 'user_' . $code,
-                'role' => $codes[$code]['role'],
-                'name' => $codes[$code]['name']
-            ];
-            return true;
+        foreach ($staff as $user) {
+            if (isset($user['access_code']) && $user['access_code'] === $code) {
+                $_SESSION['user'] = [
+                    'id' => $user['id'],
+                    'role' => $user['role'],
+                    'name' => $user['name']
+                ];
+                return true;
+            }
         }
         return false;
     }
@@ -56,6 +39,10 @@ class Auth {
 
     public static function getUser() {
         return $_SESSION['user'] ?? null;
+    }
+
+    public static function isAdmin() {
+        return self::hasRole('admin');
     }
 
     public static function hasRole($roles) {

@@ -25,6 +25,7 @@ class StaffManager {
             'name' => $data['name'],
             'role' => $data['role'] ?? 'specialist',
             'specialization' => $data['specialization'] ?? '',
+            'access_code' => $data['access_code'] ?? '000000',
             'created_at' => date('Y-m-d H:i:s')
         ];
         $this->store->add($newStaff);

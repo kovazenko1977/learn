@@ -1,1 +1,25 @@
-[{"id": "doctor_1","name": "Иванов Иван Иванович","role": "doctor","specialization": "Терапевт"}]
+[
+    {
+        "id": "admin_1",
+        "name": "Администратор",
+        "role": "admin",
+        "specialization": "Система",
+        "access_code": "123456"
+    },
+    {
+        "id": "69945d7957b32",
+        "name": "Доктор Тест",
+        "role": "doctor",
+        "specialization": "",
+        "access_code": "999999",
+        "created_at": "2026-02-17 12:22:17"
+    },
+    {
+        "id": "69945da16652a",
+        "name": "Доктор Тест",
+        "role": "doctor",
+        "specialization": "",
+        "access_code": "999999",
+        "created_at": "2026-02-17 12:22:57"
+    }
+]

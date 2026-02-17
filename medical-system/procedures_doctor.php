@@ -12,29 +12,31 @@ $patient = $patientId ? $patientManager->getById($patientId) : null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'assign') {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
         $procId = $_POST['procedure_id'];
-    $proc = $procedureManager->getById($procId);
+        $proc = $procedureManager->getById($procId);
 
-    $assignment = [
-        'patient_id' => $_POST['patient_id'],
-        'patient_name' => $patientManager->getById($_POST['patient_id'])['name'],
-        'procedure_id' => $procId,
-        'procedure_name' => $proc['name'],
-        'date' => $_POST['date'],
-        'time' => $_POST['time'],
-        'cabinet_id' => $_POST['cabinet_id'],
-        'price' => $proc['price'] ?? 0,
-        'is_paid' => $proc['is_paid'] ?? false,
-        'attended' => false,
-        'doctor' => \Medical\Core\Auth::getUser()['name']
-    ];
+        $isPaidProc = $proc['is_paid'] ?? false;
 
-    $result = $scheduleManager->assign($assignment);
-    if (isset($result['error'])) {
-        $error = $result['error'];
-    } else {
-        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
-        exit;
-    }
+        $assignment = [
+            'patient_id' => $_POST['patient_id'],
+            'patient_name' => $patientManager->getById($_POST['patient_id'])['name'],
+            'procedure_id' => $procId,
+            'procedure_name' => $proc['name'],
+            'date' => $_POST['date'],
+            'time' => $_POST['time'],
+            'cabinet_id' => $_POST['cabinet_id'],
+            'price' => $proc['price'] ?? 0,
+            'status' => $isPaidProc ? 'unpaid' : 'free',
+            'attended' => false,
+            'doctor' => \Medical\Core\Auth::getUser()['name']
+        ];
+
+        $result = $scheduleManager->assign($assignment);
+        if (isset($result['error'])) {
+            $error = $result['error'];
+        } else {
+            header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+            exit;
+        }
     }
 }
 
@@ -44,7 +46,7 @@ $allAppointments = $scheduleManager->getAll();
 // Filter for doctor: only what concerns him (assigned by him)
 $currentUser = \Medical\Core\Auth::getUser();
 $myAppointments = array_filter($allAppointments, function($app) use ($currentUser) {
-    return $app['doctor'] === $currentUser['name'];
+    return isset($app['doctor']) && $app['doctor'] === $currentUser['name'];
 });
 
 $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
@@ -53,7 +55,9 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 <h1>Назначение процедур</h1>
 
 <?php if (isset($error)): ?>
-    <div class="card mica-effect" style="color: #d83b01; border-color: #d83b01;"><?php echo $error; ?></div>
+    <div class="card mica-effect" style="color: #d83b01; border-color: #d83b01; margin-bottom: 20px;">
+        <strong>Ошибка:</strong> <?php echo $error; ?>
+    </div>
 <?php endif; ?>
 
 <?php if (!$patient): ?>
@@ -113,18 +117,18 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($patientAppointments as $app): ?>
+                        <?php foreach (array_reverse($patientAppointments) as $app): ?>
                         <tr style="border-bottom: 1px solid var(--win-border);">
                             <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
                             <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
-                            <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor']); ?></td>
+                            <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor'] ?? '-'); ?></td>
                             <td style="padding: 10px;">
                                 <?php
                                     $class = 'status-gray';
                                     $text = 'Бесплатно';
-                                    if ($app['status'] === 'unpaid') { $class = 'status-red'; $text = 'Не оплачено'; }
-                                    if ($app['status'] === 'paid') { $class = 'status-green'; $text = 'Оплачено'; }
-                                    if ($app['attended']) { $text .= ' (Проведена)'; }
+                                    if (($app['status'] ?? '') === 'unpaid') { $class = 'status-red'; $text = 'Не оплачено'; }
+                                    if (($app['status'] ?? '') === 'paid') { $class = 'status-green'; $text = 'Оплачено'; }
+                                    if ($app['attended'] ?? false) { $text .= ' (Проведена)'; }
                                 ?>
                                 <span class="<?php echo $class; ?>"><?php echo $text; ?></span>
                             </td>
@@ -161,7 +165,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                 <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
                 <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
                 <td style="padding: 10px;">
-                    <?php if ($app['attended']): ?>
+                    <?php if ($app['attended'] ?? false): ?>
                         <span class="status-green">Проведена (<?php echo htmlspecialchars($app['performed_by'] ?? 'медсестра'); ?>)</span>
                     <?php else: ?>
                         <span class="status-gray">Ожидает</span>
