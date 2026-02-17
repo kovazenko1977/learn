@@ -8,19 +8,19 @@ use Medical\Core\Managers\PatientManager;
 use Medical\Core\Managers\ProcedureManager;
 use Medical\Core\Managers\ScheduleManager;
 
-echo "Загрузка демо-данных...\n";
+echo "Загрузка обновленных демо-данных...\n";
 
-// 1. Procedures
+// 1. Procedures with Staff
 $procManager = new ProcedureManager();
 $procDirectory = new JsonStore('procedures_directory');
 $procDirectory->save([]); // Reset
 
 $procs = [
-    ['name' => 'Грязелечение', 'type' => 'free', 'price' => 0, 'duration' => 30],
-    ['name' => 'Массаж спины', 'type' => 'paid', 'price' => 1500, 'duration' => 20],
-    ['name' => 'Электрофорез', 'type' => 'free', 'price' => 0, 'duration' => 15],
-    ['name' => 'Ингаляция', 'type' => 'free', 'price' => 0, 'duration' => 10],
-    ['name' => 'Подводный душ-массаж', 'type' => 'paid', 'price' => 2500, 'duration' => 40],
+    ['name' => 'Грязелечение', 'type' => 'free', 'price' => 0, 'duration' => 30, 'staff' => ['Медсестра']],
+    ['name' => 'Массаж спины', 'type' => 'paid', 'price' => 1500, 'duration' => 20, 'staff' => ['Медсестра', 'Администратор']],
+    ['name' => 'Электрофорез', 'type' => 'free', 'price' => 0, 'duration' => 15, 'staff' => ['Медсестра']],
+    ['name' => 'Ингаляция', 'type' => 'free', 'price' => 0, 'duration' => 10, 'staff' => ['Медсестра']],
+    ['name' => 'Подводный душ-массаж', 'type' => 'paid', 'price' => 2500, 'duration' => 40, 'staff' => ['Медсестра']],
 ];
 
 foreach ($procs as $p) {
@@ -50,23 +50,41 @@ $appStore->save([]); // Reset
 
 $allProcs = $procManager->getAll();
 foreach ($pIds as $idx => $pid) {
-    // Assign 2 random procedures to each patient
-    for ($i = 0; $i < 2; $i++) {
+    for ($i = 0; $i < 3; $i++) {
         $p = $allProcs[array_rand($allProcs)];
+        $doctor = ($i % 2 == 0) ? 'Лечащий врач' : 'Администратор';
+
         $scheduleManager->assign([
             'patient_id' => $pid,
             'patient_name' => $patientNames[$idx],
             'procedure_id' => $p['id'],
             'procedure_name' => $p['name'],
             'date' => date('Y-m-d'),
-            'time' => '09:' . sprintf('%02d', (15 * ($i + $idx))),
+            'time' => '10:' . sprintf('%02d', (20 * ($i + $idx))),
             'cabinet_id' => '10' . ($idx + 1),
             'type' => $p['type'],
             'price' => $p['price'],
-            'is_paid' => false,
-            'attended' => false
+            'is_paid' => ($i == 0 && $p['type'] == 'paid'), // One pre-paid for variety
+            'attended' => ($i == 0),
+            'attended_at' => ($i == 0) ? date('Y-m-d H:i:s') : null,
+            'performed_by' => ($i == 0) ? 'Медсестра' : null,
+            'doctor' => $doctor
         ]);
     }
+
+    // Add some history and comments
+    $patientManager->addHistoryEntry($pid, [
+        'doctor' => 'Лечащий врач',
+        'diagnosis_code' => 'I10',
+        'diagnosis_text' => 'Эссенциальная [первичная] гипертензия',
+        'notes' => 'Пациент жалуется на головные боли. Назначен курс процедур.'
+    ]);
+
+    $patientManager->addComment($pid, [
+        'author' => 'Администратор',
+        'role' => 'admin',
+        'text' => 'Пациент просит назначать процедуры во второй половине дня.'
+    ]);
 }
 
-echo "Демо-данные успешно загружены.\n";
+echo "Демо-данные успешно обновлены.\n";

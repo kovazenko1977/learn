@@ -32,4 +32,14 @@ class ProcedureManager {
     public function delete($id) {
         return $this->store->deleteById($id);
     }
+
+    public function getStaffForProcedure($procedureId) {
+        $proc = $this->getById($procedureId);
+        return $proc['staff'] ?? [];
+    }
+
+    public function isStaffAssigned($procedureId, $staffName) {
+        $staff = $this->getStaffForProcedure($procedureId);
+        return in_array($staffName, $staff);
+    }
 }

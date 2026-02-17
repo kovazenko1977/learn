@@ -64,8 +64,12 @@ class ScheduleManager {
         });
     }
 
-    public function markAttended($id) {
-        return $this->store->updateById($id, ['attended' => true, 'attended_at' => date('Y-m-d H:i:s')]);
+    public function markAttended($id, $nurseName) {
+        return $this->store->updateById($id, [
+            'attended' => true,
+            'attended_at' => date('Y-m-d H:i:s'),
+            'performed_by' => $nurseName
+        ]);
     }
 
     public function markPaid($id) {

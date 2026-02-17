@@ -3,15 +3,24 @@ require_once __DIR__ . '/includes/header.php';
 \Medical\Core\Auth::requireLogin();
 
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
+$procedureManager = new \Medical\Core\Managers\ProcedureManager();
+
+$currentUser = \Medical\Core\Auth::getUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'attend') {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
-        $scheduleManager->markAttended($_POST['id']);
+        $scheduleManager->markAttended($_POST['id'], $currentUser['name']);
     }
 }
 
 $date = $_GET['date'] ?? date('Y-m-d');
-$appointments = $scheduleManager->getByDate($date);
+$allAppointments = $scheduleManager->getByDate($date);
+
+// Filter: nurse only sees procedures she is assigned to (unless admin)
+$appointments = array_filter($allAppointments, function($app) use ($procedureManager, $currentUser) {
+    if ($currentUser['role'] === 'admin') return true;
+    return $procedureManager->isStaffAssigned($app['procedure_id'], $currentUser['name']);
+});
 ?>
 
 <h1>Процедурный кабинет - Прием пациентов</h1>

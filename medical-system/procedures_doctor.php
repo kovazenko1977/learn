@@ -40,7 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 $procedures = $procedureManager->getAll();
-$appointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
+$allAppointments = $scheduleManager->getAll();
+
+// Filter for doctor: only what concerns him (assigned by him)
+$currentUser = \Medical\Core\Auth::getUser();
+$myAppointments = array_filter($allAppointments, function($app) use ($currentUser) {
+    return $app['doctor'] === $currentUser['name'];
+});
+
+$patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
 ?>
 
 <h1>Назначение процедур</h1>
@@ -94,22 +102,22 @@ $appointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
 
         <div>
             <div class="card mica-effect">
-                <h3>Назначенные процедуры</h3>
+                <h3>История назначений пациента</h3>
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
                             <th style="padding: 10px;">Дата/Время</th>
                             <th style="padding: 10px;">Процедура</th>
-                            <th style="padding: 10px;">Кабинет</th>
+                            <th style="padding: 10px;">Врач</th>
                             <th style="padding: 10px;">Статус</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($appointments as $app): ?>
+                        <?php foreach ($patientAppointments as $app): ?>
                         <tr style="border-bottom: 1px solid var(--win-border);">
                             <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
                             <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
-                            <td style="padding: 10px;"><?php echo htmlspecialchars($app['cabinet_id']); ?></td>
+                            <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor']); ?></td>
                             <td style="padding: 10px;">
                                 <?php
                                     $class = 'status-gray';
@@ -131,5 +139,38 @@ $appointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
         </div>
     </div>
 <?php endif; ?>
+
+<div class="card mica-effect" style="margin-top: 40px;">
+    <h2>Мои последние назначения</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
+                <th style="padding: 10px;">Пациент</th>
+                <th style="padding: 10px;">Процедура</th>
+                <th style="padding: 10px;">Дата/Время</th>
+                <th style="padding: 10px;">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $myRecent = array_slice(array_reverse($myAppointments), 0, 10);
+            foreach ($myRecent as $app):
+            ?>
+            <tr style="border-bottom: 1px solid var(--win-border);">
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($app['patient_name']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
+                <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
+                <td style="padding: 10px;">
+                    <?php if ($app['attended']): ?>
+                        <span class="status-green">Проведена (<?php echo htmlspecialchars($app['performed_by'] ?? 'медсестра'); ?>)</span>
+                    <?php else: ?>
+                        <span class="status-gray">Ожидает</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

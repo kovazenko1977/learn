@@ -58,4 +58,19 @@ class PatientManager {
 
         return $this->update($patientId, ['history' => $patient['history']]);
     }
+
+    public function addComment($patientId, $commentData) {
+        $patient = $this->getById($patientId);
+        if (!$patient) return false;
+
+        if (!isset($patient['comments'])) {
+            $patient['comments'] = [];
+        }
+
+        $commentData['id'] = uniqid();
+        $commentData['date'] = date('Y-m-d H:i:s');
+        $patient['comments'][] = $commentData;
+
+        return $this->update($patientId, ['comments' => $patient['comments']]);
+    }
 }

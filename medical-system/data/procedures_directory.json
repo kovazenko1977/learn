@@ -4,34 +4,50 @@
         "type": "free",
         "price": 0,
         "duration": 30,
-        "id": "69937ff3e10a8"
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6993ebdfdb6dd"
     },
     {
         "name": "Массаж спины",
         "type": "paid",
         "price": 1500,
         "duration": 20,
-        "id": "69937ff3e12ad"
+        "staff": [
+            "Медсестра",
+            "Администратор"
+        ],
+        "id": "6993ebdfdba29"
     },
     {
         "name": "Электрофорез",
         "type": "free",
         "price": 0,
         "duration": 15,
-        "id": "69937ff3e1434"
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6993ebdfdbcef"
     },
     {
         "name": "Ингаляция",
         "type": "free",
         "price": 0,
         "duration": 10,
-        "id": "69937ff3e15a9"
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6993ebdfdbef8"
     },
     {
         "name": "Подводный душ-массаж",
         "type": "paid",
         "price": 2500,
         "duration": 40,
-        "id": "69937ff3e16e1"
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6993ebdfdc13d"
     }
 ]
