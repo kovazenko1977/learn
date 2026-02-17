@@ -24,45 +24,49 @@ $appointments = array_filter($allAppointments, function($app) use ($query) {
 });
 ?>
 
-<h1>Касса - Оплата процедур</h1>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+    <h1>Касса - Оплата процедур</h1>
+</div>
 
 <div class="card mica-effect">
-    <form method="GET" style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
         <input type="text" name="q" value="<?php echo htmlspecialchars($query); ?>" placeholder="Поиск по ФИО пациента..." style="flex-grow: 1;">
-        <button type="submit" class="btn">Найти</button>
+        <button type="submit" class="btn btn-primary">
+            <i data-lucide="search" class="icon"></i> Найти
+        </button>
     </form>
 
-    <table style="width: 100%; border-collapse: collapse;">
+    <table>
         <thead>
-            <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
-                <th style="padding: 10px;">Пациент</th>
-                <th style="padding: 10px;">Процедура</th>
-                <th style="padding: 10px;">Дата</th>
-                <th style="padding: 10px;">Сумма</th>
-                <th style="padding: 10px;">Статус</th>
-                <th style="padding: 10px;">Действие</th>
+            <tr>
+                <th>Пациент</th>
+                <th>Процедура</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Статус</th>
+                <th style="text-align: right;">Действие</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($appointments as $app): ?>
-            <tr style="border-bottom: 1px solid var(--win-border);">
-                <td style="padding: 10px;"><?php echo htmlspecialchars($app['patient_name']); ?></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
-                <td style="padding: 10px;"><?php echo $app['date']; ?></td>
-                <td style="padding: 10px;"><strong><?php echo number_format($app['price'], 2, ',', ' '); ?> ₽</strong></td>
-                <td style="padding: 10px;">
+            <tr>
+                <td style="font-weight: 600;"><?php echo htmlspecialchars($app['patient_name']); ?></td>
+                <td><?php echo htmlspecialchars($app['procedure_name']); ?></td>
+                <td><?php echo $app['date']; ?></td>
+                <td style="font-weight: 700; color: var(--win-accent);"><?php echo number_format($app['price'], 0, ',', ' '); ?> ₽</td>
+                <td>
                     <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : 'status-red'; ?>">
                         <?php echo $app['status'] === 'paid' ? 'Оплачено' : 'Ожидает оплаты'; ?>
                     </span>
                 </td>
-                <td style="padding: 10px;">
-                    <div style="display: flex; gap: 5px;">
+                <td style="text-align: right;">
+                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
                         <?php if ($app['status'] === 'unpaid'): ?>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="pay">
                                 <input type="hidden" name="id" value="<?php echo $app['id']; ?>">
-                                <button type="submit" class="btn btn-primary btn-sm">Оплатить</button>
+                                <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
                             </form>
                         <?php endif; ?>
                         <a href="export.php?action=print_contract&id=<?php echo $app['id']; ?>" target="_blank" class="btn btn-sm" title="Печать договора">
@@ -73,7 +77,7 @@ $appointments = array_filter($allAppointments, function($app) use ($query) {
             </tr>
             <?php endforeach; ?>
             <?php if (empty($appointments)): ?>
-                <tr><td colspan="6" style="padding: 20px; text-align: center; color: #666;">Нет процедур, ожидающих оплаты</td></tr>
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--win-text-secondary);">Нет процедур, ожидающих оплаты</td></tr>
             <?php endif; ?>
         </tbody>
     </table>

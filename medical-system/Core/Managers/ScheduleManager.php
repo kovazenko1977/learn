@@ -143,4 +143,25 @@ class ScheduleManager {
     public function markPaid($id) {
         return $this->store->updateById($id, ['status' => 'paid', 'paid_at' => date('Y-m-d H:i:s')]);
     }
+
+    public function autoCancelUnpaid() {
+        $apps = $this->store->getAll();
+        $changed = false;
+        $now = time();
+
+        foreach ($apps as &$app) {
+            // Cancel unpaid paid procedures if they are in the past
+            if (isset($app['type']) && $app['type'] === 'paid' && isset($app['status']) && $app['status'] === 'unpaid' && empty($app['attended'])) {
+                $appTime = strtotime($app['date'] . ' ' . $app['time']);
+                if ($appTime !== false && $appTime < ($now - 7200)) { // 2 hours after scheduled time
+                    $app['status'] = 'cancelled';
+                    $changed = true;
+                }
+            }
+        }
+
+        if ($changed) {
+            $this->store->save($apps);
+        }
+    }
 }

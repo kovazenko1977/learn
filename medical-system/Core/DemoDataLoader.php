@@ -37,7 +37,7 @@ $pIds = [];
 foreach ($patientNames as $name) {
     $pIds[] = $patientManager->add([
         'name' => $name,
-        'birth_date' => '1980-05-15',
+            'birth_date' => '15-05-1980',
         'phone' => '+7 900 123 45 67',
         'card_number' => 'SB-' . rand(1000, 9999)
     ]);
@@ -59,7 +59,7 @@ foreach ($pIds as $idx => $pid) {
             'patient_name' => $patientNames[$idx],
             'procedure_id' => $p['id'],
             'procedure_name' => $p['name'],
-            'date' => date('Y-m-d'),
+            'date' => date('d-m-Y'),
             'time' => '10:' . sprintf('%02d', (20 * ($i + $idx))),
             'cabinet_id' => '10' . ($idx + 1),
             'type' => $p['type'],

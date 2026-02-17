@@ -9,7 +9,7 @@ $patient = $patientManager->getById($id);
 $appointments = $scheduleManager->getByPatient($id);
 
 if (!$patient) {
-    echo "Пациент не найден";
+    echo '<div class="card mica-effect"><h2>Пациент не найден</h2><a href="patients.php" class="btn btn-primary">Назад к списку</a></div>';
     include __DIR__ . '/includes/footer.php';
     exit;
 }
@@ -45,124 +45,152 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 ?>
 
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h1>Карточка пациента: <?php echo htmlspecialchars($patient['name']); ?></h1>
-    <a href="patients.php" class="btn">Назад к списку</a>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+    <h1>Карточка пациента: <span style="color: var(--win-accent);"><?php echo htmlspecialchars($patient['name']); ?></span></h1>
+    <a href="patients.php" class="btn">
+        <i data-lucide="arrow-left" class="icon"></i> Назад к списку
+    </a>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-    <div>
+<div style="display: grid; grid-template-columns: 320px 1fr; gap: 24px;">
+    <div style="display: flex; flex-direction: column; gap: 24px;">
         <div class="card mica-effect">
-            <h3>Личные данные</h3>
-            <p><strong>Дата рождения:</strong> <?php echo htmlspecialchars($patient['birth_date']); ?></p>
-            <p><strong>Телефон:</strong> <?php echo htmlspecialchars($patient['phone'] ?? '-'); ?></p>
-            <p><strong>№ Карты:</strong> <?php echo htmlspecialchars($patient['card_number'] ?? '-'); ?></p>
-            <hr style="border:0; border-top: 1px solid var(--win-border); margin: 15px 0;">
-            <a href="procedures_doctor.php?patient_id=<?php echo $id; ?>" class="btn btn-primary" style="display: block; text-align: center; margin-bottom: 10px;">Назначить процедуры</a>
-            <a href="export.php?action=epicrisis&patient_id=<?php echo $id; ?>" target="_blank" class="btn" style="display: block; text-align: center;">Выписной эпикриз</a>
+            <h3 style="margin-bottom: 20px;"><i data-lucide="info" class="icon"></i> Личные данные</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.95rem;">
+                <div>
+                    <div style="color: var(--win-text-secondary); font-size: 0.8rem; text-transform: uppercase;">Дата рождения</div>
+                    <strong><?php echo date('d.m.Y', strtotime($patient['birth_date'])); ?></strong>
+                </div>
+                <div>
+                    <div style="color: var(--win-text-secondary); font-size: 0.8rem; text-transform: uppercase;">Телефон</div>
+                    <strong><?php echo htmlspecialchars($patient['phone'] ?? '-'); ?></strong>
+                </div>
+                <div>
+                    <div style="color: var(--win-text-secondary); font-size: 0.8rem; text-transform: uppercase;">№ Истории болезни</div>
+                    <code><?php echo htmlspecialchars($patient['card_number'] ?? '-'); ?></code>
+                </div>
+            </div>
+            <hr style="border:0; border-top: 1px solid var(--win-border); margin: 24px 0;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="procedures_doctor.php?patient_id=<?php echo $id; ?>" class="btn btn-primary">
+                    <i data-lucide="plus-square" class="icon"></i> Назначить процедуры
+                </a>
+                <a href="export.php?action=epicrisis&patient_id=<?php echo $id; ?>" target="_blank" class="btn">
+                    <i data-lucide="file-text" class="icon"></i> Выписной эпикриз
+                </a>
+            </div>
+        </div>
+
+        <div class="card mica-effect">
+            <h3 style="margin-bottom: 20px;"><i data-lucide="message-square" class="icon"></i> Заметки</h3>
+            <form method="POST" style="margin-bottom: 20px;">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" value="add_comment">
+                <textarea name="text" style="width: 100%; height: 80px; margin-bottom: 12px; resize: vertical;" placeholder="Добавить комментарий..." required></textarea>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Добавить</button>
+            </form>
+
+            <div class="comments-list" style="display: flex; flex-direction: column; gap: 16px;">
+                <?php if (isset($patient['comments']) && is_array($patient['comments'])): ?>
+                    <?php foreach (array_reverse($patient['comments']) as $comm): ?>
+                        <div style="padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.03);">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--win-text-secondary); margin-bottom: 6px;">
+                                <strong><?php echo htmlspecialchars($comm['author']); ?></strong>
+                                <span><?php echo $comm['date']; ?></span>
+                            </div>
+                            <p style="font-size: 0.9rem; margin: 0; line-height: 1.4;"><?php echo nl2br(htmlspecialchars($comm['text'])); ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="text-align: center; color: var(--win-text-secondary); font-size: 0.9rem;">Нет комментариев</p>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
-    <div style="grid-column: span 2;">
+    <div style="display: flex; flex-direction: column; gap: 24px;">
         <div class="card mica-effect">
-            <h3>Лист назначенных и выполненных процедур</h3>
-            <table style="width: 100%; border-collapse: collapse;">
+            <h3 style="margin-bottom: 20px;"><i data-lucide="activity" class="icon"></i> План лечения</h3>
+            <table style="font-size: 0.9rem;">
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
-                        <th style="padding: 10px;">Процедура</th>
-                        <th style="padding: 10px;">Дата/Время</th>
-                        <th style="padding: 10px;">Кем назначено</th>
-                        <th style="padding: 10px;">Кем выполнено</th>
-                        <th style="padding: 10px;">Оплата</th>
-                        <th style="padding: 10px;">Действие</th>
+                    <tr>
+                        <th>Процедура</th>
+                        <th>Дата/Время</th>
+                        <th>Статус</th>
+                        <th style="text-align: right;">Оплата</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach (array_reverse($appointments) as $app): ?>
-                    <tr style="border-bottom: 1px solid var(--win-border);">
-                        <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
-                        <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
-                        <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor']); ?></td>
-                        <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['performed_by'] ?? '-'); ?></td>
-                        <td style="padding: 10px;">
-                            <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : ($app['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
-                                <?php echo $app['status'] === 'paid' ? 'Оплачено' : ($app['status'] === 'unpaid' ? 'Не оплачено' : 'Бесплатно'); ?>
-                            </span>
-                        </td>
-                        <td style="padding: 10px;">
-                            <?php if ($app['status'] === 'unpaid' && \Medical\Core\Auth::hasRole(['admin', 'cashier'])): ?>
-                                <form method="POST" style="display:inline;">
-                                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                                    <input type="hidden" name="action" value="pay">
-                                    <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                    <button type="submit" class="btn btn-primary" style="padding: 4px 8px; font-size: 0.8em;">Оплатить</button>
-                                </form>
-                            <?php endif; ?>
+                    <tr>
+                        <td style="font-weight: 500;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
+                        <td><?php echo $app['date']; ?> <span style="color: var(--win-text-secondary);"><?php echo $app['time']; ?></span></td>
+                        <td>
                             <?php if ($app['attended']): ?>
                                 <span class="status-green">Выполнена</span>
                             <?php else: ?>
                                 <span class="status-gray">Ожидает</span>
                             <?php endif; ?>
                         </td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                                <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : ($app['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
+                                    <?php echo $app['status'] === 'paid' ? 'Оплачено' : ($app['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
+                                </span>
+                                <?php if ($app['status'] === 'unpaid' && \Medical\Core\Auth::hasRole(['admin', 'cashier'])): ?>
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="pay">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        </td>
                     </tr>
                     <?php endforeach; ?>
+                    <?php if (empty($appointments)): ?>
+                        <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--win-text-secondary);">Процедуры еще не назначены</td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <div>
         <div class="card mica-effect">
-            <h3>История болезни (Электронная карта)</h3>
-            <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor'])): ?>
-            <button class="btn" onclick="document.getElementById('historyModal').style.display='block'" style="margin-bottom: 20px;">+ Добавить запись</button>
-            <?php endif; ?>
-
-            <div class="history-list">
-                <?php if (isset($patient['history']) && is_array($patient['history'])): ?>
-                    <?php foreach (array_reverse($patient['history']) as $entry): ?>
-                        <div style="padding: 15px; border: 1px solid var(--win-border); border-radius: 8px; margin-bottom: 15px; background: rgba(255,255,255,0.5);">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                <strong><?php echo $entry['date']; ?></strong>
-                                <span style="font-size: 0.8em; color: #666;"><?php echo htmlspecialchars($entry['doctor']); ?></span>
-                            </div>
-                            <div style="margin-bottom: 5px;">
-                                <span class="status-gray" style="font-family: monospace;"><?php echo htmlspecialchars($entry['diagnosis_code']); ?></span>
-                                <strong><?php echo htmlspecialchars($entry['diagnosis_text']); ?></strong>
-                            </div>
-                            <p style="font-size: 0.9em;"><?php echo nl2br(htmlspecialchars($entry['notes'])); ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p>Записей пока нет.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h3 style="margin:0;"><i data-lucide="clipboard" class="icon"></i> История болезни</h3>
+                <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor'])): ?>
+                <button class="btn btn-primary" onclick="document.getElementById('historyModal').style.display='block'">
+                    <i data-lucide="plus" class="icon"></i> Добавить запись
+                </button>
                 <?php endif; ?>
             </div>
-        </div>
-    </div>
 
-    <div>
-        <div class="card mica-effect">
-            <h3>Заметки и комментарии персонала</h3>
-            <form method="POST" style="margin-bottom: 20px;">
-                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                <input type="hidden" name="action" value="add_comment">
-                <textarea name="text" style="width: 100%; height: 60px; margin-bottom: 10px;" placeholder="Ваш комментарий..." required></textarea>
-                <button type="submit" class="btn btn-primary">Добавить</button>
-            </form>
-
-            <div class="comments-list">
-                <?php if (isset($patient['comments']) && is_array($patient['comments'])): ?>
-                    <?php foreach (array_reverse($patient['comments']) as $comm): ?>
-                        <div style="padding: 10px; border-bottom: 1px solid var(--win-border);">
-                            <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 5px;">
-                                <strong><?php echo htmlspecialchars($comm['author']); ?> (<?php echo $comm['role']; ?>)</strong>
-                                <span><?php echo $comm['date']; ?></span>
+            <div class="history-list" style="display: flex; flex-direction: column; gap: 20px;">
+                <?php if (isset($patient['history']) && is_array($patient['history'])): ?>
+                    <?php foreach (array_reverse($patient['history']) as $entry): ?>
+                        <div style="padding: 20px; border: 1px solid var(--win-border); border-radius: 12px; background: rgba(255,255,255,0.4); transition: transform 0.2s;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="background: var(--win-accent); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold;">
+                                        <?php echo $entry['date']; ?>
+                                    </div>
+                                    <span style="font-weight: 600; font-size: 1.1rem;"><?php echo htmlspecialchars($entry['diagnosis_text']); ?></span>
+                                </div>
+                                <span style="font-size: 0.8rem; color: var(--win-text-secondary); display: flex; align-items: center; gap: 5px;">
+                                    <i data-lucide="user" style="width:14px; height:14px;"></i> <?php echo htmlspecialchars($entry['doctor']); ?>
+                                </span>
                             </div>
-                            <p style="font-size: 0.9em; margin: 0;"><?php echo nl2br(htmlspecialchars($comm['text'])); ?></p>
+                            <div style="margin-bottom: 12px;">
+                                <span style="background: #eee; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9rem; font-weight: 600;">
+                                    <?php echo htmlspecialchars($entry['diagnosis_code']); ?>
+                                </span>
+                            </div>
+                            <p style="font-size: 0.95rem; line-height: 1.6; color: #333; margin: 0; white-space: pre-wrap;"><?php echo htmlspecialchars($entry['notes']); ?></p>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>Комментариев нет.</p>
+                    <p style="text-align: center; padding: 40px; color: var(--win-text-secondary);">История болезни пуста</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -170,28 +198,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 </div>
 
 <!-- History Modal -->
-<div id="historyModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
-    <div class="card mica-effect" style="width: 500px; margin: 100px auto;">
-        <h2>Новая запись в историю болезни</h2>
+<div id="historyModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 600px; margin: 60px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Новая запись в историю болезни</h2>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="add_history">
-            <div style="margin-bottom: 15px; position: relative;">
-                <label style="display:block;">Диагноз (МКБ-10)</label>
-                <input type="text" id="mkb_search" placeholder="Поиск по МКБ-10..." style="width: 100%; margin-bottom: 5px;" onkeyup="searchMKB(this.value)">
-                <div id="mkb_results" style="display:none; position: absolute; z-index: 1001; background: white; border: 1px solid #ccc; width: 100%; max-height: 150px; overflow-y: auto;"></div>
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" name="diagnosis_code" id="diag_code" placeholder="Код" style="width: 100px;" required readonly>
+            <div style="margin-bottom: 20px; position: relative;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Диагноз (МКБ-10)</label>
+                <input type="text" id="mkb_search" placeholder="Начните вводить код или название..." style="width: 100%; margin-bottom: 10px;" onkeyup="searchMKB(this.value)">
+                <div id="mkb_results" class="card mica-effect" style="display:none; position: absolute; z-index: 1001; width: 100%; max-height: 200px; overflow-y: auto; padding: 10px;"></div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" name="diagnosis_code" id="diag_code" placeholder="Код" style="width: 100px; font-weight: bold;" required readonly>
                     <input type="text" name="diagnosis_text" id="diag_text" placeholder="Наименование диагноза" style="flex-grow: 1;" required readonly>
                 </div>
             </div>
-            <div style="margin-bottom: 15px;">
-                <label style="display:block;">Жалобы, осмотр, рекомендации</label>
-                <textarea name="notes" style="width: 100%; height: 150px;" required></textarea>
+            <div style="margin-bottom: 24px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Жалобы, осмотр, рекомендации</label>
+                <textarea name="notes" style="width: 100%; height: 180px; resize: vertical;" required></textarea>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
                 <button type="button" class="btn" onclick="document.getElementById('historyModal').style.display='none'">Отмена</button>
-                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="submit" class="btn btn-primary">Сохранить запись</button>
             </div>
         </form>
     </div>
@@ -209,7 +237,7 @@ function searchMKB(query) {
     }
     const filtered = mkbData.filter(i => i.code.toLowerCase().includes(query.toLowerCase()) || i.name.toLowerCase().includes(query.toLowerCase()));
     if (filtered.length > 0) {
-        resultsDiv.innerHTML = filtered.map(i => `<div style="padding: 5px; cursor: pointer;" onclick="selectMKB('${i.code}', '${i.name}')"><strong>${i.code}</strong> ${i.name}</div>`).join('');
+        resultsDiv.innerHTML = filtered.map(i => `<div style="padding: 10px; cursor: pointer; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,120,212,0.1)'" onmouseout="this.style.background='transparent'" onclick="selectMKB('${i.code}', '${i.name}')"><strong>${i.code}</strong> ${i.name}</div>`).join('');
         resultsDiv.style.display = 'block';
     } else {
         resultsDiv.style.display = 'none';

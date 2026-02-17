@@ -1,50 +1,53 @@
 [
     {
-        "name": "Процедура X",
-        "duration": 45,
-        "prep_time": 15,
+        "name": "Грязелечение",
+        "type": "free",
+        "price": 0,
+        "duration": 30,
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6994a4e35fa44"
+    },
+    {
+        "name": "Массаж спины",
+        "type": "paid",
         "price": 1500,
-        "is_paid": true,
-        "assigned_staff": [],
-        "id": "69945d7a1235d"
-    },
-    {
-        "name": "Процедура X",
-        "duration": 45,
-        "prep_time": 15,
-        "price": 1500,
-        "is_paid": true,
-        "assigned_staff": [],
-        "id": "69945da22c57b"
-    },
-    {
-        "name": "Тест Кабинет",
         "duration": 20,
-        "prep_time": 5,
-        "price": 0,
-        "is_paid": true,
-        "default_cabinet": "999",
-        "assigned_staff": [],
-        "id": "6994964910b7a"
+        "staff": [
+            "Медсестра",
+            "Администратор"
+        ],
+        "id": "6994a4e35fdff"
     },
     {
-        "name": "Тест Кабинет",
-        "duration": 20,
-        "prep_time": 5,
+        "name": "Электрофорез",
+        "type": "free",
         "price": 0,
-        "is_paid": true,
-        "default_cabinet": "999",
-        "assigned_staff": [],
-        "id": "69949682834b2"
+        "duration": 15,
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6994a4e360097"
     },
     {
-        "name": "Тест Кабинет",
-        "duration": 20,
-        "prep_time": 5,
+        "name": "Ингаляция",
+        "type": "free",
         "price": 0,
-        "is_paid": true,
-        "default_cabinet": "999",
-        "assigned_staff": [],
-        "id": "699496babca1e"
+        "duration": 10,
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6994a4e36027b"
+    },
+    {
+        "name": "Подводный душ-массаж",
+        "type": "paid",
+        "price": 2500,
+        "duration": 40,
+        "staff": [
+            "Медсестра"
+        ],
+        "id": "6994a4e36041a"
     }
 ]
