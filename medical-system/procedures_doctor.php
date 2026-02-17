@@ -76,17 +76,19 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 
                     <div style="margin-bottom: 15px;">
                         <label style="display:block;">Процедура</label>
-                        <select name="procedure_id" style="width: 100%;" required>
+                        <select name="procedure_id" id="procedure_select" style="width: 100%;" required>
                             <option value="">-- Выберите процедуру --</option>
                             <?php foreach ($procedures as $proc): ?>
-                                <option value="<?php echo $proc['id']; ?>"><?php echo htmlspecialchars($proc['name']); ?> (<?php echo ($proc['is_paid'] ?? false) ? 'платно' : 'бесплатно'; ?>)</option>
+                                <option value="<?php echo $proc['id']; ?>" data-cabinet="<?php echo htmlspecialchars($proc['default_cabinet'] ?? ''); ?>">
+                                    <?php echo htmlspecialchars($proc['name']); ?> (<?php echo ($proc['is_paid'] ?? false) ? 'платно' : 'бесплатно'; ?>)
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
 
                     <div style="margin-bottom: 15px;">
-                        <label style="display:block;">Дата</label>
-                        <input type="date" name="date" value="<?php echo date('Y-m-d'); ?>" style="width: 100%;" required>
+                        <label style="display:block;">Дата (ДД-ММ-ГГГГ)</label>
+                        <input type="text" name="date" value="<?php echo date('d-m-Y'); ?>" placeholder="15-05-2024" style="width: 100%;" required pattern="\d{2}-\d{2}-\d{4}">
                     </div>
 
                     <div style="margin-bottom: 15px;">
@@ -96,7 +98,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 
                     <div style="margin-bottom: 15px;">
                         <label style="display:block;">Кабинет</label>
-                        <input type="text" name="cabinet_id" placeholder="Напр. 101" style="width: 100%;" required>
+                        <input type="text" name="cabinet_id" id="cabinet_id" placeholder="Напр. 101" style="width: 100%;" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Назначить</button>
@@ -143,6 +145,16 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
         </div>
     </div>
 <?php endif; ?>
+
+<script>
+    document.getElementById('procedure_select')?.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const cabinet = selectedOption.getAttribute('data-cabinet');
+        if (cabinet) {
+            document.getElementById('cabinet_id').value = cabinet;
+        }
+    });
+</script>
 
 <div class="card mica-effect" style="margin-top: 40px;">
     <h2>Мои последние назначения</h2>

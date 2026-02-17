@@ -45,12 +45,14 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
             <?php foreach ($patients as $p): ?>
             <tr style="border-bottom: 1px solid var(--win-border);">
                 <td style="padding: 10px;"><?php echo htmlspecialchars($p['name']); ?></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($p['birth_date']); ?></td>
+                <td style="padding: 10px;"><?php echo date('d-m-Y', strtotime($p['birth_date'])); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></td>
                 <td style="padding: 10px;"><?php echo htmlspecialchars($p['phone'] ?? '-'); ?></td>
                 <td style="padding: 10px;">
-                    <a href="patient_card.php?id=<?php echo $p['id']; ?>" class="btn">Карточка</a>
-                    <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn">Назначить</a>
+                    <div style="display: flex; gap: 5px;">
+                        <a href="patient_card.php?id=<?php echo $p['id']; ?>" class="btn btn-sm" title="Карточка"><i data-lucide="contact" class="icon"></i></a>
+                        <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" title="Назначить"><i data-lucide="plus-square" class="icon"></i></a>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>

@@ -40,9 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'prep_time' => (int)$_POST['prep_time'],
             'price' => (float)$_POST['price'],
             'is_paid' => isset($_POST['is_paid']),
+            'default_cabinet' => $_POST['default_cabinet'] ?? '',
             'assigned_staff' => $_POST['assigned_staff'] ?? []
         ]);
         $message = 'Процедура добавлена';
+    } elseif ($action === 'save_ui_settings') {
+        $uiSettings = [
+            'font_family' => $_POST['font_family'],
+            'font_size' => (int)$_POST['font_size'],
+            'accent_color' => $_POST['accent_color'],
+            'border_radius' => (int)$_POST['border_radius']
+        ];
+        file_put_contents(__DIR__ . '/data/settings.json', json_encode($uiSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $message = 'Настройки внешнего вида сохранены';
     } elseif ($action === 'delete_procedure') {
         $procedureManager->delete($_POST['id']);
         $message = 'Процедура удалена';
@@ -59,6 +69,7 @@ $allProcedures = $procedureManager->getAll();
     <div style="display: flex; gap: 10px;">
         <a href="?sub=procedures" class="btn <?php echo $activeSub === 'procedures' ? 'btn-primary' : ''; ?>">Процедуры</a>
         <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
+        <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
     </div>
 </div>
 
@@ -75,7 +86,7 @@ $allProcedures = $procedureManager->getAll();
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="add_procedure">
 
-            <div>
+            <div style="grid-column: span 2;">
                 <label>Наименование</label>
                 <input type="text" name="name" class="form-control" required>
             </div>
@@ -88,6 +99,11 @@ $allProcedures = $procedureManager->getAll();
                 <input type="number" name="prep_time" class="form-control" value="5" required>
             </div>
             <div>
+                <label>Кабинет</label>
+                <input type="text" name="default_cabinet" class="form-control" placeholder="101">
+            </div>
+
+            <div>
                 <label>Цена (руб)</label>
                 <input type="number" step="0.01" name="price" class="form-control" value="0" required>
             </div>
@@ -96,7 +112,7 @@ $allProcedures = $procedureManager->getAll();
                 <label for="is_paid">Платная</label>
             </div>
 
-            <div style="grid-column: span 4;">
+            <div style="grid-column: span 3;">
                 <label>Закрепленные сотрудники</label>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; border: 1px solid var(--win-border); border-radius: 4px; background: rgba(255,255,255,0.3);">
                     <?php foreach ($allStaff as $s): ?>
@@ -118,6 +134,7 @@ $allProcedures = $procedureManager->getAll();
             <thead>
                 <tr style="border-bottom: 1px solid var(--win-border); text-align: left;">
                     <th style="padding: 10px;">Название</th>
+                    <th style="padding: 10px;">Кабинет</th>
                     <th style="padding: 10px;">Время (Д+П)</th>
                     <th style="padding: 10px;">Цена</th>
                     <th style="padding: 10px;">Персонал</th>
@@ -128,6 +145,7 @@ $allProcedures = $procedureManager->getAll();
                 <?php foreach ($allProcedures as $p): ?>
                     <tr style="border-bottom: 1px solid var(--win-border);">
                         <td style="padding: 10px; font-weight: 500;"><?php echo htmlspecialchars($p['name']); ?></td>
+                        <td style="padding: 10px;"><?php echo htmlspecialchars($p['default_cabinet'] ?? '-'); ?></td>
                         <td style="padding: 10px;"><?php echo $p['duration']; ?> + <?php echo $p['prep_time'] ?? 0; ?> мин</td>
                         <td style="padding: 10px;">
                             <?php echo number_format($p['price'], 2, ',', ' '); ?> ₽
@@ -225,6 +243,36 @@ $allProcedures = $procedureManager->getAll();
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+
+<?php elseif ($activeSub === 'appearance'):
+    $ui = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+?>
+    <div class="card mica-effect">
+        <h2>Настройки внешнего вида</h2>
+        <form method="POST" style="max-width: 500px;">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="save_ui_settings">
+
+            <div class="mb-3">
+                <label class="form-label">Шрифт (CSS font-family)</label>
+                <input type="text" name="font_family" class="form-control" value="<?php echo htmlspecialchars($ui['font_family'] ?? "'Segoe UI', sans-serif"); ?>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Базовый размер шрифта (px)</label>
+                <input type="number" name="font_size" class="form-control" value="<?php echo $ui['font_size'] ?? 16; ?>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Акцентный цвет (HEX)</label>
+                <input type="color" name="accent_color" class="form-control" value="<?php echo $ui['accent_color'] ?? '#0078d4'; ?>" style="height: 40px;">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Скругление углов (px)</label>
+                <input type="number" name="border_radius" class="form-control" value="<?php echo $ui['border_radius'] ?? 8; ?>">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
     </div>
 <?php endif; ?>
 

@@ -16,5 +16,35 @@
         "is_paid": true,
         "assigned_staff": [],
         "id": "69945da22c57b"
+    },
+    {
+        "name": "Тест Кабинет",
+        "duration": 20,
+        "prep_time": 5,
+        "price": 0,
+        "is_paid": true,
+        "default_cabinet": "999",
+        "assigned_staff": [],
+        "id": "6994964910b7a"
+    },
+    {
+        "name": "Тест Кабинет",
+        "duration": 20,
+        "prep_time": 5,
+        "price": 0,
+        "is_paid": true,
+        "default_cabinet": "999",
+        "assigned_staff": [],
+        "id": "69949682834b2"
+    },
+    {
+        "name": "Тест Кабинет",
+        "duration": 20,
+        "prep_time": 5,
+        "price": 0,
+        "is_paid": true,
+        "default_cabinet": "999",
+        "assigned_staff": [],
+        "id": "699496babca1e"
     }
 ]
