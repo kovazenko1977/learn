@@ -43,13 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             'doctor' => \Medical\Core\Auth::getUser()['name']
         ];
 
+        // Normalize dates from Y-m-d (input) to d-m-Y (storage)
+        $startDate = date('d-m-Y', strtotime($_POST['date']));
+        $assignment['date'] = $startDate;
+
         $isBulk = !empty($_POST['end_date']);
         if ($isBulk) {
-            $result = $scheduleManager->bulkAssign($assignment, $_POST['date'], $_POST['end_date'], $_POST['frequency'] ?? 'daily');
-            // Check if any error in bulk assignment
+            $endDate = date('d-m-Y', strtotime($_POST['end_date']));
+            $result = $scheduleManager->bulkAssign($assignment, $startDate, $endDate, $_POST['frequency'] ?? 'daily');
+
             $errors = [];
-            foreach ($result as $date => $res) {
-                if (isset($res['error'])) $errors[] = "$date: " . $res['error'];
+            foreach ($result as $d => $res) {
+                if (isset($res['error'])) $errors[] = "$d: " . $res['error'];
             }
             if (!empty($errors)) {
                 $error = "Ошибки при массовом назначении: " . implode(', ', $errors);
@@ -118,11 +123,11 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
                         <div>
                             <label style="display:block;">С даты</label>
-                            <input type="text" name="date" id="start_date" value="<?php echo date('d-m-Y'); ?>" placeholder="ДД-ММ-ГГГГ" style="width: 100%;" required pattern="\d{2}-\d{2}-\d{4}">
+                            <input type="date" name="date" id="start_date" value="<?php echo date('Y-m-d'); ?>" style="width: 100%;" required>
                         </div>
                         <div>
                             <label style="display:block;">По дату (необяз.)</label>
-                            <input type="text" name="end_date" id="end_date" placeholder="ДД-ММ-ГГГГ" style="width: 100%;" pattern="\d{2}-\d{2}-\d{4}">
+                            <input type="date" name="end_date" id="end_date" style="width: 100%;">
                         </div>
                     </div>
 
@@ -214,10 +219,14 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 
     function updateTimeline() {
         const cabinet = cabinetInput.value;
-        const date = dateInput.value;
-        if (!cabinet || !date || date.length < 10) return;
+        let date = dateInput.value; // Y-m-d
+        if (!cabinet || !date) return;
 
-        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}`)
+        // Convert Y-m-d to d-m-Y for backend
+        const [y, m, d] = date.split('-');
+        const formattedDate = `${d}-${m}-${y}`;
+
+        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${formattedDate}`)
             .then(r => r.json())
             .then(slots => {
                 timeline.innerHTML = '';

@@ -16,11 +16,11 @@ $procDirectory = new JsonStore('procedures_directory');
 $procDirectory->save([]); // Reset
 
 $procs = [
-    ['name' => 'Грязелечение', 'type' => 'free', 'price' => 0, 'duration' => 30, 'staff' => ['Медсестра']],
-    ['name' => 'Массаж спины', 'type' => 'paid', 'price' => 1500, 'duration' => 20, 'staff' => ['Медсестра', 'Администратор']],
-    ['name' => 'Электрофорез', 'type' => 'free', 'price' => 0, 'duration' => 15, 'staff' => ['Медсестра']],
-    ['name' => 'Ингаляция', 'type' => 'free', 'price' => 0, 'duration' => 10, 'staff' => ['Медсестра']],
-    ['name' => 'Подводный душ-массаж', 'type' => 'paid', 'price' => 2500, 'duration' => 40, 'staff' => ['Медсестра']],
+    ['name' => 'Грязелечение', 'is_paid' => false, 'price' => 0, 'duration' => 30, 'staff' => ['Медсестра'], 'default_cabinet' => '101', 'prep_time' => 10],
+    ['name' => 'Массаж спины', 'is_paid' => true, 'price' => 1500, 'duration' => 20, 'staff' => ['Медсестра', 'Администратор'], 'default_cabinet' => '202', 'prep_time' => 5],
+    ['name' => 'Электрофорез', 'is_paid' => false, 'price' => 0, 'duration' => 15, 'staff' => ['Медсестра'], 'default_cabinet' => '103', 'prep_time' => 5],
+    ['name' => 'Ингаляция', 'is_paid' => false, 'price' => 0, 'duration' => 10, 'staff' => ['Медсестра'], 'default_cabinet' => '104', 'prep_time' => 2],
+    ['name' => 'Подводный душ-массаж', 'is_paid' => true, 'price' => 2500, 'duration' => 40, 'staff' => ['Медсестра'], 'default_cabinet' => '205', 'prep_time' => 15],
 ];
 
 foreach ($procs as $p) {
@@ -61,10 +61,9 @@ foreach ($pIds as $idx => $pid) {
             'procedure_name' => $p['name'],
             'date' => date('d-m-Y'),
             'time' => '10:' . sprintf('%02d', (20 * ($i + $idx))),
-            'cabinet_id' => '10' . ($idx + 1),
-            'type' => $p['type'],
+            'cabinet_id' => $p['default_cabinet'] ?? ('10' . ($idx + 1)),
             'price' => $p['price'],
-            'is_paid' => ($i == 0 && $p['type'] == 'paid'), // One pre-paid for variety
+            'status' => ($p['is_paid'] ?? false) ? 'unpaid' : 'free',
             'attended' => ($i == 0),
             'attended_at' => ($i == 0) ? date('Y-m-d H:i:s') : null,
             'performed_by' => ($i == 0) ? 'Медсестра' : null,
