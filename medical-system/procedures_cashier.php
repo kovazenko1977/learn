@@ -15,7 +15,8 @@ $allAppointments = $scheduleManager->getAll();
 // Filter only paid procedures that are not yet paid, or show all for search
 $query = $_GET['q'] ?? '';
 $appointments = array_filter($allAppointments, function($app) use ($query) {
-    if ($app['type'] !== 'paid') return false;
+    // A procedure is "payable" if status is unpaid or paid
+    if (($app['status'] ?? '') !== 'unpaid' && ($app['status'] ?? '') !== 'paid') return false;
     if ($query) {
         return mb_strpos(mb_strtolower($app['patient_name']), mb_strtolower($query)) !== false;
     }
@@ -55,15 +56,19 @@ $appointments = array_filter($allAppointments, function($app) use ($query) {
                     </span>
                 </td>
                 <td style="padding: 10px;">
-                    <?php if ($app['status'] === 'unpaid'): ?>
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                            <input type="hidden" name="action" value="pay">
-                            <input type="hidden" name="id" value="<?php echo $app['id']; ?>">
-                            <button type="submit" class="btn btn-primary">Оплатить</button>
-                        </form>
-                    <?php endif; ?>
-                    <a href="export.php?action=print_contract&id=<?php echo $app['id']; ?>" target="_blank" class="btn">Договор</a>
+                    <div style="display: flex; gap: 5px;">
+                        <?php if ($app['status'] === 'unpaid'): ?>
+                            <form method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                <input type="hidden" name="action" value="pay">
+                                <input type="hidden" name="id" value="<?php echo $app['id']; ?>">
+                                <button type="submit" class="btn btn-primary btn-sm">Оплатить</button>
+                            </form>
+                        <?php endif; ?>
+                        <a href="export.php?action=print_contract&id=<?php echo $app['id']; ?>" target="_blank" class="btn btn-sm" title="Печать договора">
+                            <i data-lucide="file-text" class="icon" style="margin: 0;"></i>
+                        </a>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>

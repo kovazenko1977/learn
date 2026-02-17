@@ -13,7 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$date = $_GET['date'] ?? date('Y-m-d');
+$dateInput = $_GET['date'] ?? date('Y-m-d');
+// Normalize date to DD-MM-YYYY for storage lookup
+$date = date('d-m-Y', strtotime($dateInput));
+
 $allAppointments = $scheduleManager->getByDate($date);
 
 // Filter: nurse only sees procedures for today
@@ -25,8 +28,8 @@ $appointments = $allAppointments;
 <div class="card mica-effect">
     <form method="GET" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center;">
         <label>Дата приема:</label>
-        <input type="date" name="date" value="<?php echo $date; ?>">
-        <button type="submit" class="btn">Обновить список</button>
+        <input type="date" name="date" value="<?php echo date('Y-m-d', strtotime($date)); ?>" class="form-control">
+        <button type="submit" class="btn btn-primary">Обновить список</button>
     </form>
 
     <table style="width: 100%; border-collapse: collapse;">

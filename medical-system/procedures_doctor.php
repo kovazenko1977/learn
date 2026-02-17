@@ -1,10 +1,23 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $procedureManager = new \Medical\Core\Managers\ProcedureManager();
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
+
+if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'get_slots') {
+    $cabinetId = $_GET['cabinet_id'];
+    $date = $_GET['date'];
+    $slots = $scheduleManager->getOccupiedSlots($cabinetId, $date);
+    header('Content-Type: application/json');
+    echo json_encode($slots);
+    exit;
+}
+
+require_once __DIR__ . '/includes/header.php';
 
 $patientId = $_GET['patient_id'] ?? '';
 $patient = $patientId ? $patientManager->getById($patientId) : null;
@@ -30,12 +43,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             'doctor' => \Medical\Core\Auth::getUser()['name']
         ];
 
-        $result = $scheduleManager->assign($assignment);
-        if (isset($result['error'])) {
-            $error = $result['error'];
+        $isBulk = !empty($_POST['end_date']);
+        if ($isBulk) {
+            $result = $scheduleManager->bulkAssign($assignment, $_POST['date'], $_POST['end_date'], $_POST['frequency'] ?? 'daily');
+            // Check if any error in bulk assignment
+            $errors = [];
+            foreach ($result as $date => $res) {
+                if (isset($res['error'])) $errors[] = "$date: " . $res['error'];
+            }
+            if (!empty($errors)) {
+                $error = "Ошибки при массовом назначении: " . implode(', ', $errors);
+            } else {
+                header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+                exit;
+            }
         } else {
-            header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
-            exit;
+            $result = $scheduleManager->assign($assignment);
+            if (isset($result['error'])) {
+                $error = $result['error'];
+            } else {
+                header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+                exit;
+            }
         }
     }
 }
@@ -86,14 +115,23 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display:block;">Дата (ДД-ММ-ГГГГ)</label>
-                        <input type="text" name="date" value="<?php echo date('d-m-Y'); ?>" placeholder="15-05-2024" style="width: 100%;" required pattern="\d{2}-\d{2}-\d{4}">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display:block;">С даты</label>
+                            <input type="text" name="date" id="start_date" value="<?php echo date('d-m-Y'); ?>" placeholder="ДД-ММ-ГГГГ" style="width: 100%;" required pattern="\d{2}-\d{2}-\d{4}">
+                        </div>
+                        <div>
+                            <label style="display:block;">По дату (необяз.)</label>
+                            <input type="text" name="end_date" id="end_date" placeholder="ДД-ММ-ГГГГ" style="width: 100%;" pattern="\d{2}-\d{2}-\d{4}">
+                        </div>
                     </div>
 
-                    <div style="margin-bottom: 15px;">
-                        <label style="display:block;">Время</label>
-                        <input type="time" name="time" style="width: 100%;" required>
+                    <div id="bulk_options" style="display: none; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 4px;">
+                        <label style="display:block;">Периодичность</label>
+                        <select name="frequency" style="width: 100%;">
+                            <option value="daily">Ежедневно</option>
+                            <option value="every_other">Через день</option>
+                        </select>
                     </div>
 
                     <div style="margin-bottom: 15px;">
@@ -101,7 +139,25 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                         <input type="text" name="cabinet_id" id="cabinet_id" placeholder="Напр. 101" style="width: 100%;" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Назначить</button>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block;">Время</label>
+                        <input type="time" name="time" id="time_input" style="width: 100%;" required>
+                    </div>
+
+                    <div id="timeline_container" style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom: 5px;">Загруженность кабинета</label>
+                        <div id="timeline" style="height: 30px; background: #dff6dd; border-radius: 4px; position: relative; overflow: hidden; border: 1px solid var(--win-border);">
+                            <!-- Busy slots will be here -->
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #666; margin-top: 2px;">
+                            <span>08:00</span>
+                            <span>12:00</span>
+                            <span>16:00</span>
+                            <span>20:00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 45px; font-weight: 600;">Назначить процедуру</button>
                 </form>
             </div>
         </div>
@@ -139,7 +195,9 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     </tbody>
                 </table>
                 <div style="margin-top: 20px;">
-                    <a href="export.php?action=print_schedule&patient_id=<?php echo $patientId; ?>" target="_blank" class="btn"><i data-lucide="printer" class="icon"></i> Печать графика</a>
+                    <a href="export.php?action=print_schedule&patient_id=<?php echo $patientId; ?>" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i data-lucide="printer" class="icon" style="margin: 0;"></i> Печать карты процедур
+                    </a>
                 </div>
             </div>
         </div>
@@ -147,13 +205,68 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 <?php endif; ?>
 
 <script>
-    document.getElementById('procedure_select')?.addEventListener('change', function() {
+    const procedureSelect = document.getElementById('procedure_select');
+    const cabinetInput = document.getElementById('cabinet_id');
+    const dateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const bulkOptions = document.getElementById('bulk_options');
+    const timeline = document.getElementById('timeline');
+
+    function updateTimeline() {
+        const cabinet = cabinetInput.value;
+        const date = dateInput.value;
+        if (!cabinet || !date || date.length < 10) return;
+
+        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}`)
+            .then(r => r.json())
+            .then(slots => {
+                timeline.innerHTML = '';
+                // 08:00 to 20:00 is 12 hours = 720 minutes
+                const startDay = 8 * 60;
+                const totalDay = 12 * 60;
+
+                slots.forEach(slot => {
+                    const [hS, mS] = slot.start.split(':').map(Number);
+                    const [hE, mE] = slot.end.split(':').map(Number);
+
+                    const startMin = (hS * 60 + mS) - startDay;
+                    const endMin = (hE * 60 + mE) - startDay;
+
+                    if (startMin < 0 && endMin <= 0) return;
+
+                    const left = Math.max(0, (startMin / totalDay) * 100);
+                    const width = ((endMin - Math.max(0, startMin)) / totalDay) * 100;
+
+                    const block = document.createElement('div');
+                    block.style.position = 'absolute';
+                    block.style.left = left + '%';
+                    block.style.width = width + '%';
+                    block.style.height = '100%';
+                    block.style.background = '#fff100'; // Yellow for busy
+                    block.title = `${slot.procedure} (${slot.start} - ${slot.end})`;
+                    timeline.appendChild(block);
+                });
+            });
+    }
+
+    procedureSelect?.addEventListener('change', function() {
         const selectedOption = this.options[this.selectedIndex];
         const cabinet = selectedOption.getAttribute('data-cabinet');
         if (cabinet) {
-            document.getElementById('cabinet_id').value = cabinet;
+            cabinetInput.value = cabinet;
+            updateTimeline();
         }
     });
+
+    cabinetInput?.addEventListener('change', updateTimeline);
+    dateInput?.addEventListener('change', updateTimeline);
+
+    endDateInput?.addEventListener('input', function() {
+        bulkOptions.style.display = this.value ? 'block' : 'none';
+    });
+
+    // Initial timeline
+    updateTimeline();
 </script>
 
 <div class="card mica-effect" style="margin-top: 40px;">

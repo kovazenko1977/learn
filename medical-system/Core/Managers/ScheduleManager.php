@@ -91,6 +91,47 @@ class ScheduleManager {
         return array_values($results);
     }
 
+    public function getOccupiedSlots($cabinetId, $date) {
+        $appointments = $this->getByCabinet($cabinetId, $date);
+        $slots = [];
+        foreach ($appointments as $app) {
+            $proc = $this->procedureManager->getById($app['procedure_id']);
+            $duration = $proc ? (int)$proc['duration'] : 20;
+            $prep = $proc ? (int)($proc['prep_time'] ?? 0) : 5;
+            $total = $duration + $prep;
+
+            $start = $app['time'];
+            $end = date('H:i', strtotime($date . ' ' . $start) + ($total * 60));
+
+            $slots[] = ['start' => $start, 'end' => $end, 'procedure' => $app['procedure_name']];
+        }
+        return $slots;
+    }
+
+    public function bulkAssign($data, $startDate, $endDate, $frequency = 'daily') {
+        $results = [];
+        $current = strtotime($startDate);
+        $last = strtotime($endDate);
+
+        while ($current <= $last) {
+            $dateStr = date('d-m-Y', $current);
+            $instanceData = $data;
+            $instanceData['date'] = $dateStr;
+
+            $res = $this->assign($instanceData);
+            $results[$dateStr] = $res;
+
+            if ($frequency === 'daily') {
+                $current = strtotime('+1 day', $current);
+            } elseif ($frequency === 'every_other') {
+                $current = strtotime('+2 days', $current);
+            } else {
+                break;
+            }
+        }
+        return $results;
+    }
+
     public function markAttended($id, $nurseName) {
         return $this->store->updateById($id, [
             'attended' => true,

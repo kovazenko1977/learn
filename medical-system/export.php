@@ -12,45 +12,76 @@ if ($action === 'print_schedule') {
     $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
     $patient = $patientManager->getById($patientId);
     $appointments = $scheduleManager->getByPatient($patientId);
+
+    usort($appointments, function($a, $b) {
+        $ta = strtotime($a['date'] . ' ' . $a['time']);
+        $tb = strtotime($b['date'] . ' ' . $b['time']);
+        return $ta <=> $tb;
+    });
+
+    $grouped = [];
+    foreach ($appointments as $app) {
+        $grouped[$app['date']][] = $app;
+    }
     ?>
     <!DOCTYPE html>
     <html lang="ru">
     <head>
         <meta charset="UTF-8">
-        <title>График процедур - <?php echo $patient['name']; ?></title>
+        <title>Карта процедур - <?php echo $patient['name']; ?></title>
         <style>
-            body { font-family: sans-serif; padding: 40px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-            .header { text-align: center; margin-bottom: 30px; }
+            @page { size: A4; margin: 15mm; }
+            body { font-family: 'Segoe UI', Tahoma, sans-serif; color: #333; line-height: 1.4; }
+            .header { border-bottom: 3px solid #0078d4; padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+            .header h1 { margin: 0; color: #0078d4; font-size: 24pt; }
+            .patient-info { font-size: 12pt; }
+            .day-section { margin-bottom: 25px; break-inside: avoid; }
+            .day-title { background: #f3f3f3; padding: 8px 15px; font-weight: bold; border-left: 5px solid #0078d4; margin-bottom: 10px; font-size: 14pt; }
+            .proc-grid { display: grid; grid-template-columns: 80px 1fr 100px; gap: 10px; padding: 0 15px; }
+            .proc-time { font-weight: 600; color: #0078d4; font-size: 12pt; }
+            .proc-name { font-weight: 500; }
+            .proc-cabinet { text-align: right; color: #666; }
+            .proc-item { padding: 8px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+            .proc-item:last-child { border-bottom: none; }
+            .footer { margin-top: 50px; font-size: 9pt; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
         </style>
     </head>
     <body onload="window.print()">
         <div class="header">
-            <h1>Листок назначений</h1>
-            <p>Пациент: <strong><?php echo htmlspecialchars($patient['name']); ?></strong></p>
-            <p>Дата печати: <?php echo date('d.m.Y H:i'); ?></p>
+            <div>
+                <h1>Карта процедур</h1>
+                <div class="patient-info">Пациент: <strong><?php echo htmlspecialchars($patient['name']); ?></strong></div>
+            </div>
+            <div style="text-align: right; font-size: 10pt;">
+                Санаторий "Здоровье"<br>
+                Дата: <?php echo date('d.m.Y'); ?>
+            </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Время</th>
-                    <th>Процедура</th>
-                    <th>Кабинет</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($appointments as $app): ?>
-                <tr>
-                    <td><?php echo $app['date']; ?></td>
-                    <td><?php echo $app['time']; ?></td>
-                    <td><?php echo htmlspecialchars($app['procedure_name']); ?></td>
-                    <td><?php echo htmlspecialchars($app['cabinet_id']); ?></td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+
+        <?php if (empty($grouped)): ?>
+            <p style="text-align: center; padding: 50px; color: #666;">Назначенных процедур не найдено.</p>
+        <?php else: ?>
+            <?php foreach ($grouped as $date => $dayProcs): ?>
+                <div class="day-section">
+                    <div class="day-title"><?php echo $date; ?></div>
+                    <div style="padding: 0 15px;">
+                        <?php foreach ($dayProcs as $app): ?>
+                            <div class="proc-item">
+                                <div style="display: flex; gap: 20px; align-items: center;">
+                                    <span class="proc-time"><?php echo $app['time']; ?></span>
+                                    <span class="proc-name"><?php echo htmlspecialchars($app['procedure_name']); ?></span>
+                                </div>
+                                <span class="proc-cabinet">Кабинет: <strong><?php echo htmlspecialchars($app['cabinet_id']); ?></strong></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <div class="footer">
+            Пожалуйста, приходите за 5 минут до начала процедуры. Желаем приятного отдыха и скорейшего выздоровления!
+        </div>
     </body>
     </html>
     <?php
