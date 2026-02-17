@@ -6,6 +6,13 @@ require_once __DIR__ . '/Core/Autoloader.php';
 
 $action = $_GET['action'] ?? '';
 
+$settings = [];
+$settingsPath = __DIR__ . '/data/settings.json';
+if (file_exists($settingsPath)) {
+    $settings = json_decode(file_get_contents($settingsPath), true) ?? [];
+}
+$orgName = $settings['org_name'] ?? 'Санаторий "Здоровье"';
+
 if ($action === 'print_schedule') {
     $patientId = $_GET['patient_id'];
     $patientManager = new \Medical\Core\Managers\PatientManager();
@@ -53,7 +60,7 @@ if ($action === 'print_schedule') {
                 <div class="patient-info">Пациент: <strong><?php echo htmlspecialchars($patient['name']); ?></strong></div>
             </div>
             <div style="text-align: right; font-size: 10pt;">
-                Санаторий "Здоровье"<br>
+                <?php echo htmlspecialchars($orgName); ?><br>
                 Дата: <?php echo date('d.m.Y'); ?>
             </div>
         </div>
@@ -102,15 +109,27 @@ if ($action === 'print_schedule') {
     </head>
     <body onload="window.print()">
         <div class="title">ДОГОВОР № <?php echo $app['id']; ?> ОБ ОКАЗАНИИ ПЛАТНЫХ МЕДИЦИНСКИХ УСЛУГ</div>
-        <p>г. Санаторск, "<?php echo date('d'); ?>" <?php echo date('m'); ?> <?php echo date('Y'); ?> г.</p>
-        <p>Санаторий "Здоровье", именуемый в дальнейшем "Исполнитель", с одной стороны, и
+        <p>г. <?php echo htmlspecialchars($settings['org_address'] ?? 'Санаторск'); ?>, "<?php echo date('d'); ?>" <?php echo date('m'); ?> <?php echo date('Y'); ?> г.</p>
+        <p><?php echo htmlspecialchars($orgName); ?>, именуемый в дальнейшем "Исполнитель", с одной стороны, и
            <strong><?php echo htmlspecialchars($app['patient_name']); ?></strong>, именуемый в дальнейшем "Заказчик", с другой стороны, заключили настоящий договор...</p>
         <p><strong>Предмет договора:</strong> Оказание услуги "<?php echo htmlspecialchars($app['procedure_name']); ?>".</p>
         <p><strong>Стоимость услуги:</strong> <?php echo number_format($app['price'], 2, ',', ' '); ?> ₽.</p>
-        <p style="margin-top: 100px;">Подписи сторон:</p>
-        <div style="display: flex; justify-content: space-between;">
-            <div>Исполнитель: ___________</div>
-            <div>Заказчик: ___________</div>
+
+        <div style="margin-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div>
+                <strong>Исполнитель:</strong><br>
+                <?php echo htmlspecialchars($orgName); ?><br>
+                Адрес: <?php echo htmlspecialchars($settings['org_address'] ?? ''); ?><br>
+                УНП/ИНН: <?php echo htmlspecialchars($settings['org_unp'] ?? ''); ?><br>
+                Банк: <?php echo htmlspecialchars($settings['org_bank'] ?? ''); ?><br>
+                Р/с: <?php echo htmlspecialchars($settings['org_account'] ?? ''); ?><br><br>
+                ___________ / <?php echo htmlspecialchars($settings['org_director'] ?? ''); ?> /
+            </div>
+            <div>
+                <strong>Заказчик:</strong><br>
+                <?php echo htmlspecialchars($app['patient_name']); ?><br><br><br>
+                ___________ / <?php echo htmlspecialchars($app['patient_name']); ?> /
+            </div>
         </div>
     </body>
     </html>
@@ -137,7 +156,7 @@ if ($action === 'print_schedule') {
     <body onload="window.print()">
         <div class="header">
             <h1>ВЫПИСНОЙ ЭПИКРИЗ</h1>
-            <p>Санаторий "Здоровье"</p>
+            <p><?php echo htmlspecialchars($orgName); ?></p>
         </div>
 
         <p><strong>Пациент:</strong> <?php echo htmlspecialchars($patient['name']); ?></p>

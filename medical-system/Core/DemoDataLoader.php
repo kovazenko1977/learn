@@ -16,11 +16,11 @@ $procDirectory = new JsonStore('procedures_directory');
 $procDirectory->save([]); // Reset
 
 $procs = [
-    ['name' => 'Грязелечение', 'is_paid' => false, 'price' => 0, 'duration' => 30, 'staff' => ['Медсестра'], 'default_cabinet' => '101', 'prep_time' => 10],
-    ['name' => 'Массаж спины', 'is_paid' => true, 'price' => 1500, 'duration' => 20, 'staff' => ['Медсестра', 'Администратор'], 'default_cabinet' => '202', 'prep_time' => 5],
-    ['name' => 'Электрофорез', 'is_paid' => false, 'price' => 0, 'duration' => 15, 'staff' => ['Медсестра'], 'default_cabinet' => '103', 'prep_time' => 5],
-    ['name' => 'Ингаляция', 'is_paid' => false, 'price' => 0, 'duration' => 10, 'staff' => ['Медсестра'], 'default_cabinet' => '104', 'prep_time' => 2],
-    ['name' => 'Подводный душ-массаж', 'is_paid' => true, 'price' => 2500, 'duration' => 40, 'staff' => ['Медсестра'], 'default_cabinet' => '205', 'prep_time' => 15],
+    ['name' => 'Грязелечение', 'is_paid' => false, 'price' => 0, 'duration' => 30, 'assigned_staff' => [], 'default_cabinet' => '101', 'prep_time' => 10],
+    ['name' => 'Массаж спины', 'is_paid' => true, 'price' => 1500, 'duration' => 20, 'assigned_staff' => [], 'default_cabinet' => '202', 'prep_time' => 5],
+    ['name' => 'Электрофорез', 'is_paid' => false, 'price' => 0, 'duration' => 15, 'assigned_staff' => [], 'default_cabinet' => '103', 'prep_time' => 5],
+    ['name' => 'Ингаляция', 'is_paid' => false, 'price' => 0, 'duration' => 10, 'assigned_staff' => [], 'default_cabinet' => '104', 'prep_time' => 2],
+    ['name' => 'Подводный душ-массаж', 'is_paid' => true, 'price' => 2500, 'duration' => 40, 'assigned_staff' => [], 'default_cabinet' => '205', 'prep_time' => 15],
 ];
 
 foreach ($procs as $p) {
@@ -32,14 +32,14 @@ $patientManager = new PatientManager();
 $patientsStore = new JsonStore('patients');
 $patientsStore->save([]); // Reset
 
-$patientNames = ['Иванов Иван Иванович', 'Петров Петр Петрович', 'Сидорова Анна Сергеевна', 'Кузнецова Елена Павловна'];
+$patientNames = ['Белов Артем Игоревич', 'Соколова Мария Павловна', 'Васильев Олег Сергеевич', 'Морозова Анна Дмитриевна'];
 $pIds = [];
 foreach ($patientNames as $name) {
     $pIds[] = $patientManager->add([
         'name' => $name,
-            'birth_date' => '15-05-1980',
-        'phone' => '+7 900 123 45 67',
-        'card_number' => 'SB-' . rand(1000, 9999)
+        'birth_date' => '12-04-1975',
+        'phone' => '+7 910 555 01 23',
+        'card_number' => 'MED-' . rand(10000, 99999)
     ]);
 }
 

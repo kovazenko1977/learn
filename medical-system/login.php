@@ -39,15 +39,6 @@ if (isset($_GET['logout'])) {
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Войти</button>
         </form>
 
-        <div style="margin-top: 30px; font-size: 0.9em; color: #666;">
-            <p>Тестовые коды:</p>
-            <ul style="text-align: left; display: inline-block;">
-                <li>Админ: 123456</li>
-                <li>Врач: 101010</li>
-                <li>Кассир: 202020</li>
-                <li>Медсестра: 303030</li>
-            </ul>
-        </div>
     </div>
 </div>
 <?php include __DIR__ . '/includes/footer.php'; ?>

@@ -45,14 +45,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $message = 'Процедура добавлена';
     } elseif ($action === 'save_ui_settings') {
-        $uiSettings = [
+        $existing = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+        $uiSettings = array_merge($existing, [
             'font_family' => $_POST['font_family'],
             'font_size' => (int)$_POST['font_size'],
             'accent_color' => $_POST['accent_color'],
             'border_radius' => (int)$_POST['border_radius']
-        ];
+        ]);
         file_put_contents(__DIR__ . '/data/settings.json', json_encode($uiSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         $message = 'Настройки внешнего вида сохранены';
+    } elseif ($action === 'save_sanatorium_details') {
+        $existing = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+        $details = array_merge($existing, [
+            'org_name' => $_POST['org_name'],
+            'org_address' => $_POST['org_address'],
+            'org_phone' => $_POST['org_phone'],
+            'org_unp' => $_POST['org_unp'],
+            'org_bank' => $_POST['org_bank'],
+            'org_account' => $_POST['org_account'],
+            'org_director' => $_POST['org_director']
+        ]);
+        file_put_contents(__DIR__ . '/data/settings.json', json_encode($details, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $message = 'Реквизиты организации сохранены';
     } elseif ($action === 'delete_procedure') {
         $procedureManager->delete($_POST['id']);
         $message = 'Процедура удалена';
@@ -69,6 +83,7 @@ $allProcedures = $procedureManager->getAll();
     <div style="display: flex; gap: 10px;">
         <a href="?sub=procedures" class="btn <?php echo $activeSub === 'procedures' ? 'btn-primary' : ''; ?>">Процедуры</a>
         <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
+        <a href="?sub=details" class="btn <?php echo $activeSub === 'details' ? 'btn-primary' : ''; ?>">Реквизиты</a>
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
     </div>
 </div>
@@ -243,6 +258,50 @@ $allProcedures = $procedureManager->getAll();
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+
+<?php elseif ($activeSub === 'details'):
+    $details = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+?>
+    <div class="card mica-effect">
+        <h2>Реквизиты санатория</h2>
+        <form method="POST" style="max-width: 600px;">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="save_sanatorium_details">
+
+            <div class="mb-3">
+                <label class="form-label">Полное наименование организации</label>
+                <input type="text" name="org_name" class="form-control" value="<?php echo htmlspecialchars($details['org_name'] ?? ''); ?>" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Адрес</label>
+                <input type="text" name="org_address" class="form-control" value="<?php echo htmlspecialchars($details['org_address'] ?? ''); ?>">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input type="text" name="org_phone" class="form-control" value="<?php echo htmlspecialchars($details['org_phone'] ?? ''); ?>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">УНП / ИНН</label>
+                    <input type="text" name="org_unp" class="form-control" value="<?php echo htmlspecialchars($details['org_unp'] ?? ''); ?>">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Банковские реквизиты (Банк, БИК)</label>
+                <input type="text" name="org_bank" class="form-control" value="<?php echo htmlspecialchars($details['org_bank'] ?? ''); ?>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Расчетный счет (IBAN)</label>
+                <input type="text" name="org_account" class="form-control" value="<?php echo htmlspecialchars($details['org_account'] ?? ''); ?>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">ФИО руководителя</label>
+                <input type="text" name="org_director" class="form-control" value="<?php echo htmlspecialchars($details['org_director'] ?? ''); ?>">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить реквизиты</button>
+        </form>
     </div>
 
 <?php elseif ($activeSub === 'appearance'):

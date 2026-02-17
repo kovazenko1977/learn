@@ -55,14 +55,19 @@ function isActive($page, $current_page) {
         </div>
         <?php endif; ?>
 
-        <?php if (\Medical\Core\Auth::hasRole('admin')): ?>
         <div style="margin-top: 2rem; border-top: 1px solid var(--win-border); padding-top: 1rem;">
+            <div class="nav-item">
+                <a href="help.php" class="btn <?php echo isActive('help.php', $current_page); ?>">
+                    <i data-lucide="help-circle" class="icon"></i> <span>Справка</span>
+                </a>
+            </div>
+            <?php if (\Medical\Core\Auth::hasRole('admin')): ?>
             <div class="nav-item">
                 <a href="settings.php" class="btn <?php echo isActive('settings.php', $current_page); ?>">
                     <i data-lucide="settings" class="icon"></i> <span>Настройки</span>
                 </a>
             </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
     </nav>
 </div>
