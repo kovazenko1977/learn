@@ -7,7 +7,9 @@
         "assigned_staff": [],
         "default_cabinet": "101",
         "prep_time": 10,
-        "id": "6994c4d305a46"
+        "work_start": "08:00",
+        "work_end": "16:00",
+        "id": "6995490fde5a4"
     },
     {
         "name": "Массаж спины",
@@ -17,7 +19,9 @@
         "assigned_staff": [],
         "default_cabinet": "202",
         "prep_time": 5,
-        "id": "6994c4d3216e7"
+        "work_start": "09:00",
+        "work_end": "18:00",
+        "id": "6995490fdf123"
     },
     {
         "name": "Электрофорез",
@@ -27,7 +31,9 @@
         "assigned_staff": [],
         "default_cabinet": "103",
         "prep_time": 5,
-        "id": "6994c4d321933"
+        "work_start": "08:00",
+        "work_end": "17:00",
+        "id": "6995490fdf4da"
     },
     {
         "name": "Ингаляция",
@@ -37,7 +43,9 @@
         "assigned_staff": [],
         "default_cabinet": "104",
         "prep_time": 2,
-        "id": "6994c4d321b34"
+        "work_start": "08:00",
+        "work_end": "20:00",
+        "id": "6995490fdf750"
     },
     {
         "name": "Подводный душ-массаж",
@@ -47,6 +55,8 @@
         "assigned_staff": [],
         "default_cabinet": "205",
         "prep_time": 15,
-        "id": "6994c4d321d3a"
+        "work_start": "10:00",
+        "work_end": "15:00",
+        "id": "6995490fdfa1a"
     }
 ]

@@ -32,6 +32,14 @@ class ScheduleManager {
         $newStart = strtotime($data['date'] . ' ' . $data['time']);
         $newEnd = $newStart + ($totalBlock * 60);
 
+        // Check Working Hours
+        $workStart = strtotime($data['date'] . ' ' . ($proc['work_start'] ?? '08:00'));
+        $workEnd = strtotime($data['date'] . ' ' . ($proc['work_end'] ?? '17:00'));
+
+        if ($newStart < $workStart || $newEnd > $workEnd) {
+            return ['error' => "Время вне графика работы процедуры (" . ($proc['work_start'] ?? '08:00') . " - " . ($proc['work_end'] ?? '17:00') . ")"];
+        }
+
         // Collision detection
         $existing = $this->getByCabinet($data['cabinet_id'], $data['date']);
         foreach ($existing as $app) {
@@ -56,6 +64,7 @@ class ScheduleManager {
         }
         $data['created_at'] = date('Y-m-d H:i:s');
         $this->store->add($data);
+        (new LogManager())->log('Назначение процедуры', ['patient' => $data['patient_name'], 'procedure' => $data['procedure_name'], 'date' => $data['date']]);
         return ['id' => $data['id']];
     }
 
@@ -133,15 +142,39 @@ class ScheduleManager {
     }
 
     public function markAttended($id, $nurseName) {
-        return $this->store->updateById($id, [
+        $res = $this->store->updateById($id, [
             'attended' => true,
             'attended_at' => date('Y-m-d H:i:s'),
             'performed_by' => $nurseName
         ]);
+        if ($res) {
+            (new LogManager())->log('Процедура выполнена', ['appointment_id' => $id, 'nurse' => $nurseName]);
+        }
+        return $res;
+    }
+
+    public function delete($id) {
+        $res = $this->store->deleteById($id);
+        if ($res) {
+            (new LogManager())->log('Отмена/Удаление назначения', ['appointment_id' => $id]);
+        }
+        return $res;
+    }
+
+    public function update($id, $data) {
+        $res = $this->store->updateById($id, $data);
+        if ($res) {
+            (new LogManager())->log('Корректировка назначения', ['appointment_id' => $id]);
+        }
+        return $res;
     }
 
     public function markPaid($id) {
-        return $this->store->updateById($id, ['status' => 'paid', 'paid_at' => date('Y-m-d H:i:s')]);
+        $res = $this->store->updateById($id, ['status' => 'paid', 'paid_at' => date('Y-m-d H:i:s')]);
+        if ($res) {
+            (new LogManager())->log('Оплата процедуры', ['appointment_id' => $id]);
+        }
+        return $res;
     }
 
     public function autoCancelUnpaid() {

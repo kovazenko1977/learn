@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
@@ -33,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
     }
 }
+
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <h1>Результаты исследований</h1>

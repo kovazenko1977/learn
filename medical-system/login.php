@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
-
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
@@ -21,6 +19,8 @@ if (isset($_GET['logout'])) {
     header('Location: login.php');
     exit;
 }
+
+require_once __DIR__ . '/includes/header.php';
 ?>
 <div style="max-width: 400px; margin: 100px auto;">
     <div class="card mica-effect" style="text-align: center; padding: 40px;">

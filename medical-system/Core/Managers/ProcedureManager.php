@@ -22,15 +22,24 @@ class ProcedureManager {
     public function add($procedureData) {
         $procedureData['id'] = uniqid();
         $this->store->add($procedureData);
+        (new LogManager())->log('Добавление процедуры в справочник', ['name' => $procedureData['name']]);
         return $procedureData['id'];
     }
 
     public function update($id, $procedureData) {
-        return $this->store->updateById($id, $procedureData);
+        $res = $this->store->updateById($id, $procedureData);
+        if ($res) {
+            (new LogManager())->log('Обновление процедуры в справочнике', ['id' => $id]);
+        }
+        return $res;
     }
 
     public function delete($id) {
-        return $this->store->deleteById($id);
+        $res = $this->store->deleteById($id);
+        if ($res) {
+            (new LogManager())->log('Удаление процедуры из справочника', ['id' => $id]);
+        }
+        return $res;
     }
 
     public function getStaffForProcedure($procedureId) {

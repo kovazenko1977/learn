@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
@@ -23,6 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $scheduleManager->markPaid($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
+    } elseif ($_POST['action'] === 'delete_appointment' && \Medical\Core\Auth::isAdmin()) {
+        $scheduleManager->delete($_POST['appointment_id']);
+        header("Location: patient_card.php?id=$id");
+        exit;
+    } elseif ($_POST['action'] === 'edit_appointment' && \Medical\Core\Auth::isAdmin()) {
+        $scheduleManager->update($_POST['appointment_id'], [
+            'price' => (float)$_POST['price'],
+            'status' => $_POST['status'],
+            'cabinet_id' => $_POST['cabinet_id'],
+            'time' => $_POST['time']
+        ]);
+        header("Location: patient_card.php?id=$id");
+        exit;
     } elseif ($_POST['action'] === 'add_history') {
         $entry = [
         'doctor' => \Medical\Core\Auth::getUser()['name'],
@@ -43,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
 }
+
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -117,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <th>Процедура</th>
                         <th>Дата/Время</th>
                         <th>Статус</th>
-                        <th style="text-align: right;">Оплата</th>
+                        <th style="text-align: right;">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,6 +160,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                         <input type="hidden" name="action" value="pay">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
                                         <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if (\Medical\Core\Auth::isAdmin()): ?>
+                                    <button class="btn btn-sm" style="padding: 4px;" onclick='openEditAppModal(<?php echo json_encode($app); ?>)'><i data-lucide="edit" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить назначение?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="delete_appointment">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px;"><i data-lucide="trash-2" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
                                     </form>
                                 <?php endif; ?>
                             </div>
@@ -197,6 +223,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     </div>
 </div>
 
+<!-- Edit Appointment Modal -->
+<div id="editAppModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 400px; margin: 100px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Редактировать назначение</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit_appointment">
+            <input type="hidden" name="appointment_id" id="edit_app_id">
+
+            <div style="margin-bottom: 15px;">
+                <label style="display:block;">Время</label>
+                <input type="time" name="time" id="edit_app_time" style="width: 100%;" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display:block;">Кабинет</label>
+                <input type="text" name="cabinet_id" id="edit_app_cabinet" style="width: 100%;" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display:block;">Цена (₽)</label>
+                <input type="number" step="0.01" name="price" id="edit_app_price" style="width: 100%;" required>
+            </div>
+            <div style="margin-bottom: 24px;">
+                <label style="display:block;">Статус</label>
+                <select name="status" id="edit_app_status" style="width: 100%;">
+                    <option value="free">Бесплатно</option>
+                    <option value="unpaid">Ожидает оплаты</option>
+                    <option value="paid">Оплачено</option>
+                    <option value="cancelled">Отменено</option>
+                </select>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('editAppModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- History Modal -->
 <div id="historyModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
     <div class="card mica-effect" style="width: 600px; margin: 60px auto; padding: 32px;">
@@ -242,6 +307,15 @@ function searchMKB(query) {
     } else {
         resultsDiv.style.display = 'none';
     }
+}
+
+function openEditAppModal(app) {
+    document.getElementById('edit_app_id').value = app.id;
+    document.getElementById('edit_app_time').value = app.time;
+    document.getElementById('edit_app_cabinet').value = app.cabinet_id;
+    document.getElementById('edit_app_price').value = app.price;
+    document.getElementById('edit_app_status').value = app.status;
+    document.getElementById('editAppModal').style.display = 'block';
 }
 
 function selectMKB(code, name) {

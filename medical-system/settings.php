@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
 $currentUser = \Medical\Core\Auth::getUser();
@@ -30,6 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'access_code' => $_POST['access_code']
         ]);
         $message = 'Сотрудник добавлен';
+    } elseif ($action === 'edit_staff') {
+        $staffManager->update($_POST['id'], [
+            'name' => $_POST['name'],
+            'role' => $_POST['role'],
+            'specialization' => $_POST['specialization'],
+            'access_code' => $_POST['access_code']
+        ]);
+        $message = 'Данные сотрудника обновлены';
     } elseif ($action === 'delete_staff') {
         $staffManager->delete($_POST['id']);
         $message = 'Сотрудник удален';
@@ -38,12 +48,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'name' => $_POST['name'],
             'duration' => (int)$_POST['duration'],
             'prep_time' => (int)$_POST['prep_time'],
+            'work_start' => $_POST['work_start'] ?? '08:00',
+            'work_end' => $_POST['work_end'] ?? '17:00',
             'price' => (float)$_POST['price'],
             'is_paid' => isset($_POST['is_paid']),
             'default_cabinet' => $_POST['default_cabinet'] ?? '',
             'assigned_staff' => $_POST['assigned_staff'] ?? []
         ]);
         $message = 'Процедура добавлена';
+    } elseif ($action === 'edit_procedure') {
+        $procedureManager->update($_POST['id'], [
+            'name' => $_POST['name'],
+            'duration' => (int)$_POST['duration'],
+            'prep_time' => (int)$_POST['prep_time'],
+            'work_start' => $_POST['work_start'] ?? '08:00',
+            'work_end' => $_POST['work_end'] ?? '17:00',
+            'price' => (float)$_POST['price'],
+            'is_paid' => isset($_POST['is_paid']),
+            'default_cabinet' => $_POST['default_cabinet'] ?? '',
+            'assigned_staff' => $_POST['assigned_staff'] ?? []
+        ]);
+        $message = 'Процедура обновлена';
     } elseif ($action === 'save_ui_settings') {
         $existing = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
         $uiSettings = array_merge($existing, [
@@ -73,6 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+require_once __DIR__ . '/includes/header.php';
+
 $activeSub = $_GET['sub'] ?? 'procedures';
 $allStaff = $staffManager->getAll();
 $allProcedures = $procedureManager->getAll();
@@ -85,6 +112,7 @@ $allProcedures = $procedureManager->getAll();
         <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
         <a href="?sub=details" class="btn <?php echo $activeSub === 'details' ? 'btn-primary' : ''; ?>">Реквизиты</a>
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
+        <a href="?sub=logs" class="btn <?php echo $activeSub === 'logs' ? 'btn-primary' : ''; ?>">Логи</a>
     </div>
 </div>
 
@@ -97,7 +125,7 @@ $allProcedures = $procedureManager->getAll();
 <?php if ($activeSub === 'procedures'): ?>
     <div class="card mica-effect mb-4">
         <h2>Добавить процедуру</h2>
-        <form method="POST" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 15px; align-items: end;">
+        <form method="POST" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; gap: 15px; align-items: end;">
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="add_procedure">
 
@@ -112,6 +140,14 @@ $allProcedures = $procedureManager->getAll();
             <div>
                 <label>Подг. (мин)</label>
                 <input type="number" name="prep_time" class="form-control" value="5" required>
+            </div>
+            <div>
+                <label>Начало работы</label>
+                <input type="time" name="work_start" class="form-control" value="08:00" required>
+            </div>
+            <div>
+                <label>Конец работы</label>
+                <input type="time" name="work_end" class="form-control" value="17:00" required>
             </div>
             <div>
                 <label>Кабинет</label>
@@ -151,6 +187,7 @@ $allProcedures = $procedureManager->getAll();
                     <th style="padding: 10px;">Название</th>
                     <th style="padding: 10px;">Кабинет</th>
                     <th style="padding: 10px;">Время (Д+П)</th>
+                    <th style="padding: 10px;">График</th>
                     <th style="padding: 10px;">Цена</th>
                     <th style="padding: 10px;">Персонал</th>
                     <th style="padding: 10px; text-align: right;">Действие</th>
@@ -162,6 +199,9 @@ $allProcedures = $procedureManager->getAll();
                         <td style="padding: 10px; font-weight: 500;"><?php echo htmlspecialchars($p['name']); ?></td>
                         <td style="padding: 10px;"><?php echo htmlspecialchars($p['default_cabinet'] ?? '-'); ?></td>
                         <td style="padding: 10px;"><?php echo $p['duration']; ?> + <?php echo $p['prep_time'] ?? 0; ?> мин</td>
+                        <td style="padding: 10px; font-size: 0.85rem;">
+                            <?php echo $p['work_start'] ?? '08:00'; ?> — <?php echo $p['work_end'] ?? '17:00'; ?>
+                        </td>
                         <td style="padding: 10px;">
                             <?php echo number_format($p['price'], 2, ',', ' '); ?> ₽
                             <?php if (!($p['is_paid'] ?? false)): ?>
@@ -180,6 +220,7 @@ $allProcedures = $procedureManager->getAll();
                             ?>
                         </td>
                         <td style="padding: 10px; text-align: right;">
+                            <button onclick='openEditProcModal(<?php echo json_encode($p); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
                             <form method="POST" style="display: inline;" onsubmit="return confirm('Удалить процедуру?')">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="delete_procedure">
@@ -247,6 +288,7 @@ $allProcedures = $procedureManager->getAll();
                         <td style="padding: 10px;"><?php echo htmlspecialchars($s['specialization']); ?></td>
                         <td style="padding: 10px;"><code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px;"><?php echo $s['access_code'] ?? '------'; ?></code></td>
                         <td style="padding: 10px; text-align: right;">
+                            <button onclick='openEditStaffModal(<?php echo json_encode($s); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
                             <form method="POST" style="display: inline;" onsubmit="return confirm('Удалить сотрудника?')">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="delete_staff">
@@ -261,7 +303,8 @@ $allProcedures = $procedureManager->getAll();
     </div>
 
 <?php elseif ($activeSub === 'details'):
-    $details = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+    $settingsPath = __DIR__ . '/data/settings.json';
+    $details = file_exists($settingsPath) ? (json_decode(file_get_contents($settingsPath), true) ?? []) : [];
 ?>
     <div class="card mica-effect">
         <h2>Реквизиты санатория</h2>
@@ -305,7 +348,8 @@ $allProcedures = $procedureManager->getAll();
     </div>
 
 <?php elseif ($activeSub === 'appearance'):
-    $ui = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+    $settingsPath = __DIR__ . '/data/settings.json';
+    $ui = file_exists($settingsPath) ? (json_decode(file_get_contents($settingsPath), true) ?? []) : [];
 ?>
     <div class="card mica-effect">
         <h2>Настройки внешнего вида</h2>
@@ -333,6 +377,155 @@ $allProcedures = $procedureManager->getAll();
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
     </div>
+<?php elseif ($activeSub === 'logs'):
+    $logManager = new \Medical\Core\Managers\LogManager();
+    $logs = $logManager->getAll(200);
+?>
+    <div class="card mica-effect">
+        <h2>Журнал активности (последние 200)</h2>
+        <table style="font-size: 0.85rem;">
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Сотрудник</th>
+                    <th>Действие</th>
+                    <th>Детали</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($logs as $l): ?>
+                    <tr>
+                        <td><?php echo $l['timestamp']; ?></td>
+                        <td><strong><?php echo htmlspecialchars($l['user_name']); ?></strong> (<?php echo $l['role']; ?>)</td>
+                        <td><?php echo htmlspecialchars($l['action']); ?></td>
+                        <td><pre style="font-size: 0.75rem; margin:0;"><?php echo json_encode($l['details'], JSON_UNESCAPED_UNICODE); ?></pre></td>
+                        <td style="color: #999;"><?php echo $l['ip']; ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 <?php endif; ?>
+
+<!-- Edit Procedure Modal -->
+<div id="editProcModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 600px; margin: 60px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Редактировать процедуру</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit_procedure">
+            <input type="hidden" name="id" id="edit_proc_id">
+
+            <div class="mb-3">
+                <label>Наименование</label>
+                <input type="text" name="name" id="edit_proc_name" class="form-control" style="width: 100%;" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="mb-3">
+                    <label>Длит. (мин)</label>
+                    <input type="number" name="duration" id="edit_proc_dur" class="form-control" style="width: 100%;" required>
+                </div>
+                <div class="mb-3">
+                    <label>Подг. (мин)</label>
+                    <input type="number" name="prep_time" id="edit_proc_prep" class="form-control" style="width: 100%;" required>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="mb-3">
+                    <label>Начало работы</label>
+                    <input type="time" name="work_start" id="edit_proc_ws" class="form-control" style="width: 100%;" required>
+                </div>
+                <div class="mb-3">
+                    <label>Конец работы</label>
+                    <input type="time" name="work_end" id="edit_proc_we" class="form-control" style="width: 100%;" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Кабинет</label>
+                <input type="text" name="default_cabinet" id="edit_proc_cab" class="form-control" style="width: 100%;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: center;">
+                <div class="mb-3">
+                    <label>Цена (руб)</label>
+                    <input type="number" step="0.01" name="price" id="edit_proc_price" class="form-control" style="width: 100%;" required>
+                </div>
+                <div class="mb-3" style="padding-top: 20px;">
+                    <input type="checkbox" name="is_paid" id="edit_proc_is_paid">
+                    <label for="edit_proc_is_paid">Платная</label>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="document.getElementById('editProcModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div id="editStaffModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 500px; margin: 80px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Редактировать сотрудника</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit_staff">
+            <input type="hidden" name="id" id="edit_staff_id">
+
+            <div class="mb-3">
+                <label>ФИО</label>
+                <input type="text" name="name" id="edit_staff_name" class="form-control" style="width: 100%;" required>
+            </div>
+            <div class="mb-3">
+                <label>Роль</label>
+                <select name="role" id="edit_staff_role" class="form-control" style="width: 100%;">
+                    <option value="doctor">Врач</option>
+                    <option value="nurse">Медсестра</option>
+                    <option value="cashier">Кассир</option>
+                    <option value="head">Начмед</option>
+                    <option value="admin">Админ</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label>Специализация</label>
+                <input type="text" name="specialization" id="edit_staff_spec" class="form-control" style="width: 100%;">
+            </div>
+            <div class="mb-3">
+                <label>Код доступа (6 цифр)</label>
+                <input type="text" name="access_code" id="edit_staff_code" class="form-control" style="width: 100%;" maxlength="6" required>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="document.getElementById('editStaffModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditProcModal(p) {
+    document.getElementById('edit_proc_id').value = p.id;
+    document.getElementById('edit_proc_name').value = p.name;
+    document.getElementById('edit_proc_dur').value = p.duration;
+    document.getElementById('edit_proc_prep').value = p.prep_time || 0;
+    document.getElementById('edit_proc_ws').value = p.work_start || '08:00';
+    document.getElementById('edit_proc_we').value = p.work_end || '17:00';
+    document.getElementById('edit_proc_cab').value = p.default_cabinet || '';
+    document.getElementById('edit_proc_price').value = p.price;
+    document.getElementById('edit_proc_is_paid').checked = !!p.is_paid;
+    document.getElementById('editProcModal').style.display = 'block';
+}
+
+function openEditStaffModal(staff) {
+    document.getElementById('edit_staff_id').value = staff.id;
+    document.getElementById('edit_staff_name').value = staff.name;
+    document.getElementById('edit_staff_role').value = staff.role;
+    document.getElementById('edit_staff_spec').value = staff.specialization || '';
+    document.getElementById('edit_staff_code').value = staff.access_code || '';
+    document.getElementById('editStaffModal').style.display = 'block';
+}
+</script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

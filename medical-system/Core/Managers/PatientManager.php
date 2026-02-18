@@ -23,15 +23,25 @@ class PatientManager {
         $patientData['id'] = uniqid();
         $patientData['created_at'] = date('Y-m-d H:i:s');
         $this->store->add($patientData);
+        (new LogManager())->log('Регистрация пациента', ['name' => $patientData['name']]);
         return $patientData['id'];
     }
 
     public function update($id, $patientData) {
-        return $this->store->updateById($id, $patientData);
+        $res = $this->store->updateById($id, $patientData);
+        if ($res) {
+            (new LogManager())->log('Обновление данных пациента', ['id' => $id]);
+        }
+        return $res;
     }
 
     public function delete($id) {
-        return $this->store->deleteById($id);
+        $patient = $this->getById($id);
+        $res = $this->store->deleteById($id);
+        if ($res) {
+            (new LogManager())->log('Удаление пациента', ['id' => $id, 'name' => $patient['name'] ?? 'Unknown']);
+        }
+        return $res;
     }
 
     public function search($query) {
@@ -56,7 +66,11 @@ class PatientManager {
         $entry['date'] = date('Y-m-d H:i:s');
         $patient['history'][] = $entry;
 
-        return $this->update($patientId, ['history' => $patient['history']]);
+        $res = $this->update($patientId, ['history' => $patient['history']]);
+        if ($res) {
+            (new LogManager())->log('Добавлена запись в историю болезни', ['patient_id' => $patientId, 'diagnosis' => $entry['diagnosis_code']]);
+        }
+        return $res;
     }
 
     public function addComment($patientId, $commentData) {

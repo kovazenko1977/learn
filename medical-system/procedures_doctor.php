@@ -17,8 +17,6 @@ if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'get_slots') {
     exit;
 }
 
-require_once __DIR__ . '/includes/header.php';
-
 $patientId = $_GET['patient_id'] ?? '';
 $patient = $patientId ? $patientManager->getById($patientId) : null;
 
@@ -74,6 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+require_once __DIR__ . '/includes/header.php';
+
 $procedures = $procedureManager->getAll();
 $allAppointments = $scheduleManager->getAll();
 
@@ -113,8 +113,12 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                         <select name="procedure_id" id="procedure_select" style="width: 100%;" required>
                             <option value="">-- Выберите процедуру --</option>
                             <?php foreach ($procedures as $proc): ?>
-                                <option value="<?php echo $proc['id']; ?>" data-cabinet="<?php echo htmlspecialchars($proc['default_cabinet'] ?? ''); ?>">
-                                    <?php echo htmlspecialchars($proc['name']); ?> (<?php echo ($proc['is_paid'] ?? false) ? 'платно' : 'бесплатно'; ?>)
+                                <option value="<?php echo $proc['id']; ?>"
+                                        data-cabinet="<?php echo htmlspecialchars($proc['default_cabinet'] ?? ''); ?>"
+                                        data-start="<?php echo $proc['work_start'] ?? '08:00'; ?>"
+                                        data-end="<?php echo $proc['work_end'] ?? '17:00'; ?>">
+                                    <?php echo htmlspecialchars($proc['name']); ?>
+                                    (<?php echo $proc['work_start'] ?? '08:00'; ?>-<?php echo $proc['work_end'] ?? '17:00'; ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -150,9 +154,10 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     </div>
 
                     <div id="timeline_container" style="margin-bottom: 20px;">
-                        <label style="display:block; margin-bottom: 5px;">Загруженность кабинета</label>
-                        <div id="timeline" style="height: 30px; background: #dff6dd; border-radius: 4px; position: relative; overflow: hidden; border: 1px solid var(--win-border);">
-                            <!-- Busy slots will be here -->
+                        <label style="display:block; margin-bottom: 5px;">Загруженность кабинета (Рабочие часы выделены белым)</label>
+                        <div id="timeline" style="height: 30px; background: #e5e5e5; border-radius: 4px; position: relative; overflow: hidden; border: 1px solid var(--win-border);">
+                            <div id="working_hours_bg" style="position: absolute; height: 100%; background: #fff; z-index: 1;"></div>
+                            <div id="busy_slots_container" style="position: absolute; width: 100%; height: 100%; z-index: 2;"></div>
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #666; margin-top: 2px;">
                             <span>08:00</span>
@@ -216,8 +221,27 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
     const endDateInput = document.getElementById('end_date');
     const bulkOptions = document.getElementById('bulk_options');
     const timeline = document.getElementById('timeline');
+    const workingHoursBg = document.getElementById('working_hours_bg');
+    const busySlotsContainer = document.getElementById('busy_slots_container');
 
     function updateTimeline() {
+        const selectedOption = procedureSelect.options[procedureSelect.selectedIndex];
+        const workStart = selectedOption?.getAttribute('data-start') || '08:00';
+        const workEnd = selectedOption?.getAttribute('data-end') || '17:00';
+
+        // Update working hours background
+        const startDay = 8 * 60;
+        const totalDay = 12 * 60; // 08:00 to 20:00
+
+        const [wsH, wsM] = workStart.split(':').map(Number);
+        const [weH, weM] = workEnd.split(':').map(Number);
+
+        const wsMin = (wsH * 60 + wsM) - startDay;
+        const weMin = (weH * 60 + weM) - startDay;
+
+        workingHoursBg.style.left = Math.max(0, (wsMin / totalDay) * 100) + '%';
+        workingHoursBg.style.width = Math.max(0, ((weMin - wsMin) / totalDay) * 100) + '%';
+
         const cabinet = cabinetInput.value;
         let date = dateInput.value; // Y-m-d
         if (!cabinet || !date) return;
@@ -229,7 +253,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
         fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${formattedDate}`)
             .then(r => r.json())
             .then(slots => {
-                timeline.innerHTML = '';
+                busySlotsContainer.innerHTML = '';
                 // 08:00 to 20:00 is 12 hours = 720 minutes
                 const startDay = 8 * 60;
                 const totalDay = 12 * 60;
@@ -251,9 +275,9 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     block.style.left = left + '%';
                     block.style.width = width + '%';
                     block.style.height = '100%';
-                    block.style.background = '#fff100'; // Yellow for busy
+                    block.style.background = 'rgba(255, 241, 0, 0.8)'; // Yellow for busy
                     block.title = `${slot.procedure} (${slot.start} - ${slot.end})`;
-                    timeline.appendChild(block);
+                    busySlotsContainer.appendChild(block);
                 });
             });
     }

@@ -29,14 +29,23 @@ class StaffManager {
             'created_at' => date('Y-m-d H:i:s')
         ];
         $this->store->add($newStaff);
+        (new LogManager())->log('Добавление сотрудника', ['name' => $data['name'], 'role' => $data['role']]);
         return $id;
     }
 
     public function update($id, $data) {
-        return $this->store->updateById($id, $data);
+        $res = $this->store->updateById($id, $data);
+        if ($res) {
+            (new LogManager())->log('Обновление данных сотрудника', ['id' => $id]);
+        }
+        return $res;
     }
 
     public function delete($id) {
-        return $this->store->deleteById($id);
+        $res = $this->store->deleteById($id);
+        if ($res) {
+            (new LogManager())->log('Удаление сотрудника', ['id' => $id]);
+        }
+        return $res;
     }
 }

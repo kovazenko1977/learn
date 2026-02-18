@@ -232,3 +232,52 @@ tr:hover td {
     .sidebar, .btn, .navbar { display: none !important; }
     .main-content { margin-left: 0; padding: 0; }
 }
+
+/* Global Preloader */
+#global-preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(243, 243, 243, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+#global-preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.win-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(0, 120, 212, 0.1);
+    border-top: 3px solid var(--win-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loader-text {
+    font-size: 1rem;
+    color: var(--win-text-secondary);
+    font-weight: 500;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

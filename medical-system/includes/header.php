@@ -31,6 +31,13 @@ if (file_exists($settingsPath)) {
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="mica-effect">
+    <div id="global-preloader">
+        <div class="loader-content">
+            <div class="win-spinner"></div>
+            <div class="loader-text">Загрузка системы...</div>
+        </div>
+    </div>
+
     <?php if (\Medical\Core\Auth::isLoggedIn()): ?>
         <?php include __DIR__ . '/sidebar.php'; ?>
         <div class="main-content">

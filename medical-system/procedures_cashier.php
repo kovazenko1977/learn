@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
@@ -22,6 +24,8 @@ $appointments = array_filter($allAppointments, function($app) use ($query) {
     }
     return $app['status'] === 'unpaid';
 });
+
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">

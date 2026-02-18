@@ -22,13 +22,17 @@ class JsonStore {
     }
 
     public function save($data) {
-        $fp = fopen($this->filePath, 'w');
-        if (flock($fp, LOCK_EX)) {
-            fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            fflush($fp);
-            flock($fp, LOCK_UN);
+        $fp = @fopen($this->filePath, 'w');
+        if ($fp) {
+            if (flock($fp, LOCK_EX)) {
+                fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+                fflush($fp);
+                flock($fp, LOCK_UN);
+            }
+            fclose($fp);
+            return true;
         }
-        fclose($fp);
+        return false;
     }
 
     public function findById($id, $key = 'id') {

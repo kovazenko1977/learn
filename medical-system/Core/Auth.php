@@ -23,6 +23,7 @@ class Auth {
                     'role' => $user['role'],
                     'name' => $user['name']
                 ];
+                (new Managers\LogManager())->log('Вход в систему');
                 return true;
             }
         }
