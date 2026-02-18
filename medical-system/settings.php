@@ -97,6 +97,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'delete_procedure') {
         $procedureManager->delete($_POST['id']);
         $message = 'Процедура удалена';
+    } elseif ($action === 'backup_system') {
+        $backupManager = new \Medical\Core\Managers\BackupManager();
+        $file = $backupManager->createBackup();
+        if ($file) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="'.basename($file).'"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            readfile($file);
+            unlink($file); // Delete temporary zip after download
+            exit;
+        } else {
+            $message = 'Ошибка при создании резервной копии';
+        }
+    } elseif ($action === 'restore_system') {
+        if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
+            $backupManager = new \Medical\Core\Managers\BackupManager();
+            if ($backupManager->restoreBackup($_FILES['backup_file']['tmp_name'])) {
+                $message = 'Система успешно восстановлена из резервной копии';
+            } else {
+                $message = 'Ошибка при восстановлении данных';
+            }
+        }
+    } elseif ($action === 'reset_system') {
+        $backupManager = new \Medical\Core\Managers\BackupManager();
+        if ($backupManager->resetSystem($_POST['reset_password'])) {
+            $message = 'Система успешно сброшена. Все данные удалены.';
+            (new \Medical\Core\Managers\LogManager())->log('Сброс системы', []);
+        } else {
+            $message = 'Ошибка: неверный пароль для сброса данных';
+        }
     }
 }
 
@@ -118,6 +152,9 @@ $allProcedures = $procedureManager->getAll();
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
         <?php if (\Medical\Core\Auth::hasRole('chief')): ?>
             <a href="?sub=logs" class="btn <?php echo $activeSub === 'logs' ? 'btn-primary' : ''; ?>">Логи</a>
+        <?php endif; ?>
+        <?php if (\Medical\Core\Auth::isAdmin()): ?>
+            <a href="?sub=maintenance" class="btn <?php echo $activeSub === 'maintenance' ? 'btn-primary' : ''; ?>">Обслуживание</a>
         <?php endif; ?>
     </div>
 </div>
@@ -383,6 +420,58 @@ $allProcedures = $procedureManager->getAll();
             <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
     </div>
+<?php elseif ($activeSub === 'maintenance' && \Medical\Core\Auth::isAdmin()): ?>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div class="card mica-effect">
+            <h2>Резервное копирование</h2>
+            <p style="color: var(--win-text-secondary); margin-bottom: 20px;">
+                Создайте полную копию всех данных системы (пациенты, назначения, персонал, настройки) в формате ZIP.
+            </p>
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" value="backup_system">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i data-lucide="download" class="icon"></i> Скачать резервную копию
+                </button>
+            </form>
+
+            <hr style="border:0; border-top: 1px solid var(--win-border); margin: 30px 0;">
+
+            <h2>Восстановление данных</h2>
+            <p style="color: var(--win-text-secondary); margin-bottom: 20px;">
+                Выберите ранее созданный ZIP-архив для восстановления данных. <strong>Внимание: текущие данные будут перезаписаны!</strong>
+            </p>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" value="restore_system">
+                <div class="mb-3">
+                    <input type="file" name="backup_file" class="form-control" accept=".zip" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">
+                    <i data-lucide="upload" class="icon"></i> Восстановить из файла
+                </button>
+            </form>
+        </div>
+
+        <div class="card mica-effect" style="border-left: 4px solid #d13438;">
+            <h2 style="color: #d13438;">Сброс системы</h2>
+            <p style="color: var(--win-text-secondary); margin-bottom: 20px;">
+                Это действие безвозвратно удалит всех пациентов, их истории болезни, назначенные процедуры и логи. Справочники процедур и персонала также будут очищены.
+            </p>
+            <form method="POST" onsubmit="return confirm('Вы уверены, что хотите УДАЛИТЬ ВСЕ ДАННЫЕ? Это действие необратимо.')">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" value="reset_system">
+                <div class="mb-3">
+                    <label class="form-label">Пароль подтверждения</label>
+                    <input type="password" name="reset_password" class="form-control" placeholder="Введите пароль для удаления" required>
+                </div>
+                <button type="submit" class="btn btn-danger" style="width: 100%;">
+                    <i data-lucide="trash-2" class="icon"></i> Удалить все данные
+                </button>
+            </form>
+        </div>
+    </div>
+
 <?php elseif ($activeSub === 'logs'):
     $logManager = new \Medical\Core\Managers\LogManager();
     $logs = $logManager->getAll(200);
