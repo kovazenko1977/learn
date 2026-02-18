@@ -170,12 +170,12 @@ $allProcedures = $procedureManager->getAll();
             </div>
 
             <div style="grid-column: span 3;">
-                <label>Закрепленные сотрудники</label>
+                <label>Закрепленные сотрудники (Медсестры)</label>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; border: 1px solid var(--win-border); border-radius: 4px; background: rgba(255,255,255,0.3);">
-                    <?php foreach ($allStaff as $s): ?>
+                    <?php foreach ($allStaff as $s): if ($s['role'] !== 'nurse') continue; ?>
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
                             <input type="checkbox" name="assigned_staff[]" value="<?php echo $s['id']; ?>">
-                            <?php echo htmlspecialchars($s['name']); ?> (<?php echo $s['role']; ?>)
+                            <?php echo htmlspecialchars($s['name']); ?>
                         </label>
                     <?php endforeach; ?>
                 </div>
@@ -330,7 +330,7 @@ $allProcedures = $procedureManager->getAll();
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="mb-3">
                     <label class="form-label">Телефон</label>
-                    <input type="text" name="org_phone" class="form-control" value="<?php echo htmlspecialchars($details['org_phone'] ?? ''); ?>">
+                    <input type="text" name="org_phone" class="form-control" value="<?php echo htmlspecialchars($details['org_phone'] ?? '+375 '); ?>" placeholder="+375 (__) ___-__-__">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">УНП / ИНН</label>
@@ -462,6 +462,18 @@ $allProcedures = $procedureManager->getAll();
                 </div>
             </div>
 
+            <div class="mb-3">
+                <label>Закрепленные медсестры</label>
+                <div id="edit_proc_staff_list" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; border: 1px solid var(--win-border); border-radius: 4px;">
+                    <?php foreach ($allStaff as $s): if ($s['role'] !== 'nurse') continue; ?>
+                        <label style="display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" name="assigned_staff[]" value="<?php echo $s['id']; ?>" class="edit-staff-checkbox">
+                            <?php echo htmlspecialchars($s['name']); ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
                 <button type="button" class="btn" onclick="document.getElementById('editProcModal').style.display='none'">Отмена</button>
                 <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -523,6 +535,13 @@ function openEditProcModal(p) {
     document.getElementById('edit_proc_cab').value = p.default_cabinet || '';
     document.getElementById('edit_proc_price').value = p.price;
     document.getElementById('edit_proc_is_paid').checked = !!p.is_paid;
+
+    // Set checkboxes
+    const assigned = p.assigned_staff || [];
+    document.querySelectorAll('.edit-staff-checkbox').forEach(cb => {
+        cb.checked = assigned.includes(cb.value);
+    });
+
     document.getElementById('editProcModal').style.display = 'block';
 }
 

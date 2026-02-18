@@ -29,6 +29,16 @@ function isActive($page, $current_page) {
                 <i data-lucide="clipboard-list" class="icon"></i> <span>Назначения</span>
             </a>
         </div>
+        <div class="nav-item">
+            <a href="procedures_map.php" class="btn <?php echo isActive('procedures_map.php', $current_page); ?>">
+                <i data-lucide="calendar-range" class="icon"></i> <span>Карта загрузки</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="lab_results.php" class="btn <?php echo isActive('lab_results.php', $current_page); ?>">
+                <i data-lucide="microscope" class="icon"></i> <span>Исследования</span>
+            </a>
+        </div>
         <?php endif; ?>
 
         <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief', 'cashier'])): ?>

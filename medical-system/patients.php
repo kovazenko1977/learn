@@ -6,6 +6,14 @@ require_once __DIR__ . '/Core/Autoloader.php';
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
 
+if (isset($_GET['ajax'])) {
+    $query = $_GET['q'] ?? '';
+    $patients = $query ? $patientManager->search($query) : $patientManager->getAll();
+    header('Content-Type: application/json');
+    echo json_encode(array_values($patients));
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
         if ($_POST['action'] === 'add') {
@@ -37,12 +45,6 @@ require_once __DIR__ . '/includes/header.php';
 
 $query = $_GET['q'] ?? '';
 $patients = $query ? $patientManager->search($query) : $patientManager->getAll();
-
-if (isset($_GET['ajax'])) {
-    header('Content-Type: application/json');
-    echo json_encode(array_values($patients));
-    exit;
-}
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -127,7 +129,7 @@ if (isset($_GET['ajax'])) {
             </div>
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Телефон</label>
-                <input type="text" name="phone" id="edit_phone" style="width: 100%;">
+                <input type="text" name="phone" id="edit_phone" style="width: 100%;" placeholder="+375 (__) ___-__-__">
             </div>
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">№ Истории болезни</label>
@@ -166,7 +168,7 @@ if (isset($_GET['ajax'])) {
             </div>
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Телефон</label>
-                <input type="text" name="phone" style="width: 100%;" placeholder="+7 (___) ___-__-__">
+                <input type="text" name="phone" style="width: 100%;" placeholder="+375 (__) ___-__-__" value="+375 ">
             </div>
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">№ Истории болезни</label>

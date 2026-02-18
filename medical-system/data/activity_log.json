@@ -982,5 +982,29 @@
         "role": "admin",
         "action": "Вход в систему",
         "details": ""
+    },
+    {
+        "id": "6995fd8e26bef",
+        "timestamp": "18-02-2026 17:57:34",
+        "user": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": ""
+    },
+    {
+        "id": "6995fded52d3e",
+        "timestamp": "18-02-2026 17:59:09",
+        "user": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": ""
+    },
+    {
+        "id": "6995fe3831c96",
+        "timestamp": "18-02-2026 18:00:24",
+        "user": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": ""
     }
 ]

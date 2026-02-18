@@ -16,10 +16,171 @@ $patientManager = new \Medical\Core\Managers\PatientManager();
 $startDate = $_GET['start_date'] ?? date('d-m-Y', strtotime('-1 month'));
 $endDate = $_GET['end_date'] ?? date('d-m-Y');
 
+// AJAX Handlers MUST be before any HTML output
+if (isset($_GET['ajax_cabinet'])) {
+    $cabName = $_GET['ajax_cabinet'];
+    $apps = array_filter($analytics->getFilteredAppointments($startDate, $endDate), function($a) use ($cabName) {
+        return $a['cabinet_id'] === $cabName;
+    });
+    ?>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--win-border);">
+                <th style="padding: 10px;">Дата/Время</th>
+                <th style="padding: 10px;">Пациент</th>
+                <th style="padding: 10px;">Процедура</th>
+                <th style="padding: 10px;">Врач</th>
+                <th style="padding: 10px;">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($apps as $a): ?>
+            <tr style="border-bottom: 1px solid var(--win-border);">
+                <td style="padding: 10px;"><?php echo $a['date']; ?> <span style="color:#666"><?php echo $a['time']; ?></span></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($a['patient_name']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($a['procedure_name']); ?></td>
+                <td style="padding: 10px; font-size: 0.85rem;"><?php echo htmlspecialchars($a['doctor']); ?></td>
+                <td style="padding: 10px;">
+                    <span class="<?php echo $a['status'] === 'paid' ? 'status-green' : ($a['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
+                        <?php echo $a['status'] === 'paid' ? 'Оплачено' : ($a['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
+                    </span>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+    exit;
+}
+
+if (isset($_GET['ajax_doctor'])) {
+    $docName = $_GET['ajax_doctor'];
+    $apps = array_filter($analytics->getFilteredAppointments($startDate, $endDate), function($a) use ($docName) {
+        return ($a['doctor'] ?? 'Не указан') === $docName;
+    });
+    ?>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--win-border);">
+                <th style="padding: 10px;">Дата/Время</th>
+                <th style="padding: 10px;">Пациент</th>
+                <th style="padding: 10px;">Процедура</th>
+                <th style="padding: 10px;">Кабинет</th>
+                <th style="padding: 10px;">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($apps as $a): ?>
+            <tr style="border-bottom: 1px solid var(--win-border);">
+                <td style="padding: 10px;"><?php echo $a['date']; ?> <span style="color:#666"><?php echo $a['time']; ?></span></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($a['patient_name']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($a['procedure_name']); ?></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($a['cabinet_id']); ?></td>
+                <td style="padding: 10px;">
+                    <span class="<?php echo $a['status'] === 'paid' ? 'status-green' : ($a['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
+                        <?php echo $a['status'] === 'paid' ? 'Оплачено' : ($a['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
+                    </span>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+    exit;
+}
+
+if (isset($_GET['ajax_proc'])) {
+    $procName = $_GET['ajax_proc'];
+    $apps = array_filter($analytics->getFilteredAppointments($startDate, $endDate), function($a) use ($procName) {
+        return $a['procedure_name'] === $procName;
+    });
+    ?>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--win-border);">
+                <th style="padding: 10px;">Дата/Время</th>
+                <th style="padding: 10px;">Пациент</th>
+                <th style="padding: 10px;">Кабинет</th>
+                <th style="padding: 10px;">Врач</th>
+                <th style="padding: 10px;">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($apps as $a): ?>
+            <tr style="border-bottom: 1px solid var(--win-border);">
+                <td style="padding: 10px;"><?php echo $a['date']; ?> <span style="color:#666"><?php echo $a['time']; ?></span></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($a['patient_name']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($a['cabinet_id']); ?></td>
+                <td style="padding: 10px; font-size: 0.85rem;"><?php echo htmlspecialchars($a['doctor']); ?></td>
+                <td style="padding: 10px;">
+                    <span class="<?php echo $a['status'] === 'paid' ? 'status-green' : ($a['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
+                        <?php echo $a['status'] === 'paid' ? 'Оплачено' : ($a['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
+                    </span>
+                    <?php if ($a['attended']): ?>
+                        <span class="status-green" style="margin-left: 8px;">Принят</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+    exit;
+}
+
+if (isset($_GET['ajax_patient'])) {
+    $pid = $_GET['ajax_patient'];
+    $apps = $analytics->getPatientDetails($pid);
+    ?>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--win-border);">
+                <th style="padding: 10px;">Дата/Время</th>
+                <th style="padding: 10px;">Процедура</th>
+                <th style="padding: 10px;">Кабинет</th>
+                <th style="padding: 10px;">Врач</th>
+                <th style="padding: 10px;">Статус оплаты</th>
+                <th style="padding: 10px;">Отметка о посещении</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($apps as $a): ?>
+            <tr style="border-bottom: 1px solid var(--win-border);">
+                <td style="padding: 10px;"><?php echo $a['date']; ?> <span style="color:#666"><?php echo $a['time']; ?></span></td>
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($a['procedure_name']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($a['cabinet_id']); ?></td>
+                <td style="padding: 10px; font-size: 0.85rem;"><?php echo htmlspecialchars($a['doctor']); ?></td>
+                <td style="padding: 10px;">
+                    <span class="<?php echo $a['status'] === 'paid' ? 'status-green' : ($a['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
+                        <?php echo $a['status'] === 'paid' ? 'Оплачено' : ($a['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
+                    </span>
+                </td>
+                <td style="padding: 10px;">
+                    <?php if ($a['attended']): ?>
+                        <div style="display: flex; align-items: center; gap: 8px; color: #107c10;">
+                            <i data-lucide="check-circle-2" style="width:16px; height:16px;"></i>
+                            <span><?php echo date('H:i', strtotime($a['attended_at'])); ?> (<?php echo htmlspecialchars($a['performed_by']); ?>)</span>
+                        </div>
+                    <?php else: ?>
+                        <span style="color: #666;">-</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php
+    exit;
+}
+
 $summary = $analytics->getSummary($startDate, $endDate);
 $workload = $analytics->getWorkloadByCabinet($startDate, $endDate);
 $procStats = $analytics->getProcedureStats($startDate, $endDate);
 $doctorLoad = $analytics->getDoctorLoad($startDate, $endDate);
+$ageStats = $analytics->getAgeStats();
+$mkbStats = $analytics->getMkbStats();
+$durationStats = $analytics->getStayDurationStats();
+$cabTimeLoad = $analytics->getCabinetTimeLoad($startDate, $endDate);
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -49,7 +210,7 @@ require_once __DIR__ . '/includes/header.php';
     </form>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-bottom: 32px;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 32px;">
     <div class="card mica-effect">
         <h3 style="color: var(--win-text-secondary); font-size: 0.85rem;">Всего назначений</h3>
         <div style="font-size: 2rem; font-weight: 700;"><?php echo $summary['total_appointments']; ?></div>
@@ -63,6 +224,51 @@ require_once __DIR__ . '/includes/header.php';
     <div class="card mica-effect">
         <h3 style="color: var(--win-text-secondary); font-size: 0.85rem;">Пациентов в базе</h3>
         <div style="font-size: 2rem; font-weight: 700;"><?php echo $summary['total_patients']; ?></div>
+    </div>
+    <div class="card mica-effect">
+        <h3 style="color: var(--win-text-secondary); font-size: 0.85rem;">Ср. длительность</h3>
+        <?php
+            $avgStay = !empty($durationStats) ? array_sum(array_keys($durationStats)) / count($durationStats) : 0;
+        ?>
+        <div style="font-size: 2rem; font-weight: 700;"><?php echo round($avgStay, 1); ?> дн.</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+    <div class="card mica-effect">
+        <h2>Возрастные категории</h2>
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+            <?php foreach ($ageStats as $label => $count):
+                $perc = $summary['total_patients'] > 0 ? ($count / $summary['total_patients']) * 100 : 0;
+            ?>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem;">
+                        <span><?php echo $label; ?> лет</span>
+                        <strong><?php echo $count; ?> чел.</strong>
+                    </div>
+                    <div style="height: 8px; background: rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: <?php echo $perc; ?>%; background: var(--win-accent);"></div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <div class="card mica-effect">
+        <h2>Длительность пребывания (дни)</h2>
+        <div style="display: flex; align-items: flex-end; gap: 10px; height: 150px; margin-top: 20px; border-bottom: 1px solid var(--win-border); padding-bottom: 5px;">
+            <?php
+            $maxDur = !empty($durationStats) ? max($durationStats) : 1;
+            foreach ($durationStats as $days => $count):
+                $h = ($count / $maxDur) * 100;
+            ?>
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                    <div style="width: 100%; height: <?php echo $h; ?>%; background: var(--win-accent); border-radius: 4px 4px 0 0;" title="<?php echo $count; ?> чел."></div>
+                    <span style="font-size: 0.7rem; color: var(--win-text-secondary);"><?php echo $days; ?></span>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--win-text-secondary); text-align: center; margin-top: 10px;">Дней пребывания по последним записям</p>
     </div>
 </div>
 
@@ -94,11 +300,55 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <div class="card mica-effect">
+        <h2>Загрузка кабинетов (мин.)</h2>
+        <div style="margin-top: 20px;">
+            <?php foreach ($cabTimeLoad as $cab => $mins):
+                $maxMins = max($cabTimeLoad);
+                $perc = ($mins / $maxMins) * 100;
+            ?>
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px;">
+                        <span>Каб. <?php echo htmlspecialchars($cab); ?></span>
+                        <span><?php echo $mins; ?> мин.</span>
+                    </div>
+                    <div style="height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; cursor: pointer;" onclick="showCabinetDetail('<?php echo htmlspecialchars($cab); ?>')">
+                        <div style="height: 100%; width: <?php echo $perc; ?>%; background: #107c10;"></div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+    <div class="card mica-effect">
+        <h2>Статистика по диагнозам (МКБ-10)</h2>
+        <table style="font-size: 0.85rem; margin-top: 15px;">
+            <thead>
+                <tr>
+                    <th>Код</th>
+                    <th>Диагноз</th>
+                    <th style="text-align: right;">Пациентов</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($mkbStats as $code => $data): ?>
+                    <tr>
+                        <td style="font-family: monospace; font-weight: 700;"><?php echo $code; ?></td>
+                        <td style="color: var(--win-text-secondary);"><?php echo htmlspecialchars($data['text']); ?></td>
+                        <td style="text-align: right; font-weight: 600;"><?php echo $data['count']; ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card mica-effect">
         <h2>Загрузка врачей</h2>
         <?php foreach ($doctorLoad as $doc => $count):
             $percent = $summary['total_appointments'] > 0 ? ($count / $summary['total_appointments']) * 100 : 0;
         ?>
-            <div style="margin-bottom: 16px;">
+            <div style="margin-bottom: 16px; cursor: pointer;" onclick="showDoctorDetail('<?php echo htmlspecialchars($doc); ?>')">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <span style="font-size: 0.9rem; font-weight: 500;"><?php echo htmlspecialchars($doc); ?></span>
                     <span style="font-size: 0.85rem; color: var(--win-text-secondary);"><?php echo $count; ?> назн.</span>
@@ -161,58 +411,54 @@ function showPatientDetail(id, name) {
         });
 }
 
+function showCabinetDetail(cab) {
+    document.getElementById('modalTitle').innerText = 'Детализация кабинета: ' + cab;
+    document.getElementById('detailModal').style.display = 'block';
+    document.getElementById('modalBody').innerHTML = '<p>Загрузка данных...</p>';
+
+    const startDate = document.querySelector('input[name="start_date"]').value;
+    const endDate = document.querySelector('input[name="end_date"]').value;
+
+    fetch(`analytics.php?ajax_cabinet=${encodeURIComponent(cab)}&start_date=${startDate}&end_date=${endDate}`)
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('modalBody').innerHTML = html;
+            lucide.createIcons();
+        });
+}
+
+function showDoctorDetail(name) {
+    document.getElementById('modalTitle').innerText = 'Детализация врача: ' + name;
+    document.getElementById('detailModal').style.display = 'block';
+    document.getElementById('modalBody').innerHTML = '<p>Загрузка данных...</p>';
+
+    const startDate = document.querySelector('input[name="start_date"]').value;
+    const endDate = document.querySelector('input[name="end_date"]').value;
+
+    fetch(`analytics.php?ajax_doctor=${encodeURIComponent(name)}&start_date=${startDate}&end_date=${endDate}`)
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('modalBody').innerHTML = html;
+            lucide.createIcons();
+        });
+}
+
 function showProcDetail(name) {
-    // Optional: filter the appointments table by procedure name
-    alert('Детализация по процедуре: ' + name);
+    document.getElementById('modalTitle').innerText = 'Детализация процедуры: ' + name;
+    document.getElementById('detailModal').style.display = 'block';
+    document.getElementById('modalBody').innerHTML = '<p>Загрузка данных...</p>';
+
+    const startDate = document.querySelector('input[name="start_date"]').value;
+    const endDate = document.querySelector('input[name="end_date"]').value;
+
+    fetch(`analytics.php?ajax_proc=${encodeURIComponent(name)}&start_date=${startDate}&end_date=${endDate}`)
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('modalBody').innerHTML = html;
+            lucide.createIcons();
+        });
 }
 </script>
 
-<?php
-if (isset($_GET['ajax_patient'])) {
-    $pid = $_GET['ajax_patient'];
-    $apps = $analytics->getPatientDetails($pid);
-    ob_clean();
-    ?>
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="text-align: left; border-bottom: 2px solid var(--win-border);">
-                <th style="padding: 10px;">Дата/Время</th>
-                <th style="padding: 10px;">Процедура</th>
-                <th style="padding: 10px;">Кабинет</th>
-                <th style="padding: 10px;">Врач</th>
-                <th style="padding: 10px;">Статус оплаты</th>
-                <th style="padding: 10px;">Отметка о посещении</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($apps as $a): ?>
-            <tr style="border-bottom: 1px solid var(--win-border);">
-                <td style="padding: 10px;"><?php echo $a['date']; ?> <span style="color:#666"><?php echo $a['time']; ?></span></td>
-                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($a['procedure_name']); ?></strong></td>
-                <td style="padding: 10px;"><?php echo htmlspecialchars($a['cabinet_id']); ?></td>
-                <td style="padding: 10px; font-size: 0.85rem;"><?php echo htmlspecialchars($a['doctor']); ?></td>
-                <td style="padding: 10px;">
-                    <span class="<?php echo $a['status'] === 'paid' ? 'status-green' : ($a['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
-                        <?php echo $a['status'] === 'paid' ? 'Оплачено' : ($a['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
-                    </span>
-                </td>
-                <td style="padding: 10px;">
-                    <?php if ($a['attended']): ?>
-                        <div style="display: flex; align-items: center; gap: 8px; color: #107c10;">
-                            <i data-lucide="check-circle-2" style="width:16px; height:16px;"></i>
-                            <span><?php echo date('H:i', strtotime($a['attended_at'])); ?> (<?php echo htmlspecialchars($a['performed_by']); ?>)</span>
-                        </div>
-                    <?php else: ?>
-                        <span style="color: #666;">-</span>
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <?php
-    exit;
-}
-?>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

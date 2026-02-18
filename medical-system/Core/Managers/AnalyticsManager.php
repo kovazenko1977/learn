@@ -109,4 +109,79 @@ class AnalyticsManager {
         arsort($load);
         return $load;
     }
+
+    public function getAgeStats() {
+        $patients = $this->patientsStore->getAll();
+        $groups = ['0-18' => 0, '19-35' => 0, '36-60' => 0, '60+' => 0];
+        $now = new \DateTime();
+
+        foreach ($patients as $p) {
+            $birth = new \DateTime($p['birth_date']);
+            $age = $now->diff($birth)->y;
+
+            if ($age <= 18) $groups['0-18']++;
+            elseif ($age <= 35) $groups['19-35']++;
+            elseif ($age <= 60) $groups['36-60']++;
+            else $groups['60+']++;
+        }
+        return $groups;
+    }
+
+    public function getMkbStats() {
+        $patients = $this->patientsStore->getAll();
+        $stats = [];
+        foreach ($patients as $p) {
+            if (isset($p['history']) && is_array($p['history'])) {
+                foreach ($p['history'] as $entry) {
+                    $code = $entry['diagnosis_code'] ?? 'Unknown';
+                    $text = $entry['diagnosis_text'] ?? '';
+                    if (!isset($stats[$code])) $stats[$code] = ['count' => 0, 'text' => $text];
+                    $stats[$code]['count']++;
+                }
+            }
+        }
+        arsort($stats);
+        return array_slice($stats, 0, 15);
+    }
+
+    public function getStayDurationStats() {
+        $patients = $this->patientsStore->getAll();
+        $appointments = $this->appointmentsStore->getAll();
+
+        $durations = [];
+        foreach ($patients as $p) {
+            $pid = $p['id'];
+            $pApps = array_filter($appointments, function($a) use ($pid) { return $a['patient_id'] === $pid; });
+            if (empty($pApps)) continue;
+
+            $dates = array_map(function($a) { return strtotime($a['date']); }, $pApps);
+            $minDate = min($dates);
+            $maxDate = max($dates);
+
+            $days = ceil(($maxDate - $minDate) / (60 * 60 * 24)) + 1;
+            if (!isset($durations[$days])) $durations[$days] = 0;
+            $durations[$days]++;
+        }
+        ksort($durations);
+        return $durations;
+    }
+
+    public function getCabinetTimeLoad($startDate = null, $endDate = null) {
+        $appointments = $this->getFilteredAppointments($startDate, $endDate);
+        $procStore = new JsonStore('procedures_directory');
+        $procedures = [];
+        foreach ($procStore->getAll() as $pr) { $procedures[$pr['id']] = $pr; }
+
+        $load = []; // cabinet => minutes
+        foreach ($appointments as $app) {
+            $cab = $app['cabinet_id'];
+            $procId = $app['procedure_id'];
+            $duration = $procedures[$procId]['duration'] ?? 20;
+
+            if (!isset($load[$cab])) $load[$cab] = 0;
+            $load[$cab] += $duration;
+        }
+        arsort($load);
+        return $load;
+    }
 }

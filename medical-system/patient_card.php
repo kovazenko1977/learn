@@ -105,6 +105,9 @@ require_once __DIR__ . '/includes/header.php';
                 <a href="export.php?action=epicrisis&patient_id=<?php echo $id; ?>" target="_blank" class="btn">
                     <i data-lucide="file-text" class="icon"></i> Выписной эпикриз
                 </a>
+                <a href="lab_results.php?patient_id=<?php echo $id; ?>" class="btn">
+                    <i data-lucide="microscope" class="icon"></i> Результаты анализов
+                </a>
             </div>
         </div>
 
