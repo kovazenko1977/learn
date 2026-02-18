@@ -1,0 +1,28 @@
+[Wed Feb 18 14:04:04 2026] PHP 8.3.6 Development Server (http://0.0.0.0:3000) started
+[Wed Feb 18 14:05:25 2026] 127.0.0.1:52838 Accepted
+[Wed Feb 18 14:05:25 2026] 127.0.0.1:52838 [200]: GET /login.php
+[Wed Feb 18 14:05:25 2026] 127.0.0.1:52838 Closing
+[Wed Feb 18 14:05:25 2026] 127.0.0.1:52854 Accepted
+[Wed Feb 18 14:05:25 2026] 127.0.0.1:52854 [200]: GET /assets/css/style.css
+[Wed Feb 18 14:05:25 2026] 127.0.0.1:52854 Closing
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52860 Accepted
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52860 [302]: POST /login.php
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52860 Closing
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52862 Accepted
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52862 [200]: GET /index.php
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52862 Closing
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52874 Accepted
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52874 [200]: GET /assets/css/style.css
+[Wed Feb 18 14:05:27 2026] 127.0.0.1:52874 Closing
+[Wed Feb 18 14:05:29 2026] 127.0.0.1:52888 Accepted
+[Wed Feb 18 14:05:29 2026] 127.0.0.1:52888 [200]: GET /settings.php
+[Wed Feb 18 14:05:29 2026] 127.0.0.1:52888 Closing
+[Wed Feb 18 14:05:29 2026] 127.0.0.1:52894 Accepted
+[Wed Feb 18 14:05:29 2026] 127.0.0.1:52894 [200]: GET /assets/css/style.css
+[Wed Feb 18 14:05:29 2026] 127.0.0.1:52894 Closing
+[Wed Feb 18 14:05:30 2026] 127.0.0.1:60688 Accepted
+[Wed Feb 18 14:05:30 2026] 127.0.0.1:60688 [200]: GET /settings.php?sub=staff
+[Wed Feb 18 14:05:30 2026] 127.0.0.1:60688 Closing
+[Wed Feb 18 14:05:30 2026] 127.0.0.1:60702 Accepted
+[Wed Feb 18 14:05:30 2026] 127.0.0.1:60702 [200]: GET /assets/css/style.css
+[Wed Feb 18 14:05:30 2026] 127.0.0.1:60702 Closing

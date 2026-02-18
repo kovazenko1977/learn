@@ -6,8 +6,8 @@ require_once __DIR__ . '/Core/Autoloader.php';
 
 $currentUser = \Medical\Core\Auth::getUser();
 
-if (!\Medical\Core\Auth::hasRole('admin')) {
-    echo '<div class="card mica-effect"><h2>Доступ ограничен</h2><p>Только администратор может просматривать этот раздел.</p></div>';
+if (!\Medical\Core\Auth::hasRole(['admin', 'chief'])) {
+    echo '<div class="card mica-effect"><h2>Доступ ограничен</h2><p>Только администратор или начмед могут просматривать этот раздел.</p></div>';
     include __DIR__ . '/includes/footer.php';
     exit;
 }
@@ -255,9 +255,11 @@ $allProcedures = $procedureManager->getAll();
                 <label>Роль</label>
                 <select name="role" class="form-control">
                     <option value="doctor">Врач</option>
+                    <option value="consultant">Врач-консультант</option>
                     <option value="nurse">Медсестра</option>
+                    <option value="registrar">Медрегистратор</option>
                     <option value="cashier">Кассир</option>
-                    <option value="head">Начмед</option>
+                    <option value="chief">Начмед</option>
                     <option value="admin">Админ</option>
                 </select>
             </div>
@@ -485,9 +487,11 @@ $allProcedures = $procedureManager->getAll();
                 <label>Роль</label>
                 <select name="role" id="edit_staff_role" class="form-control" style="width: 100%;">
                     <option value="doctor">Врач</option>
+                    <option value="consultant">Врач-консультант</option>
                     <option value="nurse">Медсестра</option>
+                    <option value="registrar">Медрегистратор</option>
                     <option value="cashier">Кассир</option>
-                    <option value="head">Начмед</option>
+                    <option value="chief">Начмед</option>
                     <option value="admin">Админ</option>
                 </select>
             </div>

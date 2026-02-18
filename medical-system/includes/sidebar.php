@@ -66,7 +66,7 @@ function isActive($page, $current_page) {
                     <i data-lucide="help-circle" class="icon"></i> <span>Справка</span>
                 </a>
             </div>
-            <?php if (\Medical\Core\Auth::hasRole('admin')): ?>
+            <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief'])): ?>
             <div class="nav-item">
                 <a href="settings.php" class="btn <?php echo isActive('settings.php', $current_page); ?>">
                     <i data-lucide="settings" class="icon"></i> <span>Настройки</span>

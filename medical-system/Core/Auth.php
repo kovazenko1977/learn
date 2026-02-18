@@ -47,7 +47,7 @@ class Auth {
     }
 
     public static function canManageStaff() {
-        return self::hasRole('chief');
+        return self::hasRole(['admin', 'chief']);
     }
 
     public static function canSeeMoney() {

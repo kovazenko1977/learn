@@ -69,7 +69,7 @@ $summary = $analytics->getSummary();
             <a href="procedures_doctor.php" class="btn" style="padding: 16px;">
                 <i data-lucide="calendar" class="icon"></i> График процедур
             </a>
-            <?php if (\Medical\Core\Auth::hasRole(['admin', 'head'])): ?>
+            <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief'])): ?>
             <a href="analytics.php" class="btn" style="padding: 16px;">
                 <i data-lucide="bar-chart-3" class="icon"></i> Аналитика
             </a>
