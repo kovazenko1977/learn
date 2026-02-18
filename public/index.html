@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ремонт DSG и DCT в Минске | Опыт более 15 лет</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 overflow-x-hidden">
+
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 z-[100] bg-gray-900 flex items-center justify-center transition-opacity duration-700">
+        <div class="relative flex flex-col items-center">
+            <div class="w-24 h-24 border-t-4 border-b-4 border-blue-600 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="settings-2" class="w-10 h-10 text-white animate-pulse"></i>
+            </div>
+            <div class="mt-8 text-white font-bold tracking-[0.3em] uppercase text-xs animate-pulse">DSG Expert</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 transition-all duration-300 glass" id="header">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-1 sm:gap-2">
+                <i data-lucide="settings-2" class="text-blue-600 w-6 h-6 sm:w-8 sm:h-8"></i>
+                <span class="text-lg sm:text-xl font-bold tracking-tight">DSG/DCT <span class="text-blue-600">Expert</span></span>
+            </div>
+            <nav class="hidden lg:flex gap-8 font-medium">
+                <a href="#services" class="hover:text-blue-600 transition">Услуги</a>
+                <a href="#process" class="hover:text-blue-600 transition">Как мы работаем</a>
+                <a href="#about" class="hover:text-blue-600 transition">О нас</a>
+                <a href="#faq" class="hover:text-blue-600 transition">FAQ</a>
+                <a href="#contacts" class="hover:text-blue-600 transition">Контакты</a>
+            </nav>
+            <div class="flex items-center gap-4">
+                <a href="tel:+375291572600" class="flex items-center gap-2 font-bold text-blue-600">
+                    <i data-lucide="phone" class="w-5 h-5"></i>
+                    <span class="hidden sm:inline">8 (029) 157-26-00</span>
+                </a>
+                <button class="lg:hidden p-2 text-gray-600" id="menu-btn">
+                    <i data-lucide="menu" id="menu-icon"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="lg:hidden hidden bg-white border-t border-gray-100 p-4 space-y-4" id="mobile-menu">
+            <a href="#services" class="block font-medium hover:text-blue-600">Услуги</a>
+            <a href="#process" class="block font-medium hover:text-blue-600">Как мы работаем</a>
+            <a href="#about" class="block font-medium hover:text-blue-600">О нас</a>
+            <a href="#faq" class="block font-medium hover:text-blue-600">FAQ</a>
+            <a href="#contacts" class="block font-medium hover:text-blue-600">Контакты</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&q=80&w=2000" alt="Background" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-gray-900/40"></div>
+        </div>
+        <div class="absolute top-1/4 -left-20 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-2xl text-white" data-aos="fade-right">
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <span class="inline-block px-4 py-1 rounded-full bg-blue-600 text-sm font-semibold">Опыт более 15 лет</span>
+                    <span class="inline-block px-4 py-1 rounded-full bg-amber-500 text-sm font-semibold text-gray-900 flex items-center gap-1">
+                        <i data-lucide="truck" class="w-4 h-4"></i> Бесплатный эвакуатор
+                    </span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-7xl font-bold mb-6 leading-tight break-words">Профессиональный ремонт DSG и DCT в Минске</h1>
+                <p class="text-lg md:text-xl text-gray-300 mb-8 break-words">Ремонт любой сложности с гарантией. Бесплатный эвакуатор по Минску при записи на ремонт.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#contacts" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-all text-center shadow-lg">Записаться на ремонт</a>
+                    <a href="#services" class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-lg font-bold transition-all text-center">Наши услуги</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands -->
+    <section class="py-6 bg-white/80 backdrop-blur-md relative z-30 border-b border-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="flex items-center gap-2 font-black text-xl tracking-tighter italic text-gray-800 hover:scale-110 transition-transform duration-300 cursor-default">VOLKSWAGEN</div>
+                <div class="flex items-center gap-2 font-black text-xl tracking-tighter italic text-gray-800 hover:scale-110 transition-transform duration-300 cursor-default">AUDI</div>
+                <div class="flex items-center gap-2 font-black text-xl tracking-tighter italic text-gray-800 hover:scale-110 transition-transform duration-300 cursor-default">SKODA</div>
+                <div class="flex items-center gap-2 font-black text-xl tracking-tighter italic text-gray-800 hover:scale-110 transition-transform duration-300 cursor-default">SEAT</div>
+                <div class="flex items-center gap-2 font-black text-xl tracking-tighter italic text-gray-800 hover:scale-110 transition-transform duration-300 cursor-default">FORD</div>
+                <div class="flex items-center gap-2 font-black text-xl tracking-tighter italic text-gray-800 hover:scale-110 transition-transform duration-300 cursor-default">VOLVO</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="py-12 bg-white relative z-20 -mt-20">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                <div class="flex items-center gap-4" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <i data-lucide="calendar"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold">15+ лет</h3>
+                        <p class="text-gray-500">Опыта работы</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold">100%</h3>
+                        <p class="text-gray-500">Гарантия качества</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                        <i data-lucide="map-pin"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-lg sm:text-2xl">Минск</h3>
+                        <p class="text-gray-500 text-sm">ул. Гагарина, 32</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                        <i data-lucide="truck"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-lg sm:text-2xl">0 руб.</h3>
+                        <p class="text-gray-500 text-sm">Эвакуатор</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E&quot;);"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4">Наши услуги</h2>
+                <div class="w-20 h-1 bg-blue-600 mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Мы предоставляем полный спектр услуг по диагностике и ремонту преселективных коробок передач.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                        <i data-lucide="tool"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Ремонт DSG 6 / 7</h3>
+                    <p class="text-gray-600 mb-6">Профессиональный ремонт всех типов DSG (DQ200, DQ250, DQ500) любой сложности.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Замена сцепления</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Ремонт мехатроника</li>
+                        <li class="flex items-center gap-2 font-semibold text-blue-600"><i data-lucide="truck" class="w-4 h-4"></i> Эвакуатор бесплатно</li>
+                    </ul>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                        <i data-lucide="cpu"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Ремонт DCT / PowerShift</h3>
+                    <p class="text-gray-600 mb-6">Качественное обслуживание и ремонт коробок DCT для различных марок автомобилей.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Адаптация КПП</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Устранение течей</li>
+                    </ul>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition group" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                        <i data-lucide="activity"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Компьютерная диагностика</h3>
+                    <p class="text-gray-600 mb-6">Точное определение неисправностей с использованием дилерского оборудования.</p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Чтение ошибок</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-green-500"></i> Проверка параметров</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process -->
+    <section id="process" class="py-24 bg-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4">Как мы работаем</h2>
+                <div class="w-20 h-1 bg-blue-600 mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Мы ценим ваше время и гарантируем прозрачность на каждом этапе ремонта.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold border-2 border-blue-600">1</div>
+                    <h3 class="text-xl font-bold mb-3">Диагностика</h3>
+                    <p class="text-gray-500">Бесплатная компьютерная диагностика и тест-драйв для выявления неисправностей.</p>
+                </div>
+                <div class="text-center p-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold border-2 border-blue-600">2</div>
+                    <h3 class="text-xl font-bold mb-3">Согласование</h3>
+                    <p class="text-gray-500">Подробный расчет стоимости запчастей и работ. Ремонт только после вашего согласия.</p>
+                </div>
+                <div class="text-center p-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold border-2 border-blue-600">3</div>
+                    <h3 class="text-xl font-bold mb-3">Ремонт</h3>
+                    <p class="text-gray-500">Качественное выполнение работ в сжатые сроки с использованием оригинальных узлов.</p>
+                </div>
+                <div class="text-center p-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold border-2 border-blue-600">4</div>
+                    <h3 class="text-xl font-bold mb-3">Выдача</h3>
+                    <p class="text-gray-500">Адаптация КПП, проверка на стенде и передача автомобиля с гарантией.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-24 bg-gray-900 text-white overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center -mx-4">
+                <div class="w-full lg:w-1/2 px-4 mb-12 lg:mb-0" data-aos="fade-right">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1000" alt="Workshop" class="rounded-2xl shadow-2xl relative z-10">
+                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-blue-600 rounded-2xl z-0 hidden sm:block"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 px-4" data-aos="fade-left">
+                    <h2 class="text-3xl sm:text-4xl font-bold mb-6 break-words">Более 15 лет в деле</h2>
+                    <p class="text-gray-400 text-lg mb-8 break-words">Наш сервис специализируется исключительно на роботизированных коробках передач. Мы накопили колоссальный опыт, позволяющий решать задачи, от которых отказываются другие.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="check-circle-2" class="text-blue-500 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="font-bold mb-1">Оригинальные запчасти</h4>
+                                <p class="text-sm text-gray-500">Используем только качественные комплектующие.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <i data-lucide="check-circle-2" class="text-blue-500 flex-shrink-0"></i>
+                            <div>
+                                <h4 class="font-bold mb-1">Сжатые сроки</h4>
+                                <p class="text-sm text-gray-500">Ценим ваше время, большинство работ за 1-2 дня.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="py-24 bg-white overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4">Наш техцентр</h2>
+                <div class="w-20 h-1 bg-blue-600 mx-auto rounded-full mb-6"></div>
+                <p class="text-gray-600 max-w-2xl mx-auto">Современное оборудование и профессиональный инструмент для работы с самыми сложными узлами трансмиссии.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="aspect-video rounded-2xl overflow-hidden shadow-lg group" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="https://images.unsplash.com/photo-1635773054018-22c23946270b?auto=format&fit=crop&q=80&w=800" alt="Подъемное оборудование" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <div class="aspect-video rounded-2xl overflow-hidden shadow-lg group" data-aos="zoom-in" data-aos-delay="200">
+                    <img src="https://images.unsplash.com/photo-1517524006039-e8d44933d399?auto=format&fit=crop&q=80&w=800" alt="Профессиональный инструмент" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <div class="aspect-video rounded-2xl overflow-hidden shadow-lg group" data-aos="zoom-in" data-aos-delay="300">
+                    <img src="https://images.unsplash.com/photo-1625047509168-a7026f36ae04?auto=format&fit=crop&q=80&w=800" alt="Диагностическое оборудование" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-24 bg-gray-50 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E&quot;);"></div>
+        <div class="container mx-auto px-4 max-w-4xl relative z-10">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-4">Часто задаваемые вопросы</h2>
+                <div class="w-20 h-1 bg-blue-600 mx-auto rounded-full mb-6"></div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" data-aos="fade-up">
+                    <button class="faq-btn w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition">
+                        <span class="font-bold break-words">Как работает бесплатный эвакуатор?</span>
+                        <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-8 pb-6 text-gray-600">
+                        Если ваш автомобиль не на ходу из-за поломки КПП, мы бесплатно доставим его в наш сервис на эвакуаторе в пределах Минска при условии последующего ремонта у нас.
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="50">
+                    <button class="faq-btn w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition">
+                        <span class="font-bold">Какую гарантию вы даете на ремонт?</span>
+                        <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-8 pb-6 text-gray-600">
+                        Мы предоставляем официальную гарантию на все выполненные работы и установленные запчасти сроком от 6 до 12 месяцев без ограничения по пробегу.
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <button class="faq-btn w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition">
+                        <span class="font-bold">Сколько времени занимает ремонт DSG?</span>
+                        <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-8 pb-6 text-gray-600">
+                        В большинстве случаев (замена сцепления или ремонт мехатроника) работы занимают от 1 до 2 рабочих дней. При сложном капитальном ремонте срок может быть увеличен.
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                    <button class="faq-btn w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition">
+                        <span class="font-bold">Нужно ли записываться на диагностику?</span>
+                        <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-8 pb-6 text-gray-600">
+                        Да, мы рекомендуем предварительно позвонить по телефону 8 (029) 157-26-00, чтобы согласовать удобное время и избежать очередей.
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" data-aos="fade-up" data-aos-delay="300">
+                    <button class="faq-btn w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition">
+                        <span class="font-bold">Какие запчасти вы используете?</span>
+                        <i data-lucide="chevron-down" class="transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-8 pb-6 text-gray-600">
+                        Мы используем только оригинальные комплектующие от ведущих производителей (LUK, SACHS, BorgWarner) или высококачественные аналоги по согласованию с клиентом.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts" class="py-24">
+        <div class="container mx-auto px-4">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-wrap">
+                <div class="w-full lg:w-1/2 p-6 sm:p-12" data-aos="fade-right">
+                    <h2 class="text-3xl font-bold mb-8">Свяжитесь с нами</h2>
+                    <div class="space-y-6 mb-12">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+                                <i data-lucide="map-pin"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Адрес</p>
+                                <p class="font-bold">Республика Беларусь, г. Минск,<br>ул. Гагарина, д. 32</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+                                <i data-lucide="phone"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Телефон</p>
+                                <a href="tel:+375291572600" class="font-bold text-xl hover:text-blue-600 transition">8 (029) 157-26-00</a>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 flex-shrink-0">
+                                <i data-lucide="clock"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Режим работы</p>
+                                <p class="font-bold">Пн-Сб: 9:00 - 19:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="space-y-4">
+                        <input type="text" placeholder="Ваше имя" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+                        <input type="tel" placeholder="Номер телефона" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 transition">
+                        <button class="w-full py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition transform active:scale-95 shadow-lg">Заказать звонок</button>
+                    </form>
+                </div>
+                <div class="w-full lg:w-1/2 min-h-[400px] bg-gray-100 relative" data-aos="fade-left">
+                    <iframe src="https://yandex.ru/map-widget/v1/?ll=27.534379%2C53.968839&z=17&pt=27.534379%2C53.968839%2Cpm2blm" class="absolute inset-0 w-full h-full border-0" allowfullscreen="true"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 py-12 border-t border-gray-200">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-2 mb-6">
+                <i data-lucide="settings-2" class="text-blue-600 w-6 h-6"></i>
+                <span class="text-lg font-bold tracking-tight">DSG/DCT <span class="text-blue-600">Expert</span></span>
+            </div>
+            <p class="text-gray-500 text-sm">© 2024 DSG/DCT Expert. Профессиональный ремонт трансмиссий в Минске.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-md', 'py-2');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.remove('shadow-md', 'py-2');
+                header.classList.add('py-4');
+            }
+        });
+
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const isHidden = mobileMenu.classList.contains('hidden');
+            menuIcon.setAttribute('data-lucide', isHidden ? 'menu' : 'x');
+            lucide.createIcons();
+        });
+
+        // Close mobile menu on link click
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIcon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            });
+        });
+
+        // Preloader
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('opacity-0');
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 700);
+        });
+
+        // FAQ Accordion
+        const faqBtns = document.querySelectorAll('.faq-btn');
+        faqBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const content = btn.nextElementSibling;
+                const icon = btn.querySelector('i');
+
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+    </script>
+</body>
+</html>
