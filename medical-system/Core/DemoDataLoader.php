@@ -16,6 +16,7 @@ $procDirectory = new JsonStore('procedures_directory');
 $procDirectory->save([]); // Reset
 
 $procs = [
+    ['name' => 'Прием врача-терапевта', 'is_paid' => false, 'price' => 0, 'duration' => 15, 'assigned_staff' => [], 'default_cabinet' => '101', 'prep_time' => 0, 'work_start' => '08:00', 'work_end' => '16:00'],
     ['name' => 'Грязелечение', 'is_paid' => false, 'price' => 0, 'duration' => 30, 'assigned_staff' => [], 'default_cabinet' => '101', 'prep_time' => 10, 'work_start' => '08:00', 'work_end' => '16:00'],
     ['name' => 'Массаж спины', 'is_paid' => true, 'price' => 1500, 'duration' => 20, 'assigned_staff' => [], 'default_cabinet' => '202', 'prep_time' => 5, 'work_start' => '09:00', 'work_end' => '18:00'],
     ['name' => 'Электрофорез', 'is_paid' => false, 'price' => 0, 'duration' => 15, 'assigned_staff' => [], 'default_cabinet' => '103', 'prep_time' => 5, 'work_start' => '08:00', 'work_end' => '17:00'],

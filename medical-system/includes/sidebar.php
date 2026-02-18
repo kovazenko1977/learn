@@ -15,10 +15,10 @@ function isActive($page, $current_page) {
             </a>
         </div>
 
-        <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor', 'head'])): ?>
+        <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief', 'registrar'])): ?>
         <div class="nav-item">
             <a href="patients.php" class="btn <?php echo isActive('patients.php', $current_page); ?>">
-                <i data-lucide="users" class="icon"></i> <span>Пациенты</span>
+                <i data-lucide="users" class="icon"></i> <span>Регистратура</span>
             </a>
         </div>
         <?php endif; ?>
@@ -31,7 +31,7 @@ function isActive($page, $current_page) {
         </div>
         <?php endif; ?>
 
-        <?php if (\Medical\Core\Auth::hasRole(['admin', 'cashier'])): ?>
+        <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief', 'cashier'])): ?>
         <div class="nav-item">
             <a href="procedures_cashier.php" class="btn <?php echo isActive('procedures_cashier.php', $current_page); ?>">
                 <i data-lucide="credit-card" class="icon"></i> <span>Касса</span>
@@ -47,10 +47,15 @@ function isActive($page, $current_page) {
         </div>
         <?php endif; ?>
 
-        <?php if (\Medical\Core\Auth::hasRole(['admin', 'head'])): ?>
+        <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief'])): ?>
         <div class="nav-item">
             <a href="analytics.php" class="btn <?php echo isActive('analytics.php', $current_page); ?>">
                 <i data-lucide="bar-chart-3" class="icon"></i> <span>Аналитика</span>
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="logs.php" class="btn <?php echo isActive('logs.php', $current_page); ?>">
+                <i data-lucide="scroll-text" class="icon"></i> <span>Журнал</span>
             </a>
         </div>
         <?php endif; ?>

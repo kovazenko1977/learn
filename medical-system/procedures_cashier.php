@@ -2,7 +2,7 @@
 require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
-\Medical\Core\Auth::requireLogin();
+\Medical\Core\Auth::requireLogin(['admin', 'chief', 'cashier']);
 
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $patientManager = new \Medical\Core\Managers\PatientManager();

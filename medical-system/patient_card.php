@@ -86,6 +86,16 @@ require_once __DIR__ . '/includes/header.php';
                     <div style="color: var(--win-text-secondary); font-size: 0.8rem; text-transform: uppercase;">№ Истории болезни</div>
                     <code><?php echo htmlspecialchars($patient['card_number'] ?? '-'); ?></code>
                 </div>
+                <div>
+                    <div style="color: var(--win-text-secondary); font-size: 0.8rem; text-transform: uppercase;">Место жительства</div>
+                    <strong><?php echo htmlspecialchars($patient['residence'] ?? '-'); ?></strong>
+                </div>
+                <div>
+                    <div style="color: var(--win-text-secondary); font-size: 0.8rem; text-transform: uppercase;">Доп. информация</div>
+                    <div style="font-size: 0.85rem; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 4px; max-height: 100px; overflow-y: auto;">
+                        <?php echo nl2br(htmlspecialchars($patient['extra_info'] ?? '-')); ?>
+                    </div>
+                </div>
             </div>
             <hr style="border:0; border-top: 1px solid var(--win-border); margin: 24px 0;">
             <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -151,9 +161,11 @@ require_once __DIR__ . '/includes/header.php';
                         </td>
                         <td style="text-align: right;">
                             <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                                <?php if (\Medical\Core\Auth::canSeeMoney()): ?>
                                 <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : ($app['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
                                     <?php echo $app['status'] === 'paid' ? 'Оплачено' : ($app['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
                                 </span>
+                                <?php endif; ?>
                                 <?php if ($app['status'] === 'unpaid' && \Medical\Core\Auth::hasRole(['admin', 'cashier'])): ?>
                                     <form method="POST" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">

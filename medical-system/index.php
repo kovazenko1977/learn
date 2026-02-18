@@ -35,6 +35,7 @@ $summary = $analytics->getSummary();
         </div>
         <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['total_appointments']; ?></div>
     </div>
+    <?php if (\Medical\Core\Auth::canSeeMoney()): ?>
     <div class="card mica-effect">
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
             <div style="background: rgba(16,124,16,0.1); padding: 10px; border-radius: 10px; color: #107c10;">
@@ -53,6 +54,7 @@ $summary = $analytics->getSummary();
         </div>
         <div style="font-size: 2.2rem; font-weight: 700; color: #107c10;"><?php echo number_format($summary['total_revenue'], 0, ',', ' '); ?> <span style="font-size: 1.2rem;">₽</span></div>
     </div>
+    <?php endif; ?>
 </div>
 
 <div style="margin-top: 32px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">

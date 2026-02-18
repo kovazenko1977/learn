@@ -13,17 +13,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'name' => $_POST['name'],
                 'birth_date' => $_POST['birth_date'],
                 'phone' => $_POST['phone'],
-                'card_number' => $_POST['card_number']
+                'card_number' => $_POST['card_number'],
+                'residence' => $_POST['residence'] ?? '',
+                'extra_info' => $_POST['extra_info'] ?? ''
             ];
             $patientManager->add($patientData);
-        } elseif ($_POST['action'] === 'edit' && \Medical\Core\Auth::isAdmin()) {
+        } elseif ($_POST['action'] === 'edit' && \Medical\Core\Auth::canEditPatients()) {
             $patientManager->update($_POST['id'], [
                 'name' => $_POST['name'],
                 'birth_date' => $_POST['birth_date'],
                 'phone' => $_POST['phone'],
-                'card_number' => $_POST['card_number']
+                'card_number' => $_POST['card_number'],
+                'residence' => $_POST['residence'] ?? '',
+                'extra_info' => $_POST['extra_info'] ?? ''
             ]);
-        } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::isAdmin()) {
+        } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::canEditPatients()) {
             $patientManager->delete($_POST['id']);
         }
     }
@@ -33,6 +37,12 @@ require_once __DIR__ . '/includes/header.php';
 
 $query = $_GET['q'] ?? '';
 $patients = $query ? $patientManager->search($query) : $patientManager->getAll();
+
+if (isset($_GET['ajax'])) {
+    header('Content-Type: application/json');
+    echo json_encode(array_values($patients));
+    exit;
+}
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -72,7 +82,7 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
                         <a href="patient_card.php?id=<?php echo $p['id']; ?>" class="btn btn-sm" title="Карточка">
                             <i data-lucide="contact" class="icon" style="margin:0;"></i>
                         </a>
-                        <?php if (\Medical\Core\Auth::isAdmin()): ?>
+                        <?php if (\Medical\Core\Auth::canEditPatients()): ?>
                             <button class="btn btn-sm" title="Редактировать" onclick='openEditModal(<?php echo json_encode($p); ?>)'>
                                 <i data-lucide="edit-3" class="icon" style="margin:0;"></i>
                             </button>
@@ -119,9 +129,17 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Телефон</label>
                 <input type="text" name="phone" id="edit_phone" style="width: 100%;">
             </div>
-            <div style="margin-bottom: 32px;">
+            <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">№ Истории болезни</label>
                 <input type="text" name="card_number" id="edit_card_number" style="width: 100%;">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Место жительства</label>
+                <input type="text" name="residence" id="edit_residence" style="width: 100%;">
+            </div>
+            <div style="margin-bottom: 32px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Дополнительная информация</label>
+                <textarea name="extra_info" id="edit_extra_info" style="width: 100%; height: 100px;"></textarea>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 12px;">
                 <button type="button" class="btn" onclick="document.getElementById('editModal').style.display='none'">Отмена</button>
@@ -150,9 +168,17 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Телефон</label>
                 <input type="text" name="phone" style="width: 100%;" placeholder="+7 (___) ___-__-__">
             </div>
-            <div style="margin-bottom: 32px;">
+            <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">№ Истории болезни</label>
                 <input type="text" name="card_number" style="width: 100%;" placeholder="0000/2024">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Место жительства</label>
+                <input type="text" name="residence" style="width: 100%;" placeholder="Город, улица...">
+            </div>
+            <div style="margin-bottom: 32px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Дополнительная информация</label>
+                <textarea name="extra_info" style="width: 100%; height: 100px;"></textarea>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 12px;">
                 <button type="button" class="btn" onclick="document.getElementById('addModal').style.display='none'">Отмена</button>
@@ -169,6 +195,8 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
         document.getElementById('edit_birth_date').value = patient.birth_date;
         document.getElementById('edit_phone').value = patient.phone || '';
         document.getElementById('edit_card_number').value = patient.card_number || '';
+        document.getElementById('edit_residence').value = patient.residence || '';
+        document.getElementById('edit_extra_info').value = patient.extra_info || '';
         document.getElementById('editModal').style.display = 'block';
     }
 </script>

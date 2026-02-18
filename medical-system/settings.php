@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action'] ?? '';
 
-    if ($action === 'add_staff') {
+    if ($action === 'add_staff' && \Medical\Core\Auth::canManageStaff()) {
         $staffManager->create([
             'name' => $_POST['name'],
             'role' => $_POST['role'],
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'access_code' => $_POST['access_code']
         ]);
         $message = 'Сотрудник добавлен';
-    } elseif ($action === 'edit_staff') {
+    } elseif ($action === 'edit_staff' && \Medical\Core\Auth::canManageStaff()) {
         $staffManager->update($_POST['id'], [
             'name' => $_POST['name'],
             'role' => $_POST['role'],
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'access_code' => $_POST['access_code']
         ]);
         $message = 'Данные сотрудника обновлены';
-    } elseif ($action === 'delete_staff') {
+    } elseif ($action === 'delete_staff' && \Medical\Core\Auth::canManageStaff()) {
         $staffManager->delete($_POST['id']);
         $message = 'Сотрудник удален';
     } elseif ($action === 'add_procedure') {
@@ -111,10 +111,14 @@ $allProcedures = $procedureManager->getAll();
     <h1>Настройки и Справочники</h1>
     <div style="display: flex; gap: 10px;">
         <a href="?sub=procedures" class="btn <?php echo $activeSub === 'procedures' ? 'btn-primary' : ''; ?>">Процедуры</a>
-        <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
+        <?php if (\Medical\Core\Auth::canManageStaff()): ?>
+            <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
+        <?php endif; ?>
         <a href="?sub=details" class="btn <?php echo $activeSub === 'details' ? 'btn-primary' : ''; ?>">Реквизиты</a>
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
-        <a href="?sub=logs" class="btn <?php echo $activeSub === 'logs' ? 'btn-primary' : ''; ?>">Логи</a>
+        <?php if (\Medical\Core\Auth::hasRole('chief')): ?>
+            <a href="?sub=logs" class="btn <?php echo $activeSub === 'logs' ? 'btn-primary' : ''; ?>">Логи</a>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -2,7 +2,7 @@
     <script>
         lucide.createIcons();
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('load', () => {
             const preloader = document.getElementById('global-preloader');
             if (preloader) {
                 // Delay slightly for smooth transition

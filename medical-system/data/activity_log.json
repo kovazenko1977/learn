@@ -934,5 +934,45 @@
             "id": "69956ebf5e124"
         },
         "ip": "unknown"
+    },
+    {
+        "id": "6995b90a52bd6",
+        "timestamp": "18-02-2026 13:05:14",
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": [],
+        "ip": "127.0.0.1"
+    },
+    {
+        "id": "6995b9501b946",
+        "timestamp": "18-02-2026 13:06:24",
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": [],
+        "ip": "127.0.0.1"
+    },
+    {
+        "id": "6995b99c92da2",
+        "timestamp": "18-02-2026 13:07:40",
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": [],
+        "ip": "127.0.0.1"
+    },
+    {
+        "id": "6995b9f18603f",
+        "timestamp": "18-02-2026 13:09:05",
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": [],
+        "ip": "127.0.0.1"
     }
 ]

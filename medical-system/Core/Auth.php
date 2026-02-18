@@ -43,7 +43,19 @@ class Auth {
     }
 
     public static function isAdmin() {
-        return self::hasRole('admin');
+        return self::hasRole(['admin', 'chief']);
+    }
+
+    public static function canManageStaff() {
+        return self::hasRole('chief');
+    }
+
+    public static function canSeeMoney() {
+        return self::hasRole(['admin', 'chief', 'cashier']);
+    }
+
+    public static function canEditPatients() {
+        return self::hasRole(['admin', 'chief', 'registrar']);
     }
 
     public static function hasRole($roles) {
@@ -60,10 +72,13 @@ class Auth {
         return $_SESSION['csrf_token'] ?? '';
     }
 
-    public static function requireLogin() {
+    public static function requireLogin($allowedRoles = []) {
         if (!self::isLoggedIn()) {
             header('Location: login.php');
             exit;
+        }
+        if (!empty($allowedRoles) && !self::hasRole($allowedRoles)) {
+            die("У вас недостаточно прав для доступа к этой странице.");
         }
     }
 }
