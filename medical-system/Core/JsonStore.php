@@ -6,7 +6,12 @@ class JsonStore {
     private $filePath;
 
     public function __construct($filename) {
-        $this->filePath = __DIR__ . '/../data/' . $filename . '.json';
+        $dir = __DIR__ . '/../data/';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0777, true);
+            file_put_contents($dir . '.htaccess', 'Deny from all');
+        }
+        $this->filePath = $dir . $filename . '.json';
         if (!file_exists($this->filePath)) {
             $this->save([]);
         }

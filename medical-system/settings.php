@@ -70,17 +70,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $message = 'Процедура обновлена';
     } elseif ($action === 'save_ui_settings') {
-        $existing = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+        $settingsStore = new \Medical\Core\JsonStore('settings');
+        $existing = $settingsStore->getAll();
         $uiSettings = array_merge($existing, [
             'font_family' => $_POST['font_family'],
             'font_size' => (int)$_POST['font_size'],
             'accent_color' => $_POST['accent_color'],
             'border_radius' => (int)$_POST['border_radius']
         ]);
-        file_put_contents(__DIR__ . '/data/settings.json', json_encode($uiSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $settingsStore->save($uiSettings);
         $message = 'Настройки внешнего вида сохранены';
     } elseif ($action === 'save_sanatorium_details') {
-        $existing = json_decode(file_get_contents(__DIR__ . '/data/settings.json'), true) ?? [];
+        $settingsStore = new \Medical\Core\JsonStore('settings');
+        $existing = $settingsStore->getAll();
         $details = array_merge($existing, [
             'org_name' => $_POST['org_name'],
             'org_address' => $_POST['org_address'],
@@ -90,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'org_account' => $_POST['org_account'],
             'org_director' => $_POST['org_director']
         ]);
-        file_put_contents(__DIR__ . '/data/settings.json', json_encode($details, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $settingsStore->save($details);
         $message = 'Реквизиты организации сохранены';
     } elseif ($action === 'delete_procedure') {
         $procedureManager->delete($_POST['id']);
@@ -303,8 +305,7 @@ $allProcedures = $procedureManager->getAll();
     </div>
 
 <?php elseif ($activeSub === 'details'):
-    $settingsPath = __DIR__ . '/data/settings.json';
-    $details = file_exists($settingsPath) ? (json_decode(file_get_contents($settingsPath), true) ?? []) : [];
+    $details = (new \Medical\Core\JsonStore('settings'))->getAll();
 ?>
     <div class="card mica-effect">
         <h2>Реквизиты санатория</h2>
@@ -348,8 +349,7 @@ $allProcedures = $procedureManager->getAll();
     </div>
 
 <?php elseif ($activeSub === 'appearance'):
-    $settingsPath = __DIR__ . '/data/settings.json';
-    $ui = file_exists($settingsPath) ? (json_decode(file_get_contents($settingsPath), true) ?? []) : [];
+    $ui = (new \Medical\Core\JsonStore('settings'))->getAll();
 ?>
     <div class="card mica-effect">
         <h2>Настройки внешнего вида</h2>

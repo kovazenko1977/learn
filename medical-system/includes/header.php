@@ -3,11 +3,7 @@ require_once __DIR__ . '/../Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
 
-$uiSettings = [];
-$settingsPath = __DIR__ . '/../data/settings.json';
-if (file_exists($settingsPath)) {
-    $uiSettings = json_decode(file_get_contents($settingsPath), true) ?? [];
-}
+$uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -19,9 +15,9 @@ if (file_exists($settingsPath)) {
     <style>
         :root {
             --win-font: <?php echo $uiSettings['font_family'] ?? "'Segoe UI Variable Display', 'Segoe UI', sans-serif"; ?>;
-            --base-size: <?php echo $uiSettings['font_size'] ?? "16"; ?>px;
+            --base-size: <?php echo ($uiSettings['font_size'] ?? 16); ?>px;
             --win-accent: <?php echo $uiSettings['accent_color'] ?? "#0078d4"; ?>;
-            --win-radius: <?php echo $uiSettings['border_radius'] ?? "12"; ?>px;
+            --win-radius: <?php echo ($uiSettings['border_radius'] ?? 12); ?>px;
         }
         body {
             font-family: var(--win-font);

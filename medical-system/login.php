@@ -1,4 +1,8 @@
 <?php
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
+
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
