@@ -7,7 +7,7 @@ function isActive($page, $current_page) {
 }
 ?>
 <div class="sidebar">
-    <h2>Санаторий</h2>
+    <h2>WES МЕД</h2>
     <nav>
         <div class="nav-item">
             <a href="index.php" class="btn <?php echo isActive('index.php', $current_page); ?>">

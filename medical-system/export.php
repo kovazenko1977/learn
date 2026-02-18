@@ -11,7 +11,7 @@ $settingsPath = __DIR__ . '/data/settings.json';
 if (file_exists($settingsPath)) {
     $settings = json_decode(file_get_contents($settingsPath), true) ?? [];
 }
-$orgName = $settings['org_name'] ?? 'Санаторий "Здоровье"';
+$orgName = $settings['org_name'] ?? 'WES МЕД';
 
 if ($action === 'print_schedule') {
     $patientId = $_GET['patient_id'];

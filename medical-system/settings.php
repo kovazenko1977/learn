@@ -308,7 +308,7 @@ $allProcedures = $procedureManager->getAll();
     $details = (new \Medical\Core\JsonStore('settings'))->getAll();
 ?>
     <div class="card mica-effect">
-        <h2>Реквизиты санатория</h2>
+        <h2>Реквизиты организации</h2>
         <form method="POST" style="max-width: 600px;">
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="save_sanatorium_details">
