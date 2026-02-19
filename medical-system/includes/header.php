@@ -35,9 +35,16 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     </div>
 
     <?php if (\Medical\Core\Auth::isLoggedIn()): ?>
+        <button id="sidebar-toggle" class="btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1001; border-radius: 50%; width: 56px; height: 56px; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: var(--win-accent); color: white; border: none;">
+            <i data-lucide="menu" id="toggle-icon"></i>
+        </button>
+
         <?php include __DIR__ . '/sidebar.php'; ?>
         <div class="main-content">
             <header class="navbar card">
+                <button id="menu-btn-mobile" class="btn btn-sm" style="display: none; margin-right: 15px; padding: 8px;">
+                    <i data-lucide="menu"></i>
+                </button>
                 <div style="flex-grow: 1; display: flex; align-items: center; gap: 12px;">
                     <div style="width: 32px; height: 32px; background: var(--win-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
                         <?php echo mb_substr(\Medical\Core\Auth::getUser()['name'], 0, 1); ?>
@@ -60,3 +67,40 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     <?php else: ?>
         <div style="padding: 40px;">
     <?php endif; ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('sidebar-toggle');
+            const mobileMenuBtn = document.getElementById('menu-btn-mobile');
+            const sidebar = document.querySelector('.sidebar');
+            const body = document.body;
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                body.classList.toggle('sidebar-open');
+                const icon = document.getElementById('toggle-icon');
+                const menuIcon = mobileMenuBtn.querySelector('i');
+
+                if (sidebar.classList.contains('open')) {
+                    if (icon) icon.setAttribute('data-lucide', 'x');
+                    if (menuIcon) menuIcon.setAttribute('data-lucide', 'x');
+                } else {
+                    if (icon) icon.setAttribute('data-lucide', 'menu');
+                    if (menuIcon) menuIcon.setAttribute('data-lucide', 'menu');
+                }
+                if (window.lucide) lucide.createIcons();
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+            if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) {
+                    if (!sidebar.contains(e.target) && e.target !== toggleBtn && !toggleBtn.contains(e.target) && e.target !== mobileMenuBtn && !mobileMenuBtn.contains(e.target)) {
+                        toggleSidebar();
+                    }
+                }
+            });
+        });
+    </script>

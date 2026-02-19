@@ -156,6 +156,7 @@ body {
 .main-content {
     margin-left: 280px;
     padding: 40px;
+    transition: margin-left 0.3s ease;
 }
 
 .status-gray { color: #5d5d5d; background: #e5e5e5; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
@@ -228,8 +229,75 @@ tr:hover td {
     background: rgba(0, 0, 0, 0.01);
 }
 
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        width: 280px;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    #sidebar-toggle, #menu-btn-mobile {
+        display: flex !important;
+    }
+    .navbar {
+        margin-bottom: 20px;
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+    }
+    .card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+
+    /* Responsive Tables */
+    .card {
+        overflow-x: auto;
+    }
+    table {
+        min-width: 600px;
+    }
+
+    /* Grid Adjustments */
+    div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Flex Wrap for Mobile */
+    form[style*="display: flex"], div[style*="display: flex"] {
+        flex-wrap: wrap !important;
+    }
+
+    /* Login Page Adjustment */
+    .login-container {
+        width: 95% !important;
+        margin: 20px auto !important;
+    }
+
+    /* Modal Adjustments */
+    #detailModal > div, #editModal > div, #addModal > div, #historyModal > div, #editAppModal > div, #editProcModal > div, #editStaffModal > div {
+        width: 95% !important;
+        padding: 20px !important;
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+    }
+}
+
 @media print {
-    .sidebar, .btn, .navbar { display: none !important; }
+    .sidebar, .btn, .navbar, #sidebar-toggle { display: none !important; }
     .main-content { margin-left: 0; padding: 0; }
 }
 

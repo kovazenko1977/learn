@@ -1,5 +1,17 @@
 [
     {
+        "name": "Прием врача-терапевта",
+        "is_paid": false,
+        "price": 0,
+        "duration": 15,
+        "assigned_staff": [],
+        "default_cabinet": "101",
+        "prep_time": 0,
+        "work_start": "08:00",
+        "work_end": "16:00",
+        "id": "6996a6ac06696"
+    },
+    {
         "name": "Грязелечение",
         "is_paid": false,
         "price": 0,
@@ -9,7 +21,7 @@
         "prep_time": 10,
         "work_start": "08:00",
         "work_end": "16:00",
-        "id": "69956ebf5bbf1"
+        "id": "6996a6ac07e51"
     },
     {
         "name": "Массаж спины",
@@ -21,7 +33,7 @@
         "prep_time": 5,
         "work_start": "09:00",
         "work_end": "18:00",
-        "id": "69956ebf5c790"
+        "id": "6996a6ac08232"
     },
     {
         "name": "Электрофорез",
@@ -33,7 +45,7 @@
         "prep_time": 5,
         "work_start": "08:00",
         "work_end": "17:00",
-        "id": "69956ebf5cab3"
+        "id": "6996a6ac084e5"
     },
     {
         "name": "Ингаляция",
@@ -45,7 +57,7 @@
         "prep_time": 2,
         "work_start": "08:00",
         "work_end": "20:00",
-        "id": "69956ebf5cd2e"
+        "id": "6996a6ac08725"
     },
     {
         "name": "Подводный душ-массаж",
@@ -57,6 +69,6 @@
         "prep_time": 15,
         "work_start": "10:00",
         "work_end": "15:00",
-        "id": "69956ebf5d015"
+        "id": "6996a6ac0895f"
     }
 ]

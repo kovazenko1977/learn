@@ -26,7 +26,7 @@ if (isset($_GET['logout'])) {
 
 require_once __DIR__ . '/includes/header.php';
 ?>
-<div style="max-width: 400px; margin: 100px auto;">
+<div class="login-container" style="max-width: 400px; margin: 100px auto;">
     <div class="card mica-effect" style="text-align: center; padding: 40px;">
         <h1 style="margin-bottom: 30px;">Вход в систему</h1>
 
