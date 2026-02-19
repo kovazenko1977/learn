@@ -35,7 +35,7 @@ $summary = $analytics->getSummary();
         </div>
         <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['total_appointments']; ?></div>
     </div>
-    <?php if (\Medical\Core\Auth::canSeeMoney()): ?>
+    <?php if (\Medical\Core\Auth::can('finance_view')): ?>
     <div class="card mica-effect">
         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
             <div style="background: rgba(16,124,16,0.1); padding: 10px; border-radius: 10px; color: #107c10;">
@@ -61,20 +61,22 @@ $summary = $analytics->getSummary();
     <div class="card mica-effect">
         <h2 style="margin-bottom: 24px;">Быстрые действия</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor'])): ?>
+            <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
             <a href="patients.php" class="btn btn-primary" style="padding: 16px;">
                 <i data-lucide="user-plus" class="icon"></i> Регистрация пациента
             </a>
             <?php endif; ?>
+            <?php if (\Medical\Core\Auth::can('procedures_assign')): ?>
             <a href="procedures_doctor.php" class="btn" style="padding: 16px;">
                 <i data-lucide="calendar" class="icon"></i> График процедур
             </a>
-            <?php if (\Medical\Core\Auth::hasRole(['admin', 'chief'])): ?>
+            <?php endif; ?>
+            <?php if (\Medical\Core\Auth::can('analytics_view')): ?>
             <a href="analytics.php" class="btn" style="padding: 16px;">
                 <i data-lucide="bar-chart-3" class="icon"></i> Аналитика
             </a>
             <?php endif; ?>
-            <?php if (\Medical\Core\Auth::hasRole(['admin', 'cashier'])): ?>
+            <?php if (\Medical\Core\Auth::can('finance_pay')): ?>
             <a href="procedures_cashier.php" class="btn" style="padding: 16px;">
                 <i data-lucide="credit-card" class="icon"></i> Касса
             </a>

@@ -21,7 +21,8 @@ class Auth {
                 $_SESSION['user'] = [
                     'id' => $user['id'],
                     'role' => $user['role'],
-                    'name' => $user['name']
+                    'name' => $user['name'],
+                    'permissions' => $user['permissions'] ?? []
                 ];
                 (new Managers\LogManager())->log('Вход в систему');
                 return true;
@@ -43,19 +44,31 @@ class Auth {
     }
 
     public static function isAdmin() {
-        return self::hasRole(['admin', 'chief']);
+        return self::hasRole('admin');
+    }
+
+    public static function can($permission) {
+        if (!self::isLoggedIn()) return false;
+        $user = self::getUser();
+
+        // Admin has all rights
+        if ($user['role'] === 'admin') return true;
+
+        // Check granular permissions
+        $permissions = $user['permissions'] ?? [];
+        return in_array($permission, $permissions);
     }
 
     public static function canManageStaff() {
-        return self::hasRole(['admin', 'chief']);
+        return self::can('settings_staff');
     }
 
     public static function canSeeMoney() {
-        return self::hasRole(['admin', 'chief', 'cashier']);
+        return self::can('finance_view');
     }
 
     public static function canEditPatients() {
-        return self::hasRole(['admin', 'chief', 'registrar']);
+        return self::can('patients_edit');
     }
 
     public static function hasRole($roles) {

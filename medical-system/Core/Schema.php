@@ -10,6 +10,7 @@ class Schema {
                 role VARCHAR(50) NOT NULL,
                 specialization VARCHAR(255),
                 access_code VARCHAR(10),
+                permissions JSON,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 

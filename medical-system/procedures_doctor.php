@@ -2,7 +2,11 @@
 require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
-\Medical\Core\Auth::requireLogin(['admin', 'chief', 'doctor', 'registrar']);
+\Medical\Core\Auth::requireLogin();
+
+if (!\Medical\Core\Auth::can('procedures_assign')) {
+    die("У вас недостаточно прав для назначения процедур.");
+}
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $procedureManager = new \Medical\Core\Managers\ProcedureManager();

@@ -2,7 +2,11 @@
 require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
-\Medical\Core\Auth::requireLogin(['admin', 'chief']);
+\Medical\Core\Auth::requireLogin();
+
+if (!\Medical\Core\Auth::can('logs_view')) {
+    die("У вас недостаточно прав для просмотра журнала системных событий.");
+}
 
 $logManager = new \Medical\Core\Managers\LogManager();
 $logs = $logManager->getRecent(500);

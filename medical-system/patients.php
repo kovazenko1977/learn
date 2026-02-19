@@ -4,6 +4,10 @@ require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
+if (!\Medical\Core\Auth::can('patients_view')) {
+    die("У вас недостаточно прав для просмотра реестра пациентов.");
+}
+
 $patientManager = new \Medical\Core\Managers\PatientManager();
 
 if (isset($_GET['ajax'])) {
@@ -16,7 +20,7 @@ if (isset($_GET['ajax'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
-        if ($_POST['action'] === 'add') {
+        if ($_POST['action'] === 'add' && \Medical\Core\Auth::can('patients_edit')) {
             $patientData = [
                 'name' => $_POST['name'],
                 'birth_date' => $_POST['birth_date'],
@@ -26,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'extra_info' => $_POST['extra_info'] ?? ''
             ];
             $patientManager->add($patientData);
-        } elseif ($_POST['action'] === 'edit' && \Medical\Core\Auth::canEditPatients()) {
+        } elseif ($_POST['action'] === 'edit' && \Medical\Core\Auth::can('patients_edit')) {
             $patientManager->update($_POST['id'], [
                 'name' => $_POST['name'],
                 'birth_date' => $_POST['birth_date'],
@@ -35,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'residence' => $_POST['residence'] ?? '',
                 'extra_info' => $_POST['extra_info'] ?? ''
             ]);
-        } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::canEditPatients()) {
+        } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::can('patients_delete')) {
             $patientManager->delete($_POST['id']);
         }
     }
@@ -49,9 +53,11 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
     <h1>Реестр пациентов</h1>
-    <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='block'">
-        <i data-lucide="user-plus" class="icon"></i> Добавить пациента
-    </button>
+    <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
+        <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='block'">
+            <i data-lucide="user-plus" class="icon"></i> Добавить пациента
+        </button>
+    <?php endif; ?>
 </div>
 
 <div class="card mica-effect">
@@ -84,10 +90,12 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
                         <a href="patient_card.php?id=<?php echo $p['id']; ?>" class="btn btn-sm" title="Карточка">
                             <i data-lucide="contact" class="icon" style="margin:0;"></i>
                         </a>
-                        <?php if (\Medical\Core\Auth::canEditPatients()): ?>
+                        <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
                             <button class="btn btn-sm" title="Редактировать" onclick='openEditModal(<?php echo json_encode($p); ?>)'>
                                 <i data-lucide="edit-3" class="icon" style="margin:0;"></i>
                             </button>
+                        <?php endif; ?>
+                        <?php if (\Medical\Core\Auth::can('patients_delete')): ?>
                             <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить пациента и все его данные?')">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="delete">
@@ -97,9 +105,11 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
                                 </button>
                             </form>
                         <?php endif; ?>
-                        <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" title="Назначить">
-                            <i data-lucide="plus-square" class="icon" style="margin:0;"></i>
-                        </a>
+                        <?php if (\Medical\Core\Auth::can('procedures_assign')): ?>
+                            <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" title="Назначить">
+                                <i data-lucide="plus-square" class="icon" style="margin:0;"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </td>
             </tr>

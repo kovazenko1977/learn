@@ -2,14 +2,18 @@
 require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
-\Medical\Core\Auth::requireLogin(['admin', 'chief', 'nurse']);
+\Medical\Core\Auth::requireLogin();
+
+if (!\Medical\Core\Auth::can('procedures_nurse')) {
+    die("У вас недостаточно прав для доступа к кабинету медсестры.");
+}
 
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $procedureManager = new \Medical\Core\Managers\ProcedureManager();
 
 $currentUser = \Medical\Core\Auth::getUser();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'attend') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'attend' && \Medical\Core\Auth::can('procedures_nurse')) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
         $scheduleManager->markAttended($_POST['id'], $currentUser['name']);
     }

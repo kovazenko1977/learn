@@ -4,11 +4,15 @@ require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
+if (!\Medical\Core\Auth::can('lab_view')) {
+    die("У вас недостаточно прав для просмотра результатов исследований.");
+}
+
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $id = $_GET['patient_id'] ?? '';
 $patient = $id ? $patientManager->getById($id) : null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'upload') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'upload' && \Medical\Core\Auth::can('lab_upload')) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
         $patientId = $_POST['patient_id'];
         if (isset($_FILES['result_file']) && $_FILES['result_file']['error'] === UPLOAD_ERR_OK) {

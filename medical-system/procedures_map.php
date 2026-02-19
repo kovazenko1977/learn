@@ -4,6 +4,10 @@ require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
+if (!\Medical\Core\Auth::can('procedures_assign') && !\Medical\Core\Auth::can('procedures_nurse')) {
+    die("У вас недостаточно прав для просмотра карты загрузки.");
+}
+
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $procedureManager = new \Medical\Core\Managers\ProcedureManager();
 

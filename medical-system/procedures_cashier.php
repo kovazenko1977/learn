@@ -2,12 +2,16 @@
 require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Autoloader::register();
 \Medical\Core\Auth::init();
-\Medical\Core\Auth::requireLogin(['admin', 'chief', 'cashier']);
+\Medical\Core\Auth::requireLogin();
+
+if (!\Medical\Core\Auth::can('finance_pay')) {
+    die("У вас недостаточно прав для доступа к кассе.");
+}
 
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $patientManager = new \Medical\Core\Managers\PatientManager();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pay') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pay' && \Medical\Core\Auth::can('finance_pay')) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
         $scheduleManager->markPaid($_POST['id']);
     }

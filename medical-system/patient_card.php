@@ -4,6 +4,10 @@ require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
+if (!\Medical\Core\Auth::can('patients_view')) {
+    die("У вас недостаточно прав для просмотра карточки пациента.");
+}
+
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $id = $_GET['id'] ?? '';
@@ -21,15 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         die("CSRF Error");
     }
 
-    if ($_POST['action'] === 'pay') {
+    if ($_POST['action'] === 'pay' && \Medical\Core\Auth::can('finance_pay')) {
         $scheduleManager->markPaid($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
-    } elseif ($_POST['action'] === 'delete_appointment' && \Medical\Core\Auth::isAdmin()) {
+    } elseif ($_POST['action'] === 'delete_appointment' && \Medical\Core\Auth::can('settings_system')) {
         $scheduleManager->delete($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
-    } elseif ($_POST['action'] === 'edit_appointment' && \Medical\Core\Auth::isAdmin()) {
+    } elseif ($_POST['action'] === 'edit_appointment' && \Medical\Core\Auth::can('settings_system')) {
         $scheduleManager->update($_POST['appointment_id'], [
             'price' => (float)$_POST['price'],
             'status' => $_POST['status'],
@@ -38,17 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ]);
         header("Location: patient_card.php?id=$id");
         exit;
-    } elseif ($_POST['action'] === 'add_history') {
+    } elseif ($_POST['action'] === 'add_history' && \Medical\Core\Auth::can('history_add')) {
         $entry = [
-        'doctor' => \Medical\Core\Auth::getUser()['name'],
-        'diagnosis_code' => $_POST['diagnosis_code'],
-        'diagnosis_text' => $_POST['diagnosis_text'],
-        'notes' => $_POST['notes']
-    ];
+            'doctor' => \Medical\Core\Auth::getUser()['name'],
+            'diagnosis_code' => $_POST['diagnosis_code'],
+            'diagnosis_text' => $_POST['diagnosis_text'],
+            'notes' => $_POST['notes']
+        ];
         $patientManager->addHistoryEntry($id, $entry);
         header("Location: patient_card.php?id=$id");
         exit;
-    } elseif ($_POST['action'] === 'add_comment') {
+    } elseif ($_POST['action'] === 'add_comment' && \Medical\Core\Auth::can('history_add')) {
         $patientManager->addComment($id, [
             'author' => \Medical\Core\Auth::getUser()['name'],
             'role' => \Medical\Core\Auth::getUser()['role'],
@@ -99,15 +103,21 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <hr style="border:0; border-top: 1px solid var(--win-border); margin: 24px 0;">
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <a href="procedures_doctor.php?patient_id=<?php echo $id; ?>" class="btn btn-primary">
-                    <i data-lucide="plus-square" class="icon"></i> Назначить процедуры
-                </a>
-                <a href="export.php?action=epicrisis&patient_id=<?php echo $id; ?>" target="_blank" class="btn">
-                    <i data-lucide="file-text" class="icon"></i> Выписной эпикриз
-                </a>
-                <a href="lab_results.php?patient_id=<?php echo $id; ?>" class="btn">
-                    <i data-lucide="microscope" class="icon"></i> Результаты анализов
-                </a>
+                <?php if (\Medical\Core\Auth::can('procedures_assign')): ?>
+                    <a href="procedures_doctor.php?patient_id=<?php echo $id; ?>" class="btn btn-primary">
+                        <i data-lucide="plus-square" class="icon"></i> Назначить процедуры
+                    </a>
+                <?php endif; ?>
+                <?php if (\Medical\Core\Auth::can('history_view')): ?>
+                    <a href="export.php?action=epicrisis&patient_id=<?php echo $id; ?>" target="_blank" class="btn">
+                        <i data-lucide="file-text" class="icon"></i> Выписной эпикриз
+                    </a>
+                <?php endif; ?>
+                <?php if (\Medical\Core\Auth::can('lab_view')): ?>
+                    <a href="lab_results.php?patient_id=<?php echo $id; ?>" class="btn">
+                        <i data-lucide="microscope" class="icon"></i> Результаты анализов
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -169,7 +179,7 @@ require_once __DIR__ . '/includes/header.php';
                                     <?php echo $app['status'] === 'paid' ? 'Оплачено' : ($app['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
                                 </span>
                                 <?php endif; ?>
-                                <?php if ($app['status'] === 'unpaid' && \Medical\Core\Auth::hasRole(['admin', 'cashier'])): ?>
+                                <?php if ($app['status'] === 'unpaid' && \Medical\Core\Auth::can('finance_pay')): ?>
                                     <form method="POST" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="pay">
@@ -177,7 +187,7 @@ require_once __DIR__ . '/includes/header.php';
                                         <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
                                     </form>
                                 <?php endif; ?>
-                                <?php if (\Medical\Core\Auth::isAdmin()): ?>
+                                <?php if (\Medical\Core\Auth::can('settings_system')): ?>
                                     <button class="btn btn-sm" style="padding: 4px;" onclick='openEditAppModal(<?php echo json_encode($app); ?>)'><i data-lucide="edit" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить назначение?')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
@@ -200,7 +210,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="card mica-effect">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h3 style="margin:0;"><i data-lucide="clipboard" class="icon"></i> История болезни</h3>
-                <?php if (\Medical\Core\Auth::hasRole(['admin', 'doctor'])): ?>
+                <?php if (\Medical\Core\Auth::can('history_add')): ?>
                 <button class="btn btn-primary" onclick="document.getElementById('historyModal').style.display='block'">
                     <i data-lucide="plus" class="icon"></i> Добавить запись
                 </button>
@@ -208,7 +218,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <div class="history-list" style="display: flex; flex-direction: column; gap: 20px;">
-                <?php if (isset($patient['history']) && is_array($patient['history'])): ?>
+                <?php if (\Medical\Core\Auth::can('history_view') && isset($patient['history']) && is_array($patient['history'])): ?>
                     <?php foreach (array_reverse($patient['history']) as $entry): ?>
                         <div style="padding: 20px; border: 1px solid var(--win-border); border-radius: 12px; background: rgba(255,255,255,0.4); transition: transform 0.2s;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
@@ -230,6 +240,8 @@ require_once __DIR__ . '/includes/header.php';
                             <p style="font-size: 0.95rem; line-height: 1.6; color: #333; margin: 0; white-space: pre-wrap;"><?php echo htmlspecialchars($entry['notes']); ?></p>
                         </div>
                     <?php endforeach; ?>
+                <?php elseif (!\Medical\Core\Auth::can('history_view')): ?>
+                    <p style="text-align: center; padding: 40px; color: var(--win-text-secondary);">У вас нет прав для просмотра медицинской истории</p>
                 <?php else: ?>
                     <p style="text-align: center; padding: 40px; color: var(--win-text-secondary);">История болезни пуста</p>
                 <?php endif; ?>

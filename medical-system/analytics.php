@@ -4,8 +4,8 @@ require_once __DIR__ . '/Core/Autoloader.php';
 \Medical\Core\Auth::init();
 \Medical\Core\Auth::requireLogin();
 
-if (!\Medical\Core\Auth::hasRole(['admin', 'chief'])) {
-    echo '<div class="card mica-effect"><h2>Доступ ограничен</h2><p>Только главный врач может просматривать расширенную аналитику.</p></div>';
+if (!\Medical\Core\Auth::can('analytics_view')) {
+    echo '<div class="card mica-effect"><h2>Доступ ограничен</h2><p>У вас нет прав для просмотра аналитики.</p></div>';
     include __DIR__ . '/includes/footer.php';
     exit;
 }
@@ -216,11 +216,13 @@ require_once __DIR__ . '/includes/header.php';
         <div style="font-size: 2rem; font-weight: 700;"><?php echo $summary['total_appointments']; ?></div>
         <div style="font-size: 0.8rem; color: #107c10; margin-top: 5px;">Выполнено: <?php echo $summary['attended_count']; ?></div>
     </div>
+    <?php if (\Medical\Core\Auth::can('finance_view')): ?>
     <div class="card mica-effect">
         <h3 style="color: var(--win-text-secondary); font-size: 0.85rem;">Общая выручка</h3>
         <div style="font-size: 2rem; font-weight: 700; color: #107c10;"><?php echo number_format($summary['total_revenue'], 0, ',', ' '); ?> ₽</div>
         <div style="font-size: 0.8rem; color: var(--win-text-secondary); margin-top: 5px;">За выбранный период</div>
     </div>
+    <?php endif; ?>
     <div class="card mica-effect">
         <h3 style="color: var(--win-text-secondary); font-size: 0.85rem;">Пациентов в базе</h3>
         <div style="font-size: 2rem; font-weight: 700;"><?php echo $summary['total_patients']; ?></div>
@@ -281,8 +283,10 @@ require_once __DIR__ . '/includes/header.php';
                     <th>Процедура</th>
                     <th style="text-align:center;">Записей</th>
                     <th style="text-align:center;">Посещений</th>
-                    <th style="text-align:right;">Выручка</th>
-                    <th style="text-align:right;">Не оплачено</th>
+                    <?php if (\Medical\Core\Auth::can('finance_view')): ?>
+                        <th style="text-align:right;">Выручка</th>
+                        <th style="text-align:right;">Не оплачено</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -291,8 +295,10 @@ require_once __DIR__ . '/includes/header.php';
                     <td><strong><?php echo htmlspecialchars($stat['name']); ?></strong></td>
                     <td style="text-align:center;"><?php echo $stat['total_records']; ?></td>
                     <td style="text-align:center;"><?php echo $stat['attended']; ?></td>
-                    <td style="text-align:right; font-weight:600; color:#107c10;"><?php echo number_format($stat['revenue'], 0); ?> ₽</td>
-                    <td style="text-align:right; color:#d13438;"><?php echo $stat['unpaid']; ?> шт.</td>
+                    <?php if (\Medical\Core\Auth::can('finance_view')): ?>
+                        <td style="text-align:right; font-weight:600; color:#107c10;"><?php echo number_format($stat['revenue'], 0); ?> ₽</td>
+                        <td style="text-align:right; color:#d13438;"><?php echo $stat['unpaid']; ?> шт.</td>
+                    <?php endif; ?>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
