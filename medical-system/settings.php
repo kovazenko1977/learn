@@ -145,6 +145,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $settingsStore->save($dbSettings);
         $message = 'Настройки базы данных сохранены. ' . ($_POST['db_driver'] === 'mysql' ? 'Переключено на MySQL.' : 'Используется JSON.');
+    } elseif ($action === 'save_template') {
+        $tm = new \Medical\Core\Managers\TemplateManager();
+        $tm->saveTemplate($_POST['type'], $_POST['content']);
+        $message = 'Шаблон "' . $_POST['type'] . '" сохранен';
     } elseif ($action === 'init_mysql') {
         try {
             if (\Medical\Core\DB::initTables()) {
@@ -175,6 +179,7 @@ $allProcedures = $procedureManager->getAll();
         <?php if (\Medical\Core\Auth::can('settings_system')): ?>
             <a href="?sub=details" class="btn <?php echo $activeSub === 'details' ? 'btn-primary' : ''; ?>">Реквизиты</a>
             <a href="?sub=database" class="btn <?php echo $activeSub === 'database' ? 'btn-primary' : ''; ?>">База данных</a>
+            <a href="?sub=templates" class="btn <?php echo $activeSub === 'templates' ? 'btn-primary' : ''; ?>">Шаблоны печати</a>
         <?php endif; ?>
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
         <?php if (\Medical\Core\Auth::can('logs_view')): ?>
@@ -606,6 +611,43 @@ $allProcedures = $procedureManager->getAll();
                 </button>
             </form>
         </div>
+    </div>
+
+<?php elseif ($activeSub === 'templates' && \Medical\Core\Auth::can('settings_system')):
+    $tm = new \Medical\Core\Managers\TemplateManager();
+    $types = [
+        'schedule' => 'График процедур',
+        'contract' => 'Договор на услуги',
+        'epicrisis' => 'Выписной эпикриз'
+    ];
+    $activeType = $_GET['type'] ?? 'schedule';
+    $templateContent = $tm->getTemplate($activeType);
+?>
+    <div class="card mica-effect">
+        <h2>Настройка шаблонов печати</h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <?php foreach ($types as $type => $label): ?>
+                <a href="?sub=templates&type=<?php echo $type; ?>" class="btn <?php echo $activeType === $type ? 'btn-primary' : ''; ?>">
+                    <?php echo $label; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="save_template">
+            <input type="hidden" name="type" value="<?php echo $activeType; ?>">
+
+            <div class="mb-3">
+                <label class="form-label">HTML Содержимое шаблона</label>
+                <div style="font-size: 0.8rem; color: var(--win-text-secondary); margin-bottom: 10px;">
+                    Доступные теги: <code>{{patient_name}}</code>, <code>{{patient_id}}</code>, <code>{{org_name}}</code>, <code>{{org_address}}</code>, <code>{{date}}</code>, <code>{{content}}</code> (основные данные), <code>{{doctor_name}}</code>
+                </div>
+                <textarea name="content" class="form-control" style="height: 400px; font-family: monospace; font-size: 14px;"><?php echo htmlspecialchars($templateContent); ?></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить шаблон</button>
+        </form>
     </div>
 
 <?php elseif ($activeSub === 'logs'):
