@@ -29,7 +29,11 @@ class LogManager {
         if (($settings['db_driver'] ?? 'json') !== 'mysql') {
             $entry['id'] = uniqid();
         }
-        $this->store->add($entry);
+        try {
+            $this->store->add($entry);
+        } catch (\Throwable $e) {
+            // Silently fail logging to prevent 500 errors on critical paths like login
+        }
     }
 
     public function getAll() {

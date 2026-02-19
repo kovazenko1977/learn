@@ -1454,5 +1454,33 @@
         "role": "admin",
         "action": "Вход в систему",
         "details": ""
+    },
+    {
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 12:37:43"
+    },
+    {
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 12:40:12",
+        "id": "699704acab9ca"
+    },
+    {
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 12:41:49"
     }
 ]

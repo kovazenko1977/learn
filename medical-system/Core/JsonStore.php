@@ -20,7 +20,7 @@ class JsonStore {
                 try {
                     $this->sqlStore = new MySqlStore($filename);
                     return;
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     // Fallback to JSON if MySQL fails
                 }
             }
