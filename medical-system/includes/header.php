@@ -12,6 +12,8 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WES МЕД</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0078d4">
     <style>
         :root {
             --win-font: <?php echo $uiSettings['font_family'] ?? "'Segoe UI Variable Display', 'Segoe UI', sans-serif"; ?>;
@@ -25,6 +27,13 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
         }
     </style>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+    </script>
 </head>
 <body class="mica-effect">
     <div id="global-preloader">
