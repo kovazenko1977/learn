@@ -21,6 +21,7 @@ class Schema {
                 phone VARCHAR(50),
                 card_number VARCHAR(50),
                 residence TEXT,
+                treating_doctor VARCHAR(255),
                 extra_info TEXT,
                 history JSON,
                 comments JSON,

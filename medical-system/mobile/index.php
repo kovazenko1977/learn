@@ -52,6 +52,34 @@ include __DIR__ . '/includes/header.php';
     </div>
 </div>
 
+<?php if ($user['role'] === 'doctor'): ?>
+<div style="padding: 16px;">
+    <h3 style="font-weight: 500; font-size: 18px; margin-bottom: 16px;">Мои пациенты</h3>
+    <?php
+    $patientManager = new \Medical\Core\Managers\PatientManager();
+    $myPatients = array_filter($patientManager->getAll(), function($p) use ($user) {
+        return ($p['treating_doctor'] ?? '') === $user['name'];
+    });
+    if (empty($myPatients)):
+    ?>
+        <p style="color: var(--md-secondary); font-size: 14px;">Прикрепленных пациентов нет</p>
+    <?php else: ?>
+        <?php foreach (array_slice($myPatients, 0, 3) as $p): ?>
+            <div class="md-list-item" style="padding: 12px 0;" onclick="location.href='attendance.php?patient_id=<?php echo $p['id']; ?>'">
+                <div style="flex-grow: 1;">
+                    <div style="font-weight: 500;"><?php echo htmlspecialchars($p['name']); ?></div>
+                    <div style="font-size: 12px; color: var(--md-secondary);">Карта: <?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></div>
+                </div>
+                <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--md-secondary);"></i>
+            </div>
+        <?php endforeach; ?>
+        <?php if (count($myPatients) > 3): ?>
+            <a href="patients.php?doctor=<?php echo urlencode($user['name']); ?>" style="display: block; text-align: center; color: var(--md-primary); font-size: 14px; margin-top: 8px; text-decoration: none;">Показать всех</a>
+        <?php endif; ?>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
 <div style="padding: 16px;">
     <h3 style="font-weight: 500; font-size: 18px; margin-bottom: 16px;">Загрузка кабинетов</h3>
     <?php

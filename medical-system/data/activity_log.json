@@ -1772,5 +1772,75 @@
         "ip": "127.0.0.1",
         "timestamp": "2026-02-19 14:41:09",
         "id": "699721050bd0a"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Регистрация пациента",
+        "details": "{\"name\":\"Test Patient\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 19:57:43",
+        "id": "69976b371c85a"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Удаление пациента",
+        "details": "{\"id\":\"69976b371bd2c\",\"name\":\"Test Patient\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 19:57:43",
+        "id": "69976b371d9fd"
+    },
+    {
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 20:04:04",
+        "id": "69976cb46953e"
+    },
+    {
+        "user_id": "69945d7957b32",
+        "user_name": "Доктор Тест",
+        "role": "doctor",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 20:07:58",
+        "id": "69976d9e5d75f"
+    },
+    {
+        "user_id": "69945d7957b32",
+        "user_name": "Доктор Тест",
+        "role": "doctor",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 20:10:18",
+        "id": "69976e2aacf75"
+    },
+    {
+        "user_id": "69945d7957b32",
+        "user_name": "Доктор Тест",
+        "role": "doctor",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 20:12:26",
+        "id": "69976eaa13dcd"
+    },
+    {
+        "user_id": "doctor_1",
+        "user_name": "Иванов И.И.",
+        "role": "doctor",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 20:15:42",
+        "id": "69976f6ee1328"
     }
 ]

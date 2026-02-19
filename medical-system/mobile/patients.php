@@ -6,7 +6,15 @@ require_once __DIR__ . '/../Core/Autoloader.php';
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $query = $_GET['q'] ?? '';
+$doctorFilter = $_GET['doctor'] ?? '';
+
 $patients = $query ? $patientManager->search($query) : $patientManager->getAll();
+
+if ($doctorFilter) {
+    $patients = array_filter($patients, function($p) use ($doctorFilter) {
+        return ($p['treating_doctor'] ?? '') === $doctorFilter;
+    });
+}
 
 include __DIR__ . '/includes/header.php';
 ?>
@@ -27,6 +35,9 @@ include __DIR__ . '/includes/header.php';
             <div style="flex-grow: 1;">
                 <div style="font-weight: 500; font-size: 16px;"><?php echo htmlspecialchars($p['name']); ?></div>
                 <div style="font-size: 14px; color: var(--md-secondary);"><?php echo date('d.m.Y', strtotime($p['birth_date'])); ?> • Карта: <?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></div>
+                <?php if (!empty($p['treating_doctor'])): ?>
+                    <div style="font-size: 12px; color: var(--md-primary); margin-top: 2px;">Врач: <?php echo htmlspecialchars($p['treating_doctor']); ?></div>
+                <?php endif; ?>
             </div>
             <i data-lucide="chevron-right" style="color: #CAC4D0;"></i>
         </div>

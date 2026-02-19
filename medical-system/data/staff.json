@@ -4,22 +4,39 @@
         "name": "Администратор",
         "role": "admin",
         "specialization": "Система",
-        "access_code": "123456"
+        "access_code": "123456",
+        "permissions": []
     },
     {
-        "id": "69945d7957b32",
-        "name": "Доктор Тест",
+        "id": "doctor_1",
+        "name": "Иванов И.И.",
         "role": "doctor",
-        "specialization": "",
-        "access_code": "999999",
-        "created_at": "2026-02-17 12:22:17"
+        "specialization": "Терапевт",
+        "access_code": "101010",
+        "permissions": ["patients_view", "procedures_assign", "analytics_view"]
     },
     {
-        "id": "69945da16652a",
-        "name": "Доктор Тест",
-        "role": "doctor",
-        "specialization": "",
-        "access_code": "999999",
-        "created_at": "2026-02-17 12:22:57"
+        "id": "nurse_1",
+        "name": "Петрова А.С.",
+        "role": "nurse",
+        "specialization": "Медсестра",
+        "access_code": "303030",
+        "permissions": ["patients_view", "procedures_attend"]
+    },
+    {
+        "id": "cashier_1",
+        "name": "Сидорова О.В.",
+        "role": "cashier",
+        "specialization": "Кассир",
+        "access_code": "202020",
+        "permissions": ["patients_view", "finance_view", "finance_pay"]
+    },
+    {
+        "id": "registrar_1",
+        "name": "Медрегистратор",
+        "role": "registrar",
+        "specialization": "Регистратура",
+        "access_code": "404040",
+        "permissions": ["patients_view", "patients_edit", "procedures_assign"]
     }
 ]

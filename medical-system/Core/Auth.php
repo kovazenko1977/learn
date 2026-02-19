@@ -22,6 +22,7 @@ class Auth {
                     'id' => $user['id'],
                     'role' => $user['role'],
                     'name' => $user['name'],
+                    'specialization' => $user['specialization'] ?? '',
                     'permissions' => $user['permissions'] ?? []
                 ];
                 (new Managers\LogManager())->log('Вход в систему');

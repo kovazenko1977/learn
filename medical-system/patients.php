@@ -9,6 +9,8 @@ if (!\Medical\Core\Auth::can('patients_view')) {
 }
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
+$staffManager = new \Medical\Core\Managers\StaffManager();
+$procedureManager = new \Medical\Core\Managers\ProcedureManager();
 
 if (isset($_GET['ajax'])) {
     $query = $_GET['q'] ?? '';
@@ -27,9 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'phone' => $_POST['phone'],
                 'card_number' => $_POST['card_number'],
                 'residence' => $_POST['residence'] ?? '',
+                'treating_doctor' => $_POST['treating_doctor'] ?? '',
                 'extra_info' => $_POST['extra_info'] ?? ''
             ];
-            $patientManager->add($patientData);
+            $newId = $patientManager->add($patientData);
+            if (isset($_GET['ajax_submit'])) {
+                echo json_encode(['success' => true, 'id' => $newId]);
+                exit;
+            }
         } elseif ($_POST['action'] === 'edit' && \Medical\Core\Auth::can('patients_edit')) {
             $patientManager->update($_POST['id'], [
                 'name' => $_POST['name'],
@@ -37,8 +44,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'phone' => $_POST['phone'],
                 'card_number' => $_POST['card_number'],
                 'residence' => $_POST['residence'] ?? '',
+                'treating_doctor' => $_POST['treating_doctor'] ?? '',
                 'extra_info' => $_POST['extra_info'] ?? ''
             ]);
+            if (isset($_GET['ajax_submit'])) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
         } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::can('patients_delete')) {
             $patientManager->delete($_POST['id']);
         } elseif ($_POST['action'] === 'import' && \Medical\Core\Auth::can('patients_edit') && isset($_FILES['csv_file'])) {
@@ -76,7 +88,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 require_once __DIR__ . '/includes/header.php';
 
 $query = $_GET['q'] ?? '';
+$doctorFilter = $_GET['doctor'] ?? '';
+
 $patients = $query ? $patientManager->search($query) : $patientManager->getAll();
+
+if ($doctorFilter) {
+    $patients = array_filter($patients, function($p) use ($doctorFilter) {
+        return ($p['treating_doctor'] ?? '') === $doctorFilter;
+    });
+}
+$doctors = array_filter($staffManager->getAll(), function($s) {
+    return $s['role'] === 'doctor' || $s['role'] === 'chief';
+});
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -103,8 +126,16 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
 <?php endif; ?>
 
 <div class="card mica-effect">
-    <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
+    <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center;">
         <input type="text" name="q" value="<?php echo htmlspecialchars($query); ?>" placeholder="Поиск по ФИО, телефону или № карты..." style="flex-grow: 1;">
+        <select name="doctor" style="width: 200px;">
+            <option value="">Все врачи</option>
+            <?php foreach ($doctors as $d): ?>
+                <option value="<?php echo htmlspecialchars($d['name']); ?>" <?php echo (isset($_GET['doctor']) && $_GET['doctor'] === $d['name']) ? 'selected' : ''; ?>>
+                    <?php echo htmlspecialchars($d['name']); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
         <button type="submit" class="btn btn-primary">
             <i data-lucide="search" class="icon"></i> Найти
         </button>
@@ -167,7 +198,7 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
 <div id="editModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
     <div class="card mica-effect" style="width: 440px; margin: 80px auto; padding: 32px;">
         <h2 style="margin-bottom: 24px;">Редактировать пациента</h2>
-        <form method="POST">
+        <form id="editPatientForm" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="id" id="edit_id">
@@ -190,6 +221,15 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
             <div style="margin-bottom: 20px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Место жительства</label>
                 <input type="text" name="residence" id="edit_residence" style="width: 100%;">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Лечащий врач</label>
+                <select name="treating_doctor" id="edit_treating_doctor" style="width: 100%;">
+                    <option value="">-- Не назначен --</option>
+                    <?php foreach ($doctors as $d): ?>
+                        <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?> (<?php echo htmlspecialchars($d['specialization']); ?>)</option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div style="margin-bottom: 32px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Дополнительная информация</label>
@@ -228,7 +268,7 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
 <div id="addModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
     <div class="card mica-effect" style="width: 440px; margin: 80px auto; padding: 32px;">
         <h2 style="margin-bottom: 24px;">Новый пациент</h2>
-        <form method="POST">
+        <form id="addPatientForm" method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
             <input type="hidden" name="action" value="add">
             <div style="margin-bottom: 20px;">
@@ -251,6 +291,15 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Место жительства</label>
                 <input type="text" name="residence" style="width: 100%;" placeholder="Город, улица...">
             </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Лечащий врач</label>
+                <select name="treating_doctor" style="width: 100%;">
+                    <option value="">-- Не назначен --</option>
+                    <?php foreach ($doctors as $d): ?>
+                        <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?> (<?php echo htmlspecialchars($d['specialization']); ?>)</option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
             <div style="margin-bottom: 32px;">
                 <label style="display:block; margin-bottom: 8px; font-weight: 500;">Дополнительная информация</label>
                 <textarea name="extra_info" style="width: 100%; height: 100px;"></textarea>
@@ -263,7 +312,124 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
     </div>
 </div>
 
+<!-- Quick Schedule Modal -->
+<div id="quickScheduleModal" style="display:none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);">
+    <div class="card mica-effect" style="width: 440px; margin: 100px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Назначить время приема</h2>
+        <p id="schedulePatientName" style="font-weight: 600; margin-bottom: 20px;"></p>
+        <form id="quickScheduleForm" method="POST" action="procedures_doctor.php">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="assign">
+            <input type="hidden" name="patient_id" id="schedule_patient_id">
+            <input type="hidden" name="procedure_id" id="initial_proc_id">
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Врач</label>
+                <input type="text" name="doctor_name_display" id="schedule_doctor_name" class="form-control" readonly style="background: #f0f0f0; width: 100%;">
+                <input type="hidden" name="doctor" id="schedule_doctor_val">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Дата приема</label>
+                <input type="date" name="date" value="<?php echo date('Y-m-d'); ?>" required style="width: 100%;">
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Время приема</label>
+                <input type="time" name="time" required style="width: 100%;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Кабинет</label>
+                <input type="text" name="cabinet_id" id="schedule_cabinet" required style="width: 100%;">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="location.reload()">Пропустить</button>
+                <button type="submit" class="btn btn-primary">Назначить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function showLoader() {
+        const loader = document.getElementById('global-preloader');
+        if (loader) {
+            loader.classList.remove('hidden');
+            loader.querySelector('.loader-text').innerText = 'Обработка...';
+        }
+    }
+    function hideLoader() {
+        const loader = document.getElementById('global-preloader');
+        if (loader) loader.classList.add('hidden');
+    }
+
+    // Identify the "Initial Appointment" procedure
+    const initialProc = <?php
+        $iproc = array_values(array_filter($procedureManager->getAll(), function($p) {
+            return mb_stripos($p['name'], 'Прием') !== false && mb_stripos($p['name'], 'терапевт') !== false;
+        }))[0] ?? ['id' => '', 'default_cabinet' => ''];
+        echo json_encode($iproc);
+    ?>;
+
+    document.getElementById('addPatientForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        showLoader();
+        const formData = new FormData(this);
+        fetch('patients.php?ajax_submit=1', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                const doctor = formData.get('treating_doctor');
+                if (doctor) {
+                    document.getElementById('addModal').style.display = 'none';
+                    document.getElementById('schedule_patient_id').value = data.id;
+                    document.getElementById('schedulePatientName').innerText = formData.get('name');
+                    document.getElementById('schedule_doctor_name').value = doctor;
+                    document.getElementById('schedule_doctor_val').value = doctor;
+                    document.getElementById('initial_proc_id').value = initialProc.id;
+                    document.getElementById('schedule_cabinet').value = initialProc.default_cabinet || '101';
+                    document.getElementById('quickScheduleModal').style.display = 'block';
+                } else {
+                    location.reload();
+                }
+            } else {
+                alert('Ошибка при сохранении: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(err => {
+            hideLoader();
+            alert('Сетевая ошибка');
+        });
+    });
+
+    document.getElementById('editPatientForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        showLoader();
+        fetch('patients.php?ajax_submit=1', {
+            method: 'POST',
+            body: new FormData(this)
+        })
+        .then(r => r.json())
+        .then(data => {
+            hideLoader();
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Ошибка при обновлении');
+            }
+        })
+        .catch(err => {
+            hideLoader();
+            alert('Сетевая ошибка');
+        });
+    });
+
     function openEditModal(patient) {
         document.getElementById('edit_id').value = patient.id;
         document.getElementById('edit_name').value = patient.name;
@@ -271,6 +437,7 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
         document.getElementById('edit_phone').value = patient.phone || '';
         document.getElementById('edit_card_number').value = patient.card_number || '';
         document.getElementById('edit_residence').value = patient.residence || '';
+        document.getElementById('edit_treating_doctor').value = patient.treating_doctor || '';
         document.getElementById('edit_extra_info').value = patient.extra_info || '';
         document.getElementById('editModal').style.display = 'block';
     }

@@ -100,7 +100,50 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 
 <?php if (!$patient): ?>
     <div class="card mica-effect">
-        <p>Выберите пациента из <a href="patients.php">реестра</a> для назначения процедур.</p>
+        <h2 style="margin-bottom: 20px;">Выберите пациента для назначения процедур</h2>
+        <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
+            <input type="text" name="q" placeholder="Поиск пациента..." style="flex-grow: 1;">
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+
+        <?php
+        $searchQuery = $_GET['q'] ?? '';
+        $displayPatients = [];
+        if ($searchQuery) {
+            $displayPatients = $patientManager->search($searchQuery);
+        } else {
+            // By default, show patients of the current doctor
+            $displayPatients = array_filter($patientManager->getAll(), function($p) use ($currentUser) {
+                return ($p['treating_doctor'] ?? '') === $currentUser['name'];
+            });
+            if (empty($displayPatients)) {
+                $displayPatients = array_slice($patientManager->getAll(), 0, 10);
+            }
+        }
+        ?>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>№ Карты</th>
+                    <th>Врач</th>
+                    <th style="text-align: right;">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($displayPatients as $p): ?>
+                <tr>
+                    <td><strong><?php echo htmlspecialchars($p['name']); ?></strong></td>
+                    <td><code><?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></code></td>
+                    <td><?php echo htmlspecialchars($p['treating_doctor'] ?? 'не назначен'); ?></td>
+                    <td style="text-align: right;">
+                        <a href="?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary">Выбрать</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 <?php else: ?>
     <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">

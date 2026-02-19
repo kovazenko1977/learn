@@ -16,7 +16,7 @@ if (\Medical\Core\Auth::isLoggedIn()) {
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (\Medical\Core\Auth::login($_POST['access_code'])) {
+    if (\Medical\Core\Auth::loginByCode($_POST['access_code'])) {
         header('Location: index.php');
         exit;
     } else {

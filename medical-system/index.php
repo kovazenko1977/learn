@@ -82,6 +82,47 @@ $summary = $analytics->getSummary();
 </style>
 
 <div style="margin-top: 32px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+    <?php if (\Medical\Core\Auth::getUser()['role'] === 'doctor'): ?>
+    <div class="card mica-effect">
+        <h2 style="margin-bottom: 24px;">Мои пациенты</h2>
+        <?php
+        $patientManager = new \Medical\Core\Managers\PatientManager();
+        $myPatients = array_filter($patientManager->getAll(), function($p) {
+            return ($p['treating_doctor'] ?? '') === \Medical\Core\Auth::getUser()['name'];
+        });
+        if (empty($myPatients)):
+        ?>
+            <p style="color: var(--win-text-secondary); text-align: center; padding: 20px;">У вас пока нет прикрепленных пациентов</p>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>№ Карты</th>
+                        <th style="text-align: right;">Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach (array_slice($myPatients, 0, 5) as $p): ?>
+                    <tr>
+                        <td><strong><?php echo htmlspecialchars($p['name']); ?></strong></td>
+                        <td><code><?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></code></td>
+                        <td style="text-align: right;">
+                            <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary">Назначить</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <?php if (count($myPatients) > 5): ?>
+                <div style="margin-top: 15px; text-align: center;">
+                    <a href="patients.php?doctor=<?php echo urlencode(\Medical\Core\Auth::getUser()['name']); ?>" style="color: var(--win-accent); text-decoration: none; font-size: 0.9rem;">Показать всех (<?php echo count($myPatients); ?>)</a>
+                </div>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+
     <div class="card mica-effect">
         <h2 style="margin-bottom: 24px;">Быстрые действия</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
