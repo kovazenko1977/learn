@@ -44,4 +44,16 @@ class LogManager {
         $all = $this->store->getAll();
         return array_slice(array_reverse($all), 0, $limit);
     }
+
+    public function getByDateRange($startDate, $endDate) {
+        $all = $this->getAll();
+        // Since timestamp is Y-m-d H:i:s, we can do string comparison
+        $start = $startDate . ' 00:00:00';
+        $end = $endDate . ' 23:59:59';
+
+        $filtered = array_filter($all, function($entry) use ($start, $end) {
+            return $entry['timestamp'] >= $start && $entry['timestamp'] <= $end;
+        });
+        return array_reverse(array_values($filtered));
+    }
 }

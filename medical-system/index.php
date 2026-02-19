@@ -17,45 +17,69 @@ $summary = $analytics->getSummary();
 <h1>Панель управления</h1>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
-    <div class="card mica-effect">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
-            <div style="background: rgba(0,120,212,0.1); padding: 10px; border-radius: 10px; color: var(--win-accent);">
-                <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+    <a href="patients.php" class="card-link">
+        <div class="card mica-effect drill-down-card">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                <div style="background: rgba(0,120,212,0.1); padding: 10px; border-radius: 10px; color: var(--win-accent);">
+                    <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Пациентов всего</h3>
             </div>
-            <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Пациентов всего</h3>
+            <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['total_patients']; ?></div>
+            <div class="drill-down-hint">Подробнее <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></div>
         </div>
-        <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['total_patients']; ?></div>
-    </div>
-    <div class="card mica-effect">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
-            <div style="background: rgba(0,120,212,0.1); padding: 10px; border-radius: 10px; color: var(--win-accent);">
-                <i data-lucide="clipboard-list" style="width: 24px; height: 24px;"></i>
+    </a>
+    <a href="analytics.php" class="card-link">
+        <div class="card mica-effect drill-down-card">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                <div style="background: rgba(0,120,212,0.1); padding: 10px; border-radius: 10px; color: var(--win-accent);">
+                    <i data-lucide="clipboard-list" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Назначено процедур</h3>
             </div>
-            <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Назначено процедур</h3>
+            <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['total_appointments']; ?></div>
+            <div class="drill-down-hint">Подробнее <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></div>
         </div>
-        <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['total_appointments']; ?></div>
-    </div>
+    </a>
     <?php if (\Medical\Core\Auth::can('finance_view')): ?>
-    <div class="card mica-effect">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
-            <div style="background: rgba(16,124,16,0.1); padding: 10px; border-radius: 10px; color: #107c10;">
-                <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+    <a href="analytics.php" class="card-link">
+        <div class="card mica-effect drill-down-card">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                <div style="background: rgba(16,124,16,0.1); padding: 10px; border-radius: 10px; color: #107c10;">
+                    <i data-lucide="check-circle" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Оказано услуг</h3>
             </div>
-            <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Оказано услуг</h3>
+            <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['attended_count']; ?></div>
+            <div class="drill-down-hint">Подробнее <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></div>
         </div>
-        <div style="font-size: 2.2rem; font-weight: 700;"><?php echo $summary['attended_count']; ?></div>
-    </div>
-    <div class="card mica-effect">
-        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
-            <div style="background: rgba(16,124,16,0.1); padding: 10px; border-radius: 10px; color: #107c10;">
-                <i data-lucide="banknote" style="width: 24px; height: 24px;"></i>
+    </a>
+    <a href="analytics.php" class="card-link">
+        <div class="card mica-effect drill-down-card">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                <div style="background: rgba(16,124,16,0.1); padding: 10px; border-radius: 10px; color: #107c10;">
+                    <i data-lucide="banknote" style="width: 24px; height: 24px;"></i>
+                </div>
+                <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Выручка</h3>
             </div>
-            <h3 style="color: var(--win-text-secondary); font-size: 0.95rem; margin: 0;">Выручка</h3>
+            <div style="font-size: 2.2rem; font-weight: 700; color: #107c10;"><?php echo number_format($summary['total_revenue'], 0, ',', ' '); ?> <span style="font-size: 1.2rem;">₽</span></div>
+            <div class="drill-down-hint">Подробнее <i data-lucide="chevron-right" style="width:14px;height:14px;"></i></div>
         </div>
-        <div style="font-size: 2.2rem; font-weight: 700; color: #107c10;"><?php echo number_format($summary['total_revenue'], 0, ',', ' '); ?> <span style="font-size: 1.2rem;">₽</span></div>
-    </div>
+    </a>
     <?php endif; ?>
 </div>
+
+<style>
+.card-link { text-decoration: none; color: inherit; display: block; }
+.drill-down-card { transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
+.drill-down-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.drill-down-hint {
+    position: absolute; bottom: 0; right: 0; background: rgba(0,120,212,0.1);
+    padding: 4px 12px; font-size: 0.7rem; border-top-left-radius: 8px; color: var(--win-accent);
+    display: flex; align-items: center; gap: 4px; opacity: 0; transition: opacity 0.2s;
+}
+.drill-down-card:hover .drill-down-hint { opacity: 1; }
+</style>
 
 <div style="margin-top: 32px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
     <div class="card mica-effect">

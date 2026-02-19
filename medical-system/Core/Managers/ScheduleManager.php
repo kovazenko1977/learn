@@ -80,6 +80,21 @@ class ScheduleManager {
         return array_values($results);
     }
 
+    public function getByDateRange($startDate, $endDate) {
+        $all = $this->getAll();
+        $results = array_filter($all, function($item) use ($startDate, $endDate) {
+            return isset($item['date']) && $item['date'] >= $startDate && $item['date'] <= $endDate;
+        });
+        // Sort by date and time
+        usort($results, function($a, $b) {
+            if ($a['date'] === $b['date']) {
+                return $a['time'] <=> $b['time'];
+            }
+            return $a['date'] <=> $b['date'];
+        });
+        return array_values($results);
+    }
+
     public function getByDate($date) {
         $all = $this->getAll();
         $results = array_filter($all, function($item) use ($date) {

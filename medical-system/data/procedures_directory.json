@@ -9,7 +9,7 @@
         "prep_time": 0,
         "work_start": "08:00",
         "work_end": "16:00",
-        "id": "6996be53a0f71"
+        "id": "69971fddb52ae"
     },
     {
         "name": "Грязелечение",
@@ -21,7 +21,7 @@
         "prep_time": 10,
         "work_start": "08:00",
         "work_end": "16:00",
-        "id": "6996be53a1de4"
+        "id": "69971fddb6194"
     },
     {
         "name": "Массаж спины",
@@ -33,7 +33,7 @@
         "prep_time": 5,
         "work_start": "09:00",
         "work_end": "18:00",
-        "id": "6996be53a2320"
+        "id": "69971fddb6633"
     },
     {
         "name": "Электрофорез",
@@ -45,7 +45,7 @@
         "prep_time": 5,
         "work_start": "08:00",
         "work_end": "17:00",
-        "id": "6996be53a282b"
+        "id": "69971fddb6add"
     },
     {
         "name": "Ингаляция",
@@ -57,7 +57,7 @@
         "prep_time": 2,
         "work_start": "08:00",
         "work_end": "20:00",
-        "id": "6996be53a2d47"
+        "id": "69971fddb6f49"
     },
     {
         "name": "Подводный душ-массаж",
@@ -69,6 +69,6 @@
         "prep_time": 15,
         "work_start": "10:00",
         "work_end": "15:00",
-        "id": "6996be53a315c"
+        "id": "69971fddb73bc"
     }
 ]

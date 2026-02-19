@@ -8,15 +8,34 @@ if (!\Medical\Core\Auth::can('logs_view')) {
     die("У вас недостаточно прав для просмотра журнала системных событий.");
 }
 
+$startDate = $_GET['start_date'] ?? date('Y-m-d');
+$endDate = $_GET['end_date'] ?? date('Y-m-d');
+
 $logManager = new \Medical\Core\Managers\LogManager();
-$logs = $logManager->getRecent(500);
+$logs = $logManager->getByDateRange($startDate, $endDate);
 
 require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
     <h1>Журнал системных событий</h1>
-    <button class="btn" onclick="window.print()"><i data-lucide="printer" class="icon"></i> Печать</button>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn" onclick="window.print()"><i data-lucide="printer" class="icon"></i> Печать</button>
+    </div>
+</div>
+
+<div class="card mica-effect" style="margin-bottom: 24px;">
+    <form method="GET" style="display: flex; gap: 12px; align-items: flex-end;">
+        <div>
+            <label style="display:block; font-size: 0.8rem; margin-bottom: 4px;">С даты</label>
+            <input type="date" name="start_date" value="<?php echo htmlspecialchars($startDate); ?>">
+        </div>
+        <div>
+            <label style="display:block; font-size: 0.8rem; margin-bottom: 4px;">По дату</label>
+            <input type="date" name="end_date" value="<?php echo htmlspecialchars($endDate); ?>">
+        </div>
+        <button type="submit" class="btn btn-primary">Показать</button>
+    </form>
 </div>
 
 <div class="card mica-effect">

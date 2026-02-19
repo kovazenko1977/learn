@@ -17,16 +17,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$allAppointments = $scheduleManager->getAll();
-// Filter only paid procedures that are not yet paid, or show all for search
+$startDate = $_GET['start_date'] ?? date('Y-m-d');
+$endDate = $_GET['end_date'] ?? date('Y-m-d');
 $query = $_GET['q'] ?? '';
-$appointments = array_filter($allAppointments, function($app) use ($query) {
-    // A procedure is "payable" if status is unpaid or paid
-    if (($app['status'] ?? '') !== 'unpaid' && ($app['status'] ?? '') !== 'paid') return false;
-    if ($query) {
-        return mb_strpos(mb_strtolower($app['patient_name']), mb_strtolower($query)) !== false;
+
+$allAppointments = $scheduleManager->getAll();
+$totalRevenue = 0;
+
+$appointments = array_filter($allAppointments, function($app) use ($query, $startDate, $endDate, &$totalRevenue) {
+    // Date range check
+    $appDate = $app['date'];
+    if ($appDate < $startDate || $appDate > $endDate) return false;
+
+    // Search query check
+    if ($query && mb_strpos(mb_strtolower($app['patient_name']), mb_strtolower($query)) === false) {
+        return false;
     }
-    return $app['status'] === 'unpaid';
+
+    // A procedure is "payable" if status is unpaid or paid
+    $isPayable = (($app['status'] ?? '') === 'unpaid' || ($app['status'] ?? '') === 'paid');
+    if (!$isPayable) return false;
+
+    if ($app['status'] === 'paid') {
+        $totalRevenue += (float)($app['price'] ?? 0);
+    }
+
+    return true;
 });
 
 require_once __DIR__ . '/includes/header.php';
@@ -34,11 +50,28 @@ require_once __DIR__ . '/includes/header.php';
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
     <h1>Касса - Оплата процедур</h1>
+    <?php if (\Medical\Core\Auth::can('finance_view')): ?>
+        <div class="card mica-effect" style="margin: 0; padding: 10px 20px; border-left: 4px solid #107c10;">
+            <div style="font-size: 0.8rem; color: var(--win-text-secondary);">Выручка за период</div>
+            <div style="font-size: 1.2rem; font-weight: 700; color: #107c10;"><?php echo number_format($totalRevenue, 0, ',', ' '); ?> ₽</div>
+        </div>
+    <?php endif; ?>
 </div>
 
 <div class="card mica-effect">
-    <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
-        <input type="text" name="q" value="<?php echo htmlspecialchars($query); ?>" placeholder="Поиск по ФИО пациента..." style="flex-grow: 1;">
+    <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: flex-end;">
+        <div style="flex-grow: 1; min-width: 200px;">
+            <label style="display:block; font-size: 0.8rem; margin-bottom: 4px;">Поиск пациента</label>
+            <input type="text" name="q" value="<?php echo htmlspecialchars($query); ?>" placeholder="ФИО..." style="width: 100%;">
+        </div>
+        <div>
+            <label style="display:block; font-size: 0.8rem; margin-bottom: 4px;">С даты</label>
+            <input type="date" name="start_date" value="<?php echo htmlspecialchars($startDate); ?>">
+        </div>
+        <div>
+            <label style="display:block; font-size: 0.8rem; margin-bottom: 4px;">По дату</label>
+            <input type="date" name="end_date" value="<?php echo htmlspecialchars($endDate); ?>">
+        </div>
         <button type="submit" class="btn btn-primary">
             <i data-lucide="search" class="icon"></i> Найти
         </button>

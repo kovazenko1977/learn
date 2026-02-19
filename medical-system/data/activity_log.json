@@ -1492,5 +1492,285 @@
         "ip": "127.0.0.1",
         "timestamp": "2026-02-19 13:23:56",
         "id": "69970eec83784"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавление процедуры в справочник",
+        "details": "{\"name\":\"Прием врача-терапевта\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb570e"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавление процедуры в справочник",
+        "details": "{\"name\":\"Грязелечение\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb6250"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавление процедуры в справочник",
+        "details": "{\"name\":\"Массаж спины\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb66ee"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавление процедуры в справочник",
+        "details": "{\"name\":\"Электрофорез\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb6b90"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавление процедуры в справочник",
+        "details": "{\"name\":\"Ингаляция\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb6ffb"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавление процедуры в справочник",
+        "details": "{\"name\":\"Подводный душ-массаж\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb748b"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Регистрация пациента",
+        "details": "{\"name\":\"Белов Артем Игоревич\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb7d7b"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Регистрация пациента",
+        "details": "{\"name\":\"Соколова Мария Павловна\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb8210"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Регистрация пациента",
+        "details": "{\"name\":\"Васильев Олег Сергеевич\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb8681"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Регистрация пациента",
+        "details": "{\"name\":\"Морозова Анна Дмитриевна\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb8b28"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Назначение процедуры",
+        "details": "{\"patient\":\"Белов Артем Игоревич\",\"procedure\":\"Грязелечение\",\"date\":\"2026-02-19\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb96b6"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Назначение процедуры",
+        "details": "{\"patient\":\"Белов Артем Игоревич\",\"procedure\":\"Подводный душ-массаж\",\"date\":\"2026-02-19\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddb9c11"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Назначение процедуры",
+        "details": "{\"patient\":\"Белов Артем Игоревич\",\"procedure\":\"Массаж спины\",\"date\":\"2026-02-19\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddba24d"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb7b7b\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddba999"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавлена запись в историю болезни",
+        "details": "{\"patient_id\":\"69971fddb7b7b\",\"diagnosis\":\"I10\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbaeaf"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb7b7b\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbb44d"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Назначение процедуры",
+        "details": "{\"patient\":\"Соколова Мария Павловна\",\"procedure\":\"Электрофорез\",\"date\":\"2026-02-19\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbbbb6"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb815c\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbc178"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавлена запись в историю болезни",
+        "details": "{\"patient_id\":\"69971fddb815c\",\"diagnosis\":\"I10\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbc6c4"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb815c\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbcbf2"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb85d6\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbd17b"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавлена запись в историю болезни",
+        "details": "{\"patient_id\":\"69971fddb85d6\",\"diagnosis\":\"I10\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbd5a8"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb85d6\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbdc5a"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb8a78\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbe280"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Добавлена запись в историю болезни",
+        "details": "{\"patient_id\":\"69971fddb8a78\",\"diagnosis\":\"I10\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbe6c8"
+    },
+    {
+        "user_id": "system",
+        "user_name": "Система",
+        "role": "system",
+        "action": "Обновление данных пациента",
+        "details": "{\"id\":\"69971fddb8a78\"}",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:36:13",
+        "id": "69971fddbee17"
+    },
+    {
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:39:14",
+        "id": "69972092b264c"
+    },
+    {
+        "user_id": "admin_1",
+        "user_name": "Администратор",
+        "role": "admin",
+        "action": "Вход в систему",
+        "details": "",
+        "ip": "127.0.0.1",
+        "timestamp": "2026-02-19 14:41:09",
+        "id": "699721050bd0a"
     }
 ]

@@ -42,7 +42,11 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Войти</button>
         </form>
-
+        <div style="margin-top: 24px; border-top: 1px solid var(--win-border); padding-top: 24px;">
+            <a href="mobile/login.php" style="color: var(--win-accent); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="smartphone" style="width:18px; height:18px;"></i> Перейти в мобильную версию
+            </a>
+        </div>
     </div>
 </div>
 <?php include __DIR__ . '/includes/footer.php'; ?>

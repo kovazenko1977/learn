@@ -19,12 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$date = $_GET['date'] ?? date('Y-m-d');
+$startDate = $_GET['start_date'] ?? date('Y-m-d');
+$endDate = $_GET['end_date'] ?? date('Y-m-d');
 $cabinetInput = $_GET['cabinet'] ?? '';
 
-$allAppointments = $scheduleManager->getByDate($date);
+$allAppointments = $scheduleManager->getByDateRange($startDate, $endDate);
 
-// Filter: nurse only sees procedures for today and her cabinet
+// Filter: nurse only sees procedures for period and her cabinet
 $appointments = array_filter($allAppointments, function($app) use ($cabinetInput) {
     if ($cabinetInput && $app['cabinet_id'] !== $cabinetInput) return false;
     return true;
@@ -44,8 +45,12 @@ require_once __DIR__ . '/includes/header.php';
 <div class="card mica-effect">
     <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">
         <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="font-weight: 500;">Дата:</label>
-            <input type="date" name="date" value="<?php echo htmlspecialchars($date); ?>" style="width: 160px;">
+            <label style="font-weight: 500;">С даты:</label>
+            <input type="date" name="start_date" value="<?php echo htmlspecialchars($startDate); ?>" style="width: 160px;">
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-weight: 500;">По дату:</label>
+            <input type="date" name="end_date" value="<?php echo htmlspecialchars($endDate); ?>" style="width: 160px;">
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-weight: 500;">Кабинет:</label>
@@ -66,7 +71,7 @@ require_once __DIR__ . '/includes/header.php';
     <table>
         <thead>
             <tr>
-                <th>Время</th>
+                <th>Дата/Время</th>
                 <th>Кабинет</th>
                 <th>Пациент</th>
                 <th>Процедура</th>
@@ -77,7 +82,9 @@ require_once __DIR__ . '/includes/header.php';
         <tbody>
             <?php foreach ($appointments as $app): ?>
             <tr style="<?php echo $app['attended'] ? 'opacity: 0.6;' : ''; ?>">
-                <td style="font-weight: 700; color: var(--win-accent);"><?php echo $app['time']; ?></td>
+                <td style="font-weight: 700; color: var(--win-accent);">
+                    <?php echo date('d.m', strtotime($app['date'])); ?> <?php echo $app['time']; ?>
+                </td>
                 <td><span style="font-size: 0.85rem; color: var(--win-text-secondary);"><?php echo htmlspecialchars($app['cabinet_id']); ?></span></td>
                 <td style="font-weight: 600;"><?php echo htmlspecialchars($app['patient_name']); ?></td>
                 <td><?php echo htmlspecialchars($app['procedure_name']); ?></td>
