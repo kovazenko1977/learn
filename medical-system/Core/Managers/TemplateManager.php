@@ -28,6 +28,46 @@ class TemplateManager {
         return $this->store->save($all);
     }
 
+    public function render($id, $data = []) {
+        $template = $this->get($id);
+        if (!$template) return "Template $id not found.";
+
+        $settings = [];
+        $settingsPath = __DIR__ . '/../../data/settings.json';
+        if (file_exists($settingsPath)) {
+            $settings = json_decode(file_get_contents($settingsPath), true) ?? [];
+        }
+
+        $replacements = array_merge([
+            'org_name' => $settings['org_name'] ?? 'Медицинский центр',
+            'org_city' => $settings['org_city'] ?? 'г. Минск',
+            'org_address' => $settings['org_address'] ?? '-',
+            'org_unp' => $settings['org_unp'] ?? '-',
+            'org_bank' => $settings['org_bank'] ?? '-',
+            'org_account' => $settings['org_account'] ?? '-',
+            'org_director' => $settings['org_director'] ?? '-',
+            'print_date' => date('d.m.Y'),
+            'day' => date('d'),
+            'month' => $this->getRussianMonth(date('n')),
+            'year' => date('Y'),
+        ], $data);
+
+        foreach ($replacements as $key => $val) {
+            $template = str_replace('{{' . $key . '}}', (string)$val, $template);
+        }
+
+        return $template;
+    }
+
+    private function getRussianMonth($n) {
+        $months = [
+            1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
+            5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
+            9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря'
+        ];
+        return $months[$n] ?? '';
+    }
+
     private function initDefaults() {
         $defaults = [
             'schedule' => '<!DOCTYPE html>

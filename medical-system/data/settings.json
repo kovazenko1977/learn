@@ -2,5 +2,10 @@
     "font_family": "'Segoe UI', sans-serif",
     "font_size": 16,
     "accent_color": "#ff0000",
-    "border_radius": 8
+    "border_radius": 8,
+    "db_driver": "mysql",
+    "db_host": "localhost",
+    "db_name": "dummy",
+    "db_user": "",
+    "db_pass": ""
 }

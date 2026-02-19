@@ -15,13 +15,20 @@ class LogManager {
     public function log($action, $details = '') {
         $user = Auth::getUser();
         $entry = [
-            'id' => uniqid(),
-            'timestamp' => date('d-m-Y H:i:s'),
-            'user' => $user['name'] ?? 'Система',
+            'user_id' => $user['id'] ?? 'system',
+            'user_name' => $user['name'] ?? 'Система',
             'role' => $user['role'] ?? 'system',
             'action' => $action,
-            'details' => is_array($details) ? json_encode($details, JSON_UNESCAPED_UNICODE) : $details
+            'details' => is_array($details) ? json_encode($details, JSON_UNESCAPED_UNICODE) : $details,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'timestamp' => date('Y-m-d H:i:s')
         ];
+        // Add ID only for JSON store to keep it consistent
+        $settingsStore = new JsonStore('settings');
+        $settings = $settingsStore->getAll();
+        if (($settings['db_driver'] ?? 'json') !== 'mysql') {
+            $entry['id'] = uniqid();
+        }
         $this->store->add($entry);
     }
 

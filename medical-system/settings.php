@@ -136,15 +136,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'save_db_settings') {
         $settingsStore = new \Medical\Core\JsonStore('settings');
         $existing = $settingsStore->getAll();
+        $oldDriver = $existing['db_driver'] ?? 'json';
+        $newDriver = $_POST['db_driver'];
+
         $dbSettings = array_merge($existing, [
-            'db_driver' => $_POST['db_driver'],
+            'db_driver' => $newDriver,
             'db_host' => $_POST['db_host'],
             'db_name' => $_POST['db_name'],
             'db_user' => $_POST['db_user'],
             'db_pass' => $_POST['db_pass']
         ]);
         $settingsStore->save($dbSettings);
-        $message = 'Настройки базы данных сохранены. ' . ($_POST['db_driver'] === 'mysql' ? 'Переключено на MySQL.' : 'Используется JSON.');
+
+        $message = 'Настройки базы данных сохранены. ' . ($newDriver === 'mysql' ? 'Переключено на MySQL.' : 'Используется JSON.');
+
+        if (isset($_POST['migrate_data']) && $oldDriver !== $newDriver) {
+            try {
+                $migrator = new \Medical\Core\Managers\MigrationManager();
+                if ($migrator->migrate($oldDriver, $newDriver)) {
+                    $message .= ' Все данные успешно перенесены в новый формат.';
+                    (new \Medical\Core\Managers\LogManager())->log('Миграция данных', ['from' => $oldDriver, 'to' => $newDriver]);
+                }
+            } catch (\Exception $e) {
+                $message .= ' Ошибка миграции: ' . $e->getMessage();
+            }
+        }
     } elseif ($action === 'save_template') {
         $tm = new \Medical\Core\Managers\TemplateManager();
         $tm->saveTemplate($_POST['type'], $_POST['content']);
@@ -165,6 +181,25 @@ require_once __DIR__ . '/includes/header.php';
 $activeSub = $_GET['sub'] ?? 'procedures';
 $allStaff = $staffManager->getAll();
 $allProcedures = $procedureManager->getAll();
+
+$permissions = [
+    'patients_view' => 'Просмотр реестра пациентов',
+    'patients_edit' => 'Добавление/Редактирование пациентов',
+    'patients_delete' => 'Удаление пациентов',
+    'history_view' => 'Просмотр истории болезни',
+    'history_add' => 'Записи в историю болезни',
+    'lab_view' => 'Просмотр результатов анализов',
+    'lab_upload' => 'Загрузка результатов анализов',
+    'procedures_assign' => 'Назначение процедур',
+    'procedures_nurse' => 'Отметка о выполнении (Медсестра)',
+    'finance_view' => 'Просмотр финансовых данных (Выручка)',
+    'finance_pay' => 'Прием оплаты (Кассир)',
+    'analytics_view' => 'Доступ к аналитике',
+    'logs_view' => 'Просмотр журнала событий',
+    'settings_staff' => 'Управление персоналом',
+    'settings_procs' => 'Управление справочником процедур',
+    'settings_system' => 'Системные настройки и БД'
+];
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -346,26 +381,7 @@ $allProcedures = $procedureManager->getAll();
             <div style="margin-bottom: 20px;">
                 <label style="font-weight: 600; display: block; margin-bottom: 10px;">Индивидуальные права доступа:</label>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; padding: 15px; background: rgba(0,0,0,0.02); border-radius: 8px;">
-                    <?php
-                    $permissions = [
-                        'patients_view' => 'Просмотр реестра пациентов',
-                        'patients_edit' => 'Добавление/Редактирование пациентов',
-                        'patients_delete' => 'Удаление пациентов',
-                        'history_view' => 'Просмотр истории болезни',
-                        'history_add' => 'Записи в историю болезни',
-                        'lab_view' => 'Просмотр результатов анализов',
-                        'lab_upload' => 'Загрузка результатов анализов',
-                        'procedures_assign' => 'Назначение процедур',
-                        'procedures_nurse' => 'Отметка о выполнении (Медсестра)',
-                        'finance_view' => 'Просмотр финансовых данных (Выручка)',
-                        'finance_pay' => 'Прием оплаты (Кассир)',
-                        'analytics_view' => 'Доступ к аналитике',
-                        'logs_view' => 'Просмотр журнала событий',
-                        'settings_staff' => 'Управление персоналом',
-                        'settings_procs' => 'Управление справочником процедур',
-                        'settings_system' => 'Системные настройки и БД'
-                    ];
-                    foreach ($permissions as $key => $label): ?>
+                    <?php foreach ($permissions as $key => $label): ?>
                         <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
                             <input type="checkbox" name="perms[]" value="<?php echo $key; ?>" class="perm-add-<?php echo $key; ?>"> <?php echo $label; ?>
                         </label>
@@ -520,6 +536,16 @@ $allProcedures = $procedureManager->getAll();
                     <label class="form-label">Пароль</label>
                     <input type="password" name="db_pass" class="form-control" value="<?php echo htmlspecialchars($db['db_pass'] ?? ''); ?>">
                 </div>
+            </div>
+
+            <div class="mb-4" style="background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #fbd38d;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: #856404; font-weight: 500;">
+                    <input type="checkbox" name="migrate_data" value="1">
+                    Перенести все данные из текущей БД в новую (Миграция)
+                </label>
+                <p style="margin: 5px 0 0 25px; font-size: 0.85rem; color: #856404;">
+                    Внимание: Данные в целевой базе будут перезаписаны! Рекомендуется сделать резервную копию перед миграцией.
+                </p>
             </div>
 
             <button type="submit" class="btn btn-primary">Сохранить настройки</button>

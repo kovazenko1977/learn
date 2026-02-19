@@ -35,7 +35,7 @@ require_once __DIR__ . '/includes/header.php';
                 <td style="white-space: nowrap; color: var(--win-text-secondary);"><?php echo $log['timestamp']; ?></td>
                 <td>
                     <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600;"><?php echo htmlspecialchars($log['user']); ?></span>
+                        <span style="font-weight: 600;"><?php echo htmlspecialchars($log['user_name'] ?? $log['user'] ?? 'Система'); ?></span>
                         <span style="font-size: 0.7rem; color: var(--win-text-secondary);"><?php echo htmlspecialchars($log['role']); ?></span>
                     </div>
                 </td>
