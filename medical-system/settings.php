@@ -131,6 +131,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = 'Ошибка: неверный пароль для сброса данных';
         }
+    } elseif ($action === 'save_db_settings') {
+        $settingsStore = new \Medical\Core\JsonStore('settings');
+        $existing = $settingsStore->getAll();
+        $dbSettings = array_merge($existing, [
+            'db_driver' => $_POST['db_driver'],
+            'db_host' => $_POST['db_host'],
+            'db_name' => $_POST['db_name'],
+            'db_user' => $_POST['db_user'],
+            'db_pass' => $_POST['db_pass']
+        ]);
+        $settingsStore->save($dbSettings);
+        $message = 'Настройки базы данных сохранены. ' . ($_POST['db_driver'] === 'mysql' ? 'Переключено на MySQL.' : 'Используется JSON.');
+    } elseif ($action === 'init_mysql') {
+        try {
+            if (\Medical\Core\DB::initTables()) {
+                $message = 'Таблицы MySQL успешно созданы/проверены.';
+            }
+        } catch (\Exception $e) {
+            $message = 'Ошибка инициализации MySQL: ' . $e->getMessage();
+        }
     }
 }
 
@@ -149,6 +169,7 @@ $allProcedures = $procedureManager->getAll();
             <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
         <?php endif; ?>
         <a href="?sub=details" class="btn <?php echo $activeSub === 'details' ? 'btn-primary' : ''; ?>">Реквизиты</a>
+        <a href="?sub=database" class="btn <?php echo $activeSub === 'database' ? 'btn-primary' : ''; ?>">База данных</a>
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
         <?php if (\Medical\Core\Auth::hasRole('chief')): ?>
             <a href="?sub=logs" class="btn <?php echo $activeSub === 'logs' ? 'btn-primary' : ''; ?>">Логи</a>
@@ -390,6 +411,83 @@ $allProcedures = $procedureManager->getAll();
             <button type="submit" class="btn btn-primary">Сохранить реквизиты</button>
         </form>
     </div>
+
+<?php elseif ($activeSub === 'database'):
+    $db = (new \Medical\Core\JsonStore('settings'))->getAll();
+    $missingTables = [];
+    $dbError = null;
+    if (($db['db_driver'] ?? 'json') === 'mysql') {
+        $res = \Medical\Core\DB::checkTables();
+        if (isset($res['error'])) {
+            $dbError = $res['error'];
+        } else {
+            $missingTables = $res;
+        }
+    }
+?>
+    <div class="card mica-effect">
+        <h2>Настройки базы данных</h2>
+        <p style="color: var(--win-text-secondary); margin-bottom: 20px;">
+            Вы можете использовать локальные JSON файлы (по умолчанию) или подключить внешнюю базу данных MySQL для повышения производительности.
+        </p>
+
+        <?php if ($dbError): ?>
+            <div style="background: #fde7e9; color: #d13438; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #d13438;">
+                <strong>Ошибка подключения:</strong> <?php echo htmlspecialchars($dbError); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($missingTables)): ?>
+            <div style="background: #fff8e1; color: #b7791f; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fbd38d;">
+                <strong>Внимание:</strong> В базе данных MySQL отсутствуют необходимые таблицы (<?php echo implode(', ', $missingTables); ?>).
+                <form method="POST" style="margin-top: 10px;">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="init_mysql">
+                    <button type="submit" class="btn btn-primary btn-sm">Создать таблицы</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" style="max-width: 500px;">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="save_db_settings">
+
+            <div class="mb-3">
+                <label class="form-label">Тип хранилища (Driver)</label>
+                <select name="db_driver" class="form-control">
+                    <option value="json" <?php echo ($db['db_driver'] ?? 'json') === 'json' ? 'selected' : ''; ?>>JSON Файлы (Локально)</option>
+                    <option value="mysql" <?php echo ($db['db_driver'] ?? 'json') === 'mysql' ? 'selected' : ''; ?>>MySQL Server</option>
+                </select>
+            </div>
+
+            <div id="mysql_fields" style="display: <?php echo ($db['db_driver'] ?? 'json') === 'mysql' ? 'block' : 'none'; ?>; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <div class="mb-3">
+                    <label class="form-label">Host</label>
+                    <input type="text" name="db_host" class="form-control" value="<?php echo htmlspecialchars($db['db_host'] ?? 'localhost'); ?>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Имя базы данных (Database Name)</label>
+                    <input type="text" name="db_name" class="form-control" value="<?php echo htmlspecialchars($db['db_name'] ?? ''); ?>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пользователь</label>
+                    <input type="text" name="db_user" class="form-control" value="<?php echo htmlspecialchars($db['db_user'] ?? ''); ?>">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="db_pass" class="form-control" value="<?php echo htmlspecialchars($db['db_pass'] ?? ''); ?>">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить настройки</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelector('select[name="db_driver"]').addEventListener('change', function() {
+            document.getElementById('mysql_fields').style.display = this.value === 'mysql' ? 'block' : 'none';
+        });
+    </script>
 
 <?php elseif ($activeSub === 'appearance'):
     $ui = (new \Medical\Core\JsonStore('settings'))->getAll();
