@@ -123,7 +123,7 @@ class ScheduleManager {
         $last = strtotime($endDate);
 
         while ($current <= $last) {
-            $dateStr = date('d-m-Y', $current);
+            $dateStr = date('Y-m-d', $current);
             $instanceData = $data;
             $instanceData['date'] = $dateStr;
 

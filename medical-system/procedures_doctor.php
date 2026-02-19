@@ -45,13 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             'doctor' => \Medical\Core\Auth::getUser()['name']
         ];
 
-        // Normalize dates from Y-m-d (input) to d-m-Y (storage)
-        $startDate = date('d-m-Y', strtotime($_POST['date']));
+        // Storage uses Y-m-d (ISO 8601) for consistency and sorting
+        $startDate = $_POST['date'];
         $assignment['date'] = $startDate;
 
         $isBulk = !empty($_POST['end_date']);
         if ($isBulk) {
-            $endDate = date('d-m-Y', strtotime($_POST['end_date']));
+            $endDate = $_POST['end_date'];
             $result = $scheduleManager->bulkAssign($assignment, $startDate, $endDate, $_POST['frequency'] ?? 'daily');
 
             $errors = [];
@@ -250,11 +250,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
         let date = dateInput.value; // Y-m-d
         if (!cabinet || !date) return;
 
-        // Convert Y-m-d to d-m-Y for backend
-        const [y, m, d] = date.split('-');
-        const formattedDate = `${d}-${m}-${y}`;
-
-        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${formattedDate}`)
+        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}`)
             .then(r => r.json())
             .then(slots => {
                 busySlotsContainer.innerHTML = '';

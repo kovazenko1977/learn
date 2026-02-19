@@ -11,8 +11,7 @@ if (!\Medical\Core\Auth::can('procedures_assign') && !\Medical\Core\Auth::can('p
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $procedureManager = new \Medical\Core\Managers\ProcedureManager();
 
-$dateInput = $_GET['date'] ?? date('Y-m-d');
-$date = date('d-m-Y', strtotime($dateInput));
+$date = $_GET['date'] ?? date('Y-m-d');
 
 $allAppointments = $scheduleManager->getByDate($date);
 $cabinets = array_unique(array_column($allAppointments, 'cabinet_id'));
@@ -32,7 +31,7 @@ require_once __DIR__ . '/includes/header.php';
     <h1>Карта загрузки кабинетов</h1>
     <form method="GET" style="display: flex; gap: 12px; align-items: center;">
         <label>Дата:</label>
-        <input type="date" name="date" value="<?php echo date('Y-m-d', strtotime($date)); ?>" onchange="this.form.submit()">
+        <input type="date" name="date" value="<?php echo htmlspecialchars($date); ?>" onchange="this.form.submit()">
         <button type="submit" class="btn btn-primary">Показать</button>
     </form>
 </div>

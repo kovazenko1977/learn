@@ -15,7 +15,7 @@ class MigrationManager {
     public function migrate($fromDriver, $toDriver) {
         if ($fromDriver === $toDriver) return true;
 
-        $tables = ['staff', 'procedures', 'patients', 'appointments', 'lab_results', 'logs', 'templates'];
+        $tables = ['staff', 'procedures_directory', 'patients', 'appointments', 'activity_log', 'templates'];
 
         foreach ($tables as $table) {
             $sourceData = $this->getData($table, $fromDriver);
@@ -66,7 +66,7 @@ class MigrationManager {
     private function saveToTarget($table, $driver, $data) {
         if ($driver === 'mysql') {
             $store = new MySqlStore($table);
-            if ($table === 'settings') {
+            if ($table === 'settings' || $table === 'templates') {
                 $store->save($data);
             } else {
                 foreach ($data as $item) {

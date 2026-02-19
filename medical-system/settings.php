@@ -99,6 +99,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'delete_procedure') {
         $procedureManager->delete($_POST['id']);
         $message = 'Процедура удалена';
+    } elseif ($action === 'import_procedures' && \Medical\Core\Auth::can('settings_procs') && isset($_FILES['csv_file'])) {
+        $file = $_FILES['csv_file']['tmp_name'];
+        if (($handle = fopen($file, "r")) !== FALSE) {
+            $bom = fread($handle, 3);
+            if ($bom != "\xEF\xBB\xBF") rewind($handle);
+            $headers = fgetcsv($handle, 1000, ",");
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                if (count($data) < 2) continue;
+                // Expected order from export: ID, Name, Duration, Prep, Price, IsPaid, Cabinet
+                $pData = [
+                    'name' => $data[1] ?? '',
+                    'duration' => (int)($data[2] ?? 20),
+                    'prep_time' => (int)($data[3] ?? 5),
+                    'price' => (float)($data[4] ?? 0),
+                    'is_paid' => ($data[5] ?? '1') === '1',
+                    'default_cabinet' => $data[6] ?? '',
+                    'work_start' => '08:00',
+                    'work_end' => '17:00'
+                ];
+                if (!empty($pData['name'])) {
+                    $procedureManager->add($pData);
+                }
+            }
+            fclose($handle);
+            $message = 'Справочник процедур обновлен из файла';
+        }
     } elseif ($action === 'backup_system') {
         $backupManager = new \Medical\Core\Managers\BackupManager();
         $file = $backupManager->createBackup();
@@ -163,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif ($action === 'save_template') {
         $tm = new \Medical\Core\Managers\TemplateManager();
-        $tm->saveTemplate($_POST['type'], $_POST['content']);
+        $tm->save($_POST['type'], $_POST['content']);
         $message = 'Шаблон "' . $_POST['type'] . '" сохранен';
     } elseif ($action === 'init_mysql') {
         try {
@@ -290,7 +316,17 @@ $permissions = [
     </div>
 
     <div class="card mica-effect">
-        <h2>Список процедур</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Список процедур</h2>
+            <div style="display: flex; gap: 10px;">
+                <a href="export.php?action=export_procedures" class="btn btn-sm">
+                    <i data-lucide="download" class="icon"></i> Экспорт
+                </a>
+                <button class="btn btn-sm" onclick="document.getElementById('importProcsModal').style.display='block'">
+                    <i data-lucide="upload" class="icon"></i> Импорт
+                </button>
+            </div>
+        </div>
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr style="border-bottom: 1px solid var(--win-border); text-align: left;">
@@ -647,7 +683,7 @@ $permissions = [
         'epicrisis' => 'Выписной эпикриз'
     ];
     $activeType = $_GET['type'] ?? 'schedule';
-    $templateContent = $tm->getTemplate($activeType);
+    $templateContent = $tm->get($activeType);
 ?>
     <div class="card mica-effect">
         <h2>Настройка шаблонов печати</h2>
@@ -770,6 +806,27 @@ $permissions = [
             <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
                 <button type="button" class="btn" onclick="document.getElementById('editProcModal').style.display='none'">Отмена</button>
                 <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Import Procedures Modal -->
+<div id="importProcsModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 440px; margin: 80px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Импорт справочника процедур</h2>
+        <p style="font-size: 0.9rem; color: var(--win-text-secondary); margin-bottom: 20px;">
+            Выберите CSV файл для импорта. Формат должен соответствовать файлу экспорта (ID, Название, Длительность, Подготовка, Цена, Платная, Кабинет).
+        </p>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="import_procedures">
+            <div style="margin-bottom: 32px;">
+                <input type="file" name="csv_file" accept=".csv" required style="width: 100%;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('importProcsModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Загрузить</button>
             </div>
         </form>
     </div>

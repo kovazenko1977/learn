@@ -20,6 +20,15 @@ class MySqlStore {
             return $result;
         }
 
+        if ($this->tableName === 'templates') {
+            $stmt = $this->pdo->query("SELECT id, content FROM templates");
+            $result = [];
+            while ($row = $stmt->fetch()) {
+                $result[$row['id']] = $row['content'];
+            }
+            return $result;
+        }
+
         $stmt = $this->pdo->query("SELECT * FROM " . $this->tableName);
         $data = $stmt->fetchAll();
         foreach ($data as &$row) {
@@ -38,6 +47,14 @@ class MySqlStore {
                 $stmt = $this->pdo->prepare("INSERT INTO settings (name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = ?");
                 $jsonVal = json_encode($val, JSON_UNESCAPED_UNICODE);
                 $stmt->execute([$name, $jsonVal, $jsonVal]);
+            }
+            return true;
+        }
+
+        if ($this->tableName === 'templates') {
+            foreach ($data as $id => $content) {
+                $stmt = $this->pdo->prepare("INSERT INTO templates (id, content) VALUES (?, ?) ON DUPLICATE KEY UPDATE content = ?");
+                $stmt->execute([$id, $content, $content]);
             }
             return true;
         }

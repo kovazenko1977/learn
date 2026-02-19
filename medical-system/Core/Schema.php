@@ -70,6 +70,12 @@ class Schema {
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
+            'templates' => "CREATE TABLE IF NOT EXISTS templates (
+                id VARCHAR(50) PRIMARY KEY,
+                content MEDIUMTEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
             'settings' => "CREATE TABLE IF NOT EXISTS settings (
                 name VARCHAR(255) PRIMARY KEY,
                 value JSON

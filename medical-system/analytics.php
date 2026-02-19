@@ -13,8 +13,8 @@ if (!\Medical\Core\Auth::can('analytics_view')) {
 $analytics = new \Medical\Core\Managers\AnalyticsManager();
 $patientManager = new \Medical\Core\Managers\PatientManager();
 
-$startDate = $_GET['start_date'] ?? date('d-m-Y', strtotime('-1 month'));
-$endDate = $_GET['end_date'] ?? date('d-m-Y');
+$startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-1 month'));
+$endDate = $_GET['end_date'] ?? date('Y-m-d');
 
 // AJAX Handlers MUST be before any HTML output
 if (isset($_GET['ajax_cabinet'])) {
@@ -198,11 +198,11 @@ require_once __DIR__ . '/includes/header.php';
     <form method="GET" style="display: flex; gap: 20px; align-items: flex-end;">
         <div>
             <label style="display:block; margin-bottom: 8px;">Начало периода</label>
-            <input type="date" name="start_date" value="<?php echo date('Y-m-d', strtotime($startDate)); ?>">
+            <input type="date" name="start_date" value="<?php echo htmlspecialchars($startDate); ?>">
         </div>
         <div>
             <label style="display:block; margin-bottom: 8px;">Конец периода</label>
-            <input type="date" name="end_date" value="<?php echo date('Y-m-d', strtotime($endDate)); ?>">
+            <input type="date" name="end_date" value="<?php echo htmlspecialchars($endDate); ?>">
         </div>
         <button type="submit" class="btn btn-primary">
             <i data-lucide="refresh-cw" class="icon"></i> Применить фильтр

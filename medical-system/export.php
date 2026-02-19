@@ -117,4 +117,44 @@ if ($action === 'print_schedule') {
         ]);
     }
     fclose($output);
+} elseif ($action === 'export_patients') {
+    $patientManager = new \Medical\Core\Managers\PatientManager();
+    $patients = $patientManager->getAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="patients_'.date('Y-m-d').'.csv"');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fputcsv($output, ['ID', 'ФИО', 'Дата рождения', 'Телефон', 'Номер карты', 'Адрес', 'Доп. инфо']);
+    foreach ($patients as $p) {
+        fputcsv($output, [
+            $p['id'],
+            $p['name'],
+            $p['birth_date'] ?? '',
+            $p['phone'] ?? '',
+            $p['card_number'] ?? '',
+            $p['residence'] ?? '',
+            $p['extra_info'] ?? ''
+        ]);
+    }
+    fclose($output);
+} elseif ($action === 'export_procedures') {
+    $procStore = new \Medical\Core\JsonStore('procedures_directory');
+    $procs = $procStore->getAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="procedures_'.date('Y-m-d').'.csv"');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fputcsv($output, ['ID', 'Наименование', 'Длительность (мин)', 'Подготовка (мин)', 'Цена', 'Платная (1/0)', 'Кабинет по умолчанию']);
+    foreach ($procs as $p) {
+        fputcsv($output, [
+            $p['id'],
+            $p['name'],
+            $p['duration'] ?? '',
+            $p['prep_time'] ?? '',
+            $p['price'] ?? '',
+            $p['is_paid'] ?? '0',
+            $p['default_cabinet'] ?? ''
+        ]);
+    }
+    fclose($output);
 }

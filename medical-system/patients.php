@@ -41,6 +41,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             ]);
         } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::can('patients_delete')) {
             $patientManager->delete($_POST['id']);
+        } elseif ($_POST['action'] === 'import' && \Medical\Core\Auth::can('patients_edit') && isset($_FILES['csv_file'])) {
+            $file = $_FILES['csv_file']['tmp_name'];
+            if (($handle = fopen($file, "r")) !== FALSE) {
+                // Skip BOM if present
+                $bom = fread($handle, 3);
+                if ($bom != "\xEF\xBB\xBF") rewind($handle);
+
+                $headers = fgetcsv($handle, 1000, ",");
+                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                    if (count($data) < 2) continue;
+                    // Map CSV columns to patient data
+                    // Expected order from export: ID, Name, BirthDate, Phone, CardNumber, Residence, ExtraInfo
+                    $pData = [
+                        'name' => $data[1] ?? '',
+                        'birth_date' => $data[2] ?? '',
+                        'phone' => $data[3] ?? '',
+                        'card_number' => $data[4] ?? '',
+                        'residence' => $data[5] ?? '',
+                        'extra_info' => $data[6] ?? ''
+                    ];
+                    if (!empty($pData['name'])) {
+                        $patientManager->add($pData);
+                    }
+                }
+                fclose($handle);
+                header('Location: patients.php?import_success=1');
+                exit;
+            }
         }
     }
 }
@@ -53,12 +81,26 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
     <h1>Реестр пациентов</h1>
-    <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
-        <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='block'">
-            <i data-lucide="user-plus" class="icon"></i> Добавить пациента
-        </button>
-    <?php endif; ?>
+    <div style="display: flex; gap: 10px;">
+        <a href="export.php?action=export_patients" class="btn">
+            <i data-lucide="download" class="icon"></i> Экспорт
+        </a>
+        <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
+            <button class="btn" onclick="document.getElementById('importModal').style.display='block'">
+                <i data-lucide="upload" class="icon"></i> Импорт
+            </button>
+            <button class="btn btn-primary" onclick="document.getElementById('addModal').style.display='block'">
+                <i data-lucide="user-plus" class="icon"></i> Добавить пациента
+            </button>
+        <?php endif; ?>
+    </div>
 </div>
+
+<?php if (isset($_GET['import_success'])): ?>
+    <div style="background: #dff6dd; color: #107c10; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #107c10;">
+        Данные пациентов успешно импортированы.
+    </div>
+<?php endif; ?>
 
 <div class="card mica-effect">
     <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
@@ -156,6 +198,27 @@ $patients = $query ? $patientManager->search($query) : $patientManager->getAll()
             <div style="display: flex; justify-content: flex-end; gap: 12px;">
                 <button type="button" class="btn" onclick="document.getElementById('editModal').style.display='none'">Отмена</button>
                 <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div id="importModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 440px; margin: 80px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Импорт пациентов</h2>
+        <p style="font-size: 0.9rem; color: var(--win-text-secondary); margin-bottom: 20px;">
+            Выберите CSV файл для импорта. Формат должен соответствовать файлу экспорта (ID, ФИО, Дата рождения, Телефон, № карты, Адрес, Доп. инфо).
+        </p>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="import">
+            <div style="margin-bottom: 32px;">
+                <input type="file" name="csv_file" accept=".csv" required style="width: 100%;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('importModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Загрузить</button>
             </div>
         </form>
     </div>

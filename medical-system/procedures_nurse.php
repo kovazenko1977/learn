@@ -19,11 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$dateInput = $_GET['date'] ?? date('Y-m-d');
+$date = $_GET['date'] ?? date('Y-m-d');
 $cabinetInput = $_GET['cabinet'] ?? '';
-
-// Normalize date to DD-MM-YYYY for storage lookup
-$date = date('d-m-Y', strtotime($dateInput));
 
 $allAppointments = $scheduleManager->getByDate($date);
 
@@ -48,7 +45,7 @@ require_once __DIR__ . '/includes/header.php';
     <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">
         <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-weight: 500;">Дата:</label>
-            <input type="date" name="date" value="<?php echo date('Y-m-d', strtotime($date)); ?>" style="width: 160px;">
+            <input type="date" name="date" value="<?php echo htmlspecialchars($date); ?>" style="width: 160px;">
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
             <label style="font-weight: 500;">Кабинет:</label>
