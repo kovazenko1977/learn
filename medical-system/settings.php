@@ -159,6 +159,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $message = 'Ошибка: неверный пароль для сброса данных';
         }
+    } elseif ($action === 'save_system_settings') {
+        $settingsStore = new \Medical\Core\JsonStore('settings');
+        $existing = $settingsStore->getAll();
+        $settingsStore->save(array_merge($existing, [
+            'is_logging_enabled' => isset($_POST['is_logging_enabled'])
+        ]));
+        $message = 'Системные настройки сохранены';
     } elseif ($action === 'save_db_settings') {
         $settingsStore = new \Medical\Core\JsonStore('settings');
         $existing = $settingsStore->getAll();
@@ -624,6 +631,24 @@ $permissions = [
         </form>
     </div>
 <?php elseif ($activeSub === 'maintenance' && \Medical\Core\Auth::isAdmin()): ?>
+    <div class="card mica-effect mb-4">
+        <h2>Общие настройки системы</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="save_system_settings">
+
+            <?php $sys = (new \Medical\Core\JsonStore('settings'))->getAll(); ?>
+            <div class="mb-3">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" name="is_logging_enabled" <?php echo (!isset($sys['is_logging_enabled']) || $sys['is_logging_enabled']) ? 'checked' : ''; ?>>
+                    Включить журнал активности (логирование действий пользователей)
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить настройки</button>
+        </form>
+    </div>
+
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <div class="card mica-effect">
             <h2>Резервное копирование</h2>

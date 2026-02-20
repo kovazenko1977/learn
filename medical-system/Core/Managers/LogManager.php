@@ -13,6 +13,14 @@ class LogManager {
     }
 
     public function log($action, $details = '') {
+        $settingsStore = new JsonStore('settings');
+        $settings = $settingsStore->getAll();
+
+        // Check if logging is enabled (default is true for safety)
+        if (isset($settings['is_logging_enabled']) && !$settings['is_logging_enabled']) {
+            return;
+        }
+
         $user = Auth::getUser();
         $entry = [
             'user_id' => $user['id'] ?? 'system',
@@ -24,8 +32,6 @@ class LogManager {
             'timestamp' => date('Y-m-d H:i:s')
         ];
         // Add ID only for JSON store to keep it consistent
-        $settingsStore = new JsonStore('settings');
-        $settings = $settingsStore->getAll();
         if (($settings['db_driver'] ?? 'json') !== 'mysql') {
             $entry['id'] = uniqid();
         }
