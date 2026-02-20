@@ -61,7 +61,8 @@ class BackupManager {
             'role' => 'admin',
             'code' => '123456',
             'service_id' => null,
-            'telegram_chat_id' => ''
+            'telegram_chat_id' => '',
+            'info' => 'Главный администратор системы'
         ]];
         file_put_contents($this->dataDir . 'users.json', json_encode($defaultAdmin, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 

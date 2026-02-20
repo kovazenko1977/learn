@@ -19,7 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'role' => $_POST['role'],
             'code' => $_POST['code'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
-            'telegram_chat_id' => $_POST['telegram_chat_id'] ?? ''
+            'telegram_chat_id' => $_POST['telegram_chat_id'] ?? '',
+            'info' => $_POST['info'] ?? ''
         ]);
         $message = 'Пользователь создан';
     } elseif ($action === 'edit') {
@@ -28,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'role' => $_POST['role'],
             'code' => $_POST['code'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
-            'telegram_chat_id' => $_POST['telegram_chat_id'] ?? ''
+            'telegram_chat_id' => $_POST['telegram_chat_id'] ?? '',
+            'info' => $_POST['info'] ?? ''
         ]);
         $message = 'Данные пользователя обновлены';
     } elseif ($action === 'delete') {
@@ -100,6 +102,10 @@ include 'includes/header.php';
                 <label>Telegram Chat ID (персональный)</label>
                 <input type="text" name="telegram_chat_id" placeholder="Напр. 123456789">
             </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label>Дополнительная информация</label>
+                <textarea name="info" rows="2" placeholder="Должность, контакты, график работы..."></textarea>
+            </div>
             <div style="grid-column: 1 / -1; margin-top:8px;">
                 <button type="submit" class="btn-primary" style="width:100%;">
                     <i data-lucide="user-plus"></i> Создать аккаунт
@@ -130,6 +136,11 @@ include 'includes/header.php';
                             </span>
                         <?php endif; ?>
                     </div>
+                    <?php if (!empty($u['info'])): ?>
+                        <div style="font-size: 11px; color: var(--win-text-secondary); margin-top: 4px; font-style: italic;">
+                            <?php echo htmlspecialchars($u['info']); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
@@ -207,6 +218,11 @@ include 'includes/header.php';
                 <input type="text" name="telegram_chat_id" id="edit-telegram_chat_id">
             </div>
 
+            <div class="form-group">
+                <label>Дополнительная информация</label>
+                <textarea name="info" id="edit-info" rows="3"></textarea>
+            </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Отмена</button>
                 <button type="submit" class="btn-primary">Сохранить изменения</button>
@@ -223,6 +239,7 @@ function openEditModal(user) {
     document.getElementById('edit-code').value = user.code;
     document.getElementById('edit-service_id').value = user.service_id || "";
     document.getElementById('edit-telegram_chat_id').value = user.telegram_chat_id || "";
+    document.getElementById('edit-info').value = user.info || "";
     document.getElementById('editModal').style.display = 'flex';
 }
 
