@@ -46,13 +46,24 @@ class BackupManager {
     public function resetData(string $password): bool {
         if ($password !== '12345') return false;
 
-        // Transactions to clear
-        $filesToClear = ['requests.json', 'notifications.json', 'chat.json'];
+        // Transactions and Dictionaries to clear
+        $filesToClear = ['requests.json', 'notifications.json', 'chat.json', 'services.json', 'templates.json', 'locations.json'];
         foreach ($filesToClear as $f) {
             if (file_exists($this->dataDir . $f)) {
                 file_put_contents($this->dataDir . $f, json_encode([]));
             }
         }
+
+        // Wipe and restore default admin
+        $defaultAdmin = [[
+            'id' => 1,
+            'name' => 'Администратор',
+            'role' => 'admin',
+            'code' => '123456',
+            'service_id' => null,
+            'telegram_chat_id' => ''
+        ]];
+        file_put_contents($this->dataDir . 'users.json', json_encode($defaultAdmin, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         // Clear uploads
         foreach (glob($this->uploadDir . "*") as $file) {

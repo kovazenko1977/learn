@@ -17,6 +17,7 @@ $fStatus = $_GET['status'] ?? null;
 $fPerformerId = isset($_GET['performer_id']) ? (int)$_GET['performer_id'] : null;
 $fStart = $_GET['start_date'] ?? null;
 $fEnd = $_GET['end_date'] ?? null;
+$fOverdue = $_GET['overdue'] ?? null;
 
 $filteredRequests = [];
 foreach ($requests as $req) {
@@ -37,14 +38,20 @@ foreach ($requests as $req) {
 }
 
 // Apply deep filters
-if ($fStatus || $fPerformerId || $fStart || $fEnd) {
-    $filteredRequests = array_filter($filteredRequests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd) {
+if ($fStatus || $fPerformerId || $fStart || $fEnd || $fOverdue) {
+    $filteredRequests = array_filter($filteredRequests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd, $fOverdue, $slaConfig) {
         if ($fStatus && $req['status'] !== $fStatus) return false;
         if ($fPerformerId && ($req['performer_id'] ?? 0) !== $fPerformerId) return false;
 
         $createdAt = strtotime($req['created_at']);
         if ($fStart && $createdAt < strtotime($fStart . ' 00:00:00')) return false;
         if ($fEnd && $createdAt > strtotime($fEnd . ' 23:59:59')) return false;
+
+        if ($fOverdue) {
+            if (in_array($req['status'], ['completed', 'closed'])) return false;
+            $hoursLimit = $slaConfig[$req['priority']] ?? 24;
+            if (time() <= ($createdAt + ($hoursLimit * 3600))) return false;
+        }
 
         return true;
     });
@@ -85,7 +92,9 @@ include 'includes/header.php';
         <div class="stats-grid">
             <?php
                 $newCount = 0; $workCount = 0; $overdueCount = 0;
-                foreach($filteredRequests as $r) {
+                $totalBase = count($requests); // Total from all accessible, not filtered by deep link
+                foreach($requests as $r) {
+                    // We re-calculate based on ALL requests the user can see, to make summary cards meaningful
                     if ($r['status'] === 'new') $newCount++;
                     if ($r['status'] === 'working') $workCount++;
                     $hoursLimit = $slaConfig[$r['priority']] ?? 24;
@@ -94,22 +103,22 @@ include 'includes/header.php';
                     }
                 }
             ?>
-            <div class="stat-card mica" style="border-bottom: 3px solid var(--status-new);">
+            <a href="index.php?status=new" class="stat-card mica" style="border-bottom: 3px solid var(--status-new); text-decoration:none; color:inherit;">
                 <div class="stat-value" style="color:var(--status-new);"><?php echo $newCount; ?></div>
                 <div class="stat-label">Ожидают</div>
-            </div>
-            <div class="stat-card mica" style="border-bottom: 3px solid var(--status-working);">
+            </a>
+            <a href="index.php?status=working" class="stat-card mica" style="border-bottom: 3px solid var(--status-working); text-decoration:none; color:inherit;">
                 <div class="stat-value" style="color:var(--status-working);"><?php echo $workCount; ?></div>
                 <div class="stat-label">В работе</div>
-            </div>
-            <div class="stat-card mica" style="border-bottom: 3px solid var(--priority-critical);">
+            </a>
+            <a href="index.php?overdue=1" class="stat-card mica" style="border-bottom: 3px solid var(--priority-critical); text-decoration:none; color:inherit;">
                 <div class="stat-value" style="color:var(--priority-critical);"><?php echo $overdueCount; ?></div>
                 <div class="stat-label">Просрочено</div>
-            </div>
-            <div class="stat-card mica" style="border-bottom: 3px solid var(--win-accent);">
-                <div class="stat-value" style="color:var(--win-accent);"><?php echo count($filteredRequests); ?></div>
+            </a>
+            <a href="index.php" class="stat-card mica" style="border-bottom: 3px solid var(--win-accent); text-decoration:none; color:inherit;">
+                <div class="stat-value" style="color:var(--win-accent);"><?php echo $totalBase; ?></div>
                 <div class="stat-label">Всего</div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -128,7 +137,7 @@ include 'includes/header.php';
             </div>
         </div>
         <div class="filter-chips" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width: none;">
-            <button class="filter-chip <?php echo !$fStatus ? 'active' : ''; ?>" data-status="all">Все</button>
+            <button class="filter-chip <?php echo (!$fStatus && !$fOverdue) ? 'active' : ''; ?>" data-status="all">Все</button>
             <?php foreach ($statusNames as $code => $name): ?>
                 <button class="filter-chip <?php echo $fStatus === $code ? 'active' : ''; ?>" data-status="<?php echo $code; ?>"><?php echo $name; ?></button>
             <?php endforeach; ?>
@@ -212,6 +221,7 @@ include 'includes/header.php';
     transition: all 0.2s;
 }
 .filter-chip:hover { background: rgba(0,0,0,0.06); }
+.stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
 .filter-chip.active {
     background: var(--win-accent);
     color: white;
