@@ -132,6 +132,55 @@ class ScheduleManager {
         return $slots;
     }
 
+    public function getFreeSlots($procedureId, $cabinetId, $date) {
+        $proc = $this->procedureManager->getById($procedureId);
+        if (!$proc) return [];
+
+        $duration = (int)$proc['duration'];
+        $prepTime = (int)($proc['prep_time'] ?? 0);
+        $totalBlock = $duration + $prepTime;
+
+        $workStartStr = $proc['work_start'] ?? '08:00';
+        $workEndStr = $proc['work_end'] ?? '17:00';
+
+        $workStart = strtotime($date . ' ' . $workStartStr);
+        $workEnd = strtotime($date . ' ' . $workEndStr);
+
+        $occupied = $this->getOccupiedSlots($cabinetId, $date);
+
+        $freeSlots = [];
+        $currentTime = $workStart;
+
+        // Step by 5 minutes for high precision selection, or 15 for better UI?
+        // Let's use 10 minutes step for a balance.
+        while ($currentTime + ($duration * 60) <= $workEnd) {
+            $slotStart = $currentTime;
+            $slotEnd = $slotStart + ($totalBlock * 60);
+
+            $isOccupied = false;
+            foreach ($occupied as $occ) {
+                $occStart = strtotime($date . ' ' . $occ['start']);
+                $occEnd = strtotime($date . ' ' . $occ['end']);
+
+                if (($slotStart >= $occStart && $slotStart < $occEnd) ||
+                    ($slotEnd > $occStart && $slotEnd <= $occEnd) ||
+                    ($slotStart <= $occStart && $slotEnd >= $occEnd)) {
+                    $isOccupied = true;
+                    // If occupied, we jump to the end of this occupied block to save cycles
+                    $currentTime = $occEnd;
+                    break;
+                }
+            }
+
+            if (!$isOccupied) {
+                $freeSlots[] = date('H:i', $slotStart);
+                $currentTime += 10 * 60; // 10 min step
+            }
+        }
+
+        return $freeSlots;
+    }
+
     public function bulkAssign($data, $startDate, $endDate, $frequency = 'daily') {
         $results = [];
         $current = strtotime($startDate);

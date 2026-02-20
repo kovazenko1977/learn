@@ -15,9 +15,11 @@ $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'get_slots') {
     $cabinetId = $_GET['cabinet_id'];
     $date = $_GET['date'];
-    $slots = $scheduleManager->getOccupiedSlots($cabinetId, $date);
+    $procId = $_GET['procedure_id'] ?? null;
+    $occupied = $scheduleManager->getOccupiedSlots($cabinetId, $date);
+    $free = $procId ? $scheduleManager->getFreeSlots($procId, $cabinetId, $date) : [];
     header('Content-Type: application/json');
-    echo json_encode($slots);
+    echo json_encode(['occupied' => $occupied, 'free' => $free]);
     exit;
 }
 
@@ -196,8 +198,21 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     </div>
 
                     <div style="margin-bottom: 15px;">
-                        <label style="display:block;">Время</label>
-                        <input type="time" name="time" id="time_input" style="width: 100%;" required>
+                        <label style="display:block;">Время (выберите из списка или введите вручную)</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="time" name="time" id="time_input" style="flex-grow: 1;" required>
+                            <button type="button" class="btn btn-sm" onclick="document.getElementById('free_slots_wrapper').style.display = 'block';">Свободные слоты</button>
+                        </div>
+                    </div>
+
+                    <div id="free_slots_wrapper" style="display: none; margin-bottom: 15px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px; border: 1px dashed var(--win-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 0.85rem; font-weight: 600;">Доступное время:</span>
+                            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.style.display='none'" style="background:none; border:none; cursor:pointer; font-size: 1.2rem;">&times;</button>
+                        </div>
+                        <div id="free_slots_container" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                            <span style="font-size: 0.8rem; color: #666;">Выберите процедуру, кабинет и дату...</span>
+                        </div>
                     </div>
 
                     <div id="timeline_container" style="margin-bottom: 20px;">
@@ -271,8 +286,13 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
     const workingHoursBg = document.getElementById('working_hours_bg');
     const busySlotsContainer = document.getElementById('busy_slots_container');
 
+    const timeInput = document.getElementById('time_input');
+    const freeSlotsContainer = document.getElementById('free_slots_container');
+    const freeSlotsWrapper = document.getElementById('free_slots_wrapper');
+
     function updateTimeline() {
         const selectedOption = procedureSelect.options[procedureSelect.selectedIndex];
+        const procId = procedureSelect.value;
         const workStart = selectedOption?.getAttribute('data-start') || '08:00';
         const workEnd = selectedOption?.getAttribute('data-end') || '17:00';
 
@@ -293,25 +313,28 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
         let date = dateInput.value; // Y-m-d
         if (!cabinet || !date) return;
 
-        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}`)
+        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}&procedure_id=${procId}`)
             .then(r => r.json())
-            .then(slots => {
-                busySlotsContainer.innerHTML = '';
-                // 08:00 to 20:00 is 12 hours = 720 minutes
-                const startDay = 8 * 60;
-                const totalDay = 12 * 60;
+            .then(data => {
+                const occupied = data.occupied || [];
+                const free = data.free || [];
 
-                slots.forEach(slot => {
+                // Update Timeline (Busy Slots)
+                busySlotsContainer.innerHTML = '';
+                const sDay = 8 * 60;
+                const tDay = 12 * 60;
+
+                occupied.forEach(slot => {
                     const [hS, mS] = slot.start.split(':').map(Number);
                     const [hE, mE] = slot.end.split(':').map(Number);
 
-                    const startMin = (hS * 60 + mS) - startDay;
-                    const endMin = (hE * 60 + mE) - startDay;
+                    const startMin = (hS * 60 + mS) - sDay;
+                    const endMin = (hE * 60 + mE) - sDay;
 
                     if (startMin < 0 && endMin <= 0) return;
 
-                    const left = Math.max(0, (startMin / totalDay) * 100);
-                    const width = ((endMin - Math.max(0, startMin)) / totalDay) * 100;
+                    const left = Math.max(0, (startMin / tDay) * 100);
+                    const width = ((endMin - Math.max(0, startMin)) / tDay) * 100;
 
                     const block = document.createElement('div');
                     block.style.position = 'absolute';
@@ -322,6 +345,27 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     block.title = `${slot.procedure} (${slot.start} - ${slot.end})`;
                     busySlotsContainer.appendChild(block);
                 });
+
+                // Update Free Slots Chips
+                freeSlotsContainer.innerHTML = '';
+                if (free.length === 0) {
+                    freeSlotsContainer.innerHTML = '<span style="font-size: 0.8rem; color: #d83b01;">Нет свободных слотов</span>';
+                } else {
+                    free.forEach(time => {
+                        const chip = document.createElement('div');
+                        chip.textContent = time;
+                        chip.className = 'time-chip';
+                        chip.style.cssText = 'padding: 4px 10px; background: var(--win-accent); color: white; border-radius: 12px; font-size: 0.8rem; cursor: pointer; transition: opacity 0.2s;';
+                        chip.onclick = () => {
+                            timeInput.value = time;
+                            freeSlotsWrapper.style.display = 'none';
+                            // Highlighting selection
+                            document.querySelectorAll('.time-chip').forEach(c => c.style.opacity = '1');
+                            chip.style.opacity = '0.7';
+                        };
+                        freeSlotsContainer.appendChild(chip);
+                    });
+                }
             });
     }
 
