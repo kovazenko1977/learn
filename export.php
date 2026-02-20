@@ -9,6 +9,25 @@ checkRole(['manager', 'admin']);
 $requestStore = new JsonStore('data/requests.json');
 $requests = $requestStore->read();
 
+// Apply filters if present
+$fStatus = $_GET['status'] ?? null;
+$fPerformerId = isset($_GET['performer_id']) ? (int)$_GET['performer_id'] : null;
+$fStart = $_GET['start_date'] ?? null;
+$fEnd = $_GET['end_date'] ?? null;
+
+if ($fStatus || $fPerformerId || $fStart || $fEnd) {
+    $requests = array_filter($requests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd) {
+        if ($fStatus && $req['status'] !== $fStatus) return false;
+        if ($fPerformerId && ($req['performer_id'] ?? 0) !== $fPerformerId) return false;
+
+        $createdAt = strtotime($req['created_at']);
+        if ($fStart && $createdAt < strtotime($fStart . ' 00:00:00')) return false;
+        if ($fEnd && $createdAt > strtotime($fEnd . ' 23:59:59')) return false;
+
+        return true;
+    });
+}
+
 $serviceStore = new JsonStore('data/services.json');
 $services = [];
 foreach ($serviceStore->read() as $s) $services[$s['id']] = $s['name'];

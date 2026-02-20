@@ -12,8 +12,19 @@ class AnalyticsManager {
         $this->settings = $settings;
     }
 
-    public function getStats(): array {
-        $requests = $this->requestStore->read();
+    public function getStats(?string $startDate = null, ?string $endDate = null): array {
+        $allRequests = $this->requestStore->read();
+        $requests = [];
+
+        $startTs = $startDate ? strtotime($startDate . ' 00:00:00') : null;
+        $endTs = $endDate ? strtotime($endDate . ' 23:59:59') : null;
+
+        foreach ($allRequests as $req) {
+            $createdAt = strtotime($req['created_at']);
+            if ($startTs && $createdAt < $startTs) continue;
+            if ($endTs && $createdAt > $endTs) continue;
+            $requests[] = $req;
+        }
 
         $stats = [
             'total' => count($requests),

@@ -12,8 +12,15 @@ $requests = $requestManager->getAll();
 $userRole = $_SESSION['user_role'];
 $userId = $_SESSION['user_id'];
 
+// Deep linking filters
+$fStatus = $_GET['status'] ?? null;
+$fPerformerId = isset($_GET['performer_id']) ? (int)$_GET['performer_id'] : null;
+$fStart = $_GET['start_date'] ?? null;
+$fEnd = $_GET['end_date'] ?? null;
+
 $filteredRequests = [];
 foreach ($requests as $req) {
+    // Basic role access control
     if ($userRole === 'admin' || $userRole === 'manager') {
         $filteredRequests[] = $req;
     } elseif ($userRole === 'initiator') {
@@ -27,6 +34,20 @@ foreach ($requests as $req) {
     } elseif ($userRole === 'controller') {
         if ($req['status'] === 'checking' || $req['status'] === 'completed') $filteredRequests[] = $req;
     }
+}
+
+// Apply deep filters
+if ($fStatus || $fPerformerId || $fStart || $fEnd) {
+    $filteredRequests = array_filter($filteredRequests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd) {
+        if ($fStatus && $req['status'] !== $fStatus) return false;
+        if ($fPerformerId && ($req['performer_id'] ?? 0) !== $fPerformerId) return false;
+
+        $createdAt = strtotime($req['created_at']);
+        if ($fStart && $createdAt < strtotime($fStart . ' 00:00:00')) return false;
+        if ($fEnd && $createdAt > strtotime($fEnd . ' 23:59:59')) return false;
+
+        return true;
+    });
 }
 
 usort($filteredRequests, fn($a, $b) => strcmp($b['created_at'], $a['created_at']));
@@ -107,9 +128,9 @@ include 'includes/header.php';
             </div>
         </div>
         <div class="filter-chips" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width: none;">
-            <button class="filter-chip active" data-status="all">Все</button>
+            <button class="filter-chip <?php echo !$fStatus ? 'active' : ''; ?>" data-status="all">Все</button>
             <?php foreach ($statusNames as $code => $name): ?>
-                <button class="filter-chip" data-status="<?php echo $code; ?>"><?php echo $name; ?></button>
+                <button class="filter-chip <?php echo $fStatus === $code ? 'active' : ''; ?>" data-status="<?php echo $code; ?>"><?php echo $name; ?></button>
             <?php endforeach; ?>
         </div>
     </div>

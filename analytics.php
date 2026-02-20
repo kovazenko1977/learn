@@ -12,8 +12,11 @@ $userStore = new JsonStore('data/users.json');
 $settingsStore = new JsonStore('data/settings.json');
 $settings = $settingsStore->read();
 
+$startDate = $_GET['start_date'] ?? null;
+$endDate = $_GET['end_date'] ?? null;
+
 $analytics = new AnalyticsManager($requestStore, $serviceStore, $settings);
-$stats = $analytics->getStats();
+$stats = $analytics->getStats($startDate, $endDate);
 
 $services = [];
 foreach ($serviceStore->read() as $s) $services[$s['id']] = $s['name'];
@@ -35,10 +38,33 @@ include 'includes/header.php';
             <h1>Аналитическая панель</h1>
             <p style="color:var(--win-text-secondary);">Показатели эффективности и нагрузка служб</p>
         </div>
-        <a href="export.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
-            <i data-lucide="download"></i> Экспорт в CSV
-        </a>
+        <div style="display:flex; gap:12px;">
+            <a href="export.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="download"></i> Экспорт
+            </a>
+        </div>
     </div>
+
+    <section class="card mica" style="animation: slideDown 0.4s ease-out; margin-bottom: 24px; padding: 16px;">
+        <form method="GET" style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;">
+            <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
+                <label style="font-size: 11px;">Дата С</label>
+                <input type="date" name="start_date" value="<?php echo $startDate; ?>" style="height: 40px;">
+            </div>
+            <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
+                <label style="font-size: 11px;">Дата По</label>
+                <input type="date" name="end_date" value="<?php echo $endDate; ?>" style="height: 40px;">
+            </div>
+            <button type="submit" class="btn-primary" style="height: 40px; padding: 0 20px;">
+                Применить
+            </button>
+            <?php if ($startDate || $endDate): ?>
+                <a href="analytics.php" class="btn-secondary" style="height: 40px; text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 0 16px;">
+                    Сбросить
+                </a>
+            <?php endif; ?>
+        </form>
+    </section>
 
     <div class="stats-grid" style="animation: slideUp 0.6s ease-out;">
         <div class="stat-card mica">
@@ -80,8 +106,9 @@ include 'includes/header.php';
                 <?php foreach ($statusNames as $code => $name):
                     $count = $stats['by_status'][$code] ?? 0;
                     $percent = $stats['total'] > 0 ? round(($count / $stats['total']) * 100) : 0;
+                    $link = "index.php?status=$code" . ($startDate ? "&start_date=$startDate" : "") . ($endDate ? "&end_date=$endDate" : "");
                 ?>
-                    <div style="margin-bottom: 12px;">
+                    <a href="<?php echo $link; ?>" style="text-decoration:none; color:inherit; display:block; margin-bottom: 12px;" class="clickable-stat">
                         <div style="display:flex; justify-content:space-between; font-size: 13px; margin-bottom: 4px;">
                             <span style="font-weight: 500;"><?php echo $name; ?></span>
                             <span style="font-weight: 700;"><?php echo $count; ?></span>
@@ -89,7 +116,7 @@ include 'includes/header.php';
                         <div style="height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden;">
                             <div style="height: 100%; width: <?php echo $percent; ?>%; background: var(--status-<?php echo $code; ?>);"></div>
                         </div>
-                    </div>
+                    </a>
                 <?php endforeach; ?>
             </div>
         </section>
@@ -133,8 +160,9 @@ include 'includes/header.php';
                     foreach ($stats['by_performer'] as $pid => $pstats):
                         $efficiency = $pstats['total'] > 0 ? round(($pstats['completed'] / $pstats['total']) * 100) : 0;
                         $avgTime = $pstats['completed'] > 0 ? round($pstats['total_hours'] / $pstats['completed'], 1) : 0;
+                        $link = "index.php?performer_id=$pid" . ($startDate ? "&start_date=$startDate" : "") . ($endDate ? "&end_date=$endDate" : "");
                     ?>
-                        <tr>
+                        <tr onclick="window.location='<?php echo $link; ?>'" style="cursor:pointer;" class="table-hover-row">
                             <td style="font-weight: 600;"><?php echo htmlspecialchars($users[$pid] ?? "ID: $pid"); ?></td>
                             <td style="text-align:center;"><?php echo $pstats['total']; ?></td>
                             <td style="text-align:center;"><?php echo $pstats['completed']; ?></td>
@@ -185,6 +213,8 @@ include 'includes/header.php';
     margin-bottom: 12px;
 }
 .stat-icon i { width: 20px; height: 20px; }
+.clickable-stat:hover { opacity: 0.7; }
+.table-hover-row:hover { background: rgba(0,0,0,0.02); }
 </style>
 
 <?php include 'includes/footer.php'; ?>
