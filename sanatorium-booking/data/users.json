@@ -1,0 +1,66 @@
+[
+    {
+        "username": "admin",
+        "full_name": "Администратор",
+        "role": "administrator",
+        "permissions": [
+            "view_dashboard",
+            "manage_bookings",
+            "view_calendar",
+            "manage_guests",
+            "manage_rooms",
+            "manage_catalog",
+            "view_analytics",
+            "manage_planning",
+            "manage_users",
+            "manage_settings",
+            "assign_procedures",
+            "manage_payments",
+            "record_attendance"
+        ],
+        "api_token": "cd336e570f145f6b14c8e9f4bb17891d",
+        "password_hash": "$2y$10$YTVaKVvZfFD\/Inuxbwlide4nI8xEm3I7ECotPi.2HhFI7xuGZEb3a",
+        "id": 1,
+        "access_code": "123456"
+    },
+    {
+        "username": "doctor",
+        "full_name": "Врач Терапевт",
+        "role": "doctor",
+        "access_code": "101010",
+        "permissions": [
+            "assign_procedures",
+            "view_calendar",
+            "view_dashboard"
+        ],
+        "password_hash": "$2y$10$fs6hFXCD1Bp5f4BTPqsHZOGDuSTHwDnu8Pt1iJ7ZNejg42xYnviCK",
+        "api_token": "1cc5f780787d4c78e19d061a687f6966",
+        "id": 2
+    },
+    {
+        "username": "cashier",
+        "full_name": "Кассир",
+        "role": "cashier",
+        "access_code": "202020",
+        "permissions": [
+            "manage_payments",
+            "view_dashboard"
+        ],
+        "password_hash": "$2y$10$.gNTXHZ53.wtP67Upvxhj.RZXvF7RT1iBWXvCw4Bk78y5PGjMn9Ru",
+        "api_token": "b22f9895f6289abd683243bb0daf04ab",
+        "id": 3
+    },
+    {
+        "username": "nurse",
+        "full_name": "Медсестра",
+        "role": "nurse",
+        "access_code": "303030",
+        "permissions": [
+            "record_attendance",
+            "view_dashboard"
+        ],
+        "password_hash": "$2y$10$udVJ8NN3f4FZIvVUHXSFXOgvHdiWCVRMDf3E2O9hsfBq.E3BigC6O",
+        "api_token": "a1da72f30e3d3af90e66ce2cf1b1664d",
+        "id": 4
+    }
+]

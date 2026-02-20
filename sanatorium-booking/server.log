@@ -1,0 +1,34 @@
+[Sun Feb 15 18:14:20 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
+[Sun Feb 15 18:14:25 2026] [::1]:48688 Accepted
+[Sun Feb 15 18:14:25 2026] [::1]:48688 [404]: GET /admin/index.php - No such file or directory
+[Sun Feb 15 18:14:25 2026] [::1]:48688 Closing
+[Sun Feb 15 18:14:26 2026] [::1]:48690 Accepted
+[Sun Feb 15 18:14:26 2026] [::1]:48690 [302]: GET /admin/calendar.php
+[Sun Feb 15 18:14:26 2026] [::1]:48690 Closing
+[Sun Feb 15 18:14:26 2026] [::1]:48704 Accepted
+[Sun Feb 15 18:14:26 2026] [::1]:48704 [200]: GET /admin/login.php
+[Sun Feb 15 18:14:26 2026] [::1]:48704 Closing
+[Sun Feb 15 18:14:26 2026] [::1]:48716 Accepted
+[Sun Feb 15 18:14:26 2026] [::1]:48716 [200]: GET /public/assets/css/admin.css
+[Sun Feb 15 18:14:26 2026] [::1]:48716 Closing
+[Sun Feb 15 18:14:27 2026] [::1]:48722 Accepted
+[Sun Feb 15 18:14:27 2026] [::1]:48722 [302]: GET /admin/today.php
+[Sun Feb 15 18:14:27 2026] [::1]:48722 Closing
+[Sun Feb 15 18:14:27 2026] [::1]:48732 Accepted
+[Sun Feb 15 18:14:27 2026] [::1]:48732 [200]: GET /admin/login.php
+[Sun Feb 15 18:14:27 2026] [::1]:48732 Closing
+[Sun Feb 15 18:14:27 2026] [::1]:48738 Accepted
+[Sun Feb 15 18:14:27 2026] [::1]:48738 [200]: GET /public/assets/css/admin.css
+[Sun Feb 15 18:14:27 2026] [::1]:48738 Closing
+[Sun Feb 15 18:14:29 2026] [::1]:48750 Accepted
+[Sun Feb 15 18:14:29 2026] [::1]:48750 [302]: GET /admin/planning.php
+[Sun Feb 15 18:14:29 2026] [::1]:48750 Closing
+[Sun Feb 15 18:14:29 2026] [::1]:48756 Accepted
+[Sun Feb 15 18:14:29 2026] [::1]:48756 [200]: GET /admin/login.php
+[Sun Feb 15 18:14:29 2026] [::1]:48756 Closing
+[Sun Feb 15 18:14:29 2026] [::1]:48772 Accepted
+[Sun Feb 15 18:14:29 2026] [::1]:48772 [200]: GET /public/assets/css/admin.css
+[Sun Feb 15 18:14:29 2026] [::1]:48772 Closing
+[Sun Feb 15 18:14:30 2026] [::1]:48778 Accepted
+[Sun Feb 15 18:14:30 2026] [::1]:48778 [404]: GET /admin/bookings.php - No such file or directory
+[Sun Feb 15 18:14:30 2026] [::1]:48778 Closing

@@ -1,0 +1,31 @@
+[Mon Feb 16 17:36:58 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8080) started
+[Mon Feb 16 17:37:47 2026] 127.0.0.1:51472 Accepted
+[Mon Feb 16 17:37:47 2026] 127.0.0.1:51472 [200]: GET /admin/login.php
+[Mon Feb 16 17:37:47 2026] 127.0.0.1:51472 Closing
+[Mon Feb 16 17:37:47 2026] 127.0.0.1:51478 Accepted
+[Mon Feb 16 17:37:47 2026] 127.0.0.1:51478 [200]: GET /public/assets/css/admin.css
+[Mon Feb 16 17:37:47 2026] 127.0.0.1:51478 Closing
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51484 Accepted
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51484 [302]: POST /admin/login.php
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51484 Closing
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51500 Accepted
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51500 [200]: GET /admin/dashboard.php
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51500 Closing
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51504 Accepted
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51504 [200]: GET /public/assets/css/admin.css
+[Mon Feb 16 17:37:48 2026] 127.0.0.1:51504 Closing
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40506 Accepted
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40506 [200]: GET /admin/login.php
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40506 Closing
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40520 Accepted
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40520 [200]: GET /public/assets/css/admin.css
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40520 Closing
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40524 Accepted
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40524 [302]: POST /admin/login.php
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40524 Closing
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40538 Accepted
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40538 [200]: GET /admin/dashboard.php
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40538 Closing
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40552 Accepted
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40552 [200]: GET /public/assets/css/admin.css
+[Mon Feb 16 17:38:37 2026] 127.0.0.1:40552 Closing

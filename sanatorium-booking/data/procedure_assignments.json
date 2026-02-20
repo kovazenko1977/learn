@@ -1,0 +1,29 @@
+[
+    {
+        "guest_id": 1,
+        "procedure_id": 1,
+        "date": "2026-02-16",
+        "time": "10:00",
+        "status": "completed",
+        "price": 500,
+        "id": 1
+    },
+    {
+        "guest_id": 1,
+        "procedure_id": 1,
+        "date": "2026-02-16",
+        "time": "10:00",
+        "status": "completed",
+        "price": 500,
+        "id": 2
+    },
+    {
+        "guest_id": 1,
+        "procedure_id": 1,
+        "date": "2026-02-16",
+        "time": "10:00",
+        "status": "completed",
+        "price": 500,
+        "id": 3
+    }
+]
