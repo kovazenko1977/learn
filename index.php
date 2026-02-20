@@ -164,7 +164,7 @@ include 'includes/header.php';
                             <i class="lucide-map-pin" style="width:14px; height:14px;"></i>
                             <?php echo "Корп. {$req['location']['building']}, каб. {$req['location']['room']}"; ?>
                         </span>
-                        <?php if ($req['photo']): ?>
+                        <?php if (!empty($req['photo'])): ?>
                             <span style="display:flex; align-items:center; gap:4px;">
                                 <i class="lucide-image" style="width:14px; height:14px;"></i>
                                 Фото

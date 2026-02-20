@@ -39,6 +39,11 @@
                 <span>Дашборд</span>
             </a>
 
+            <a href="chat.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>">
+                <i data-lucide="message-square"></i>
+                <span>Общий чат</span>
+            </a>
+
             <?php if ($_SESSION['user_role'] === 'initiator' || $_SESSION['user_role'] === 'admin'): ?>
             <a href="create.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'create.php' ? 'active' : ''; ?>">
                 <i data-lucide="file-plus"></i>
@@ -121,6 +126,10 @@
         <a href="index.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
             <i data-lucide="layout-grid"></i>
             <span>Задачи</span>
+        </a>
+        <a href="chat.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>">
+            <i data-lucide="message-square"></i>
+            <span>Чат</span>
         </a>
         <?php if ($_SESSION['user_role'] === 'initiator' || $_SESSION['user_role'] === 'admin'): ?>
         <a href="create.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'create.php' ? 'active' : ''; ?>">

@@ -21,6 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null
         ]);
         $message = 'Пользователь создан';
+    } elseif ($action === 'edit') {
+        $userManager->update((int)$_POST['id'], [
+            'name' => $_POST['name'],
+            'role' => $_POST['role'],
+            'code' => $_POST['code'],
+            'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null
+        ]);
+        $message = 'Данные пользователя обновлены';
     } elseif ($action === 'delete') {
         $userManager->delete((int)$_POST['id']);
         $message = 'Пользователь удален';
@@ -45,7 +53,7 @@ include 'includes/header.php';
 
 <div class="container">
     <div class="page-header" style="animation: slideDown 0.5s ease-out;">
-        <h1>Управление пользователями</h1>
+        <h1>Управление персоналом</h1>
         <p style="color:var(--win-text-secondary);">Учетные записи и права доступа</p>
     </div>
 
@@ -122,6 +130,12 @@ include 'includes/header.php';
                 <div style="text-align: right; font-family: monospace; color: var(--win-text-secondary); font-size: 14px;">
                     <?php echo $u['code']; ?>
                 </div>
+
+                <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:8px;"
+                        onclick="openEditModal(<?php echo htmlspecialchars(json_encode($u)); ?>)">
+                    <i class="lucide-edit-3"></i>
+                </button>
+
                 <?php if ($u['role'] !== 'admin' || $u['id'] !== 1): ?>
                 <form method="POST" onsubmit="return confirm('Удалить пользователя?')">
                     <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
@@ -137,5 +151,80 @@ include 'includes/header.php';
         <?php endforeach; ?>
     </div>
 </div>
+
+<!-- Edit Modal -->
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div class="card mica" style="width:100%; max-width:500px; margin:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Редактировать сотрудника</h2>
+            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i class="lucide-x"></i></button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="id" id="edit-id">
+
+            <div class="form-group">
+                <label>ФИО</label>
+                <input type="text" name="name" id="edit-name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Роль</label>
+                <select name="role" id="edit-role">
+                    <option value="initiator">Инициатор</option>
+                    <option value="performer">Исполнитель</option>
+                    <option value="service_lead">Ответственный службы</option>
+                    <option value="controller">Контролёр</option>
+                    <option value="manager">Руководитель</option>
+                    <option value="admin">Администратор</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Код доступа (6 цифр)</label>
+                <input type="text" name="code" id="edit-code" maxlength="6" pattern="\d{6}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Служба</label>
+                <select name="service_id" id="edit-service_id">
+                    <option value="">Не привязано</option>
+                    <?php foreach ($services as $svc): ?>
+                        <option value="<?php echo $svc['id']; ?>"><?php echo $svc['name']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(user) {
+    document.getElementById('edit-id').value = user.id;
+    document.getElementById('edit-name').value = user.name;
+    document.getElementById('edit-role').value = user.role;
+    document.getElementById('edit-code').value = user.code;
+    document.getElementById('edit-service_id').value = user.service_id || "";
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    let modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        closeEditModal();
+    }
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

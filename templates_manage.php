@@ -2,14 +2,13 @@
 require_once 'core/Autoloader.php';
 require_once 'includes/auth.php';
 use Hop\Core\JsonStore;
+use Hop\Core\ServiceManager;
 
 checkRole(['admin', 'service_lead']);
 
-$templateStore = new JsonStore('data/templates.json');
-$templates = $templateStore->read();
-
 $serviceStore = new JsonStore('data/services.json');
-$services = $serviceStore->read();
+$templateStore = new JsonStore('data/templates.json');
+$serviceManager = new ServiceManager($serviceStore, $templateStore);
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'create') {
         $id = $templateStore->getNextId();
+        $templates = $templateStore->read();
         $templates[] = [
             'id' => $id,
             'service_id' => (int)$_POST['service_id'],
@@ -26,13 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         $templateStore->save($templates);
         $message = 'Шаблон успешно создан';
+    } elseif ($action === 'edit') {
+        $serviceManager->updateTemplate((int)$_POST['id'], [
+            'service_id' => (int)$_POST['service_id'],
+            'title' => $_POST['title'],
+            'description' => $_POST['description']
+        ]);
+        $message = 'Шаблон обновлен';
     } elseif ($action === 'delete') {
-        $id = (int)$_POST['id'];
-        $templates = array_filter($templates, fn($t) => $t['id'] !== $id);
-        $templateStore->save(array_values($templates));
+        $serviceManager->deleteTemplate((int)$_POST['id']);
         $message = 'Шаблон удален';
     }
 }
+
+$templates = $serviceManager->getAllTemplates();
+$services = $serviceManager->getAllServices();
 
 include 'includes/header.php';
 ?>
@@ -89,18 +97,84 @@ include 'includes/header.php';
                         &ldquo;<?php echo htmlspecialchars($t['description']); ?>&rdquo;
                     </div>
                 </div>
-                <form method="POST" onsubmit="return confirm('Удалить шаблон?');">
-                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value="<?php echo $t['id']; ?>">
-                    <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
-                        <i class="lucide-trash"></i>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:4px;"
+                            onclick="openEditModal(<?php echo htmlspecialchars(json_encode($t)); ?>)">
+                        <i class="lucide-edit"></i>
                     </button>
-                </form>
+                    <form method="POST" onsubmit="return confirm('Удалить шаблон?');">
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="<?php echo $t['id']; ?>">
+                        <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
+                            <i class="lucide-trash"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
         <?php endforeach; ?>
     </div>
 </div>
+
+<!-- Edit Modal -->
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div class="card mica" style="width:100%; max-width:600px; margin:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Редактировать шаблон</h2>
+            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i class="lucide-x"></i></button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="id" id="edit-id">
+
+            <div class="form-group">
+                <label>Название шаблона</label>
+                <input type="text" name="title" id="edit-title" required>
+            </div>
+
+            <div class="form-group">
+                <label>Служба</label>
+                <select name="service_id" id="edit-service_id" required>
+                    <?php foreach ($services as $svc): ?>
+                        <option value="<?php echo $svc['id']; ?>"><?php echo $svc['name']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Текст заявки</label>
+                <textarea name="description" id="edit-description" rows="4" required></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(tmpl) {
+    document.getElementById('edit-id').value = tmpl.id;
+    document.getElementById('edit-title').value = tmpl.title || '';
+    document.getElementById('edit-service_id').value = tmpl.service_id || '';
+    document.getElementById('edit-description').value = tmpl.description || '';
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    let modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        closeEditModal();
+    }
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

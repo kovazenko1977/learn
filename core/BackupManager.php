@@ -47,7 +47,7 @@ class BackupManager {
         if ($password !== '12345') return false;
 
         // Transactions to clear
-        $filesToClear = ['requests.json', 'notifications.json'];
+        $filesToClear = ['requests.json', 'notifications.json', 'chat.json'];
         foreach ($filesToClear as $f) {
             if (file_exists($this->dataDir . $f)) {
                 file_put_contents($this->dataDir . $f, json_encode([]));

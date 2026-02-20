@@ -2,11 +2,13 @@
 require_once 'core/Autoloader.php';
 require_once 'includes/auth.php';
 use Hop\Core\JsonStore;
+use Hop\Core\ServiceManager;
 
 checkRole('admin');
 
 $serviceStore = new JsonStore('data/services.json');
-$services = $serviceStore->read();
+$templateStore = new JsonStore('data/templates.json');
+$serviceManager = new ServiceManager($serviceStore, $templateStore);
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'create') {
         $id = $serviceStore->getNextId();
+        $services = $serviceStore->read();
         $services[] = [
             'id' => $id,
             'name' => $_POST['name'],
@@ -22,13 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         $serviceStore->save($services);
         $message = 'Служба добавлена';
+    } elseif ($action === 'edit') {
+        $serviceManager->updateService((int)$_POST['id'], [
+            'name' => $_POST['name'],
+            'description' => $_POST['description']
+        ]);
+        $message = 'Данные службы обновлены';
     } elseif ($action === 'delete') {
-        $id = (int)$_POST['id'];
-        $services = array_filter($services, fn($s) => $s['id'] !== $id);
-        $serviceStore->save(array_values($services));
+        $serviceManager->deleteService((int)$_POST['id']);
         $message = 'Служба удалена';
     }
 }
+
+$services = $serviceManager->getAllServices();
 
 include 'includes/header.php';
 ?>
@@ -72,14 +81,20 @@ include 'includes/header.php';
                         <?php echo htmlspecialchars($s['description']); ?>
                     </p>
                 </div>
-                <form method="POST" onsubmit="return confirm('Удалить службу?');">
-                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
-                    <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
-                        <i class="lucide-x"></i>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:4px;"
+                            onclick="openEditModal(<?php echo htmlspecialchars(json_encode($s)); ?>)">
+                        <i class="lucide-edit"></i>
                     </button>
-                </form>
+                    <form method="POST" onsubmit="return confirm('Удалить службу?');">
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
+                        <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
+                            <i class="lucide-trash-2"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
             <div style="margin-top: 12px; border-top: 1px solid var(--win-border); pt: 8px; display: flex; gap: 12px; font-size: 12px; color: var(--win-text-secondary);">
                 <span>ID: <?php echo $s['id']; ?></span>
@@ -88,5 +103,55 @@ include 'includes/header.php';
         <?php endforeach; ?>
     </div>
 </div>
+
+<!-- Edit Modal -->
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div class="card mica" style="width:100%; max-width:500px; margin:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Редактировать службу</h2>
+            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i class="lucide-x"></i></button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="id" id="edit-id">
+
+            <div class="form-group">
+                <label>Название службы</label>
+                <input type="text" name="name" id="edit-name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Описание</label>
+                <textarea name="description" id="edit-description" rows="3" required></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditModal(svc) {
+    document.getElementById('edit-id').value = svc.id;
+    document.getElementById('edit-name').value = svc.name || '';
+    document.getElementById('edit-description').value = svc.description || '';
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    let modal = document.getElementById('editModal');
+    if (event.target == modal) {
+        closeEditModal();
+    }
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>
