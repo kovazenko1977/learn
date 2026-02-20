@@ -10,6 +10,7 @@ $services = $serviceStore->read();
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    checkCsrf();
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {
@@ -33,61 +34,59 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header">
+    <div class="page-header" style="animation: slideDown 0.5s ease-out;">
         <h1>Управление службами</h1>
+        <p style="color:var(--win-text-secondary);">Организационная структура больницы</p>
     </div>
 
     <?php if ($message): ?>
-        <div class="alert alert-success" style="padding:12px; background:var(--status-completed); color:#fff; border-radius:8px; margin-bottom:16px;">
-            <?php echo $message; ?>
-        </div>
+        <div class="alert alert-success" style="animation: slideDown 0.3s ease-out;"><?php echo $message; ?></div>
     <?php endif; ?>
 
-    <section class="card">
-        <h2>Новая служба</h2>
+    <section class="card mica" style="animation: slideUp 0.6s ease-out; margin-bottom: 24px;">
+        <h2 style="margin-top:0; font-size:18px; margin-bottom:20px;">Зарегистрировать службу</h2>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
             <input type="hidden" name="action" value="create">
             <div class="form-group">
                 <label>Название службы</label>
-                <input type="text" name="name" required placeholder="Например: Отдел вентиляции">
+                <input type="text" name="name" required placeholder="Например: Сантехническая служба">
             </div>
             <div class="form-group">
-                <label>Описание деятельности</label>
-                <textarea name="description" rows="2" required></textarea>
+                <label>Зона ответственности</label>
+                <textarea name="description" rows="2" required placeholder="Краткое описание выполняемых работ..."></textarea>
             </div>
-            <button type="submit" class="btn-primary">Добавить службу</button>
+            <button type="submit" class="btn-primary" style="width:100%;">
+                <i class="lucide-plus-circle"></i> Добавить в реестр
+            </button>
         </form>
     </section>
 
-    <section class="card">
-        <h2>Список служб</h2>
-        <div class="table-responsive">
-            <table class="table" style="width:100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="border-bottom: 1px solid var(--win-border);">
-                        <th style="text-align:left; padding:8px;">Название</th>
-                        <th style="text-align:left; padding:8px;">Описание</th>
-                        <th style="text-align:right; padding:8px;">Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($services as $s): ?>
-                    <tr style="border-bottom: 1px solid var(--win-border);">
-                        <td style="padding:8px; font-weight:600;"><?php echo htmlspecialchars($s['name']); ?></td>
-                        <td style="padding:8px; font-size:14px; color:var(--win-text-secondary);"><?php echo htmlspecialchars($s['description']); ?></td>
-                        <td style="padding:8px; text-align:right;">
-                            <form method="POST" style="display:inline;">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
-                                <button type="submit" class="btn-danger btn-sm" onclick="return confirm('Удалить службу? Это может повлиять на привязанных пользователей.')">Удалить</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    <div class="list-container" style="display: grid; gap: 12px;">
+        <?php foreach ($services as $index => $s): ?>
+        <div class="card mica list-item" style="animation-delay: <?php echo $index * 0.05; ?>s; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h3 style="margin: 0 0 4px 0; font-size: 16px;"><?php echo htmlspecialchars($s['name']); ?></h3>
+                    <p style="margin: 0; font-size: 13px; color: var(--win-text-secondary); line-height: 1.5;">
+                        <?php echo htmlspecialchars($s['description']); ?>
+                    </p>
+                </div>
+                <form method="POST" onsubmit="return confirm('Удалить службу?');">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
+                    <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
+                        <i class="lucide-x"></i>
+                    </button>
+                </form>
+            </div>
+            <div style="margin-top: 12px; border-top: 1px solid var(--win-border); pt: 8px; display: flex; gap: 12px; font-size: 12px; color: var(--win-text-secondary);">
+                <span>ID: <?php echo $s['id']; ?></span>
+            </div>
         </div>
-    </section>
+        <?php endforeach; ?>
+    </div>
 </div>
 
 <?php include 'includes/footer.php'; ?>

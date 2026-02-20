@@ -24,35 +24,63 @@ $roleNames = [
 include 'includes/header.php';
 ?>
 
-<div class="container">
-    <div class="page-header">
-        <h1>Профиль пользователя</h1>
+<div class="container" style="max-width: 500px;">
+    <div class="page-header" style="text-align: center; animation: slideDown 0.5s ease-out;">
+        <h1>Профиль сотрудника</h1>
+        <p style="color:var(--win-text-secondary);">Ваши учетные данные в системе ХОП</p>
     </div>
 
-    <section class="card mica" style="text-align:center; padding: 32px 16px;">
-        <div style="width:80px; height:80px; background:var(--win-accent); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:32px; font-weight:600;">
+    <section class="card mica" style="animation: slideUp 0.6s ease-out; padding: 40px 20px; text-align: center;">
+        <div style="width:100px; height:100px; background: linear-gradient(135deg, var(--win-accent) 0%, #005a9e 100%); color:#fff; border-radius:30px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:42px; font-weight:800; box-shadow: 0 10px 20px rgba(0,120,212,0.2);">
             <?php echo mb_substr($user['name'], 0, 1); ?>
         </div>
-        <h2 style="margin:0;"><?php echo $user['name']; ?></h2>
-        <p style="color:var(--win-text-secondary); margin:4px 0 16px;"><?php echo $roleNames[$user['role']] ?? $user['role']; ?></p>
 
-        <div style="text-align:left; max-width:300px; margin:0 auto; border-top:1px solid var(--win-border); padding-top:16px;">
-            <div style="margin-bottom:8px;">
-                <label style="font-size:12px;">Код доступа</label>
-                <div style="font-weight:600;">****</div>
-            </div>
-            <?php if ($user['service_id']): ?>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:12px;">Служба</label>
-                    <div style="font-weight:600;"><?php echo $services[$user['service_id']] ?? 'Неизвестно'; ?></div>
-                </div>
-            <?php endif; ?>
+        <h2 style="margin:0; font-size: 24px;"><?php echo htmlspecialchars($user['name']); ?></h2>
+        <div class="badge" style="margin-top: 12px; background: rgba(0,120,212,0.1); color: var(--win-accent); padding: 6px 16px; font-size: 14px; border-radius: 20px;">
+            <?php echo $roleNames[$user['role']] ?? $user['role']; ?>
         </div>
-    </section>
 
-    <section style="margin-top:24px;">
-        <a href="logout.php" class="btn-primary" style="background:var(--priority-critical); display:block; text-align:center; text-decoration:none;">
-            Выйти из системы
+        <div style="margin-top: 40px; text-align: left; border-top: 1px solid var(--win-border); pt: 32px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span style="color: var(--win-text-secondary); font-size: 14px;">Персональный код</span>
+                <span style="font-weight: 700; font-family: monospace; letter-spacing: 2px;">●●●●●●</span>
+            </div>
+
+            <?php if ($user['service_id']): ?>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span style="color: var(--win-text-secondary); font-size: 14px;">Закрепленная служба</span>
+                <span style="font-weight: 700; color: var(--win-text);"><?php echo htmlspecialchars($services[$user['service_id']] ?? '—'); ?></span>
+            </div>
+            <?php endif; ?>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span style="color: var(--win-text-secondary); font-size: 14px;">ID в системе</span>
+                <span style="font-weight: 700; color: var(--win-text);">#<?php echo $user['id']; ?></span>
+            </div>
+        </div>
+
+        <?php if ($user['role'] === 'admin'): ?>
+        <div class="mobile-only" style="margin-top: 32px; border-top: 1px solid var(--win-border); pt: 24px; text-align: left;">
+            <h3 style="font-size: 16px; margin-bottom: 16px;">Панель управления</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <a href="users.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="lucide-users" style="width:16px;"></i> Персонал
+                </a>
+                <a href="services_manage.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="lucide-briefcase" style="width:16px;"></i> Службы
+                </a>
+                <a href="templates_manage.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="lucide-copy" style="width:16px;"></i> Шаблоны
+                </a>
+                <a href="settings.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="lucide-settings" style="width:16px;"></i> Настройки
+                </a>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <a href="logout.php" class="btn-primary" style="margin-top: 32px; background: #e81123; width: 100%; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <i class="lucide-log-out"></i> Завершить сеанс
         </a>
     </section>
 </div>

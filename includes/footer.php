@@ -1,24 +1,27 @@
     </main>
-    <div id="toast"></div>
-    <div id="loading" class="loading-overlay">
-        <div class="spinner"></div>
-        <p style="margin-top:12px; font-weight:600;">Загрузка...</p>
-    </div>
     <script>
-      lucide.createIcons();
+        // Initialize Lucide icons
+        lucide.createIcons();
 
-      document.addEventListener('submit', function() {
-          document.getElementById('loading').style.display = 'flex';
-      });
+        // Loading indicator logic
+        window.addEventListener('beforeunload', function() {
+            document.getElementById('loading-overlay').style.opacity = '1';
+            document.getElementById('loading-overlay').style.pointerEvents = 'all';
+        });
 
-      function showToast(message) {
-          const toast = document.getElementById('toast');
-          toast.textContent = message;
-          toast.classList.add('show');
-          setTimeout(() => {
-              toast.classList.remove('show');
-          }, 3000);
-      }
+        // Hide loading on page load
+        window.addEventListener('load', function() {
+            document.getElementById('loading-overlay').style.opacity = '0';
+            document.getElementById('loading-overlay').style.pointerEvents = 'none';
+        });
+
+        // Form submission loading
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                document.getElementById('loading-overlay').style.opacity = '1';
+                document.getElementById('loading-overlay').style.pointerEvents = 'all';
+            });
+        });
     </script>
 </body>
 </html>

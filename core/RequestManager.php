@@ -3,9 +3,11 @@ namespace Hop\Core;
 
 class RequestManager {
     private JsonStore $store;
+    private ?NotificationManager $notifier;
 
-    public function __construct(JsonStore $store) {
+    public function __construct(JsonStore $store, ?NotificationManager $notifier = null) {
         $this->store = $store;
+        $this->notifier = $notifier;
     }
 
     public function getAll(): array {
@@ -31,6 +33,9 @@ class RequestManager {
         $historyComment = 'Заявка создана';
         if (isset($data['performer_id']) && $status === 'assigned') {
             $historyComment = 'Заявка создана и автоматически назначена';
+            if ($this->notifier) {
+                $this->notifier->send($data['performer_id'], "Вам назначена новая заявка #$id");
+            }
         }
 
         $data['history'] = [
@@ -49,6 +54,7 @@ class RequestManager {
     public function updateStatus(int $id, string $newStatus, int $userId, string $comment = '', string $photo = ''): bool {
         $requests = $this->getAll();
         $found = false;
+        $targetRequest = null;
         foreach ($requests as &$request) {
             if ($request['id'] === $id) {
                 $request['status'] = $newStatus;
@@ -64,17 +70,26 @@ class RequestManager {
                     $request['photos'][] = $photo;
                 }
                 $request['history'][] = $entry;
-
-                if ($newStatus === 'assigned' && isset($userId)) {
-                    $request['performer_id'] = $userId; // Although Service Lead assigns it to a Performer
-                }
-
                 $found = true;
+                $targetRequest = $request;
                 break;
             }
         }
         if ($found) {
-            return $this->store->save($requests);
+            $this->store->save($requests);
+
+            if ($this->notifier && $targetRequest) {
+                $msg = "Заявка #$id изменила статус на " . $newStatus;
+                // Notify initiator
+                if ($targetRequest['initiator_id'] != $userId) {
+                    $this->notifier->send($targetRequest['initiator_id'], $msg);
+                }
+                // Notify performer if status changed by controller/admin
+                if (isset($targetRequest['performer_id']) && $targetRequest['performer_id'] != $userId) {
+                    $this->notifier->send($targetRequest['performer_id'], $msg);
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -91,7 +106,15 @@ class RequestManager {
                     'timestamp' => date('Y-m-d H:i:s'),
                     'comment' => 'Назначен исполнитель'
                 ];
-                return $this->store->save($requests);
+                $this->store->save($requests);
+
+                if ($this->notifier) {
+                    $this->notifier->send($performerId, "Вам назначена заявка #$id");
+                    if ($request['initiator_id'] != $assignerId) {
+                        $this->notifier->send($request['initiator_id'], "По вашей заявке #$id назначен исполнитель");
+                    }
+                }
+                return true;
             }
         }
         return false;
