@@ -79,7 +79,7 @@ include 'includes/header.php';
                 </select>
             </div>
             <button type="submit" class="btn-primary" style="width:100%;">
-                <i class="lucide-plus-circle"></i> Добавить в реестр
+                <i data-lucide="plus-circle"></i> Добавить в реестр
             </button>
         </form>
     </section>
@@ -97,14 +97,14 @@ include 'includes/header.php';
                 <div style="display: flex; gap: 8px;">
                     <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:4px;"
                             onclick="openEditModal(<?php echo htmlspecialchars(json_encode($s)); ?>)">
-                        <i class="lucide-edit"></i>
+                        <i data-lucide="edit"></i>
                     </button>
                     <form method="POST" onsubmit="return confirm('Удалить службу?');">
                         <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
                         <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
-                            <i class="lucide-trash-2"></i>
+                            <i data-lucide="trash-2"></i>
                         </button>
                     </form>
                 </div>
@@ -112,7 +112,7 @@ include 'includes/header.php';
             <div style="margin-top: 12px; border-top: 1px solid var(--win-border); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--win-text-secondary);">
                 <span>ID: <?php echo $s['id']; ?></span>
                 <span style="display:flex; align-items:center; gap:4px;">
-                    <i class="lucide-user" style="width:14px;"></i>
+                    <i data-lucide="user" style="width:14px;"></i>
                     <?php
                         $pName = 'Не назначен';
                         if ($s['performer_id'] ?? 0) {
@@ -132,7 +132,7 @@ include 'includes/header.php';
     <div class="card mica" style="width:100%; max-width:500px; margin:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2 style="margin:0;">Редактировать службу</h2>
-            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i class="lucide-x"></i></button>
+            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
         </div>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">

@@ -13,6 +13,10 @@ $notifier = new NotificationManager($settingsStore, $notificationStore);
 
 $requestStore = new JsonStore('data/requests.json');
 $requestManager = new RequestManager($requestStore, $notifier);
+
+$locStore = new JsonStore('data/locations.json');
+$locations = $locStore->read();
+
 $req = $requestManager->getById($id);
 
 if (!$req) {
@@ -37,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'priority' => $_POST['priority'],
             'location' => [
                 'building' => $_POST['building'],
+                'floor' => $_POST['floor'] ?? $req['location']['floor'],
                 'room' => $_POST['room']
             ]
         ]);
@@ -217,21 +222,6 @@ include 'includes/header.php';
                                 <button type="submit" name="action" value="returned" class="btn-primary" style="background:var(--status-returned);">Вернуть на доработку</button>
                             </div>
                         </form>
-                        <script>
-                            document.querySelectorAll('.star-btn').forEach(btn => {
-                                btn.onclick = function() {
-                                    const val = this.dataset.value;
-                                    document.getElementById('rating-input').value = val;
-                                    document.querySelectorAll('.star-btn').forEach(s => {
-                                        s.style.color = s.dataset.value <= val ? '#ffc107' : '#ccc';
-                                        if (s.dataset.value <= val) s.classList.add('fill-current');
-                                        else s.classList.remove('fill-current');
-                                    });
-                                }
-                            });
-                            // Trigger initial state
-                            document.querySelector('.star-btn[data-value="5"]').click();
-                        </script>
                     <?php elseif ($req['status'] === 'completed'): ?>
                         <form method="POST">
                             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
@@ -311,15 +301,43 @@ include 'includes/header.php';
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <div class="form-group">
-                    <label>Корпус</label>
-                    <input type="text" name="building" value="<?php echo htmlspecialchars($req['location']['building']); ?>" required>
-                </div>
-                <div class="form-group">
-                    <label>Кабинет</label>
-                    <input type="text" name="room" value="<?php echo htmlspecialchars($req['location']['room']); ?>" required>
-                </div>
+                <?php if (!empty($locations)): ?>
+                    <div class="form-group">
+                        <label>Корпус</label>
+                        <select name="building" id="building-select" onchange="updateFloors()" required>
+                            <?php foreach ($locations as $l): ?>
+                                <option value="<?php echo htmlspecialchars($l['name']); ?>"
+                                    data-floors='<?php echo json_encode($l['floors']); ?>'
+                                    <?php echo $req['location']['building'] === $l['name'] ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($l['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Этаж</label>
+                        <select name="floor" id="floor-select" required>
+                            <option value="<?php echo htmlspecialchars($req['location']['floor']); ?>"><?php echo htmlspecialchars($req['location']['floor']); ?></option>
+                        </select>
+                    </div>
+                <?php else: ?>
+                    <div class="form-group">
+                        <label>Корпус</label>
+                        <input type="text" name="building" value="<?php echo htmlspecialchars($req['location']['building']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Кабинет</label>
+                        <input type="text" name="room" value="<?php echo htmlspecialchars($req['location']['room']); ?>" required>
+                    </div>
+                <?php endif; ?>
             </div>
+
+            <?php if (!empty($locations)): ?>
+            <div class="form-group">
+                <label>Кабинет</label>
+                <input type="text" name="room" value="<?php echo htmlspecialchars($req['location']['room']); ?>" required>
+            </div>
+            <?php endif; ?>
 
             <div class="form-group">
                 <label>Приоритет</label>
@@ -344,5 +362,52 @@ include 'includes/header.php';
     .container > div { grid-template-columns: 1fr !important; }
 }
 </style>
+
+<script>
+function updateFloors() {
+    const bSelect = document.getElementById('building-select');
+    const fSelect = document.getElementById('floor-select');
+    if (!bSelect || !fSelect) return;
+
+    const option = bSelect.options[bSelect.selectedIndex];
+    const currentFloor = "<?php echo $req['location']['floor']; ?>";
+    fSelect.innerHTML = '';
+
+    if (option && option.dataset.floors) {
+        const floors = JSON.parse(option.dataset.floors);
+        floors.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            if (f === currentFloor) opt.selected = true;
+            fSelect.appendChild(opt);
+        });
+    }
+}
+window.addEventListener('load', updateFloors);
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.star-btn').forEach(btn => {
+        btn.onclick = function() {
+            const val = parseInt(this.dataset.value);
+            const input = document.getElementById('rating-input');
+            let newVal = val;
+            if (input && parseInt(input.value) === val) {
+                newVal = 0; // Allow 0 rating by clicking same star
+            }
+            if (input) input.value = newVal;
+            document.querySelectorAll('.star-btn').forEach(s => {
+                const sVal = parseInt(s.dataset.value);
+                s.style.color = sVal <= newVal ? '#ffc107' : '#ccc';
+                if (sVal <= newVal) s.classList.add('fill-current');
+                else s.classList.remove('fill-current');
+            });
+        }
+    });
+    // Trigger initial state if exists
+    const defaultStar = document.querySelector('.star-btn[data-value="5"]');
+    if (defaultStar) defaultStar.click();
+});
+</script>
 
 <?php include 'includes/footer.php'; ?>

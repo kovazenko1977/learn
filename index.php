@@ -56,7 +56,7 @@ include 'includes/header.php';
             </div>
             <?php if ($userRole === 'initiator' || $userRole === 'admin'): ?>
                 <a href="create.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px;">
-                    <i class="lucide-plus"></i> Новая заявка
+                    <i data-lucide="plus"></i> Новая заявка
                 </a>
             <?php endif; ?>
         </div>
@@ -95,7 +95,7 @@ include 'includes/header.php';
     <div class="card mica" style="padding:20px; margin-bottom:24px; animation: slideUp 0.6s ease-out;">
         <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap: wrap;">
             <div style="flex:1; min-width: 250px; position:relative;">
-                <i class="lucide-search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--win-text-secondary);"></i>
+                <i data-lucide="search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--win-text-secondary);"></i>
                 <input type="text" id="search-input" placeholder="Поиск заявок..." style="padding-left:48px; height:48px; border-radius:12px; font-size:15px;">
             </div>
             <div style="width: 200px;">
@@ -118,7 +118,7 @@ include 'includes/header.php';
         <?php if (empty($filteredRequests)): ?>
             <div class="card mica" style="text-align:center; color:var(--win-text-secondary); padding: 60px 20px;">
                 <div style="width:64px; height:64px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-                    <i class="lucide-inbox" style="width:32px; height:32px; opacity: 0.5;"></i>
+                    <i data-lucide="inbox" style="width:32px; height:32px; opacity: 0.5;"></i>
                 </div>
                 <p style="font-weight:600; font-size:16px; color:var(--win-text);">Активных заявок пока нет</p>
                 <p style="font-size:14px;">Когда появятся задачи, они отобразятся здесь</p>
@@ -161,12 +161,12 @@ include 'includes/header.php';
                     </div>
                     <div style="display:flex; align-items:center; gap:16px; font-size:12px; color:var(--win-text-secondary);">
                         <span style="display:flex; align-items:center; gap:4px;">
-                            <i class="lucide-map-pin" style="width:14px; height:14px;"></i>
+                            <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
                             <?php echo "Корп. {$req['location']['building']}, каб. {$req['location']['room']}"; ?>
                         </span>
                         <?php if (!empty($req['photo'])): ?>
                             <span style="display:flex; align-items:center; gap:4px;">
-                                <i class="lucide-image" style="width:14px; height:14px;"></i>
+                                <i data-lucide="image" style="width:14px; height:14px;"></i>
                                 Фото
                             </span>
                         <?php endif; ?>

@@ -52,7 +52,7 @@
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--win-font-family, 'Inter', system-ui, -apple-system, sans-serif);
     background-color: var(--win-bg);
     color: var(--win-text);
     margin: 0;

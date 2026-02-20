@@ -47,7 +47,7 @@ include 'includes/header.php';
     <div class="page-header" style="animation: slideDown 0.5s ease-out;">
         <div style="display:flex; align-items:center; gap:16px;">
             <a href="view.php?id=<?php echo $requestId; ?>" class="btn-icon" style="text-decoration:none; color:inherit; background:rgba(0,0,0,0.05); border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
-                <i class="lucide-chevron-left"></i>
+                <i data-lucide="chevron-left"></i>
             </a>
             <h1>Назначение</h1>
         </div>

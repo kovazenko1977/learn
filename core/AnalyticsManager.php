@@ -19,6 +19,7 @@ class AnalyticsManager {
             'total' => count($requests),
             'by_status' => [],
             'by_service' => [],
+            'by_performer' => [],
             'overdue' => 0,
             'avg_hours' => 0,
             'completed_count' => 0
@@ -34,6 +35,14 @@ class AnalyticsManager {
             $serviceId = $req['service_id'];
             $stats['by_service'][$serviceId] = ($stats['by_service'][$serviceId] ?? 0) + 1;
 
+            $perfId = $req['performer_id'] ?? null;
+            if ($perfId) {
+                if (!isset($stats['by_performer'][$perfId])) {
+                    $stats['by_performer'][$perfId] = ['total' => 0, 'completed' => 0, 'total_hours' => 0];
+                }
+                $stats['by_performer'][$perfId]['total']++;
+            }
+
             // Overdue check
             if (!in_array($status, ['completed', 'closed'])) {
                 $hoursLimit = $slaConfig[$req['priority']] ?? 24;
@@ -48,13 +57,18 @@ class AnalyticsManager {
                 $stats['completed_count']++;
                 $completedAt = null;
                 foreach ($req['history'] as $h) {
-                    if ($h['to'] === 'completed') {
+                    if (isset($h['status']) && $h['status'] === 'completed') {
                         $completedAt = strtotime($h['timestamp']);
                         break;
                     }
                 }
                 if ($completedAt) {
-                    $totalHours += ($completedAt - strtotime($req['created_at'])) / 3600;
+                    $duration = ($completedAt - strtotime($req['created_at'])) / 3600;
+                    $totalHours += $duration;
+                    if ($perfId) {
+                        $stats['by_performer'][$perfId]['completed']++;
+                        $stats['by_performer'][$perfId]['total_hours'] += $duration;
+                    }
                 }
             }
         }

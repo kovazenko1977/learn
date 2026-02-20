@@ -17,7 +17,7 @@ class JsonStore {
         if (!$fp) return [];
 
         flock($fp, LOCK_SH);
-        $content = file_get_contents($this->filePath);
+        $content = stream_get_contents($fp);
         flock($fp, LOCK_UN);
         fclose($fp);
 

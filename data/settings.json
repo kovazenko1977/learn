@@ -1,11 +1,13 @@
 {
-  "hospital_name": "Городская Больница",
-  "sla": {
-    "low": 48,
-    "medium": 24,
-    "high": 4,
-    "critical": 1
-  },
-  "telegram_token": "",
-  "telegram_chat_id": ""
+    "hospital_name": "Городская Больница",
+    "sla": {
+        "low": 48,
+        "medium": 24,
+        "high": 4,
+        "critical": 1
+    },
+    "telegram_token": "",
+    "telegram_chat_id": "",
+    "accent_color": "#e81123",
+    "primary_font": "'Roboto', sans-serif"
 }

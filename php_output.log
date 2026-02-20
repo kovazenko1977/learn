@@ -1,0 +1,79 @@
+[Fri Feb 20 13:52:24 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Fri Feb 20 13:53:20 2026] 127.0.0.1:41224 Accepted
+[Fri Feb 20 13:53:20 2026] 127.0.0.1:41224 [200]: GET /login.php
+[Fri Feb 20 13:53:20 2026] 127.0.0.1:41224 Closing
+[Fri Feb 20 13:53:20 2026] 127.0.0.1:41228 Accepted
+[Fri Feb 20 13:53:20 2026] 127.0.0.1:41228 [200]: GET /assets/style.css
+[Fri Feb 20 13:53:20 2026] 127.0.0.1:41228 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41234 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41234 [302]: POST /login.php
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41234 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41248 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41248 [200]: GET /index.php
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41248 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41264 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41264 [200]: GET /assets/style.css
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:41264 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38692 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38692 [200]: GET /sw.js
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38692 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38694 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38706 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38720 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38694 [200]: GET /
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38694 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38706 [200]: GET /index.php
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38706 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38720 [200]: GET /assets/style.css
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38720 Closing
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38728 Accepted
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38728 [200]: GET /settings.php
+[Fri Feb 20 13:53:21 2026] 127.0.0.1:38728 Closing
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38730 Accepted
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38730 [200]: GET /sw.js
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38730 Closing
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38742 Accepted
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38742 [200]: POST /settings.php
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38742 Closing
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38750 Accepted
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38750 [200]: GET /users.php
+[Fri Feb 20 13:53:23 2026] 127.0.0.1:38750 Closing
+[Fri Feb 20 13:54:13 2026] 127.0.0.1:60840 Accepted
+[Fri Feb 20 13:54:13 2026] 127.0.0.1:60840 [200]: GET /login.php
+[Fri Feb 20 13:54:13 2026] 127.0.0.1:60840 Closing
+[Fri Feb 20 13:54:13 2026] 127.0.0.1:60846 Accepted
+[Fri Feb 20 13:54:13 2026] 127.0.0.1:60846 [200]: GET /assets/style.css
+[Fri Feb 20 13:54:13 2026] 127.0.0.1:60846 Closing
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60860 Accepted
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60860 [302]: POST /login.php
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60860 Closing
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60864 Accepted
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60864 [200]: GET /index.php
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60864 Closing
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60868 Accepted
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60868 [200]: GET /assets/style.css
+[Fri Feb 20 13:54:14 2026] 127.0.0.1:60868 Closing
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60882 Accepted
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60882 [200]: GET /sw.js
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60882 Closing
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60894 Accepted
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60896 Accepted
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60910 Accepted
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60894 [200]: GET /
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60894 Closing
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60896 [200]: GET /index.php
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60896 Closing
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60910 [200]: GET /assets/style.css
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60910 Closing
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60918 Accepted
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60918 [200]: GET /settings.php
+[Fri Feb 20 13:54:15 2026] 127.0.0.1:60918 Closing
+[Fri Feb 20 13:54:16 2026] 127.0.0.1:60932 Accepted
+[Fri Feb 20 13:54:16 2026] 127.0.0.1:60932 [200]: POST /settings.php
+[Fri Feb 20 13:54:16 2026] 127.0.0.1:60932 Closing
+[Fri Feb 20 13:54:16 2026] 127.0.0.1:60938 Accepted
+[Fri Feb 20 13:54:16 2026] 127.0.0.1:60938 [200]: GET /users.php
+[Fri Feb 20 13:54:16 2026] 127.0.0.1:60938 Closing
+[Fri Feb 20 13:54:17 2026] 127.0.0.1:60944 Accepted
+[Fri Feb 20 13:54:17 2026] 127.0.0.1:60944 [200]: GET /sw.js
+[Fri Feb 20 13:54:17 2026] 127.0.0.1:60944 Closing

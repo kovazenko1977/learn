@@ -19,6 +19,9 @@ $serviceManager = new ServiceManager($servicesStore, $templatesStore);
 $requestStore = new JsonStore('data/requests.json');
 $requestManager = new RequestManager($requestStore, $notifier);
 
+$locStore = new JsonStore('data/locations.json');
+$locations = $locStore->read();
+
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     checkCsrf();
@@ -87,7 +90,7 @@ include 'includes/header.php';
             <div style="display: flex; flex-direction: column; gap: 24px;">
                 <section class="card mica" style="padding: 32px;">
                     <h2 style="margin-top:0; font-size:18px; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
-                        <i class="lucide-file-text" style="color:var(--win-accent);"></i> Суть обращения
+                        <i data-lucide="file-text" style="color:var(--win-accent);"></i> Суть обращения
                     </h2>
 
                     <div class="form-group">
@@ -100,12 +103,12 @@ include 'includes/header.php';
                         <div class="photo-upload-zone" onclick="document.getElementById('photo-upload').click()">
                             <input type="file" name="photo" id="photo-upload" accept="image/*" capture="environment" style="display: none;" onchange="updateFileName(this)">
                             <div id="upload-placeholder">
-                                <i class="lucide-camera" style="width: 32px; height: 32px; margin-bottom: 8px;"></i>
+                                <i data-lucide="camera" style="width: 32px; height: 32px; margin-bottom: 8px;"></i>
                                 <div style="font-weight: 600;">Нажмите для снимка</div>
                                 <div style="font-size: 12px; color: var(--win-text-secondary);">или выберите файл</div>
                             </div>
                             <div id="file-selected" style="display:none;">
-                                <i class="lucide-check-circle" style="width: 32px; height: 32px; color: var(--status-completed); margin-bottom: 8px;"></i>
+                                <i data-lucide="check-circle" style="width: 32px; height: 32px; color: var(--status-completed); margin-bottom: 8px;"></i>
                                 <div id="filename-text" style="font-weight: 600;">Файл выбран</div>
                             </div>
                         </div>
@@ -114,9 +117,28 @@ include 'includes/header.php';
 
                 <section class="card mica" style="padding: 32px;">
                     <h2 style="margin-top:0; font-size:18px; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
-                        <i class="lucide-map-pin" style="color:var(--win-accent);"></i> Местоположение
+                        <i data-lucide="map-pin" style="color:var(--win-accent);"></i> Местоположение
                     </h2>
                     <div class="form-grid">
+                        <?php if (!empty($locations)): ?>
+                        <div class="form-group">
+                            <label>Корпус</label>
+                            <select name="building" id="building-select" onchange="updateFloors()" required>
+                                <option value="">-- Выберите корпус --</option>
+                                <?php foreach ($locations as $l): ?>
+                                    <option value="<?php echo htmlspecialchars($l['name']); ?>" data-floors='<?php echo json_encode($l['floors']); ?>'>
+                                        <?php echo htmlspecialchars($l['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Этаж</label>
+                            <select name="floor" id="floor-select" required>
+                                <option value="">-- Выберите этаж --</option>
+                            </select>
+                        </div>
+                        <?php else: ?>
                         <div class="form-group">
                             <label>Корпус</label>
                             <input type="text" name="building" required placeholder="А, Б, В...">
@@ -125,6 +147,8 @@ include 'includes/header.php';
                             <label>Этаж</label>
                             <input type="text" name="floor" required placeholder="1-9...">
                         </div>
+                        <?php endif; ?>
+
                         <div class="form-group">
                             <label>Кабинет / Номер</label>
                             <input type="text" name="room" required placeholder="305, Палата 12...">
@@ -172,7 +196,7 @@ include 'includes/header.php';
                 </section>
 
                 <button type="submit" class="btn-primary" style="padding: 20px; font-size: 18px; font-weight: 800; box-shadow: 0 10px 20px rgba(0, 120, 212, 0.2);">
-                    <i class="lucide-send"></i> Отправить
+                    <i data-lucide="send"></i> Отправить
                 </button>
             </aside>
         </div>
@@ -199,6 +223,25 @@ include 'includes/header.php';
 </style>
 
 <script>
+function updateFloors() {
+    const bSelect = document.getElementById('building-select');
+    const fSelect = document.getElementById('floor-select');
+    if (!bSelect || !fSelect) return;
+
+    const option = bSelect.options[bSelect.selectedIndex];
+    fSelect.innerHTML = '<option value="">-- Выберите этаж --</option>';
+
+    if (option && option.dataset.floors) {
+        const floors = JSON.parse(option.dataset.floors);
+        floors.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f;
+            opt.textContent = f;
+            fSelect.appendChild(opt);
+        });
+    }
+}
+
 function updateFileName(input) {
     if (input.files && input.files.length > 0) {
         document.getElementById('upload-placeholder').style.display = 'none';

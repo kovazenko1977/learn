@@ -9,8 +9,23 @@
     <meta name="theme-color" content="#0078d4">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <?php
+        $settingsStore = new \Hop\Core\JsonStore('data/settings.json');
+        $globalSettings = $settingsStore->read();
+        $accentColor = $globalSettings['accent_color'] ?? '#0078d4';
+        $primaryFont = $globalSettings['primary_font'] ?? 'Inter';
+    ?>
+    <style>
+        :root {
+            --win-accent: <?php echo $accentColor; ?>;
+            --win-font-family: <?php echo $primaryFont === 'Inter' ? "'Inter', sans-serif" : $primaryFont; ?>;
+        }
+        body {
+            font-family: var(--win-font-family) !important;
+        }
+    </style>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -66,6 +81,8 @@
             <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Система</div>
 
             <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Справочники</div>
+
                 <a href="users.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>">
                     <i data-lucide="users"></i>
                     <span>Персонал</span>
@@ -74,13 +91,19 @@
                     <i data-lucide="briefcase"></i>
                     <span>Службы</span>
                 </a>
+                <a href="locations_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'locations_manage.php' ? 'active' : ''; ?>">
+                    <i data-lucide="map-pin"></i>
+                    <span>Объекты (Места)</span>
+                </a>
                 <a href="templates_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'templates_manage.php' ? 'active' : ''; ?>">
                     <i data-lucide="copy"></i>
                     <span>Шаблоны</span>
                 </a>
+
+                <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Управление</div>
                 <a href="settings.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">
                     <i data-lucide="settings"></i>
-                    <span>Настройки</span>
+                    <span>Настройки SLA</span>
                 </a>
             <?php endif; ?>
 

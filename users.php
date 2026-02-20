@@ -96,7 +96,7 @@ include 'includes/header.php';
             </div>
             <div style="grid-column: 1 / -1; margin-top:8px;">
                 <button type="submit" class="btn-primary" style="width:100%;">
-                    <i class="lucide-user-plus"></i> Создать аккаунт
+                    <i data-lucide="user-plus"></i> Создать аккаунт
                 </button>
             </div>
         </form>
@@ -117,7 +117,7 @@ include 'includes/header.php';
                         </span>
                         <?php if ($u['service_id']): ?>
                             <span style="margin-left: 8px;">
-                                <i class="lucide-briefcase" style="font-size: 10px;"></i>
+                                <i data-lucide="briefcase" style="width: 12px; height: 12px; vertical-align: middle;"></i>
                                 <?php
                                     foreach ($services as $s) if ($s['id'] == $u['service_id']) echo $s['name'];
                                 ?>
@@ -133,7 +133,7 @@ include 'includes/header.php';
 
                 <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:8px;"
                         onclick="openEditModal(<?php echo htmlspecialchars(json_encode($u)); ?>)">
-                    <i class="lucide-edit-3"></i>
+                    <i data-lucide="edit-3"></i>
                 </button>
 
                 <?php if ($u['role'] !== 'admin' || $u['id'] !== 1): ?>
@@ -142,7 +142,7 @@ include 'includes/header.php';
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="id" value="<?php echo $u['id']; ?>">
                     <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:8px;">
-                        <i class="lucide-trash-2"></i>
+                        <i data-lucide="trash-2"></i>
                     </button>
                 </form>
                 <?php endif; ?>
@@ -157,7 +157,7 @@ include 'includes/header.php';
     <div class="card mica" style="width:100%; max-width:500px; margin:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2 style="margin:0;">Редактировать сотрудника</h2>
-            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i class="lucide-x"></i></button>
+            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
         </div>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">

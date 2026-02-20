@@ -64,23 +64,23 @@ include 'includes/header.php';
             <h3 style="font-size: 16px; margin-bottom: 16px;">Панель управления</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <a href="users.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <i class="lucide-users" style="width:16px;"></i> Персонал
+                    <i data-lucide="users" style="width:16px;"></i> Персонал
                 </a>
                 <a href="services_manage.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <i class="lucide-briefcase" style="width:16px;"></i> Службы
+                    <i data-lucide="briefcase" style="width:16px;"></i> Службы
                 </a>
                 <a href="templates_manage.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <i class="lucide-copy" style="width:16px;"></i> Шаблоны
+                    <i data-lucide="copy" style="width:16px;"></i> Шаблоны
                 </a>
                 <a href="settings.php" class="btn-secondary" style="text-decoration:none; text-align:center; font-size: 13px; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <i class="lucide-settings" style="width:16px;"></i> Настройки
+                    <i data-lucide="settings" style="width:16px;"></i> Настройки
                 </a>
             </div>
         </div>
         <?php endif; ?>
 
         <a href="logout.php" class="btn-primary" style="margin-top: 32px; background: #e81123; width: 100%; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <i class="lucide-log-out"></i> Завершить сеанс
+            <i data-lucide="log-out"></i> Завершить сеанс
         </a>
     </section>
 </div>

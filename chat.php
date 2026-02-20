@@ -52,7 +52,7 @@ include 'includes/header.php';
                     <textarea name="text" rows="2" required placeholder="Напишите сообщение или объявление..." style="resize: none;"></textarea>
                 </div>
                 <button type="submit" class="btn-primary" style="height: 48px; padding: 0 24px;">
-                    <i class="lucide-send"></i>
+                    <i data-lucide="send"></i>
                 </button>
             </div>
         </form>
@@ -61,7 +61,7 @@ include 'includes/header.php';
     <div class="chat-container" style="display: flex; flex-direction: column; gap: 16px; animation: slideUp 0.7s ease-out;">
         <?php if (empty($messages)): ?>
             <div style="text-align: center; color: var(--win-text-secondary); padding: 40px;">
-                <i class="lucide-message-square" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 12px;"></i>
+                <i data-lucide="message-square" style="width: 48px; height: 48px; opacity: 0.3; margin-bottom: 12px;"></i>
                 <p>Сообщений пока нет. Будьте первым!</p>
             </div>
         <?php else: ?>
@@ -86,7 +86,7 @@ include 'includes/header.php';
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="id" value="<?php echo $msg['id']; ?>">
                                 <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
-                                    <i class="lucide-trash-2" style="width: 16px;"></i>
+                                    <i data-lucide="trash-2" style="width: 16px;"></i>
                                 </button>
                             </form>
                         <?php endif; ?>

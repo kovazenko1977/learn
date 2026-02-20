@@ -22,7 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hospital_name'])) {
             'critical' => (int)$_POST['sla_critical']
         ],
         'telegram_token' => $_POST['telegram_token'],
-        'telegram_chat_id' => $_POST['telegram_chat_id']
+        'telegram_chat_id' => $_POST['telegram_chat_id'],
+        'accent_color' => $_POST['accent_color'] ?? '#0078d4',
+        'primary_font' => $_POST['primary_font'] ?? 'Inter'
     ];
 
     if ($settingsStore->save($newSettings)) {
@@ -52,8 +54,9 @@ if (isset($_GET['action'])) {
         $serviceStore = new JsonStore('data/services.json');
         $userStore = new JsonStore('data/users.json');
         $tmplStore = new JsonStore('data/templates.json');
+        $locStore = new JsonStore('data/locations.json');
         $loader = new DemoDataLoader();
-        $loader->load($serviceStore, $userStore, $requestStore, $tmplStore);
+        $loader->load($serviceStore, $userStore, $requestStore, $tmplStore, $locStore);
         header('Location: settings.php?msg=demo_ok');
         exit;
     }
@@ -99,7 +102,7 @@ include 'includes/header.php';
         <div class="form-grid" style="align-items: stretch;">
             <section class="card mica">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                    <i class="lucide-building-2" style="color:var(--win-accent);"></i> Организация
+                    <i data-lucide="building-2" style="color:var(--win-accent);"></i> Организация
                 </h2>
                 <div class="form-group">
                     <label>Название учреждения</label>
@@ -109,8 +112,33 @@ include 'includes/header.php';
 
             <section class="card mica">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                    <i class="lucide-bell-ring" style="color:var(--win-accent);"></i> Уведомления Telegram
+                    <i data-lucide="palette" style="color:var(--win-accent);"></i> Внешний вид
                 </h2>
+                <div class="form-group">
+                    <label>Акцентный цвет (HEX)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="color" name="accent_color" value="<?php echo htmlspecialchars($settings['accent_color'] ?? '#0078d4'); ?>" style="width:50px; height:38px; padding:2px;">
+                        <input type="text" value="<?php echo htmlspecialchars($settings['accent_color'] ?? '#0078d4'); ?>" readonly style="flex:1;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Основной шрифт</label>
+                    <select name="primary_font">
+                        <option value="Inter" <?php echo ($settings['primary_font'] ?? 'Inter') === 'Inter' ? 'selected' : ''; ?>>Inter (Системный)</option>
+                        <option value="'Segoe UI', sans-serif" <?php echo ($settings['primary_font'] ?? '') === "'Segoe UI', sans-serif" ? 'selected' : ''; ?>>Segoe UI</option>
+                        <option value="'Roboto', sans-serif" <?php echo ($settings['primary_font'] ?? '') === "'Roboto', sans-serif" ? 'selected' : ''; ?>>Roboto</option>
+                        <option value="'Open Sans', sans-serif" <?php echo ($settings['primary_font'] ?? '') === "'Open Sans', sans-serif" ? 'selected' : ''; ?>>Open Sans</option>
+                        <option value="system-ui" <?php echo ($settings['primary_font'] ?? '') === 'system-ui' ? 'selected' : ''; ?>>System Default</option>
+                    </select>
+                </div>
+            </section>
+        </div>
+
+        <section class="card mica" style="margin-top: 24px;">
+            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="bell-ring" style="color:var(--win-accent);"></i> Уведомления Telegram
+            </h2>
+            <div class="form-grid">
                 <div class="form-group">
                     <label>Bot Token</label>
                     <input type="text" name="telegram_token" value="<?php echo htmlspecialchars($settings['telegram_token']); ?>" placeholder="000000000:AAHHH...">
@@ -119,12 +147,12 @@ include 'includes/header.php';
                     <label>Target Chat ID</label>
                     <input type="text" name="telegram_chat_id" value="<?php echo htmlspecialchars($settings['telegram_chat_id']); ?>" placeholder="-100123456789">
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
 
         <section class="card mica" style="margin-top: 24px;">
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i class="lucide-timer" style="color:var(--win-accent);"></i> Нормативы SLA (в часах)
+                <i data-lucide="timer" style="color:var(--win-accent);"></i> Нормативы SLA (в часах)
             </h2>
             <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                 <div class="form-group">
@@ -148,7 +176,7 @@ include 'includes/header.php';
 
         <div style="margin-top: 24px; text-align: right;">
             <button type="submit" class="btn-primary" style="padding: 12px 32px; font-size: 16px;">
-                <i class="lucide-save"></i> Применить изменения
+                <i data-lucide="save"></i> Применить изменения
             </button>
         </div>
     </form>
@@ -164,7 +192,7 @@ include 'includes/header.php';
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <a href="settings.php?action=backup" class="btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; background: var(--win-accent);">
-                        <i class="lucide-download"></i> Скачать архив данных
+                        <i data-lucide="download"></i> Скачать архив данных
                     </a>
                 </div>
 
@@ -179,7 +207,7 @@ include 'includes/header.php';
                         <input type="file" name="backup_file" accept=".zip" required>
                     </div>
                     <button type="submit" class="btn-primary" style="width:100%; background:var(--status-checking);">
-                        <i class="lucide-upload"></i> Загрузить и восстановить
+                        <i data-lucide="upload"></i> Загрузить и восстановить
                     </button>
                 </form>
             </section>
@@ -190,7 +218,7 @@ include 'includes/header.php';
                     Наполните систему сгенерированными данными для обучения персонала или тестирования функционала.
                 </p>
                 <a href="settings.php?action=demo" class="btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; background:var(--status-working);">
-                    <i class="lucide-flask-conical"></i> Генерировать демо-данные
+                    <i data-lucide="flask-conical"></i> Генерировать демо-данные
                 </a>
 
                 <div style="margin: 24px 0; height: 1px; background: var(--win-border);"></div>
@@ -207,7 +235,7 @@ include 'includes/header.php';
                         <input type="password" name="reset_password" placeholder="Введите '12345'" required>
                     </div>
                     <button type="submit" class="btn-primary" style="width:100%; background:var(--priority-critical);">
-                        <i class="lucide-trash-2"></i> Очистить базу данных
+                        <i data-lucide="trash-2"></i> Очистить базу данных
                     </button>
                 </form>
             </section>

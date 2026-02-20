@@ -2,7 +2,18 @@
 namespace Hop\Core;
 
 class DemoDataLoader {
-    public function load(JsonStore $svcStore, JsonStore $userStore, JsonStore $reqStore, JsonStore $tmplStore): void {
+    public function load(JsonStore $svcStore, JsonStore $userStore, JsonStore $reqStore, JsonStore $tmplStore, ?JsonStore $locStore = null): void {
+        // 0. Locations
+        if ($locStore) {
+            $locations = [
+                ['id' => 1, 'name' => 'Корпус А (Главный)', 'floors' => ['1', '2', '3', '4', '5']],
+                ['id' => 2, 'name' => 'Корпус Б (Хирургия)', 'floors' => ['1', '2', '3']],
+                ['id' => 3, 'name' => 'Корпус В (Инфекционный)', 'floors' => ['1', '2']],
+                ['id' => 4, 'name' => 'Хозблок', 'floors' => ['1']]
+            ];
+            $locStore->save($locations);
+        }
+
         // 1. Services
         $services = [
             ['id' => 1, 'name' => 'Техническая служба (Сантехника/Электрика)'],

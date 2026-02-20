@@ -24,10 +24,13 @@ class NotificationManager {
 
         $this->notificationStore->save($notifications);
 
-        // Telegram Mock
+        // Telegram Notification
         $settings = $this->settingsStore->read();
         if (!empty($settings['telegram_token']) && !empty($settings['telegram_chat_id'])) {
-            // Here we would call file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id={$chatId}&text=" . urlencode($message));
+            $token = $settings['telegram_token'];
+            $chatId = $settings['telegram_chat_id'];
+            $url = "https://api.telegram.org/bot{$token}/sendMessage?chat_id={$chatId}&text=" . urlencode($message);
+            @file_get_contents($url);
         }
 
         return true;

@@ -8,6 +8,7 @@ checkRole(['manager', 'admin']);
 
 $requestStore = new JsonStore('data/requests.json');
 $serviceStore = new JsonStore('data/services.json');
+$userStore = new JsonStore('data/users.json');
 $settingsStore = new JsonStore('data/settings.json');
 $settings = $settingsStore->read();
 
@@ -16,6 +17,9 @@ $stats = $analytics->getStats();
 
 $services = [];
 foreach ($serviceStore->read() as $s) $services[$s['id']] = $s['name'];
+
+$users = [];
+foreach ($userStore->read() as $u) $users[$u['id']] = $u['name'];
 
 $statusNames = [
     'new' => 'Новые', 'assigned' => 'Назначены', 'working' => 'В работе',
@@ -32,35 +36,35 @@ include 'includes/header.php';
             <p style="color:var(--win-text-secondary);">Показатели эффективности и нагрузка служб</p>
         </div>
         <a href="export.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
-            <i class="lucide-download"></i> Экспорт в CSV
+            <i data-lucide="download"></i> Экспорт в CSV
         </a>
     </div>
 
     <div class="stats-grid" style="animation: slideUp 0.6s ease-out;">
         <div class="stat-card mica">
             <div class="stat-icon" style="background: rgba(0, 120, 212, 0.1); color: var(--win-accent);">
-                <i class="lucide-layers"></i>
+                <i data-lucide="layers"></i>
             </div>
             <div class="stat-value"><?php echo $stats['total']; ?></div>
             <div class="stat-label">Всего заявок</div>
         </div>
         <div class="stat-card mica">
             <div class="stat-icon" style="background: rgba(232, 17, 35, 0.1); color: var(--priority-critical);">
-                <i class="lucide-alert-triangle"></i>
+                <i data-lucide="alert-triangle"></i>
             </div>
             <div class="stat-value"><?php echo $stats['overdue']; ?></div>
             <div class="stat-label">Просрочено SLA</div>
         </div>
         <div class="stat-card mica">
             <div class="stat-icon" style="background: rgba(16, 124, 16, 0.1); color: var(--status-completed);">
-                <i class="lucide-check-circle"></i>
+                <i data-lucide="check-circle"></i>
             </div>
             <div class="stat-value"><?php echo $stats['completed_count']; ?></div>
             <div class="stat-label">Выполнено</div>
         </div>
         <div class="stat-card mica">
             <div class="stat-icon" style="background: rgba(0, 120, 212, 0.1); color: var(--win-accent);">
-                <i class="lucide-clock"></i>
+                <i data-lucide="clock"></i>
             </div>
             <div class="stat-value"><?php echo $stats['avg_hours']; ?><small style="font-size: 14px; margin-left: 2px;">ч</small></div>
             <div class="stat-label">Ср. время</div>
@@ -70,7 +74,7 @@ include 'includes/header.php';
     <div class="form-grid" style="margin-top: 24px; animation: slideUp 0.7s ease-out;">
         <section class="card mica">
             <h2 style="margin-top:0; font-size:18px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-                <i class="lucide-pie-chart" style="color:var(--win-accent);"></i> Статусы заявок
+                <i data-lucide="pie-chart" style="color:var(--win-accent);"></i> Статусы заявок
             </h2>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 <?php foreach ($statusNames as $code => $name):
@@ -92,7 +96,7 @@ include 'includes/header.php';
 
         <section class="card mica">
             <h2 style="margin-top:0; font-size:18px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-                <i class="lucide-bar-chart-3" style="color:var(--win-accent);"></i> Нагрузка на службы
+                <i data-lucide="bar-chart-3" style="color:var(--win-accent);"></i> Нагрузка на службы
             </h2>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <?php foreach ($services as $id => $name):
@@ -108,7 +112,46 @@ include 'includes/header.php';
         </section>
     </div>
 
-    <section class="card mica" style="margin-top: 24px; animation: slideUp 0.8s ease-out; padding: 40px; text-align: center;">
+    <div class="card mica" style="margin-top: 24px; animation: slideUp 0.8s ease-out;">
+        <h2 style="margin-top:0; font-size:18px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+            <i data-lucide="users" style="color:var(--win-accent);"></i> Эффективность персонала
+        </h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Сотрудник</th>
+                        <th style="text-align:center;">Всего задач</th>
+                        <th style="text-align:center;">Выполнено</th>
+                        <th style="text-align:center;">КПД</th>
+                        <th style="text-align:right;">Ср. время (ч)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    uasort($stats['by_performer'], function($a, $b) { return $b['completed'] <=> $a['completed']; });
+                    foreach ($stats['by_performer'] as $pid => $pstats):
+                        $efficiency = $pstats['total'] > 0 ? round(($pstats['completed'] / $pstats['total']) * 100) : 0;
+                        $avgTime = $pstats['completed'] > 0 ? round($pstats['total_hours'] / $pstats['completed'], 1) : 0;
+                    ?>
+                        <tr>
+                            <td style="font-weight: 600;"><?php echo htmlspecialchars($users[$pid] ?? "ID: $pid"); ?></td>
+                            <td style="text-align:center;"><?php echo $pstats['total']; ?></td>
+                            <td style="text-align:center;"><?php echo $pstats['completed']; ?></td>
+                            <td style="text-align:center;">
+                                <span class="badge" style="background: rgba(0, 120, 212, 0.1); color: var(--win-accent);">
+                                    <?php echo $efficiency; ?>%
+                                </span>
+                            </td>
+                            <td style="text-align:right; font-weight: 700; color: var(--win-accent);"><?php echo $avgTime; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <section class="card mica" style="margin-top: 24px; animation: slideUp 0.9s ease-out; padding: 40px; text-align: center;">
         <h2 style="margin-top:0;">Краткий отчет по эффективности</h2>
         <div style="display: flex; justify-content: center; gap: 48px; margin-top: 32px;">
              <div>

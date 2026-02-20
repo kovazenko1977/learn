@@ -77,7 +77,7 @@ include 'includes/header.php';
                 <textarea name="description" rows="3" required placeholder="Опишите суть проблемы для этого шаблона..."></textarea>
             </div>
             <button type="submit" class="btn-primary" style="width:100%;">
-                <i class="lucide-layout"></i> Сохранить шаблон
+                <i data-lucide="layout"></i> Сохранить шаблон
             </button>
         </form>
     </section>
@@ -100,14 +100,14 @@ include 'includes/header.php';
                 <div style="display: flex; gap: 8px;">
                     <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:4px;"
                             onclick="openEditModal(<?php echo htmlspecialchars(json_encode($t)); ?>)">
-                        <i class="lucide-edit"></i>
+                        <i data-lucide="edit"></i>
                     </button>
                     <form method="POST" onsubmit="return confirm('Удалить шаблон?');">
                         <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="id" value="<?php echo $t['id']; ?>">
                         <button type="submit" class="btn-icon" style="background:none; border:none; color:var(--priority-critical); cursor:pointer; padding:4px;">
-                            <i class="lucide-trash"></i>
+                            <i data-lucide="trash-2"></i>
                         </button>
                     </form>
                 </div>
@@ -122,7 +122,7 @@ include 'includes/header.php';
     <div class="card mica" style="width:100%; max-width:600px; margin:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2 style="margin:0;">Редактировать шаблон</h2>
-            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i class="lucide-x"></i></button>
+            <button onclick="closeEditModal()" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
         </div>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">

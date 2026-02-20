@@ -29,7 +29,7 @@ include 'includes/header.php';
         <form method="POST">
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
             <button type="submit" name="mark_read" class="btn-primary" style="padding: 8px 16px; font-size: 13px; background: rgba(0,0,0,0.05); color: var(--win-text); border: 1px solid var(--win-border);">
-                <i class="lucide-check-circle-2"></i> Прочитать всё
+                <i data-lucide="check-circle-2"></i> Прочитать всё
             </button>
         </form>
         <?php endif; ?>
@@ -38,7 +38,7 @@ include 'includes/header.php';
     <?php if (empty($notifications)): ?>
         <div class="card mica" style="text-align:center; color:var(--win-text-secondary); padding: 80px 20px; animation: slideUp 0.6s ease-out; display: flex; flex-direction: column; align-items: center;">
             <div style="width: 80px; height: 80px; background: rgba(0,0,0,0.03); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
-                <i class="lucide-bell-off" style="width:40px; height:40px; opacity: 0.3;"></i>
+                <i data-lucide="bell-off" style="width:40px; height:40px; opacity: 0.3;"></i>
             </div>
             <p style="font-size: 18px; font-weight: 600; margin: 0; color: var(--win-text);">Входящих нет</p>
             <p style="font-size: 14px; margin-top: 8px; opacity: 0.7;">Мы сообщим вам, когда произойдет что-то важное</p>
@@ -49,7 +49,7 @@ include 'includes/header.php';
                 <div class="card mica list-item <?php echo $n['read'] ? '' : 'unread-pulse'; ?>" style="animation-delay: <?php echo $index * 0.05; ?>s; padding: 16px; border-left: 4px solid <?php echo $n['read'] ? 'transparent' : 'var(--win-accent)'; ?>;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <div style="font-size:11px; color:var(--win-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">
-                            <i class="lucide-clock" style="width:12px; height:12px; vertical-align: middle; margin-right:4px;"></i>
+                            <i data-lucide="clock" style="width:12px; height:12px; vertical-align: middle; margin-right:4px;"></i>
                             <?php echo date('d.m.Y H:i', strtotime($n['timestamp'])); ?>
                         </div>
                         <?php if (!$n['read']): ?>
