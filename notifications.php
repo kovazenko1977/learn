@@ -6,7 +6,8 @@ use Hop\Core\NotificationManager;
 
 $settingsStore = new JsonStore('data/settings.json');
 $notificationStore = new JsonStore('data/notifications.json');
-$notifier = new NotificationManager($settingsStore, $notificationStore);
+$userStore = new JsonStore('data/users.json');
+$notifier = new NotificationManager($settingsStore, $notificationStore, $userStore);
 $notifications = $notifier->getForUser($_SESSION['user_id']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_read'])) {

@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'name' => $_POST['name'],
             'role' => $_POST['role'],
             'code' => $_POST['code'],
-            'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null
+            'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
+            'telegram_chat_id' => $_POST['telegram_chat_id'] ?? ''
         ]);
         $message = 'Пользователь создан';
     } elseif ($action === 'edit') {
@@ -26,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'name' => $_POST['name'],
             'role' => $_POST['role'],
             'code' => $_POST['code'],
-            'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null
+            'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
+            'telegram_chat_id' => $_POST['telegram_chat_id'] ?? ''
         ]);
         $message = 'Данные пользователя обновлены';
     } elseif ($action === 'delete') {
@@ -93,6 +95,10 @@ include 'includes/header.php';
                         <option value="<?php echo $svc['id']; ?>"><?php echo $svc['name']; ?></option>
                     <?php endforeach; ?>
                 </select>
+            </div>
+            <div class="form-group">
+                <label>Telegram Chat ID (персональный)</label>
+                <input type="text" name="telegram_chat_id" placeholder="Напр. 123456789">
             </div>
             <div style="grid-column: 1 / -1; margin-top:8px;">
                 <button type="submit" class="btn-primary" style="width:100%;">
@@ -196,6 +202,11 @@ include 'includes/header.php';
                 </select>
             </div>
 
+            <div class="form-group">
+                <label>Telegram Chat ID</label>
+                <input type="text" name="telegram_chat_id" id="edit-telegram_chat_id">
+            </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Отмена</button>
                 <button type="submit" class="btn-primary">Сохранить изменения</button>
@@ -211,6 +222,7 @@ function openEditModal(user) {
     document.getElementById('edit-role').value = user.role;
     document.getElementById('edit-code').value = user.code;
     document.getElementById('edit-service_id').value = user.service_id || "";
+    document.getElementById('edit-telegram_chat_id').value = user.telegram_chat_id || "";
     document.getElementById('editModal').style.display = 'flex';
 }
 

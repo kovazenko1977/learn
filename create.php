@@ -10,7 +10,8 @@ checkRole(['initiator', 'admin']);
 
 $settingsStore = new JsonStore('data/settings.json');
 $notificationStore = new JsonStore('data/notifications.json');
-$notifier = new NotificationManager($settingsStore, $notificationStore);
+$userStore = new JsonStore('data/users.json');
+$notifier = new NotificationManager($settingsStore, $notificationStore, $userStore);
 
 $servicesStore = new JsonStore('data/services.json');
 $templatesStore = new JsonStore('data/templates.json');

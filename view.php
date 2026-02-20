@@ -9,7 +9,8 @@ use Hop\Core\NotificationManager;
 $id = (int)($_GET['id'] ?? 0);
 $settingsStore = new JsonStore('data/settings.json');
 $notificationStore = new JsonStore('data/notifications.json');
-$notifier = new NotificationManager($settingsStore, $notificationStore);
+$userStore = new JsonStore('data/users.json');
+$notifier = new NotificationManager($settingsStore, $notificationStore, $userStore);
 
 $requestStore = new JsonStore('data/requests.json');
 $requestManager = new RequestManager($requestStore, $notifier);
