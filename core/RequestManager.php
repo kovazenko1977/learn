@@ -51,19 +51,22 @@ class RequestManager {
         return $id;
     }
 
-    public function updateStatus(int $id, string $newStatus, int $userId, string $comment = '', string $photo = ''): bool {
+    public function updateStatus(int $id, string $newStatus, int $userId, string $comment = '', string $photo = '', int $rating = 0): bool {
         $requests = $this->getAll();
         $found = false;
         $targetRequest = null;
         foreach ($requests as &$request) {
             if ($request['id'] === $id) {
                 $request['status'] = $newStatus;
+                if ($rating > 0) $request['rating'] = $rating;
+
                 $entry = [
                     'status' => $newStatus,
                     'user_id' => $userId,
                     'timestamp' => date('Y-m-d H:i:s'),
                     'comment' => $comment
                 ];
+                if ($rating > 0) $entry['rating'] = $rating;
                 if ($photo) {
                     $entry['photo'] = $photo;
                     if (!isset($request['photos'])) $request['photos'] = [];
@@ -118,5 +121,29 @@ class RequestManager {
             }
         }
         return false;
+    }
+
+    public function adminUpdate(int $id, array $data): bool {
+        $requests = $this->getAll();
+        $found = false;
+        foreach ($requests as &$request) {
+            if ($request['id'] === $id) {
+                if (isset($data['description'])) $request['description'] = $data['description'];
+                if (isset($data['priority'])) $request['priority'] = $data['priority'];
+                if (isset($data['location'])) $request['location'] = array_merge($request['location'], $data['location']);
+                if (isset($data['service_id'])) $request['service_id'] = (int)$data['service_id'];
+                if (isset($data['performer_id'])) $request['performer_id'] = (int)$data['performer_id'];
+
+                $request['history'][] = [
+                    'status' => $request['status'],
+                    'user_id' => 0, // System/Admin
+                    'timestamp' => date('Y-m-d H:i:s'),
+                    'comment' => 'Данные заявки изменены администратором'
+                ];
+                $found = true;
+                break;
+            }
+        }
+        return $found ? $this->store->save($requests) : false;
     }
 }

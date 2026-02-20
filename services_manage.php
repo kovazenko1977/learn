@@ -21,14 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $services[] = [
             'id' => $id,
             'name' => $_POST['name'],
-            'description' => $_POST['description']
+            'description' => $_POST['description'],
+            'performer_id' => (int)($_POST['performer_id'] ?? 0)
         ];
         $serviceStore->save($services);
         $message = 'Служба добавлена';
     } elseif ($action === 'edit') {
         $serviceManager->updateService((int)$_POST['id'], [
             'name' => $_POST['name'],
-            'description' => $_POST['description']
+            'description' => $_POST['description'],
+            'performer_id' => (int)($_POST['performer_id'] ?? 0)
         ]);
         $message = 'Данные службы обновлены';
     } elseif ($action === 'delete') {
@@ -38,6 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $services = $serviceManager->getAllServices();
+$userStore = new JsonStore('data/users.json');
+$allPerformers = array_filter($userStore->read(), fn($u) => $u['role'] === 'performer');
 
 include 'includes/header.php';
 ?>
@@ -64,6 +68,15 @@ include 'includes/header.php';
             <div class="form-group">
                 <label>Зона ответственности</label>
                 <textarea name="description" rows="2" required placeholder="Краткое описание выполняемых работ..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Закрепленный исполнитель</label>
+                <select name="performer_id">
+                    <option value="0">-- Не назначен --</option>
+                    <?php foreach ($allPerformers as $p): ?>
+                        <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <button type="submit" class="btn-primary" style="width:100%;">
                 <i class="lucide-plus-circle"></i> Добавить в реестр
@@ -96,8 +109,18 @@ include 'includes/header.php';
                     </form>
                 </div>
             </div>
-            <div style="margin-top: 12px; border-top: 1px solid var(--win-border); pt: 8px; display: flex; gap: 12px; font-size: 12px; color: var(--win-text-secondary);">
+            <div style="margin-top: 12px; border-top: 1px solid var(--win-border); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--win-text-secondary);">
                 <span>ID: <?php echo $s['id']; ?></span>
+                <span style="display:flex; align-items:center; gap:4px;">
+                    <i class="lucide-user" style="width:14px;"></i>
+                    <?php
+                        $pName = 'Не назначен';
+                        if ($s['performer_id'] ?? 0) {
+                            foreach ($allPerformers as $ap) if ($ap['id'] == $s['performer_id']) $pName = $ap['name'];
+                        }
+                        echo htmlspecialchars($pName);
+                    ?>
+                </span>
             </div>
         </div>
         <?php endforeach; ?>
@@ -126,6 +149,16 @@ include 'includes/header.php';
                 <textarea name="description" id="edit-description" rows="3" required></textarea>
             </div>
 
+            <div class="form-group">
+                <label>Закрепленный исполнитель</label>
+                <select name="performer_id" id="edit-performer_id">
+                    <option value="0">-- Не назначен --</option>
+                    <?php foreach ($allPerformers as $p): ?>
+                        <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Отмена</button>
                 <button type="submit" class="btn-primary">Сохранить</button>
@@ -139,6 +172,7 @@ function openEditModal(svc) {
     document.getElementById('edit-id').value = svc.id;
     document.getElementById('edit-name').value = svc.name || '';
     document.getElementById('edit-description').value = svc.description || '';
+    document.getElementById('edit-performer_id').value = svc.performer_id || 0;
     document.getElementById('editModal').style.display = 'flex';
 }
 

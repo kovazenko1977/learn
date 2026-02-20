@@ -31,16 +31,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $userRole = $_SESSION['user_role'];
     $userId = $_SESSION['user_id'];
 
+    if ($action === 'admin_edit' && $userRole === 'admin') {
+        $requestManager->adminUpdate($id, [
+            'description' => $_POST['description'],
+            'priority' => $_POST['priority'],
+            'location' => [
+                'building' => $_POST['building'],
+                'room' => $_POST['room']
+            ]
+        ]);
+        header("Location: view.php?id=$id");
+        exit;
+    }
+
     if ($userRole === 'admin') { $isAllowed = true; }
     elseif ($userRole === 'performer' && ($req['performer_id'] ?? 0) === $userId) {
         if (in_array($action, ['working', 'checking'])) $isAllowed = true;
-    } elseif ($userRole === 'controller') {
+    } elseif ($userId === $req['initiator_id']) {
         if (in_array($action, ['completed', 'returned', 'closed'])) $isAllowed = true;
     }
 
     if (!$isAllowed) { die('Доступ запрещен'); }
 
     $comment = $_POST['comment'] ?? '';
+    $rating = (int)($_POST['rating'] ?? 0);
     $photoPath = '';
 
     if (isset($_FILES['proof_photo']) && $_FILES['proof_photo']['error'] === UPLOAD_ERR_OK) {
@@ -52,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
     }
 
-    $requestManager->updateStatus($id, $action, $_SESSION['user_id'], $comment, $photoPath);
+    $requestManager->updateStatus($id, $action, $_SESSION['user_id'], $comment, $photoPath, $rating);
     header("Location: view.php?id=$id");
     exit;
 }
@@ -77,7 +91,7 @@ include 'includes/header.php';
     <div class="page-header" style="display:flex; align-items:center; justify-content:space-between; animation: slideDown 0.5s ease-out;">
         <div style="display:flex; align-items:center; gap:16px;">
             <a href="index.php" class="btn-icon" style="text-decoration:none; color:inherit; background:rgba(0,0,0,0.05); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-                <i class="lucide-arrow-left"></i>
+                <i data-lucide="arrow-left"></i>
             </a>
             <div>
                 <h1 style="margin:0;">Заявка #<?php echo $req['id']; ?></h1>
@@ -87,7 +101,7 @@ include 'includes/header.php';
             </div>
         </div>
         <button onclick="window.print()" class="btn-secondary desktop-only">
-            <i class="lucide-printer"></i> Печать
+            <i data-lucide="printer"></i> Печать
         </button>
     </div>
 
@@ -100,12 +114,30 @@ include 'includes/header.php';
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--win-text-secondary); font-weight: 700; margin-bottom: 4px;">Служба</div>
                         <h2 style="margin: 0; font-size: 22px; font-weight: 800;"><?php echo $services[$req['service_id']] ?? 'Служба'; ?></h2>
                     </div>
-                    <span class="badge status-<?php echo $req['status']; ?>" style="padding: 8px 16px; font-size: 14px;">
-                        <?php echo $statusNames[$req['status']]; ?>
-                    </span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <?php if ($_SESSION['user_role'] === 'admin'): ?>
+                            <button onclick="document.getElementById('adminEditModal').style.display='flex'" class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer;">
+                                <i data-lucide="edit-3"></i>
+                            </button>
+                        <?php endif; ?>
+                        <span class="badge status-<?php echo $req['status']; ?>" style="padding: 8px 16px; font-size: 14px;">
+                            <?php echo $statusNames[$req['status']]; ?>
+                        </span>
+                    </div>
                 </div>
 
                 <div style="font-size: 17px; line-height: 1.6; color: var(--win-text); margin-bottom: 32px; white-space: pre-wrap;"><?php echo htmlspecialchars($req['description']); ?></div>
+
+                <?php if (!empty($req['rating'])): ?>
+                    <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 11px; text-transform: uppercase; color: var(--win-text-secondary); font-weight: 700;">Оценка:</span>
+                        <div style="color: #ffc107; display: flex; gap: 2px;">
+                            <?php for($i=1; $i<=5; $i++): ?>
+                                <i data-lucide="star" class="<?php echo $i <= $req['rating'] ? 'fill-current' : ''; ?>" style="width:16px;"></i>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <?php if (!empty($req['photo'])): ?>
                     <div style="margin-top: 24px;">
@@ -135,7 +167,7 @@ include 'includes/header.php';
 
                 <?php if ($req['status'] === 'new' && ($_SESSION['user_role'] === 'service_lead' || $_SESSION['user_role'] === 'admin')): ?>
                     <a href="assign.php?id=<?php echo $req['id']; ?>" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;">
-                        <i class="lucide-user-check"></i> Назначить исполнителя
+                        <i data-lucide="user-check"></i> Назначить исполнителя
                     </a>
                 <?php endif; ?>
 
@@ -163,24 +195,48 @@ include 'includes/header.php';
                     <?php endif; ?>
                 <?php endif; ?>
 
-                <?php if ($_SESSION['user_role'] === 'controller' || $_SESSION['user_role'] === 'admin'): ?>
+                <?php if ($_SESSION['user_id'] === $req['initiator_id'] || $_SESSION['user_role'] === 'admin'): ?>
                     <?php if ($req['status'] === 'checking'): ?>
                         <form method="POST">
                             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                             <div class="form-group">
-                                <label>Комментарий контролера</label>
-                                <textarea name="comment" rows="2"></textarea>
+                                <label>Оцените качество выполнения</label>
+                                <div class="rating-stars" style="display:flex; gap:12px; margin-bottom:16px; color:#ccc; font-size:24px;">
+                                    <?php for($i=1; $i<=5; $i++): ?>
+                                        <i data-lucide="star" class="star-btn" data-value="<?php echo $i; ?>" style="cursor:pointer;"></i>
+                                    <?php endfor; ?>
+                                </div>
+                                <input type="hidden" name="rating" id="rating-input" value="5">
+                            </div>
+                            <div class="form-group">
+                                <label>Ваш отзыв / комментарий</label>
+                                <textarea name="comment" rows="2" placeholder="Добавьте подробности, если нужно..."></textarea>
                             </div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                                 <button type="submit" name="action" value="completed" class="btn-primary" style="background:var(--status-completed);">Принять работу</button>
                                 <button type="submit" name="action" value="returned" class="btn-primary" style="background:var(--status-returned);">Вернуть на доработку</button>
                             </div>
                         </form>
+                        <script>
+                            document.querySelectorAll('.star-btn').forEach(btn => {
+                                btn.onclick = function() {
+                                    const val = this.dataset.value;
+                                    document.getElementById('rating-input').value = val;
+                                    document.querySelectorAll('.star-btn').forEach(s => {
+                                        s.style.color = s.dataset.value <= val ? '#ffc107' : '#ccc';
+                                        if (s.dataset.value <= val) s.classList.add('fill-current');
+                                        else s.classList.remove('fill-current');
+                                    });
+                                }
+                            });
+                            // Trigger initial state
+                            document.querySelector('.star-btn[data-value="5"]').click();
+                        </script>
                     <?php elseif ($req['status'] === 'completed'): ?>
                         <form method="POST">
                             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
                             <input type="hidden" name="action" value="closed">
-                            <p style="font-size:13px; color:var(--win-text-secondary); margin-bottom:16px;">Заявка прошла все этапы. Подтвержите закрытие.</p>
+                            <p style="font-size:13px; color:var(--win-text-secondary); margin-bottom:16px;">Заявка выполнена и проверена. Подтвердите закрытие.</p>
                             <button type="submit" class="btn-primary" style="width:100%; background:var(--win-accent);">Закрыть и архивировать</button>
                         </form>
                     <?php endif; ?>
@@ -238,7 +294,52 @@ include 'includes/header.php';
     </div>
 </div>
 
+<!-- Admin Edit Modal -->
+<div id="adminEditModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div class="card mica" style="width:100%; max-width:600px; margin:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0;">Редактировать заявку</h2>
+            <button onclick="document.getElementById('adminEditModal').style.display='none'" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+            <input type="hidden" name="action" value="admin_edit">
+
+            <div class="form-group">
+                <label>Описание проблемы</label>
+                <textarea name="description" rows="4" required><?php echo htmlspecialchars($req['description']); ?></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                <div class="form-group">
+                    <label>Корпус</label>
+                    <input type="text" name="building" value="<?php echo htmlspecialchars($req['location']['building']); ?>" required>
+                </div>
+                <div class="form-group">
+                    <label>Кабинет</label>
+                    <input type="text" name="room" value="<?php echo htmlspecialchars($req['location']['room']); ?>" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Приоритет</label>
+                <select name="priority">
+                    <?php foreach ($priorityNames as $key => $val): ?>
+                        <option value="<?php echo $key; ?>" <?php echo $req['priority'] === $key ? 'selected' : ''; ?>><?php echo $val; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:20px;">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('adminEditModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
+.fill-current { fill: currentColor; }
 @media (max-width: 900px) {
     .container > div { grid-template-columns: 1fr !important; }
 }

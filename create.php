@@ -38,11 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $performerId = null;
     $initialStatus = 'new';
 
-    $userStore = new JsonStore('data/users.json');
-    $allUsers = $userStore->read();
-    foreach ($allUsers as $u) {
-        if ($u['role'] === 'performer' && $u['service_id'] === $serviceId) {
-            $performerId = $u['id'];
+    $services = $serviceManager->getAllServices();
+    foreach ($services as $s) {
+        if ($s['id'] === $serviceId && !empty($s['performer_id'])) {
+            $performerId = $s['performer_id'];
             $initialStatus = 'assigned';
             break;
         }

@@ -1,0 +1,93 @@
+[
+    {
+        "user_id": 12,
+        "message": "Вам назначена новая заявка #121",
+        "type": "info",
+        "timestamp": "2026-02-20 11:26:12",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #121 изменила статус на working",
+        "type": "info",
+        "timestamp": "2026-02-20 11:26:16",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #121 изменила статус на checking",
+        "type": "info",
+        "timestamp": "2026-02-20 11:26:18",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Вам назначена новая заявка #122",
+        "type": "info",
+        "timestamp": "2026-02-20 11:28:26",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #122 изменила статус на working",
+        "type": "info",
+        "timestamp": "2026-02-20 11:28:29",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #122 изменила статус на checking",
+        "type": "info",
+        "timestamp": "2026-02-20 11:28:31",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Вам назначена новая заявка #123",
+        "type": "info",
+        "timestamp": "2026-02-20 11:29:21",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #123 изменила статус на working",
+        "type": "info",
+        "timestamp": "2026-02-20 11:29:24",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #123 изменила статус на checking",
+        "type": "info",
+        "timestamp": "2026-02-20 11:29:25",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Вам назначена новая заявка #124",
+        "type": "info",
+        "timestamp": "2026-02-20 11:31:21",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #124 изменила статус на working",
+        "type": "info",
+        "timestamp": "2026-02-20 11:31:24",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #124 изменила статус на checking",
+        "type": "info",
+        "timestamp": "2026-02-20 11:31:26",
+        "read": false
+    },
+    {
+        "user_id": 12,
+        "message": "Заявка #124 изменила статус на completed",
+        "type": "info",
+        "timestamp": "2026-02-20 11:31:28",
+        "read": false
+    }
+]

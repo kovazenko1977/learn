@@ -27,6 +27,8 @@ class ServiceManager {
         $found = false;
         foreach ($services as &$s) {
             if ($s['id'] === $id) {
+                // Ensure numeric types for IDs
+                if (isset($data['performer_id'])) $data['performer_id'] = (int)$data['performer_id'];
                 $s = array_merge($s, $data);
                 $found = true;
                 break;
