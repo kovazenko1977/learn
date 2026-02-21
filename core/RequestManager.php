@@ -176,4 +176,31 @@ class RequestManager {
         }
         return $found ? $this->store->save($requests) : false;
     }
+
+    public function purgeBefore(string $date): int {
+        $requests = $this->getAll();
+        $initialCount = count($requests);
+        $newRequests = [];
+        $cutoff = strtotime($date . ' 23:59:59');
+
+        foreach ($requests as $req) {
+            $reqDate = strtotime($req['created_at']);
+            if ($reqDate > $cutoff) {
+                $newRequests[] = $req;
+            } else {
+                // Delete photos
+                if (!empty($req['photo']) && file_exists($req['photo'])) {
+                    @unlink($req['photo']);
+                }
+                if (!empty($req['photos'])) {
+                    foreach ($req['photos'] as $p) {
+                        if (file_exists($p)) @unlink($p);
+                    }
+                }
+            }
+        }
+
+        $this->store->save($newRequests);
+        return $initialCount - count($newRequests);
+    }
 }

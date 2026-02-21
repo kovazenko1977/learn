@@ -121,4 +121,17 @@ class NotificationManager {
         }
         $this->notificationStore->save($notifications);
     }
+
+    public function purgeBefore(string $date): int {
+        $notifications = $this->notificationStore->read();
+        $initialCount = count($notifications);
+        $cutoff = strtotime($date . ' 23:59:59');
+
+        $newNotifications = array_filter($notifications, function($n) use ($cutoff) {
+            return strtotime($n['timestamp']) > $cutoff;
+        });
+
+        $this->notificationStore->save(array_values($newNotifications));
+        return $initialCount - count($newNotifications);
+    }
 }

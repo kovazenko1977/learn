@@ -96,9 +96,8 @@ include 'includes/header.php';
         <div class="stats-grid">
             <?php
                 $newCount = 0; $workCount = 0; $overdueCount = 0;
-                $totalBase = count($requests); // Total from all accessible, not filtered by deep link
-                foreach($requests as $r) {
-                    // We re-calculate based on ALL requests the user can see, to make summary cards meaningful
+                $totalBase = count($filteredRequests); // FIXED: Use role-filtered requests
+                foreach($filteredRequests as $r) {
                     if ($r['status'] === 'new') $newCount++;
                     if ($r['status'] === 'working') $workCount++;
                     $hoursLimit = $slaConfig[$r['priority']] ?? 24;

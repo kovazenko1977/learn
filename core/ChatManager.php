@@ -29,4 +29,17 @@ class ChatManager {
         $newMessages = array_filter($messages, fn($m) => $m['id'] !== $id);
         return $this->store->save(array_values($newMessages));
     }
+
+    public function purgeBefore(string $date): int {
+        $messages = $this->store->read();
+        $initialCount = count($messages);
+        $cutoff = strtotime($date . ' 23:59:59');
+
+        $newMessages = array_filter($messages, function($m) use ($cutoff) {
+            return strtotime($m['timestamp']) > $cutoff;
+        });
+
+        $this->store->save(array_values($newMessages));
+        return $initialCount - count($newMessages);
+    }
 }

@@ -79,7 +79,7 @@
                     }
                 });
         }
-        setInterval(checkNotifications, 10000); // Check every 10 seconds
+        setInterval(checkNotifications, <?php echo (int)($globalSettings['polling_interval'] ?? 10) * 1000; ?>);
         checkNotifications();
     </script>
     <aside class="sidebar mica">

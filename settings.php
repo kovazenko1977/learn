@@ -37,7 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hospital_name'])) {
         'telegram_token' => $_POST['telegram_token'],
         'telegram_chat_id' => $_POST['telegram_chat_id'],
         'accent_color' => $_POST['accent_color'] ?? '#0078d4',
-        'primary_font' => $_POST['primary_font'] ?? 'Inter'
+        'primary_font' => $_POST['primary_font'] ?? 'Inter',
+        'polling_interval' => (int)($_POST['polling_interval'] ?? 10)
     ];
 
     if ($settingsStore->save($newSettings)) {
@@ -89,6 +90,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['maintenance'])) {
         } else {
             $message = 'Неверный административный пароль';
         }
+    } elseif ($_POST['maintenance'] === 'purge') {
+        $purgeDate = $_POST['purge_date'];
+        if ($purgeDate) {
+            $reqStore = new JsonStore('data/requests.json');
+            $chatStore = new JsonStore('data/chat.json');
+            $notifStore = new JsonStore('data/notifications.json');
+
+            $nm = new \Hop\Core\NotificationManager($settingsStore, $notifStore);
+            $rm = new \Hop\Core\RequestManager($reqStore, $nm);
+            $cm = new \Hop\Core\ChatManager($chatStore);
+
+            $purgedReqs = $rm->purgeBefore($purgeDate);
+            $purgedChat = $cm->purgeBefore($purgeDate);
+            $purgedNotifs = $nm->purgeBefore($purgeDate);
+
+            $message = "✅ Очистка завершена: Удалено заявок: $purgedReqs, сообщений чата: $purgedChat, уведомлений: $purgedNotifs";
+        }
     }
 }
 
@@ -120,6 +138,17 @@ include 'includes/header.php';
                 <div class="form-group">
                     <label>Название учреждения</label>
                     <input type="text" name="hospital_name" value="<?php echo htmlspecialchars($settings['hospital_name']); ?>" required>
+                </div>
+            </section>
+
+            <section class="card mica">
+                <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="settings" style="color:var(--win-accent);"></i> Системные
+                </h2>
+                <div class="form-group">
+                    <label>Интервал проверки уведомлений (сек)</label>
+                    <input type="number" name="polling_interval" value="<?php echo (int)($settings['polling_interval'] ?? 10); ?>" min="2" max="300" required>
+                    <small style="color:var(--win-text-secondary); font-size:11px;">Как часто браузер будет проверять новые заявки (рекомендуется 10-30 сек).</small>
                 </div>
             </section>
 
@@ -297,11 +326,29 @@ include 'includes/header.php';
             </section>
 
             <section class="card mica">
+                <h3 style="margin-top:0;">Архивация и очистка</h3>
+                <p style="font-size:13px; color:var(--win-text-secondary); margin-bottom:20px;">
+                    Удаление старых данных до указанной даты включительно для оптимизации скорости работы.
+                </p>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                    <input type="hidden" name="maintenance" value="purge">
+                    <div class="form-group">
+                        <label>Удалить всё ДО (включительно):</label>
+                        <input type="date" name="purge_date" value="<?php echo date('Y-m-d', strtotime('-1 month')); ?>" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width:100%; background:var(--win-accent); margin-bottom: 24px;">
+                        <i data-lucide="scissors"></i> Выполнить очистку
+                    </button>
+                </form>
+
+                <div style="margin: 24px 0; height: 1px; background: var(--win-border);"></div>
+
                 <h3 style="margin-top:0;">Тестовая среда</h3>
                 <p style="font-size:13px; color:var(--win-text-secondary); margin-bottom:20px;">
-                    Наполните систему сгенерированными данными для обучения персонала или тестирования функционала.
+                    Наполните систему сгенерированными данными для обучения персонала.
                 </p>
-                <a href="settings.php?action=demo" class="btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; background:var(--status-working);">
+                <a href="settings.php?action=demo" class="btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; background:var(--status-working); margin-bottom: 24px;">
                     <i data-lucide="flask-conical"></i> Генерировать демо-данные
                 </a>
 
