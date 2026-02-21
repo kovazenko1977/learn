@@ -5,93 +5,220 @@ require_once 'includes/auth.php';
 include 'includes/header.php';
 ?>
 
-<div class="container">
-    <div class="page-header" style="animation: slideDown 0.5s ease-out;">
-        <h1>Справка и руководство</h1>
-        <p style="color:var(--win-text-secondary);">Как работать с информационной системой ХОП</p>
+<div class="container" style="max-width: 1200px;">
+    <div class="page-header" style="animation: slideDown 0.5s ease-out; margin-bottom: 40px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 56px; height: 56px; background: var(--win-accent); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white;">
+                <i data-lucide="help-circle" style="width: 32px; height: 32px;"></i>
+            </div>
+            <div>
+                <h1 style="margin:0; font-size: 32px;">Центр поддержки ХОП</h1>
+                <p style="color:var(--win-text-secondary); margin-top: 4px;">Полное руководство по работе с системой Хозяйственно-Оперативных Поручений</p>
+            </div>
+        </div>
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; animation: slideUp 0.6s ease-out;">
+    <!-- Quick Navigation -->
+    <div class="card mica" style="padding: 12px; margin-bottom: 32px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;">
+        <a href="#roles" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Роли и права</a>
+        <a href="#lifecycle" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Жизненный цикл</a>
+        <a href="#initiator" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Для Инициатора</a>
+        <a href="#performer" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Для Исполнителя</a>
+        <a href="#admin" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Администрирование</a>
+        <a href="#telegram" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Настройка Telegram</a>
+        <a href="#pwa" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Мобильная версия</a>
+    </div>
 
-        <section class="card mica">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="users" style="color:var(--win-accent);"></i> Роли пользователей
-            </h2>
-            <ul style="padding-left:20px; font-size:14px; line-height:1.6;">
-                <li><strong>Администратор:</strong> Полный доступ ко всем настройкам, справочникам и управлению персоналом.</li>
-                <li><strong>Инициатор:</strong> Сотрудник, создающий заявки. Видит только свои обращения.</li>
-                <li><strong>Исполнитель:</strong> Технический специалист. Работает со списком назначенных ему задач.</li>
-                <li><strong>Ответственный (Lead):</strong> Начальник службы. Распределяет новые заявки между исполнителями своей службы.</li>
-                <li><strong>Контролер:</strong> Проверяет качество выполненных работ перед закрытием заявки.</li>
-            </ul>
-        </section>
+    <div style="display: grid; grid-template-columns: 1fr; gap: 40px; animation: slideUp 0.6s ease-out;">
 
-        <section class="card mica">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="git-pull-request" style="color:var(--win-accent);"></i> Жизненный цикл заявки
+        <!-- SECTION: ROLES -->
+        <section id="roles">
+            <h2 style="font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="users" style="color:var(--win-accent);"></i> Роли пользователей и полномочия
             </h2>
-            <ol style="padding-left:20px; font-size:14px; line-height:1.6;">
-                <li><strong>Новая:</strong> Создана инициатором, ожидает распределения.</li>
-                <li><strong>Назначена:</strong> Выбран исполнитель.</li>
-                <li><strong>В работе:</strong> Исполнитель приступил к выполнению.</li>
-                <li><strong>Проверка:</strong> Работа выполнена, ожидает подтверждения инициатором или контролером.</li>
-                <li><strong>Выполнена/Закрыта:</strong> Работа принята и ушла в архив.</li>
-                <li><strong>Доработка:</strong> Если работа не принята, она возвращается исполнителю.</li>
-            </ol>
-        </section>
-
-        <section class="card mica">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="bell-ring" style="color:var(--win-accent);"></i> Настройка Telegram
-            </h2>
-            <div style="font-size:14px; line-height:1.6;">
-                <p>Для работы уведомлений необходимо:</p>
-                <ol>
-                    <li>Создать бота через <strong>@BotFather</strong> и получить Token.</li>
-                    <li>Добавить бота в группу или написать ему в ЛС, чтобы получить Chat ID.</li>
-                    <li>Ввести Token и Глобальный Chat ID в настройках системы.</li>
-                    <li>Для персональных уведомлений укажите Telegram ID сотрудника в его профиле (раздел "Персонал").</li>
-                </ol>
-                <div style="background:rgba(0,120,212,0.05); padding:10px; border-radius:8px; font-size:12px; border-left:4px solid var(--win-accent);">
-                    <strong>Совет:</strong> Используйте кнопку "Отправить тест" в настройках для проверки связи.
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                <div class="card mica" style="padding: 20px;">
+                    <h3 style="margin-top:0; font-size: 16px; color: var(--win-accent);">Инициатор</h3>
+                    <p style="font-size: 13px; color: var(--win-text-secondary);">Сотрудник больницы (медсестра, врач), обнаруживший проблему.</p>
+                    <ul style="font-size: 13px; padding-left: 18px; line-height: 1.6;">
+                        <li>Создание новых заявок с фото</li>
+                        <li>Отслеживание статуса своих заявок</li>
+                        <li>Общение в чате заявки</li>
+                        <li>Приемка работы (Оценка 0-5 звезд)</li>
+                    </ul>
+                </div>
+                <div class="card mica" style="padding: 20px;">
+                    <h3 style="margin-top:0; font-size: 16px; color: var(--status-working);">Исполнитель</h3>
+                    <p style="font-size: 13px; color: var(--win-text-secondary);">Технический специалист (сантехник, электрик), выполняющий работу.</p>
+                    <ul style="font-size: 13px; padding-left: 18px; line-height: 1.6;">
+                        <li>Просмотр только своих задач</li>
+                        <li>Перевод заявки в статус "Принято"</li>
+                        <li>Загрузка фото результата</li>
+                        <li>Отправка на проверку</li>
+                    </ul>
+                </div>
+                <div class="card mica" style="padding: 20px;">
+                    <h3 style="margin-top:0; font-size: 16px; color: var(--status-checking);">Ответственный службы (Lead)</h3>
+                    <p style="font-size: 13px; color: var(--win-text-secondary);">Начальник технического подразделения.</p>
+                    <ul style="font-size: 13px; padding-left: 18px; line-height: 1.6;">
+                        <li>Видит все заявки своей службы</li>
+                        <li>Назначает конкретных исполнителей</li>
+                        <li>Контролирует сроки выполнения (SLA)</li>
+                        <li>Переназначение задач</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <section class="card mica">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="database" style="color:var(--win-accent);"></i> Бэкап и Архивация
+        <!-- SECTION: LIFECYCLE -->
+        <section id="lifecycle" class="card mica" style="padding: 32px;">
+            <h2 style="margin-top:0; font-size: 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="git-pull-request" style="color:var(--win-accent);"></i> Жизненный цикл заявки (Маршрутизация)
             </h2>
-            <div style="font-size:14px; line-height:1.6;">
-                <p>Все данные системы (заявки, пользователи, фото) хранятся в JSON-файлах. Для безопасности:</p>
-                <ul>
-                    <li>Регулярно скачивайте ZIP-архив в разделе "Настройки".</li>
-                    <li>При сбое используйте функцию "Восстановить", загрузив актуальный архив.</li>
-                    <li>Система поддерживает полную очистку (Reset) только при вводе пароля.</li>
-                </ul>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                <div style="background: rgba(0,0,0,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--win-border);">
+                    <span class="badge status-new" style="margin-bottom:8px; display:inline-block;">НОВАЯ</span>
+                    <p style="font-size:12px; margin:0;">Только что создана. Ожидает, пока начальник службы назначит мастера.</p>
+                </div>
+                <div style="background: rgba(0,0,0,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--win-border);">
+                    <span class="badge status-assigned" style="margin-bottom:8px; display:inline-block;">НАЗНАЧЕНА</span>
+                    <p style="font-size:12px; margin:0;">Мастер выбран, он получил уведомление, но еще не нажал кнопку "В работу".</p>
+                </div>
+                <div style="background: rgba(0,0,0,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--win-border);">
+                    <span class="badge status-working" style="margin-bottom:8px; display:inline-block;">ПРИНЯТО</span>
+                    <p style="font-size:12px; margin:0;">Исполнитель подтвердил, что выехал на место или приступил к задаче.</p>
+                </div>
+                <div style="background: rgba(0,0,0,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--win-border);">
+                    <span class="badge status-checking" style="margin-bottom:8px; display:inline-block;">ПРОВЕРКА</span>
+                    <p style="font-size:12px; margin:0;">Работа готова. Инициатор должен нажать "Принять" или "Вернуть".</p>
+                </div>
+                <div style="background: rgba(0,0,0,0.02); padding: 16px; border-radius: 12px; border: 1px solid var(--win-border);">
+                    <span class="badge status-completed" style="margin-bottom:8px; display:inline-block;">ВЫПОЛНЕНА</span>
+                    <p style="font-size:12px; margin:0;">Работа принята, оценка поставлена. Заявка закрывается автоматически.</p>
+                </div>
             </div>
         </section>
 
-        <section class="card mica">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="smartphone" style="color:var(--win-accent);"></i> Мобильное использование
+        <!-- SECTION: INITIATOR GUIDE -->
+        <section id="initiator">
+            <h2 style="font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="plus-circle" style="color:var(--win-accent);"></i> Инструкция для Инициатора
             </h2>
-            <p style="font-size:14px; line-height:1.6;">
-                Программа спроектирована как PWA (Progressive Web App). Вы можете добавить её на главный экран смартфона через меню браузера ("Добавить на экран 'Домой'"). Это позволит работать в полноэкранном режиме, как с обычным приложением.
-            </p>
+            <div class="card mica">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                    <div>
+                        <h4 style="margin-top:0; font-size:15px; border-bottom: 1px solid var(--win-border); pb: 8px;">1. Создание заявки</h4>
+                        <p style="font-size:13px; line-height:1.6;">Нажмите кнопку "Новая заявка" на главной или внизу. Укажите подробное описание проблемы. <br><strong>Обязательно:</strong> выберите Корпус и Кабинет. <br><strong>Фото:</strong> Приложите фото неисправности — это ускорит понимание задачи исполнителем.</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-top:0; font-size:15px; border-bottom: 1px solid var(--win-border); pb: 8px;">2. Контроль выполнения</h4>
+                        <p style="font-size:13px; line-height:1.6;">Вы будете получать уведомления в системе и в Telegram (если настроен). В карточке заявки виден статус и кто конкретно назначен исполнителем. Вы можете написать комментарий в чат заявки, если ситуация изменилась.</p>
+                    </div>
+                    <div>
+                        <h4 style="margin-top:0; font-size:15px; border-bottom: 1px solid var(--win-border); pb: 8px;">3. Приемка работы</h4>
+                        <p style="font-size:13px; line-height:1.6;">Когда работа готова, статус изменится на "Проверка". <br><strong>Вариант А:</strong> Нажмите "Принять работу" и поставьте оценку звездами. <br><strong>Вариант Б:</strong> Если работа не доделана, нажмите "Вернуть на доработку" и напишите причину.</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="card mica">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="help-circle" style="color:var(--win-accent);"></i> Поддержка
+        <!-- SECTION: ADMIN -->
+        <section id="admin">
+            <h2 style="font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="shield" style="color:var(--priority-critical);"></i> Панель Администратора и настройки
             </h2>
-            <p style="font-size:14px; line-height:1.6;">
-                Разработано: <strong>wes.by Коваженко С.Б.</strong><br>
-                По техническим вопросам и предложениям обращайтесь к администратору вашей системы.
-            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                <div class="card mica">
+                    <h3 style="margin-top:0; font-size: 16px;">Управление персоналом и SLA</h3>
+                    <p style="font-size: 13px; line-height: 1.6;">
+                        <strong>Персонал:</strong> Каждому сотруднику выдается 6-значный код. При создании "Исполнителя" или "Ответственного" обязательно привязывайте его к конкретной <strong>Службе</strong>.<br>
+                        <strong>SLA:</strong> В настройках укажите время в часах для каждого приоритета (Низкий, Средний, Высокий, Критический). Система будет подсвечивать просроченные задачи красным цветом.
+                    </p>
+                </div>
+                <div class="card mica">
+                    <h3 style="margin-top:0; font-size: 16px;">Обслуживание данных</h3>
+                    <p style="font-size: 13px; line-height: 1.6;">
+                        <strong>Бэкап:</strong> Система хранит все в JSON-файлах. Раз в неделю скачивайте ZIP-архив из настроек. В случае поломки сервера вы сможете восстановить всё за 1 минуту.<br>
+                        <strong>Сброс:</strong> Для полной очистки базы перед новым сезоном используйте "Сброс" с паролем 12345. Это удалит заявки, но сохранит настройки и пользователей.
+                    </p>
+                </div>
+            </div>
         </section>
+
+        <!-- SECTION: TELEGRAM -->
+        <section id="telegram" class="card mica" style="background: linear-gradient(135deg, rgba(0,136,204,0.05) 0%, rgba(255,255,255,0.7) 100%);">
+            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 32px;">
+                <div>
+                    <h2 style="margin-top:0; font-size: 24px; display: flex; align-items: center; gap: 12px;">
+                        <i data-lucide="send" style="color:#0088cc;"></i> Интеграция с Telegram
+                    </h2>
+                    <p style="font-size:14px; line-height:1.6;">Уведомления в Telegram позволяют сотрудникам не держать вкладку браузера открытой постоянно. Бот сам напишет, когда придет новая задача или изменится статус.</p>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                        <div>
+                            <h4 style="margin-top:0; font-size:14px; color:var(--win-accent);">Глобальный чат (Для Lead)</h4>
+                            <p style="font-size:12px; color:var(--win-text-secondary);">В настройках системы укажите ID группы больницы. Туда бот будет кидать <strong>все</strong> новые заявки для их быстрого распределения начальниками служб.</p>
+                        </div>
+                        <div>
+                            <h4 style="margin-top:0; font-size:14px; color:var(--win-accent);">Личные уведомления</h4>
+                            <p style="font-size:12px; color:var(--win-text-secondary);">Каждый сотрудник может указать свой Telegram ID в профиле. Тогда бот будет писать ему <strong>лично</strong> только о его задачах.</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.4); padding: 20px; border-radius: 16px; border: 1px solid rgba(0,136,204,0.2);">
+                    <h4 style="margin-top:0;">Как настроить бота?</h4>
+                    <ol style="font-size:12px; padding-left:16px; line-height:1.8;">
+                        <li>Напишите <b>@BotFather</b> в Telegram.</li>
+                        <li>Команда <code>/newbot</code> -> Имя -> Юзернейм.</li>
+                        <li>Скопируйте <b>HTTP API Token</b> в настройки ХОП.</li>
+                        <li>Найдите <b>@userinfobot</b> и узнайте свой ID (цифры).</li>
+                        <li>Вставьте ID в "Target Chat ID" и нажмите "Тест".</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: PWA -->
+        <section id="pwa" class="card mica" style="border-left: 6px solid var(--win-accent);">
+            <div style="display: flex; gap: 32px; align-items: center; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h2 style="margin-top:0; font-size: 24px; display: flex; align-items: center; gap: 12px;">
+                        <i data-lucide="smartphone" style="color:var(--win-accent);"></i> Мобильное приложение (PWA)
+                    </h2>
+                    <p style="font-size:14px; line-height:1.6;">Вам не нужно искать ХОП в AppStore или Google Play. Система работает как Progressive Web App. Это экономит место и работает быстрее.</p>
+
+                    <div style="display: flex; gap: 24px; margin-top: 16px;">
+                        <div style="flex:1;">
+                            <h4 style="margin-top:0; font-size:13px;"><i data-lucide="apple" style="width:14px;"></i> iOS (iPhone)</h4>
+                            <p style="font-size:11px; color:var(--win-text-secondary);">Открыть Safari -> Кнопка "Поделиться" -> "На экран Домой".</p>
+                        </div>
+                        <div style="flex:1;">
+                            <h4 style="margin-top:0; font-size:13px;"><i data-lucide="android" style="width:14px;"></i> Android</h4>
+                            <p style="font-size:11px; color:var(--win-text-secondary);">Открыть Chrome -> Три точки -> "Установить приложение".</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="width:180px; height:180px; background:rgba(0,0,0,0.03); border-radius:30px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px;">
+                    <i data-lucide="layout-grid" style="width:48px; height:48px; color:var(--win-accent); margin-bottom:12px;"></i>
+                    <span style="font-size:11px; font-weight:700;">Иконка появится на рабочем столе</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER INFO -->
+        <div style="text-align: center; color: var(--win-text-secondary); font-size: 12px; margin-top: 20px; border-top: 1px solid var(--win-border); pt: 40px; pb: 40px;">
+            <p>© 2024 Информационная система «ХОП» — Разработано специально для медицинских учреждений.</p>
+            <p>Техническая поддержка: <b>wes.by Коваженко С.Б.</b></p>
+        </div>
 
     </div>
 </div>
+
+<style>
+section { scroll-margin-top: 100px; }
+.btn-secondary:hover { background: var(--win-accent); color: white; border-color: var(--win-accent); }
+strong { color: var(--win-text); }
+h4 { color: var(--win-text); font-weight: 700; margin-bottom: 8px; }
+</style>
 
 <?php include 'includes/footer.php'; ?>
