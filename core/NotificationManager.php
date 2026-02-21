@@ -49,12 +49,52 @@ class NotificationManager {
             }
 
             if ($targetChatId) {
-                $url = "https://api.telegram.org/bot{$token}/sendMessage?chat_id={$targetChatId}&text=" . urlencode($message);
-                @file_get_contents($url);
+                $this->rawSend($token, $targetChatId, $message);
             }
         }
 
         return true;
+    }
+
+    public function testConnection(string $token, string $chatId): array {
+        $result = $this->rawSend($token, $chatId, "🧪 Тестовое сообщение системы ХОП. Если вы это видите, интеграция настроена верно!");
+        return $result;
+    }
+
+    private function rawSend(string $token, string $chatId, string $message): array {
+        $url = "https://api.telegram.org/bot{$token}/sendMessage";
+        $data = [
+            'chat_id' => $chatId,
+            'text' => $message,
+            'parse_mode' => 'HTML'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            return ['success' => false, 'error' => $error];
+        }
+
+        $responseData = json_decode($response, true);
+        if ($httpCode !== 200 || !($responseData['ok'] ?? false)) {
+            return [
+                'success' => false,
+                'error' => $responseData['description'] ?? "HTTP Error $httpCode"
+            ];
+        }
+
+        return ['success' => true];
     }
 
     public function getForUser(int $userId): array {

@@ -4,6 +4,7 @@ require_once 'includes/auth.php';
 use Hop\Core\JsonStore;
 use Hop\Core\BackupManager;
 use Hop\Core\DemoDataLoader;
+use Hop\Core\NotificationManager;
 
 checkRole('admin');
 
@@ -11,6 +12,18 @@ $settingsStore = new JsonStore('data/settings.json');
 $settings = $settingsStore->read();
 
 $message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tg_test_id'])) {
+    checkCsrf();
+    $notifStore = new JsonStore('data/notifications.json');
+    $nm = new NotificationManager($settingsStore, $notifStore);
+    $testResult = $nm->testConnection($_POST['tg_test_token'], $_POST['tg_test_id']);
+    if ($testResult['success']) {
+        $message = "✅ Тестовое сообщение успешно отправлено!";
+    } else {
+        $message = "❌ Ошибка Telegram: " . $testResult['error'];
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hospital_name'])) {
     checkCsrf();
     $newSettings = [
@@ -141,14 +154,53 @@ include 'includes/header.php';
             <div class="form-grid">
                 <div class="form-group">
                     <label>Bot Token</label>
-                    <input type="text" name="telegram_token" value="<?php echo htmlspecialchars($settings['telegram_token']); ?>" placeholder="000000000:AAHHH...">
+                    <input type="text" id="tg_token" name="telegram_token" value="<?php echo htmlspecialchars($settings['telegram_token']); ?>" placeholder="000000000:AAHHH...">
                 </div>
                 <div class="form-group">
-                    <label>Target Chat ID</label>
-                    <input type="text" name="telegram_chat_id" value="<?php echo htmlspecialchars($settings['telegram_chat_id']); ?>" placeholder="-100123456789">
+                    <label>Target Chat ID (Глобальный)</label>
+                    <input type="text" id="tg_chat" name="telegram_chat_id" value="<?php echo htmlspecialchars($settings['telegram_chat_id']); ?>" placeholder="-100123456789">
                 </div>
             </div>
+
+            <div style="margin-top:20px; padding:16px; background:rgba(0,120,212,0.05); border-radius:8px; border:1px dashed var(--win-accent);">
+                <h3 style="margin-top:0; font-size:14px; margin-bottom:12px;">Проверка связи</h3>
+                <div style="display:flex; gap:12px; align-items:flex-end;">
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:700;">Telegram ID для теста</label>
+                        <input type="text" id="test_tg_id" placeholder="Напр. 123456789" style="height:38px;">
+                    </div>
+                    <button type="button" onclick="testTelegram()" class="btn-secondary" style="height:38px; white-space:nowrap;">
+                        <i data-lucide="send" style="width:14px;"></i> Отправить тест
+                    </button>
+                </div>
+                <p style="font-size:11px; color:var(--win-text-secondary); margin-top:8px; margin-bottom:0;">
+                    Введите ID чата или пользователя, чтобы проверить работу бота перед сохранением.
+                </p>
+            </div>
         </section>
+
+        <!-- Hidden form for test submission -->
+        <form id="tg-test-form" method="POST" style="display:none;">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+            <input type="hidden" name="tg_test_token" id="tg_test_token_input">
+            <input type="hidden" name="tg_test_id" id="tg_test_id_input">
+        </form>
+
+        <script>
+        function testTelegram() {
+            const token = document.getElementById('tg_token').value;
+            const chatId = document.getElementById('test_tg_id').value || document.getElementById('tg_chat').value;
+
+            if (!token || !chatId) {
+                alert('Укажите Token и ID чата');
+                return;
+            }
+
+            document.getElementById('tg_test_token_input').value = token;
+            document.getElementById('tg_test_id_input').value = chatId;
+            document.getElementById('tg-test-form').submit();
+        }
+        </script>
 
         <section class="card mica" style="margin-top: 24px;">
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">

@@ -157,6 +157,11 @@
                 <span>Мой профиль</span>
             </a>
 
+            <a href="help.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'help.php' ? 'active' : ''; ?>">
+                <i data-lucide="help-circle"></i>
+                <span>Справка</span>
+            </a>
+
             <a href="logout.php" class="sidebar-item" style="margin-top:20px; color: #e81123;">
                 <i data-lucide="log-out"></i>
                 <span>Выйти</span>
@@ -216,6 +221,10 @@
         <a href="profile.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
             <i data-lucide="user"></i>
             <span>Профиль</span>
+        </a>
+        <a href="help.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'help.php' ? 'active' : ''; ?>">
+            <i data-lucide="help-circle"></i>
+            <span>Справка</span>
         </a>
     </nav>
     <?php endif; ?>

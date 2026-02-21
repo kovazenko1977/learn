@@ -23,6 +23,12 @@ $fStart = $_GET['start_date'] ?? null;
 $fEnd = $_GET['end_date'] ?? null;
 $fOverdue = $_GET['overdue'] ?? null;
 
+$currentUserData = null;
+if ($userRole === 'service_lead') {
+    $userStore = new JsonStore('data/users.json');
+    $currentUserData = (new \Hop\Core\UserManager($userStore))->getById($userId);
+}
+
 $filteredRequests = [];
 foreach ($requests as $req) {
     // Basic role access control
@@ -33,9 +39,7 @@ foreach ($requests as $req) {
     } elseif ($userRole === 'performer') {
         if (isset($req['performer_id']) && $req['performer_id'] === $userId) $filteredRequests[] = $req;
     } elseif ($userRole === 'service_lead') {
-        $userStore = new JsonStore('data/users.json');
-        $user = (new \Hop\Core\UserManager($userStore))->getById($userId);
-        if ($user && $req['service_id'] === $user['service_id']) $filteredRequests[] = $req;
+        if ($currentUserData && $req['service_id'] === $currentUserData['service_id']) $filteredRequests[] = $req;
     } elseif ($userRole === 'controller') {
         if ($req['status'] === 'checking' || $req['status'] === 'completed') $filteredRequests[] = $req;
     }
