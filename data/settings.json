@@ -1,5 +1,5 @@
 {
-    "hospital_name": "Городская Больница",
+    "hospital_name": "Test Hospital 1771713794",
     "sla": {
         "low": 48,
         "medium": 24,
@@ -9,5 +9,6 @@
     "telegram_token": "",
     "telegram_chat_id": "",
     "accent_color": "#e81123",
-    "primary_font": "'Roboto', sans-serif"
+    "primary_font": "'Roboto', sans-serif",
+    "font_size": "18px"
 }

@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hospital_name'])) {
         'telegram_chat_id' => $_POST['telegram_chat_id'],
         'accent_color' => $_POST['accent_color'] ?? '#0078d4',
         'primary_font' => $_POST['primary_font'] ?? 'Inter',
+        'font_size' => $_POST['font_size'] ?? '15px',
         'polling_interval' => (int)($_POST['polling_interval'] ?? 10)
     ];
 
@@ -151,17 +152,6 @@ include 'includes/header.php';
 
             <section class="card mica">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                    <i data-lucide="settings" style="color:var(--win-accent);"></i> Системные
-                </h2>
-                <div class="form-group">
-                    <label>Интервал проверки уведомлений (сек)</label>
-                    <input type="number" name="polling_interval" value="<?php echo (int)($settings['polling_interval'] ?? 10); ?>" min="2" max="300" required>
-                    <small style="color:var(--win-text-secondary); font-size:11px;">Как часто браузер будет проверять новые заявки (рекомендуется 10-30 сек).</small>
-                </div>
-            </section>
-
-            <section class="card mica">
-                <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="palette" style="color:var(--win-accent);"></i> Внешний вид
                 </h2>
                 <div class="form-group">
@@ -181,7 +171,18 @@ include 'includes/header.php';
                         <option value="system-ui" <?php echo ($settings['primary_font'] ?? '') === 'system-ui' ? 'selected' : ''; ?>>System Default</option>
                     </select>
                 </div>
-                </section>
+                <div class="form-group">
+                    <label>Размер текста</label>
+                    <select name="font_size">
+                        <option value="13px" <?php echo ($settings['font_size'] ?? '15px') === '13px' ? 'selected' : ''; ?>>Мелкий (13px)</option>
+                        <option value="14px" <?php echo ($settings['font_size'] ?? '15px') === '14px' ? 'selected' : ''; ?>>Средний (14px)</option>
+                        <option value="15px" <?php echo ($settings['font_size'] ?? '15px') === '15px' ? 'selected' : ''; ?>>Обычный (15px)</option>
+                        <option value="16px" <?php echo ($settings['font_size'] ?? '15px') === '16px' ? 'selected' : ''; ?>>Крупный (16px)</option>
+                        <option value="18px" <?php echo ($settings['font_size'] ?? '15px') === '18px' ? 'selected' : ''; ?>>Очень крупный (18px)</option>
+                        <option value="20px" <?php echo ($settings['font_size'] ?? '15px') === '20px' ? 'selected' : ''; ?>>Максимальный (20px)</option>
+                    </select>
+                </div>
+            </section>
             </div>
         </div>
 

@@ -2,15 +2,15 @@
 
 :root {
     /* Sophisticated Color Palette */
-    --win-bg: #f0f2f5;
-    --win-mica: rgba(255, 255, 255, 0.85);
+    --win-bg: #f3f3f3;
+    --win-mica: rgba(243, 243, 243, 0.85);
     --win-accent: #0078d4;
-    --win-accent-gradient: linear-gradient(135deg, #0078d4 0%, #8e24aa 100%);
+    --win-accent-gradient: linear-gradient(135deg, #0078d4 0%, #4f46e5 100%);
     --win-text: #1a1a1a;
-    --win-text-secondary: #5a5a5a;
-    --win-border: rgba(0, 0, 0, 0.06);
-    --win-border-strong: rgba(0, 0, 0, 0.12);
-    --win-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+    --win-text-secondary: #5d5d5d;
+    --win-border: rgba(0, 0, 0, 0.08);
+    --win-border-strong: rgba(0, 0, 0, 0.15);
+    --win-card-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.1);
     --win-card-bg: #ffffff;
 
     /* Status Colors */
@@ -35,14 +35,14 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --win-bg: #202020;
-        --win-mica: rgba(32, 32, 32, 0.75);
+        --win-bg: #1c1c1c;
+        --win-mica: rgba(28, 28, 28, 0.8);
         --win-accent: #60cdff;
         --win-text: #ffffff;
-        --win-text-secondary: #cccccc;
-        --win-border: rgba(255, 255, 255, 0.08);
-        --win-border-strong: rgba(255, 255, 255, 0.15);
-        --win-card-bg: #2b2b2b;
+        --win-text-secondary: #a0a0a0;
+        --win-border: rgba(255, 255, 255, 0.1);
+        --win-border-strong: rgba(255, 255, 255, 0.2);
+        --win-card-bg: #2d2d2d;
     }
 }
 
@@ -52,20 +52,21 @@
 }
 
 body {
-    font-family: var(--win-font-family, 'Inter', system-ui, -apple-system, sans-serif);
+    font-family: var(--win-font-family, 'Segoe UI Variable Text', 'Segoe UI', 'Inter', system-ui, sans-serif);
+    font-size: var(--win-base-font-size, 14px);
     background-color: var(--win-bg);
     color: var(--win-text);
     margin: 0;
     padding: 0;
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
 
 /* Glassmorphism / Mica */
 .mica {
     background: var(--win-mica);
-    backdrop-filter: blur(40px) saturate(150%);
-    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    backdrop-filter: blur(50px) saturate(125%);
+    -webkit-backdrop-filter: blur(50px) saturate(125%);
     border: 1px solid var(--win-border);
 }
 
@@ -78,12 +79,16 @@ body {
 /* Luxurious Cards */
 .card {
     background: var(--win-card-bg);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: var(--win-card-shadow);
     border: 1px solid var(--win-border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.12);
 }
 
 .list-item:hover {
@@ -103,11 +108,21 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+.page-header {
+    margin-bottom: 32px;
+}
+
 .page-header h1 {
-    font-size: 32px;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 600;
     margin: 0;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.01em;
+    color: var(--win-text);
+}
+
+.page-header p {
+    margin-top: 4px;
+    font-size: 14px;
 }
 
 /* Sidebar - Desktop */
@@ -134,14 +149,15 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 16px;
-    border-radius: 8px;
+    padding: 9px 12px;
+    border-radius: 4px;
     text-decoration: none;
     color: var(--win-text);
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 2px;
-    transition: all 0.15s;
+    font-size: 0.95em;
+    font-weight: 400;
+    margin: 2px 0;
+    transition: background 0.1s;
+    position: relative;
 }
 
 .sidebar-item:hover {
@@ -149,17 +165,27 @@ body {
 }
 
 .sidebar-item.active {
-    background: var(--win-accent-gradient);
-    color: white;
+    background: rgba(0,0,0,0.06);
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0,120,212,0.2);
+    color: var(--win-accent);
+}
+
+.sidebar-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 3px;
+    background: var(--win-accent);
+    border-radius: 2px;
 }
 
 .sidebar-item svg { width: 18px; height: 18px; }
 
 /* Header */
 header {
-    height: 64px;
+    height: 54px;
     display: flex;
     align-items: center;
     position: sticky;
@@ -208,18 +234,21 @@ header {
 input, select, textarea {
     background: var(--win-card-bg);
     border: 1px solid var(--win-border-strong);
-    border-radius: 8px;
-    padding: 10px 14px;
+    border-bottom-color: var(--win-border-strong);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 8px 12px;
     font-family: inherit;
-    font-size: 15px;
+    font-size: 1em;
     color: var(--win-text);
     width: 100%;
+    transition: all 0.2s;
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--win-accent);
-    box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
+    border-bottom-color: var(--win-accent);
+    background: #ffffff;
 }
 
 .form-grid {
@@ -229,20 +258,28 @@ input:focus, select:focus, textarea:focus {
 }
 
 .btn-primary {
-    background: var(--win-accent-gradient);
+    background: var(--win-accent);
     color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 700;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-bottom-color: rgba(0,0,0,0.2);
+    padding: 8px 24px;
+    border-radius: 4px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    box-shadow: 0 4px 15px rgba(0, 120, 212, 0.3);
+    transition: all 0.1s;
+    font-size: 0.95em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-primary:hover {
-    filter: brightness(1.1);
+    filter: brightness(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
 }
 
 .btn-secondary {
@@ -324,13 +361,21 @@ input:focus, select:focus, textarea:focus {
 
 /* Utility */
 .alert {
-    padding: 16px;
-    border-radius: 10px;
+    padding: 12px 16px;
+    border-radius: 4px;
     margin-bottom: 24px;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-success {
+    background: #dff6dd;
+    color: #0e700e;
+    border: 1px solid #c2e9bf;
+}
 
 .stats-grid {
     display: grid;

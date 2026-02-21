@@ -16,14 +16,17 @@
         $globalSettings = $settingsStore->read();
         $accentColor = $globalSettings['accent_color'] ?? '#0078d4';
         $primaryFont = $globalSettings['primary_font'] ?? 'Inter';
+        $fontSize = $globalSettings['font_size'] ?? '15px';
     ?>
     <style>
         :root {
             --win-accent: <?php echo $accentColor; ?>;
             --win-font-family: <?php echo $primaryFont === 'Inter' ? "'Inter', sans-serif" : $primaryFont; ?>;
+            --win-base-font-size: <?php echo $fontSize; ?>;
         }
         body {
             font-family: var(--win-font-family) !important;
+            font-size: var(--win-base-font-size) !important;
         }
     </style>
     <script>
@@ -83,9 +86,14 @@
         checkNotifications();
     </script>
     <aside class="sidebar mica">
-        <div class="sidebar-header" style="padding: 24px;">
-            <div style="width:40px; height:40px; background:var(--win-accent); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:18px; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">Х</div>
-            <span style="margin-left:12px; font-weight:800; font-size:20px; letter-spacing:-0.5px; color:#1a1a1a;">ХОП</span>
+        <div class="sidebar-header" style="padding: 32px 24px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width:40px; height:40px; background:var(--win-accent-gradient); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:20px; box-shadow: 0 8px 16px rgba(0, 120, 212, 0.25);">Х</div>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight:800; font-size:22px; line-height:1; letter-spacing:-0.03em; color:var(--win-text);">ХОП</span>
+                    <span style="font-size:10px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:0.05em; margin-top:2px;">Hospital System</span>
+                </div>
+            </div>
         </div>
 
         <nav class="sidebar-nav" style="padding: 0 12px;">
@@ -175,10 +183,10 @@
     </aside>
 
     <header class="mica">
-        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%; padding: 0 24px;">
+        <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%; padding: 0 24px; height: 100%;">
             <div class="mobile-only-header" style="display:none; align-items:center; gap:12px;">
-                <div style="width:32px; height:32px; background:var(--win-accent); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px;">Х</div>
-                <h1 style="font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.5px;">ХОП</h1>
+                <div style="width:36px; height:36px; background:var(--win-accent-gradient); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);">Х</div>
+                <h1 style="font-size: 20px; margin: 0; font-weight: 800; letter-spacing: -0.02em;">ХОП</h1>
             </div>
 
             <div class="header-search desktop-only" style="flex: 1; max-width: 400px; position: relative;">
