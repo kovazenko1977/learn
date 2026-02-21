@@ -392,3 +392,43 @@ input:focus, select:focus, textarea:focus {
 .stat-value { font-size: 32px; font-weight: 800; }
 .stat-label { font-size: 11px; font-weight: 700; color: var(--win-text-secondary); text-transform: uppercase; }
 .fill-current { fill: currentColor; }
+
+@media print {
+    .sidebar, header, .bottom-nav, .page-header .btn-primary, .page-header .btn-secondary, form, .no-print, .btn-primary, .btn-secondary, .mobile-only-header, .user-pill {
+        display: none !important;
+    }
+    main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+    }
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        background: white !important;
+        break-inside: avoid;
+        margin-bottom: 20px;
+    }
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    .mica {
+        backdrop-filter: none !important;
+        background: white !important;
+    }
+    .stat-card.colorful-card {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+    .stat-card.colorful-card .stat-value, .stat-card.colorful-card .stat-label {
+        color: black !important;
+    }
+    .stat-icon-new { display: none !important; }
+}

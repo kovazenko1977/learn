@@ -29,25 +29,27 @@ if ($userRole === 'service_lead') {
     $currentUserData = (new \Hop\Core\UserManager($userStore))->getById($userId);
 }
 
-$filteredRequests = [];
+$roleFilteredRequests = [];
 foreach ($requests as $req) {
     // Basic role access control
     if ($userRole === 'admin' || $userRole === 'manager') {
-        $filteredRequests[] = $req;
+        $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'initiator') {
-        if ($req['initiator_id'] === $userId) $filteredRequests[] = $req;
+        if ($req['initiator_id'] === $userId) $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'performer') {
-        if (isset($req['performer_id']) && $req['performer_id'] === $userId) $filteredRequests[] = $req;
+        if (isset($req['performer_id']) && $req['performer_id'] === $userId) $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'service_lead') {
-        if ($currentUserData && $req['service_id'] === $currentUserData['service_id']) $filteredRequests[] = $req;
+        if ($currentUserData && $req['service_id'] === $currentUserData['service_id']) $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'controller') {
-        if ($req['status'] === 'checking' || $req['status'] === 'completed') $filteredRequests[] = $req;
+        if ($req['status'] === 'checking' || $req['status'] === 'completed') $roleFilteredRequests[] = $req;
     }
 }
 
+$filteredRequests = $roleFilteredRequests;
+
 // Apply deep filters
 if ($fStatus || $fPerformerId || $fStart || $fEnd || $fOverdue) {
-    $filteredRequests = array_filter($filteredRequests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd, $fOverdue, $slaConfig) {
+    $filteredRequests = array_filter($roleFilteredRequests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd, $fOverdue, $slaConfig) {
         if ($fStatus && $req['status'] !== $fStatus) return false;
         if ($fPerformerId && ($req['performer_id'] ?? 0) !== $fPerformerId) return false;
 
@@ -96,8 +98,8 @@ include 'includes/header.php';
         <div class="stats-grid">
             <?php
                 $newCount = 0; $workCount = 0; $overdueCount = 0;
-                $totalBase = count($filteredRequests); // FIXED: Use role-filtered requests
-                foreach($filteredRequests as $r) {
+                $totalBase = count($roleFilteredRequests);
+                foreach($roleFilteredRequests as $r) {
                     if ($r['status'] === 'new') $newCount++;
                     if ($r['status'] === 'working') $workCount++;
                     $hoursLimit = $slaConfig[$r['priority']] ?? 24;

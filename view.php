@@ -106,7 +106,7 @@ include 'includes/header.php';
                 </div>
             </div>
         </div>
-        <button onclick="window.print()" class="btn-secondary desktop-only">
+        <button onclick="window.print()" class="btn-secondary">
             <i data-lucide="printer"></i> Печать
         </button>
     </div>

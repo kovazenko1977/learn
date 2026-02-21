@@ -40,6 +40,9 @@ include 'includes/header.php';
             <p style="color:var(--win-text-secondary);">Показатели эффективности и нагрузка служб</p>
         </div>
         <div style="display:flex; gap:12px;">
+            <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px;">
+                <i data-lucide="printer"></i> Печать
+            </button>
             <a href="export.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="download"></i> Экспорт
             </a>

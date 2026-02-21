@@ -56,9 +56,14 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header" style="animation: slideDown 0.5s ease-out;">
-        <h1>Управление персоналом</h1>
-        <p style="color:var(--win-text-secondary);">Учетные записи и права доступа</p>
+    <div class="page-header" style="animation: slideDown 0.5s ease-out; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+            <h1>Управление персоналом</h1>
+            <p style="color:var(--win-text-secondary);">Учетные записи и права доступа</p>
+        </div>
+        <button onclick="window.print()" class="btn-secondary">
+            <i data-lucide="printer"></i> Печать списка
+        </button>
     </div>
 
     <?php if ($message): ?>
