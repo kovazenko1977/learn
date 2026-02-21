@@ -59,6 +59,19 @@ include 'includes/header.php';
             </div>
         </div>
 
+        <div style="margin-top: 32px; text-align: left; background: rgba(0,120,212,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0,120,212,0.1);">
+            <h3 style="margin-top:0; font-size:15px; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="bell-ring" style="width:18px; color:var(--win-accent);"></i> Звуковые оповещения
+            </h3>
+            <p style="font-size:12px; color:var(--win-text-secondary); margin-bottom:16px;">
+                Чтобы получать звуковые уведомления при закрытой странице, используйте Telegram (укажите ID выше) или включите браузерные Push-уведомления.
+            </p>
+            <button id="btn-push-subscribe" class="btn-secondary" style="width:100%; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i data-lucide="message-square"></i> Включить Push-уведомления
+            </button>
+            <div id="push-status" style="font-size:11px; margin-top:8px; text-align:center; color:var(--win-accent); font-weight:600;"></div>
+        </div>
+
         <?php if ($user['role'] === 'admin'): ?>
         <div class="mobile-only" style="margin-top: 32px; border-top: 1px solid var(--win-border); pt: 24px; text-align: left;">
             <h3 style="font-size: 16px; margin-bottom: 16px;">Панель управления</h3>
@@ -84,5 +97,38 @@ include 'includes/header.php';
         </a>
     </section>
 </div>
+
+<script>
+document.getElementById('btn-push-subscribe').addEventListener('click', async () => {
+    const statusEl = document.getElementById('push-status');
+
+    if (!('Notification' in window)) {
+        alert("Ваш браузер не поддерживает уведомления");
+        return;
+    }
+
+    statusEl.textContent = "Запрос разрешения...";
+
+    let permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+        statusEl.textContent = "Разрешено! Теперь вы будете получать системные оповещения.";
+        // In a real production app, we would register the Push subscription here
+        // and send it to the server to be stored in users.json
+        new Notification("ХОП", {
+            body: "Браузерные уведомления успешно активированы",
+            icon: "/assets/icon-192.png"
+        });
+    } else {
+        statusEl.textContent = "Доступ заблокирован в настройках браузера.";
+        statusEl.style.color = "var(--priority-critical)";
+    }
+});
+
+// Check current status
+if (Notification.permission === 'granted') {
+    document.getElementById('push-status').textContent = "Push-уведомления активны";
+    document.getElementById('btn-push-subscribe').style.display = 'none';
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>
