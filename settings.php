@@ -127,11 +127,19 @@ include 'includes/header.php';
         <div class="alert alert-success" style="animation: slideDown 0.3s ease-out;"><?php echo $message; ?></div>
     <?php endif; ?>
 
+    <div class="settings-tabs mica" style="animation: slideDown 0.4s ease-out; margin-bottom: 24px;">
+        <button class="tab-btn active" onclick="showTab('org')"><i data-lucide="building-2"></i> Организация</button>
+        <button class="tab-btn" onclick="showTab('tg')"><i data-lucide="bell-ring"></i> Уведомления</button>
+        <button class="tab-btn" onclick="showTab('sla')"><i data-lucide="timer"></i> SLA & Система</button>
+        <button class="tab-btn" onclick="showTab('data')"><i data-lucide="database"></i> Обслуживание</button>
+    </div>
+
     <form method="POST" style="animation: slideUp 0.6s ease-out;">
         <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
-        <div class="form-grid" style="align-items: stretch;">
-            <section class="card mica">
+        <div id="tab-org" class="tab-content active">
+            <div class="form-grid" style="align-items: stretch;">
+                <section class="card mica">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="building-2" style="color:var(--win-accent);"></i> Организация
                 </h2>
@@ -173,10 +181,12 @@ include 'includes/header.php';
                         <option value="system-ui" <?php echo ($settings['primary_font'] ?? '') === 'system-ui' ? 'selected' : ''; ?>>System Default</option>
                     </select>
                 </div>
-            </section>
+                </section>
+            </div>
         </div>
 
-        <section class="card mica" style="margin-top: 24px;">
+        <div id="tab-tg" class="tab-content">
+            <section class="card mica">
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="bell-ring" style="color:var(--win-accent);"></i> Уведомления Telegram
             </h2>
@@ -225,9 +235,48 @@ include 'includes/header.php';
                     </div>
                 </div>
             </div>
-        </section>
+            </section>
+        </div>
 
-        <!-- Hidden form for test submission -->
+        <div id="tab-sla" class="tab-content">
+            <div class="form-grid">
+                <section class="card mica">
+                    <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+                        <i data-lucide="settings" style="color:var(--win-accent);"></i> Системные
+                    </h2>
+                    <div class="form-group">
+                        <label>Интервал проверки уведомлений (сек)</label>
+                        <input type="number" name="polling_interval" value="<?php echo (int)($settings['polling_interval'] ?? 10); ?>" min="2" max="300" required>
+                        <small style="color:var(--win-text-secondary); font-size:11px;">Как часто браузер будет проверять новые заявки (рекомендуется 10-30 сек).</small>
+                    </div>
+                </section>
+
+                <section class="card mica" style="margin-top: 0;">
+                    <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+                        <i data-lucide="timer" style="color:var(--win-accent);"></i> Нормативы SLA (в часах)
+                    </h2>
+                    <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+                        <div class="form-group">
+                            <label style="color:var(--priority-low); font-weight:600;">Низкий</label>
+                            <input type="number" name="sla_low" value="<?php echo $settings['sla']['low']; ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--priority-medium); font-weight:600;">Средний</label>
+                            <input type="number" name="sla_medium" value="<?php echo $settings['sla']['medium']; ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--priority-high); font-weight:600;">Высокий</label>
+                            <input type="number" name="sla_high" value="<?php echo $settings['sla']['high']; ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--priority-critical); font-weight:600;">Критический</label>
+                            <input type="number" name="sla_critical" value="<?php echo $settings['sla']['critical']; ?>" required>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
         <form id="tg-test-form" method="POST" style="display:none;">
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
             <input type="hidden" name="tg_test_token" id="tg_test_token_input">
@@ -263,40 +312,14 @@ include 'includes/header.php';
             }
         </style>
 
-        <section class="card mica" style="margin-top: 24px;">
-            <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="timer" style="color:var(--win-accent);"></i> Нормативы SLA (в часах)
-            </h2>
-            <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-                <div class="form-group">
-                    <label style="color:var(--priority-low); font-weight:600;">Низкий</label>
-                    <input type="number" name="sla_low" value="<?php echo $settings['sla']['low']; ?>" required>
-                </div>
-                <div class="form-group">
-                    <label style="color:var(--priority-medium); font-weight:600;">Средний</label>
-                    <input type="number" name="sla_medium" value="<?php echo $settings['sla']['medium']; ?>" required>
-                </div>
-                <div class="form-group">
-                    <label style="color:var(--priority-high); font-weight:600;">Высокий</label>
-                    <input type="number" name="sla_high" value="<?php echo $settings['sla']['high']; ?>" required>
-                </div>
-                <div class="form-group">
-                    <label style="color:var(--priority-critical); font-weight:600;">Критический</label>
-                    <input type="number" name="sla_critical" value="<?php echo $settings['sla']['critical']; ?>" required>
-                </div>
-            </div>
-        </section>
-
-        <div style="margin-top: 24px; text-align: right;">
+        <div style="margin-top: 24px; text-align: right;" id="save-btn-container">
             <button type="submit" class="btn-primary" style="padding: 12px 32px; font-size: 16px;">
                 <i data-lucide="save"></i> Применить изменения
             </button>
         </div>
     </form>
 
-    <div style="margin-top:48px; border-top: 1px solid var(--win-border); pt: 32px;">
-        <h2 style="font-size:24px; margin-bottom:24px;">Обслуживание и данные</h2>
-
+    <div id="tab-data" class="tab-content">
         <div class="form-grid">
             <section class="card mica">
                 <h3 style="margin-top:0;">Резервное копирование</h3>
@@ -373,5 +396,61 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
+
+<style>
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--win-text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.tab-btn i { width: 16px; height: 16px; }
+.tab-btn:hover { background: rgba(0,0,0,0.04); }
+.tab-btn.active {
+    background: var(--win-accent);
+    color: white;
+}
+.tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+.tab-content.active { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    document.getElementById('tab-' + tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    // Hide save button on data tab as it has its own forms
+    const saveBtn = document.getElementById('save-btn-container');
+    if (tabId === 'data') {
+        saveBtn.style.display = 'none';
+    } else {
+        saveBtn.style.display = 'block';
+    }
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

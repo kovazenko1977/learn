@@ -106,20 +106,20 @@ include 'includes/header.php';
                     }
                 }
             ?>
-            <a href="index.php?status=new" class="stat-card mica" style="border-bottom: 3px solid var(--status-new); text-decoration:none; color:inherit;">
-                <div class="stat-value" style="color:var(--status-new);"><?php echo $newCount; ?></div>
+            <a href="index.php?status=new" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #0078d4, #00c6ff); text-decoration:none; color:inherit;">
+                <div class="stat-value"><?php echo $newCount; ?></div>
                 <div class="stat-label">Ожидают</div>
             </a>
-            <a href="index.php?status=working" class="stat-card mica" style="border-bottom: 3px solid var(--status-working); text-decoration:none; color:inherit;">
-                <div class="stat-value" style="color:var(--status-working);"><?php echo $workCount; ?></div>
+            <a href="index.php?status=working" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #ff8f00, #ffcc00); text-decoration:none; color:inherit;">
+                <div class="stat-value"><?php echo $workCount; ?></div>
                 <div class="stat-label">В работе</div>
             </a>
-            <a href="index.php?overdue=1" class="stat-card mica" style="border-bottom: 3px solid var(--priority-critical); text-decoration:none; color:inherit;">
-                <div class="stat-value" style="color:var(--priority-critical);"><?php echo $overdueCount; ?></div>
+            <a href="index.php?overdue=1" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #e81123, #ff5f6d); text-decoration:none; color:inherit;">
+                <div class="stat-value"><?php echo $overdueCount; ?></div>
                 <div class="stat-label">Просрочено</div>
             </a>
-            <a href="index.php" class="stat-card mica" style="border-bottom: 3px solid var(--win-accent); text-decoration:none; color:inherit;">
-                <div class="stat-value" style="color:var(--win-accent);"><?php echo $totalBase; ?></div>
+            <a href="index.php" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #8e24aa, #ba68c8); text-decoration:none; color:inherit;">
+                <div class="stat-value"><?php echo $totalBase; ?></div>
                 <div class="stat-label">Всего</div>
             </a>
         </div>
@@ -226,11 +226,18 @@ include 'includes/header.php';
 .filter-chip:hover { background: rgba(0,0,0,0.06); }
 .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
 .filter-chip.active {
-    background: var(--win-accent);
+    background: var(--win-accent-gradient);
     color: white;
     border-color: var(--win-accent);
     box-shadow: 0 4px 10px rgba(0, 120, 212, 0.2);
 }
+.colorful-stat-card {
+    background: var(--bg-grad) !important;
+    border: none !important;
+    color: white !important;
+}
+.colorful-stat-card .stat-value { color: white !important; font-size: 36px; }
+.colorful-stat-card .stat-label { color: rgba(255,255,255,0.9) !important; font-weight: 800; }
 </style>
 
 <script>

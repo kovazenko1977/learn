@@ -17,6 +17,7 @@ $endDate = $_GET['end_date'] ?? null;
 
 $analytics = new AnalyticsManager($requestStore, $serviceStore, $settings);
 $stats = $analytics->getStats($startDate, $endDate);
+$bestPerformers = $analytics->getBestPerformers(3);
 
 $services = [];
 foreach ($serviceStore->read() as $s) $services[$s['id']] = $s['name'];
@@ -66,30 +67,59 @@ include 'includes/header.php';
         </form>
     </section>
 
-    <div class="stats-grid" style="animation: slideUp 0.6s ease-out;">
-        <div class="stat-card mica">
-            <div class="stat-icon" style="background: rgba(0, 120, 212, 0.1); color: var(--win-accent);">
+    <div class="card mica" style="margin-top: 24px; animation: slideUp 0.5s ease-out; border: none; background: linear-gradient(135deg, rgba(0, 120, 212, 0.1) 0%, rgba(142, 36, 170, 0.1) 100%);">
+        <h2 style="margin-top:0; font-size:20px; margin-bottom:24px; display:flex; align-items:center; gap:8px;">
+            <i data-lucide="trophy" style="color:#ffae00;"></i> Лучшие сотрудники
+        </h2>
+        <div class="leaderboard-grid">
+            <?php
+            $medals = ['#ffd700', '#c0c0c0', '#cd7f32'];
+            foreach ($bestPerformers as $idx => $perf):
+            ?>
+                <div class="leader-card">
+                    <div class="leader-medal" style="background: <?php echo $medals[$idx] ?? '#0078d4'; ?>;">
+                        <?php echo $idx + 1; ?>
+                    </div>
+                    <div class="leader-info">
+                        <div class="leader-name"><?php echo htmlspecialchars($perf['name']); ?></div>
+                        <div class="leader-stats">
+                            <span><i data-lucide="check-circle-2" style="width:12px; height:12px;"></i> <?php echo $perf['completed']; ?></span>
+                            <span><i data-lucide="star" style="width:12px; height:12px; fill:#ffae00; color:#ffae00;"></i> <?php echo $perf['avg_rating']; ?></span>
+                        </div>
+                    </div>
+                    <div class="leader-score">
+                        <div style="font-size:10px; opacity:0.6; font-weight:700;">БАЛЛЫ</div>
+                        <?php echo $perf['score']; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <div class="stats-grid" style="animation: slideUp 0.6s ease-out; margin-top: 24px;">
+        <div class="stat-card mica colorful-card" style="--card-color: #0078d4;">
+            <div class="stat-icon-new">
                 <i data-lucide="layers"></i>
             </div>
             <div class="stat-value"><?php echo $stats['total']; ?></div>
             <div class="stat-label">Всего заявок</div>
         </div>
-        <div class="stat-card mica">
-            <div class="stat-icon" style="background: rgba(232, 17, 35, 0.1); color: var(--priority-critical);">
+        <div class="stat-card mica colorful-card" style="--card-color: #e81123;">
+            <div class="stat-icon-new">
                 <i data-lucide="alert-triangle"></i>
             </div>
             <div class="stat-value"><?php echo $stats['overdue']; ?></div>
             <div class="stat-label">Просрочено SLA</div>
         </div>
-        <div class="stat-card mica">
-            <div class="stat-icon" style="background: rgba(16, 124, 16, 0.1); color: var(--status-completed);">
+        <div class="stat-card mica colorful-card" style="--card-color: #107c10;">
+            <div class="stat-icon-new">
                 <i data-lucide="check-circle"></i>
             </div>
             <div class="stat-value"><?php echo $stats['completed_count']; ?></div>
             <div class="stat-label">Выполнено</div>
         </div>
-        <div class="stat-card mica">
-            <div class="stat-icon" style="background: rgba(0, 120, 212, 0.1); color: var(--win-accent);">
+        <div class="stat-card mica colorful-card" style="--card-color: #8e24aa;">
+            <div class="stat-icon-new">
                 <i data-lucide="clock"></i>
             </div>
             <div class="stat-value"><?php echo $stats['avg_hours']; ?><small style="font-size: 14px; margin-left: 2px;">ч</small></div>
@@ -215,6 +245,61 @@ include 'includes/header.php';
 .stat-icon i { width: 20px; height: 20px; }
 .clickable-stat:hover { opacity: 0.7; }
 .table-hover-row:hover { background: rgba(0,0,0,0.02); }
+
+.leaderboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+.leader-card {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+.leader-card:hover { transform: scale(1.02); }
+.leader-medal {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.leader-info { flex: 1; }
+.leader-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.leader-stats { display: flex; gap: 12px; font-size: 12px; color: var(--win-text-secondary); font-weight: 600; }
+.leader-stats span { display: flex; align-items: center; gap: 4px; }
+.leader-score { text-align: right; font-weight: 800; font-size: 18px; color: var(--win-accent); }
+
+.colorful-card {
+    position: relative;
+    overflow: hidden;
+    color: white;
+    background: linear-gradient(135deg, var(--card-color) 0%, rgba(0,0,0,0.8) 150%) !important;
+    border: none !important;
+}
+.colorful-card .stat-value { color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.colorful-card .stat-label { color: rgba(255,255,255,0.8); }
+.stat-icon-new {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    opacity: 0.2;
+    transform: scale(2.5);
+    pointer-events: none;
+}
 </style>
 
 <?php include 'includes/footer.php'; ?>

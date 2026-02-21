@@ -25,6 +25,7 @@ include 'includes/header.php';
         <a href="#initiator" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Для Инициатора</a>
         <a href="#performer" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Для Исполнителя</a>
         <a href="#admin" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Администрирование</a>
+        <a href="#analytics" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Рейтинги и КПД</a>
         <a href="#telegram" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Настройка Telegram</a>
         <a href="#pwa" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Мобильная версия</a>
     </div>
@@ -118,6 +119,27 @@ include 'includes/header.php';
                         <h4 style="margin-top:0; font-size:15px; border-bottom: 1px solid var(--win-border); pb: 8px;">3. Приемка работы</h4>
                         <p style="font-size:13px; line-height:1.6;">Когда работа готова, статус изменится на "Проверка". <br><strong>Вариант А:</strong> Нажмите "Принять работу" и поставьте оценку звездами. <br><strong>Вариант Б:</strong> Если работа не доделана, нажмите "Вернуть на доработку" и напишите причину.</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ANALYTICS -->
+        <section id="analytics" class="card mica" style="background: linear-gradient(135deg, rgba(255, 174, 0, 0.05) 0%, rgba(255,255,255,0.7) 100%);">
+            <h2 style="margin-top:0; font-size: 24px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="trophy" style="color:#ffae00;"></i> Рейтинги и эффективность
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                <div>
+                    <h4 style="margin-top:0;">Оценки пользователей</h4>
+                    <p style="font-size:13px; line-height:1.6;">После выполнения каждой заявки Инициатор выставляет оценку от 0 до 5 звезд. Эти оценки напрямую влияют на рейтинг сотрудника и всей службы.</p>
+                </div>
+                <div>
+                    <h4 style="margin-top:0;">Алгоритм "Лучший сотрудник"</h4>
+                    <p style="font-size:13px; line-height:1.6;">Система использует сбалансированную формулу: <code>Средний рейтинг × Логарифм выполненных задач</code>. Это позволяет поощрять как качество работы, так и большой объем выполненных поручений.</p>
+                </div>
+                <div>
+                    <h4 style="margin-top:0;">Контроль SLA</h4>
+                    <p style="font-size:13px; line-height:1.6;">Соблюдение сроков — критический фактор. Просроченные заявки негативно сказываются на КПД службы в общем отчете для руководства.</p>
                 </div>
             </div>
         </section>

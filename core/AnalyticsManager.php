@@ -49,7 +49,7 @@ class AnalyticsManager {
             $perfId = $req['performer_id'] ?? null;
             if ($perfId) {
                 if (!isset($stats['by_performer'][$perfId])) {
-                    $stats['by_performer'][$perfId] = ['total' => 0, 'completed' => 0, 'total_hours' => 0];
+                    $stats['by_performer'][$perfId] = ['total' => 0, 'completed' => 0, 'total_hours' => 0, 'ratings' => [], 'avg_rating' => 0];
                 }
                 $stats['by_performer'][$perfId]['total']++;
             }
@@ -79,6 +79,9 @@ class AnalyticsManager {
                     if ($perfId) {
                         $stats['by_performer'][$perfId]['completed']++;
                         $stats['by_performer'][$perfId]['total_hours'] += $duration;
+                        if (isset($req['rating']) && $req['rating'] > 0) {
+                            $stats['by_performer'][$perfId]['ratings'][] = (int)$req['rating'];
+                        }
                     }
                 }
             }
@@ -88,6 +91,41 @@ class AnalyticsManager {
             $stats['avg_hours'] = round($totalHours / $stats['completed_count'], 1);
         }
 
+        // Calculate average ratings for performers
+        foreach ($stats['by_performer'] as $pid => &$pdata) {
+            if (count($pdata['ratings']) > 0) {
+                $pdata['avg_rating'] = round(array_sum($pdata['ratings']) / count($pdata['ratings']), 1);
+            }
+        }
+
         return $stats;
+    }
+
+    public function getBestPerformers(int $limit = 5): array {
+        $stats = $this->getStats();
+        $rankings = [];
+
+        $userStore = new JsonStore('data/users.json');
+        $users = $userStore->read();
+        $userNames = [];
+        foreach ($users as $u) $userNames[$u['id']] = $u['name'];
+
+        foreach ($stats['by_performer'] as $id => $data) {
+            if ($data['completed'] === 0) continue;
+
+            // Formula: Rating * log10(completed + 1) to balance quality and quantity
+            $score = $data['avg_rating'] * log10($data['completed'] + 1);
+
+            $rankings[] = [
+                'id' => $id,
+                'name' => $userNames[$id] ?? "Сотрудник #$id",
+                'completed' => $data['completed'],
+                'avg_rating' => $data['avg_rating'],
+                'score' => round($score, 2)
+            ];
+        }
+
+        usort($rankings, fn($a, $b) => $b['score'] <=> $a['score']);
+        return array_slice($rankings, 0, $limit);
     }
 }
