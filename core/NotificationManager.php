@@ -57,12 +57,22 @@ class NotificationManager {
     }
 
     public function testConnection(string $token, string $chatId): array {
-        $result = $this->rawSend($token, $chatId, "🧪 Тестовое сообщение системы ХОП. Если вы это видите, интеграция настроена верно!");
+        $time = date('H:i:s');
+        $msg = "🧪 <b>ТЕСТ СВЯЗИ ХОП</b>\n";
+        $msg .= "Время: <code>$time</code>\n";
+        $msg .= "Статус: Соединение установлено успешно! ✅\n\n";
+        $msg .= "<i>Теперь вы будете получать уведомления о новых заявках и изменении их статуса.</i>";
+
+        $result = $this->rawSend($token, $chatId, $msg);
         return $result;
     }
 
     private function rawSend(string $token, string $chatId, string $message): array {
         $url = "https://api.telegram.org/bot{$token}/sendMessage";
+
+        // Clean and prepare message for HTML parse mode
+        $message = str_replace(['<br>', '<br/>', '<br />'], "\n", $message);
+
         $data = [
             'chat_id' => $chatId,
             'text' => $message,

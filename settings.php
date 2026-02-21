@@ -151,31 +151,50 @@ include 'includes/header.php';
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="bell-ring" style="color:var(--win-accent);"></i> Уведомления Telegram
             </h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Bot Token</label>
-                    <input type="text" id="tg_token" name="telegram_token" value="<?php echo htmlspecialchars($settings['telegram_token']); ?>" placeholder="000000000:AAHHH...">
-                </div>
-                <div class="form-group">
-                    <label>Target Chat ID (Глобальный)</label>
-                    <input type="text" id="tg_chat" name="telegram_chat_id" value="<?php echo htmlspecialchars($settings['telegram_chat_id']); ?>" placeholder="-100123456789">
-                </div>
-            </div>
 
-            <div style="margin-top:20px; padding:16px; background:rgba(0,120,212,0.05); border-radius:8px; border:1px dashed var(--win-accent);">
-                <h3 style="margin-top:0; font-size:14px; margin-bottom:12px;">Проверка связи</h3>
-                <div style="display:flex; gap:12px; align-items:flex-end;">
-                    <div style="flex:1;">
-                        <label style="font-size:11px; font-weight:700;">Telegram ID для теста</label>
-                        <input type="text" id="test_tg_id" placeholder="Напр. 123456789" style="height:38px;">
+            <div class="tg-config-layout">
+                <div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="form-group">
+                            <label>Bot Token</label>
+                            <input type="text" id="tg_token" name="telegram_token" value="<?php echo htmlspecialchars($settings['telegram_token']); ?>" placeholder="000000000:AAHHH...">
+                        </div>
+                        <div class="form-group">
+                            <label>Target Chat ID (Глобальный)</label>
+                            <input type="text" id="tg_chat" name="telegram_chat_id" value="<?php echo htmlspecialchars($settings['telegram_chat_id']); ?>" placeholder="-100123456789">
+                        </div>
                     </div>
-                    <button type="button" onclick="testTelegram()" class="btn-secondary" style="height:38px; white-space:nowrap;">
-                        <i data-lucide="send" style="width:14px;"></i> Отправить тест
-                    </button>
+
+                    <div style="margin-top:20px; padding:16px; background:rgba(0,120,212,0.05); border-radius:12px; border:1px solid rgba(0,120,212,0.1);">
+                        <h3 style="margin-top:0; font-size:14px; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                            <i data-lucide="zap" style="width:16px; color:var(--win-accent);"></i> Быстрая проверка
+                        </h3>
+                        <div style="display:flex; gap:12px; align-items:flex-end;">
+                            <div style="flex:1;">
+                                <label style="font-size:11px; font-weight:700; color:var(--win-text-secondary); margin-bottom:4px; display:block;">ID ЧАТА / ПОЛЬЗОВАТЕЛЯ</label>
+                                <input type="text" id="test_tg_id" placeholder="Напр. 123456789" style="height:38px; border-radius:8px;">
+                            </div>
+                            <button type="button" onclick="testTelegram()" class="btn-secondary" style="height:38px; white-space:nowrap; border-radius:8px; padding: 0 16px;">
+                                <i data-lucide="send" style="width:14px;"></i> Тест
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <p style="font-size:11px; color:var(--win-text-secondary); margin-top:8px; margin-bottom:0;">
-                    Введите ID чата или пользователя, чтобы проверить работу бота перед сохранением.
-                </p>
+
+                <div style="background: rgba(0,0,0,0.02); padding: 20px; border-radius: 12px; border: 1px solid var(--win-border);">
+                    <h3 style="margin-top:0; font-size:14px; margin-bottom:12px;">Инструкция по настройке</h3>
+                    <ul style="font-size:12px; padding-left:16px; margin:0; line-height:1.6; color:var(--win-text-secondary);">
+                        <li style="margin-bottom:8px;">Создайте бота в <a href="https://t.me/BotFather" target="_blank" style="color:var(--win-accent); font-weight:600;">@BotFather</a> и получите <b>Token</b>.</li>
+                        <li style="margin-bottom:8px;">Узнайте свой ID в <a href="https://t.me/userinfobot" target="_blank" style="color:var(--win-accent); font-weight:600;">@userinfobot</a> или ID группы.</li>
+                        <li style="margin-bottom:8px;">Вставьте данные и нажмите <b>Тест</b>.</li>
+                        <li>После успешного теста нажмите <b>Применить изменения</b>.</li>
+                    </ul>
+                    <div style="margin-top:16px; pt:16px; border-top:1px solid var(--win-border);">
+                        <a href="help.php" class="btn-secondary" style="width:100%; font-size:11px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; text-decoration:none;">
+                            Подробная справка
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -201,6 +220,19 @@ include 'includes/header.php';
             document.getElementById('tg-test-form').submit();
         }
         </script>
+
+        <style>
+            .tg-config-layout {
+                display: grid;
+                grid-template-columns: 1fr 300px;
+                gap: 24px;
+            }
+            @media (max-width: 850px) {
+                .tg-config-layout {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
 
         <section class="card mica" style="margin-top: 24px;">
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">

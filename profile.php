@@ -6,6 +6,16 @@ use Hop\Core\UserManager;
 
 $userStore = new JsonStore('data/users.json');
 $userManager = new UserManager($userStore);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['telegram_chat_id'])) {
+    checkCsrf();
+    $userManager->update($_SESSION['user_id'], [
+        'telegram_chat_id' => $_POST['telegram_chat_id']
+    ]);
+    header('Location: profile.php?success=1');
+    exit;
+}
+
 $user = $userManager->getById($_SESSION['user_id']);
 
 $servicesStore = new JsonStore('data/services.json');
@@ -30,6 +40,10 @@ include 'includes/header.php';
         <p style="color:var(--win-text-secondary);">Ваши учетные данные в системе ХОП</p>
     </div>
 
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success" style="animation: slideDown 0.3s ease-out; text-align:center;">Данные профиля обновлены</div>
+    <?php endif; ?>
+
     <section class="card mica" style="animation: slideUp 0.6s ease-out; padding: 40px 20px; text-align: center;">
         <div style="width:100px; height:100px; background: linear-gradient(135deg, var(--win-accent) 0%, #005a9e 100%); color:#fff; border-radius:30px; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; font-size:42px; font-weight:800; box-shadow: 0 10px 20px rgba(0,120,212,0.2);">
             <?php echo mb_substr($user['name'], 0, 1); ?>
@@ -41,25 +55,36 @@ include 'includes/header.php';
         </div>
 
         <div style="margin-top: 40px; text-align: left; border-top: 1px solid var(--win-border); pt: 32px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <span style="color: var(--win-text-secondary); font-size: 14px;">Персональный код</span>
-                <span style="font-weight: 700; font-family: monospace; letter-spacing: 2px;">●●●●●●</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center;">
+                <span style="color: var(--win-text-secondary); font-size: 13px;">Персональный код</span>
+                <span style="font-weight: 700; font-family: monospace; letter-spacing: 2px; background: rgba(0,0,0,0.03); padding: 4px 12px; border-radius: 6px;">●●●●●●</span>
             </div>
 
             <?php if ($user['service_id']): ?>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <span style="color: var(--win-text-secondary); font-size: 14px;">Закрепленная служба</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center;">
+                <span style="color: var(--win-text-secondary); font-size: 13px;">Служба</span>
                 <span style="font-weight: 700; color: var(--win-text);"><?php echo htmlspecialchars($services[$user['service_id']] ?? '—'); ?></span>
             </div>
             <?php endif; ?>
 
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <span style="color: var(--win-text-secondary); font-size: 14px;">ID в системе</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center;">
+                <span style="color: var(--win-text-secondary); font-size: 13px;">ID аккаунта</span>
                 <span style="font-weight: 700; color: var(--win-text);">#<?php echo $user['id']; ?></span>
             </div>
+
+            <form method="POST" style="margin-top: 24px; pt: 24px; border-top: 1px dashed var(--win-border);">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                <div class="form-group">
+                    <label style="font-size: 12px; margin-bottom: 8px; display: block;">Telegram Chat ID (для личных уведомлений)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" name="telegram_chat_id" value="<?php echo htmlspecialchars($user['telegram_chat_id'] ?? ''); ?>" placeholder="Напр. 123456789" style="height: 38px; font-size: 14px;">
+                        <button type="submit" class="btn-primary" style="height: 38px; padding: 0 16px;"><i data-lucide="check" style="width: 16px;"></i></button>
+                    </div>
+                </div>
+            </form>
         </div>
 
-        <div style="margin-top: 32px; text-align: left; background: rgba(0,120,212,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0,120,212,0.1);">
+        <div style="margin-top: 24px; text-align: left; background: rgba(0,120,212,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(0,120,212,0.1);">
             <h3 style="margin-top:0; font-size:15px; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="bell-ring" style="width:18px; color:var(--win-accent);"></i> Звуковые оповещения
             </h3>

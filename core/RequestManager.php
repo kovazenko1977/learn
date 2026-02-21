@@ -34,7 +34,13 @@ class RequestManager {
         if (isset($data['performer_id']) && $status === 'assigned') {
             $historyComment = 'Заявка создана и автоматически назначена';
             if ($this->notifier) {
-                $this->notifier->send($data['performer_id'], "🚀 Вам назначена новая заявка #$id");
+                $msg = "🚀 <b>Вам назначена заявка #$id</b>";
+                if (isset($data['location'])) {
+                    $loc = $data['location'];
+                    $msg .= "\n📍 Корп. {$loc['building']}, каб. {$loc['room']}";
+                }
+                $msg .= "\n📝 " . htmlspecialchars(mb_substr($data['description'], 0, 100));
+                $this->notifier->send($data['performer_id'], $msg);
             }
         }
 
@@ -88,9 +94,15 @@ class RequestManager {
 
             if ($this->notifier && $targetRequest) {
                 $statusName = $statusNames[$newStatus] ?? $newStatus;
-                $msg = "🔔 Заявка #$id\nСтатус: $statusName";
+                $msg = "🔔 <b>Заявка #$id</b>\nСтатус: <b>$statusName</b>";
+
+                if (isset($targetRequest['location'])) {
+                    $loc = $targetRequest['location'];
+                    $msg .= "\n📍 Место: Корп. {$loc['building']}, каб. {$loc['room']}";
+                }
+
                 if ($comment) {
-                    $msg .= "\nКомментарий: " . mb_substr($comment, 0, 100) . (mb_strlen($comment) > 100 ? '...' : '');
+                    $msg .= "\n💬 <i>" . htmlspecialchars(mb_substr($comment, 0, 100)) . (mb_strlen($comment) > 100 ? '...' : '') . "</i>";
                 }
 
                 // Notify initiator
@@ -122,9 +134,17 @@ class RequestManager {
                 $this->store->save($requests);
 
                 if ($this->notifier) {
-                    $this->notifier->send($performerId, "👷 Вам назначена новая заявка #$id");
+                    $msgPerformer = "👷 <b>Вам назначена заявка #$id</b>";
+                    if (isset($request['location'])) {
+                        $loc = $request['location'];
+                        $msgPerformer .= "\n📍 Корп. {$loc['building']}, каб. {$loc['room']}";
+                    }
+                    $msgPerformer .= "\n📝 " . htmlspecialchars(mb_substr($request['description'], 0, 100));
+
+                    $this->notifier->send($performerId, $msgPerformer);
+
                     if ($request['initiator_id'] != $assignerId) {
-                        $this->notifier->send($request['initiator_id'], "✅ По вашей заявке #$id назначен исполнитель");
+                        $this->notifier->send($request['initiator_id'], "✅ По вашей заявке <b>#$id</b> назначен исполнитель");
                     }
                 }
                 return true;
