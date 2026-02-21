@@ -34,7 +34,7 @@ class RequestManager {
         if (isset($data['performer_id']) && $status === 'assigned') {
             $historyComment = 'Заявка создана и автоматически назначена';
             if ($this->notifier) {
-                $this->notifier->send($data['performer_id'], "Вам назначена новая заявка #$id");
+                $this->notifier->send($data['performer_id'], "🚀 Вам назначена новая заявка #$id");
             }
         }
 
@@ -55,6 +55,11 @@ class RequestManager {
         $requests = $this->getAll();
         $found = false;
         $targetRequest = null;
+        $statusNames = [
+            'new' => 'Новая', 'assigned' => 'Назначена', 'working' => 'В работе',
+            'checking' => 'Проверка', 'returned' => 'Доработка', 'completed' => 'Выполнена', 'closed' => 'Закрыта'
+        ];
+
         foreach ($requests as &$request) {
             if ($request['id'] === $id) {
                 $request['status'] = $newStatus;
@@ -82,12 +87,17 @@ class RequestManager {
             $this->store->save($requests);
 
             if ($this->notifier && $targetRequest) {
-                $msg = "Заявка #$id изменила статус на " . $newStatus;
+                $statusName = $statusNames[$newStatus] ?? $newStatus;
+                $msg = "🔔 Заявка #$id\nСтатус: $statusName";
+                if ($comment) {
+                    $msg .= "\nКомментарий: " . mb_substr($comment, 0, 100) . (mb_strlen($comment) > 100 ? '...' : '');
+                }
+
                 // Notify initiator
                 if ($targetRequest['initiator_id'] != $userId) {
                     $this->notifier->send($targetRequest['initiator_id'], $msg);
                 }
-                // Notify performer if status changed by controller/admin
+                // Notify performer if status changed by controller/admin/initiator
                 if (isset($targetRequest['performer_id']) && $targetRequest['performer_id'] != $userId) {
                     $this->notifier->send($targetRequest['performer_id'], $msg);
                 }
@@ -112,9 +122,9 @@ class RequestManager {
                 $this->store->save($requests);
 
                 if ($this->notifier) {
-                    $this->notifier->send($performerId, "Вам назначена заявка #$id");
+                    $this->notifier->send($performerId, "👷 Вам назначена новая заявка #$id");
                     if ($request['initiator_id'] != $assignerId) {
-                        $this->notifier->send($request['initiator_id'], "По вашей заявке #$id назначен исполнитель");
+                        $this->notifier->send($request['initiator_id'], "✅ По вашей заявке #$id назначен исполнитель");
                     }
                 }
                 return true;
