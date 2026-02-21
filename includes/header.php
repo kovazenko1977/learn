@@ -35,11 +35,53 @@
     </script>
 </head>
 <body>
+    <audio id="notif-sound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+    </audio>
+
     <div id="loading-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); backdrop-filter:blur(10px); z-index:9999; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s;">
         <div class="win-spinner"></div>
     </div>
 
     <?php if (isset($_SESSION['user_role'])): ?>
+    <script>
+        let lastNotifCount = -1;
+        function checkNotifications() {
+            fetch('api_notifications.php')
+                .then(r => r.json())
+                .then(data => {
+                    if (lastNotifCount !== -1 && data.count > lastNotifCount) {
+                        const sound = document.getElementById('notif-sound');
+                        if (sound) {
+                            sound.play().catch(e => console.log("Sound blocked by browser policy. Interaction needed."));
+                        }
+                    }
+                    lastNotifCount = data.count;
+
+                    // Update badge if exists
+                    const badge = document.getElementById('notif-badge');
+                    const badgeSidebar = document.getElementById('notif-badge-sidebar');
+                    if (badge) {
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.style.display = 'flex';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                    if (badgeSidebar) {
+                        if (data.count > 0) {
+                            badgeSidebar.textContent = data.count;
+                            badgeSidebar.style.display = 'block';
+                        } else {
+                            badgeSidebar.style.display = 'none';
+                        }
+                    }
+                });
+        }
+        setInterval(checkNotifications, 10000); // Check every 10 seconds
+        checkNotifications();
+    </script>
     <aside class="sidebar mica">
         <div class="sidebar-header" style="padding: 24px;">
             <div style="width:40px; height:40px; background:var(--win-accent); border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:18px; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);">Х</div>
@@ -74,8 +116,11 @@
             <?php endif; ?>
 
             <a href="notifications.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>">
-                <i data-lucide="bell"></i>
-                <span>Уведомления</span>
+                <div style="position: relative; display: flex; align-items: center; gap: 12px; width: 100%;">
+                    <i data-lucide="bell"></i>
+                    <span>Уведомления</span>
+                    <div id="notif-badge-sidebar" style="margin-left:auto; background:#e81123; color:white; border-radius:10px; padding: 2px 8px; font-size:10px; display:none; font-weight:700;">0</div>
+                </div>
             </a>
 
             <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Система</div>
@@ -162,7 +207,10 @@
         </a>
         <?php endif; ?>
         <a href="notifications.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>">
-            <i data-lucide="bell"></i>
+            <div style="position: relative;">
+                <i data-lucide="bell"></i>
+                <div id="notif-badge" style="position:absolute; top:-5px; right:-5px; width:16px; height:16px; background:#e81123; color:white; border-radius:50%; font-size:10px; display:none; align-items:center; justify-content:center; font-weight:700; border:2px solid white;">0</div>
+            </div>
             <span>Инфо</span>
         </a>
         <a href="profile.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">

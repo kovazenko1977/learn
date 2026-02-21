@@ -89,5 +89,12 @@
         "type": "info",
         "timestamp": "2026-02-20 11:31:28",
         "read": false
+    },
+    {
+        "user_id": 1,
+        "message": "Тестовое уведомление для проверки бейджа",
+        "type": "info",
+        "timestamp": "2026-02-21 17:11:46",
+        "read": false
     }
 ]

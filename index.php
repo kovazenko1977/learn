@@ -12,6 +12,10 @@ $requests = $requestManager->getAll();
 $userRole = $_SESSION['user_role'];
 $userId = $_SESSION['user_id'];
 
+$settingsStore = new JsonStore('data/settings.json');
+$settings = $settingsStore->read();
+$slaConfig = $settings['sla'] ?? [];
+
 // Deep linking filters
 $fStatus = $_GET['status'] ?? null;
 $fPerformerId = isset($_GET['performer_id']) ? (int)$_GET['performer_id'] : null;
@@ -67,10 +71,6 @@ $statusNames = [
     'new' => 'Новая', 'assigned' => 'Назначена', 'working' => 'В работе',
     'checking' => 'Проверка', 'returned' => 'Доработка', 'completed' => 'Выполнена', 'closed' => 'Закрыта'
 ];
-
-$settingsStore = new JsonStore('data/settings.json');
-$settings = $settingsStore->read();
-$slaConfig = $settings['sla'] ?? [];
 
 include 'includes/header.php';
 ?>

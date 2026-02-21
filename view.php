@@ -272,9 +272,14 @@ include 'includes/header.php';
                                     <?php echo $statusNames[$entry['status']]; ?>
                                 </div>
                                 <?php if (!empty($entry['comment'])): ?>
-                                    <div style="font-size: 12px; color: var(--win-text-secondary); line-height: 1.4; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px;">
+                                    <div style="font-size: 12px; color: var(--win-text-secondary); line-height: 1.4; background: rgba(0,0,0,0.02); padding: 8px; border-radius: 6px; margin-bottom: 8px;">
                                         <?php echo htmlspecialchars($entry['comment']); ?>
                                     </div>
+                                <?php endif; ?>
+                                <?php if (!empty($entry['photo'])): ?>
+                                    <a href="<?php echo $entry['photo']; ?>" target="_blank" style="display: block; margin-top: 8px;">
+                                        <img src="<?php echo $entry['photo']; ?>" style="max-width: 100%; max-height: 120px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </div>

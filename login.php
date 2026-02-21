@@ -76,18 +76,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .code-input {
             background: rgba(255,255,255,0.8);
-            border: 2px solid transparent;
+            border: 2px solid var(--win-border);
             border-radius: 12px;
             padding: 16px;
-            font-size: 24px;
-            letter-spacing: 8px;
+            font-size: 32px;
+            letter-spacing: 4px;
             text-align: center;
             width: 100%;
             box-sizing: border-box;
             transition: all 0.2s;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
             font-family: 'Inter', sans-serif;
             font-weight: 700;
+            color: var(--win-text);
         }
         .code-input:focus {
             background: #fff;
@@ -148,13 +149,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error-box"><?php echo $error; ?></div>
             <?php endif; ?>
 
-            <input type="password" name="code" class="code-input" placeholder="••••••" required autofocus maxlength="6" pattern="\d{6}" inputmode="numeric">
+            <div style="position: relative;">
+                <input type="text" name="code" id="code-input" class="code-input" placeholder="000000" required autofocus maxlength="6" pattern="\d{6}" inputmode="numeric">
+                <div style="font-size: 11px; color: var(--win-text-secondary); margin-bottom: 20px;">Введите ваш персональный 6-значный код</div>
+            </div>
 
             <button type="submit" class="btn-login">Войти в кабинет</button>
         </form>
 
         <div class="footer-note">
-            При возникновении проблем с доступом обратитесь к администратору (код: 123456)
+            При возникновении проблем с доступом обратитесь к администратору
         </div>
     </div>
 </body>
