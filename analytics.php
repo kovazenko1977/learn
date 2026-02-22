@@ -78,8 +78,9 @@ include 'includes/header.php';
             <?php
             $medals = ['#ffd700', '#c0c0c0', '#cd7f32'];
             foreach ($bestPerformers as $idx => $perf):
+                $perfLink = "index.php?performer_id=" . $perf['id'] . ($startDate ? "&start_date=$startDate" : "") . ($endDate ? "&end_date=$endDate" : "");
             ?>
-                <div class="leader-card">
+                <a href="<?php echo $perfLink; ?>" class="leader-card" style="text-decoration: none; color: inherit;">
                     <div class="leader-medal" style="background: <?php echo $medals[$idx] ?? '#0078d4'; ?>;">
                         <?php echo $idx + 1; ?>
                     </div>
@@ -94,7 +95,7 @@ include 'includes/header.php';
                         <div style="font-size:10px; opacity:0.6; font-weight:700;">БАЛЛЫ</div>
                         <?php echo $perf['score']; ?>
                     </div>
-                </div>
+                </a>
             <?php endforeach; ?>
         </div>
     </div>
@@ -162,11 +163,12 @@ include 'includes/header.php';
                 <?php foreach ($services as $id => $name):
                     $count = $stats['by_service'][$id] ?? 0;
                     $percent = $stats['total'] > 0 ? round(($count / $stats['total']) * 100) : 0;
+                    $svcLink = "index.php?service_id=$id" . ($startDate ? "&start_date=$startDate" : "") . ($endDate ? "&end_date=$endDate" : "");
                 ?>
-                    <div style="display:flex; align-items:center; gap:12px; padding: 10px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--win-border);">
+                    <a href="<?php echo $svcLink; ?>" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:12px; padding: 10px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--win-border);" class="clickable-stat">
                         <div style="flex: 1; font-size: 14px; font-weight: 600;"><?php echo htmlspecialchars($name); ?></div>
                         <div style="font-weight: 800; font-size: 16px; color: var(--win-accent);"><?php echo $count; ?></div>
-                    </div>
+                    </a>
                 <?php endforeach; ?>
             </div>
         </section>

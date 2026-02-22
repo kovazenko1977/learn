@@ -19,6 +19,7 @@ $slaConfig = $settings['sla'] ?? [];
 // Deep linking filters
 $fStatus = $_GET['status'] ?? null;
 $fPerformerId = isset($_GET['performer_id']) ? (int)$_GET['performer_id'] : null;
+$fServiceId = isset($_GET['service_id']) ? (int)$_GET['service_id'] : null;
 $fStart = $_GET['start_date'] ?? null;
 $fEnd = $_GET['end_date'] ?? null;
 $fOverdue = $_GET['overdue'] ?? null;
@@ -48,10 +49,11 @@ foreach ($requests as $req) {
 $filteredRequests = $roleFilteredRequests;
 
 // Apply deep filters
-if ($fStatus || $fPerformerId || $fStart || $fEnd || $fOverdue) {
-    $filteredRequests = array_filter($roleFilteredRequests, function($req) use ($fStatus, $fPerformerId, $fStart, $fEnd, $fOverdue, $slaConfig) {
+if ($fStatus || $fPerformerId || $fServiceId || $fStart || $fEnd || $fOverdue) {
+    $filteredRequests = array_filter($roleFilteredRequests, function($req) use ($fStatus, $fPerformerId, $fServiceId, $fStart, $fEnd, $fOverdue, $slaConfig) {
         if ($fStatus && $req['status'] !== $fStatus) return false;
         if ($fPerformerId && ($req['performer_id'] ?? 0) !== $fPerformerId) return false;
+        if ($fServiceId && ($req['service_id'] ?? 0) !== $fServiceId) return false;
 
         $createdAt = strtotime($req['created_at']);
         if ($fStart && $createdAt < strtotime($fStart . ' 00:00:00')) return false;
@@ -88,11 +90,16 @@ include 'includes/header.php';
                 <h1>Главная панель</h1>
                 <p style="color:var(--win-text-secondary);"><?php echo $_SESSION['user_name']; ?>, добро пожаловать в ХОП</p>
             </div>
-            <?php if ($userRole === 'initiator' || $userRole === 'admin'): ?>
-                <a href="create.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px;">
-                    <i data-lucide="plus"></i> Новая заявка
-                </a>
-            <?php endif; ?>
+            <div style="display:flex; gap:12px;">
+                <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px; padding: 12px 24px;">
+                    <i data-lucide="printer"></i> Печать
+                </button>
+                <?php if ($userRole === 'initiator' || $userRole === 'admin'): ?>
+                    <a href="create.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px;">
+                        <i data-lucide="plus"></i> Новая заявка
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
 
         <div class="stats-grid">
@@ -128,6 +135,39 @@ include 'includes/header.php';
     </div>
 
     <div class="card mica" style="padding:20px; margin-bottom:24px; animation: slideUp 0.6s ease-out;">
+        <form method="GET" style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--win-border);">
+            <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
+                <label style="font-size: 11px; font-weight:700;">Дата С</label>
+                <input type="date" name="start_date" value="<?php echo $fStart; ?>" style="height: 40px;">
+            </div>
+            <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
+                <label style="font-size: 11px; font-weight:700;">Дата По</label>
+                <input type="date" name="end_date" value="<?php echo $fEnd; ?>" style="height: 40px;">
+            </div>
+            <?php if ($fStatus): ?>
+                <input type="hidden" name="status" value="<?php echo $fStatus; ?>">
+            <?php endif; ?>
+            <?php if ($fPerformerId): ?>
+                <input type="hidden" name="performer_id" value="<?php echo $fPerformerId; ?>">
+            <?php endif; ?>
+            <?php if (isset($_GET['service_id'])): ?>
+                <input type="hidden" name="service_id" value="<?php echo (int)$_GET['service_id']; ?>">
+            <?php endif; ?>
+
+            <button type="submit" class="btn-primary" style="height: 40px; padding: 0 20px;">
+                Применить
+            </button>
+            <?php if ($fStart || $fEnd): ?>
+                <a href="index.php?<?php
+                    $params = $_GET;
+                    unset($params['start_date'], $params['end_date']);
+                    echo http_build_query($params);
+                ?>" class="btn-secondary" style="height: 40px; text-decoration: none; display: flex; align-items: center; justify-content: center; padding: 0 16px;">
+                    <i data-lucide="x" style="width:16px; height:16px;"></i>
+                </a>
+            <?php endif; ?>
+        </form>
+
         <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap: wrap;">
             <div style="flex:1; min-width: 250px; position:relative;">
                 <i data-lucide="search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--win-text-secondary);"></i>
