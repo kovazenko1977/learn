@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $settings['telegram_token'] = $_POST['telegram_token'] ?? $settings['telegram_token'];
     $settings['telegram_chat_id'] = $_POST['telegram_chat_id'] ?? $settings['telegram_chat_id'];
     $settings['accent_color'] = $_POST['accent_color'] ?? $settings['accent_color'] ?? '#0078d4';
+    $settings['theme'] = $_POST['theme'] ?? $settings['theme'] ?? 'light';
     $settings['primary_font'] = $_POST['primary_font'] ?? $settings['primary_font'] ?? 'Inter';
     $settings['font_size'] = $_POST['font_size'] ?? $settings['font_size'] ?? '15px';
     $settings['polling_interval'] = (int)($_POST['polling_interval'] ?? $settings['polling_interval'] ?? 10);
@@ -195,6 +196,14 @@ include 'includes/header.php';
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="palette" style="color:var(--win-accent);"></i> Внешний вид
                 </h2>
+                <div class="form-group">
+                    <label>Тема оформления</label>
+                    <select name="theme">
+                        <option value="light" <?php echo ($settings['theme'] ?? 'light') === 'light' ? 'selected' : ''; ?>>Светлая</option>
+                        <option value="dark" <?php echo ($settings['theme'] ?? '') === 'dark' ? 'selected' : ''; ?>>Темная</option>
+                        <option value="auto" <?php echo ($settings['theme'] ?? '') === 'auto' ? 'selected' : ''; ?>>Системная (Авто)</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Акцентный цвет (HEX)</label>
                     <div style="display:flex; gap:10px;">

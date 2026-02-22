@@ -11,5 +11,6 @@
     "accent_color": "#e81123",
     "primary_font": "'Roboto', sans-serif",
     "font_size": "18px",
-    "polling_interval": 10
+    "polling_interval": 10,
+    "theme": "dark"
 }

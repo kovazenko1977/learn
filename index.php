@@ -124,19 +124,19 @@ include 'includes/header.php';
                     }
                 }
             ?>
-            <a href="index.php?status=new" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #0078d4, #00c6ff); text-decoration:none; color:inherit;">
+            <a href="index.php?status=new" class="stat-card mica stat-new-card">
                 <div class="stat-value"><?php echo $newCount; ?></div>
                 <div class="stat-label">Ожидают</div>
             </a>
-            <a href="index.php?status=working" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #ff8f00, #ffcc00); text-decoration:none; color:inherit;">
+            <a href="index.php?status=working" class="stat-card mica stat-working-card">
                 <div class="stat-value"><?php echo $workCount; ?></div>
                 <div class="stat-label">В работе</div>
             </a>
-            <a href="index.php?overdue=1" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #e81123, #ff5f6d); text-decoration:none; color:inherit;">
+            <a href="index.php?overdue=1" class="stat-card mica stat-overdue-card">
                 <div class="stat-value"><?php echo $overdueCount; ?></div>
                 <div class="stat-label">Просрочено</div>
             </a>
-            <a href="index.php" class="stat-card mica colorful-stat-card" style="--bg-grad: linear-gradient(135deg, #8e24aa, #ba68c8); text-decoration:none; color:inherit;">
+            <a href="index.php" class="stat-card mica stat-total-card">
                 <div class="stat-value"><?php echo $totalBase; ?></div>
                 <div class="stat-label">Всего</div>
             </a>

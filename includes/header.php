@@ -17,6 +17,7 @@
         $accentColor = $globalSettings['accent_color'] ?? '#0078d4';
         $primaryFont = $globalSettings['primary_font'] ?? 'Inter';
         $fontSize = $globalSettings['font_size'] ?? '15px';
+        $theme = $globalSettings['theme'] ?? 'light';
     ?>
     <style>
         :root {
@@ -37,7 +38,21 @@
         }
     </script>
 </head>
-<body>
+<body class="<?php echo $theme === 'dark' ? 'dark-theme' : ''; ?>">
+    <script>
+        <?php if ($theme === 'auto'): ?>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-theme');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        });
+        <?php endif; ?>
+    </script>
     <audio id="notif-sound" preload="auto">
         <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
     </audio>
