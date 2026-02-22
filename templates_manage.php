@@ -46,14 +46,18 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header" style="animation: slideDown 0.5s ease-out; display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-            <h1>Шаблоны заявок</h1>
-            <p style="color:var(--win-text-secondary);">Типовые решения для быстрой подачи</p>
+    <div class="page-header" style="animation: slideDown 0.5s ease-out;">
+        <div class="header-action-row">
+            <div class="header-title-block">
+                <h1>Шаблоны заявок</h1>
+                <p style="color:var(--win-text-secondary);">Типовые решения для быстрой подачи</p>
+            </div>
+            <div class="header-buttons-block">
+                <button onclick="window.print()" class="btn-secondary">
+                    <i data-lucide="printer"></i> Печать
+                </button>
+            </div>
         </div>
-        <button onclick="window.print()" class="btn-secondary">
-            <i data-lucide="printer"></i> Печать
-        </button>
     </div>
 
     <?php if ($message): ?>

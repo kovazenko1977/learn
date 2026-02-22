@@ -34,18 +34,20 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end; animation: slideDown 0.5s ease-out;">
-        <div>
-            <h1>Аналитическая панель</h1>
-            <p style="color:var(--win-text-secondary);">Показатели эффективности и нагрузка служб</p>
-        </div>
-        <div style="display:flex; gap:12px;">
-            <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px;">
-                <i data-lucide="printer"></i> Печать
-            </button>
-            <a href="export.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="download"></i> Экспорт
-            </a>
+    <div class="page-header" style="animation: slideDown 0.5s ease-out;">
+        <div class="header-action-row">
+            <div class="header-title-block">
+                <h1>Аналитическая панель</h1>
+                <p style="color:var(--win-text-secondary);">Показатели эффективности и нагрузка служб</p>
+            </div>
+            <div class="header-buttons-block">
+                <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="printer"></i> Печать
+                </button>
+                <a href="export.php?<?php echo http_build_query($_GET); ?>" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="download"></i> Экспорт
+                </a>
+            </div>
         </div>
     </div>
 

@@ -94,21 +94,25 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="page-header" style="display:flex; align-items:center; justify-content:space-between; animation: slideDown 0.5s ease-out;">
-        <div style="display:flex; align-items:center; gap:16px;">
-            <a href="index.php" class="btn-icon" style="text-decoration:none; color:inherit; background:rgba(0,0,0,0.05); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
-                <i data-lucide="arrow-left"></i>
-            </a>
-            <div>
-                <h1 style="margin:0;">Заявка #<?php echo $req['id']; ?></h1>
-                <div style="font-size:12px; color:var(--win-text-secondary); margin-top:2px;">
-                    Создана <?php echo date('d.m.Y в H:i', strtotime($req['created_at'])); ?>
+    <div class="page-header" style="animation: slideDown 0.5s ease-out;">
+        <div class="header-action-row">
+            <div style="display:flex; align-items:center; gap:16px;">
+                <a href="index.php" class="btn-icon" style="text-decoration:none; color:inherit; background:rgba(0,0,0,0.05); border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="arrow-left"></i>
+                </a>
+                <div>
+                    <h1 style="margin:0;">Заявка #<?php echo $req['id']; ?></h1>
+                    <div style="font-size:12px; color:var(--win-text-secondary); margin-top:2px;">
+                        Создана <?php echo date('d.m.Y в H:i', strtotime($req['created_at'])); ?>
+                    </div>
                 </div>
             </div>
+            <div class="header-buttons-block">
+                <button onclick="window.print()" class="btn-secondary">
+                    <i data-lucide="printer"></i> Печать
+                </button>
+            </div>
         </div>
-        <button onclick="window.print()" class="btn-secondary">
-            <i data-lucide="printer"></i> Печать
-        </button>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; animation: slideUp 0.6s ease-out;">

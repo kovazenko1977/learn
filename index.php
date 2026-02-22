@@ -85,12 +85,12 @@ include 'includes/header.php';
 
 <div class="container">
     <div class="page-header" style="animation: slideDown 0.5s ease-out;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
-            <div>
+        <div class="header-action-row">
+            <div class="header-title-block">
                 <h1>Главная панель</h1>
                 <p style="color:var(--win-text-secondary);"><?php echo $_SESSION['user_name']; ?>, добро пожаловать в ХОП</p>
             </div>
-            <div style="display:flex; gap:12px;">
+            <div class="header-buttons-block">
                 <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px; padding: 12px 24px;">
                     <i data-lucide="printer"></i> Печать
                 </button>

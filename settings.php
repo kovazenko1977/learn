@@ -128,17 +128,47 @@ include 'includes/header.php';
         <div class="alert alert-success" style="animation: slideDown 0.3s ease-out;"><?php echo $message; ?></div>
     <?php endif; ?>
 
-    <div class="settings-tabs mica" style="animation: slideDown 0.4s ease-out; margin-bottom: 24px;">
-        <button class="tab-btn active" onclick="showTab('org')"><i data-lucide="building-2"></i> Организация</button>
-        <button class="tab-btn" onclick="showTab('tg')"><i data-lucide="bell-ring"></i> Уведомления</button>
-        <button class="tab-btn" onclick="showTab('sla')"><i data-lucide="timer"></i> SLA & Система</button>
-        <button class="tab-btn" onclick="showTab('data')"><i data-lucide="database"></i> Обслуживание</button>
-    </div>
+    <div class="settings-layout" style="animation: slideUp 0.5s ease-out;">
+        <!-- Settings Sidebar -->
+        <aside class="settings-sidebar mica">
+            <div class="settings-nav">
+                <button class="settings-tab-btn active" onclick="showTab('org')">
+                    <i data-lucide="building-2"></i>
+                    <div class="btn-text">
+                        <span class="title">Организация</span>
+                        <span class="desc">Название, шрифты, цвета</span>
+                    </div>
+                </button>
+                <button class="settings-tab-btn" onclick="showTab('tg')">
+                    <i data-lucide="bell-ring"></i>
+                    <div class="btn-text">
+                        <span class="title">Уведомления</span>
+                        <span class="desc">Настройка Telegram бота</span>
+                    </div>
+                </button>
+                <button class="settings-tab-btn" onclick="showTab('sla')">
+                    <i data-lucide="timer"></i>
+                    <div class="btn-text">
+                        <span class="title">SLA & Система</span>
+                        <span class="desc">Сроки и системные параметры</span>
+                    </div>
+                </button>
+                <button class="settings-tab-btn" onclick="showTab('data')">
+                    <i data-lucide="database"></i>
+                    <div class="btn-text">
+                        <span class="title">Обслуживание</span>
+                        <span class="desc">Бэкап, очистка, демо-данные</span>
+                    </div>
+                </button>
+            </div>
+        </aside>
 
-    <form method="POST" style="animation: slideUp 0.6s ease-out;">
-        <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+        <!-- Settings Content -->
+        <div class="settings-main-content">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
-        <div id="tab-org" class="tab-content active">
+                <div id="tab-org" class="tab-content active">
             <div class="form-grid" style="align-items: stretch;">
                 <section class="card mica">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
@@ -313,14 +343,14 @@ include 'includes/header.php';
             }
         </style>
 
-        <div style="margin-top: 24px; text-align: right;" id="save-btn-container">
-            <button type="submit" class="btn-primary" style="padding: 12px 32px; font-size: 16px;">
-                <i data-lucide="save"></i> Применить изменения
-            </button>
-        </div>
-    </form>
+                <div style="margin-top: 24px; text-align: right;" id="save-btn-container">
+                    <button type="submit" class="btn-primary" style="padding: 12px 32px; font-size: 16px;">
+                        <i data-lucide="save"></i> Применить изменения
+                    </button>
+                </div>
+            </form>
 
-    <div id="tab-data" class="tab-content">
+            <div id="tab-data" class="tab-content">
         <div class="form-grid">
             <section class="card mica">
                 <h3 style="margin-top:0;">Резервное копирование</h3>
@@ -394,39 +424,82 @@ include 'includes/header.php';
                     </button>
                 </form>
             </section>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
-.settings-tabs {
-    display: flex;
-    gap: 8px;
-    padding: 6px;
-    border-radius: 12px;
-    overflow-x: auto;
-    scrollbar-width: none;
+.settings-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 32px;
+    align-items: start;
 }
-.tab-btn {
-    background: transparent;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    color: var(--win-text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
+
+.settings-sidebar {
+    position: sticky;
+    top: 100px;
+    padding: 12px;
+    border-radius: 16px;
+}
+
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.settings-tab-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
+    gap: 16px;
+    padding: 12px 16px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    width: 100%;
+    color: var(--win-text);
 }
-.tab-btn i { width: 16px; height: 16px; }
-.tab-btn:hover { background: rgba(0,0,0,0.04); }
-.tab-btn.active {
-    background: var(--win-accent);
-    color: white;
+
+.settings-tab-btn i {
+    width: 20px;
+    height: 20px;
+    color: var(--win-accent);
 }
+
+.settings-tab-btn .btn-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-tab-btn .title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.settings-tab-btn .desc {
+    font-size: 11px;
+    color: var(--win-text-secondary);
+}
+
+.settings-tab-btn:hover {
+    background: rgba(0,0,0,0.04);
+}
+
+.settings-tab-btn.active {
+    background: var(--win-card-bg);
+    border-color: var(--win-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.settings-tab-btn.active i {
+    color: var(--win-accent);
+}
+
 .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
 .tab-content.active { display: block; }
 
@@ -434,15 +507,42 @@ include 'includes/header.php';
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 991px) {
+    .settings-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .settings-sidebar {
+        position: static;
+        overflow-x: auto;
+    }
+    .settings-nav {
+        flex-direction: row;
+        scrollbar-width: none;
+    }
+    .settings-nav::-webkit-scrollbar { display: none; }
+    .settings-tab-btn {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-width: 120px;
+        padding: 12px 8px;
+    }
+    .settings-tab-btn .desc { display: none; }
+}
 </style>
 
 <script>
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.settings-tab-btn').forEach(b => b.classList.remove('active'));
 
     document.getElementById('tab-' + tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
+
+    // Find the button that was clicked
+    let btn = event.currentTarget;
+    btn.classList.add('active');
 
     // Hide save button on data tab as it has its own forms
     const saveBtn = document.getElementById('save-btn-container');

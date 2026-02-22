@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <nav class="sidebar-nav" style="padding: 0 12px;">
+        <nav class="sidebar-nav">
             <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 24px 12px 12px;">Основные</div>
 
             <a href="index.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
@@ -107,6 +107,11 @@
             <a href="chat.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'chat.php' ? 'active' : ''; ?>">
                 <i data-lucide="message-square"></i>
                 <span>Общий чат</span>
+            </a>
+
+            <a href="help.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'help.php' ? 'active' : ''; ?>">
+                <i data-lucide="help-circle"></i>
+                <span>Справка</span>
             </a>
 
             <?php if ($_SESSION['user_role'] === 'initiator' || $_SESSION['user_role'] === 'admin'): ?>
@@ -165,11 +170,6 @@
                 <span>Мой профиль</span>
             </a>
 
-            <a href="help.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'help.php' ? 'active' : ''; ?>">
-                <i data-lucide="help-circle"></i>
-                <span>Справка</span>
-            </a>
-
             <a href="logout.php" class="sidebar-item" style="margin-top:20px; color: #e81123;">
                 <i data-lucide="log-out"></i>
                 <span>Выйти</span>
@@ -185,8 +185,11 @@
     <header class="mica">
         <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%; padding: 0 24px; height: 100%;">
             <div class="mobile-only-header" style="display:none; align-items:center; gap:12px;">
-                <div style="width:36px; height:36px; background:var(--win-accent-gradient); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:16px; box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);">Х</div>
-                <h1 style="font-size: 20px; margin: 0; font-weight: 800; letter-spacing: -0.02em;">ХОП</h1>
+                <button id="mobile-sidebar-toggle" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--win-text);">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div style="width:32px; height:32px; background:var(--win-accent-gradient); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px;">Х</div>
+                <h1 style="font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.02em;">ХОП</h1>
             </div>
 
             <div class="header-search desktop-only" style="flex: 1; max-width: 400px; position: relative;">
@@ -194,10 +197,16 @@
                 <input type="text" placeholder="Быстрый поиск..." style="width: 100%; background: rgba(0,0,0,0.04); border: none; padding: 10px 10px 10px 40px; border-radius: 8px; font-size: 14px;">
             </div>
 
-            <div class="user-pill" style="display:flex; align-items:center; gap:12px; background: rgba(0,0,0,0.03); padding: 6px 6px 6px 16px; border-radius: 20px; border: 1px solid var(--win-border);">
-                <div style="font-size: 13px; font-weight: 600; color: #333;" class="desktop-only"><?php echo $_SESSION['user_name'] ?? ''; ?></div>
-                <div style="width:32px; height:32px; background:var(--win-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700;">
-                    <?php echo mb_substr($_SESSION['user_name'] ?? 'U', 0, 1); ?>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <a href="help.php" class="desktop-only" style="color: var(--win-text-secondary); text-decoration: none; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;">
+                    <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
+                    <span>Справка</span>
+                </a>
+                <div class="user-pill" style="display:flex; align-items:center; gap:12px; background: rgba(0,0,0,0.03); padding: 6px 6px 6px 16px; border-radius: 20px; border: 1px solid var(--win-border);">
+                    <div style="font-size: 13px; font-weight: 600; color: #333;" class="desktop-only"><?php echo $_SESSION['user_name'] ?? ''; ?></div>
+                    <div style="width:32px; height:32px; background:var(--win-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700;">
+                        <?php echo mb_substr($_SESSION['user_name'] ?? 'U', 0, 1); ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -230,11 +239,37 @@
             <i data-lucide="user"></i>
             <span>Профиль</span>
         </a>
-        <a href="help.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'help.php' ? 'active' : ''; ?>">
-            <i data-lucide="help-circle"></i>
-            <span>Справка</span>
-        </a>
     </nav>
+
+    <div id="sidebar-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001; display:none; backdrop-filter:blur(3px);"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('mobile-sidebar-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+
+        if (toggle) {
+            toggle.addEventListener('click', () => {
+                sidebar.style.display = 'flex';
+                sidebar.style.left = '0';
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                if (window.innerWidth < 992) {
+                    sidebar.style.left = '-280px';
+                    setTimeout(() => { sidebar.style.display = 'none'; }, 300);
+                }
+                overlay.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        }
+    });
+    </script>
     <?php endif; ?>
 
     <main>
