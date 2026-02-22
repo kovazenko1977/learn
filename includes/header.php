@@ -18,16 +18,19 @@
         $primaryFont = $globalSettings['primary_font'] ?? 'Inter';
         $fontSize = $globalSettings['font_size'] ?? '15px';
         $theme = $globalSettings['theme'] ?? 'light';
+        $uiStyle = $globalSettings['ui_style'] ?? 'windows';
     ?>
     <style>
         :root {
-            --win-accent: <?php echo $accentColor; ?>;
-            --win-font-family: <?php echo $primaryFont === 'Inter' ? "'Inter', sans-serif" : $primaryFont; ?>;
-            --win-base-font-size: <?php echo $fontSize; ?>;
+            --accent: <?php echo $accentColor; ?>;
+            --font-main: <?php echo $primaryFont === 'Inter' ? "'Inter', sans-serif" : $primaryFont; ?>;
+            --win-accent: <?php echo $accentColor; ?>; /* Compat */
+            --win-text: var(--text-main); /* Compat */
+            --win-text-secondary: var(--text-dim); /* Compat */
+            --win-border: var(--border); /* Compat */
         }
         body {
-            font-family: var(--win-font-family) !important;
-            font-size: var(--win-base-font-size) !important;
+            font-size: <?php echo $fontSize; ?> !important;
         }
     </style>
     <script>
@@ -38,7 +41,7 @@
         }
     </script>
 </head>
-<body class="<?php echo $theme === 'dark' ? 'dark-theme' : ''; ?>">
+<body class="<?php echo ($theme === 'dark' ? 'dark-theme' : '') . ' ui-' . $uiStyle; ?>">
     <script>
         <?php if ($theme === 'auto'): ?>
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {

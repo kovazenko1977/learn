@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $settings['telegram_chat_id'] = $_POST['telegram_chat_id'] ?? $settings['telegram_chat_id'];
     $settings['accent_color'] = $_POST['accent_color'] ?? $settings['accent_color'] ?? '#0078d4';
     $settings['theme'] = $_POST['theme'] ?? $settings['theme'] ?? 'light';
+    $settings['ui_style'] = $_POST['ui_style'] ?? $settings['ui_style'] ?? 'windows';
     $settings['primary_font'] = $_POST['primary_font'] ?? $settings['primary_font'] ?? 'Inter';
     $settings['font_size'] = $_POST['font_size'] ?? $settings['font_size'] ?? '15px';
     $settings['polling_interval'] = (int)($_POST['polling_interval'] ?? $settings['polling_interval'] ?? 10);
@@ -182,7 +183,7 @@ include 'includes/header.php';
 
                 <div id="tab-org" class="tab-content active">
             <div class="form-grid" style="align-items: stretch;">
-                <section class="card mica">
+                <section class="card">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="building-2" style="color:var(--win-accent);"></i> Организация
                 </h2>
@@ -192,7 +193,7 @@ include 'includes/header.php';
                 </div>
             </section>
 
-            <section class="card mica">
+            <section class="card">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="palette" style="color:var(--win-accent);"></i> Внешний вид
                 </h2>
@@ -202,6 +203,14 @@ include 'includes/header.php';
                         <option value="light" <?php echo ($settings['theme'] ?? 'light') === 'light' ? 'selected' : ''; ?>>Светлая</option>
                         <option value="dark" <?php echo ($settings['theme'] ?? '') === 'dark' ? 'selected' : ''; ?>>Темная</option>
                         <option value="auto" <?php echo ($settings['theme'] ?? '') === 'auto' ? 'selected' : ''; ?>>Системная (Авто)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Стиль интерфейса</label>
+                    <select name="ui_style">
+                        <option value="windows" <?php echo ($settings['ui_style'] ?? 'windows') === 'windows' ? 'selected' : ''; ?>>Windows 11 (Fluent)</option>
+                        <option value="macos" <?php echo ($settings['ui_style'] ?? '') === 'macos' ? 'selected' : ''; ?>>macOS (Monterey)</option>
+                        <option value="minimal" <?php echo ($settings['ui_style'] ?? '') === 'minimal' ? 'selected' : ''; ?>>Professional (Minimal)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -237,7 +246,7 @@ include 'includes/header.php';
         </div>
 
         <div id="tab-tg" class="tab-content">
-            <section class="card mica">
+            <section class="card">
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="bell-ring" style="color:var(--win-accent);"></i> Уведомления Telegram
             </h2>
@@ -291,7 +300,7 @@ include 'includes/header.php';
 
         <div id="tab-sla" class="tab-content">
             <div class="form-grid">
-                <section class="card mica">
+                <section class="card">
                     <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                         <i data-lucide="settings" style="color:var(--win-accent);"></i> Системные
                     </h2>
@@ -302,7 +311,7 @@ include 'includes/header.php';
                     </div>
                 </section>
 
-                <section class="card mica" style="margin-top: 0;">
+                <section class="card" style="margin-top: 0;">
                     <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                         <i data-lucide="timer" style="color:var(--win-accent);"></i> Нормативы SLA (в часах)
                     </h2>
@@ -372,7 +381,7 @@ include 'includes/header.php';
 
             <div id="tab-data" class="tab-content">
         <div class="form-grid">
-            <section class="card mica">
+            <section class="card">
                 <h3 style="margin-top:0;">Резервное копирование</h3>
                 <p style="font-size:13px; color:var(--win-text-secondary); margin-bottom:20px;">
                     Создайте полную копию всех данных системы (пользователи, заявки, настройки и файлы) в формате ZIP.
@@ -383,7 +392,7 @@ include 'includes/header.php';
                     </a>
                 </div>
 
-                <div style="margin: 24px 0; height: 1px; background: var(--win-border);"></div>
+                <div style="margin: 24px 0; height: 1px; background: var(--border);"></div>
 
                 <h3>Восстановление</h3>
                 <form method="POST" enctype="multipart/form-data">

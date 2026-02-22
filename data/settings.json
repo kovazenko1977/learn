@@ -12,5 +12,6 @@
     "primary_font": "'Roboto', sans-serif",
     "font_size": "18px",
     "polling_interval": 10,
-    "theme": "dark"
+    "theme": "dark",
+    "ui_style": "minimal"
 }

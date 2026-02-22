@@ -124,26 +124,26 @@ include 'includes/header.php';
                     }
                 }
             ?>
-            <a href="index.php?status=new" class="stat-card mica stat-new-card">
+            <a href="index.php?status=new" class="stat-card stat-new-card">
                 <div class="stat-value"><?php echo $newCount; ?></div>
                 <div class="stat-label">Ожидают</div>
             </a>
-            <a href="index.php?status=working" class="stat-card mica stat-working-card">
+            <a href="index.php?status=working" class="stat-card stat-working-card">
                 <div class="stat-value"><?php echo $workCount; ?></div>
                 <div class="stat-label">В работе</div>
             </a>
-            <a href="index.php?overdue=1" class="stat-card mica stat-overdue-card">
+            <a href="index.php?overdue=1" class="stat-card stat-overdue-card">
                 <div class="stat-value"><?php echo $overdueCount; ?></div>
                 <div class="stat-label">Просрочено</div>
             </a>
-            <a href="index.php" class="stat-card mica stat-total-card">
+            <a href="index.php" class="stat-card stat-total-card">
                 <div class="stat-value"><?php echo $totalBase; ?></div>
                 <div class="stat-label">Всего</div>
             </a>
         </div>
     </div>
 
-    <div class="card mica" style="padding:20px; margin-bottom:24px; animation: slideUp 0.6s ease-out;">
+    <div class="card" style="padding:20px; margin-bottom:24px; animation: slideUp 0.6s ease-out;">
         <form method="GET" style="display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--win-border);">
             <div class="form-group" style="margin:0; flex: 1; min-width: 150px;">
                 <label style="font-size: 11px; font-weight:700;">Дата С</label>

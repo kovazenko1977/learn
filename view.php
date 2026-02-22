@@ -118,7 +118,7 @@ include 'includes/header.php';
     <div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px; animation: slideUp 0.6s ease-out;">
         <!-- Left Column: Details -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
-            <section class="card mica" style="padding: 32px; border-top: 4px solid var(--priority-<?php echo $req['priority']; ?>);">
+            <section class="card" style="padding: 32px; border-top: 4px solid var(--priority-<?php echo $req['priority']; ?>);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
                     <div>
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--win-text-secondary); font-weight: 700; margin-bottom: 4px;">Служба</div>
@@ -172,7 +172,7 @@ include 'includes/header.php';
 
             <!-- Actions Section -->
             <?php if ($req['status'] !== 'closed'): ?>
-            <section class="card mica" style="padding: 24px;">
+            <section class="card" style="padding: 24px;">
                 <h3 style="margin-top:0; font-size:16px; margin-bottom:20px;">Управление состоянием</h3>
 
                 <?php if ($req['status'] === 'new' && ($_SESSION['user_role'] === 'service_lead' || $_SESSION['user_role'] === 'admin')): ?>
@@ -242,7 +242,7 @@ include 'includes/header.php';
 
         <!-- Right Column: Sidebar info & Timeline -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
-            <section class="card mica" style="padding: 20px;">
+            <section class="card" style="padding: 20px;">
                 <h3 style="margin-top:0; font-size:14px; text-transform: uppercase; letter-spacing: 0.5px; color:var(--win-text-secondary); margin-bottom:16px;">Участники</h3>
 
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
