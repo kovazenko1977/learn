@@ -40,7 +40,7 @@ class RequestManager {
                     $msg .= "\n📍 Корп. {$loc['building']}, каб. {$loc['room']}";
                 }
                 $msg .= "\n📝 " . htmlspecialchars(mb_substr($data['description'], 0, 100));
-                $this->notifier->send($data['performer_id'], $msg);
+                $this->notifier->send($data['performer_id'], $msg, 'info', "view.php?id=$id");
             }
         }
 
@@ -107,11 +107,11 @@ class RequestManager {
 
                 // Notify initiator
                 if ($targetRequest['initiator_id'] != $userId) {
-                    $this->notifier->send($targetRequest['initiator_id'], $msg);
+                    $this->notifier->send($targetRequest['initiator_id'], $msg, 'info', "view.php?id=$id");
                 }
                 // Notify performer if status changed by controller/admin/initiator
                 if (isset($targetRequest['performer_id']) && $targetRequest['performer_id'] != $userId) {
-                    $this->notifier->send($targetRequest['performer_id'], $msg);
+                    $this->notifier->send($targetRequest['performer_id'], $msg, 'info', "view.php?id=$id");
                 }
             }
             return true;
@@ -141,10 +141,10 @@ class RequestManager {
                     }
                     $msgPerformer .= "\n📝 " . htmlspecialchars(mb_substr($request['description'], 0, 100));
 
-                    $this->notifier->send($performerId, $msgPerformer);
+                    $this->notifier->send($performerId, $msgPerformer, 'info', "view.php?id=$id");
 
                     if ($request['initiator_id'] != $assignerId) {
-                        $this->notifier->send($request['initiator_id'], "✅ По вашей заявке <b>#$id</b> назначен исполнитель");
+                        $this->notifier->send($request['initiator_id'], "✅ По вашей заявке <b>#$id</b> назначен исполнитель", 'info', "view.php?id=$id");
                     }
                 }
                 return true;

@@ -16,16 +16,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'create') {
         $userManager->create([
             'name' => $_POST['name'],
+            'phone' => $_POST['phone'],
             'role' => $_POST['role'],
             'code' => $_POST['code'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
             'telegram_chat_id' => $_POST['telegram_chat_id'] ?? '',
             'info' => $_POST['info'] ?? ''
         ]);
-        $message = 'Пользователь создан';
+        $message = '✅ Пользователь создан';
     } elseif ($action === 'edit') {
         $userManager->update((int)$_POST['id'], [
             'name' => $_POST['name'],
+            'phone' => $_POST['phone'],
             'role' => $_POST['role'],
             'code' => $_POST['code'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
@@ -39,7 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$roleFilter = $_GET['role'] ?? '';
 $users = $userManager->getAll();
+if ($roleFilter) {
+    $users = array_filter($users, fn($u) => $u['role'] === $roleFilter);
+}
 $servicesStore = new JsonStore('data/services.json');
 $services = $servicesStore->read();
 
@@ -74,7 +80,8 @@ include 'includes/header.php';
         <div class="alert alert-success" style="animation: slideDown 0.3s ease-out;"><?php echo $message; ?></div>
     <?php endif; ?>
 
-    <section class="card mica" style="animation: slideUp 0.6s ease-out; margin-bottom: 24px;">
+    <div style="display:grid; grid-template-columns: 1fr 300px; gap:24px; margin-bottom: 24px;">
+    <section class="card mica" style="animation: slideUp 0.6s ease-out;">
         <h2 style="margin-top:0; font-size:18px; margin-bottom:20px;">Добавить нового сотрудника</h2>
         <form method="POST" class="form-grid">
             <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
@@ -82,6 +89,10 @@ include 'includes/header.php';
             <div class="form-group">
                 <label>ФИО</label>
                 <input type="text" name="name" required placeholder="Иванов Иван Иванович">
+            </div>
+            <div class="form-group">
+                <label>Мобильный телефон (обязательно)</label>
+                <input type="tel" name="phone" required placeholder="+375 (__) ___-__-__">
             </div>
             <div class="form-group">
                 <label>Роль в системе</label>
@@ -123,6 +134,39 @@ include 'includes/header.php';
         </form>
     </section>
 
+    <aside class="card mica" style="height:fit-content; animation: slideUp 0.7s ease-out;">
+        <h3 style="margin-top:0; font-size:16px; margin-bottom:16px;">Фильтр ролей</h3>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="users.php" class="filter-link <?php echo !$roleFilter ? 'active' : ''; ?>">Все сотрудники</a>
+            <?php foreach ($roleLabels as $key => $val): ?>
+                <a href="users.php?role=<?php echo $key; ?>" class="filter-link <?php echo $roleFilter === $key ? 'active' : ''; ?>">
+                    <?php echo $val; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </aside>
+    </div>
+
+    <style>
+        .filter-link {
+            padding: 8px 12px;
+            text-decoration: none;
+            color: var(--win-text);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .filter-link:hover { background: rgba(0,0,0,0.05); }
+        .filter-link.active {
+            background: var(--win-accent);
+            color: white;
+            font-weight: 600;
+        }
+        @media (max-width: 850px) {
+            .container > div:first-of-type { grid-template-columns: 1fr !important; }
+        }
+    </style>
+
     <div class="list-container" style="display: grid; gap: 12px;">
         <?php foreach ($users as $index => $u): ?>
         <div class="card mica list-item" style="animation-delay: <?php echo $index * 0.05; ?>s; display: flex; align-items: center; justify-content: space-between; padding: 16px;">
@@ -131,7 +175,15 @@ include 'includes/header.php';
                     <?php echo mb_substr($u['name'], 0, 1); ?>
                 </div>
                 <div>
-                    <div style="font-weight: 600;"><?php echo htmlspecialchars($u['name']); ?></div>
+                    <div style="font-weight: 600;">
+                        <?php echo htmlspecialchars($u['name']); ?>
+                        <?php if (!empty($u['phone'])): ?>
+                            <span style="font-weight:400; color:var(--win-text-secondary); margin-left:8px; font-size:13px;">
+                                <i data-lucide="phone" style="width:12px; height:12px; vertical-align:middle;"></i>
+                                <?php echo htmlspecialchars($u['phone']); ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
                     <div style="font-size: 12px; color: var(--win-text-secondary);">
                         <span class="badge" style="background: rgba(0,120,212,0.1); color: var(--win-accent); padding: 2px 8px; border-radius: 4px;">
                             <?php echo $roleLabels[$u['role']] ?? $u['role']; ?>
@@ -196,6 +248,11 @@ include 'includes/header.php';
             </div>
 
             <div class="form-group">
+                <label>Телефон</label>
+                <input type="tel" name="phone" id="edit-phone" required>
+            </div>
+
+            <div class="form-group">
                 <label>Роль</label>
                 <select name="role" id="edit-role">
                     <option value="initiator">Инициатор</option>
@@ -244,6 +301,7 @@ include 'includes/header.php';
 function openEditModal(user) {
     document.getElementById('edit-id').value = user.id;
     document.getElementById('edit-name').value = user.name;
+    document.getElementById('edit-phone').value = user.phone || "";
     document.getElementById('edit-role').value = user.role;
     document.getElementById('edit-code').value = user.code;
     document.getElementById('edit-service_id').value = user.service_id || "";

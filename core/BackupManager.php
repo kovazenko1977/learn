@@ -36,18 +36,37 @@ class BackupManager {
     public function restoreBackup(string $zipFilePath): bool {
         $zip = new \ZipArchive();
         if ($zip->open($zipFilePath) === TRUE) {
-            // Verify zip contains 'data/' directory to avoid accidental extraction of wrong files
-            if ($zip->locateName('data/users.json') === false && $zip->locateName('data/settings.json') === false) {
-                $zip->close();
-                return false;
+            // Security: Only extract files that belong to data/ or uploads/
+            $allowedDirs = ['data/', 'uploads/'];
+            $validZip = false;
+
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filename = $zip->getNameIndex($i);
+
+                // Basic check if it contains expected structure
+                if (strpos($filename, 'data/settings.json') !== false || strpos($filename, 'data/users.json') !== false) {
+                    $validZip = true;
+                }
+
+                $isAllowed = false;
+                foreach ($allowedDirs as $dir) {
+                    if (strpos($filename, $dir) === 0) {
+                        $isAllowed = true;
+                        break;
+                    }
+                }
+
+                // If file is not in allowed directories, skip it or handle error
+                if (!$isAllowed) continue;
+
+                // Security: Prevent Directory Traversal in zip filenames
+                if (strpos($filename, '..') !== false) continue;
+
+                $zip->extractTo('.', $filename);
             }
 
-            if (!is_dir($this->dataDir)) mkdir($this->dataDir, 0755, true);
-            if (!is_dir($this->uploadDir)) mkdir($this->uploadDir, 0755, true);
-
-            $zip->extractTo('.');
             $zip->close();
-            return true;
+            return $validZip;
         }
         return false;
     }

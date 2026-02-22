@@ -12,7 +12,7 @@ class NotificationManager {
         $this->userStore = $userStore;
     }
 
-    public function send(int $userId, string $message, string $type = 'info'): bool {
+    public function send(int $userId, string $message, string $type = 'info', ?string $url = null): bool {
         // Internal log
         $notifications = $this->notificationStore->read();
 
@@ -21,7 +21,8 @@ class NotificationManager {
             'message' => $message,
             'type' => $type,
             'timestamp' => date('Y-m-d H:i:s'),
-            'read' => false
+            'read' => false,
+            'url' => $url
         ];
 
         $this->notificationStore->save($notifications);
@@ -85,7 +86,7 @@ class NotificationManager {
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

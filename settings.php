@@ -24,29 +24,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tg_test_id'])) {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hospital_name'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_settings') {
     checkCsrf();
-    $newSettings = [
-        'hospital_name' => $_POST['hospital_name'],
-        'sla' => [
-            'low' => (int)$_POST['sla_low'],
-            'medium' => (int)$_POST['sla_medium'],
-            'high' => (int)$_POST['sla_high'],
-            'critical' => (int)$_POST['sla_critical']
-        ],
-        'telegram_token' => $_POST['telegram_token'],
-        'telegram_chat_id' => $_POST['telegram_chat_id'],
-        'accent_color' => $_POST['accent_color'] ?? '#0078d4',
-        'primary_font' => $_POST['primary_font'] ?? 'Inter',
-        'font_size' => $_POST['font_size'] ?? '15px',
-        'polling_interval' => (int)($_POST['polling_interval'] ?? 10)
-    ];
+    $settings = $settingsStore->read();
 
-    if ($settingsStore->save($newSettings)) {
-        $settings = $newSettings;
-        $message = 'Настройки системы успешно обновлены';
+    $settings['hospital_name'] = $_POST['hospital_name'] ?? $settings['hospital_name'];
+    $settings['sla'] = [
+        'low' => (int)($_POST['sla_low'] ?? $settings['sla']['low']),
+        'medium' => (int)($_POST['sla_medium'] ?? $settings['sla']['medium']),
+        'high' => (int)($_POST['sla_high'] ?? $settings['sla']['high']),
+        'critical' => (int)($_POST['sla_critical'] ?? $settings['sla']['critical'])
+    ];
+    $settings['telegram_token'] = $_POST['telegram_token'] ?? $settings['telegram_token'];
+    $settings['telegram_chat_id'] = $_POST['telegram_chat_id'] ?? $settings['telegram_chat_id'];
+    $settings['accent_color'] = $_POST['accent_color'] ?? $settings['accent_color'] ?? '#0078d4';
+    $settings['primary_font'] = $_POST['primary_font'] ?? $settings['primary_font'] ?? 'Inter';
+    $settings['font_size'] = $_POST['font_size'] ?? $settings['font_size'] ?? '15px';
+    $settings['polling_interval'] = (int)($_POST['polling_interval'] ?? $settings['polling_interval'] ?? 10);
+
+    if ($settingsStore->save($settings)) {
+        $message = '✅ Настройки системы успешно обновлены';
     } else {
-        $message = 'Ошибка при сохранении настроек';
+        $message = '❌ Ошибка при сохранении настроек';
     }
 }
 
@@ -93,20 +92,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['maintenance'])) {
         }
     } elseif ($_POST['maintenance'] === 'purge') {
         $purgeDate = $_POST['purge_date'];
-        if ($purgeDate) {
-            $reqStore = new JsonStore('data/requests.json');
-            $chatStore = new JsonStore('data/chat.json');
-            $notifStore = new JsonStore('data/notifications.json');
+        $targets = $_POST['purge_targets'] ?? [];
+        if ($purgeDate && !empty($targets)) {
+            $purgedReqs = 0; $purgedChat = 0; $purgedNotifs = 0; $purgedLogs = 0;
 
-            $nm = new \Hop\Core\NotificationManager($settingsStore, $notifStore);
-            $rm = new \Hop\Core\RequestManager($reqStore, $nm);
-            $cm = new \Hop\Core\ChatManager($chatStore);
+            if (in_array('requests', $targets)) {
+                $reqStore = new JsonStore('data/requests.json');
+                $nm = new \Hop\Core\NotificationManager($settingsStore, new JsonStore('data/notifications.json'));
+                $rm = new \Hop\Core\RequestManager($reqStore, $nm);
+                $purgedReqs = $rm->purgeBefore($purgeDate);
+            }
+            if (in_array('chat', $targets)) {
+                $cm = new \Hop\Core\ChatManager(new JsonStore('data/chat.json'));
+                $purgedChat = $cm->purgeBefore($purgeDate);
+            }
+            if (in_array('notifications', $targets)) {
+                $nm = new \Hop\Core\NotificationManager($settingsStore, new JsonStore('data/notifications.json'));
+                $purgedNotifs = $nm->purgeBefore($purgeDate);
+            }
 
-            $purgedReqs = $rm->purgeBefore($purgeDate);
-            $purgedChat = $cm->purgeBefore($purgeDate);
-            $purgedNotifs = $nm->purgeBefore($purgeDate);
-
-            $message = "✅ Очистка завершена: Удалено заявок: $purgedReqs, сообщений чата: $purgedChat, уведомлений: $purgedNotifs";
+            $message = "✅ Очистка завершена. Удалено:";
+            if (in_array('requests', $targets)) $message .= " заявок: $purgedReqs;";
+            if (in_array('chat', $targets)) $message .= " сообщений чата: $purgedChat;";
+            if (in_array('notifications', $targets)) $message .= " уведомлений: $purgedNotifs;";
+        } else {
+            $message = "⚠️ Выберите хотя бы один раздел для очистки";
         }
     }
 }
@@ -166,6 +176,7 @@ include 'includes/header.php';
         <!-- Settings Content -->
         <div class="settings-main-content">
             <form method="POST">
+                <input type="hidden" name="action" value="save_settings">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
                 <div id="tab-org" class="tab-content active">
@@ -308,47 +319,47 @@ include 'includes/header.php';
             </div>
         </div>
 
-        <form id="tg-test-form" method="POST" style="display:none;">
-            <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
-            <input type="hidden" name="tg_test_token" id="tg_test_token_input">
-            <input type="hidden" name="tg_test_id" id="tg_test_id_input">
-        </form>
-
-        <script>
-        function testTelegram() {
-            const token = document.getElementById('tg_token').value;
-            const chatId = document.getElementById('test_tg_id').value || document.getElementById('tg_chat').value;
-
-            if (!token || !chatId) {
-                alert('Укажите Token и ID чата');
-                return;
-            }
-
-            document.getElementById('tg_test_token_input').value = token;
-            document.getElementById('tg_test_id_input').value = chatId;
-            document.getElementById('tg-test-form').submit();
-        }
-        </script>
-
-        <style>
-            .tg-config-layout {
-                display: grid;
-                grid-template-columns: 1fr 300px;
-                gap: 24px;
-            }
-            @media (max-width: 850px) {
-                .tg-config-layout {
-                    grid-template-columns: 1fr;
-                }
-            }
-        </style>
-
                 <div style="margin-top: 24px; text-align: right;" id="save-btn-container">
                     <button type="submit" class="btn-primary" style="padding: 12px 32px; font-size: 16px;">
                         <i data-lucide="save"></i> Применить изменения
                     </button>
                 </div>
             </form>
+
+            <form id="tg-test-form" method="POST" style="display:none;">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                <input type="hidden" name="tg_test_token" id="tg_test_token_input">
+                <input type="hidden" name="tg_test_id" id="tg_test_id_input">
+            </form>
+
+            <script>
+            function testTelegram() {
+                const token = document.getElementById('tg_token').value;
+                const chatId = document.getElementById('test_tg_id').value || document.getElementById('tg_chat').value;
+
+                if (!token || !chatId) {
+                    alert('Укажите Token и ID чата');
+                    return;
+                }
+
+                document.getElementById('tg_test_token_input').value = token;
+                document.getElementById('tg_test_id_input').value = chatId;
+                document.getElementById('tg-test-form').submit();
+            }
+            </script>
+
+            <style>
+                .tg-config-layout {
+                    display: grid;
+                    grid-template-columns: 1fr 300px;
+                    gap: 24px;
+                }
+                @media (max-width: 850px) {
+                    .tg-config-layout {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            </style>
 
             <div id="tab-data" class="tab-content">
         <div class="form-grid">
@@ -390,6 +401,20 @@ include 'includes/header.php';
                     <div class="form-group">
                         <label>Удалить всё ДО (включительно):</label>
                         <input type="date" name="purge_date" value="<?php echo date('Y-m-d', strtotime('-1 month')); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Что очистить:</label>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+                            <label style="display:flex; align-items:center; gap:8px; font-weight:normal; cursor:pointer;">
+                                <input type="checkbox" name="purge_targets[]" value="requests" checked> Заявки
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-weight:normal; cursor:pointer;">
+                                <input type="checkbox" name="purge_targets[]" value="chat" checked> Чат
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; font-weight:normal; cursor:pointer;">
+                                <input type="checkbox" name="purge_targets[]" value="notifications" checked> Уведомления
+                            </label>
+                        </div>
                     </div>
                     <button type="submit" class="btn-primary" style="width:100%; background:var(--win-accent); margin-bottom: 24px;">
                         <i data-lucide="scissors"></i> Выполнить очистку

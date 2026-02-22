@@ -1,5 +1,5 @@
 {
-    "hospital_name": "Test Hospital 1771713794",
+    "hospital_name": "Verified Hospital 1771749722",
     "sla": {
         "low": 48,
         "medium": 24,
@@ -10,5 +10,6 @@
     "telegram_chat_id": "",
     "accent_color": "#e81123",
     "primary_font": "'Roboto', sans-serif",
-    "font_size": "18px"
+    "font_size": "18px",
+    "polling_interval": 10
 }

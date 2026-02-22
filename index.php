@@ -75,6 +75,15 @@ $servicesStore = new JsonStore('data/services.json');
 $services = [];
 foreach ($servicesStore->read() as $s) $services[$s['id']] = $s['name'];
 
+$userStoreForList = new JsonStore('data/users.json');
+$usersList = [];
+foreach ($userStoreForList->read() as $u) {
+    $usersList[$u['id']] = [
+        'name' => $u['name'],
+        'phone' => $u['phone'] ?? ''
+    ];
+}
+
 $statusNames = [
     'new' => 'Новая', 'assigned' => 'Назначена', 'working' => 'В работе',
     'checking' => 'Проверка', 'returned' => 'Доработка', 'completed' => 'Выполнена', 'closed' => 'Закрыта'
@@ -234,17 +243,33 @@ include 'includes/header.php';
                     <div style="font-size:14px; color:var(--win-text-secondary); margin-bottom:16px; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
                         <?php echo htmlspecialchars($req['description']); ?>
                     </div>
-                    <div style="display:flex; align-items:center; gap:16px; font-size:12px; color:var(--win-text-secondary);">
-                        <span style="display:flex; align-items:center; gap:4px;">
-                            <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
-                            <?php echo "Корп. {$req['location']['building']}, каб. {$req['location']['room']}"; ?>
-                        </span>
-                        <?php if (!empty($req['photo'])): ?>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:16px; font-size:12px; color:var(--win-text-secondary);">
                             <span style="display:flex; align-items:center; gap:4px;">
-                                <i data-lucide="image" style="width:14px; height:14px;"></i>
-                                Фото
+                                <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
+                                <?php echo "Корп. {$req['location']['building']}, каб. {$req['location']['room']}"; ?>
                             </span>
-                        <?php endif; ?>
+                            <?php if (!empty($req['photo'])): ?>
+                                <span style="display:flex; align-items:center; gap:4px;">
+                                    <i data-lucide="image" style="width:14px; height:14px;"></i>
+                                    Фото
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <?php
+                                $partnerId = ($userRole === 'performer') ? $req['initiator_id'] : ($req['performer_id'] ?? null);
+                                $partnerPhone = ($partnerId && isset($usersList[$partnerId])) ? $usersList[$partnerId]['phone'] : '';
+                            ?>
+                            <?php if ($partnerPhone): ?>
+                                <button type="button" class="btn-icon partner-call-btn"
+                                        onclick="event.preventDefault(); window.location.href='tel:<?php echo $partnerPhone; ?>'"
+                                        style="background:rgba(0,120,212,0.05); color:var(--win-accent); border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                                    <i data-lucide="phone" style="width:14px; height:14px;"></i>
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </a>
             <?php endforeach; ?>

@@ -245,20 +245,34 @@ include 'includes/header.php';
             <section class="card mica" style="padding: 20px;">
                 <h3 style="margin-top:0; font-size:14px; text-transform: uppercase; letter-spacing: 0.5px; color:var(--win-text-secondary); margin-bottom:16px;">Участники</h3>
 
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                    <div style="width:36px; height:36px; background:rgba(0,0,0,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">И</div>
-                    <div>
-                        <div style="font-size:13px; font-weight:700;"><?php echo htmlspecialchars($initiator['name'] ?? 'Система'); ?></div>
-                        <div style="font-size:11px; color:var(--win-text-secondary);">Инициатор</div>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width:36px; height:36px; background:rgba(0,0,0,0.05); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">И</div>
+                        <div>
+                            <div style="font-size:13px; font-weight:700;"><?php echo htmlspecialchars($initiator['name'] ?? 'Система'); ?></div>
+                            <div style="font-size:11px; color:var(--win-text-secondary);">Инициатор</div>
+                        </div>
                     </div>
+                    <?php if (!empty($initiator['phone'])): ?>
+                        <a href="tel:<?php echo $initiator['phone']; ?>" class="btn-icon" style="text-decoration:none; color:var(--win-accent); background:rgba(0,120,212,0.05); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                            <i data-lucide="phone" style="width:16px; height:16px;"></i>
+                        </a>
+                    <?php endif; ?>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width:36px; height:36px; background:rgba(0,120,212,0.1); color:var(--win-accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">Р</div>
-                    <div>
-                        <div style="font-size:13px; font-weight:700;"><?php echo htmlspecialchars($performer['name'] ?? 'Не назначен'); ?></div>
-                        <div style="font-size:11px; color:var(--win-text-secondary);">Исполнитель</div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width:36px; height:36px; background:rgba(0,120,212,0.1); color:var(--win-accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">Р</div>
+                        <div>
+                            <div style="font-size:13px; font-weight:700;"><?php echo htmlspecialchars($performer['name'] ?? 'Не назначен'); ?></div>
+                            <div style="font-size:11px; color:var(--win-text-secondary);">Исполнитель</div>
+                        </div>
                     </div>
+                    <?php if (!empty($performer['phone'])): ?>
+                        <a href="tel:<?php echo $performer['phone']; ?>" class="btn-icon" style="text-decoration:none; color:var(--win-accent); background:rgba(0,120,212,0.05); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">
+                            <i data-lucide="phone" style="width:16px; height:16px;"></i>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </section>
 

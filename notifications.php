@@ -47,7 +47,10 @@ include 'includes/header.php';
     <?php else: ?>
         <div class="list-container" style="display: grid; gap: 12px; animation: slideUp 0.6s ease-out;">
             <?php foreach (array_reverse($notifications) as $index => $n): ?>
-                <div class="card mica list-item <?php echo $n['read'] ? '' : 'unread-pulse'; ?>" style="animation-delay: <?php echo $index * 0.05; ?>s; padding: 16px; border-left: 4px solid <?php echo $n['read'] ? 'transparent' : 'var(--win-accent)'; ?>;">
+                <?php $isClickable = !empty($n['url']); ?>
+                <div class="card mica list-item <?php echo $n['read'] ? '' : 'unread-pulse'; ?> <?php echo $isClickable ? 'clickable-notification' : ''; ?>"
+                     style="animation-delay: <?php echo $index * 0.05; ?>s; padding: 16px; border-left: 4px solid <?php echo $n['read'] ? 'transparent' : 'var(--win-accent)'; ?>;"
+                     onclick="<?php echo $isClickable ? "window.location.href='{$n['url']}'" : ''; ?>">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <div style="font-size:11px; color:var(--win-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">
                             <i data-lucide="clock" style="width:12px; height:12px; vertical-align: middle; margin-right:4px;"></i>
@@ -61,8 +64,17 @@ include 'includes/header.php';
                         <?php endif; ?>
                     </div>
                     <div style="font-size:15px; font-weight: 500; line-height: 1.5; color: var(--win-text);">
-                        <?php echo htmlspecialchars($n['message']); ?>
+                        <?php
+                            // Telegram HTML to basic HTML for web display
+                            $displayMsg = str_replace(["\n", "<b>", "</b>", "<i>", "</i>", "<code>", "</code>"], ["<br>", "<strong>", "</strong>", "<em>", "</em>", "<code>", "</code>"], $n['message']);
+                            echo $displayMsg;
+                        ?>
                     </div>
+                    <?php if ($isClickable): ?>
+                        <div style="margin-top: 12px; font-size: 12px; color: var(--win-accent); font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                            Перейти к заявке <i data-lucide="arrow-right" style="width:14px; height:14px;"></i>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -72,6 +84,14 @@ include 'includes/header.php';
 <style>
 .unread-pulse {
     background: rgba(0, 120, 212, 0.03) !important;
+}
+.clickable-notification {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.clickable-notification:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
 </style>
 

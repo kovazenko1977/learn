@@ -139,24 +139,35 @@
             <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Система</div>
 
             <?php if ($_SESSION['user_role'] === 'admin'): ?>
-                <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Справочники</div>
+                <?php
+                    $managementPages = ['users.php', 'services_manage.php', 'locations_manage.php', 'templates_manage.php'];
+                    $isManagementOpen = in_array(basename($_SERVER['PHP_SELF']), $managementPages);
+                ?>
+                <div class="sidebar-group <?php echo $isManagementOpen ? 'open' : ''; ?>">
+                    <div class="sidebar-group-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 0 12px;">Справочники</span>
+                        <i data-lucide="chevron-down" class="group-chevron"></i>
+                    </div>
 
-                <a href="users.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>">
-                    <i data-lucide="users"></i>
-                    <span>Персонал</span>
-                </a>
-                <a href="services_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'services_manage.php' ? 'active' : ''; ?>">
-                    <i data-lucide="briefcase"></i>
-                    <span>Службы</span>
-                </a>
-                <a href="locations_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'locations_manage.php' ? 'active' : ''; ?>">
-                    <i data-lucide="map-pin"></i>
-                    <span>Объекты (Места)</span>
-                </a>
-                <a href="templates_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'templates_manage.php' ? 'active' : ''; ?>">
-                    <i data-lucide="copy"></i>
-                    <span>Шаблоны</span>
-                </a>
+                    <div class="sidebar-group-content">
+                        <a href="users.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>">
+                            <i data-lucide="users"></i>
+                            <span>Персонал</span>
+                        </a>
+                        <a href="services_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'services_manage.php' ? 'active' : ''; ?>">
+                            <i data-lucide="briefcase"></i>
+                            <span>Службы</span>
+                        </a>
+                        <a href="locations_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'locations_manage.php' ? 'active' : ''; ?>">
+                            <i data-lucide="map-pin"></i>
+                            <span>Объекты (Места)</span>
+                        </a>
+                        <a href="templates_manage.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'templates_manage.php' ? 'active' : ''; ?>">
+                            <i data-lucide="copy"></i>
+                            <span>Шаблоны</span>
+                        </a>
+                    </div>
+                </div>
 
                 <div style="font-size:11px; font-weight:700; color:var(--win-text-secondary); text-transform:uppercase; letter-spacing:1px; margin: 32px 12px 12px;">Управление</div>
                 <a href="settings.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'settings.php' ? 'active' : ''; ?>">
