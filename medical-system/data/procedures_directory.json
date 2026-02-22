@@ -70,5 +70,15 @@
         "work_start": "10:00",
         "work_end": "15:00",
         "id": "69971fddb73bc"
+    },
+    {
+        "id": "p1",
+        "name": "Массаж",
+        "duration": 20,
+        "prep_time": 5,
+        "type": "paid",
+        "price": 500,
+        "work_start": "08:00",
+        "work_end": "17:00"
     }
 ]

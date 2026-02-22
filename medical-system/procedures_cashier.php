@@ -40,6 +40,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && \Medical
             $scheduleManager->bulkMarkPaid($toPayIds);
 
             $message = "Оплачено процедур: " . count($toPayIds);
+        } elseif ($_POST['action'] === 'bulk_pay_procedure') {
+            $countToPay = (int)($_POST['count'] ?? 0);
+            $patientId = $_POST['patient_id'] ?? '';
+            $procedureId = $_POST['procedure_id'] ?? '';
+            $procedureName = $_POST['procedure_name'] ?? '';
+
+            $all = $scheduleManager->getAll();
+            $unpaid = array_filter($all, function($app) use ($patientId, $procedureId, $procedureName) {
+                return $app['patient_id'] == $patientId &&
+                       ($app['status'] ?? '') === 'unpaid' &&
+                       (($procedureId && $app['procedure_id'] == $procedureId) || (!$procedureId && $app['procedure_name'] == $procedureName));
+            });
+
+            usort($unpaid, function($a, $b) {
+                if ($a['date'] === $b['date']) return $a['time'] <=> $b['time'];
+                return $a['date'] <=> $b['date'];
+            });
+
+            $toPayIds = array_map(function($app) { return $app['id']; }, array_slice($unpaid, 0, $countToPay));
+            $scheduleManager->bulkMarkPaid($toPayIds);
+            $message = "Оплачено процедур «" . ($procedureName) . "»: " . count($toPayIds);
         }
     }
 }
@@ -73,11 +94,28 @@ $appointments = array_filter($allAppointments, function($app) use ($query, $star
     } else {
         $filteredUnpaidCount++;
         $filteredUnpaidSum += (float)($app['price'] ?? 0);
-        $selectedPatientId = $app['patient_id']; // For bulk pay we assume filtering by one patient if we want to use bulk pay
+        $selectedPatientId = $app['patient_id'];
     }
 
     return true;
 });
+
+// Grouping by patient and procedure
+$grouped = [];
+foreach ($appointments as $app) {
+    $key = $app['patient_id'] . '_' . ($app['procedure_id'] ?? $app['procedure_name']);
+    if (!isset($grouped[$key])) {
+        $grouped[$key] = [
+            'patient_name' => $app['patient_name'],
+            'patient_id' => $app['patient_id'],
+            'procedure_name' => $app['procedure_name'],
+            'procedure_id' => $app['procedure_id'] ?? null,
+            'price' => $app['price'],
+            'items' => []
+        ];
+    }
+    $grouped[$key]['items'][] = $app;
+}
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -148,46 +186,116 @@ require_once __DIR__ . '/includes/header.php';
             <tr>
                 <th>Пациент</th>
                 <th>Процедура</th>
-                <th>Дата</th>
+                <th>Даты / Кол-во</th>
                 <th>Сумма</th>
                 <th>Статус</th>
                 <th style="text-align: right;">Действие</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($appointments as $app): ?>
-            <tr>
-                <td style="font-weight: 600;"><?php echo htmlspecialchars($app['patient_name']); ?></td>
-                <td><?php echo htmlspecialchars($app['procedure_name']); ?></td>
-                <td><?php echo $app['date']; ?></td>
-                <td style="font-weight: 700; color: var(--win-accent);"><?php echo number_format($app['price'], 0, ',', ' '); ?> ₽</td>
+            <?php foreach ($grouped as $key => $group):
+                $unpaidItems = array_filter($group['items'], function($it) { return ($it['status'] ?? '') === 'unpaid'; });
+                $paidItems = array_filter($group['items'], function($it) { return ($it['status'] ?? '') === 'paid'; });
+                $count = count($group['items']);
+                $unpaidCount = count($unpaidItems);
+                $isGroup = $count > 1;
+            ?>
+            <tr class="group-row" data-key="<?php echo $key; ?>">
+                <td style="font-weight: 600;"><?php echo htmlspecialchars($group['patient_name']); ?></td>
+                <td><?php echo htmlspecialchars($group['procedure_name']); ?></td>
                 <td>
-                    <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : 'status-red'; ?>">
-                        <?php echo $app['status'] === 'paid' ? 'Оплачено' : 'Ожидает оплаты'; ?>
-                    </span>
+                    <?php if ($isGroup): ?>
+                        <span class="badge" style="background: var(--win-accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem;">
+                            <?php echo $count; ?> раз(а)
+                        </span>
+                        <button class="btn btn-sm btn-ghost toggle-group" data-target="detail-<?php echo $key; ?>" style="padding: 2px 4px; margin-left: 8px;">
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i> смотреть количество
+                        </button>
+                    <?php else: ?>
+                        <?php echo $group['items'][0]['date']; ?>
+                    <?php endif; ?>
+                </td>
+                <td style="font-weight: 700; color: var(--win-accent);">
+                    <?php echo number_format($group['price'] * $count, 0, ',', ' '); ?> ₽
+                </td>
+                <td>
+                    <?php if ($unpaidCount > 0): ?>
+                        <span class="status-red">Ожидает оплаты (<?php echo $unpaidCount; ?>)</span>
+                    <?php else: ?>
+                        <span class="status-green">Оплачено</span>
+                    <?php endif; ?>
                 </td>
                 <td style="text-align: right;">
                     <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                        <?php if ($app['status'] === 'unpaid'): ?>
+                        <?php if ($unpaidCount > 0): ?>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                                <input type="hidden" name="action" value="pay">
-                                <input type="hidden" name="id" value="<?php echo $app['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
+                                <input type="hidden" name="action" value="bulk_pay_procedure">
+                                <input type="hidden" name="patient_id" value="<?php echo $group['patient_id']; ?>">
+                                <input type="hidden" name="procedure_id" value="<?php echo $group['procedure_id']; ?>">
+                                <input type="hidden" name="procedure_name" value="<?php echo $group['procedure_name']; ?>">
+                                <input type="hidden" name="count" value="<?php echo $unpaidCount; ?>">
+                                <button type="submit" class="btn btn-sm btn-primary">Оплатить все</button>
                             </form>
                         <?php endif; ?>
-                        <a href="export.php?action=print_contract&id=<?php echo $app['id']; ?>" target="_blank" class="btn btn-sm" title="Печать договора">
-                            <i data-lucide="file-text" class="icon" style="margin: 0;"></i>
-                        </a>
+                        <?php if (!$isGroup): ?>
+                            <a href="export.php?action=print_contract&id=<?php echo $group['items'][0]['id']; ?>" target="_blank" class="btn btn-sm" title="Печать договора">
+                                <i data-lucide="file-text" class="icon" style="margin: 0;"></i>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </td>
             </tr>
+            <?php if ($isGroup): ?>
+            <tr id="detail-<?php echo $key; ?>" style="display: none; background: rgba(0,0,0,0.02);">
+                <td colspan="6" style="padding: 10px 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                        <?php foreach ($group['items'] as $item): ?>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: white; border: 1px solid var(--win-border); border-radius: 6px;">
+                                <span><?php echo $item['date']; ?> <?php echo $item['time']; ?></span>
+                                <div>
+                                    <?php if ($item['status'] === 'unpaid'): ?>
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                            <input type="hidden" name="action" value="pay">
+                                            <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
+                                            <button type="submit" class="btn btn-sm btn-ghost" style="color: var(--win-accent);">Оплатить</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span style="color: #107c10; font-size: 0.8rem;"><i data-lucide="check" style="width: 12px; height: 12px;"></i> Оплачено</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </td>
+            </tr>
+            <?php endif; ?>
             <?php endforeach; ?>
-            <?php if (empty($appointments)): ?>
+            <?php if (empty($grouped)): ?>
                 <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--win-text-secondary);">Нет процедур, ожидающих оплаты</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.toggle-group').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            const target = document.getElementById(targetId);
+            const icon = btn.querySelector('i');
+            if (target.style.display === 'none') {
+                target.style.display = 'table-row';
+                icon.setAttribute('data-lucide', 'chevron-up');
+            } else {
+                target.style.display = 'none';
+                icon.setAttribute('data-lucide', 'chevron-down');
+            }
+            if (window.lucide) lucide.createIcons();
+        });
+    });
+});
+</script>
 <?php include __DIR__ . '/includes/footer.php'; ?>
