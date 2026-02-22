@@ -181,6 +181,32 @@ class ScheduleManager {
         return $freeSlots;
     }
 
+    public function getEarliestFreeSlot($procedureId, $cabinetId, $date) {
+        $freeSlots = $this->getFreeSlots($procedureId, $cabinetId, $date);
+
+        if (empty($freeSlots)) return null;
+
+        // If it's today, we should probably filter out past times
+        if ($date === date('Y-m-d')) {
+            $now = date('H:i');
+            foreach ($freeSlots as $slot) {
+                if ($slot >= $now) return $slot;
+            }
+        }
+
+        return $freeSlots[0];
+    }
+
+    public function bulkMarkPaid($ids) {
+        $count = 0;
+        foreach ($ids as $id) {
+            if ($this->markPaid($id)) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
     public function bulkAssign($data, $startDate, $endDate, $frequency = 'daily') {
         $results = [];
         $current = strtotime($startDate);

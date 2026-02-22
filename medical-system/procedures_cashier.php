@@ -11,9 +11,36 @@ if (!\Medical\Core\Auth::can('finance_pay')) {
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $patientManager = new \Medical\Core\Managers\PatientManager();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'pay' && \Medical\Core\Auth::can('finance_pay')) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && \Medical\Core\Auth::can('finance_pay')) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
-        $scheduleManager->markPaid($_POST['id']);
+        if ($_POST['action'] === 'pay') {
+            $scheduleManager->markPaid($_POST['id']);
+        } elseif ($_POST['action'] === 'bulk_pay') {
+            $countToPay = (int)($_POST['count'] ?? 0);
+            $patientId = $_POST['patient_id'] ?? '';
+            $startDate = $_POST['start_date'] ?? '';
+            $endDate = $_POST['end_date'] ?? '';
+
+            // Fetch all unpaid for this patient in range
+            $all = $scheduleManager->getAll();
+            $unpaid = array_filter($all, function($app) use ($patientId, $startDate, $endDate) {
+                return $app['patient_id'] == $patientId &&
+                       ($app['status'] ?? '') === 'unpaid' &&
+                       $app['date'] >= $startDate &&
+                       $app['date'] <= $endDate;
+            });
+
+            // Sort by date/time
+            usort($unpaid, function($a, $b) {
+                if ($a['date'] === $b['date']) return $a['time'] <=> $b['time'];
+                return $a['date'] <=> $b['date'];
+            });
+
+            $toPayIds = array_map(function($app) { return $app['id']; }, array_slice($unpaid, 0, $countToPay));
+            $scheduleManager->bulkMarkPaid($toPayIds);
+
+            $message = "Оплачено процедур: " . count($toPayIds);
+        }
     }
 }
 
@@ -23,8 +50,11 @@ $query = $_GET['q'] ?? '';
 
 $allAppointments = $scheduleManager->getAll();
 $totalRevenue = 0;
+$filteredUnpaidCount = 0;
+$filteredUnpaidSum = 0;
+$selectedPatientId = null;
 
-$appointments = array_filter($allAppointments, function($app) use ($query, $startDate, $endDate, &$totalRevenue) {
+$appointments = array_filter($allAppointments, function($app) use ($query, $startDate, $endDate, &$totalRevenue, &$filteredUnpaidCount, &$filteredUnpaidSum, &$selectedPatientId) {
     // Date range check
     $appDate = $app['date'];
     if ($appDate < $startDate || $appDate > $endDate) return false;
@@ -40,6 +70,10 @@ $appointments = array_filter($allAppointments, function($app) use ($query, $star
 
     if ($app['status'] === 'paid') {
         $totalRevenue += (float)($app['price'] ?? 0);
+    } else {
+        $filteredUnpaidCount++;
+        $filteredUnpaidSum += (float)($app['price'] ?? 0);
+        $selectedPatientId = $app['patient_id']; // For bulk pay we assume filtering by one patient if we want to use bulk pay
     }
 
     return true;
@@ -57,6 +91,12 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     <?php endif; ?>
 </div>
+
+<?php if (isset($message)): ?>
+    <div style="background: #dff6dd; color: #107c10; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #107c10;">
+        <?php echo $message; ?>
+    </div>
+<?php endif; ?>
 
 <div class="card mica-effect">
     <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: flex-end;">
@@ -76,6 +116,32 @@ require_once __DIR__ . '/includes/header.php';
             <i data-lucide="search" class="icon"></i> Найти
         </button>
     </form>
+
+    <?php if ($query && $filteredUnpaidCount > 0): ?>
+    <div style="background: rgba(0,120,212,0.05); padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--win-border);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h3 style="margin-bottom: 8px;">Итого к оплате (<?php echo htmlspecialchars($query); ?>)</h3>
+                <div style="font-size: 0.9rem; color: var(--win-text-secondary);">
+                    Процедур: <strong><?php echo $filteredUnpaidCount; ?></strong> |
+                    Сумма: <strong style="color: var(--win-accent); font-size: 1.1rem;"><?php echo number_format($filteredUnpaidSum, 0, ',', ' '); ?> ₽</strong>
+                </div>
+            </div>
+
+            <form method="POST" style="display: flex; gap: 8px; align-items: center; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid var(--win-border);">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" value="bulk_pay">
+                <input type="hidden" name="patient_id" value="<?php echo $selectedPatientId; ?>">
+                <input type="hidden" name="start_date" value="<?php echo $startDate; ?>">
+                <input type="hidden" name="end_date" value="<?php echo $endDate; ?>">
+
+                <label style="font-size: 0.8rem;">Оплатить (кол-во):</label>
+                <input type="number" name="count" value="<?php echo $filteredUnpaidCount; ?>" min="1" max="<?php echo $filteredUnpaidCount; ?>" style="width: 70px;">
+                <button type="submit" class="btn btn-primary btn-sm">Принять оплату</button>
+            </form>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <table>
         <thead>

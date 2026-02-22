@@ -164,3 +164,90 @@
 [Fri Feb 20 07:45:43 2026] 127.0.0.1:55898 Accepted
 [Fri Feb 20 07:45:43 2026] 127.0.0.1:55898 [200]: GET /sw.js
 [Fri Feb 20 07:45:43 2026] 127.0.0.1:55898 Closing
+[Sun Feb 22 16:54:53 2026] 127.0.0.1:39650 Accepted
+[Sun Feb 22 16:54:53 2026] 127.0.0.1:39650 [200]: GET /login.php
+[Sun Feb 22 16:54:53 2026] 127.0.0.1:39650 Closing
+[Sun Feb 22 16:54:53 2026] 127.0.0.1:39662 Accepted
+[Sun Feb 22 16:54:53 2026] 127.0.0.1:39662 [200]: GET /assets/css/style.css
+[Sun Feb 22 16:54:53 2026] 127.0.0.1:39662 Closing
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39666 Accepted
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39666 [200]: GET /sw.js
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39666 Closing
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39680 Accepted
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39694 Accepted
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39706 Accepted
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39680 [302]: GET /
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39680 Closing
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39694 [302]: GET /index.php
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39694 Closing
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39706 [200]: GET /assets/css/style.css
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39706 Closing
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39716 Accepted
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39716 [200]: GET /login.php
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39716 Closing
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39718 Accepted
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39718 [200]: GET /login.php
+[Sun Feb 22 16:54:54 2026] 127.0.0.1:39718 Closing
+[Sun Feb 22 16:54:55 2026] 127.0.0.1:39726 Accepted
+[Sun Feb 22 16:54:55 2026] 127.0.0.1:39726 [302]: POST /login.php
+[Sun Feb 22 16:54:55 2026] 127.0.0.1:39726 Closing
+[Sun Feb 22 16:54:56 2026] 127.0.0.1:39742 Accepted
+[Sun Feb 22 16:54:56 2026] 127.0.0.1:39742 [200]: GET /procedures_doctor.php
+[Sun Feb 22 16:54:56 2026] 127.0.0.1:39742 Closing
+[Sun Feb 22 16:54:56 2026] 127.0.0.1:39758 Accepted
+[Sun Feb 22 16:54:56 2026] 127.0.0.1:39758 [200]: GET /sw.js
+[Sun Feb 22 16:54:56 2026] 127.0.0.1:39758 Closing
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39762 Accepted
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39762 [200]: GET /procedures_doctor.php?patient_id=69971fddb7b7b
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39762 Closing
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39766 Accepted
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39766 [200]: GET /procedures_doctor.php?ajax_action=get_slots&cabinet_id=101&date=2026-02-22&procedure_id=69971fddb52ae
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39766 Closing
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39776 Accepted
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39776 [200]: GET /sw.js
+[Sun Feb 22 16:54:58 2026] 127.0.0.1:39776 Closing
+[Sun Feb 22 16:55:00 2026] 127.0.0.1:60218 Accepted
+[Sun Feb 22 16:55:00 2026] 127.0.0.1:60218 [200]: GET /sw.js
+[Sun Feb 22 16:55:00 2026] 127.0.0.1:60218 Closing
+[Sun Feb 22 16:55:00 2026] 127.0.0.1:60228 Accepted
+[Sun Feb 22 16:55:01 2026] 127.0.0.1:60228 [200]: GET /procedures_cashier.php
+[Sun Feb 22 16:55:01 2026] 127.0.0.1:60228 Closing
+[Sun Feb 22 16:55:01 2026] 127.0.0.1:60244 Accepted
+[Sun Feb 22 16:55:01 2026] 127.0.0.1:60244 [200]: GET /procedures_cashier.php?q=%D0%91%D0%B5%D0%BB%D0%BE%D0%B2&start_date=2026-02-22&end_date=2026-02-22
+[Sun Feb 22 16:55:01 2026] 127.0.0.1:60244 Closing
+[Sun Feb 22 16:58:21 2026] 127.0.0.1:49706 Accepted
+[Sun Feb 22 16:58:21 2026] 127.0.0.1:49706 [200]: GET /login.php
+[Sun Feb 22 16:58:21 2026] 127.0.0.1:49706 Closing
+[Sun Feb 22 16:58:21 2026] 127.0.0.1:49708 Accepted
+[Sun Feb 22 16:58:21 2026] 127.0.0.1:49708 [200]: GET /assets/css/style.css
+[Sun Feb 22 16:58:21 2026] 127.0.0.1:49708 Closing
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49720 Accepted
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49720 [200]: GET /sw.js
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49720 Closing
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49726 Accepted
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49738 Accepted
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49742 Accepted
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49726 [302]: GET /
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49726 Closing
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49738 [302]: GET /index.php
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49738 Closing
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49742 [200]: GET /assets/css/style.css
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49742 Closing
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49744 Accepted
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49744 [200]: GET /login.php
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49744 Closing
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49754 Accepted
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49754 [200]: GET /login.php
+[Sun Feb 22 16:58:22 2026] 127.0.0.1:49754 Closing
+[Sun Feb 22 16:58:23 2026] 127.0.0.1:49760 Accepted
+[Sun Feb 22 16:58:23 2026] 127.0.0.1:49760 [302]: POST /login.php
+[Sun Feb 22 16:58:23 2026] 127.0.0.1:49760 Closing
+[Sun Feb 22 16:58:24 2026] 127.0.0.1:49770 Accepted
+[Sun Feb 22 16:58:24 2026] 127.0.0.1:49770 [200]: GET /procedures_cashier.php?q=%D0%91%D0%B5%D0%BB%D0%BE%D0%B2&start_date=2026-02-01&end_date=2026-12-31
+[Sun Feb 22 16:58:24 2026] 127.0.0.1:49770 Closing
+[Sun Feb 22 16:58:24 2026] 127.0.0.1:49786 Accepted
+[Sun Feb 22 16:58:24 2026] 127.0.0.1:49786 [200]: GET /sw.js
+[Sun Feb 22 16:58:24 2026] 127.0.0.1:49786 Closing
+[Sun Feb 22 16:58:26 2026] 127.0.0.1:49788 Accepted
+[Sun Feb 22 16:58:26 2026] 127.0.0.1:49788 [200]: GET /sw.js
+[Sun Feb 22 16:58:26 2026] 127.0.0.1:49788 Closing

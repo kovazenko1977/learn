@@ -18,8 +18,9 @@ if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'get_slots') {
     $procId = $_GET['procedure_id'] ?? null;
     $occupied = $scheduleManager->getOccupiedSlots($cabinetId, $date);
     $free = $procId ? $scheduleManager->getFreeSlots($procId, $cabinetId, $date) : [];
+    $earliest = $procId ? $scheduleManager->getEarliestFreeSlot($procId, $cabinetId, $date) : null;
     header('Content-Type: application/json');
-    echo json_encode(['occupied' => $occupied, 'free' => $free]);
+    echo json_encode(['occupied' => $occupied, 'free' => $free, 'earliest' => $earliest]);
     exit;
 }
 
@@ -318,6 +319,12 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
             .then(data => {
                 const occupied = data.occupied || [];
                 const free = data.free || [];
+                const earliest = data.earliest;
+
+                // Suggest earliest slot
+                if (earliest && !timeInput.value) {
+                    timeInput.value = earliest;
+                }
 
                 // Update Timeline (Busy Slots)
                 busySlotsContainer.innerHTML = '';
