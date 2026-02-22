@@ -26,11 +26,39 @@
         const closeBtn = document.getElementById('pwa-close-btn');
 
         window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
+            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Only show on mobile
+
+            // Don't show if already in standalone mode
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                return;
+            }
+
+            // Show the banner if on mobile or if we want to be proactive
             if (window.innerWidth < 992) {
                 pwaBanner.style.display = 'flex';
+            }
+        });
+
+        // Optional: Proactive check for iOS or other browsers where beforeinstallprompt doesn't fire
+        window.addEventListener('load', () => {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+            if (isIOS && !isStandalone && window.innerWidth < 992) {
+                // For iOS we could show instructions, but let's stick to the banner for now
+                // just changing the text if it's iOS
+                const desc = pwaBanner.querySelector('div > div:last-child');
+                if (desc) desc.textContent = 'Нажмите "Поделиться" и "На экран Домой"';
+                const installBtn = document.getElementById('pwa-install-btn');
+                if (installBtn) installBtn.style.display = 'none'; // iOS doesn't support programmatic install
+
+                // Show after a delay
+                setTimeout(() => {
+                    pwaBanner.style.display = 'flex';
+                }, 3000);
             }
         });
 
