@@ -35,10 +35,22 @@
 
     --priority-low: #107c10;
     --priority-medium: #ffaa44;
-    --priority-high: #e81123;
-    --priority-critical: #a4262c;
+    --priority-high: #ff8c00;
+    --priority-critical: #d13438;
 
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@keyframes pulse-status {
+    0% { box-shadow: 0 0 0 0 rgba(0, 120, 212, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 120, 212, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 120, 212, 0); }
+}
+
+.pulse-new {
+    animation: pulse-status 2s infinite;
+    position: relative;
+    z-index: 1;
 }
 
 /* --- DARK THEME BASE --- */

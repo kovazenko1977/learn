@@ -1,3 +1,6 @@
+        <div style="text-align: center; padding: 20px; font-size: 11px; opacity: 0.5; color: var(--win-text-secondary); margin-bottom: 20px;">
+            Разработчик wes.by
+        </div>
     </main>
     <div id="pwa-install-banner">
         <div style="display:flex; align-items:center; gap:12px;">

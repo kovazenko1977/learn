@@ -6,7 +6,7 @@ use Hop\Core\RequestManager;
 use Hop\Core\ServiceManager;
 use Hop\Core\NotificationManager;
 
-checkRole(['initiator', 'admin']);
+checkRole(['initiator', 'performer', 'service_lead', 'controller', 'admin', 'manager']);
 
 $settingsStore = new JsonStore('data/settings.json');
 $notificationStore = new JsonStore('data/notifications.json');

@@ -25,7 +25,7 @@ $fEnd = $_GET['end_date'] ?? null;
 $fOverdue = $_GET['overdue'] ?? null;
 
 $currentUserData = null;
-if ($userRole === 'service_lead') {
+if ($userRole === 'service_lead' || $userRole === 'performer') {
     $userStore = new JsonStore('data/users.json');
     $currentUserData = (new \Hop\Core\UserManager($userStore))->getById($userId);
 }
@@ -38,7 +38,7 @@ foreach ($requests as $req) {
     } elseif ($userRole === 'initiator') {
         if ($req['initiator_id'] === $userId) $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'performer') {
-        if (isset($req['performer_id']) && $req['performer_id'] === $userId) $roleFilteredRequests[] = $req;
+        if (($req['status'] === 'new' && $currentUserData && $req['service_id'] === $currentUserData['service_id']) || (isset($req['performer_id']) && $req['performer_id'] === $userId)) $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'service_lead') {
         if ($currentUserData && $req['service_id'] === $currentUserData['service_id']) $roleFilteredRequests[] = $req;
     } elseif ($userRole === 'controller') {
@@ -103,11 +103,9 @@ include 'includes/header.php';
                 <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px; padding: 12px 24px;">
                     <i data-lucide="printer"></i> Печать
                 </button>
-                <?php if ($userRole === 'initiator' || $userRole === 'admin'): ?>
-                    <a href="create.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px;">
-                        <i data-lucide="plus"></i> Новая заявка
-                    </a>
-                <?php endif; ?>
+                <a href="create.php" class="btn-primary" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px;">
+                    <i data-lucide="plus"></i> Новая заявка
+                </a>
             </div>
         </div>
 
@@ -124,7 +122,7 @@ include 'includes/header.php';
                     }
                 }
             ?>
-            <a href="index.php?status=new" class="stat-card stat-new-card">
+            <a href="index.php?status=new" class="stat-card stat-new-card <?php echo ($newCount > 0) ? 'pulse-new' : ''; ?>">
                 <div class="stat-value"><?php echo $newCount; ?></div>
                 <div class="stat-label">Ожидают</div>
             </a>

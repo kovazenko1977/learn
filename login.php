@@ -37,13 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body.login-page {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
             background: linear-gradient(135deg, #f0f4f8 0%, #d7e3ec 100%);
-            overflow: hidden;
         }
         .login-card {
             width: 100%;
@@ -126,8 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .btn-login:hover {
             filter: brightness(1.1);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 120, 212, 0.4);
         }
         .btn-login:active { transform: translateY(0); }
 
@@ -158,7 +157,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <div class="footer-note">
-            При возникновении проблем с доступом обратитесь к администратору
+            <div>При возникновении проблем с доступом обратитесь к администратору</div>
+            <div style="margin-top: 12px; font-size: 10px; opacity: 0.7;">Разработчик wes.by</div>
         </div>
     </div>
 </body>
