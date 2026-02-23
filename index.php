@@ -3,38 +3,38 @@
 <!-- Desktop Icons Layer -->
 <div class="desktop-icons">
     <div class="desktop-icon" onclick="window.location.href='infrastructure.php'">
-        <img src="https://img.icons8.com/color/48/000000/monitor.png" alt="My Computer">
+        <img src="https://img.icons8.com/fluency/48/000000/monitor.png" alt="My Computer">
         <span>Мой Компьютер</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='rooms.php'">
-        <img src="https://img.icons8.com/color/48/000000/folder-invoices.png" alt="My Documents">
+        <img src="https://img.icons8.com/fluency/48/000000/bedroom.png" alt="My Documents">
         <span>Мои Номера</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='contact.php'">
-        <img src="https://img.icons8.com/color/48/000000/network.png" alt="Network">
+        <img src="https://img.icons8.com/fluency/48/000000/network.png" alt="Network">
         <span>Сетевое окружение</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='diagnostics.php'">
-        <img src="https://img.icons8.com/color/48/000000/internet-explorer.png" alt="IE">
-        <span>IE Диагностика</span>
+        <img src="https://img.icons8.com/fluency/48/000000/stethoscope.png" alt="IE">
+        <span>Диагностика</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='procedures.php'">
-        <img src="https://img.icons8.com/color/48/000000/syringe.png" alt="Procedures">
+        <img src="https://img.icons8.com/fluency/48/000000/syringe.png" alt="Procedures">
         <span>Процедуры</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='prices.php'">
-        <img src="https://img.icons8.com/color/48/000000/money-bag.png" alt="Prices">
+        <img src="https://img.icons8.com/fluency/48/000000/money-bag.png" alt="Prices">
         <span>Прайс-лист</span>
     </div>
     <div class="desktop-icon" onclick="if(confirm('Очистить временные данные?')) { localStorage.clear(); alert('Данные очищены'); location.reload(); }">
-        <img src="https://img.icons8.com/color/48/000000/recycle-bin.png" alt="Recycle Bin">
+        <img src="https://img.icons8.com/fluency/48/000000/recycle-bin.png" alt="Recycle Bin">
         <span>Корзина</span>
     </div>
 </div>
 
 <div class="window" style="width: 85%; max-width: 900px; margin: 40px auto; position: relative; z-index: 10;">
     <div class="title-bar">
-        <div class="title-bar-text">Санаторий "Березина" - Microsoft Internet Explorer</div>
+        <div class="title-bar-text">Санаторий "Березина" — Microsoft Edge</div>
         <div class="title-bar-controls">
             <button aria-label="Minimize"></button>
             <button aria-label="Maximize"></button>
@@ -55,7 +55,7 @@
             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                 <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Copilot_20251228_012015-683x1024.png" alt="Герой" style="width: 300px; height: 200px; object-fit: cover; border: 4px solid #fff; box-shadow: 2px 2px 5px rgba(0,0,0,0.3);">
                 <div>
-                    <h1 style="color: #003399; margin-top: 0;">Добро пожаловать в "Березину"!</h1>
+                    <h1 style="color: var(--win-accent); margin-top: 0;">Добро пожаловать в "Березину"!</h1>
                     <p>Государственное учреждение «Республиканский санаторий «БЕРЕЗИНА» для ветеранов войны, труда и инвалидов» — это современный лечебно-диагностический центр в сердце соснового бора.</p>
                     <button onclick="window.location.href='booking.php'" class="xp-btn-large">Забронировать путевку</button>
                 </div>
@@ -82,7 +82,7 @@
             <div style="margin-top: 20px; background: #eef3fa; padding: 15px; border: 1px solid #7cb7f1;">
                 <h3 style="margin-top: 0;">🌲 Оздоровительные факторы</h3>
                 <p>Наш санаторий расположен среди живописной природы Борисовщины. Сосновый лес выделяет фитонциды — природные антибиотики, которые подавляют болезнетворные бактерии. Проживание в такой среде — мощная профилактика ОРВИ и болезней дыхательных путей.</p>
-                <a href="infrastructure.php" style="color: #003399; font-weight: bold;">Подробнее о территории...</a>
+                <a href="infrastructure.php" style="color: var(--win-accent); font-weight: bold;">Подробнее о территории...</a>
             </div>
         </div>
     </div>

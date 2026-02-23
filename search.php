@@ -11,26 +11,28 @@
     </div>
 
     <div class="window-body" style="display: flex; flex: 1; margin: 0; padding: 0; overflow: hidden;">
-        <!-- Search Companion Sidebar -->
-        <aside style="width: 250px; background: #748aff; padding: 15px; display: flex; flex-direction: column; gap: 20px; color: white; border-right: 1px solid #002d96;">
-            <div style="text-align: center;">
-                <img src="https://img.icons8.com/color/96/000000/dog.png" alt="Rover" style="width: 80px;">
-                <p style="font-size: 12px; font-weight: bold; margin-top: 10px;">Что вы хотите найти?</p>
+        <!-- Modern Search Sidebar -->
+        <aside style="width: 280px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); padding: 24px; display: flex; flex-direction: column; gap: 24px; border-right: 1px solid rgba(0, 0, 0, 0.05);">
+            <div>
+                <h3 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">Поиск</h3>
+                <div style="position: relative;">
+                    <input type="text" id="searchInput" style="width: 100%; padding: 10px 12px; border: 1px solid rgba(0,0,0,0.2); border-radius: 6px; font-size: 14px; background: rgba(255,255,255,0.8);" placeholder="Услуга или номер..." oninput="performSearch()">
+                </div>
             </div>
 
-            <div style="background: white; color: #333; padding: 10px; border-radius: 8px;">
-                <label style="font-size: 11px; font-weight: bold;">Часть имени файла или слова в нем:</label>
-                <input type="text" id="searchInput" style="width: 100%; margin-top: 5px; border: 1px solid #7cb7f1;" placeholder="Процедура, номер...">
-                <button onclick="performSearch()" class="xp-btn-large" style="width: 100%; margin-top: 10px; padding: 5px;">Найти</button>
-            </div>
-
-            <div style="font-size: 11px;">
-                <p>Вы также можете искать по:</p>
-                <ul style="padding-left: 20px;">
-                    <li style="cursor: pointer; text-decoration: underline;" onclick="filterSearch('procedure')">Процедурам</li>
-                    <li style="cursor: pointer; text-decoration: underline;" onclick="filterSearch('room')">Номерам</li>
-                    <li style="cursor: pointer; text-decoration: underline;" onclick="filterSearch('price')">Ценам</li>
-                </ul>
+            <div>
+                <div style="font-size: 13px; font-weight: 600; margin-bottom: 12px; opacity: 0.7;">ФИЛЬТРЫ</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button onclick="filterSearch('all')" class="toolbar-btn" style="text-align: left; padding: 8px; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://img.icons8.com/fluency/16/000000/layers.png"> Все результаты
+                    </button>
+                    <button onclick="filterSearch('procedure')" class="toolbar-btn" style="text-align: left; padding: 8px; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://img.icons8.com/fluency/16/000000/syringe.png"> Процедуры
+                    </button>
+                    <button onclick="filterSearch('room')" class="toolbar-btn" style="text-align: left; padding: 8px; border-radius: 4px; display: flex; align-items: center; gap: 10px;">
+                        <img src="https://img.icons8.com/fluency/16/000000/bedroom.png"> Номера
+                    </button>
+                </div>
             </div>
         </aside>
 
@@ -63,13 +65,20 @@ const data = [
 
 function performSearch() {
     const query = document.getElementById('searchInput').value.toLowerCase();
-    if (!query) return;
+    if (!query) {
+        displayResults(data);
+        return;
+    }
 
     const results = data.filter(item => item.name.toLowerCase().includes(query));
     displayResults(results);
 }
 
 function filterSearch(type) {
+    if (type === 'all') {
+        displayResults(data);
+        return;
+    }
     const results = data.filter(item => item.type === type);
     displayResults(results);
 }
@@ -80,11 +89,11 @@ function displayResults(results) {
     container.innerHTML = '';
 
     if (results.length === 0) {
-        info.innerText = 'Ничего не найдено.';
+        info.innerText = 'По вашему запросу ничего не найдено.';
         return;
     }
 
-    info.innerText = `Найдено элементов: ${results.length}`;
+    info.innerText = `Результатов: ${results.length}`;
 
     results.forEach(item => {
         const card = document.createElement('div');

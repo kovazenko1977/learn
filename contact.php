@@ -2,7 +2,7 @@
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
     <div class="xp-card">
-        <h3 style="color: #215DC6; margin-top: 0;">📍 Контактная информация</h3>
+        <h3 style="color: var(--win-accent); margin-top: 0;">📍 Контактная информация</h3>
         <p style="font-size: 12px;"><strong>Адрес:</strong> 222514, РБ, Минская обл., Борисовский р-н, Пригородный с/с, 8, корп. 4</p>
         <p style="font-size: 12px;"><strong>Телефоны:</strong></p>
         <ul style="font-size: 11px; padding-left: 20px;">
@@ -30,7 +30,7 @@
 </div>
 
 <div class="xp-card">
-    <h3 style="color: #215DC6;">🗺 Карта проезда</h3>
+    <h3 style="color: var(--win-accent);">🗺 Карта проезда</h3>
     <div style="border: 1px solid #7F9DB9; height: 300px;">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2334.862444585141!2d28.48710897654167!3d54.21808087255148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46da259972354567%3A0x8898b9a24422e0e!2z0YHQsNC90LDRgtC-0YDQuNC5IEJlcmV6aW5h!5e0!3m2!1sru!2sby!4v1700000000000!5m2!1sru!2sby" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
     </div>

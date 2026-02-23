@@ -1,15 +1,18 @@
 :root {
-    --xp-blue: #0058e6;
-    --xp-blue-light: #245edb;
-    --xp-green: #3c813c;
-    --xp-orange: #ff8c00;
+    --win-bg: #f3f3f3;
+    --win-accent: #0067c0;
+    --win-mica: rgba(255, 255, 255, 0.7);
+    --win-mica-dark: rgba(32, 32, 32, 0.7);
+    --win-radius: 8px;
+    --win-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    --win-border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 body {
     margin: 0;
     padding: 0;
-    font-family: "Tahoma", "Segoe UI", sans-serif;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/4/41/Windows_XP_Bliss.jpg') no-repeat center center fixed;
+    font-family: "Segoe UI", "Variable Font", sans-serif;
+    background: url('https://4kwallpapers.com/images/wallpapers/windows-11-stock-blue-background-bloom-1920x1080-5632.jpg') no-repeat center center fixed;
     background-size: cover;
     height: 100vh;
     overflow: hidden;
@@ -85,211 +88,272 @@ body {
     overflow-y: auto;
 }
 
-/* Navigation Drawer */
+/* Start Menu (Floating Panel) */
 .nav-drawer {
     position: fixed;
-    top: 0;
-    left: -280px;
-    width: 280px;
-    height: calc(100vh - 30px);
-    background: #ece9d8;
-    z-index: 1000;
-    transition: left 0.3s ease;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-    border-right: 2px solid #0058e6;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    width: 600px;
+    height: 600px;
+    max-height: 80vh;
+    max-width: 95vw;
+    background: var(--win-mica);
+    backdrop-filter: blur(40px);
+    z-index: 3000;
+    transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    box-shadow: var(--win-shadow);
+    border: var(--win-border);
+    border-radius: 12px;
+    overflow: hidden;
+    visibility: hidden;
 }
 
 .nav-drawer.active {
-    left: 0;
+    transform: translateX(-50%) translateY(0);
+    visibility: visible;
 }
 
-/* Explorer Sidebar */
+/* Modern Sidebar / App List */
 .explorer-sidebar {
-    width: 200px;
-    background: linear-gradient(to bottom, #748aff 0%, #4058d3 100%);
-    color: white;
-    padding: 10px;
-    border-right: 1px solid #002d96;
+    width: 240px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 20px 10px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
     overflow-y: auto;
 }
 
 .explorer-group {
-    background: white;
-    border-radius: 5px 5px 0 0;
-    margin-bottom: 15px;
-    overflow: hidden;
+    margin-bottom: 24px;
 }
 
 .explorer-group-header {
-    background: linear-gradient(to right, #215cf3 0%, #4690fb 100%);
-    padding: 5px 10px;
-    font-weight: bold;
+    padding: 0 10px 10px;
+    font-weight: 600;
     font-size: 12px;
-    color: white;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .explorer-group-body {
-    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 2px;
 }
 
 .explorer-link {
-    color: #215cf3;
+    color: #333;
     text-decoration: none;
-    font-size: 11px;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.2s;
 }
 
 .explorer-link:hover {
-    text-decoration: underline;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .explorer-content {
     flex: 1;
-    background: white;
+    background: var(--win-bg);
 }
 
-/* Windows Classic Style Components */
+/* Windows 11 Style Components */
 .window {
-    background: #ece9d8;
-    border: 2px solid #0058e6;
-    border-radius: 8px 8px 0 0;
-    box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+    background: var(--win-mica);
+    backdrop-filter: blur(30px) saturate(210%);
+    border: var(--win-border);
+    border-radius: var(--win-radius);
+    box-shadow: var(--win-shadow);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    animation: windowOpen 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes windowOpen {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 .title-bar {
-    background: linear-gradient(to bottom, #0058e6 0%, #245edb 10%, #245edb 90%, #0058e6 100%);
-    padding: 4px 8px;
+    padding: 10px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
-    font-weight: bold;
-    font-size: 13px;
-    height: 25px;
+    color: #000;
+    font-size: 12px;
+    height: 32px;
+}
+
+.title-bar-controls {
+    display: flex;
+    gap: 0;
 }
 
 .title-bar-controls button {
-    width: 21px;
-    height: 21px;
-    border: 1px solid white;
-    border-radius: 3px;
-    margin-left: 2px;
-    background: linear-gradient(to bottom, #40a0ff, #0058e6);
-    color: white;
+    width: 46px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #000;
     cursor: pointer;
-    font-weight: bold;
-    line-height: 1;
-    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    transition: background 0.2s;
 }
 
-.title-bar-controls button[aria-label="Close"] {
-    background: linear-gradient(to bottom, #ff7d59, #e60000);
+.title-bar-controls button:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.title-bar-controls button[aria-label="Close"]:hover {
+    background: #e81123;
+    color: #fff;
 }
 
 .window-body {
-    margin: 8px;
-    background: white;
-    border: 1px solid #999;
+    background: #fff;
     flex: 1;
     overflow-y: auto;
     position: relative;
 }
 
-/* Start Menu Style */
+/* Taskbar Style (Windows 11) */
 .taskbar {
-    height: 30px;
-    background: linear-gradient(to bottom, #245edb 0%, #3973e5 10%, #245edb 90%, #245edb 100%);
+    height: 48px;
+    background: var(--win-mica);
+    backdrop-filter: blur(20px);
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     display: flex;
+    justify-content: center;
     align-items: center;
-    padding: 0;
+    padding: 0 10px;
     z-index: 2000;
+    border-top: var(--win-border);
+}
+
+.taskbar-center-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .start-button {
-    height: 100%;
-    background: linear-gradient(to bottom, #3c813c 0%, #51a951 10%, #3c813c 90%, #3c813c 100%);
+    height: 40px;
+    width: 40px;
+    background: transparent;
     border: none;
-    border-radius: 0 10px 10px 0;
-    padding: 0 15px;
-    color: white;
-    font-style: italic;
-    font-weight: bold;
-    font-size: 16px;
+    border-radius: 4px;
+    padding: 0;
     cursor: pointer;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 5px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+    transition: background 0.2s;
 }
 
 .start-button:hover {
-    filter: brightness(1.1);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .taskbar-items {
     display: flex;
-    flex: 1;
     height: 100%;
-    padding: 2px 5px;
-    gap: 5px;
+    align-items: center;
+    gap: 4px;
 }
 
 .taskbar-item {
-    background: #3973e5;
-    border: 1px solid #1a4ab0;
-    border-radius: 3px;
-    color: white;
-    font-size: 11px;
-    padding: 0 10px;
+    height: 40px;
+    width: 40px;
+    background: transparent;
+    border-radius: 4px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    max-width: 160px;
-    height: 24px;
-    overflow: hidden;
-    white-space: nowrap;
-    box-shadow: inset 1px 1px 1px rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
 }
 
-.taskbar-item.active {
-    background: #1e52b7;
-    box-shadow: inset -1px -1px 1px rgba(255,255,255,0.2);
+.taskbar-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.taskbar-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background: var(--win-accent);
+    border-radius: 2px;
 }
 
 .system-tray {
-    padding: 0 10px;
-    color: white;
-    font-size: 11px;
-    background: #0975bd;
-    height: 100%;
+    position: absolute;
+    right: 10px;
     display: flex;
     align-items: center;
-    border-left: 1px solid #1a4ab0;
+    gap: 10px;
+    color: #333;
+    font-size: 12px;
+    padding: 0 10px;
+    border-radius: 4px;
+    height: 40px;
+    transition: background 0.2s;
+    cursor: pointer;
 }
 
-/* Forms and Buttons */
-.xp-btn-large {
-    background: linear-gradient(to bottom, #f2f2f2, #ebebeb 50%, #dddddd 51%, #cfcfcf);
-    border: 1px solid #707070;
-    border-radius: 3px;
-    padding: 10px 20px;
+.system-tray:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Modern Buttons (Fluent UI) */
+.xp-btn-large, .xp-btn {
+    background: var(--win-accent);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    color: #333;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.xp-btn-primary {
+    background: var(--win-accent);
+}
+
+.xp-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
 }
 
 .xp-btn-large:hover {
-    background: linear-gradient(to bottom, #eaf6fd, #d9f0fc 50%, #bee6fd 51%, #a7d9f5);
-    border-color: #3c7fb1;
+    background: #005aab;
+}
+
+.xp-btn-large:active {
+    transform: scale(0.98);
 }
 
 .toolbar-btn {
@@ -336,7 +400,7 @@ body {
 .procedure-card h3 {
     margin: 0 0 5px 0;
     font-size: 14px;
-    color: #003399;
+    color: var(--win-accent);
 }
 
 .procedure-card p {
@@ -376,4 +440,33 @@ body {
         margin: 0 !important;
         height: calc(100% - 30px);
     }
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: var(--win-accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 103, 192, 0.2);
+}
+
+fieldset {
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: 600;
+    color: var(--win-accent);
+    padding: 0 10px;
 }

@@ -10,27 +10,25 @@
         </div>
     </div>
 
-    <div class="window-body" style="display: flex; flex-direction: row; height: calc(100% - 30px); margin: 0; padding: 0;">
-        <!-- Sidebar Explorer Style -->
+    <div class="window-body" style="display: flex; flex-direction: row; height: 100%; margin: 0; padding: 0;">
+        <!-- Modern Sidebar -->
         <aside class="explorer-sidebar">
             <div class="explorer-group">
-                <div class="explorer-group-header">Системные задачи</div>
+                <div class="explorer-group-header">Услуги</div>
                 <div class="explorer-group-body">
-                    <a href="booking.php" class="explorer-link">Записаться на прием</a>
-                    <a href="diagnostics.php" class="explorer-link">Пройти диагностику</a>
+                    <a href="#cardio" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/heart-health.png"> Кардиология</a>
+                    <a href="#nerve" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/brain.png"> Нервная система</a>
+                    <a href="#respiratory" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/lungs.png"> Органы дыхания</a>
+                    <a href="#muscle" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/skeleton.png"> Опорно-двигательный</a>
+                    <a href="#skin" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/skin.png"> Дерматология</a>
                 </div>
             </div>
 
             <div class="explorer-group">
-                <div class="explorer-group-header">Категории</div>
+                <div class="explorer-group-header">Действия</div>
                 <div class="explorer-group-body">
-                    <a href="#cardio" class="explorer-link">Сердечно-сосудистые</a>
-                    <a href="#nerve" class="explorer-link">Нервная система</a>
-                    <a href="#respiratory" class="explorer-link">Органы дыхания</a>
-                    <a href="#muscle" class="explorer-link">Костно-мышечная</a>
-                    <a href="#skin" class="explorer-link">Кожные заболевания</a>
-                    <a href="#cosmetic" class="explorer-link">Косметология</a>
-                    <a href="#special" class="explorer-link">Спецпредложения (Vacumed)</a>
+                    <a href="booking.php" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/calendar.png"> Забронировать</a>
+                    <a href="diagnostics.php" class="explorer-link"><img src="https://img.icons8.com/fluency/16/000000/stethoscope.png"> Диагностика</a>
                 </div>
             </div>
         </aside>

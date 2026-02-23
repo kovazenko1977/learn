@@ -55,9 +55,9 @@
                 </ul>
             </div>
 
-            <div style="width: 320px; background: #ece9d8; border: 2px solid #0058e6; padding: 10px; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);">
-                <h4 style="margin-top: 0; color: #003399; display: flex; align-items: center; gap: 5px;">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Money_Cash.svg/20px-Money_Cash.svg.png">
+            <div style="width: 320px; background: var(--win-bg); border: 1px solid rgba(0,0,0,0.1); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <h4 style="margin-top: 0; color: #000; display: flex; align-items: center; gap: 10px; font-size: 16px;">
+                    <img src="https://img.icons8.com/fluency/24/000000/calculator.png">
                     Калькулятор путевки
                 </h4>
                 <div style="display: flex; flex-direction: column; gap: 10px; font-size: 11px;">
