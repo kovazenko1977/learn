@@ -1,162 +1,225 @@
 :root {
-    --accent-color: #2e7d32;
-    --bg-color: #f3f3f3;
-    --card-bg: rgba(255, 255, 255, 0.7);
-    --text-color: #1a1a1a;
-    --sidebar-bg: rgba(243, 243, 243, 0.5);
-    --border-radius: 8px;
-    --mica-blur: blur(30px) saturate(210%);
+    --xp-blue: #0058e3;
+    --xp-blue-dark: #0046b4;
+    --xp-bg: #ECE9D8;
+    --xp-border: #003ca5;
+    --xp-text: #000000;
+    --xp-window-bg: #FFFFFF;
+    --xp-start-green: #3c813f;
+    --xp-sidebar-bg: #7BA2E7;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     margin: 0;
-    font-family: 'Segoe UI', 'Inter', -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    min-height: 100vh;
-    background-attachment: fixed;
+    font-family: 'Tahoma', 'Verdana', sans-serif;
+    background-color: #004E98; /* XP Desktop Blue */
+    background-image: url('https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png'); /* Bliss wallpaper */
     background-size: cover;
-}
-
-.sidebar {
-    width: 280px;
-    background: var(--sidebar-bg);
-    backdrop-filter: var(--mica-blur);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    background-attachment: fixed;
+    color: var(--xp-text);
     display: flex;
     flex-direction: column;
-    padding: 20px 0;
-    position: fixed;
-    height: 100vh;
-    z-index: 100;
+    min-height: 100vh;
 }
 
-.sidebar-brand {
-    padding: 0 20px 20px;
+.xp-container {
     display: flex;
-    align-items: center;
+    flex: 1;
+    padding: 10px;
     gap: 10px;
 }
 
-.sidebar-brand img {
-    height: 40px;
+.sidebar {
+    width: 240px;
+    background: linear-gradient(to bottom, #7BA2E7 0%, #638AD9 100%);
+    border: 1px solid var(--xp-border);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
 }
 
-.nav-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.sidebar-header {
+    background: linear-gradient(to right, #0058e3 0%, #00a0ef 100%);
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.nav-item {
-    margin: 4px 12px;
+.sidebar-nav {
+    padding: 10px;
+}
+
+.nav-group {
+    background: white;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #99BBE7;
+    overflow: hidden;
+}
+
+.nav-group-header {
+    background: linear-gradient(to right, #E0E9F9 0%, #BDD2F1 100%);
+    padding: 5px 10px;
+    font-weight: bold;
+    color: #215DC6;
+    font-size: 12px;
+    border-bottom: 1px solid #99BBE7;
 }
 
 .nav-link {
-    display: flex;
-    align-items: center;
-    padding: 10px 16px;
+    display: block;
+    padding: 6px 15px;
+    color: #215DC6;
     text-decoration: none;
-    color: var(--text-color);
-    border-radius: 4px;
-    transition: background 0.2s;
+    font-size: 11px;
 }
 
 .nav-link:hover {
-    background: rgba(0, 0, 0, 0.05);
+    text-decoration: underline;
 }
 
-.nav-link.active {
-    background: rgba(0, 0, 0, 0.05);
-    position: relative;
-}
-
-.nav-link.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 10px;
-    bottom: 10px;
-    width: 3px;
-    background: var(--accent-color);
-    border-radius: 2px;
-}
-
-.main-content {
+.main-window {
     flex: 1;
-    margin-left: 280px;
-    padding: 40px;
+    background: var(--xp-bg);
+    border: 3px solid var(--xp-blue);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.4);
 }
 
-.card {
-    background: var(--card-bg);
-    backdrop-filter: var(--mica-blur);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: var(--border-radius);
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-h1, h2, h3 {
-    margin-top: 0;
-}
-
-.btn {
-    background: var(--accent-color);
+.title-bar {
+    background: linear-gradient(to bottom, #0058e3 0%, #00a0ef 4%, #0058e3 6%, #0058e3 43%, #0046b4 54%, #0058e3 100%);
+    padding: 3px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    font-weight: bold;
+    text-shadow: 1px 1px #000;
+}
+
+.title-bar-text {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.title-bar-controls {
+    display: flex;
+    gap: 2px;
+}
+
+.control-btn {
+    width: 21px;
+    height: 21px;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 14px;
-    transition: opacity 0.2s;
+    background: linear-gradient(to bottom, #4a8eff 0%, #0055e5 100%);
 }
 
-.btn:hover {
-    opacity: 0.9;
+.control-btn.close {
+    background: linear-gradient(to bottom, #e76339 0%, #c13511 100%);
 }
 
-.form-group {
-    margin-bottom: 20px;
+.window-body {
+    background: white;
+    flex: 1;
+    margin: 2px;
+    padding: 20px;
+    overflow-y: auto;
+    border: 1px solid #7F9DB9;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
-.form-control {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+.xp-card {
+    border: 1px solid #D5D5D5;
+    background: #F9F9F9;
+    padding: 15px;
+    margin-bottom: 15px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.5);
-    font-size: 14px;
+}
+
+.xp-btn {
+    border: 1px solid #003ca5;
+    background: linear-gradient(to bottom, #ffffff 0%, #ebebeb 50%, #dbdbdb 51%, #dcdcdc 100%);
+    padding: 5px 15px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.xp-btn:active {
+    background: #dbdbdb;
+}
+
+.xp-btn-primary {
+    background: linear-gradient(to bottom, #89d66d 0%, #3c813f 100%);
+    color: white;
+    border-color: #2d6130;
+    font-weight: bold;
+}
+
+.taskbar {
+    height: 30px;
+    background: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #245edb 92%, #1941a5 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+    z-index: 1000;
+}
+
+.start-btn {
+    background: linear-gradient(to bottom, #3c813f 0%, #52ad56 10%, #3c813f 20%, #3c813f 90%, #2d6130 100%);
+    color: white;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 2px 15px;
+    border-radius: 0 10px 10px 0;
+    border: none;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.taskbar-item {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(0,0,0,0.2);
+    color: white;
+    font-size: 11px;
+    padding: 3px 10px;
+    margin-left: 5px;
+    border-radius: 3px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 @media (max-width: 768px) {
-    body {
+    .xp-container {
         flex-direction: column;
     }
     .sidebar {
         width: 100%;
-        height: auto;
-        position: relative;
-        padding: 10px 0;
-    }
-    .main-content {
-        margin-left: 0;
-        padding: 20px;
-    }
-    .nav-menu {
-        display: flex;
-        overflow-x: auto;
-    }
-    .nav-item {
-        margin: 0 4px;
-        white-space: nowrap;
     }
 }

@@ -1,74 +1,52 @@
 <?php include 'includes/header.php'; ?>
 
-<h1>Бронирование путёвки</h1>
-<p>Заполните форму ниже, и наши специалисты свяжутся с вами для подтверждения бронирования.</p>
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="xp-card">
+        <h2 style="color: #215DC6; margin-top: 0; border-bottom: 1px solid #BDD2F1;">Мастер бронирования</h2>
+        <p style="font-size: 11px;">Пожалуйста, заполните все обязательные поля (*).</p>
 
-<div class="card" style="max-width: 600px; margin: 0 auto;">
-    <form id="bookingForm" method="POST">
-        <div class="form-group">
-            <label for="fio">Ф.И.О. *</label>
-            <input type="text" id="fio" name="fio" class="form-control" required placeholder="Введите ваше полное имя">
+        <form id="bookingForm" method="POST" style="margin-top: 20px;">
+            <div style="display: grid; grid-template-columns: 100px 1fr; gap: 15px; align-items: center;">
+                <label style="font-size: 11px;">Ф.И.О. *</label>
+                <input type="text" name="fio" required style="border: 1px solid #7F9DB9; padding: 2px;">
+
+                <label style="font-size: 11px;">Дата заезда *</label>
+                <input type="date" name="arrival_date" required style="border: 1px solid #7F9DB9; padding: 2px;">
+
+                <label style="font-size: 11px;">Тип путевки</label>
+                <select name="voucher_type" style="border: 1px solid #7F9DB9; padding: 2px;">
+                    <option value="medical">Лечебно-оздоровительная (15 дн)</option>
+                    <option value="wellness">Оздоровительная (15 дн)</option>
+                    <option value="weekend">Тур выходного дня (2 дн)</option>
+                </select>
+
+                <label style="font-size: 11px;">Номер</label>
+                <select name="room_category" style="border: 1px solid #7F9DB9; padding: 2px;">
+                    <option value="single">Однокомнатный</option>
+                    <option value="lux">Люкс</option>
+                </select>
+
+                <label style="font-size: 11px;">Телефон *</label>
+                <input type="tel" name="phone" required placeholder="+375" style="border: 1px solid #7F9DB9; padding: 2px;">
+            </div>
+
+            <div style="margin-top: 20px; text-align: right; border-top: 1px solid #BDD2F1; padding-top: 15px;">
+                <button type="submit" class="xp-btn xp-btn-primary" style="min-width: 80px;">Далее ></button>
+                <button type="reset" class="xp-btn" style="min-width: 80px;">Отмена</button>
+            </div>
+        </form>
+
+        <div id="formMessage" style="display: none; margin-top: 15px; padding: 10px; background: #DFF0D8; border: 1px solid #D6E9C6; color: #3C763D; font-size: 11px;">
+            Заявка успешно отправлена!
         </div>
-
-        <div class="form-group">
-            <label for="arrival_date">Дата заезда *</label>
-            <input type="date" id="arrival_date" name="arrival_date" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="voucher_type">Вариант путевки</label>
-            <select id="voucher_type" name="voucher_type" class="form-control">
-                <option value="medical">Путевки с лечебно-оздоровительными процедурами (15 дн)</option>
-                <option value="wellness">Путевки с оздоровительными процедурами (15 дн)</option>
-                <option value="weekend">Тур выходного дня (2-3 дн)</option>
-                <option value="custom">Произвольный выбор</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="room_category">Категория номера</label>
-            <select id="room_category" name="room_category" class="form-control">
-                <option value="single">Двухместный однокомнатный номер</option>
-                <option value="lux2">Двухкомнатный двухместный номер «ЛЮКС»</option>
-                <option value="lux3">Трехкомнатный двухместный номер «ЛЮКС»</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="days_count">Количество дней</label>
-            <input type="number" id="days_count" name="days_count" class="form-control" min="1" value="15">
-        </div>
-
-        <div class="form-group">
-            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="is_resident" name="is_resident" value="yes" checked>
-                Резидент Республики Беларусь
-            </label>
-        </div>
-
-        <div class="form-group">
-            <label for="phone">Контактный телефон *</label>
-            <input type="tel" id="phone" name="phone" class="form-control" required placeholder="+375 (__) ___-__-__">
-        </div>
-
-        <div id="formMessage" style="margin-bottom: 20px; padding: 10px; border-radius: 4px; display: none;"></div>
-
-        <button type="submit" class="btn" style="width: 100%; font-size: 16px;">Забронировать</button>
-    </form>
+    </div>
 </div>
 
 <script>
 document.getElementById('bookingForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    const msg = document.getElementById('formMessage');
-    msg.style.display = 'block';
-    msg.style.backgroundColor = '#d4edda';
-    msg.style.color = '#155724';
-    msg.textContent = 'Спасибо! Ваша заявка принята. Мы свяжемся с вами в ближайшее время.';
+    document.getElementById('formMessage').style.display = 'block';
     this.reset();
-
-    // Smooth scroll to message
-    msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 </script>
 

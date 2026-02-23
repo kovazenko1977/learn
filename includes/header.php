@@ -3,12 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Санаторий Березина - Веб-приложение</title>
+    <title>Санаторий Березина - Windows Internet Explorer</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2e7d32">
-    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <meta name="theme-color" content="#245edb">
+    <link rel="apple-touch-icon" href="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png">
 </head>
 <body>
-<?php include 'sidebar.php'; ?>
-<main class="main-content">
+
+<div class="xp-container">
+    <?php include 'sidebar.php'; ?>
+
+    <div class="main-window">
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" style="height:16px;">
+                Санаторий "Березина" - Microsoft Internet Explorer
+            </div>
+            <div class="title-bar-controls">
+                <div class="control-btn">_</div>
+                <div class="control-btn">□</div>
+                <div class="control-btn close">X</div>
+            </div>
+        </div>
+        <div class="window-body">

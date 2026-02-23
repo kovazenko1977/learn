@@ -1,151 +1,100 @@
 <?php include 'includes/header.php'; ?>
 
-<h1>Экспресс-диагностика</h1>
-<p>Пошаговый опрос в формате санаторно-курортного приёма. В конце вы получите предварительные рекомендации.</p>
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="xp-card" style="padding: 0;">
+        <div style="background: white; border-bottom: 1px solid #7F9DB9; padding: 20px; display: flex; gap: 20px;">
+            <div style="width: 150px; background: linear-gradient(to bottom, #7BA2E7 0%, #638AD9 100%); color: white; padding: 10px; font-weight: bold; font-size: 14px;">
+                Мастер диагностики
+            </div>
+            <div style="flex: 1;">
+                <h2 style="margin: 0; font-size: 18px;">Шаг <span id="stepNum">1</span> из 5</h2>
+                <p style="font-size: 11px; color: #666;" id="stepTitle">Общие данные</p>
+            </div>
+        </div>
 
-<div class="card" id="diagnostics-container" style="max-width: 700px; margin: 0 auto; min-height: 400px; display: flex; flex-direction: column;">
-    <!-- Step Indicators -->
-    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-        <span class="step-indicator active" data-step="1">1. Общие</span>
-        <span class="step-indicator" data-step="2">2. Жалобы</span>
-        <span class="step-indicator" data-step="3">3. Симптомы</span>
-        <span class="step-indicator" data-step="4">4. Риски</span>
-        <span class="step-indicator" data-step="5">5. Итог</span>
+        <form id="diagForm" style="padding: 20px;">
+            <div id="step-1" class="step-content">
+                <p>Укажите вашу базовую информацию:</p>
+                <div style="margin-bottom: 10px;">
+                    <label style="display: block; font-size: 11px;">Возраст:</label>
+                    <input type="number" class="form-control" style="width: 100px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 11px;">Цель пребывания:</label>
+                    <select class="form-control">
+                        <option>Лечение</option>
+                        <option>Профилактика</option>
+                        <option>Отдых</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="step-2" class="step-content" style="display:none;">
+                <p>Что вас беспокоит?</p>
+                <label style="display: block; font-size: 11px;"><input type="checkbox"> Сердце / Давление</label>
+                <label style="display: block; font-size: 11px;"><input type="checkbox"> Суставы / Спина</label>
+                <label style="display: block; font-size: 11px;"><input type="checkbox"> Стресс / Сон</label>
+                <label style="display: block; font-size: 11px;"><input type="checkbox"> Органы дыхания</label>
+            </div>
+
+            <div id="step-3" class="step-content" style="display:none;">
+                <p>Детализация симптомов:</p>
+                <label style="display: block; font-size: 11px;">Частота жалоб:</label>
+                <select class="form-control"><option>Редко</option><option>Часто</option><option>Постоянно</option></select>
+            </div>
+
+            <div id="step-4" class="step-content" style="display:none;">
+                <p>Факторы риска:</p>
+                <label style="display: block; font-size: 11px;"><input type="checkbox"> Курение</label>
+                <label style="display: block; font-size: 11px;"><input type="checkbox"> Малоподвижный образ жизни</label>
+            </div>
+
+            <div id="step-5" class="step-content" style="display:none;">
+                <p>Готово! Нажмите "Завершить", чтобы получить результат.</p>
+                <div id="result-box" style="display:none; padding: 10px; border: 1px solid #7F9DB9; background: #FFFFE1;">
+                    <strong>Рекомендация:</strong><br>
+                    Программа "Здоровое сердце". Рекомендуемые процедуры: ванны с бишофитом, магнитотерапия ОртоСПОК.
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: right; border-top: 1px solid #BDD2F1; padding-top: 15px;">
+                <button type="button" class="xp-btn" id="prevBtn" style="display: none; min-width: 80px;">< Назад</button>
+                <button type="button" class="xp-btn xp-btn-primary" id="nextBtn" style="min-width: 80px;">Далее ></button>
+            </div>
+        </form>
     </div>
-
-    <form id="diagForm">
-        <!-- Step 1 -->
-        <div class="step-content" id="step-1">
-            <h3>Этап 1 — Общие данные</h3>
-            <div class="form-group">
-                <label for="age">Ваш возраст</label>
-                <input type="number" id="age" class="form-control" placeholder="Например, 65">
-            </div>
-            <div class="form-group">
-                <label>Основная цель пребывания</label>
-                <select class="form-control">
-                    <option>Лечение хронических заболеваний</option>
-                    <option>Профилактика и укрепление здоровья</option>
-                    <option>Восстановление после болезни/операции</option>
-                    <option>Оздоровление и внешний вид</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Образ жизни</label>
-                <select class="form-control">
-                    <option>Низкая активность (сидячая работа)</option>
-                    <option>Умеренная активность</option>
-                    <option>Высокая активность</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="step-content" id="step-2" style="display:none;">
-            <h3>Этап 2 — Основные жалобы</h3>
-            <p>Отметьте беспокоящие вас направления:</p>
-            <div class="form-group">
-                <label><input type="checkbox"> Сердечно-сосудистые (давление, сердце, отеки)</label><br>
-                <label><input type="checkbox"> Нервная система (стресс, головные боли, сон)</label><br>
-                <label><input type="checkbox"> Органы дыхания (кашель, одышка)</label><br>
-                <label><input type="checkbox"> Кожные проявления</label><br>
-                <label><input type="checkbox"> ЖКТ и обмен веществ</label><br>
-                <label><input type="checkbox"> Косметология и внешний вид</label>
-            </div>
-        </div>
-
-        <!-- Step 3 -->
-        <div class="step-content" id="step-3" style="display:none;">
-            <h3>Этап 3 — Подробные симптомы</h3>
-            <div class="form-group">
-                <label>Бывают ли у вас эпизоды повышенного давления?</label>
-                <select class="form-control"><option>Нет</option><option>Редко</option><option>Часто</option></select>
-            </div>
-            <div class="form-group">
-                <label>Ощущаете ли вы хронический стресс?</label>
-                <select class="form-control"><option>Нет</option><option>Иногда</option><option>Постоянно</option></select>
-            </div>
-            <div class="form-group">
-                <label>Беспокоят ли боли в суставах?</label>
-                <select class="form-control"><option>Нет</option><option>При нагрузке</option><option>По утрам</option></select>
-            </div>
-        </div>
-
-        <!-- Step 4 -->
-        <div class="step-content" id="step-4" style="display:none;">
-            <h3>Этап 4 — Факторы риска</h3>
-            <div class="form-group">
-                <label><input type="checkbox"> Курение</label><br>
-                <label><input type="checkbox"> Наследственность (сердечные заболевания у близких)</label><br>
-                <label><input type="checkbox"> Нарушенный режим питания</label><br>
-                <label><input type="checkbox"> Нарушенный режим сна</label>
-            </div>
-        </div>
-
-        <!-- Step 5 -->
-        <div class="step-content" id="step-5" style="display:none;">
-            <h3>Этап 5 — Подтверждение</h3>
-            <p>Данные экспресс-диагностики не заменяют очную консультацию врача, но помогают структурировать ваш запрос.</p>
-            <div id="result-box" style="display:none; padding: 20px; background: rgba(46, 125, 50, 0.1); border-radius: 8px; margin-top: 20px;">
-                <h4>Ваше предварительное заключение:</h4>
-                <p>Рекомендуемый профиль: <strong>Общеоздоровительный с акцентом на сердечно-сосудистую систему.</strong></p>
-                <p>Рекомендуемые процедуры: Ванны лечебные, Магнитотерапия, Спелеотерапия.</p>
-            </div>
-        </div>
-
-        <div style="margin-top: auto; display: flex; justify-content: space-between; padding-top: 20px;">
-            <button type="button" class="btn" id="prevBtn" style="background: #ccc; display: none;">Назад</button>
-            <button type="button" class="btn" id="nextBtn">Далее</button>
-        </div>
-    </form>
 </div>
-
-<style>
-.step-indicator { opacity: 0.5; font-size: 14px; font-weight: 500; }
-.step-indicator.active { opacity: 1; color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
-</style>
 
 <script>
 let currentStep = 1;
-const totalSteps = 5;
+const titles = ["Общие данные", "Основные жалобы", "Подробные симптомы", "Факторы риска", "Результат"];
 
-const nextBtn = document.getElementById('nextBtn');
-const prevBtn = document.getElementById('prevBtn');
-
-nextBtn.addEventListener('click', () => {
-    if (currentStep < totalSteps) {
-        document.getElementById(`step-${currentStep}`).style.display = 'none';
-        document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.remove('active');
+document.getElementById('nextBtn').onclick = function() {
+    if (currentStep < 5) {
+        document.getElementById('step-' + currentStep).style.display = 'none';
         currentStep++;
-        document.getElementById(`step-${currentStep}`).style.display = 'block';
-        document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.add('active');
-
-        prevBtn.style.display = 'block';
-        if (currentStep === totalSteps) {
-            nextBtn.textContent = 'Запустить анализ';
-        }
+        document.getElementById('step-' + currentStep).style.display = 'block';
+        document.getElementById('stepNum').textContent = currentStep;
+        document.getElementById('stepTitle').textContent = titles[currentStep-1];
+        document.getElementById('prevBtn').style.display = 'inline-block';
+        if (currentStep === 5) this.textContent = 'Завершить';
     } else {
-        // Run analysis
         document.getElementById('result-box').style.display = 'block';
-        nextBtn.style.display = 'none';
-        prevBtn.textContent = 'Пройти заново';
-        prevBtn.onclick = () => location.reload();
+        this.style.display = 'none';
     }
-});
+};
 
-prevBtn.addEventListener('click', () => {
+document.getElementById('prevBtn').onclick = function() {
     if (currentStep > 1) {
-        document.getElementById(`step-${currentStep}`).style.display = 'none';
-        document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.remove('active');
+        document.getElementById('step-' + currentStep).style.display = 'none';
         currentStep--;
-        document.getElementById(`step-${currentStep}`).style.display = 'block';
-        document.querySelector(`.step-indicator[data-step="${currentStep}"]`).classList.add('active');
-
-        if (currentStep === 1) prevBtn.style.display = 'none';
-        nextBtn.textContent = 'Далее';
-        nextBtn.style.display = 'block';
+        document.getElementById('step-' + currentStep).style.display = 'block';
+        document.getElementById('stepNum').textContent = currentStep;
+        document.getElementById('stepTitle').textContent = titles[currentStep-1];
+        document.getElementById('nextBtn').textContent = 'Далее >';
+        if (currentStep === 1) this.style.display = 'none';
     }
-});
+};
 </script>
 
 <?php include 'includes/footer.php'; ?>
