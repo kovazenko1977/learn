@@ -1,6 +1,35 @@
     </div> <!-- desktop-main -->
 </div> <!-- xp-container -->
 
+<!-- Android Style Bottom Navigation -->
+<nav class="mobile-nav">
+    <a href="index.php" class="mobile-nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">
+        <img src="https://img.icons8.com/fluency/48/000000/home.png">
+        <span>Главная</span>
+    </a>
+    <a href="procedures.php" class="mobile-nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'procedures.php') ? 'active' : ''; ?>">
+        <img src="https://img.icons8.com/fluency/48/000000/syringe.png">
+        <span>Услуги</span>
+    </a>
+    <a href="booking.php" class="mobile-nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'booking.php') ? 'active' : ''; ?>">
+        <img src="https://img.icons8.com/fluency/48/000000/calendar.png">
+        <span>Запись</span>
+    </a>
+    <a href="contact.php" class="mobile-nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'contact.php') ? 'active' : ''; ?>">
+        <img src="https://img.icons8.com/fluency/48/000000/address-book.png">
+        <span>Инфо</span>
+    </a>
+</nav>
+
+<!-- PWA Install Banner -->
+<div id="install-banner">
+    <span>Установить как приложение?</span>
+    <div style="display: flex; gap: 8px;">
+        <button id="install-btn">Установить</button>
+        <button onclick="this.parentElement.parentElement.style.display='none'" style="background:transparent; border:1px solid white;">Позже</button>
+    </div>
+</div>
+
 <div class="taskbar">
     <div class="taskbar-center-group">
         <button class="start-button" title="Пуск">

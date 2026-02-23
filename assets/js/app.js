@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    if (isMobile) {
+        document.body.classList.add('mobile-mode');
+    }
+
     const startButton = document.querySelector('.start-button');
     const sidebar = document.getElementById('sidebar');
 
@@ -6,6 +12,32 @@ document.addEventListener('DOMContentLoaded', function() {
         startButton.addEventListener('click', function(e) {
             sidebar.classList.toggle('active');
             e.stopPropagation();
+        });
+    }
+
+    // PWA Install Prompt handling
+    let deferredPrompt;
+    const installBanner = document.getElementById('install-banner');
+    const installBtn = document.getElementById('install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (isMobile && installBanner) {
+            installBanner.style.display = 'flex';
+        }
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBanner.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
         });
     }
 
