@@ -1,18 +1,17 @@
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('Service Worker registered'))
-      .catch(err => console.log('Service Worker registration failed', err));
-  });
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const startButton = document.querySelector('.start-button');
+    const sidebar = document.getElementById('sidebar');
 
-// Global active link handling
-document.addEventListener('DOMContentLoaded', () => {
-    const currentPath = window.location.pathname.split('/').pop() || 'index.php';
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
+    if (startButton && sidebar) {
+        startButton.addEventListener('click', function(e) {
+            sidebar.classList.toggle('active');
+            e.stopPropagation();
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (sidebar && sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== startButton) {
+            sidebar.classList.remove('active');
         }
     });
 });

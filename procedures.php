@@ -1,81 +1,130 @@
 <?php include 'includes/header.php'; ?>
 
-<h1 style="color: #215DC6; border-bottom: 2px solid #BDD2F1; padding-bottom: 5px;">Лечение и процедуры в санатории "Березина"</h1>
-<p>Ознакомьтесь с подробным перечнем медицинских услуг, предоставляемых нашим учреждением.</p>
-
-<div class="xp-card">
-    <h2 style="color: #c13511;">🫀 Сердечно-сосудистая система</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        <div class="xp-card" style="background: white;">
-            <img src="https://gu-berezina.by/wp-content/uploads/2026/01/подари-родителям-300x247.png" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 10px;">
-            <h4>Сухие углекислые ванны</h4>
-            <p style="font-size: 12px;">Эффективность ванн определяется влиянием на организм углекислоты, которая расширяет крупные артерии, вены и капилляры, улучшая кровообращение.</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Неинвазивное лазерное облучение крови</h4>
-            <p style="font-size: 12px;">Надвенное лазерное воздействие на кровь улучшает реологические свойства крови, активирует транспорт кислорода и повышает иммунитет.</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Магнитотерапия на аппарате ОртоСПОК</h4>
-            <p style="font-size: 12px;">Обладает седативным, иммуномодулирующим и противоотечным эффектами. Показана при гипертонической болезни и ангиопатиях.</p>
+<div class="window">
+    <div class="title-bar">
+        <div class="title-bar-text">Лечебные процедуры - Проводник</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='index.php'"></button>
         </div>
     </div>
-</div>
 
-<div class="xp-card">
-    <h2 style="color: #2d6130;">🧠 Нервная система</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        <div class="xp-card" style="background: white;">
-            <h4>Четырехкамерные гальванические ванны</h4>
-            <p style="font-size: 12px;">Вид гидротерапии, основанный на воздействии воды и электрического тока на конечности. Стимулирует кровообращение и нервную проводимость.</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Гипербарическая оксигенация (Барокамера)</h4>
-            <p style="font-size: 12px;">Метод лечения кислородом под повышенным давлением. Ликвидирует кислородную недостаточность в тканях и органах.</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Подводный душ-массаж</h4>
-            <p style="font-size: 12px;">Ускоряет процессы метаболизма, выводит шлаки и токсины, улучшает лимфатический дренаж.</p>
-        </div>
+    <div class="window-body" style="display: flex; flex-direction: row; height: calc(100% - 30px); margin: 0; padding: 0;">
+        <!-- Sidebar Explorer Style -->
+        <aside class="explorer-sidebar">
+            <div class="explorer-group">
+                <div class="explorer-group-header">Системные задачи</div>
+                <div class="explorer-group-body">
+                    <a href="booking.php" class="explorer-link">Записаться на прием</a>
+                    <a href="diagnostics.php" class="explorer-link">Пройти диагностику</a>
+                </div>
+            </div>
+
+            <div class="explorer-group">
+                <div class="explorer-group-header">Категории</div>
+                <div class="explorer-group-body">
+                    <a href="#cardio" class="explorer-link">Сердечно-сосудистые</a>
+                    <a href="#nerve" class="explorer-link">Нервная система</a>
+                    <a href="#respiratory" class="explorer-link">Органы дыхания</a>
+                    <a href="#muscle" class="explorer-link">Костно-мышечная</a>
+                    <a href="#skin" class="explorer-link">Кожные заболевания</a>
+                    <a href="#cosmetic" class="explorer-link">Косметология</a>
+                    <a href="#special" class="explorer-link">Спецпредложения (Vacumed)</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Explorer Style -->
+        <main class="explorer-content" style="overflow-y: auto; padding: 20px;">
+            <h2 id="cardio">Сердечно-сосудистая система</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2026/01/Screenshot_4-1.png" alt="Ванны">
+                    <h3>Лечебные ванны</h3>
+                    <p>Жемчужные, хвойные и минеральные ванны для укрепления сосудов и нормализации давления.</p>
+                </div>
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2026/01/Screenshot_3-1.png" alt="Душ">
+                    <h3>Циркулярный душ</h3>
+                    <p>Интенсивное воздействие струй воды улучшает кровообращение и тонус организма.</p>
+                </div>
+            </div>
+
+            <h2 id="nerve">Нервная система</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2026/01/Screenshot_2-2.png" alt="Массаж">
+                    <h3>Лечебный массаж</h3>
+                    <p>Классический и аппаратный массаж для снятия мышечного напряжения и стресса.</p>
+                </div>
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_7-removebg-preview.png" alt="Сон">
+                    <h3>Электросон</h3>
+                    <p>Воздействие импульсных токов для нормализации сна и психоэмоционального состояния.</p>
+                </div>
+            </div>
+
+            <h2 id="respiratory">Органы дыхания</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2026/01/подари-родителям-300x247.png" alt="Галотерапия">
+                    <h3>Галотерапия</h3>
+                    <p>Пребывание в соляной комнате для очищения дыхательных путей и укрепления иммунитета.</p>
+                </div>
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" alt="Ингаляции">
+                    <h3>Ингаляции</h3>
+                    <p>Лекарственные и травяные ингаляции для лечения хронических бронхитов.</p>
+                </div>
+            </div>
+
+            <h2 id="muscle">Костно-мышечная система</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/e1zb4ekmx5rmw0cvc7wrec3d10-1024x578.png" alt="Грязелечение">
+                    <h3>Грязелечение</h3>
+                    <p>Аппликации сапропелевых грязей для лечения суставов и позвоночника.</p>
+                </div>
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/линия-removebg-preview-300x58.png" alt="Парафин">
+                    <h3>Парафино-озокерит</h3>
+                    <p>Теплолечение для улучшения подвижности суставов и снятия боли.</p>
+                </div>
+            </div>
+
+            <h2 id="skin">Кожные заболевания</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Copilot_20251228_012015-683x1024.png" alt="Светолечение">
+                    <h3>Светолечение (Биоптрон)</h3>
+                    <p>Поляризованный свет для лечения псориаза, экзем и ускорения заживления ран.</p>
+                </div>
+            </div>
+
+            <h2 id="cosmetic">Косметология</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" alt="Уход">
+                    <h3>Эстетическая косметология</h3>
+                    <p>Процедуры по уходу за кожей лица и тела, омолаживающие маски и пилинги.</p>
+                </div>
+            </div>
+
+            <h2 id="special">Специализированное лечение</h2>
+            <div class="procedure-grid">
+                <div class="procedure-card">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_7-removebg-preview.png" alt="Vacumed">
+                    <h3>Аппарат VACUMED</h3>
+                    <p>Интервальная вакуумная терапия для улучшения лимфодренажа и кровоснабжения нижних конечностей.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding: 15px; background: #ffffcc; border: 1px solid #e6db55;">
+                <strong>💡 Важно:</strong> Все процедуры назначаются врачом после первичного осмотра и ознакомления с вашей санаторно-курортной картой.
+            </div>
+        </main>
     </div>
-</div>
-
-<div class="xp-card">
-    <h2 style="color: #003ca5;">🦴 Костно-мышечная система</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        <div class="xp-card" style="background: white;">
-            <h4>Нафталановые ванны</h4>
-            <p style="font-size: 12px;">Используются со времен Средневековья. Нафталанская нефть обладает уникальными лечебными свойствами для кожи и суставов.</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Локальная криотерапия</h4>
-            <p style="font-size: 12px;">Воздействие сверхнизкими температурами на определенные участки тела для снятия боли и воспаления.</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Стоун-массаж</h4>
-            <p style="font-size: 12px;">Массаж горячими камнями способствует глубокому расслаблению мышц и снятию стресса.</p>
-        </div>
-    </div>
-</div>
-
-<div class="xp-card">
-    <h2 style="color: #555;">🫁 Органы дыхания</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
-        <div class="xp-card" style="background: white;">
-            <h4>Спелеотерапия</h4>
-            <p style="font-size: 12px;">Лечение в камере, облицованной природными соляными рудами Старобинского месторождения (галитовые и сильвинитовые руды).</p>
-        </div>
-        <div class="xp-card" style="background: white;">
-            <h4>Аэроионотерапия (Люстра Чижевского)</h4>
-            <p style="font-size: 12px;">Снижает артериальное давление, обладает успокаивающим действием и улучшает доставку кислорода к тканям.</p>
-        </div>
-    </div>
-</div>
-
-<div class="xp-card" style="text-align: center;">
-    <h3>Желаете получить индивидуальную программу?</h3>
-    <p>Пройдите экспресс-диагностику прямо сейчас!</p>
-    <a href="diagnostics.php" class="xp-btn xp-btn-primary" style="text-decoration: none; display: inline-block;">Начать диагностику</a>
 </div>
 
 <?php include 'includes/footer.php'; ?>

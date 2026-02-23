@@ -12,18 +12,6 @@
 <body>
 
 <div class="xp-container">
-    <?php include 'sidebar.php'; ?>
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
-    <div class="main-window">
-        <div class="title-bar">
-            <div class="title-bar-text">
-                <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" style="height:16px;">
-                Санаторий "Березина" - Microsoft Internet Explorer
-            </div>
-            <div class="title-bar-controls">
-                <div class="control-btn">_</div>
-                <div class="control-btn">□</div>
-                <div class="control-btn close">X</div>
-            </div>
-        </div>
-        <div class="window-body">
+    <div class="desktop-main">

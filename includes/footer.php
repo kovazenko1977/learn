@@ -1,9 +1,8 @@
-        </div> <!-- window-body -->
-    </div> <!-- main-window -->
+    </div> <!-- desktop-main -->
 </div> <!-- xp-container -->
 
 <div class="taskbar">
-    <button class="start-btn">
+    <button class="start-button">
         <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" style="height:20px;">
         пуск
     </button>

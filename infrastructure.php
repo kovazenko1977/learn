@@ -1,0 +1,50 @@
+<?php include 'includes/header.php'; ?>
+
+<div class="window">
+    <div class="title-bar">
+        <div class="title-bar-text">Инфраструктура и Территория</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='index.php'"></button>
+        </div>
+    </div>
+
+    <div class="window-body" style="padding: 20px; overflow-y: auto;">
+        <section>
+            <h2>Природные лечебные факторы</h2>
+            <p>Санаторий расположен на площади <strong>11 гектаров</strong> в живописном сосновом бору на берегу реки Березина.</p>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px;">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_7-removebg-preview.png" alt="Лес" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid #7cb7f1;">
+                    <p><strong>Хвойный фитонцид:</strong> Воздух нашего леса насыщен природными антибиотиками, которые укрепляют легкие и уничтожают болезнетворные бактерии.</p>
+                </div>
+                <div style="flex: 1; min-width: 250px;">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Copilot_20251228_012015-683x1024.png" alt="Река" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid #7cb7f1;">
+                    <p><strong>Река Березина:</strong> Умиротворяющий вид на воду и обустроенная набережная способствуют психологической разгрузке.</p>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-top: 30px;">
+            <h2>Бассейн и Сауна</h2>
+            <div style="background: #eef3fa; padding: 15px; border-left: 5px solid #0055e5;">
+                <p><strong>Бассейн:</strong> Размеры 9 x 3.4 м, глубина от 1.2 до 1.75 м. Температура воды поддерживается на уровне 28–30 °C.</p>
+                <p><strong>Сауна:</strong> Отличное место для терморегуляции, снятия стресса и укрепления иммунитета.</p>
+            </div>
+        </section>
+
+        <section style="margin-top: 30px;">
+            <h2>Дополнительные услуги</h2>
+            <ul>
+                <li>Библиотека с богатым книжным фондом</li>
+                <li>Танцевальный зал для вечерних мероприятий</li>
+                <li>Спортивные площадки на открытом воздухе</li>
+                <li>Тренажерный зал</li>
+                <li>Пункт проката (велосипеды, лыжи)</li>
+            </ul>
+        </section>
+    </div>
+</div>
+
+<?php include 'includes/footer.php'; ?>

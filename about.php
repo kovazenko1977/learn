@@ -1,0 +1,39 @@
+<?php include 'includes/header.php'; ?>
+
+<div class="window">
+    <div class="title-bar">
+        <div class="title-bar-text">О санатории - Блокнот</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='index.php'"></button>
+        </div>
+    </div>
+
+    <div class="window-body" style="padding: 20px; overflow-y: auto;">
+        <h1>Республиканский санаторий «БЕРЕЗИНА»</h1>
+        <p>Наше учреждение предназначено для лечения и оздоровления ветеранов войны, труда и инвалидов. Мы гордимся своей историей и высоким качеством медицинского обслуживания.</p>
+
+        <h3>Наша миссия</h3>
+        <p>Обеспечение доступного и эффективного оздоровления граждан, укрепление здоровья нации через сочетание современных медицинских технологий и природных лечебных факторов.</p>
+
+        <h3>Расположение</h3>
+        <p>Санаторий находится в Минской области, Борисовском районе, в живописном месте на берегу реки Березина. Вокруг — вековой сосновый лес, создающий уникальный микроклимат.</p>
+
+        <div style="margin-top: 20px;">
+            <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" alt="Вид" style="width: 100%; max-width: 600px; border: 1px solid #ccc;">
+        </div>
+
+        <h3 style="margin-top: 30px;">Основные направления деятельности:</h3>
+        <ul>
+            <li>Кардиология (болезни системы кровообращения)</li>
+            <li>Неврология (болезни нервной системы)</li>
+            <li>Пульмонология (болезни органов дыхания)</li>
+            <li>Травматология и ортопедия (болезни костно-мышечной системы)</li>
+        </ul>
+
+        <p style="margin-top: 20px;">Мы всегда рады новым гостям и делаем всё возможное, чтобы ваше пребывание у нас было максимально полезным и приятным.</p>
+    </div>
+</div>
+
+<?php include 'includes/footer.php'; ?>
