@@ -150,8 +150,20 @@ require_once __DIR__ . '/includes/header.php';
 
     <div style="display: flex; flex-direction: column; gap: 24px;">
         <div class="card mica-effect">
-            <h3 style="margin-bottom: 20px;"><i data-lucide="activity" class="icon"></i> План лечения</h3>
-            <table style="font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0;"><i data-lucide="activity" class="icon"></i> План лечения</h3>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-size: 0.8rem; color: var(--win-text-secondary);">Показывать по:</label>
+                    <select id="pagination-limit" style="padding: 4px 8px; font-size: 0.8rem;">
+                        <option value="19">19</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">Все</option>
+                    </select>
+                </div>
+            </div>
+            <table style="font-size: 0.9rem;" id="appointments-table">
                 <thead>
                     <tr>
                         <th>Процедура</th>
@@ -162,7 +174,7 @@ require_once __DIR__ . '/includes/header.php';
                 </thead>
                 <tbody>
                     <?php foreach (array_reverse($appointments) as $app): ?>
-                    <tr>
+                    <tr class="appointment-row">
                         <td style="font-weight: 500;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
                         <td><?php echo $app['date']; ?> <span style="color: var(--win-text-secondary);"><?php echo $app['time']; ?></span></td>
                         <td>
@@ -351,5 +363,27 @@ function selectMKB(code, name) {
     document.getElementById('mkb_results').style.display = 'none';
     document.getElementById('mkb_search').value = '';
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const limitSelect = document.getElementById('pagination-limit');
+    const table = document.getElementById('appointments-table');
+    const rows = Array.from(table.querySelectorAll('.appointment-row'));
+
+    function updatePagination() {
+        const limit = limitSelect.value;
+        if (limit === 'all') {
+            rows.forEach(row => row.style.display = '');
+        } else {
+            const count = parseInt(limit);
+            rows.forEach((row, index) => {
+                row.style.display = index < count ? '' : 'none';
+            });
+        }
+    }
+
+    limitSelect.addEventListener('change', updatePagination);
+    updatePagination();
+});
 </script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

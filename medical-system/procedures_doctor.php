@@ -237,8 +237,20 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 
         <div>
             <div class="card mica-effect">
-                <h3>История назначений пациента</h3>
-                <table style="width: 100%; border-collapse: collapse;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin:0;">История назначений пациента</h3>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 0.8rem; color: var(--win-text-secondary);">Показывать по:</label>
+                        <select id="pagination-limit" style="padding: 4px 8px; font-size: 0.8rem;">
+                            <option value="19">19</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all">Все</option>
+                        </select>
+                    </div>
+                </div>
+                <table style="width: 100%; border-collapse: collapse;" id="appointments-table">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
                             <th style="padding: 10px;">Дата/Время</th>
@@ -249,7 +261,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     </thead>
                     <tbody>
                         <?php foreach (array_reverse($patientAppointments) as $app): ?>
-                        <tr style="border-bottom: 1px solid var(--win-border);">
+                        <tr style="border-bottom: 1px solid var(--win-border);" class="appointment-row">
                             <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
                             <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
                             <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor'] ?? '-'); ?></td>
@@ -429,4 +441,28 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
     </table>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const limitSelect = document.getElementById('pagination-limit');
+    const table = document.getElementById('appointments-table');
+    if (limitSelect && table) {
+        const rows = Array.from(table.querySelectorAll('.appointment-row'));
+
+        function updatePagination() {
+            const limit = limitSelect.value;
+            if (limit === 'all') {
+                rows.forEach(row => row.style.display = '');
+            } else {
+                const count = parseInt(limit);
+                rows.forEach((row, index) => {
+                    row.style.display = index < count ? '' : 'none';
+                });
+            }
+        }
+
+        limitSelect.addEventListener('change', updatePagination);
+        updatePagination();
+    }
+});
+</script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

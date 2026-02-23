@@ -39,10 +39,23 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
 </head>
 <body class="mica-effect">
     <div id="global-preloader">
+        <button type="button" onclick="document.getElementById('global-preloader').classList.add('hidden')" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--win-text-secondary); cursor: pointer; opacity: 0.5; z-index: 10001;" title="Закрыть прелоадер">
+            <i data-lucide="x"></i>
+        </button>
         <div class="loader-content">
             <div class="win-spinner"></div>
             <div class="loader-text">Загрузка системы...</div>
         </div>
+        <script>
+            // Internal failsafe in case external scripts fail
+            setTimeout(function() {
+                var p = document.getElementById('global-preloader');
+                if (p && !p.classList.contains('hidden')) {
+                    p.classList.add('hidden');
+                    console.log('Preloader forced hidden by header failsafe');
+                }
+            }, 4000);
+        </script>
     </div>
 
     <?php if (\Medical\Core\Auth::isLoggedIn()): ?>

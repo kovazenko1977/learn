@@ -9,12 +9,18 @@
             }
         };
 
-        window.addEventListener('load', () => {
-            setTimeout(hidePreloader, 300);
+        // Try hiding on DOMContentLoaded (faster)
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(hidePreloader, 800); // Small buffer for Lucide icons
         });
 
-        // Failsafe: hide preloader after 5 seconds regardless of load state
-        setTimeout(hidePreloader, 5000);
+        // Definitely hide on window load
+        window.addEventListener('load', () => {
+            setTimeout(hidePreloader, 100);
+        });
+
+        // Extreme Failsafe: hide preloader after 3 seconds regardless of load state
+        setTimeout(hidePreloader, 3000);
 
         // Add preloader to all forms on submit
         document.querySelectorAll('form').forEach(form => {

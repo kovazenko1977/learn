@@ -179,7 +179,10 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
                             </form>
                         <?php endif; ?>
                         <?php if (\Medical\Core\Auth::can('procedures_assign')): ?>
-                            <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" title="Назначить">
+                            <button class="btn btn-sm btn-ghost" title="Записать к врачу" onclick='openAssignDoctorModal(<?php echo htmlspecialchars(json_encode($p), ENT_QUOTES); ?>)'>
+                                <i data-lucide="stethoscope" class="icon" style="margin:0; color: #8b44d5;"></i>
+                            </button>
+                            <a href="procedures_doctor.php?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" title="Назначить процедуры">
                                 <i data-lucide="plus-square" class="icon" style="margin:0;"></i>
                             </a>
                         <?php endif; ?>
@@ -260,6 +263,73 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
                 <button type="button" class="btn" onclick="document.getElementById('importModal').style.display='none'">Отмена</button>
                 <button type="submit" class="btn btn-primary">Загрузить</button>
             </div>
+        </form>
+    </div>
+</div>
+
+<!-- Assign Doctor Modal -->
+<div id="assignDoctorModal" style="display:none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);">
+    <div class="card mica-effect" style="width: 500px; margin: 60px auto; padding: 32px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="margin:0;">Запись к врачу</h2>
+            <button type="button" onclick="document.getElementById('assignDoctorModal').style.display='none'" style="background:none; border:none; cursor:pointer;"><i data-lucide="x"></i></button>
+        </div>
+        <p id="assign_patient_name" style="font-weight: 600; color: var(--win-accent); margin-bottom: 20px;"></p>
+
+        <form id="assignDoctorForm" method="POST" action="procedures_doctor.php">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="assign">
+            <input type="hidden" name="patient_id" id="assign_patient_id">
+
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom: 8px;">Выберите врача</label>
+                <select name="doctor" id="assign_doctor_select" style="width: 100%;" required>
+                    <option value="">-- Выберите врача --</option>
+                    <?php foreach ($doctors as $d): ?>
+                        <option value="<?php echo htmlspecialchars($d['name']); ?>" data-cabinet="<?php echo htmlspecialchars($d['specialization'] === 'Терапевт' ? '101' : '102'); ?>">
+                            <?php echo htmlspecialchars($d['name']); ?> (<?php echo htmlspecialchars($d['specialization']); ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom: 8px;">Тип приема</label>
+                <select name="procedure_id" id="assign_proc_select" style="width: 100%;" required>
+                    <?php
+                    $docProcs = array_filter($procedureManager->getAll(), function($pr) {
+                        return mb_stripos($pr['name'], 'Прием') !== false;
+                    });
+                    foreach ($docProcs as $pr): ?>
+                        <option value="<?php echo $pr['id']; ?>"><?php echo htmlspecialchars($pr['name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display:block; margin-bottom: 8px;">Дата</label>
+                    <input type="date" name="date" id="assign_date" value="<?php echo date('Y-m-d'); ?>" style="width: 100%;" required>
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom: 8px;">Кабинет</label>
+                    <input type="text" name="cabinet_id" id="assign_cabinet" style="width: 100%;" required>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px;">Время приема</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="time" name="time" id="assign_time" style="flex-grow:1;" required>
+                    <button type="button" class="btn btn-sm" onclick="fetchDoctorSlots()">Свободно</button>
+                </div>
+            </div>
+
+            <div id="doctor_slots_container" style="display: none; margin-bottom: 20px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px; border: 1px dashed var(--win-border);">
+                <div id="doctor_slots_chips" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 120px; overflow-y: auto;"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; height: 48px;">Записать пациента</button>
         </form>
     </div>
 </div>
@@ -440,6 +510,63 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
         document.getElementById('edit_treating_doctor').value = patient.treating_doctor || '';
         document.getElementById('edit_extra_info').value = patient.extra_info || '';
         document.getElementById('editModal').style.display = 'block';
+    }
+
+    function openAssignDoctorModal(patient) {
+        document.getElementById('assign_patient_id').value = patient.id;
+        document.getElementById('assign_patient_name').innerText = patient.name;
+        if (patient.treating_doctor) {
+            document.getElementById('assign_doctor_select').value = patient.treating_doctor;
+            const opt = document.querySelector(`#assign_doctor_select option[value="${patient.treating_doctor}"]`);
+            if (opt) document.getElementById('assign_cabinet').value = opt.dataset.cabinet;
+        }
+        document.getElementById('assignDoctorModal').style.display = 'block';
+        lucide.createIcons();
+    }
+
+    document.getElementById('assign_doctor_select').addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        if (opt && opt.dataset.cabinet) {
+            document.getElementById('assign_cabinet').value = opt.dataset.cabinet;
+        }
+    });
+
+    function fetchDoctorSlots() {
+        const doc = document.getElementById('assign_doctor_select').value;
+        const cabinet = document.getElementById('assign_cabinet').value;
+        const date = document.getElementById('assign_date').value;
+        const procId = document.getElementById('assign_proc_select').value;
+
+        if (!cabinet || !date || !procId) {
+            alert('Выберите врача, процедуру и дату');
+            return;
+        }
+
+        const container = document.getElementById('doctor_slots_container');
+        const chips = document.getElementById('doctor_slots_chips');
+        container.style.display = 'block';
+        chips.innerHTML = '<span style="font-size: 0.8rem; color: #666;">Загрузка...</span>';
+
+        fetch(`procedures_doctor.php?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}&procedure_id=${procId}`)
+            .then(r => r.json())
+            .then(data => {
+                const free = data.free || [];
+                chips.innerHTML = '';
+                if (free.length === 0) {
+                    chips.innerHTML = '<span style="font-size: 0.8rem; color: #d83b01;">Нет свободных слотов</span>';
+                } else {
+                    free.forEach(time => {
+                        const chip = document.createElement('div');
+                        chip.textContent = time;
+                        chip.style.cssText = 'padding: 4px 10px; background: #8b44d5; color: white; border-radius: 12px; font-size: 0.8rem; cursor: pointer;';
+                        chip.onclick = () => {
+                            document.getElementById('assign_time').value = time;
+                            container.style.display = 'none';
+                        };
+                        chips.appendChild(chip);
+                    });
+                }
+            });
     }
 </script>
 
