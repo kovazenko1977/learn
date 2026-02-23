@@ -207,8 +207,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 16px;
     transition: background 0.2s;
+}
+
+.title-bar-controls button svg {
+    pointer-events: none;
 }
 
 .title-bar-controls button:hover {

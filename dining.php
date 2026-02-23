@@ -4,9 +4,15 @@
     <div class="title-bar">
         <div class="title-bar-text">Питание в санатории - Справка</div>
         <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="window.location.href='index.php'"></button>
+            <button aria-label="Minimize">
+                <svg width="10" height="1" viewBox="0 0 10 1"><path d="M0 0.5H10" stroke="currentColor" stroke-width="1"/></svg>
+            </button>
+            <button aria-label="Maximize">
+                <svg width="10" height="10" viewBox="0 0 10 10"><rect x="0.5" y="0.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+            </button>
+            <button aria-label="Close" onclick="window.location.href='index.php'">
+                <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
         </div>
     </div>
 
