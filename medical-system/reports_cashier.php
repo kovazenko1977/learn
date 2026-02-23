@@ -51,6 +51,16 @@ require_once __DIR__ . '/includes/header.php';
             <label style="display:block; margin-bottom: 8px;">Конец периода</label>
             <input type="date" name="end_date" value="<?php echo htmlspecialchars($endDate); ?>">
         </div>
+        <div style="border-left: 1px solid var(--win-border); padding-left: 20px; display: flex; gap: 15px; align-items: flex-end;">
+            <div>
+                <label style="display:block; margin-bottom: 8px;">Дней вперед</label>
+                <input type="number" id="days_ahead" min="0" max="365" placeholder="0" style="width: 80px;">
+            </div>
+            <div style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="save_period" style="width: 18px; height: 18px; cursor: pointer;">
+                <label for="save_period" style="font-size: 0.85rem; cursor: pointer;">Запомнить</label>
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary">Обновить</button>
     </form>
 </div>

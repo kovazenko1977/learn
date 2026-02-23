@@ -47,6 +47,7 @@ require_once __DIR__ . '/includes/header.php';
                 <i data-lucide="smartphone" style="width:18px; height:18px;"></i> Перейти в мобильную версию
             </a>
         </div>
+        <p style="margin-top: 20px; font-size: 0.7rem; color: var(--win-text-secondary); opacity: 0.6;">разработчик wes.by</p>
     </div>
 </div>
 <?php include __DIR__ . '/includes/footer.php'; ?>
