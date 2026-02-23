@@ -61,6 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && \Medical
             $toPayIds = array_map(function($app) { return $app['id']; }, array_slice($unpaid, 0, $countToPay));
             $scheduleManager->bulkMarkPaid($toPayIds);
             $message = "Оплачено процедур «" . ($procedureName) . "»: " . count($toPayIds);
+        } elseif ($_POST['action'] === 'pay_selected') {
+            $ids = $_POST['ids'] ?? [];
+            if (!empty($ids)) {
+                $count = $scheduleManager->bulkMarkPaid($ids);
+                $message = "Оплачено выбранных процедур: " . $count;
+            }
         }
     }
 }
@@ -209,7 +215,7 @@ require_once __DIR__ . '/includes/header.php';
                             <?php echo $count; ?> раз(а)
                         </span>
                         <button class="btn btn-sm btn-ghost toggle-group" data-target="detail-<?php echo $key; ?>" style="padding: 2px 4px; margin-left: 8px;">
-                            <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i> смотреть количество
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i> смотреть
                         </button>
                     <?php else: ?>
                         <?php echo $group['items'][0]['date']; ?>
@@ -248,26 +254,40 @@ require_once __DIR__ . '/includes/header.php';
             </tr>
             <?php if ($isGroup): ?>
             <tr id="detail-<?php echo $key; ?>" style="display: none; background: rgba(0,0,0,0.02);">
-                <td colspan="6" style="padding: 10px 20px;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
-                        <?php foreach ($group['items'] as $item): ?>
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: white; border: 1px solid var(--win-border); border-radius: 6px;">
-                                <span><?php echo $item['date']; ?> <?php echo $item['time']; ?></span>
-                                <div>
-                                    <?php if ($item['status'] === 'unpaid'): ?>
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                                            <input type="hidden" name="action" value="pay">
-                                            <input type="hidden" name="id" value="<?php echo $item['id']; ?>">
-                                            <button type="submit" class="btn btn-sm btn-ghost" style="color: var(--win-accent);">Оплатить</button>
-                                        </form>
-                                    <?php else: ?>
-                                        <span style="color: #107c10; font-size: 0.8rem;"><i data-lucide="check" style="width: 12px; height: 12px;"></i> Оплачено</span>
+                <td colspan="6" style="padding: 15px 25px;">
+                    <form method="POST" class="selective-pay-form">
+                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                        <input type="hidden" name="action" value="pay_selected">
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                            <?php foreach ($group['items'] as $item): ?>
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border: 1px solid var(--win-border); border-radius: 8px; transition: all 0.2s;">
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex-grow: 1;">
+                                        <?php if ($item['status'] === 'unpaid'): ?>
+                                            <input type="checkbox" name="ids[]" value="<?php echo $item['id']; ?>" class="item-checkbox" style="width: 18px; height: 18px;">
+                                        <?php else: ?>
+                                            <i data-lucide="check" style="width: 18px; height: 18px; color: #107c10;"></i>
+                                        <?php endif; ?>
+                                        <span style="font-size: 0.9rem;"><?php echo $item['date']; ?> <small style="color: #666;"><?php echo $item['time']; ?></small></span>
+                                    </label>
+                                    <?php if ($item['status'] === 'paid'): ?>
+                                        <span style="color: #107c10; font-size: 0.75rem; font-weight: 600;">Оплачено</span>
                                     <?php endif; ?>
                                 </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <?php if ($unpaidCount > 0): ?>
+                            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px;">
+                                <div style="font-size: 0.85rem; color: var(--win-text-secondary);">
+                                    Выбрано: <strong class="selected-count">0</strong>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm pay-selected-btn" disabled>
+                                    <i data-lucide="credit-card" class="icon" style="width: 14px; height: 14px;"></i> Оплатить выбранные
+                                </button>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
+                        <?php endif; ?>
+                    </form>
                 </td>
             </tr>
             <?php endif; ?>
@@ -294,6 +314,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon.setAttribute('data-lucide', 'chevron-down');
             }
             if (window.lucide) lucide.createIcons();
+        });
+    });
+
+    // Selective pay logic
+    document.querySelectorAll('.selective-pay-form').forEach(form => {
+        const checkboxes = form.querySelectorAll('.item-checkbox');
+        const btn = form.querySelector('.pay-selected-btn');
+        const counter = form.querySelector('.selected-count');
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const checked = form.querySelectorAll('.item-checkbox:checked');
+                if (counter) counter.innerText = checked.length;
+                if (btn) btn.disabled = checked.length === 0;
+
+                // Highlight row
+                cb.closest('div').style.borderColor = cb.checked ? 'var(--win-accent)' : 'var(--win-border)';
+                cb.closest('div').style.background = cb.checked ? 'rgba(0,120,212,0.05)' : 'white';
+            });
         });
     });
 });

@@ -2,15 +2,19 @@
     <script>
         lucide.createIcons();
 
-        window.addEventListener('load', () => {
+        const hidePreloader = () => {
             const preloader = document.getElementById('global-preloader');
-            if (preloader) {
-                // Delay slightly for smooth transition
-                setTimeout(() => {
-                    preloader.classList.add('hidden');
-                }, 300);
+            if (preloader && !preloader.classList.contains('hidden')) {
+                preloader.classList.add('hidden');
             }
+        };
+
+        window.addEventListener('load', () => {
+            setTimeout(hidePreloader, 300);
         });
+
+        // Failsafe: hide preloader after 5 seconds regardless of load state
+        setTimeout(hidePreloader, 5000);
 
         // Add preloader to all forms on submit
         document.querySelectorAll('form').forEach(form => {
