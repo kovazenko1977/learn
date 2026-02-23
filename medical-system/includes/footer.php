@@ -27,7 +27,7 @@
             });
         });
 
-        // Reports Period Logic
+        // Unified Period Persistence Logic
         document.addEventListener('DOMContentLoaded', function() {
             const daysAheadInput = document.getElementById('days_ahead');
             const savePeriodCheckbox = document.getElementById('save_period');
@@ -37,13 +37,18 @@
 
             if (!daysAheadInput) return;
 
-            const savedDays = localStorage.getItem('reports_days_ahead');
-            if (savedDays) {
+            // Key includes user ID and page path for "separately for each" and "depends on profile"
+            const pageId = window.location.pathname.split('/').pop() || 'index.php';
+            const storageKey = `period_${window.WES_USER_ID || 'guest'}_${pageId}`;
+
+            const savedDays = localStorage.getItem(storageKey);
+            if (savedDays !== null) {
                 daysAheadInput.value = savedDays;
                 savePeriodCheckbox.checked = true;
 
                 const urlParams = new URLSearchParams(window.location.search);
-                if (!urlParams.has('start_date')) {
+                // Auto-apply only if URL doesn't have explicit dates
+                if (!urlParams.has('start_date') && !urlParams.has('end_date')) {
                      const start = new Date();
                      const end = new Date();
                      end.setDate(start.getDate() + parseInt(savedDays));
@@ -57,11 +62,13 @@
                 }
             }
 
+            // Real-time date adjustment when typing number of days
             daysAheadInput.addEventListener('input', function() {
-                if (this.value >= 0 && this.value !== '') {
+                const val = parseInt(this.value);
+                if (!isNaN(val) && val >= 0) {
                     const start = new Date();
                     const end = new Date();
-                    end.setDate(start.getDate() + parseInt(this.value));
+                    end.setDate(start.getDate() + val);
                     if (startDateInput) startDateInput.value = start.toISOString().split('T')[0];
                     if (endDateInput) endDateInput.value = end.toISOString().split('T')[0];
                 }
@@ -70,9 +77,9 @@
             if (form) {
                 form.addEventListener('submit', function() {
                     if (savePeriodCheckbox.checked) {
-                        localStorage.setItem('reports_days_ahead', daysAheadInput.value);
+                        localStorage.setItem(storageKey, daysAheadInput.value);
                     } else {
-                        localStorage.removeItem('reports_days_ahead');
+                        localStorage.removeItem(storageKey);
                     }
                 });
             }

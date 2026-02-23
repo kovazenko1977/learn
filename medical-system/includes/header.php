@@ -29,6 +29,7 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        window.WES_USER_ID = "<?php echo \Medical\Core\Auth::getUser()['id'] ?? 'guest'; ?>";
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js');
