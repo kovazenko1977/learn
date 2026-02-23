@@ -14,7 +14,7 @@
         <!-- Search Companion Sidebar -->
         <aside style="width: 250px; background: #748aff; padding: 15px; display: flex; flex-direction: column; gap: 20px; color: white; border-right: 1px solid #002d96;">
             <div style="text-align: center;">
-                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/Windows_XP_Search_Companion_character_Rover.png/150px-Windows_XP_Search_Companion_character_Rover.png" alt="Rover" style="width: 80px;">
+                <img src="https://img.icons8.com/color/96/000000/dog.png" alt="Rover" style="width: 80px;">
                 <p style="font-size: 12px; font-weight: bold; margin-top: 10px;">Что вы хотите найти?</p>
             </div>
 
@@ -58,7 +58,7 @@ const data = [
     { name: "1-комнатный номер", type: "room", link: "rooms.php", img: "https://gu-berezina.by/wp-content/uploads/2025/12/IMG_1975-1024x683.jpg" },
     { name: "2-комнатный Люкс", type: "room", link: "rooms.php", img: "https://gu-berezina.by/wp-content/uploads/2025/12/IMG_2028-1024x683.jpg" },
     { name: "3-комнатный Люкс", type: "room", link: "rooms.php", img: "https://gu-berezina.by/wp-content/uploads/2025/12/IMG_2057-1024x683.jpg" },
-    { name: "Прейскурант", type: "price", link: "prices.php", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Money_Cash.svg/32px-Money_Cash.svg.png" }
+    { name: "Прейскурант", type: "price", link: "prices.php", img: "https://img.icons8.com/color/48/000000/money-bag.png" }
 ];
 
 function performSearch() {

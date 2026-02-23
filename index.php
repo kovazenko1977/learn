@@ -3,31 +3,31 @@
 <!-- Desktop Icons Layer -->
 <div class="desktop-icons">
     <div class="desktop-icon" onclick="window.location.href='infrastructure.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/My_Computer_XP.png/32px-My_Computer_XP.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/monitor.png" alt="My Computer">
         <span>Мой Компьютер</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='rooms.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/My_Documents_XP.png/32px-My_Documents_XP.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/folder-invoices.png" alt="My Documents">
         <span>Мои Номера</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='contact.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/My_Network_Places_XP.png/32px-My_Network_Places_XP.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/network.png" alt="Network">
         <span>Сетевое окружение</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='diagnostics.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Internet_Explorer_6_logo.svg/32px-Internet_Explorer_6_logo.svg.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/internet-explorer.png" alt="IE">
         <span>IE Диагностика</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='procedures.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/XP_Programs_Icon.png/32px-XP_Programs_Icon.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/syringe.png" alt="Procedures">
         <span>Процедуры</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='prices.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Money_Cash.svg/32px-Money_Cash.svg.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/money-bag.png" alt="Prices">
         <span>Прайс-лист</span>
     </div>
     <div class="desktop-icon" onclick="if(confirm('Очистить временные данные?')) { localStorage.clear(); alert('Данные очищены'); location.reload(); }">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Recycle_Bin_Empty_XP.png/32px-Recycle_Bin_Empty_XP.png" alt="">
+        <img src="https://img.icons8.com/color/48/000000/recycle-bin.png" alt="Recycle Bin">
         <span>Корзина</span>
     </div>
 </div>

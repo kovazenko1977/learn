@@ -56,6 +56,8 @@ body {
     height: 32px;
     margin-bottom: 4px;
     filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.5));
+    display: block;
+    object-fit: contain;
 }
 
 .desktop-icon span {

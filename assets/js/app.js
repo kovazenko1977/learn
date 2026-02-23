@@ -14,6 +14,17 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('active');
         }
 
+        // Icon error handling
+        document.querySelectorAll('.desktop-icon img').forEach(img => {
+            img.onerror = function() {
+                this.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.style.fontSize = '24px';
+                fallback.innerHTML = '📁'; // Default fallback
+                this.parentNode.insertBefore(fallback, this);
+            };
+        });
+
         // Desktop icon selection
         const icons = document.querySelectorAll('.desktop-icon');
         icons.forEach(icon => {

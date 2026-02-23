@@ -3,17 +3,17 @@
 
 <div class="taskbar">
     <button class="start-button">
-        <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" style="height:20px;">
+        <img src="https://img.icons8.com/color/48/000000/windows-xp.png" style="height:20px;">
         пуск
     </button>
     <div class="taskbar-items">
         <div class="taskbar-item active">
-            <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" style="height:14px; margin-right:5px;">
+            <img src="https://img.icons8.com/color/48/000000/medical-doctor.png" style="height:14px; margin-right:5px;">
             Санаторий Березина
         </div>
     </div>
     <div class="system-tray" id="clock-tray" title="Нажмите, чтобы увидеть календарь" onclick="toggleCalendar()">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/My_Documents_XP.png/16px-My_Documents_XP.png" style="height:14px; margin-right:5px; opacity:0.7;">
+        <img src="https://img.icons8.com/color/16/000000/folder-invoices.png" style="height:14px; margin-right:5px; opacity:0.7;">
         <span id="taskbar-clock"><?php echo date('H:i'); ?></span>
     </div>
 </div>
