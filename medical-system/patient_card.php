@@ -188,7 +188,7 @@ require_once __DIR__ . '/includes/header.php';
                                     </form>
                                 <?php endif; ?>
                                 <?php if (\Medical\Core\Auth::can('settings_system')): ?>
-                                    <button class="btn btn-sm" style="padding: 4px;" onclick='openEditAppModal(<?php echo json_encode($app); ?>)'><i data-lucide="edit" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
+                                    <button class="btn btn-sm" style="padding: 4px;" onclick='openEditAppModal(<?php echo htmlspecialchars(json_encode($app), ENT_QUOTES); ?>)'><i data-lucide="edit" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить назначение?')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="delete_appointment">

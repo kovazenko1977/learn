@@ -373,7 +373,7 @@ $permissions = [
                             ?>
                         </td>
                         <td style="padding: 10px; text-align: right;">
-                            <button onclick='openEditProcModal(<?php echo json_encode($p); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
+                            <button onclick='openEditProcModal(<?php echo htmlspecialchars(json_encode($p), ENT_QUOTES); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
                             <form method="POST" style="display: inline;" onsubmit="return confirm('Удалить процедуру?')">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="delete_procedure">
@@ -456,7 +456,7 @@ $permissions = [
                         <td style="padding: 10px;"><?php echo htmlspecialchars($s['specialization']); ?></td>
                         <td style="padding: 10px;"><code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px;"><?php echo $s['access_code'] ?? '------'; ?></code></td>
                         <td style="padding: 10px; text-align: right;">
-                            <button onclick='openEditStaffModal(<?php echo json_encode($s); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
+                            <button onclick='openEditStaffModal(<?php echo htmlspecialchars(json_encode($s), ENT_QUOTES); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
                             <form method="POST" style="display: inline;" onsubmit="return confirm('Удалить сотрудника?')">
                                 <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                 <input type="hidden" name="action" value="delete_staff">

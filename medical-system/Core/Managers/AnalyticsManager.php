@@ -184,4 +184,60 @@ class AnalyticsManager {
         arsort($load);
         return $load;
     }
+
+    public function getDailyRevenue($startDate = null, $endDate = null) {
+        $appointments = $this->getFilteredAppointments($startDate, $endDate);
+        $daily = [];
+        foreach ($appointments as $app) {
+            if ($app['status'] === 'paid') {
+                $date = $app['date'];
+                if (!isset($daily[$date])) $daily[$date] = 0;
+                $daily[$date] += (float)($app['price'] ?? 0);
+            }
+        }
+        ksort($daily);
+        return $daily;
+    }
+
+    public function getDailyRegistrations($startDate = null, $endDate = null) {
+        $patients = $this->patientsStore->getAll();
+        $daily = [];
+        foreach ($patients as $p) {
+            $date = date('Y-m-d', strtotime($p['created_at']));
+            if ($startDate && $date < $startDate) continue;
+            if ($endDate && $date > $endDate) continue;
+            if (!isset($daily[$date])) $daily[$date] = 0;
+            $daily[$date]++;
+        }
+        ksort($daily);
+        return $daily;
+    }
+
+    public function getProcedurePopularity($startDate = null, $endDate = null) {
+        $appointments = $this->getFilteredAppointments($startDate, $endDate);
+        $popularity = [];
+        foreach ($appointments as $app) {
+            $name = $app['procedure_name'];
+            if (!isset($popularity[$name])) $popularity[$name] = 0;
+            $popularity[$name]++;
+        }
+        arsort($popularity);
+        return array_slice($popularity, 0, 10);
+    }
+
+    public function getDoctorPerformance($startDate = null, $endDate = null) {
+        $appointments = $this->getFilteredAppointments($startDate, $endDate);
+        $perf = [];
+        foreach ($appointments as $app) {
+            $doc = $app['doctor'] ?? 'Не указан';
+            if (!isset($perf[$doc])) {
+                $perf[$doc] = ['count' => 0, 'revenue' => 0];
+            }
+            $perf[$doc]['count']++;
+            if ($app['status'] === 'paid') {
+                $perf[$doc]['revenue'] += (float)($app['price'] ?? 0);
+            }
+        }
+        return $perf;
+    }
 }

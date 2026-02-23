@@ -27,6 +27,7 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
         }
     </style>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

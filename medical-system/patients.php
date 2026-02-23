@@ -164,7 +164,7 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
                             <i data-lucide="contact" class="icon" style="margin:0;"></i>
                         </a>
                         <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
-                            <button class="btn btn-sm" title="Редактировать" onclick='openEditModal(<?php echo json_encode($p); ?>)'>
+                            <button class="btn btn-sm" title="Редактировать" onclick='openEditModal(<?php echo htmlspecialchars(json_encode($p), ENT_QUOTES); ?>)'>
                                 <i data-lucide="edit-3" class="icon" style="margin:0;"></i>
                             </button>
                         <?php endif; ?>
