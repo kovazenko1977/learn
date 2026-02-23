@@ -20,8 +20,9 @@
         <h3>Расположение</h3>
         <p>Санаторий находится в Минской области, Борисовском районе, в живописном месте на берегу реки Березина. Вокруг — вековой сосновый лес, создающий уникальный микроклимат.</p>
 
-        <div style="margin-top: 20px;">
-            <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" alt="Вид" style="width: 100%; max-width: 600px; border: 1px solid #ccc;">
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Copilot_20251228_012015-683x1024.png" alt="Вид" style="width: 50%; height: 200px; object-fit: cover; border: 1px solid #ccc;">
+            <img src="https://gu-berezina.by/wp-content/uploads/2025/12/IMG_1975-1024x683.jpg" alt="Вид" style="width: 50%; height: 200px; object-fit: cover; border: 1px solid #ccc;">
         </div>
 
         <h3 style="margin-top: 30px;">Основные направления деятельности:</h3>

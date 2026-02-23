@@ -2,20 +2,16 @@
 
 <!-- Desktop Icons Layer -->
 <div class="desktop-icons">
+    <div class="desktop-icon" onclick="window.location.href='infrastructure.php'">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/My_Computer_XP.png/32px-My_Computer_XP.png" alt="">
+        <span>Мой Компьютер</span>
+    </div>
     <div class="desktop-icon" onclick="window.location.href='rooms.php'">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/My_Documents_XP.png/32px-My_Documents_XP.png" alt="">
         <span>Мои Номера</span>
     </div>
-    <div class="desktop-icon" onclick="window.location.href='prices.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Money_Cash.svg/32px-Money_Cash.svg.png" alt="">
-        <span>Прайс-лист</span>
-    </div>
-    <div class="desktop-icon" onclick="window.location.href='infrastructure.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/My_Computer_XP.png/32px-My_Computer_XP.png" alt="">
-        <span>Территория</span>
-    </div>
     <div class="desktop-icon" onclick="window.location.href='contact.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Winemine_icon.png/32px-Winemine_icon.png" alt="">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/My_Network_Places_XP.png/32px-My_Network_Places_XP.png" alt="">
         <span>Сетевое окружение</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='diagnostics.php'">
@@ -23,8 +19,16 @@
         <span>IE Диагностика</span>
     </div>
     <div class="desktop-icon" onclick="window.location.href='procedures.php'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Crystal_Clear_app_ark.png/32px-Crystal_Clear_app_ark.png" alt="">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/XP_Programs_Icon.png/32px-XP_Programs_Icon.png" alt="">
         <span>Процедуры</span>
+    </div>
+    <div class="desktop-icon" onclick="window.location.href='prices.php'">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Money_Cash.svg/32px-Money_Cash.svg.png" alt="">
+        <span>Прайс-лист</span>
+    </div>
+    <div class="desktop-icon" onclick="if(confirm('Очистить временные данные?')) { localStorage.clear(); alert('Данные очищены'); location.reload(); }">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Recycle_Bin_Empty_XP.png/32px-Recycle_Bin_Empty_XP.png" alt="">
+        <span>Корзина</span>
     </div>
 </div>
 

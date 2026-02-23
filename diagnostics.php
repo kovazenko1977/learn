@@ -1,7 +1,16 @@
 <?php include 'includes/header.php'; ?>
 
-<div style="max-width: 600px; margin: 0 auto;">
-    <div class="xp-card" style="padding: 0;">
+<div class="window" style="max-width: 650px; margin: 40px auto;">
+    <div class="title-bar">
+        <div class="title-bar-text">Мастер диагностики</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='index.php'"></button>
+        </div>
+    </div>
+
+    <div class="window-body" style="padding: 0;">
         <div style="background: white; border-bottom: 1px solid #7F9DB9; padding: 20px; display: flex; gap: 20px;">
             <div style="width: 150px; background: linear-gradient(to bottom, #7BA2E7 0%, #638AD9 100%); color: white; padding: 10px; font-weight: bold; font-size: 14px;">
                 Мастер диагностики
@@ -54,6 +63,9 @@
                 <div id="result-box" style="display:none; padding: 10px; border: 1px solid #7F9DB9; background: #FFFFE1;">
                     <strong>Рекомендация:</strong><br>
                     Программа "Здоровое сердце". Рекомендуемые процедуры: ванны с бишофитом, магнитотерапия ОртоСПОК.
+                    <div style="margin-top: 10px; text-align: right;">
+                        <button type="button" onclick="window.print()" style="padding: 2px 5px; cursor: pointer;">Печать результата</button>
+                    </div>
                 </div>
             </div>
 

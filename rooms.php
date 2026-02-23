@@ -27,7 +27,7 @@
             <div class="procedure-grid">
                 <!-- Double one-room -->
                 <div class="procedure-card" style="width: 100%; max-width: none;">
-                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Copilot_20251228_012015-683x1024.png" alt="Однокомнатный номер" style="max-height: 300px; object-fit: cover;">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/IMG_1975-1024x683.jpg" alt="Однокомнатный номер" style="max-height: 300px; object-fit: cover;">
                     <h3>Двухместный однокомнатный номер</h3>
                     <p>Стандартный уютный номер для двоих. Идеально подходит для комфортного отдыха.</p>
                     <ul>
@@ -41,7 +41,7 @@
 
                 <!-- Two-room Lux -->
                 <div class="procedure-card" style="width: 100%; max-width: none;">
-                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/e1zb4ekmx5rmw0cvc7wrec3d10-1024x578.png" alt="Двухкомнатный Люкс" style="max-height: 300px; object-fit: cover;">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/IMG_2028-1024x683.jpg" alt="Двухкомнатный Люкс" style="max-height: 300px; object-fit: cover;">
                     <h3>Двухкомнатный двухместный номер «ЛЮКС»</h3>
                     <p>Просторный номер повышенной комфортности с отдельной гостиной и спальней.</p>
                     <ul>
@@ -55,7 +55,7 @@
 
                 <!-- Three-room Lux -->
                 <div class="procedure-card" style="width: 100%; max-width: none;">
-                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_1-removebg-preview-1.png" alt="Трехкомнатный Люкс" style="max-height: 300px; object-fit: cover;">
+                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/IMG_2057-1024x683.jpg" alt="Трехкомнатный Люкс" style="max-height: 300px; object-fit: cover;">
                     <h3>Трехкомнатный двухместный номер «ЛЮКС»</h3>
                     <p>Максимальный уровень комфорта. Большая площадь и расширенный набор удобств.</p>
                     <ul>

@@ -13,5 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (sidebar && sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== startButton) {
             sidebar.classList.remove('active');
         }
+
+        // Desktop icon selection
+        const icons = document.querySelectorAll('.desktop-icon');
+        icons.forEach(icon => {
+            if (icon.contains(e.target)) {
+                icons.forEach(i => i.classList.remove('selected'));
+                icon.classList.add('selected');
+            } else if (!e.target.closest('.desktop-icon')) {
+                icon.classList.remove('selected');
+            }
+        });
     });
 });

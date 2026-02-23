@@ -8,6 +8,7 @@
             <div class="explorer-group-header">Главное</div>
             <div class="explorer-group-body">
                 <a href="index.php" class="explorer-link">🏠 Главная страница</a>
+                <a href="search.php" class="explorer-link">🔍 Поиск услуг</a>
                 <a href="about.php" class="explorer-link">ℹ️ О санатории</a>
                 <a href="contact.php" class="explorer-link">📞 Контакты</a>
             </div>

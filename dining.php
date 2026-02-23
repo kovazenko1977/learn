@@ -38,9 +38,28 @@
             </div>
         </div>
 
-        <div style="margin-top: 30px;">
-            <h3>Специальные предложения:</h3>
-            <p>Для пациентов с сахарным диабетом предусмотрено специальное меню с дробным режимом питания. Также в обеденном зале всегда в доступе свежая выпечка и витаминные напитки.</p>
+        <div style="margin-top: 30px; display: flex; gap: 20px;">
+            <div style="flex: 1;">
+                <h3>Специальные предложения:</h3>
+                <p>Для пациентов с сахарным диабетом предусмотрено специальное меню с дробным режимом питания. Также в обеденном зале всегда в доступе свежая выпечка и витаминные напитки.</p>
+            </div>
+
+            <!-- Windows Media Player Simulation -->
+            <div style="width: 200px; background: #000; color: #0f0; border: 2px solid #555; padding: 5px; font-family: 'Courier New', monospace; font-size: 10px;">
+                <div style="background: #333; padding: 2px; color: #fff; margin-bottom: 5px;">Windows Media Player</div>
+                <div style="height: 60px; display: flex; align-items: center; justify-content: center; border: 1px solid #555; margin-bottom: 5px;">
+                    <div style="width: 10px; height: 30px; background: #0f0; margin: 2px; animation: wave 1s infinite alternate;"></div>
+                    <div style="width: 10px; height: 45px; background: #0f0; margin: 2px; animation: wave 1.2s infinite alternate;"></div>
+                    <div style="width: 10px; height: 20px; background: #0f0; margin: 2px; animation: wave 0.8s infinite alternate;"></div>
+                </div>
+                <div style="text-align: center;">Атмосфера столовой.mp3</div>
+                <div style="display: flex; justify-content: space-around; margin-top: 5px;">
+                    <span>[ |< ]</span> <span>[ > ]</span> <span>[ >| ]</span>
+                </div>
+                <style>
+                @keyframes wave { from { height: 10px; } to { height: 50px; } }
+                </style>
+            </div>
         </div>
     </div>
 </div>

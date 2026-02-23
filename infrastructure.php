@@ -16,12 +16,16 @@
             <p>Санаторий расположен на площади <strong>11 гектаров</strong> в живописном сосновом бору на берегу реки Березина.</p>
             <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 250px;">
-                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Screenshot_7-removebg-preview.png" alt="Лес" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid #7cb7f1;">
-                    <p><strong>Хвойный фитонцид:</strong> Воздух нашего леса насыщен природными антибиотиками, которые укрепляют легкие и уничтожают болезнетворные бактерии.</p>
+                    <div class="procedure-card">
+                        <img src="https://gu-berezina.by/wp-content/uploads/2026/01/Copilot_20251228_012015-scaled.jpg" alt="Лес" style="width: 100%; height: 200px; object-fit: cover;">
+                        <p style="font-size: 11px; margin-top: 10px;"><strong>Хвойный фитонцид:</strong> Воздух нашего леса насыщен природными антибиотиками, которые укрепляют легкие и уничтожают болезнетворные бактерии.</p>
+                    </div>
                 </div>
                 <div style="flex: 1; min-width: 250px;">
-                    <img src="https://gu-berezina.by/wp-content/uploads/2025/12/Copilot_20251228_012015-683x1024.png" alt="Река" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid #7cb7f1;">
-                    <p><strong>Река Березина:</strong> Умиротворяющий вид на воду и обустроенная набережная способствуют психологической разгрузке.</p>
+                    <div class="procedure-card">
+                        <img src="https://gu-berezina.by/wp-content/uploads/2025/12/IMG_2028-1024x683.jpg" alt="Река" style="width: 100%; height: 200px; object-fit: cover;">
+                        <p style="font-size: 11px; margin-top: 10px;"><strong>Река Березина:</strong> Умиротворяющий вид на воду и обустроенная набережная способствуют психологической разгрузке.</p>
+                    </div>
                 </div>
             </div>
         </section>

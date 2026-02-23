@@ -1,8 +1,17 @@
 <?php include 'includes/header.php'; ?>
 
-<div style="max-width: 500px; margin: 0 auto;">
-    <div class="xp-card">
-        <h2 style="color: #215DC6; margin-top: 0; border-bottom: 1px solid #BDD2F1;">Мастер бронирования</h2>
+<div class="window" style="max-width: 600px; margin: 40px auto;">
+    <div class="title-bar">
+        <div class="title-bar-text">Мастер бронирования</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='index.php'"></button>
+        </div>
+    </div>
+
+    <div class="window-body" style="padding: 20px;">
+        <h2 style="color: #215DC6; margin-top: 0; border-bottom: 1px solid #BDD2F1;">Бронирование путевки</h2>
         <p style="font-size: 11px;">Пожалуйста, заполните все обязательные поля (*).</p>
 
         <form id="bookingForm" method="POST" style="margin-top: 20px;">
@@ -38,6 +47,7 @@
 
         <div id="formMessage" style="display: none; margin-top: 15px; padding: 10px; background: #DFF0D8; border: 1px solid #D6E9C6; color: #3C763D; font-size: 11px;">
             Заявка успешно отправлена!
+            <button onclick="window.print()" style="margin-left: 10px; padding: 2px 5px; cursor: pointer;">Печать подтверждения</button>
         </div>
     </div>
 </div>
