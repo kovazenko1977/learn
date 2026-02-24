@@ -76,6 +76,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 exit;
             }
         }
+    } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
+        $scheduleManager->cancel($_POST['appointment_id']);
+        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+        exit;
     }
 }
 
@@ -271,9 +275,20 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                                     $text = 'Бесплатно';
                                     if (($app['status'] ?? '') === 'unpaid') { $class = 'status-red'; $text = 'Не оплачено'; }
                                     if (($app['status'] ?? '') === 'paid') { $class = 'status-green'; $text = 'Оплачено'; }
+                                    if (($app['status'] ?? '') === 'cancelled') { $class = 'status-red'; $text = 'Отменено'; }
                                     if ($app['attended'] ?? false) { $text .= ' (Проведена)'; }
                                 ?>
                                 <span class="<?php echo $class; ?>"><?php echo $text; ?></span>
+                                <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
+                                    <form method="POST" style="display:inline; margin-left: 10px;" onsubmit="return confirm('Отменить назначение?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="cancel">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-ghost" style="color: #d13438; padding: 2px 5px;" title="Отменить">
+                                            &times;
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>

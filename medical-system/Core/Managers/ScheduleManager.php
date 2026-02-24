@@ -243,10 +243,18 @@ class ScheduleManager {
         return $res;
     }
 
+    public function cancel($id) {
+        $res = $this->store->updateById($id, ['status' => 'cancelled']);
+        if ($res) {
+            (new LogManager())->log('Отмена назначения', ['appointment_id' => $id]);
+        }
+        return $res;
+    }
+
     public function delete($id) {
         $res = $this->store->deleteById($id);
         if ($res) {
-            (new LogManager())->log('Отмена/Удаление назначения', ['appointment_id' => $id]);
+            (new LogManager())->log('Удаление назначения', ['appointment_id' => $id]);
         }
         return $res;
     }

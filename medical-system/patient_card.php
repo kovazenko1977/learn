@@ -29,6 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $scheduleManager->markPaid($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
+    } elseif ($_POST['action'] === 'cancel_appointment' && \Medical\Core\Auth::can('procedures_cancel')) {
+        $scheduleManager->cancel($_POST['appointment_id']);
+        header("Location: patient_card.php?id=$id");
+        exit;
     } elseif ($_POST['action'] === 'delete_appointment' && \Medical\Core\Auth::can('settings_system')) {
         $scheduleManager->delete($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
@@ -180,6 +184,8 @@ require_once __DIR__ . '/includes/header.php';
                         <td>
                             <?php if ($app['attended']): ?>
                                 <span class="status-green">Выполнена</span>
+                            <?php elseif (($app['status'] ?? '') === 'cancelled'): ?>
+                                <span class="status-red" style="opacity: 0.6; text-decoration: line-through;">Отменена</span>
                             <?php else: ?>
                                 <span class="status-gray">Ожидает</span>
                             <?php endif; ?>
@@ -197,6 +203,14 @@ require_once __DIR__ . '/includes/header.php';
                                         <input type="hidden" name="action" value="pay">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
                                         <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Отменить это назначение?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="cancel_appointment">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm" style="color: #d13438;" title="Отменить">Отменить</button>
                                     </form>
                                 <?php endif; ?>
                                 <?php if (\Medical\Core\Auth::can('settings_system')): ?>
