@@ -24,6 +24,34 @@ if (!$req) {
     die('Заявка не найдена');
 }
 
+// Quick Actions from Swipe or Links
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
+    $userId = $_SESSION['user_id'];
+    $userRole = $_SESSION['user_role'];
+
+    $isAllowed = false;
+    $targetStatus = '';
+
+    if ($action === 'work') {
+        if (($userRole === 'performer' && ($req['performer_id'] ?? 0) === $userId) || $userRole === 'admin') {
+            $isAllowed = true;
+            $targetStatus = 'working';
+        }
+    } elseif ($action === 'check') {
+        if (($userRole === 'performer' && ($req['performer_id'] ?? 0) === $userId) || $userRole === 'admin') {
+            $isAllowed = true;
+            $targetStatus = 'checking';
+        }
+    }
+
+    if ($isAllowed && $targetStatus) {
+        $requestManager->updateStatus($id, $targetStatus, $userId, 'Выполнено через быстрое действие');
+        header("Location: view.php?id=$id");
+        exit;
+    }
+}
+
 $userStore = new JsonStore('data/users.json');
 $userManager = new UserManager($userStore);
 $initiator = $userManager->getById($req['initiator_id']);

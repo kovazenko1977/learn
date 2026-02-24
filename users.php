@@ -16,24 +16,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'create') {
         $userManager->create([
             'name' => $_POST['name'],
+            'username' => $_POST['username'],
+            'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
             'phone' => $_POST['phone'],
             'role' => $_POST['role'],
-            'code' => $_POST['code'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
             'telegram_chat_id' => $_POST['telegram_chat_id'] ?? '',
             'info' => $_POST['info'] ?? ''
         ]);
         $message = '✅ Пользователь создан';
     } elseif ($action === 'edit') {
-        $userManager->update((int)$_POST['id'], [
+        $updateData = [
             'name' => $_POST['name'],
+            'username' => $_POST['username'],
             'phone' => $_POST['phone'],
             'role' => $_POST['role'],
-            'code' => $_POST['code'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
             'telegram_chat_id' => $_POST['telegram_chat_id'] ?? '',
             'info' => $_POST['info'] ?? ''
-        ]);
+        ];
+        if (!empty($_POST['password'])) {
+            $updateData['password'] = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        }
+        $userManager->update((int)$_POST['id'], $updateData);
         $message = 'Данные пользователя обновлены';
     } elseif ($action === 'delete') {
         $userManager->delete((int)$_POST['id']);
@@ -106,8 +111,12 @@ include 'includes/header.php';
                 </select>
             </div>
             <div class="form-group">
-                <label>Код доступа (6 цифр)</label>
-                <input type="text" name="code" maxlength="6" pattern="\d{6}" required placeholder="123456">
+                <label>Логин</label>
+                <input type="text" name="username" required placeholder="ivanov">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" name="password" required placeholder="Введите пароль">
             </div>
             <div class="form-group">
                 <label>Служба (для исполнителей)</label>
@@ -206,7 +215,7 @@ include 'includes/header.php';
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <div style="text-align: right; font-family: monospace; color: var(--win-text-secondary); font-size: 14px;">
-                    <?php echo $u['code']; ?>
+                    @<?php echo htmlspecialchars($u['username'] ?? ''); ?>
                 </div>
 
                 <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:8px;"
@@ -265,8 +274,13 @@ include 'includes/header.php';
             </div>
 
             <div class="form-group">
-                <label>Код доступа (6 цифр)</label>
-                <input type="text" name="code" id="edit-code" maxlength="6" pattern="\d{6}" required>
+                <label>Логин</label>
+                <input type="text" name="username" id="edit-username" required>
+            </div>
+
+            <div class="form-group">
+                <label>Новый пароль (пусто, если не менять)</label>
+                <input type="password" name="password" id="edit-password" placeholder="********">
             </div>
 
             <div class="form-group">
@@ -303,7 +317,8 @@ function openEditModal(user) {
     document.getElementById('edit-name').value = user.name;
     document.getElementById('edit-phone').value = user.phone || "";
     document.getElementById('edit-role').value = user.role;
-    document.getElementById('edit-code').value = user.code;
+    document.getElementById('edit-username').value = user.username || "";
+    document.getElementById('edit-password').value = "";
     document.getElementById('edit-service_id').value = user.service_id || "";
     document.getElementById('edit-telegram_chat_id').value = user.telegram_chat_id || "";
     document.getElementById('edit-info').value = user.info || "";

@@ -100,6 +100,9 @@ include 'includes/header.php';
                 <p style="color:var(--win-text-secondary);"><?php echo $_SESSION['user_name']; ?>, добро пожаловать в ХОП</p>
             </div>
             <div class="header-buttons-block">
+                <a href="export.php?<?php echo http_build_query($_GET); ?>" class="btn-secondary" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px;">
+                    <i data-lucide="download"></i> Экспорт
+                </a>
                 <button onclick="window.print()" class="btn-secondary" style="display:flex; align-items:center; gap:8px; padding: 12px 24px;">
                     <i data-lucide="printer"></i> Печать
                 </button>
@@ -345,6 +348,44 @@ document.addEventListener('DOMContentLoaded', () => {
             filterCards();
         });
     });
+
+    // Swipe actions for mobile
+    let touchstartX = 0;
+    let touchendX = 0;
+    const swipeThreshold = 100;
+
+    cards.forEach(card => {
+        card.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        card.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleSwipe(card);
+        }, {passive: true});
+    });
+
+    function handleSwipe(card) {
+        const diff = touchendX - touchstartX;
+        const id = card.getAttribute('href').split('=')[1];
+        const status = card.dataset.status;
+
+        if (diff < -swipeThreshold) {
+            // Swipe Left -> Quick action (e.g., In Work)
+            if (status === 'assigned' || status === 'new') {
+                if (confirm('Взять заявку #' + id + ' в работу?')) {
+                    window.location.href = 'view.php?id=' + id + '&action=work';
+                }
+            } else if (status === 'working') {
+                if (confirm('Завершить работу по заявке #' + id + ' и отправить на проверку?')) {
+                    window.location.href = 'view.php?id=' + id + '&action=check';
+                }
+            }
+        } else if (diff > swipeThreshold) {
+            // Swipe Right -> Open comments
+            window.location.href = 'view.php?id=' + id + '#chat';
+        }
+    }
 });
 </script>
 

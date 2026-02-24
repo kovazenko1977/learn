@@ -87,7 +87,8 @@ class BackupManager {
             'id' => 1,
             'name' => 'Администратор',
             'role' => 'admin',
-            'code' => '123456',
+            'username' => 'admin',
+            'password' => password_hash('admin', PASSWORD_DEFAULT),
             'service_id' => null,
             'telegram_chat_id' => '',
             'info' => 'Главный администратор системы'

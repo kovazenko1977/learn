@@ -58,6 +58,8 @@ class RequestManager {
     }
 
     public function updateStatus(int $id, string $newStatus, int $userId, string $comment = '', string $photo = '', int $rating = 0): bool {
+        $logger = new LogManager();
+        $logger->log('status_change', $userId, "Заявка #$id -> $newStatus. " . ($comment ? "Коммент: $comment" : ""));
         $requests = $this->getAll();
         $found = false;
         $targetRequest = null;

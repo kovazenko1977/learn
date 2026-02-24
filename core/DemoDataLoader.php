@@ -25,18 +25,29 @@ class DemoDataLoader {
 
         // 2. Users (Generating 30 users)
         $users = [];
-        $users[] = ['id' => 1, 'name' => 'Администратор', 'role' => 'admin', 'code' => '123456', 'service_id' => null];
+        $users[] = [
+            'id' => 1,
+            'name' => 'Администратор',
+            'role' => 'admin',
+            'username' => 'admin',
+            'password' => password_hash('admin', PASSWORD_DEFAULT),
+            'service_id' => null
+        ];
 
         $firstNames = ['Иван', 'Петр', 'Сергей', 'Алексей', 'Дмитрий', 'Андрей', 'Николай', 'Михаил', 'Александр', 'Виктор'];
         $lastNames = ['Иванов', 'Петров', 'Сидоров', 'Кузнецов', 'Попов', 'Васильев', 'Соколов', 'Михайлов', 'Новиков', 'Федоров'];
 
+        $firstNamesEn = ['Ivan', 'Petr', 'Sergey', 'Aleksey', 'Dmitriy', 'Andrey', 'Nikolay', 'Mihail', 'Aleksandr', 'Viktor'];
+
         // 10 Initiators
         for ($i = 2; $i <= 11; $i++) {
+            $fnIdx = array_rand($firstNames);
             $users[] = [
                 'id' => $i,
-                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'name' => $firstNames[$fnIdx] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'initiator',
-                'code' => (string)rand(200000, 299999),
+                'username' => $firstNamesEn[$fnIdx] . $i,
+                'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
                 'service_id' => null
             ];
         }
@@ -44,11 +55,13 @@ class DemoDataLoader {
         // 12 Performers (3 per service)
         for ($i = 12; $i <= 23; $i++) {
             $svcId = (($i - 12) % 4) + 1;
+            $fnIdx = array_rand($firstNames);
             $users[] = [
                 'id' => $i,
-                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'name' => $firstNames[$fnIdx] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'performer',
-                'code' => (string)rand(300000, 399999),
+                'username' => $firstNamesEn[$fnIdx] . $i,
+                'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
                 'service_id' => $svcId
             ];
         }
@@ -56,28 +69,39 @@ class DemoDataLoader {
         // 4 Service Leads
         for ($i = 24; $i <= 27; $i++) {
             $svcId = $i - 23;
+            $fnIdx = array_rand($firstNames);
             $users[] = [
                 'id' => $i,
-                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'name' => $firstNames[$fnIdx] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'service_lead',
-                'code' => (string)rand(400000, 499999),
+                'username' => $firstNamesEn[$fnIdx] . $i,
+                'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
                 'service_id' => $svcId
             ];
         }
 
         // 2 Controllers
         for ($i = 28; $i <= 29; $i++) {
+            $fnIdx = array_rand($firstNames);
             $users[] = [
                 'id' => $i,
-                'name' => $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)],
+                'name' => $firstNames[$fnIdx] . ' ' . $lastNames[array_rand($lastNames)],
                 'role' => 'controller',
-                'code' => (string)rand(500000, 599999),
+                'username' => $firstNamesEn[$fnIdx] . $i,
+                'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
                 'service_id' => null
             ];
         }
 
         // 1 Manager
-        $users[] = ['id' => 30, 'name' => 'Главврач', 'role' => 'manager', 'code' => '777777', 'service_id' => null];
+        $users[] = [
+            'id' => 30,
+            'name' => 'Главврач',
+            'role' => 'manager',
+            'username' => 'glavvrach',
+            'password' => password_hash('777777', PASSWORD_DEFAULT),
+            'service_id' => null
+        ];
 
         $userStore->save($users);
 

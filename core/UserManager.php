@@ -20,10 +20,20 @@ class UserManager {
         return null;
     }
 
-    public function getByCode(string $code): ?array {
+    public function getByUsername(string $username): ?array {
         $users = $this->getAll();
         foreach ($users as $user) {
-            if ($user['code'] === $code) return $user;
+            if (isset($user['username']) && strtolower($user['username']) === strtolower($username)) {
+                return $user;
+            }
+        }
+        return null;
+    }
+
+    public function authenticate(string $username, string $password): ?array {
+        $user = $this->getByUsername($username);
+        if ($user && isset($user['password']) && password_verify($password, $user['password'])) {
+            return $user;
         }
         return null;
     }

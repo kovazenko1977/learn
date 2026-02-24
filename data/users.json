@@ -3,210 +3,240 @@
         "id": 1,
         "name": "Администратор",
         "role": "admin",
-        "code": "123456",
+        "username": "admin",
+        "password": "$2y$10$WUCB0InVz8Obb5IykXDvG.EiRgER\/dNWQoj5tCZpg.ULxzl0VCk0G",
         "service_id": null
     },
     {
         "id": 2,
-        "name": "Сергей Петров",
+        "name": "Виктор Васильев",
         "role": "initiator",
-        "code": "266681",
+        "username": "Viktor2",
+        "password": "$2y$10$YobAVZRy2VLD6.SaoRvboen19KZwaz8fw5GLok\/i3YsR1g5DdK3WG",
         "service_id": null
     },
     {
         "id": 3,
-        "name": "Алексей Соколов",
+        "name": "Виктор Федоров",
         "role": "initiator",
-        "code": "214525",
+        "username": "Viktor3",
+        "password": "$2y$10$Zv8\/cVJxqbWwNeHor\/iA8u3r9HPr2.x8p0Zsx4p5i.X3nzhBcwxMS",
         "service_id": null
     },
     {
         "id": 4,
-        "name": "Алексей Новиков",
+        "name": "Иван Кузнецов",
         "role": "initiator",
-        "code": "261158",
+        "username": "Ivan4",
+        "password": "$2y$10$gw5yJegwHTSL\/qKfr\/HPbODNyJ93dwP9CqDpRQWON5IvFB6k0dAZ.",
         "service_id": null
     },
     {
         "id": 5,
-        "name": "Алексей Новиков",
+        "name": "Виктор Сидоров",
         "role": "initiator",
-        "code": "214150",
+        "username": "Viktor5",
+        "password": "$2y$10$VZfGOqBG545WfI.bW.\/Jtegok3y1goD4m\/0Y\/Gm0chqjvMri5.Tt2",
         "service_id": null
     },
     {
         "id": 6,
-        "name": "Дмитрий Иванов",
+        "name": "Петр Соколов",
         "role": "initiator",
-        "code": "270942",
+        "username": "Petr6",
+        "password": "$2y$10$3N03jiRH7W7ZwZAF2u.vNuTjnkcFxycFWuP43dejFcib9zBITSRpO",
         "service_id": null
     },
     {
         "id": 7,
-        "name": "Александр Федоров",
+        "name": "Александр Петров",
         "role": "initiator",
-        "code": "249271",
+        "username": "Aleksandr7",
+        "password": "$2y$10$LdIDXIRR0L58QwjCI8IvTergcCz.BuxSWLFdSmAb.TKIomg\/ZtDEC",
         "service_id": null
     },
     {
         "id": 8,
-        "name": "Александр Попов",
+        "name": "Николай Петров",
         "role": "initiator",
-        "code": "272360",
+        "username": "Nikolay8",
+        "password": "$2y$10$rT6eqLL6EJYZO8UgDA7d7OMxORrQQC\/WodCO\/21esNT1YYoMfbQvi",
         "service_id": null
     },
     {
         "id": 9,
-        "name": "Николай Новиков",
+        "name": "Алексей Кузнецов",
         "role": "initiator",
-        "code": "285068",
+        "username": "Aleksey9",
+        "password": "$2y$10$IVmxXA8a4NQQGmMgVfdFh.3gL9.FaH4fswDa0y3LxG2qSBkx59dQa",
         "service_id": null
     },
     {
         "id": 10,
-        "name": "Иван Михайлов",
+        "name": "Сергей Новиков",
         "role": "initiator",
-        "code": "265782",
+        "username": "Sergey10",
+        "password": "$2y$10$BtD1TjUGgBwwAo28f6j0P.w8QjwBbGvHcyfgJhQ\/bD.6wKR5B6Nk2",
         "service_id": null
     },
     {
         "id": 11,
-        "name": "Андрей Михайлов",
+        "name": "Петр Михайлов",
         "role": "initiator",
-        "code": "245919",
+        "username": "Petr11",
+        "password": "$2y$10$.zX1RvLSTuLcQkkMF\/K\/ce.TzXd5CWgq5XXmGkMa6zsZFoF34H9CS",
         "service_id": null
     },
     {
         "id": 12,
-        "name": "Александр Попов",
+        "name": "Николай Васильев",
         "role": "performer",
-        "code": "373382",
+        "username": "Nikolay12",
+        "password": "$2y$10$c6tdkZNIALTH7x6urlz1W.vax4.LGymjqhvKThXTUpaEZmaWdoCsm",
         "service_id": 1
     },
     {
         "id": 13,
-        "name": "Николай Кузнецов",
+        "name": "Михаил Новиков",
         "role": "performer",
-        "code": "329924",
+        "username": "Mihail13",
+        "password": "$2y$10$Pca0r9S3WSJKTJWT6MX7Ke9M.X4cAIvrhJOfD3A2lqcrbpY3lKW7u",
         "service_id": 2
     },
     {
         "id": 14,
-        "name": "Александр Федоров",
+        "name": "Дмитрий Васильев",
         "role": "performer",
-        "code": "310703",
+        "username": "Dmitriy14",
+        "password": "$2y$10$Qw4n9WUAOxEiqj\/HnF5Z0eHx05tIP0qhMVzIOS8vgLl\/1Ipu2hGJ2",
         "service_id": 3
     },
     {
         "id": 15,
-        "name": "Виктор Новиков",
+        "name": "Виктор Петров",
         "role": "performer",
-        "code": "359609",
+        "username": "Viktor15",
+        "password": "$2y$10$7YI1.O5TxQBAyP1eIEnMuuWSZIVPjnESDN8pPCR5feX9PcJ3Vr0Ba",
         "service_id": 4
     },
     {
         "id": 16,
-        "name": "Алексей Новиков",
+        "name": "Дмитрий Петров",
         "role": "performer",
-        "code": "345911",
+        "username": "Dmitriy16",
+        "password": "$2y$10$\/D648xvcp0N07rf1hfkDtu7CSUwCtk42PD1hbyn6lEJ2k\/2Q.vMJ6",
         "service_id": 1
     },
     {
         "id": 17,
-        "name": "Петр Попов",
+        "name": "Алексей Кузнецов",
         "role": "performer",
-        "code": "317541",
+        "username": "Aleksey17",
+        "password": "$2y$10$krPVM8JxO34KzXT8JSCHAeG\/CLXqTiH0S8vNfisnHmlXXip6avyQe",
         "service_id": 2
     },
     {
         "id": 18,
-        "name": "Андрей Новиков",
+        "name": "Иван Попов",
         "role": "performer",
-        "code": "395178",
+        "username": "Ivan18",
+        "password": "$2y$10$ugdpOEjBsbq54rZdHNkdUesVGS911Y.\/CDN6NS9n4WfmZKlbZ\/c.S",
         "service_id": 3
     },
     {
         "id": 19,
-        "name": "Сергей Федоров",
+        "name": "Андрей Кузнецов",
         "role": "performer",
-        "code": "355588",
+        "username": "Andrey19",
+        "password": "$2y$10$qt9dOOZLu0dwU\/SmcWqkueMPJkzsx0ZvNRRfI1YB2L6mduaQJIDIq",
         "service_id": 4
     },
     {
         "id": 20,
-        "name": "Петр Петров",
+        "name": "Иван Иванов",
         "role": "performer",
-        "code": "325874",
+        "username": "Ivan20",
+        "password": "$2y$10$1Ygj9ln5J2aeI9uTfJRmbuIRQt\/sU64TAuNCpaCL2.0tu\/FcUaByK",
         "service_id": 1
     },
     {
         "id": 21,
-        "name": "Николай Сидоров",
+        "name": "Дмитрий Федоров",
         "role": "performer",
-        "code": "342712",
+        "username": "Dmitriy21",
+        "password": "$2y$10$TLtpQu7V4oMHxnI.kgh4COfanyq7S5ofcVM8my54gSULXuEfeiwNm",
         "service_id": 2
     },
     {
         "id": 22,
-        "name": "Михаил Новиков",
+        "name": "Петр Васильев",
         "role": "performer",
-        "code": "325153",
+        "username": "Petr22",
+        "password": "$2y$10$zDrBh7NesHSjh3.qKRRNCupLrdci0VZZlKsbQSEU06opJgmEOLuBW",
         "service_id": 3
     },
     {
         "id": 23,
-        "name": "Николай Соколов",
+        "name": "Иван Петров",
         "role": "performer",
-        "code": "393153",
+        "username": "Ivan23",
+        "password": "$2y$10$OiRNJJBQbhPyyE\/wKwq5fuHdixohRV2g\/Bsq\/2oWiZ2sYBTOx4ewa",
         "service_id": 4
     },
     {
         "id": 24,
-        "name": "Петр Иванов",
+        "name": "Алексей Васильев",
         "role": "service_lead",
-        "code": "408976",
+        "username": "Aleksey24",
+        "password": "$2y$10$CyZRW6wnHKugLcV2TCjmtu9rFlKlFugtGmRirUXeggbf5YQw5OmXe",
         "service_id": 1
     },
     {
         "id": 25,
-        "name": "Дмитрий Васильев",
+        "name": "Дмитрий Попов",
         "role": "service_lead",
-        "code": "410122",
+        "username": "Dmitriy25",
+        "password": "$2y$10$gy7Apw00CcVaYIw1kXSZy.SCoouwVnVxOzkPOC1pk3CCTRwX9\/qBS",
         "service_id": 2
     },
     {
         "id": 26,
-        "name": "Андрей Михайлов",
+        "name": "Виктор Соколов",
         "role": "service_lead",
-        "code": "485956",
+        "username": "Viktor26",
+        "password": "$2y$10$shlHL8Yd8HapnAMtC.xQIuck1aBtCgsVxXivHZ7RxjDTAC\/kxSNYW",
         "service_id": 3
     },
     {
         "id": 27,
-        "name": "Виктор Федоров",
+        "name": "Николай Кузнецов",
         "role": "service_lead",
-        "code": "436512",
+        "username": "Nikolay27",
+        "password": "$2y$10$b706RBrW8Xo7x7abT\/dDC.LadPIdoDHbINybgLqq9SZknZhIyOueK",
         "service_id": 4
     },
     {
         "id": 28,
-        "name": "Дмитрий Соколов",
+        "name": "Михаил Иванов",
         "role": "controller",
-        "code": "599824",
+        "username": "Mihail28",
+        "password": "$2y$10$npSffkoNsKPUlK3\/XsdL9.cch5aXGxQUDZ8NHpiUlIzG\/sue5pLwW",
         "service_id": null
     },
     {
         "id": 29,
-        "name": "Виктор Васильев",
+        "name": "Сергей Федоров",
         "role": "controller",
-        "code": "502490",
+        "username": "Sergey29",
+        "password": "$2y$10$bATCs95xUKcMCUx0.UTU3.zZwyJhX3dSCRGf.RdH.DKODnxDuzS9C",
         "service_id": null
     },
     {
         "id": 30,
         "name": "Главврач",
         "role": "manager",
-        "code": "777777",
+        "username": "glavvrach",
+        "password": "$2y$10$a1ZMf0lqOE.GQrQA.MyKfeifW43EwEju0uPuzSxZUChEVfItFif8K",
         "service_id": null
     }
 ]

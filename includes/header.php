@@ -192,6 +192,10 @@
                     <i data-lucide="settings"></i>
                     <span>Настройки SLA</span>
                 </a>
+                <a href="logs.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'logs.php' ? 'active' : ''; ?>">
+                    <i data-lucide="scroll"></i>
+                    <span>Логи системы</span>
+                </a>
             <?php endif; ?>
 
             <a href="profile.php" class="sidebar-item <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
