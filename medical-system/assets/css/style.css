@@ -294,9 +294,14 @@ tr:hover td {
     /* Responsive Tables */
     .card {
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     table {
         min-width: 600px;
+        font-size: 13px;
+    }
+    td, th {
+        padding: 12px 8px;
     }
 
     /* Grid Adjustments */
@@ -319,9 +324,34 @@ tr:hover td {
     #detailModal > div, #editModal > div, #addModal > div, #historyModal > div, #editAppModal > div, #editProcModal > div, #editStaffModal > div {
         width: 95% !important;
         padding: 20px !important;
-        margin-top: 20px !important;
-        margin-bottom: 20px !important;
+        margin: 20px auto !important;
     }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .navbar {
+        height: auto;
+        padding: 12px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .navbar .btn {
+        width: auto;
+        margin-bottom: 0;
+    }
+}
+
+.btn-ghost {
+    background: transparent;
+    border-color: transparent;
+}
+.btn-ghost:hover {
+    background: rgba(0,0,0,0.05);
 }
 
 @media print {

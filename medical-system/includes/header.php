@@ -35,9 +35,72 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
                 navigator.serviceWorker.register('sw.js');
             });
         }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.style.display = 'flex';
+        });
+
+        function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
+                document.getElementById('pwa-install-banner').style.display = 'none';
+            });
+        }
     </script>
 </head>
 <body class="mica-effect">
+    <script>
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isMobile() && !window.location.pathname.includes('/mobile/')) {
+                document.getElementById('mobile-suggestion-banner').style.display = 'flex';
+            }
+        });
+    </script>
+
+    <!-- Mobile Suggestion Banner -->
+    <div id="mobile-suggestion-banner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; background: #fff8e1; border-bottom: 2px solid #ff8c00; z-index: 10001; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); align-items: center; justify-content: space-between; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="info" style="color: #ff8c00;"></i>
+            <div style="font-size: 0.85rem; color: #333;">
+                Обнаружено мобильное устройство. Использовать оптимизированную версию?
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="document.getElementById('mobile-suggestion-banner').style.display='none'" class="btn btn-sm btn-ghost" style="padding: 5px;">Нет</button>
+            <a href="mobile/" class="btn btn-sm btn-primary" style="padding: 5px 10px; background: #ff8c00;">Да</a>
+        </div>
+    </div>
+
+    <!-- PWA Install Banner -->
+    <div id="pwa-install-banner" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 2px solid var(--win-accent); z-index: 10000; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); align-items: center; justify-content: space-between; gap: 15px; animation: slideUp 0.5s ease;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; background: var(--win-accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                <i data-lucide="smartphone"></i>
+            </div>
+            <div>
+                <div style="font-weight: 700; font-size: 0.9rem;">Установить WES МЕД</div>
+                <div style="font-size: 0.75rem; color: var(--win-text-secondary);">Добавить на рабочий стол для быстрого доступа</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="document.getElementById('pwa-install-banner').style.display='none'" class="btn btn-sm btn-ghost" style="padding: 8px;">Позже</button>
+            <button onclick="installPWA()" class="btn btn-sm btn-primary" style="padding: 8px 16px;">Установить</button>
+        </div>
+    </div>
+
     <div id="global-preloader">
         <button type="button" onclick="document.getElementById('global-preloader').classList.add('hidden')" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--win-text-secondary); cursor: pointer; opacity: 0.5; z-index: 10001;" title="Закрыть прелоадер">
             <i data-lucide="x"></i>
