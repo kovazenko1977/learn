@@ -10,9 +10,13 @@ if (!\Medical\Core\Auth::can('patients_view')) {
 
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
+$bookingManager = new \Medical\Core\Managers\BookingManager();
+$roomManager = new \Medical\Core\Managers\RoomManager();
+
 $id = $_GET['id'] ?? '';
 $patient = $patientManager->getById($id);
 $appointments = $scheduleManager->getByPatient($id);
+$bookings = $bookingManager->getByPatient($id);
 
 if (!$patient) {
     echo '<div class="card mica-effect"><h2>Пациент не найден</h2><a href="patients.php" class="btn btn-primary">Назад к списку</a></div>';
@@ -123,6 +127,40 @@ require_once __DIR__ . '/includes/header.php';
                     </a>
                 <?php endif; ?>
             </div>
+        </div>
+
+        <div class="card mica-effect">
+            <h3 style="margin-bottom: 20px;"><i data-lucide="calendar-check" class="icon"></i> История проживания</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <?php if (empty($bookings)): ?>
+                    <p style="text-align: center; color: var(--win-text-secondary); font-size: 0.85rem;">Нет данных о бронировании</p>
+                <?php else: ?>
+                    <?php foreach (array_reverse($bookings) as $b):
+                        $room = $roomManager->getById($b['room_id']);
+                        $sMap = [
+                            'preliminary' => ['bg' => '#fff8e1', 'text' => '#b7791f', 'label' => 'Предв.'],
+                            'confirmed' => ['bg' => '#fde7e9', 'text' => '#d13438', 'label' => 'Подтв.'],
+                            'checked_in' => ['bg' => '#dff6dd', 'text' => '#107c10', 'label' => 'Проживает'],
+                            'checked_out' => ['bg' => '#f3f2f1', 'text' => '#605e5c', 'label' => 'Выехал'],
+                            'cancelled' => ['bg' => '#f3f2f1', 'text' => '#a19f9d', 'label' => 'Отмена']
+                        ];
+                        $st = $sMap[$b['status']] ?? $sMap['preliminary'];
+                    ?>
+                        <div style="padding: 10px; border: 1px solid var(--win-border); border-radius: 8px; font-size: 0.85rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <strong><?php echo htmlspecialchars($room['name'] ?? 'Удален'); ?></strong>
+                                <span style="background: <?php echo $st['bg']; ?>; color: <?php echo $st['text']; ?>; padding: 1px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">
+                                    <?php echo $st['label']; ?>
+                                </span>
+                            </div>
+                            <div style="color: var(--win-text-secondary);">
+                                <?php echo date('d.m', strtotime($b['check_in'])); ?> — <?php echo date('d.m.Y', strtotime($b['check_out'])); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+            <a href="booking.php" class="btn btn-sm btn-ghost" style="margin-top: 15px; width: 100%;">Перейти в бронирование</a>
         </div>
 
         <div class="card mica-effect">

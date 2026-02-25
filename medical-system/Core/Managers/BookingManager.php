@@ -24,6 +24,24 @@ class BookingManager {
         $data['status'] = $data['status'] ?? 'preliminary'; // preliminary, confirmed, checked_in, checked_out, cancelled
         $data['created_at'] = date('Y-m-d H:i:s');
 
+        // Integration with Patient Registry
+        $pm = new PatientManager();
+        $existing = $pm->findByNameOrPhone($data['guest_name'], $data['guest_phone']);
+        if ($existing) {
+            $data['patient_id'] = $existing['id'];
+        } else {
+            // Create new patient record
+            $patientId = $pm->add([
+                'name' => $data['guest_name'],
+                'phone' => $data['guest_phone'],
+                'birth_date' => $data['guest_birth_date'] ?? '',
+                'card_number' => $data['guest_card_number'] ?? '',
+                'residence' => $data['guest_residence'] ?? '',
+                'extra_info' => 'Создан автоматически при бронировании'
+            ]);
+            $data['patient_id'] = $patientId;
+        }
+
         // Calculate total cost
         $rm = new RoomManager();
         $total = 0;
@@ -58,6 +76,34 @@ class BookingManager {
                    $b['check_in'] < $end &&
                    $b['check_out'] > $start;
         });
+    }
+
+    public function getByPatient($patientId) {
+        $bookings = $this->getAll();
+        return array_filter($bookings, function($b) use ($patientId) {
+            return ($b['patient_id'] ?? '') === $patientId;
+        });
+    }
+
+    public function getActiveByPatient($patientId) {
+        $bookings = $this->getByPatient($patientId);
+        $today = date('Y-m-d');
+        foreach ($bookings as $b) {
+            if ($b['status'] !== 'cancelled' && $b['status'] !== 'checked_out') {
+                if ($today >= $b['check_in'] && $today < $b['check_out']) {
+                    return $b;
+                }
+            }
+        }
+        // If not strictly within dates, check if it's a confirmed future booking
+        foreach ($bookings as $b) {
+            if ($b['status'] === 'confirmed' || $b['status'] === 'preliminary') {
+                if ($b['check_in'] >= $today) {
+                    return $b;
+                }
+            }
+        }
+        return null;
     }
 
     public function isAvailable($roomId, $start, $end, $excludeId = null) {

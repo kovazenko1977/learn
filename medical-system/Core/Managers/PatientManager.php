@@ -54,6 +54,16 @@ class PatientManager {
         });
     }
 
+    public function findByNameOrPhone($name, $phone) {
+        $patients = $this->getAll();
+        foreach ($patients as $p) {
+            if ($p['name'] === $name && $p['phone'] === $phone) {
+                return $p;
+            }
+        }
+        return null;
+    }
+
     public function addHistoryEntry($patientId, $entry) {
         $patient = $this->getById($patientId);
         if (!$patient) return false;

@@ -11,6 +11,7 @@ if (!\Medical\Core\Auth::can('patients_view')) {
 $patientManager = new \Medical\Core\Managers\PatientManager();
 $staffManager = new \Medical\Core\Managers\StaffManager();
 $procedureManager = new \Medical\Core\Managers\ProcedureManager();
+$bookingManager = new \Medical\Core\Managers\BookingManager();
 
 if (isset($_GET['ajax'])) {
     $query = $_GET['q'] ?? '';
@@ -145,6 +146,7 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
         <thead>
             <tr>
                 <th>ФИО</th>
+                <th style="text-align: center;">Статус</th>
                 <th>Дата рождения</th>
                 <th>№ Карты</th>
                 <th>Телефон</th>
@@ -152,9 +154,26 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($patients as $p): ?>
+            <?php foreach ($patients as $p):
+                $activeBooking = $bookingManager->getActiveByPatient($p['id']);
+            ?>
             <tr>
                 <td style="font-weight: 600;"><?php echo htmlspecialchars($p['name']); ?></td>
+                <td style="text-align: center;">
+                    <?php if ($activeBooking): ?>
+                        <?php if ($activeBooking['status'] === 'checked_in'): ?>
+                            <div class="status-icon living" title="Проживает в номере">
+                                <i data-lucide="home" class="icon-sm"></i>
+                            </div>
+                        <?php else: ?>
+                            <div class="status-icon booked" title="Забронирован номер">
+                                <i data-lucide="calendar-days" class="icon-sm"></i>
+                            </div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <span style="color: #ccc;">-</span>
+                    <?php endif; ?>
+                </td>
                 <td><?php echo date('d-m-Y', strtotime($p['birth_date'])); ?></td>
                 <td><code><?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></code></td>
                 <td><?php echo htmlspecialchars($p['phone'] ?? '-'); ?></td>
@@ -569,5 +588,18 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
             });
     }
 </script>
+
+<style>
+.status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+}
+.status-icon.booked { background: #fff8e1; color: #b7791f; border: 1px solid #fbd38d; }
+.status-icon.living { background: #dff6dd; color: #107c10; border: 1px solid #107c10; }
+</style>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

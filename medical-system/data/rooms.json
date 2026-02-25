@@ -1,1 +1,9 @@
-[]
+[
+    {
+        "name": "Room 101",
+        "type": "Standard",
+        "capacity": 2,
+        "base_price": 1000,
+        "id": "699f5bac8c958"
+    }
+]

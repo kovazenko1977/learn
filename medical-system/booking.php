@@ -29,6 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'room_id' => $_POST['room_id'],
                 'guest_name' => $_POST['guest_name'],
                 'guest_phone' => $_POST['guest_phone'],
+                'guest_birth_date' => $_POST['guest_birth_date'] ?? '',
+                'guest_card_number' => $_POST['guest_card_number'] ?? '',
+                'guest_residence' => $_POST['guest_residence'] ?? '',
                 'check_in' => $_POST['check_in'],
                 'check_out' => $_POST['check_out'],
                 'status' => 'confirmed',
@@ -234,9 +237,26 @@ $allBookings = $bm->getAll();
                 <input type="text" name="guest_name" class="form-control" required>
             </div>
 
-            <div class="mb-3">
-                <label>Телефон</label>
-                <input type="text" name="guest_phone" class="form-control" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="mb-3">
+                <div>
+                    <label>Телефон</label>
+                    <input type="text" name="guest_phone" class="form-control" value="+375 " required>
+                </div>
+                <div>
+                    <label>Дата рождения</label>
+                    <input type="date" name="guest_birth_date" class="form-control" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="mb-3">
+                <div>
+                    <label>№ Ист. болезни (если есть)</label>
+                    <input type="text" name="guest_card_number" class="form-control" placeholder="0000/2024">
+                </div>
+                <div>
+                    <label>Место жительства</label>
+                    <input type="text" name="guest_residence" class="form-control" placeholder="Город...">
+                </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" class="mb-3">
