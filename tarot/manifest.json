@@ -1,0 +1,20 @@
+{
+  "name": "Таро Сканер ИИ",
+  "short_name": "Таро",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#f3f3f3",
+  "theme_color": "#6200ee",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluency/144/000000/tarot-cards.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/fluency/512/000000/tarot-cards.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
