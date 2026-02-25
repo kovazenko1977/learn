@@ -58,7 +58,7 @@ require_once __DIR__ . '/includes/header.php';
                 <div style="width: 150px; padding: 15px; font-weight: 600; border-right: 1px solid var(--win-border); background: rgba(0,0,0,0.01);">
                     Кабинет <?php echo htmlspecialchars($cab); ?>
                 </div>
-                <div style="flex-grow: 1; position: relative; background: #fff;">
+                <div style="flex-grow: 1; position: relative; background: #eefbe3; background-image: linear-gradient(90deg, transparent 99%, rgba(0,0,0,0.05) 99%); background-size: 8.333% 100%;">
                     <?php
                     $dayStart = 8 * 60;
                     $dayTotal = 12 * 60; // 8:00 to 20:00
@@ -107,6 +107,10 @@ require_once __DIR__ . '/includes/header.php';
         <div style="display: flex; align-items: center; gap: 8px;">
             <div style="width: 16px; height: 16px; background: var(--win-accent); border-radius: 3px;"></div>
             <span>Запланированная процедура</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 16px; background: #eefbe3; border: 1px solid #d4edda; border-radius: 3px;"></div>
+            <span>Свободное время</span>
         </div>
         <div style="color: var(--win-text-secondary);">
             * Показаны записи с 08:00 до 20:00. Нажмите на блок, чтобы увидеть детали.

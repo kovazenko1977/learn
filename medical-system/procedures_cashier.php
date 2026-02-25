@@ -74,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && \Medical
 $startDate = $_GET['start_date'] ?? date('Y-m-d');
 $endDate = $_GET['end_date'] ?? date('Y-m-d');
 $query = $_GET['q'] ?? '';
+$hidePaid = isset($_GET['hide_paid']);
 
 $allAppointments = $scheduleManager->getAll();
 $totalRevenue = 0;
@@ -81,7 +82,7 @@ $filteredUnpaidCount = 0;
 $filteredUnpaidSum = 0;
 $selectedPatientId = null;
 
-$appointments = array_filter($allAppointments, function($app) use ($query, $startDate, $endDate, &$totalRevenue, &$filteredUnpaidCount, &$filteredUnpaidSum, &$selectedPatientId) {
+$appointments = array_filter($allAppointments, function($app) use ($query, $startDate, $endDate, $hidePaid, &$totalRevenue, &$filteredUnpaidCount, &$filteredUnpaidSum, &$selectedPatientId) {
     // Date range check
     $appDate = $app['date'];
     if ($appDate < $startDate || $appDate > $endDate) return false;
@@ -94,6 +95,7 @@ $appointments = array_filter($allAppointments, function($app) use ($query, $star
     // A procedure is "payable" if status is unpaid or paid
     $isPayable = (($app['status'] ?? '') === 'unpaid' || ($app['status'] ?? '') === 'paid');
     if (!$isPayable) return false;
+    if ($hidePaid && $app['status'] === 'paid') return false;
 
     if ($app['status'] === 'paid') {
         $totalRevenue += (float)($app['price'] ?? 0);

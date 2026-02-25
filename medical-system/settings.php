@@ -206,6 +206,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (\Exception $e) {
             $message = 'Ошибка инициализации MySQL: ' . $e->getMessage();
         }
+    } elseif ($action === 'create_snapshot' && \Medical\Core\Auth::can('settings_system')) {
+        $sm = new \Medical\Core\Managers\SnapshotManager();
+        if ($sm->createSnapshot($_POST['note'] ?? '')) {
+            $message = 'Снимок системы (версия) успешно создан';
+        }
+    } elseif ($action === 'restore_snapshot' && \Medical\Core\Auth::can('settings_system')) {
+        $sm = new \Medical\Core\Managers\SnapshotManager();
+        if ($sm->restoreFromSnapshot($_POST['id'])) {
+            $message = 'Система успешно откачена к выбранной версии';
+        }
+    } elseif ($action === 'delete_snapshot' && \Medical\Core\Auth::can('settings_system')) {
+        $sm = new \Medical\Core\Managers\SnapshotManager();
+        if ($sm->deleteSnapshot($_POST['id'])) {
+            $message = 'Версия данных удалена';
+        }
     }
 }
 
@@ -680,6 +695,61 @@ $permissions = [
                     <i data-lucide="upload" class="icon"></i> Восстановить из файла
                 </button>
             </form>
+        </div>
+
+        <div class="card mica-effect" style="margin-bottom: 24px;">
+            <h2>Контроль версий и откат</h2>
+            <p style="color: var(--win-text-secondary); margin-bottom: 20px;">
+                Создавайте «снимки» текущего состояния базы данных перед важными изменениями. Это позволит быстро вернуться к предыдущей версии в случае ошибки.
+            </p>
+            <form method="POST" style="display: flex; gap: 10px; margin-bottom: 24px;">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" value="create_snapshot">
+                <input type="text" name="note" placeholder="Примечание к версии..." style="flex-grow: 1;">
+                <button type="submit" class="btn btn-primary">Создать снимок</button>
+            </form>
+
+            <table style="font-size: 0.85rem;">
+                <thead>
+                    <tr>
+                        <th>Время</th>
+                        <th>Автор</th>
+                        <th>Примечание</th>
+                        <th style="text-align: right;">Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $sm = new \Medical\Core\Managers\SnapshotManager();
+                    $snapshots = $sm->listSnapshots();
+                    foreach ($snapshots as $s): ?>
+                        <tr>
+                            <td><strong><?php echo $s['timestamp']; ?></strong></td>
+                            <td><?php echo htmlspecialchars($s['user']); ?></td>
+                            <td><?php echo htmlspecialchars($s['note']); ?></td>
+                            <td style="text-align: right;">
+                                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                    <form method="POST" onsubmit="return confirm('Откатить систему к этой версии? Текущие данные будут перезаписаны!')" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="restore_snapshot">
+                                        <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
+                                        <button type="submit" class="btn btn-sm" style="color: var(--win-accent);" title="Откатиться">Откат</button>
+                                    </form>
+                                    <form method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="delete_snapshot">
+                                        <input type="hidden" name="id" value="<?php echo $s['id']; ?>">
+                                        <button type="submit" class="btn btn-sm" style="color: #d13438;" title="Удалить">&times;</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    <?php if (empty($snapshots)): ?>
+                        <tr><td colspan="4" style="text-align: center; color: #999; padding: 20px;">Снимки еще не создавались</td></tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
 
         <div class="card mica-effect" style="border-left: 4px solid #d13438;">
