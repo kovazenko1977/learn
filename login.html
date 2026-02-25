@@ -1,10 +1,3 @@
-<?php
-require_once __DIR__ . '/../Core/Autoloader.php';
-\Medical\Core\Autoloader::register();
-\Medical\Core\Auth::init();
-
-$uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
-?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,10 +9,10 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     <meta name="theme-color" content="#0078d4">
     <style>
         :root {
-            --win-font: <?php echo $uiSettings['font_family'] ?? "'Segoe UI Variable Display', 'Segoe UI', sans-serif"; ?>;
-            --base-size: <?php echo ($uiSettings['font_size'] ?? 16); ?>px;
-            --win-accent: <?php echo $uiSettings['accent_color'] ?? "#0078d4"; ?>;
-            --win-radius: <?php echo ($uiSettings['border_radius'] ?? 12); ?>px;
+            --win-font: 'Segoe UI', sans-serif;
+            --base-size: 16px;
+            --win-accent: #0078d4;
+            --win-radius: 12px;
         }
         body {
             font-family: var(--win-font);
@@ -29,12 +22,12 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        window.WES_USER_ID = "<?php echo \Medical\Core\Auth::getUser()['id'] ?? 'guest'; ?>";
-        /* if ('serviceWorker' in navigator) {
+        window.WES_USER_ID = "guest";
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js');
             });
-        } */
+        }
 
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -121,39 +114,7 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
         </script>
     </div>
 
-    <?php if (\Medical\Core\Auth::isLoggedIn()): ?>
-        <button id="sidebar-toggle" class="btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1001; border-radius: 50%; width: 56px; height: 56px; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); background: var(--win-accent); color: white; border: none;">
-            <i data-lucide="menu" id="toggle-icon"></i>
-        </button>
-
-        <?php include __DIR__ . '/sidebar.php'; ?>
-        <div class="main-content">
-            <header class="navbar card">
-                <button id="menu-btn-mobile" class="btn btn-sm" style="display: none; margin-right: 15px; padding: 8px;">
-                    <i data-lucide="menu"></i>
-                </button>
-                <div style="flex-grow: 1; display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 32px; height: 32px; background: var(--win-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                        <?php echo mb_substr(\Medical\Core\Auth::getUser()['name'], 0, 1); ?>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600; font-size: 0.95rem; line-height: 1.2;">
-                            <?php echo htmlspecialchars(\Medical\Core\Auth::getUser()['name']); ?>
-                        </div>
-                        <div style="font-size: 0.75rem; color: var(--win-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">
-                            <?php echo htmlspecialchars(\Medical\Core\Auth::getUser()['role']); ?>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <a href="login.php?logout=1" class="btn btn-sm">
-                        <i data-lucide="log-out" class="icon" style="margin:0; width: 16px; height: 16px;"></i> Выход
-                    </a>
-                </div>
-            </header>
-    <?php else: ?>
-        <div style="padding: 40px;">
-    <?php endif; ?>
+            <div style="padding: 40px;">
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -191,3 +152,122 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
             });
         });
     </script>
+<div class="login-container" style="max-width: 400px; margin: 100px auto;">
+    <div class="card mica-effect" style="text-align: center; padding: 40px;">
+        <h1 style="margin-bottom: 30px;">Вход в систему</h1>
+
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="890e332a649f4074f01f8e7b4b68d43d0a5d9849289b5c7dda2691762d91a3d7">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; text-align: left;">Код доступа (6 цифр)</label>
+                <input type="password" name="code" maxlength="6" style="width: 100%; font-size: 24px; text-align: center; letter-spacing: 10px;" required autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Войти</button>
+        </form>
+        <div style="margin-top: 24px; border-top: 1px solid var(--win-border); padding-top: 24px;">
+            <a href="mobile/login.php" style="color: var(--win-accent); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="smartphone" style="width:18px; height:18px;"></i> Перейти в мобильную версию
+            </a>
+        </div>
+        <p style="margin-top: 20px; font-size: 0.7rem; color: var(--win-text-secondary); opacity: 0.6;">разработчик wes.by</p>
+    </div>
+</div>
+        </div>
+    <script>
+        lucide.createIcons();
+
+        const hidePreloader = () => {
+            const preloader = document.getElementById('global-preloader');
+            if (preloader && !preloader.classList.contains('hidden')) {
+                preloader.classList.add('hidden');
+            }
+        };
+
+        // Try hiding on DOMContentLoaded (faster)
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(hidePreloader, 800); // Small buffer for Lucide icons
+        });
+
+        // Definitely hide on window load
+        window.addEventListener('load', () => {
+            setTimeout(hidePreloader, 100);
+        });
+
+        // Extreme Failsafe: hide preloader after 3 seconds regardless of load state
+        setTimeout(hidePreloader, 3000);
+
+        // Add preloader to all forms on submit
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+                const preloader = document.getElementById('global-preloader');
+                if (preloader) {
+                    preloader.classList.remove('hidden');
+                    preloader.querySelector('.loader-text').innerText = 'Обработка данных...';
+                }
+            });
+        });
+
+        // Unified Period Persistence Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const daysAheadInput = document.getElementById('days_ahead');
+            const savePeriodCheckbox = document.getElementById('save_period');
+            const startDateInput = document.querySelector('input[name="start_date"]');
+            const endDateInput = document.querySelector('input[name="end_date"]');
+            const form = daysAheadInput?.closest('form');
+
+            if (!daysAheadInput) return;
+
+            // Key includes user ID and page path for "separately for each" and "depends on profile"
+            const pageId = window.location.pathname.split('/').pop() || 'index.php';
+            const storageKey = `period_${window.WES_USER_ID || 'guest'}_${pageId}`;
+
+            const savedDays = localStorage.getItem(storageKey);
+            if (savedDays !== null) {
+                daysAheadInput.value = savedDays;
+                savePeriodCheckbox.checked = true;
+
+                const urlParams = new URLSearchParams(window.location.search);
+                // Auto-apply only if URL doesn't have explicit dates
+                if (!urlParams.has('start_date') && !urlParams.has('end_date')) {
+                     const start = new Date();
+                     const end = new Date();
+                     end.setDate(start.getDate() + parseInt(savedDays));
+                     const startStr = start.toISOString().split('T')[0];
+                     const endStr = end.toISOString().split('T')[0];
+
+                     const url = new URL(window.location);
+                     url.searchParams.set('start_date', startStr);
+                     url.searchParams.set('end_date', endStr);
+                     window.location.href = url.toString();
+                }
+            }
+
+            // Real-time date adjustment when typing number of days
+            daysAheadInput.addEventListener('input', function() {
+                const val = parseInt(this.value);
+                if (!isNaN(val) && val >= 0) {
+                    const start = new Date();
+                    const end = new Date();
+                    end.setDate(start.getDate() + val);
+                    if (startDateInput) startDateInput.value = start.toISOString().split('T')[0];
+                    if (endDateInput) endDateInput.value = end.toISOString().split('T')[0];
+                }
+            });
+
+            if (form) {
+                form.addEventListener('submit', function() {
+                    if (savePeriodCheckbox.checked) {
+                        localStorage.setItem(storageKey, daysAheadInput.value);
+                    } else {
+                        localStorage.removeItem(storageKey);
+                    }
+                });
+            }
+        });
+    </script>
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--win-border); text-align: center;">
+        <p style="font-size: 0.75rem; color: var(--win-text-secondary); opacity: 0.7;">разработчик wes.by</p>
+    </div>
+</body>
+</html>

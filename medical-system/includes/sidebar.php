@@ -23,6 +23,16 @@ function isActive($page, $current_page) {
         </div>
         <?php endif; ?>
 
+        <?php
+        $sys = (new \Medical\Core\JsonStore('settings'))->getAll();
+        if ($sys['is_booking_enabled'] ?? false): ?>
+        <div class="nav-item">
+            <a href="booking.php" class="btn <?php echo isActive('booking.php', $current_page); ?>">
+                <i data-lucide="calendar-check" class="icon"></i> <span>Бронирование</span>
+            </a>
+        </div>
+        <?php endif; ?>
+
         <?php if (\Medical\Core\Auth::can('procedures_assign')): ?>
         <div class="nav-item">
             <a href="procedures_doctor.php" class="btn <?php echo isActive('procedures_doctor.php', $current_page); ?>">

@@ -80,6 +80,38 @@ class Schema {
             'settings' => "CREATE TABLE IF NOT EXISTS settings (
                 name VARCHAR(255) PRIMARY KEY,
                 value JSON
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+            'rooms' => "CREATE TABLE IF NOT EXISTS rooms (
+                id VARCHAR(50) PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                type VARCHAR(50),
+                capacity INT,
+                base_price DECIMAL(10,2),
+                description TEXT,
+                photos JSON
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+            'bookings' => "CREATE TABLE IF NOT EXISTS bookings (
+                id VARCHAR(50) PRIMARY KEY,
+                room_id VARCHAR(50),
+                guest_name VARCHAR(255),
+                guest_phone VARCHAR(50),
+                check_in DATE,
+                check_out DATE,
+                total_cost DECIMAL(10,2),
+                status VARCHAR(50),
+                comment TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+            'pricing_rules' => "CREATE TABLE IF NOT EXISTS pricing_rules (
+                id VARCHAR(50) PRIMARY KEY,
+                name VARCHAR(255),
+                start_date DATE,
+                end_date DATE,
+                type VARCHAR(50),
+                value DECIMAL(10,2)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
         ];
     }

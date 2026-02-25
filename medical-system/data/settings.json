@@ -8,5 +8,6 @@
     "db_name": "",
     "db_user": "",
     "db_pass": "",
-    "is_logging_enabled": false
+    "is_logging_enabled": false,
+    "is_booking_enabled": true
 }

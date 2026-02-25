@@ -163,7 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $settingsStore = new \Medical\Core\JsonStore('settings');
         $existing = $settingsStore->getAll();
         $settingsStore->save(array_merge($existing, [
-            'is_logging_enabled' => isset($_POST['is_logging_enabled'])
+            'is_logging_enabled' => isset($_POST['is_logging_enabled']),
+            'is_booking_enabled' => isset($_POST['is_booking_enabled'])
         ]));
         $message = 'Системные настройки сохранены';
     } elseif ($action === 'save_db_settings') {
@@ -221,6 +222,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($sm->deleteSnapshot($_POST['id'])) {
             $message = 'Версия данных удалена';
         }
+    } elseif ($action === 'clear_logs' && \Medical\Core\Auth::isAdmin()) {
+        $lm = new \Medical\Core\Managers\LogManager();
+        if ($lm->clear()) {
+            $message = 'Журнал активности очищен';
+        }
+    } elseif ($action === 'add_room' && \Medical\Core\Auth::can('settings_system')) {
+        $rm = new \Medical\Core\Managers\RoomManager();
+        $photos = [];
+        if (isset($_FILES['photos'])) {
+            $uploadDir = __DIR__ . '/uploads/rooms/';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+            foreach ($_FILES['photos']['tmp_name'] as $key => $tmpName) {
+                if ($_FILES['photos']['error'][$key] === UPLOAD_ERR_OK) {
+                    $name = uniqid() . '_' . $_FILES['photos']['name'][$key];
+                    if (move_uploaded_file($tmpName, $uploadDir . $name)) {
+                        $photos[] = 'uploads/rooms/' . $name;
+                    }
+                }
+            }
+        }
+        $rm->add([
+            'name' => $_POST['name'],
+            'type' => $_POST['type'],
+            'capacity' => (int)$_POST['capacity'],
+            'base_price' => (float)$_POST['base_price'],
+            'description' => $_POST['description'],
+            'photos' => $photos
+        ]);
+        $message = 'Номер добавлен в фонд';
+    } elseif ($action === 'edit_room' && \Medical\Core\Auth::can('settings_system')) {
+        $rm = new \Medical\Core\Managers\RoomManager();
+        $rm->update($_POST['id'], [
+            'name' => $_POST['name'],
+            'type' => $_POST['type'],
+            'capacity' => (int)$_POST['capacity'],
+            'base_price' => (float)$_POST['base_price'],
+            'description' => $_POST['description']
+        ]);
+        $message = 'Данные номера обновлены';
+    } elseif ($action === 'delete_room' && \Medical\Core\Auth::can('settings_system')) {
+        $rm = new \Medical\Core\Managers\RoomManager();
+        $rm->delete($_POST['id']);
+        $message = 'Номер удален';
+    } elseif ($action === 'add_pricing_rule' && \Medical\Core\Auth::can('settings_system')) {
+        $rulesStore = new \Medical\Core\JsonStore('pricing_rules');
+        $rulesStore->add([
+            'id' => uniqid(),
+            'name' => $_POST['name'],
+            'start_date' => $_POST['start_date'],
+            'end_date' => $_POST['end_date'],
+            'type' => $_POST['type'],
+            'value' => (float)$_POST['value']
+        ]);
+        $message = 'Правило ценообразования добавлено';
+    } elseif ($action === 'delete_pricing_rule' && \Medical\Core\Auth::can('settings_system')) {
+        $rulesStore = new \Medical\Core\JsonStore('pricing_rules');
+        $rulesStore->deleteById($_POST['id']);
+        $message = 'Правило удалено';
     }
 }
 
@@ -271,6 +330,7 @@ $permissions = [
         <?php endif; ?>
         <?php if (\Medical\Core\Auth::can('settings_system')): ?>
             <a href="?sub=maintenance" class="btn <?php echo $activeSub === 'maintenance' ? 'btn-primary' : ''; ?>">Обслуживание</a>
+            <a href="?sub=booking_config" class="btn <?php echo $activeSub === 'booking_config' ? 'btn-primary' : ''; ?>">Настройка Брони</a>
         <?php endif; ?>
     </div>
 </div>
@@ -660,6 +720,12 @@ $permissions = [
                     Включить журнал активности (логирование действий пользователей)
                 </label>
             </div>
+            <div class="mb-3">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" name="is_booking_enabled" <?php echo ($sys['is_booking_enabled'] ?? false) ? 'checked' : ''; ?>>
+                    Включить модуль «БРОНИРОВАНИЕ НОМЕРОВ»
+                </label>
+            </div>
 
             <button type="submit" class="btn btn-primary">Сохранить настройки</button>
         </form>
@@ -808,12 +874,169 @@ $permissions = [
         </form>
     </div>
 
+<?php elseif ($activeSub === 'booking_config' && \Medical\Core\Auth::can('settings_system')):
+    $rm = new \Medical\Core\Managers\RoomManager();
+    $rooms = $rm->getAll();
+    $rulesStore = new \Medical\Core\JsonStore('pricing_rules');
+    $rules = $rulesStore->getAll();
+?>
+    <div class="d-grid" style="grid-template-columns: 1.5fr 1fr; gap: 24px;">
+        <div>
+            <div class="card mica-effect mb-4">
+                <h2>Номерной фонд</h2>
+                <form method="POST" enctype="multipart/form-data" style="margin-bottom: 20px;">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="add_room">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; align-items: end; margin-bottom:10px;">
+                        <div>
+                            <label>Название/№</label>
+                            <input type="text" name="name" class="form-control" placeholder="Люкс 201" required>
+                        </div>
+                        <div>
+                            <label>Тип</label>
+                            <select name="type" class="form-control">
+                                <option value="single">Одноместный</option>
+                                <option value="double">Двухместный</option>
+                                <option value="suite">Люкс</option>
+                                <option value="apartment">Апартаменты</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Мест</label>
+                            <input type="number" name="capacity" class="form-control" value="2" required>
+                        </div>
+                        <div>
+                            <label>Цена/сут</label>
+                            <input type="number" name="base_price" class="form-control" value="5000" required>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: end;">
+                        <div>
+                            <label>Описание</label>
+                            <input type="text" name="description" class="form-control" placeholder="Уютный номер с видом на парк">
+                        </div>
+                        <div>
+                            <label>Фотографии</label>
+                            <input type="file" name="photos[]" class="form-control" multiple accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="height:38px">Добавить номер</button>
+                    </div>
+                </form>
+
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Номер</th>
+                            <th>Тип</th>
+                            <th>Мест</th>
+                            <th>Базовая цена</th>
+                            <th style="text-align: right;">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($rooms as $room): ?>
+                            <tr style="border-top: 1px solid var(--win-border);">
+                                <td style="padding: 10px;"><?php echo htmlspecialchars($room['name']); ?></td>
+                                <td style="padding: 10px;"><?php echo $room['type']; ?></td>
+                                <td style="padding: 10px;"><?php echo $room['capacity']; ?></td>
+                                <td style="padding: 10px;"><?php echo number_format($room['base_price'], 2); ?> ₽</td>
+                                <td style="padding: 10px; text-align: right;">
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить номер?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="delete_room">
+                                        <input type="hidden" name="id" value="<?php echo $room['id']; ?>">
+                                        <button type="submit" style="background:none; border:none; color: #d13438;"><i data-lucide="trash-2" class="icon-sm"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card mica-effect">
+                <h2>Сайт-виджет (Интеграция)</h2>
+                <p style="font-size: 0.9rem; color: var(--win-text-secondary); margin-bottom: 10px;">
+                    Скопируйте этот код и вставьте его на свой сайт для отображения формы бронирования:
+                </p>
+                <textarea class="form-control" style="height: 120px; font-family: monospace; font-size: 12px;" readonly><script src="<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/medical-system/assets/js/booking-widget.js"></script>
+<div id="wes-booking-widget" data-url="<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/medical-system/"></div></textarea>
+            </div>
+        </div>
+
+        <div>
+            <div class="card mica-effect">
+                <h2>Сезонные цены</h2>
+                <form method="POST" style="margin-bottom: 20px;">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="add_pricing_rule">
+                    <div class="mb-2">
+                        <label>Название периода</label>
+                        <input type="text" name="name" class="form-control" placeholder="Лето 2024" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="mb-2">
+                        <div>
+                            <label>С</label>
+                            <input type="date" name="start_date" class="form-control" required>
+                        </div>
+                        <div>
+                            <label>По</label>
+                            <input type="date" name="end_date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px;" class="mb-3">
+                        <div>
+                            <label>Тип изменения</label>
+                            <select name="type" class="form-control">
+                                <option value="fixed">Фикс. цена (руб)</option>
+                                <option value="multiplier">Коэффициент (1.5 = +50%)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Значение</label>
+                            <input type="number" step="0.01" name="value" class="form-control" value="1.2" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Добавить правило</button>
+                </form>
+
+                <div style="font-size: 0.85rem;">
+                    <?php foreach ($rules as $rule): ?>
+                        <div style="padding: 10px; border: 1px solid var(--win-border); border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong><?php echo htmlspecialchars($rule['name']); ?></strong><br>
+                                <span style="color: #666;"><?php echo $rule['start_date']; ?> — <?php echo $rule['end_date']; ?></span><br>
+                                <span style="color: var(--win-accent);"><?php echo $rule['type'] === 'fixed' ? $rule['value'].' ₽' : 'x'.$rule['value']; ?></span>
+                            </div>
+                            <form method="POST" onsubmit="return confirm('Удалить правило?')">
+                                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                <input type="hidden" name="action" value="delete_pricing_rule">
+                                <input type="hidden" name="id" value="<?php echo $rule['id']; ?>">
+                                <button type="submit" style="background:none; border:none; color: #d13438;"><i data-lucide="trash-2" class="icon-sm"></i></button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php elseif ($activeSub === 'logs'):
     $logManager = new \Medical\Core\Managers\LogManager();
     $logs = $logManager->getAll(200);
 ?>
     <div class="card mica-effect">
-        <h2>Журнал активности (последние 200)</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Журнал активности (последние 200)</h2>
+            <?php if (\Medical\Core\Auth::isAdmin()): ?>
+                <form method="POST" onsubmit="return confirm('Очистить весь журнал?')">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="clear_logs">
+                    <button type="submit" class="btn btn-sm" style="color: #d13438;">
+                        <i data-lucide="trash-2" class="icon"></i> Очистить журнал
+                    </button>
+                </form>
+            <?php endif; ?>
+        </div>
         <table style="font-size: 0.85rem;">
             <thead>
                 <tr>
