@@ -67,6 +67,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && \Medical
                 $count = $scheduleManager->bulkMarkPaid($ids);
                 $message = "Оплачено выбранных процедур: " . $count;
             }
+        } elseif ($_POST['action'] === 'refund') {
+            if ($scheduleManager->refund($_POST['id'])) {
+                $message = "Средства за процедуру возвращены";
+            }
+        } elseif ($_POST['action'] === 'bulk_refund_procedure') {
+            $ids = $_POST['ids'] ?? [];
+            if (!empty($ids)) {
+                $count = $scheduleManager->bulkRefund($ids);
+                $message = "Оформлен возврат процедур: " . $count;
+            }
         }
     }
 }
@@ -233,7 +243,7 @@ require_once __DIR__ . '/includes/header.php';
                             <?php echo $count; ?> раз(а)
                         </span>
                         <button class="btn btn-sm btn-ghost toggle-group" data-target="detail-<?php echo $key; ?>" style="padding: 2px 4px; margin-left: 8px;">
-                            <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i> смотреть
+                            <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i> детали
                         </button>
                     <?php else: ?>
                         <?php echo $group['items'][0]['date']; ?>
@@ -245,6 +255,8 @@ require_once __DIR__ . '/includes/header.php';
                 <td>
                     <?php if ($unpaidCount > 0): ?>
                         <span class="status-red">Ожидает оплаты (<?php echo $unpaidCount; ?>)</span>
+                    <?php elseif (count(array_filter($group['items'], function($it){return ($it['status']??'') === 'refunded';})) === $count): ?>
+                        <span class="status-gray">Возвращено</span>
                     <?php else: ?>
                         <span class="status-green">Оплачено</span>
                     <?php endif; ?>
@@ -260,6 +272,13 @@ require_once __DIR__ . '/includes/header.php';
                                 <input type="hidden" name="procedure_name" value="<?php echo $group['procedure_name']; ?>">
                                 <input type="hidden" name="count" value="<?php echo $unpaidCount; ?>">
                                 <button type="submit" class="btn btn-sm btn-primary">Оплатить все</button>
+                            </form>
+                        <?php elseif (!$isGroup && $group['items'][0]['status'] === 'paid' && !$group['items'][0]['attended']): ?>
+                            <form method="POST" style="display:inline;" onsubmit="return confirm('Выполнить возврат средств?')">
+                                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                <input type="hidden" name="action" value="refund">
+                                <input type="hidden" name="id" value="<?php echo $group['items'][0]['id']; ?>">
+                                <button type="submit" class="btn btn-sm" style="color: #d13438;">Возврат</button>
                             </form>
                         <?php endif; ?>
                         <?php if (!$isGroup): ?>
@@ -281,8 +300,10 @@ require_once __DIR__ . '/includes/header.php';
                             <?php foreach ($group['items'] as $item): ?>
                                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border: 1px solid var(--win-border); border-radius: 8px; transition: all 0.2s;">
                                     <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex-grow: 1;">
-                                        <?php if ($item['status'] === 'unpaid'): ?>
-                                            <input type="checkbox" name="ids[]" value="<?php echo $item['id']; ?>" class="item-checkbox" style="width: 18px; height: 18px;">
+                                        <?php if ($item['status'] === 'unpaid' || ($item['status'] === 'paid' && !$item['attended'])): ?>
+                                            <input type="checkbox" name="ids[]" value="<?php echo $item['id']; ?>" data-status="<?php echo $item['status']; ?>" class="item-checkbox" style="width: 18px; height: 18px;">
+                                        <?php elseif ($item['status'] === 'refunded'): ?>
+                                            <i data-lucide="rotate-ccw" style="width: 18px; height: 18px; color: #999;"></i>
                                         <?php else: ?>
                                             <i data-lucide="check" style="width: 18px; height: 18px; color: #107c10;"></i>
                                         <?php endif; ?>
@@ -295,16 +316,20 @@ require_once __DIR__ . '/includes/header.php';
                             <?php endforeach; ?>
                         </div>
 
-                        <?php if ($unpaidCount > 0): ?>
-                            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px;">
-                                <div style="font-size: 0.85rem; color: var(--win-text-secondary);">
-                                    Выбрано: <strong class="selected-count">0</strong>
-                                </div>
+                        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px;">
+                            <div style="font-size: 0.85rem; color: var(--win-text-secondary);">
+                                Выбрано: <strong class="selected-count">0</strong>
+                            </div>
+                            <?php if ($unpaidCount > 0): ?>
                                 <button type="submit" class="btn btn-primary btn-sm pay-selected-btn" disabled>
                                     <i data-lucide="credit-card" class="icon" style="width: 14px; height: 14px;"></i> Оплатить выбранные
                                 </button>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+
+                            <button type="submit" class="btn btn-sm refund-selected-btn" style="color: #d13438;" disabled onclick="this.form.querySelector('input[name=action]').value='bulk_refund_procedure'">
+                                <i data-lucide="rotate-ccw" class="icon" style="width: 14px; height: 14px;"></i> Возврат выбранных
+                            </button>
+                        </div>
                     </form>
                 </td>
             </tr>
@@ -335,22 +360,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Selective pay logic
+    // Selective pay/refund logic
     document.querySelectorAll('.selective-pay-form').forEach(form => {
         const checkboxes = form.querySelectorAll('.item-checkbox');
-        const btn = form.querySelector('.pay-selected-btn');
+        const payBtn = form.querySelector('.pay-selected-btn');
+        const refundBtn = form.querySelector('.refund-selected-btn');
         const counter = form.querySelector('.selected-count');
 
         checkboxes.forEach(cb => {
             cb.addEventListener('change', () => {
-                const checked = form.querySelectorAll('.item-checkbox:checked');
+                const checked = Array.from(form.querySelectorAll('.item-checkbox:checked'));
                 if (counter) counter.innerText = checked.length;
-                if (btn) btn.disabled = checked.length === 0;
+
+                // Pay button active if any selected is unpaid
+                if (payBtn) payBtn.disabled = !checked.some(c => c.dataset.status === 'unpaid');
+
+                // Refund button active if any selected is paid
+                if (refundBtn) refundBtn.disabled = !checked.some(c => c.dataset.status === 'paid');
 
                 // Highlight row
                 cb.closest('div').style.borderColor = cb.checked ? 'var(--win-accent)' : 'var(--win-border)';
                 cb.closest('div').style.background = cb.checked ? 'rgba(0,120,212,0.05)' : 'white';
             });
+        });
+
+        refundBtn.addEventListener('click', (e) => {
+            if (!confirm('Выполнить возврат средств за выбранные процедуры?')) {
+                e.preventDefault();
+            }
         });
     });
 });

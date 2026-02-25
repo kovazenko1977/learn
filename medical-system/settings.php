@@ -280,6 +280,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $rulesStore = new \Medical\Core\JsonStore('pricing_rules');
         $rulesStore->deleteById($_POST['id']);
         $message = 'Правило удалено';
+    } elseif ($action === 'add_announcement' && \Medical\Core\Auth::can('settings_system')) {
+        $am = new \Medical\Core\Managers\AnnouncementManager();
+        $am->add([
+            'title' => $_POST['title'],
+            'content' => $_POST['content'],
+            'expires_at' => $_POST['expires_at'] ?? null,
+            'author' => $currentUser['name']
+        ]);
+        $message = 'Объявление опубликовано';
+    } elseif ($action === 'delete_announcement' && \Medical\Core\Auth::can('settings_system')) {
+        $am = new \Medical\Core\Managers\AnnouncementManager();
+        $am->delete($_POST['id']);
+        $message = 'Объявление удалено';
     }
 }
 
@@ -323,6 +336,7 @@ $permissions = [
             <a href="?sub=details" class="btn <?php echo $activeSub === 'details' ? 'btn-primary' : ''; ?>">Реквизиты</a>
             <a href="?sub=database" class="btn <?php echo $activeSub === 'database' ? 'btn-primary' : ''; ?>">База данных</a>
             <a href="?sub=templates" class="btn <?php echo $activeSub === 'templates' ? 'btn-primary' : ''; ?>">Шаблоны печати</a>
+            <a href="?sub=announcements" class="btn <?php echo $activeSub === 'announcements' ? 'btn-primary' : ''; ?>">Объявления</a>
         <?php endif; ?>
         <a href="?sub=appearance" class="btn <?php echo $activeSub === 'appearance' ? 'btn-primary' : ''; ?>">Внешний вид</a>
         <?php if (\Medical\Core\Auth::can('logs_view')): ?>
@@ -1019,6 +1033,70 @@ $permissions = [
                 </div>
             </div>
         </div>
+    </div>
+<?php elseif ($activeSub === 'announcements' && \Medical\Core\Auth::can('settings_system')):
+    $am = new \Medical\Core\Managers\AnnouncementManager();
+    $announcements = $am->getAll(false);
+?>
+    <div class="card mica-effect mb-4">
+        <h2>Новое объявление для персонала</h2>
+        <form method="POST" style="max-width: 800px;">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="add_announcement">
+
+            <div class="mb-3">
+                <label class="form-label">Заголовок</label>
+                <input type="text" name="title" class="form-control" placeholder="Важное сообщение..." required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Текст объявления</label>
+                <textarea name="content" class="form-control" style="height: 120px;" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Актуально до (необязательно)</label>
+                <input type="date" name="expires_at" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Опубликовать</button>
+        </form>
+    </div>
+
+    <div class="card mica-effect">
+        <h2>Список объявлений</h2>
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Заголовок</th>
+                    <th>Автор</th>
+                    <th>Дата создания</th>
+                    <th>Актуально до</th>
+                    <th style="text-align: right;">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($announcements as $a): ?>
+                    <tr style="border-top: 1px solid var(--win-border);">
+                        <td style="padding: 12px 10px;"><strong><?php echo htmlspecialchars($a['title']); ?></strong></td>
+                        <td style="padding: 10px;"><?php echo htmlspecialchars($a['author'] ?? '-'); ?></td>
+                        <td style="padding: 10px;"><?php echo $a['created_at']; ?></td>
+                        <td style="padding: 10px;">
+                            <?php echo $a['expires_at'] ? '<span class="badge">' . $a['expires_at'] . '</span>' : 'Бессрочно'; ?>
+                        </td>
+                        <td style="padding: 10px; text-align: right;">
+                            <form method="POST" onsubmit="return confirm('Удалить объявление?')" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                <input type="hidden" name="action" value="delete_announcement">
+                                <input type="hidden" name="id" value="<?php echo $a['id']; ?>">
+                                <button type="submit" style="background:none; border:none; color: #d13438;"><i data-lucide="trash-2" class="icon-sm"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (empty($announcements)): ?>
+                    <tr><td colspan="5" style="text-align: center; color: #999; padding: 20px;">Объявлений пока нет</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 <?php elseif ($activeSub === 'logs'):
     $logManager = new \Medical\Core\Managers\LogManager();

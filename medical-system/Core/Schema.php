@@ -112,6 +112,15 @@ class Schema {
                 end_date DATE,
                 type VARCHAR(50),
                 value DECIMAL(10,2)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+            'announcements' => "CREATE TABLE IF NOT EXISTS announcements (
+                id VARCHAR(50) PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
+                author VARCHAR(255),
+                expires_at DATE,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
         ];
     }

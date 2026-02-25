@@ -33,6 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $scheduleManager->markPaid($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
+    } elseif ($_POST['action'] === 'refund' && \Medical\Core\Auth::can('finance_pay')) {
+        $scheduleManager->refund($_POST['appointment_id']);
+        header("Location: patient_card.php?id=$id");
+        exit;
     } elseif ($_POST['action'] === 'cancel_appointment' && \Medical\Core\Auth::can('procedures_cancel')) {
         $scheduleManager->cancel($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
@@ -224,6 +228,8 @@ require_once __DIR__ . '/includes/header.php';
                                 <span class="status-green">Выполнена</span>
                             <?php elseif (($app['status'] ?? '') === 'cancelled'): ?>
                                 <span class="status-red" style="opacity: 0.6; text-decoration: line-through;">Отменена</span>
+                            <?php elseif (($app['status'] ?? '') === 'refunded'): ?>
+                                <span class="status-gray" style="opacity: 0.8;">Возврат</span>
                             <?php else: ?>
                                 <span class="status-gray">Ожидает</span>
                             <?php endif; ?>
@@ -231,8 +237,8 @@ require_once __DIR__ . '/includes/header.php';
                         <td style="text-align: right;">
                             <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
                                 <?php if (\Medical\Core\Auth::canSeeMoney()): ?>
-                                <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : ($app['status'] === 'unpaid' ? 'status-red' : 'status-gray'); ?>">
-                                    <?php echo $app['status'] === 'paid' ? 'Оплачено' : ($app['status'] === 'unpaid' ? 'Ожидает' : 'Бесплатно'); ?>
+                                <span class="<?php echo $app['status'] === 'paid' ? 'status-green' : ($app['status'] === 'unpaid' ? 'status-red' : ($app['status'] === 'refunded' ? 'status-gray' : 'status-gray')); ?>">
+                                    <?php echo $app['status'] === 'paid' ? 'Оплачено' : ($app['status'] === 'unpaid' ? 'Ожидает' : ($app['status'] === 'refunded' ? 'Возврат' : 'Бесплатно')); ?>
                                 </span>
                                 <?php endif; ?>
                                 <?php if ($app['status'] === 'unpaid' && \Medical\Core\Auth::can('finance_pay')): ?>
@@ -241,6 +247,13 @@ require_once __DIR__ . '/includes/header.php';
                                         <input type="hidden" name="action" value="pay">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
                                         <button type="submit" class="btn btn-sm btn-primary">Оплатить</button>
+                                    </form>
+                                <?php elseif ($app['status'] === 'paid' && !$app['attended'] && \Medical\Core\Auth::can('finance_pay')): ?>
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Оформить возврат средств?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="refund">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm" style="color: #d13438;">Возврат</button>
                                     </form>
                                 <?php endif; ?>
                                 <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>

@@ -275,6 +275,24 @@ class ScheduleManager {
         return $res;
     }
 
+    public function refund($id) {
+        $res = $this->store->updateById($id, ['status' => 'refunded', 'refunded_at' => date('Y-m-d H:i:s')]);
+        if ($res) {
+            (new LogManager())->log('Возврат средств за процедуру', ['appointment_id' => $id]);
+        }
+        return $res;
+    }
+
+    public function bulkRefund($ids) {
+        $count = 0;
+        foreach ($ids as $id) {
+            if ($this->refund($id)) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
     public function autoCancelUnpaid() {
         $apps = $this->store->getAll();
         $changed = false;
