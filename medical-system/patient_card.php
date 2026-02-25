@@ -206,11 +206,13 @@ require_once __DIR__ . '/includes/header.php';
                                     </form>
                                 <?php endif; ?>
                                 <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
-                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Отменить это назначение?')">
+                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите ОТМЕНИТЬ эту процедуру?\n\nЗапись останется в истории со статусом «Отменена».')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="cancel_appointment">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                        <button type="submit" class="btn btn-sm" style="color: #d13438;" title="Отменить">Отменить</button>
+                                        <button type="submit" class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05);" title="Отменить назначение">
+                                            <i data-lucide="ban" class="icon" style="width: 14px; height: 14px; margin: 0 4px 0 0; color: #d13438;"></i> Отменить
+                                        </button>
                                     </form>
                                 <?php endif; ?>
                                 <?php if (\Medical\Core\Auth::can('settings_system')): ?>

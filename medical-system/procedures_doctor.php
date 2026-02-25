@@ -280,12 +280,12 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                                 ?>
                                 <span class="<?php echo $class; ?>"><?php echo $text; ?></span>
                                 <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
-                                    <form method="POST" style="display:inline; margin-left: 10px;" onsubmit="return confirm('Отменить назначение?')">
+                                    <form method="POST" style="display:inline; margin-left: 10px;" onsubmit="return confirm('Вы уверены, что хотите ОТМЕНИТЬ эту процедуру?\n\nЗапись останется в истории со статусом «Отменена».')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="cancel">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-ghost" style="color: #d13438; padding: 2px 5px;" title="Отменить">
-                                            &times;
+                                        <button type="submit" class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение">
+                                            <i data-lucide="ban" style="width: 14px; height: 14px; color: #d13438;"></i>
                                         </button>
                                     </form>
                                 <?php endif; ?>

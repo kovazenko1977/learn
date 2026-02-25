@@ -163,9 +163,15 @@ require_once __DIR__ . '/includes/header.php';
                 <label style="display:block; margin-bottom: 8px; font-size: 0.8rem;">Дней вперед</label>
                 <input type="number" id="days_ahead" min="0" max="365" placeholder="0" style="width: 80px;">
             </div>
-            <div style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" id="save_period" style="width: 18px; height: 18px; cursor: pointer;">
-                <label for="save_period" style="font-size: 0.85rem; cursor: pointer;">Запомнить</label>
+            <div style="padding-bottom: 10px; display: flex; align-items: center; gap: 15px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" name="hide_paid" id="hide_paid" style="width: 18px; height: 18px; cursor: pointer;" <?php echo $hidePaid ? 'checked' : ''; ?> onchange="this.form.submit()">
+                    <label for="hide_paid" style="font-size: 0.85rem; cursor: pointer; font-weight: 600; color: var(--win-accent);">Скрыть оплаченные</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="save_period" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="save_period" style="font-size: 0.85rem; cursor: pointer;">Запомнить</label>
+                </div>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">
