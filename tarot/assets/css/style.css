@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 :root {
     --win-accent: #d4af37; /* Gold */
     --win-bg: #1a1a2e; /* Deep Indigo */
@@ -70,9 +74,9 @@ body {
     background: linear-gradient(135deg, #d4af37 0%, #f9d976 100%);
     color: #1a1a2e;
     border: none;
-    padding: 18px 36px;
+    padding: 16px 24px;
     border-radius: 40px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     display: inline-flex;
@@ -81,7 +85,11 @@ body {
     gap: 12px;
     transition: all 0.3s;
     width: 100%;
+    max-width: 100%;
     box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .btn-primary:hover {

@@ -14,6 +14,32 @@ if (!$data) {
     exit;
 }
 
+// Ensure uploads directory exists
+$uploadsDir = __DIR__ . '/uploads';
+if (!is_dir($uploadsDir)) {
+    mkdir($uploadsDir, 0777, true);
+}
+
+// Handle image storage to avoid bloating history.json
+if (isset($data['image']) && strpos($data['image'], 'data:image') === 0) {
+    $imgData = $data['image'];
+    $extension = 'jpg';
+    if (preg_match('/^data:image\/(\w+);base64,/', $imgData, $type)) {
+        $imgData = substr($imgData, strpos($imgData, ',') + 1);
+        $extension = strtolower($type[1]);
+        if ($extension == 'jpeg') $extension = 'jpg';
+    }
+
+    $decodedData = base64_decode($imgData);
+    if ($decodedData) {
+        $fileName = 'spread_' . uniqid() . '.' . $extension;
+        $uploadPath = $uploadsDir . '/' . $fileName;
+        if (file_put_contents($uploadPath, $decodedData)) {
+            $data['image'] = 'uploads/' . $fileName; // Store relative path
+        }
+    }
+}
+
 $filePath = __DIR__ . '/data/history.json';
 
 // Atomic write using flock

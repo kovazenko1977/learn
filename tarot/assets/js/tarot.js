@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const cameraInput = document.getElementById('camera-input');
+    const galleryInput = document.getElementById('gallery-input');
     const uploadSection = document.getElementById('upload-section');
     const previewSection = document.getElementById('preview-section');
     const previewImg = document.getElementById('preview-img');
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadHistory();
     });
 
-    cameraInput.addEventListener('change', (e) => {
+    const handleFileSelect = (e) => {
         if (e.target.files && e.target.files[0]) {
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -56,12 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             reader.readAsDataURL(e.target.files[0]);
         }
-    });
+    };
+
+    cameraInput.addEventListener('change', handleFileSelect);
+    galleryInput.addEventListener('change', handleFileSelect);
 
     retakeBtn.addEventListener('click', () => {
         uploadSection.style.display = 'block';
         previewSection.style.display = 'none';
         cameraInput.value = '';
+        galleryInput.value = '';
     });
 
     analyzeBtn.addEventListener('click', async () => {
@@ -214,12 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const date = new Date(item.date).toLocaleString('ru-RU');
                 const cardNames = item.cards.map(c => c.name).join(' / ');
+                const imgSrc = item.image ? item.image : '';
+                const imgHtml = imgSrc ? `<img src="${imgSrc}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255,215,0,0.2);">` : '';
 
                 div.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                         <span style="font-size: 0.8rem; color: var(--win-accent);">${date}</span>
                         <i data-lucide="chevron-down" style="width:16px; opacity:0.5;"></i>
                     </div>
+                    ${imgHtml}
                     <div style="font-weight: bold; margin-bottom: 10px; color: #fff;">${cardNames}</div>
                     <p style="font-size: 0.9rem; color: var(--win-text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                         ${item.interpretation}

@@ -29,10 +29,17 @@
                 <h2>Раскройте Тайны Будущего</h2>
                 <p style="color: var(--win-text-secondary); margin-bottom: 35px; line-height: 1.6;">Сфотографируйте ваш расклад. Наш искусственный интеллект распознает карты и проведет глубокий сакральный анализ.</p>
 
-                <label for="camera-input" class="btn-primary">
-                    <i data-lucide="camera"></i> Начать Съемку
-                </label>
-                <input type="file" id="camera-input" accept="image/*" capture="camera" style="display: none;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <label for="camera-input" class="btn-primary">
+                        <i data-lucide="camera"></i> Сделать Фото
+                    </label>
+                    <input type="file" id="camera-input" accept="image/*" capture="camera" style="display: none;">
+
+                    <label for="gallery-input" class="btn-primary" style="background: rgba(255,255,255,0.1); color: var(--win-accent); border: 1px solid var(--win-accent);">
+                        <i data-lucide="image"></i> Из Галереи
+                    </label>
+                    <input type="file" id="gallery-input" accept="image/*" style="display: none;">
+                </div>
             </div>
 
             <div class="preview-container" id="preview-section">
