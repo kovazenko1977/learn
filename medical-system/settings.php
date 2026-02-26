@@ -303,6 +303,7 @@ $permissions = [
     'lab_upload' => 'Загрузка результатов анализов',
     'procedures_assign' => 'Назначение процедур',
     'procedures_cancel' => 'Отмена назначенных процедур',
+    'procedures_delete' => 'Полное удаление назначений (ошибок)',
     'procedures_nurse' => 'Отметка о выполнении (Медсестра)',
     'finance_view' => 'Просмотр финансовых данных (Выручка)',
     'finance_pay' => 'Прием оплаты (Кассир)',
@@ -1246,12 +1247,12 @@ function openEditProcModal(p) {
 }
 
 const roleTemplates = {
-    'admin': ['patients_view', 'patients_edit', 'patients_delete', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel', 'procedures_nurse', 'finance_view', 'finance_pay', 'analytics_view', 'logs_view', 'settings_staff', 'settings_procs', 'settings_system'],
-    'chief': ['patients_view', 'patients_edit', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel', 'finance_view', 'analytics_view', 'logs_view', 'settings_staff', 'settings_procs'],
-    'doctor': ['patients_view', 'patients_edit', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel'],
+    'admin': ['patients_view', 'patients_edit', 'patients_delete', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel', 'procedures_delete', 'procedures_nurse', 'finance_view', 'finance_pay', 'analytics_view', 'logs_view', 'settings_staff', 'settings_procs', 'settings_system'],
+    'chief': ['patients_view', 'patients_edit', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel', 'procedures_delete', 'finance_view', 'analytics_view', 'logs_view', 'settings_staff', 'settings_procs'],
+    'doctor': ['patients_view', 'patients_edit', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel', 'procedures_delete'],
     'consultant': ['patients_view', 'history_view', 'lab_view'],
     'nurse': ['patients_view', 'procedures_nurse'],
-    'registrar': ['patients_view', 'patients_edit', 'procedures_assign', 'procedures_cancel'],
+    'registrar': ['patients_view', 'patients_edit', 'procedures_assign', 'procedures_cancel', 'procedures_delete'],
     'cashier': ['patients_view', 'finance_pay']
 };
 

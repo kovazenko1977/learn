@@ -80,6 +80,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $scheduleManager->cancel($_POST['appointment_id']);
         header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
         exit;
+    } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
+        $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
+        if ($appToDelete && ($appToDelete['status'] ?? '') === 'paid' && !\Medical\Core\Auth::can('settings_system')) {
+            die("Нельзя удалить оплаченную процедуру без прав администратора.");
+        }
+        $scheduleManager->delete($_POST['appointment_id']);
+        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+        exit;
     }
 }
 
@@ -286,6 +294,16 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
                                         <button type="submit" class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение">
                                             <i data-lucide="ban" style="width: 14px; height: 14px; color: #d13438;"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete')): ?>
+                                    <form method="POST" style="display:inline; margin-left: 5px;" onsubmit="return confirm('Удалить назначение навсегда?')">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px;" title="Удалить ошибку">
+                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
                                         </button>
                                     </form>
                                 <?php endif; ?>

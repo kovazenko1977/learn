@@ -100,6 +100,12 @@ include __DIR__ . '/includes/header.php';
     <?php endforeach; ?>
 </div>
 
+<div style="padding: 16px; margin-top: 24px; border-top: 1px solid #eee; text-align: center;">
+    <a href="../index.php?force_desktop=1" style="color: var(--md-secondary); font-size: 13px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <i data-lucide="monitor" style="width: 16px; height: 16px;"></i> Полная версия (Windows 11)
+    </a>
+</div>
+
 <a href="attendance.php" class="md-fab">
     <i data-lucide="plus"></i>
 </a>

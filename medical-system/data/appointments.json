@@ -1,18 +1,5 @@
 [
     {
-        "id": "699b73ecce04e",
-        "patient_id": "69971fddb7b7b",
-        "patient_name": "Иван Иванов",
-        "procedure_id": "69971fddb6633",
-        "procedure_name": "Массаж спины",
-        "date": "2026-02-22",
-        "time": "10:00",
-        "cabinet_id": "202",
-        "price": 1500,
-        "status": "unpaid",
-        "created_at": "2026-02-22 21:23:56"
-    },
-    {
         "id": "699b73ecce082",
         "patient_id": "69971fddb7b7b",
         "patient_name": "Иван Иванов",

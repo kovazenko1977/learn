@@ -30,11 +30,11 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         window.WES_USER_ID = "<?php echo \Medical\Core\Auth::getUser()['id'] ?? 'guest'; ?>";
-        /* if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js');
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
             });
-        } */
+        }
 
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -64,7 +64,12 @@ $uiSettings = (new \Medical\Core\JsonStore('settings'))->getAll();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            if (isMobile() && !window.location.pathname.includes('/mobile/')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('force_desktop')) {
+                localStorage.setItem('force_desktop', '1');
+            }
+
+            if (isMobile() && !window.location.pathname.includes('/mobile/') && localStorage.getItem('force_desktop') !== '1') {
                 document.getElementById('mobile-suggestion-banner').style.display = 'flex';
             }
         });

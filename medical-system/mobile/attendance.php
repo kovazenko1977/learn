@@ -80,6 +80,10 @@ include __DIR__ . '/includes/header.php';
             <p>Назначений нет</p>
         </div>
     <?php endif; ?>
+
+    <div style="text-align: center; padding: 20px; color: #999; font-size: 11px; margin-bottom: 20px;">
+        © WES.BY — Коваженко С.Б., 2024
+    </div>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

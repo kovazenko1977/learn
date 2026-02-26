@@ -92,7 +92,7 @@
         });
     </script>
     <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--win-border); text-align: center;">
-        <p style="font-size: 0.75rem; color: var(--win-text-secondary); opacity: 0.7;">разработчик wes.by</p>
+        <p style="font-size: 0.75rem; color: var(--win-text-secondary); opacity: 0.7;">© WES.BY — Коваженко С.Б., 2024</p>
     </div>
 </body>
 </html>

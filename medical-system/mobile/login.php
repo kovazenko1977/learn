@@ -49,8 +49,8 @@ include __DIR__ . '/includes/header.php';
         <button type="submit" class="md-btn md-btn-primary" style="width: 100%; height: 48px; border-radius: 24px;">Войти</button>
     </form>
 
-    <p style="text-align: center; margin-top: 32px; font-size: 12px; color: var(--md-secondary);">
-        wes.by Коваженко С.Б.
+    <p style="text-align: center; margin-top: 32px; font-size: 11px; color: var(--md-secondary); opacity: 0.6;">
+        © WES.BY — Коваженко С.Б., 2024
     </p>
 </div>
 

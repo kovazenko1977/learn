@@ -37,7 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $scheduleManager->cancel($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
-    } elseif ($_POST['action'] === 'delete_appointment' && \Medical\Core\Auth::can('settings_system')) {
+    } elseif ($_POST['action'] === 'delete_appointment' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
+        $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
+        if ($appToDelete && ($appToDelete['status'] ?? '') === 'paid' && !\Medical\Core\Auth::can('settings_system')) {
+            die("Нельзя удалить оплаченную процедуру без прав администратора. Сначала выполните возврат.");
+        }
         $scheduleManager->delete($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id");
         exit;
@@ -255,11 +259,13 @@ require_once __DIR__ . '/includes/header.php';
                                 <?php endif; ?>
                                 <?php if (\Medical\Core\Auth::can('settings_system')): ?>
                                     <button class="btn btn-sm" style="padding: 4px;" onclick='openEditAppModal(<?php echo htmlspecialchars(json_encode($app), ENT_QUOTES); ?>)'><i data-lucide="edit" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
+                                <?php endif; ?>
+                                <?php if (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete')): ?>
                                     <form method="POST" style="display:inline;" onsubmit="return confirm('Удалить назначение?')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="delete_appointment">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px;"><i data-lucide="trash-2" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px;" title="Удалить навсегда"><i data-lucide="trash-2" class="icon" style="width:14px; height:14px; margin:0;"></i></button>
                                     </form>
                                 <?php endif; ?>
                             </div>

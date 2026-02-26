@@ -91,6 +91,11 @@ function isActive($page, $current_page) {
 
         <div style="margin-top: 2rem; border-top: 1px solid var(--win-border); padding-top: 1rem;">
             <div class="nav-item">
+                <a href="mobile/" class="btn">
+                    <i data-lucide="smartphone" class="icon"></i> <span>Мобильная версия</span>
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="help.php" class="btn <?php echo isActive('help.php', $current_page); ?>">
                     <i data-lucide="help-circle" class="icon"></i> <span>Справка</span>
                 </a>
