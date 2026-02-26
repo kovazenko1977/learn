@@ -78,7 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
     } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
         $scheduleManager->cancel($_POST['appointment_id']);
-        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=cancelled");
         exit;
     } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
         $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
@@ -86,7 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             die("Нельзя удалить оплаченную процедуру без прав администратора.");
         }
         $scheduleManager->delete($_POST['appointment_id']);
-        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=deleted");
         exit;
     }
 }
@@ -106,6 +108,17 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 ?>
 
 <h1>Назначение процедур</h1>
+
+<?php if (isset($_GET['success'])): ?>
+    <div class="card mica-effect" style="background: #dff6dd; color: #107c10; border-color: #107c10; margin-bottom: 20px; padding: 15px;">
+        <i data-lucide="check-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        <strong>Успешно:</strong>
+        <?php
+            if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
+            if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
+        ?>
+    </div>
+<?php endif; ?>
 
 <?php if (isset($error)): ?>
     <div class="card mica-effect" style="color: #d83b01; border-color: #d83b01; margin-bottom: 20px;">
@@ -269,6 +282,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                             <th style="padding: 10px;">Процедура</th>
                             <th style="padding: 10px;">Врач</th>
                             <th style="padding: 10px;">Статус</th>
+                            <th style="padding: 10px; text-align: right;">Действия</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -291,6 +305,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                                     <form method="POST" style="display:inline; margin-left: 10px;" onsubmit="return confirm('Вы уверены, что хотите ОТМЕНИТЬ эту процедуру?\n\nЗапись останется в истории со статусом «Отменена».')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="cancel">
+                                        <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
                                         <button type="submit" class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение">
                                             <i data-lucide="ban" style="width: 14px; height: 14px; color: #d13438;"></i>
@@ -301,6 +316,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                                     <form method="POST" style="display:inline; margin-left: 5px;" onsubmit="return confirm('Удалить назначение навсегда?')">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                                         <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
                                         <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px;" title="Удалить ошибку">
                                             <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>

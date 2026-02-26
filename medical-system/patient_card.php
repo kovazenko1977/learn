@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     } elseif ($_POST['action'] === 'cancel_appointment' && \Medical\Core\Auth::can('procedures_cancel')) {
         $scheduleManager->cancel($_POST['appointment_id']);
-        header("Location: patient_card.php?id=$id");
+        header("Location: patient_card.php?id=$id&success=cancelled");
         exit;
     } elseif ($_POST['action'] === 'delete_appointment' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
         $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             die("Нельзя удалить оплаченную процедуру без прав администратора. Сначала выполните возврат.");
         }
         $scheduleManager->delete($_POST['appointment_id']);
-        header("Location: patient_card.php?id=$id");
+        header("Location: patient_card.php?id=$id&success=deleted");
         exit;
     } elseif ($_POST['action'] === 'edit_appointment' && \Medical\Core\Auth::can('settings_system')) {
         $scheduleManager->update($_POST['appointment_id'], [
@@ -77,6 +77,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 require_once __DIR__ . '/includes/header.php';
 ?>
+
+<?php if (isset($_GET['success'])): ?>
+    <div class="card mica-effect" style="background: #dff6dd; color: #107c10; border-color: #107c10; margin-bottom: 20px; padding: 15px;">
+        <i data-lucide="check-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        <strong>Успешно:</strong>
+        <?php
+            if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
+            if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
+        ?>
+    </div>
+<?php endif; ?>
 
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
     <h1>Карточка пациента: <span style="color: var(--win-accent);"><?php echo htmlspecialchars($patient['name']); ?></span></h1>
