@@ -181,6 +181,7 @@ $ageStats = $analytics->getAgeStats();
 $mkbStats = $analytics->getMkbStats();
 $durationStats = $analytics->getStayDurationStats();
 $cabTimeLoad = $analytics->getCabinetTimeLoad($startDate, $endDate);
+$nonAttendance = $analytics->getNonAttendanceStats($startDate, $endDate);
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -374,6 +375,72 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
         <?php endforeach; ?>
+    </div>
+</div>
+
+<div class="card mica-effect mb-4">
+    <h2>Пропуски процедур (не явились)</h2>
+
+    <div style="margin-top: 20px;">
+        <h3 style="color: #d13438; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="alert-circle" style="width: 20px; height: 20px;"></i>
+            Назначено, но не оплачено и не посещено
+        </h3>
+        <table style="font-size: 0.85rem; margin-bottom: 30px;">
+            <thead>
+                <tr>
+                    <th>Дата/Время</th>
+                    <th>Пациент</th>
+                    <th>Процедура</th>
+                    <th>Врач (кто назначил)</th>
+                    <th>Кабинет</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($nonAttendance['unpaid_missed'] as $item): ?>
+                    <tr>
+                        <td><?php echo $item['date']; ?> <strong><?php echo $item['time']; ?></strong></td>
+                        <td><a href="patient_card.php?id=<?php echo $item['patient_id']; ?>" style="color: inherit; text-decoration: none; font-weight: 600;"><?php echo htmlspecialchars($item['patient_name']); ?></a></td>
+                        <td><?php echo htmlspecialchars($item['procedure_name']); ?></td>
+                        <td><?php echo htmlspecialchars($item['doctor']); ?></td>
+                        <td><?php echo htmlspecialchars($item['cabinet']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (empty($nonAttendance['unpaid_missed'])): ?>
+                    <tr><td colspan="5" style="text-align: center; color: #999; padding: 20px;">Пропусков не обнаружено</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
+        <h3 style="color: #107c10; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="banknote" style="width: 20px; height: 20px;"></i>
+            Оплачено, но не посещено (требует внимания)
+        </h3>
+        <table style="font-size: 0.85rem;">
+            <thead>
+                <tr>
+                    <th>Дата/Время</th>
+                    <th>Пациент</th>
+                    <th>Процедура</th>
+                    <th>Врач</th>
+                    <th>Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($nonAttendance['paid_missed'] as $item): ?>
+                    <tr>
+                        <td><?php echo $item['date']; ?> <strong><?php echo $item['time']; ?></strong></td>
+                        <td><a href="patient_card.php?id=<?php echo $item['patient_id']; ?>" style="color: inherit; text-decoration: none; font-weight: 600;"><?php echo htmlspecialchars($item['patient_name']); ?></a></td>
+                        <td><?php echo htmlspecialchars($item['procedure_name']); ?></td>
+                        <td><?php echo htmlspecialchars($item['doctor']); ?></td>
+                        <td style="font-weight: 600; color: #107c10;"><?php echo number_format($item['price'], 0); ?> ₽</td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (empty($nonAttendance['paid_missed'])): ?>
+                    <tr><td colspan="5" style="text-align: center; color: #999; padding: 20px;">Оплаченных пропусков нет</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 

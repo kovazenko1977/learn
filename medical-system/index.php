@@ -13,38 +13,8 @@ $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $scheduleManager->autoCancelUnpaid();
 
 $summary = $analytics->getSummary();
-
-$am = new \Medical\Core\Managers\AnnouncementManager();
-$activeAnnouncements = $am->getAll(true);
 ?>
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-    <h1>Панель управления</h1>
-    <div style="font-size: 0.9rem; color: var(--win-text-secondary);">
-        Сегодня: <strong><?php echo date('d.m.Y'); ?></strong>
-    </div>
-</div>
-
-<?php if (!empty($activeAnnouncements)): ?>
-<div style="margin-bottom: 24px;">
-    <?php foreach ($activeAnnouncements as $a): ?>
-    <div class="card mica-effect" style="border-left: 4px solid var(--win-accent); margin-bottom: 12px; padding: 16px 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <i data-lucide="megaphone" style="width: 20px; height: 20px; color: var(--win-accent);"></i>
-                <h3 style="margin: 0; font-size: 1.1rem;"><?php echo htmlspecialchars($a['title']); ?></h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--win-text-secondary);"><?php echo $a['created_at']; ?></span>
-        </div>
-        <div style="font-size: 0.95rem; line-height: 1.5; color: var(--win-text-primary); white-space: pre-wrap;"><?php echo htmlspecialchars($a['content']); ?></div>
-        <?php if ($a['author']): ?>
-            <div style="margin-top: 10px; font-size: 0.8rem; text-align: right; font-style: italic; color: var(--win-text-secondary);">
-                — <?php echo htmlspecialchars($a['author']); ?>
-            </div>
-        <?php endif; ?>
-    </div>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
+<h1>Панель управления</h1>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
     <a href="patients.php" class="card-link">

@@ -240,4 +240,58 @@ class AnalyticsManager {
         }
         return $perf;
     }
+
+    /**
+     * Get statistics for missed appointments (non-attendance).
+     * Returns two lists:
+     * 1. Unpaid missed appointments
+     * 2. Paid missed appointments
+     */
+    public function getNonAttendanceStats($startDate = null, $endDate = null) {
+        $appointments = $this->getFilteredAppointments($startDate, $endDate);
+        $now = time();
+
+        $unpaidMissed = [];
+        $paidMissed = [];
+
+        foreach ($appointments as $app) {
+            // A procedure is considered "missed" if its scheduled time has passed
+            // and it was not marked as attended.
+            $appTime = strtotime($app['date'] . ' ' . $app['time']);
+
+            // Skip future appointments
+            if ($appTime > $now) continue;
+
+            // Skip attended appointments
+            if (!empty($app['attended'])) continue;
+
+            // Collect patient info for the report
+            $patient = $this->patientsStore->findById($app['patient_id']);
+            $patientName = $patient ? $patient['name'] : 'Неизвестный пациент';
+
+            $item = [
+                'id' => $app['id'],
+                'date' => $app['date'],
+                'time' => $app['time'],
+                'patient_name' => $patientName,
+                'patient_id' => $app['patient_id'],
+                'procedure_name' => $app['procedure_name'],
+                'doctor' => $app['doctor'] ?? 'Не указан',
+                'cabinet' => $app['cabinet_id'] ?? '—',
+                'price' => $app['price'] ?? 0,
+                'status' => $app['status']
+            ];
+
+            if ($app['status'] === 'paid') {
+                $paidMissed[] = $item;
+            } else {
+                $unpaidMissed[] = $item;
+            }
+        }
+
+        return [
+            'unpaid_missed' => $unpaidMissed,
+            'paid_missed' => $paidMissed
+        ];
+    }
 }

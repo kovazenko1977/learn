@@ -275,24 +275,6 @@ class ScheduleManager {
         return $res;
     }
 
-    public function refund($id) {
-        $res = $this->store->updateById($id, ['status' => 'refunded', 'refunded_at' => date('Y-m-d H:i:s')]);
-        if ($res) {
-            (new LogManager())->log('Возврат средств за процедуру', ['appointment_id' => $id]);
-        }
-        return $res;
-    }
-
-    public function bulkRefund($ids) {
-        $count = 0;
-        foreach ($ids as $id) {
-            if ($this->refund($id)) {
-                $count++;
-            }
-        }
-        return $count;
-    }
-
     public function autoCancelUnpaid() {
         $apps = $this->store->getAll();
         $changed = false;
@@ -312,5 +294,35 @@ class ScheduleManager {
         if ($changed) {
             $this->store->save($apps);
         }
+    }
+
+    public function deleteOverdueUnpaid() {
+        $apps = $this->store->getAll();
+        $now = time();
+        $newApps = [];
+        $deletedCount = 0;
+
+        foreach ($apps as $app) {
+            $isOverdue = false;
+            if (isset($app['status']) && $app['status'] === 'unpaid' && empty($app['attended'])) {
+                $appTime = strtotime($app['date'] . ' ' . $app['time']);
+                if ($appTime !== false && $appTime < ($now - 7200)) { // 2 hours after scheduled time
+                    $isOverdue = true;
+                }
+            }
+
+            if ($isOverdue) {
+                $deletedCount++;
+            } else {
+                $newApps[] = $app;
+            }
+        }
+
+        if ($deletedCount > 0) {
+            $this->store->save($newApps);
+            (new LogManager())->log('Массовое удаление просроченных неоплаченных процедур', ['count' => $deletedCount]);
+        }
+
+        return $deletedCount;
     }
 }
