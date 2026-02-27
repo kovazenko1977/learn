@@ -83,6 +83,11 @@ include 'includes/header.php';
             <div class="kpi-label">Скорость (часы)</div>
             <div class="kpi-sub">Среднее время на заявку</div>
         </div>
+        <div class="card mica kpi-card">
+            <div class="kpi-value" style="color: #e81123;"><?php echo $report['in_progress']; ?></div>
+            <div class="kpi-label">Текущая нагрузка</div>
+            <div class="kpi-sub">Активных задач в работе</div>
+        </div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 350px; gap: 24px; margin-top: 24px;">
@@ -140,6 +145,23 @@ include 'includes/header.php';
                 </div>
             </section>
 
+            <!-- Speed Trend -->
+            <section class="card mica" style="padding: 24px; animation: slideUp 0.85s ease-out;">
+                <h3 style="margin-top:0; font-size:14px; text-transform: uppercase; color:var(--win-text-secondary); margin-bottom:16px;">Тренд скорости (ч)</h3>
+                <div style="height: 100px; display: flex; align-items: flex-end; gap: 4px;">
+                    <?php
+                    $maxHours = !empty($report['trends']) ? max($report['trends']) : 1;
+                    $trendData = array_slice($report['trends'], -10); // Last 10 days
+                    foreach ($trendData as $date => $val):
+                        $height = ($val / $maxHours) * 100;
+                    ?>
+                        <div style="flex:1; height:<?php echo $height; ?>%; background:rgba(142, 36, 170, 0.3); border-radius:2px; position:relative;" title="<?php echo $date; ?>: <?php echo $val; ?>ч">
+                            <div style="position:absolute; bottom:100%; left:50%; transform:translateX(-50%); font-size:9px; font-weight:700;"><?php echo $val; ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
             <!-- Quality Distribution -->
             <section class="card mica" style="padding: 24px; animation: slideUp 0.9s ease-out;">
                 <h3 style="margin-top:0; font-size:14px; text-transform: uppercase; color:var(--win-text-secondary); margin-bottom:16px;">Оценки пользователей</h3>
@@ -167,6 +189,7 @@ include 'includes/header.php';
     text-align: center;
     padding: 24px;
 }
+.stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
 .kpi-value {
     font-size: 32px;
     font-weight: 800;

@@ -227,7 +227,8 @@
 
             <div class="header-search desktop-only" style="flex: 1; max-width: 400px; position: relative;">
                 <i data-lucide="search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: #888;"></i>
-                <input type="text" placeholder="Быстрый поиск..." style="width: 100%; background: rgba(0,0,0,0.04); border: none; padding: 10px 10px 10px 40px; border-radius: 8px; font-size: 14px;">
+                <input type="text" id="global-search" placeholder="Поиск по ID или тексту..." style="width: 100%; background: rgba(0,0,0,0.04); border: none; padding: 10px 10px 10px 40px; border-radius: 8px; font-size: 14px;">
+                <div id="search-results" class="mica" style="position: absolute; top: 110%; left: 0; right: 0; max-height: 400px; overflow-y: auto; z-index: 2000; border-radius: 12px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid var(--win-border);"></div>
             </div>
 
             <div style="display: flex; align-items: center; gap: 16px;">
@@ -282,6 +283,51 @@
     <div id="sidebar-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001; display:none; backdrop-filter:blur(3px);"></div>
 
     <script>
+    let searchTimeout = null;
+    document.getElementById('global-search')?.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        const resultsDiv = document.getElementById('search-results');
+
+        if (query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            fetch(`api_search.php?q=${encodeURIComponent(query)}`)
+                .then(r => r.json())
+                .then(data => {
+                    resultsDiv.innerHTML = '';
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--win-text-secondary); font-size: 13px;">Ничего не найдено</div>';
+                    } else {
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.style.padding = '12px 16px';
+                            div.style.cursor = 'pointer';
+                            div.style.borderBottom = '1px solid var(--win-border)';
+                            div.innerHTML = `
+                                <div style="font-weight: 700; font-size: 13px;">#${item.id} - ${item.service}</div>
+                                <div style="font-size: 11px; color: var(--win-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.description}</div>
+                            `;
+                            div.onclick = () => window.location.href = `view.php?id=${item.id}`;
+                            div.onmouseover = () => div.style.background = 'rgba(0,120,212,0.05)';
+                            div.onmouseout = () => div.style.background = 'transparent';
+                            resultsDiv.appendChild(div);
+                        });
+                    }
+                    resultsDiv.style.display = 'block';
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.header-search')) {
+            document.getElementById('search-results').style.display = 'none';
+        }
+    });
+
     function updateOnlineStatus() {
         const indicator = document.getElementById('online-indicator');
         if (!indicator) return;

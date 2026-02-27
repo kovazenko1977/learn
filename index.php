@@ -178,18 +178,29 @@ include 'includes/header.php';
             <?php endif; ?>
         </form>
 
-        <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap: wrap;">
-            <div style="flex:1; min-width: 250px; position:relative;">
+        <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap: wrap; align-items: center;">
+            <div style="flex:1; min-width: 200px; position:relative;">
                 <i data-lucide="search" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); width:18px; height:18px; color:var(--win-text-secondary);"></i>
-                <input type="text" id="search-input" placeholder="Поиск заявок..." style="padding-left:48px; height:48px; border-radius:12px; font-size:15px;">
+                <input type="text" id="search-input" placeholder="Поиск..." style="padding-left:48px; height:48px; border-radius:12px; font-size:15px;">
             </div>
-            <div style="width: 200px;">
+            <div style="width: 180px;">
+                <select id="service-quick-filter" style="height:48px; border-radius:12px;">
+                    <option value="all">Все службы</option>
+                    <?php foreach ($services as $sid => $sname): ?>
+                        <option value="<?php echo $sid; ?>"><?php echo htmlspecialchars($sname); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div style="width: 180px;">
                 <select id="sort-select" style="height:48px; border-radius:12px;">
                     <option value="date-desc">Сначала новые</option>
                     <option value="date-asc">Сначала старые</option>
                     <option value="priority">По приоритету</option>
                 </select>
             </div>
+            <button id="compact-view-toggle" class="btn-secondary desktop-only" style="height:48px; width:48px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:12px;" title="Компактный вид">
+                <i data-lucide="list"></i>
+            </button>
         </div>
         <div class="filter-chips" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px; scrollbar-width: none;">
             <button class="filter-chip <?php echo (!$fStatus && !$fOverdue) ? 'active' : ''; ?>" data-status="all">Все</button>
@@ -200,6 +211,9 @@ include 'includes/header.php';
     </div>
 
     <div class="list-container" id="request-list" style="display: grid; gap: 12px; animation: slideUp 0.7s ease-out;">
+        <div class="mobile-only" style="background: rgba(0,120,212,0.05); padding: 10px; border-radius: 8px; font-size: 11px; color: var(--win-accent); margin-bottom: 8px; text-align: center; border: 1px dashed var(--win-accent);">
+            <i data-lucide="info" style="width:12px; height:12px; vertical-align:middle;"></i> Смахните влево для быстрых действий или вправо для чата
+        </div>
         <?php if (empty($filteredRequests)): ?>
             <div class="card mica" style="text-align:center; color:var(--win-text-secondary); padding: 60px 20px;">
                 <div style="width:64px; height:64px; background:rgba(0,0,0,0.03); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
@@ -221,6 +235,7 @@ include 'includes/header.php';
                 <a href="view.php?id=<?php echo $req['id']; ?>"
                    class="card mica list-item request-card"
                    data-status="<?php echo $req['status']; ?>"
+                   data-service-id="<?php echo $req['service_id']; ?>"
                    data-desc="<?php echo htmlspecialchars(mb_strtolower($req['description'])); ?>"
                    data-timestamp="<?php echo strtotime($req['created_at']); ?>"
                    data-priority="<?php echo $priorityMap[$req['priority']] ?? 0; ?>"
@@ -248,7 +263,13 @@ include 'includes/header.php';
                         <div style="display:flex; align-items:center; gap:16px; font-size:12px; color:var(--win-text-secondary);">
                             <span style="display:flex; align-items:center; gap:4px;">
                                 <i data-lucide="map-pin" style="width:14px; height:14px;"></i>
-                                <?php echo "Корп. {$req['location']['building']}, каб. {$req['location']['room']}"; ?>
+                                <?php
+                                    if (is_array($req['location'])) {
+                                        echo "Корп. {$req['location']['building']}, каб. {$req['location']['room']}";
+                                    } else {
+                                        echo htmlspecialchars($req['location']);
+                                    }
+                                ?>
                             </span>
                             <?php if (!empty($req['photo'])): ?>
                                 <span style="display:flex; align-items:center; gap:4px;">
@@ -306,12 +327,20 @@ include 'includes/header.php';
 }
 .colorful-stat-card .stat-value { color: white !important; font-size: 36px; }
 .colorful-stat-card .stat-label { color: rgba(255,255,255,0.9) !important; font-weight: 800; }
+
+.compact-view { grid-template-columns: 1fr 1fr; }
+.compact-view .request-card { padding: 12px; margin-bottom: 0; }
+.compact-view .request-card > div:nth-child(2) { font-size: 14px; margin-bottom: 4px; }
+.compact-view .request-card > div:nth-child(3) { display: none; }
+@media (max-width: 1100px) { .compact-view { grid-template-columns: 1fr; } }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const sortSelect = document.getElementById('sort-select');
+    const serviceQuickFilter = document.getElementById('service-quick-filter');
+    const compactToggle = document.getElementById('compact-view-toggle');
     const filterChips = document.querySelectorAll('.filter-chip');
     const list = document.getElementById('request-list');
     let cards = Array.from(document.querySelectorAll('.request-card'));
@@ -319,11 +348,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function filterCards() {
         const searchTerm = searchInput.value.toLowerCase();
         const activeStatus = document.querySelector('.filter-chip.active').dataset.status;
+        const selectedSvc = serviceQuickFilter.value;
 
         cards.forEach(card => {
             const matchesSearch = card.dataset.desc.includes(searchTerm);
             const matchesStatus = activeStatus === 'all' || card.dataset.status === activeStatus;
-            card.style.display = (matchesSearch && matchesStatus) ? 'block' : 'none';
+            const matchesSvc = selectedSvc === 'all' || card.dataset.serviceId === selectedSvc;
+            card.style.display = (matchesSearch && matchesStatus && matchesSvc) ? 'block' : 'none';
         });
     }
 
@@ -340,6 +371,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchInput.addEventListener('input', filterCards);
     sortSelect.addEventListener('change', sortCards);
+    serviceQuickFilter.addEventListener('change', filterCards);
+
+    compactToggle?.addEventListener('click', () => {
+        list.classList.toggle('compact-view');
+        const icon = compactToggle.querySelector('i');
+        if (list.classList.contains('compact-view')) {
+            icon.setAttribute('data-lucide', 'grid');
+        } else {
+            icon.setAttribute('data-lucide', 'list');
+        }
+        lucide.createIcons();
+    });
 
     filterChips.forEach(chip => {
         chip.addEventListener('click', () => {

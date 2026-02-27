@@ -143,6 +143,7 @@ class AnalyticsManager {
             'avg_hours' => 0,
             'locations' => ['buildings' => [], 'floors' => []],
             'activity' => [],
+            'trends' => [], // [date => avg_hours]
             'ratings_dist' => [1=>0, 2=>0, 3=>0, 4=>0, 5=>0],
             'coefficients' => [
                 'efficiency' => 0, // completed / total
@@ -232,6 +233,28 @@ class AnalyticsManager {
         if ($slaCount > 0) {
             $report['avg_hours'] = round($totalHours / $slaCount, 1);
             $report['coefficients']['speed'] = round($slaAdherence / $slaCount, 2);
+        }
+
+        // Calculate trends
+        $dateCompletionTimes = [];
+        foreach ($allRequests as $req) {
+            if (($req['performer_id'] ?? 0) !== $id) continue;
+            $completedAt = null;
+            foreach ($req['history'] as $h) {
+                if ($h['status'] === 'completed') {
+                    $completedAt = strtotime($h['timestamp']);
+                    break;
+                }
+            }
+            if ($completedAt) {
+                $date = date('Y-m-d', $completedAt);
+                if (!isset($dateCompletionTimes[$date])) $dateCompletionTimes[$date] = [];
+                $dateCompletionTimes[$date][] = ($completedAt - strtotime($req['created_at'])) / 3600;
+            }
+        }
+        ksort($dateCompletionTimes);
+        foreach ($dateCompletionTimes as $date => $times) {
+            $report['trends'][$date] = round(array_sum($times) / count($times), 1);
         }
 
         // Sort activity by time descending

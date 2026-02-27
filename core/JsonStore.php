@@ -3,12 +3,17 @@ namespace Hop\Core;
 
 class JsonStore {
     private string $filePath;
+    private static array $requestCache = [];
 
     public function __construct(string $filePath) {
         $this->filePath = $filePath;
     }
 
     public function read(): array {
+        if (isset(self::$requestCache[$this->filePath])) {
+            return self::$requestCache[$this->filePath];
+        }
+
         if (!file_exists($this->filePath)) {
             return [];
         }
@@ -22,7 +27,10 @@ class JsonStore {
         fclose($fp);
 
         $data = json_decode($content, true);
-        return is_array($data) ? $data : [];
+        $data = is_array($data) ? $data : [];
+
+        self::$requestCache[$this->filePath] = $data;
+        return $data;
     }
 
     public function save(array $data): bool {
@@ -36,6 +44,10 @@ class JsonStore {
         fflush($fp);
         flock($fp, LOCK_UN);
         fclose($fp);
+
+        if ($result !== false) {
+            self::$requestCache[$this->filePath] = $data;
+        }
 
         return $result !== false;
     }

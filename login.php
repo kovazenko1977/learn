@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['user_name'] = $user['name'];
+        $_SESSION['user_service_id'] = $user['service_id'] ?? 0;
         $logger->log('auth_success', $user['id'], "Вход в систему: " . ($user['username'] ?? 'по коду'));
         header('Location: index.php');
         exit;

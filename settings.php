@@ -11,49 +11,165 @@ checkRole('admin');
 $settingsStore = new JsonStore('data/settings.json');
 $settings = $settingsStore->read();
 
+$activeTab = $_GET['tab'] ?? 'org';
 $message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tg_test_id'])) {
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     checkCsrf();
-    $notifStore = new JsonStore('data/notifications.json');
-    $nm = new NotificationManager($settingsStore, $notifStore);
-    $testResult = $nm->testConnection($_POST['tg_test_token'], $_POST['tg_test_id']);
-    if ($testResult['success']) {
-        $message = "✅ Тестовое сообщение успешно отправлено!";
-    } else {
-        $message = "❌ Ошибка Telegram: " . $testResult['error'];
+
+    // Telegram Test
+    if (isset($_POST['tg_test_id'])) {
+        $notifStore = new JsonStore('data/notifications.json');
+        $nm = new NotificationManager($settingsStore, $notifStore);
+        $testResult = $nm->testConnection($_POST['tg_test_token'], $_POST['tg_test_id']);
+        if ($testResult['success']) {
+            $message = "✅ Тестовое сообщение успешно отправлено!";
+        } else {
+            $message = "❌ Ошибка Telegram: " . $testResult['error'];
+        }
+    }
+
+    // Save Settings
+    if (isset($_POST['action']) && $_POST['action'] === 'save_settings') {
+        $settings['hospital_name'] = $_POST['hospital_name'] ?? $settings['hospital_name'];
+        $settings['sla'] = [
+            'low' => (int)($_POST['sla_low'] ?? $settings['sla']['low']),
+            'medium' => (int)($_POST['sla_medium'] ?? $settings['sla']['medium']),
+            'high' => (int)($_POST['sla_high'] ?? $settings['sla']['high']),
+            'critical' => (int)($_POST['sla_critical'] ?? $settings['sla']['critical'])
+        ];
+        $settings['telegram_token'] = $_POST['telegram_token'] ?? $settings['telegram_token'];
+        $settings['telegram_chat_id'] = $_POST['telegram_chat_id'] ?? $settings['telegram_chat_id'];
+        $settings['accent_color'] = $_POST['accent_color'] ?? $settings['accent_color'] ?? '#0078d4';
+        $settings['theme'] = $_POST['theme'] ?? $settings['theme'] ?? 'light';
+        $settings['ui_style'] = $_POST['ui_style'] ?? $settings['ui_style'] ?? 'windows';
+        $settings['primary_font'] = $_POST['primary_font'] ?? $settings['primary_font'] ?? 'Inter';
+        $settings['font_size'] = $_POST['font_size'] ?? $settings['font_size'] ?? '15px';
+        $settings['polling_interval'] = (int)($_POST['polling_interval'] ?? $settings['polling_interval'] ?? 10);
+
+        if ($settingsStore->save($settings)) {
+            $message = '✅ Настройки системы успешно обновлены';
+        } else {
+            $message = '❌ Ошибка при сохранении настроек';
+        }
+    }
+
+    $backupManager = new BackupManager('data', 'uploads');
+
+    // Maintenance Actions
+    if (isset($_POST['maintenance'])) {
+        if ($_POST['maintenance'] === 'restore' && isset($_FILES['backup_file'])) {
+            if ($backupManager->restoreBackup($_FILES['backup_file']['tmp_name'])) {
+                $message = 'Данные успешно восстановлены из архива';
+            } else {
+                $message = 'Ошибка при восстановлении данных';
+            }
+        } elseif ($_POST['maintenance'] === 'reset') {
+            if ($backupManager->resetData($_POST['reset_password'])) {
+                $message = 'Система полностью очищена';
+            } else {
+                $message = 'Неверный административный пароль';
+            }
+        } elseif ($_POST['maintenance'] === 'purge') {
+            $purgeDate = $_POST['purge_date'];
+            $targets = $_POST['purge_targets'] ?? [];
+            if ($purgeDate && !empty($targets)) {
+                $purgedReqs = 0; $purgedChat = 0; $purgedNotifs = 0;
+
+                if (in_array('requests', $targets)) {
+                    $reqStore = new JsonStore('data/requests.json');
+                    $nm = new \Hop\Core\NotificationManager($settingsStore, new JsonStore('data/notifications.json'));
+                    $rm = new \Hop\Core\RequestManager($reqStore, $nm);
+                    $purgedReqs = $rm->purgeBefore($purgeDate);
+                }
+                if (in_array('chat', $targets)) {
+                    $cm = new \Hop\Core\ChatManager(new JsonStore('data/chat.json'));
+                    $purgedChat = $cm->purgeBefore($purgeDate);
+                }
+                if (in_array('notifications', $targets)) {
+                    $nm = new \Hop\Core\NotificationManager($settingsStore, new JsonStore('data/notifications.json'));
+                    $purgedNotifs = $nm->purgeBefore($purgeDate);
+                }
+
+                $message = "✅ Очистка завершена. Удалено: заявок: $purgedReqs; сообщений: $purgedChat; уведомлений: $purgedNotifs;";
+            } else {
+                $message = "⚠️ Выберите хотя бы один раздел для очистки";
+            }
+        }
+    }
+
+    // Integrity Check & Fix
+    if (isset($_POST['action'])) {
+        if ($_POST['action'] === 'check_integrity') {
+            $activeTab = 'data';
+            $reqStore = new JsonStore('data/requests.json');
+            $userStore = new JsonStore('data/users.json');
+            $serviceStore = new JsonStore('data/services.json');
+
+            $requests = $reqStore->read();
+            $users = $userStore->read();
+            $services = $serviceStore->read();
+
+            $user_ids = array_column($users, 'id');
+            $service_ids = array_column($services, 'id');
+
+            $bad_users = 0;
+            $bad_services = 0;
+
+            foreach ($requests as $req) {
+                if (!empty($req['service_id']) && !in_array($req['service_id'], $service_ids)) $bad_services++;
+                if (!empty($req['performer_id']) && !in_array($req['performer_id'], $user_ids)) $bad_users++;
+            }
+
+            $_SESSION['integrity_results'] = [
+                'bad_users' => $bad_users,
+                'bad_services' => $bad_services,
+                'total' => $bad_users + $bad_services
+            ];
+        } elseif ($_POST['action'] === 'fix_integrity') {
+            $activeTab = 'data';
+            $reqStore = new JsonStore('data/requests.json');
+            $userStore = new JsonStore('data/users.json');
+            $serviceStore = new JsonStore('data/services.json');
+
+            $requests = $reqStore->read();
+            $users = $userStore->read();
+            $services = $serviceStore->read();
+
+            $user_ids = array_column($users, 'id');
+            $service_ids = array_column($services, 'id');
+
+            $fixed = 0;
+            foreach ($requests as &$req) {
+                $is_broken = false;
+                if (!empty($req['service_id']) && !in_array($req['service_id'], $service_ids)) {
+                    $req['service_id'] = null;
+                    $is_broken = true;
+                }
+                if (!empty($req['performer_id']) && !in_array($req['performer_id'], $user_ids)) {
+                    $req['performer_id'] = null;
+                    $is_broken = true;
+                }
+
+                if ($is_broken) {
+                    $req['status'] = 'new';
+                    $fixed++;
+                }
+            }
+
+            if ($fixed > 0) {
+                $reqStore->save($requests);
+                $message = "✅ Целостность восстановлена. Исправлено заявок: $fixed";
+            } else {
+                $message = "Ошибок не найдено.";
+            }
+        }
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_settings') {
-    checkCsrf();
-    $settings = $settingsStore->read();
-
-    $settings['hospital_name'] = $_POST['hospital_name'] ?? $settings['hospital_name'];
-    $settings['sla'] = [
-        'low' => (int)($_POST['sla_low'] ?? $settings['sla']['low']),
-        'medium' => (int)($_POST['sla_medium'] ?? $settings['sla']['medium']),
-        'high' => (int)($_POST['sla_high'] ?? $settings['sla']['high']),
-        'critical' => (int)($_POST['sla_critical'] ?? $settings['sla']['critical'])
-    ];
-    $settings['telegram_token'] = $_POST['telegram_token'] ?? $settings['telegram_token'];
-    $settings['telegram_chat_id'] = $_POST['telegram_chat_id'] ?? $settings['telegram_chat_id'];
-    $settings['accent_color'] = $_POST['accent_color'] ?? $settings['accent_color'] ?? '#0078d4';
-    $settings['theme'] = $_POST['theme'] ?? $settings['theme'] ?? 'light';
-    $settings['ui_style'] = $_POST['ui_style'] ?? $settings['ui_style'] ?? 'windows';
-    $settings['primary_font'] = $_POST['primary_font'] ?? $settings['primary_font'] ?? 'Inter';
-    $settings['font_size'] = $_POST['font_size'] ?? $settings['font_size'] ?? '15px';
-    $settings['polling_interval'] = (int)($_POST['polling_interval'] ?? $settings['polling_interval'] ?? 10);
-
-    if ($settingsStore->save($settings)) {
-        $message = '✅ Настройки системы успешно обновлены';
-    } else {
-        $message = '❌ Ошибка при сохранении настроек';
-    }
-}
-
-$backupManager = new BackupManager('data', 'uploads');
-
+// GET Actions
 if (isset($_GET['action'])) {
+    $backupManager = new BackupManager('data', 'uploads');
     if ($_GET['action'] === 'backup') {
         try {
             $file = $backupManager->createBackup();
@@ -66,60 +182,10 @@ if (isset($_GET['action'])) {
             $message = "Ошибка бэкапа: " . $e->getMessage();
         }
     } elseif ($_GET['action'] === 'demo') {
-        $requestStore = new JsonStore('data/requests.json');
-        $serviceStore = new JsonStore('data/services.json');
-        $userStore = new JsonStore('data/users.json');
-        $tmplStore = new JsonStore('data/templates.json');
-        $locStore = new JsonStore('data/locations.json');
         $loader = new DemoDataLoader();
-        $loader->load($serviceStore, $userStore, $requestStore, $tmplStore, $locStore);
+        $loader->load(new JsonStore('data/services.json'), new JsonStore('data/users.json'), new JsonStore('data/requests.json'), new JsonStore('data/templates.json'), new JsonStore('data/locations.json'));
         header('Location: settings.php?msg=demo_ok');
         exit;
-    }
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['maintenance'])) {
-    checkCsrf();
-    if ($_POST['maintenance'] === 'restore' && isset($_FILES['backup_file'])) {
-        if ($backupManager->restoreBackup($_FILES['backup_file']['tmp_name'])) {
-            $message = 'Данные успешно восстановлены из архива';
-        } else {
-            $message = 'Ошибка при восстановлении данных';
-        }
-    } elseif ($_POST['maintenance'] === 'reset') {
-        if ($backupManager->resetData($_POST['reset_password'])) {
-            $message = 'Система полностью очищена';
-        } else {
-            $message = 'Неверный административный пароль';
-        }
-    } elseif ($_POST['maintenance'] === 'purge') {
-        $purgeDate = $_POST['purge_date'];
-        $targets = $_POST['purge_targets'] ?? [];
-        if ($purgeDate && !empty($targets)) {
-            $purgedReqs = 0; $purgedChat = 0; $purgedNotifs = 0; $purgedLogs = 0;
-
-            if (in_array('requests', $targets)) {
-                $reqStore = new JsonStore('data/requests.json');
-                $nm = new \Hop\Core\NotificationManager($settingsStore, new JsonStore('data/notifications.json'));
-                $rm = new \Hop\Core\RequestManager($reqStore, $nm);
-                $purgedReqs = $rm->purgeBefore($purgeDate);
-            }
-            if (in_array('chat', $targets)) {
-                $cm = new \Hop\Core\ChatManager(new JsonStore('data/chat.json'));
-                $purgedChat = $cm->purgeBefore($purgeDate);
-            }
-            if (in_array('notifications', $targets)) {
-                $nm = new \Hop\Core\NotificationManager($settingsStore, new JsonStore('data/notifications.json'));
-                $purgedNotifs = $nm->purgeBefore($purgeDate);
-            }
-
-            $message = "✅ Очистка завершена. Удалено:";
-            if (in_array('requests', $targets)) $message .= " заявок: $purgedReqs;";
-            if (in_array('chat', $targets)) $message .= " сообщений чата: $purgedChat;";
-            if (in_array('notifications', $targets)) $message .= " уведомлений: $purgedNotifs;";
-        } else {
-            $message = "⚠️ Выберите хотя бы один раздел для очистки";
-        }
     }
 }
 
@@ -144,28 +210,28 @@ include 'includes/header.php';
         <!-- Settings Sidebar -->
         <aside class="settings-sidebar mica">
             <div class="settings-nav">
-                <button class="settings-tab-btn active" onclick="showTab('org')">
+                <button class="settings-tab-btn <?php echo $activeTab === 'org' ? 'active' : ''; ?>" onclick="showTab('org')">
                     <i data-lucide="building-2"></i>
                     <div class="btn-text">
                         <span class="title">Организация</span>
                         <span class="desc">Название, шрифты, цвета</span>
                     </div>
                 </button>
-                <button class="settings-tab-btn" onclick="showTab('tg')">
+                <button class="settings-tab-btn <?php echo $activeTab === 'tg' ? 'active' : ''; ?>" onclick="showTab('tg')">
                     <i data-lucide="bell-ring"></i>
                     <div class="btn-text">
                         <span class="title">Уведомления</span>
                         <span class="desc">Настройка Telegram бота</span>
                     </div>
                 </button>
-                <button class="settings-tab-btn" onclick="showTab('sla')">
+                <button class="settings-tab-btn <?php echo $activeTab === 'sla' ? 'active' : ''; ?>" onclick="showTab('sla')">
                     <i data-lucide="timer"></i>
                     <div class="btn-text">
                         <span class="title">SLA & Система</span>
                         <span class="desc">Сроки и системные параметры</span>
                     </div>
                 </button>
-                <button class="settings-tab-btn" onclick="showTab('data')">
+                <button class="settings-tab-btn <?php echo $activeTab === 'data' ? 'active' : ''; ?>" onclick="showTab('data')">
                     <i data-lucide="database"></i>
                     <div class="btn-text">
                         <span class="title">Обслуживание</span>
@@ -181,7 +247,7 @@ include 'includes/header.php';
                 <input type="hidden" name="action" value="save_settings">
                 <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
-                <div id="tab-org" class="tab-content active">
+                <div id="tab-org" class="tab-content <?php echo $activeTab === 'org' ? 'active' : ''; ?>">
             <div class="form-grid" style="align-items: stretch;">
                 <section class="card">
                 <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
@@ -246,7 +312,7 @@ include 'includes/header.php';
             </div>
         </div>
 
-        <div id="tab-tg" class="tab-content">
+        <div id="tab-tg" class="tab-content <?php echo $activeTab === 'tg' ? 'active' : ''; ?>">
             <section class="card">
             <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
                 <i data-lucide="bell-ring" style="color:var(--win-accent);"></i> Уведомления Telegram
@@ -299,7 +365,7 @@ include 'includes/header.php';
             </section>
         </div>
 
-        <div id="tab-sla" class="tab-content">
+        <div id="tab-sla" class="tab-content <?php echo $activeTab === 'sla' ? 'active' : ''; ?>">
             <div class="form-grid">
                 <section class="card">
                     <h2 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
@@ -380,7 +446,7 @@ include 'includes/header.php';
                 }
             </style>
 
-            <div id="tab-data" class="tab-content">
+            <div id="tab-data" class="tab-content <?php echo $activeTab === 'data' ? 'active' : ''; ?>">
         <div class="form-grid">
             <section class="card">
                 <h3 style="margin-top:0;">Резервное копирование</h3>
@@ -449,6 +515,40 @@ include 'includes/header.php';
                 <a href="settings.php?action=demo" class="btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; background:var(--status-working); margin-bottom: 24px;">
                     <i data-lucide="flask-conical"></i> Генерировать демо-данные
                 </a>
+
+                <div style="margin: 24px 0; height: 1px; background: var(--win-border);"></div>
+
+                <h3 style="margin-top:0; font-size:18px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="shield-check" style="color:var(--win-accent);"></i> Целостность системы
+                </h3>
+                <p style="font-size: 13px; color: var(--win-text-secondary); margin-bottom: 20px;">Проверка на наличие "осиротевших" заявок (назначенных на удаленные службы или сотрудников).</p>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="check_integrity">
+                    <button type="submit" class="btn-secondary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <i data-lucide="microscope"></i> Запустить диагностику
+                    </button>
+                </form>
+
+                <?php if (isset($_SESSION['integrity_results'])): ?>
+                    <div style="margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.02); border-radius: 12px; font-size: 13px;">
+                        <h4 style="margin-top:0;">Результаты:</h4>
+                        <ul style="padding-left: 20px;">
+                            <li>Битых заявок (удаленные службы): <?php echo $_SESSION['integrity_results']['bad_services']; ?></li>
+                            <li>Битых заявок (удаленные сотрудники): <?php echo $_SESSION['integrity_results']['bad_users']; ?></li>
+                        </ul>
+                        <?php if ($_SESSION['integrity_results']['total'] > 0): ?>
+                            <form method="POST">
+                                <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
+                                <input type="hidden" name="action" value="fix_integrity">
+                                <button type="submit" class="btn-primary" style="width:100%; margin-top:10px; font-size:12px;">Исправить (перевести в статус Новая)</button>
+                            </form>
+                        <?php else: ?>
+                            <p style="color: #107c10; font-weight: 700;">Ошибок не обнаружено ✅</p>
+                        <?php endif; ?>
+                    </div>
+                    <?php unset($_SESSION['integrity_results']); ?>
+                <?php endif; ?>
 
                 <div style="margin: 24px 0; height: 1px; background: var(--win-border);"></div>
 
