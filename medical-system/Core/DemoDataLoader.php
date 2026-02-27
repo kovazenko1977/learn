@@ -10,6 +10,60 @@ use Medical\Core\Managers\ScheduleManager;
 
 echo "Загрузка обновленных демо-данных...\n";
 
+// 0. Staff Roles (As requested)
+$staffStore = new JsonStore('staff');
+$staffRoles = [
+    [
+        'id' => 'admin_1',
+        'name' => 'Администратор Системы',
+        'role' => 'admin',
+        'specialization' => 'IT-отдел',
+        'access_code' => '123456',
+        'permissions' => []
+    ],
+    [
+        'id' => 'doctor_1',
+        'name' => 'Иванов Иван Иванович',
+        'role' => 'doctor',
+        'specialization' => 'Лечащий врач',
+        'access_code' => '101010',
+        'permissions' => ['patients_view', 'patients_edit', 'history_view', 'history_add', 'lab_view', 'lab_upload', 'procedures_assign', 'procedures_cancel', 'procedures_delete']
+    ],
+    [
+        'id' => 'consultant_1',
+        'name' => 'Петров Петр Петрович',
+        'role' => 'consultant',
+        'specialization' => 'Врач-консультант',
+        'access_code' => '111111',
+        'permissions' => ['patients_view', 'history_view', 'lab_view', 'procedures_assign']
+    ],
+    [
+        'id' => 'cashier_1',
+        'name' => 'Сидорова Светлана Сергеевна',
+        'role' => 'cashier',
+        'specialization' => 'Медрегистратор / Кассир',
+        'access_code' => '202020',
+        'permissions' => ['patients_view', 'finance_pay', 'finance_view']
+    ],
+    [
+        'id' => 'nurse_1',
+        'name' => 'Козлова Анна Андреевна',
+        'role' => 'nurse',
+        'specialization' => 'Медсестра процедуры',
+        'access_code' => '303030',
+        'permissions' => ['patients_view', 'procedures_nurse']
+    ],
+    [
+        'id' => 'head_1',
+        'name' => 'Николаев Николай Николаевич',
+        'role' => 'head_doctor',
+        'specialization' => 'Начальник медчасти',
+        'access_code' => '505050',
+        'permissions' => ['patients_view', 'history_view', 'analytics_view', 'logs_view', 'finance_view']
+    ]
+];
+$staffStore->save($staffRoles);
+
 // 1. Procedures with Staff
 $procManager = new ProcedureManager();
 $procDirectory = new JsonStore('procedures_directory');
@@ -68,7 +122,7 @@ foreach ($pIds as $idx => $pid) {
             'attended' => ($i == 0),
             'attended_at' => ($i == 0) ? date('Y-m-d H:i:s') : null,
             'performed_by' => ($i == 0) ? 'Медсестра' : null,
-            'doctor' => $doctor
+            'doctor' => 'Иванов Иван Иванович'
         ]);
     }
 

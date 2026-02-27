@@ -102,8 +102,9 @@ require_once __DIR__ . '/includes/header.php';
                     <?php
                         $class = 'status-gray';
                         $text = 'Бесплатно';
-                        if ($app['status'] === 'unpaid') { $class = 'status-red'; $text = 'Не оплачено'; }
-                        if ($app['status'] === 'paid') { $class = 'status-green'; $text = 'Оплачено'; }
+                        if (($app['status'] ?? '') === 'unpaid') { $class = 'status-red'; $text = 'Не оплачено'; }
+                        if (($app['status'] ?? '') === 'paid') { $class = 'status-green'; $text = 'Оплачено'; }
+                        if (($app['status'] ?? '') === 'cancelled') { $class = 'status-red'; $text = 'Отменено'; }
                     ?>
                     <span class="<?php echo $class; ?>"><?php echo $text; ?></span>
                 </td>

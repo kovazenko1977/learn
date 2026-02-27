@@ -53,7 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 exit;
             }
         } elseif ($_POST['action'] === 'delete' && \Medical\Core\Auth::can('patients_delete')) {
-            $patientManager->delete($_POST['id']);
+            try {
+                $patientManager->delete($_POST['id']);
+                header('Location: patients.php?delete_success=1');
+                exit;
+            } catch (\Exception $e) {
+                header('Location: patients.php?error=' . urlencode($e->getMessage()));
+                exit;
+            }
         } elseif ($_POST['action'] === 'import' && \Medical\Core\Auth::can('patients_edit') && isset($_FILES['csv_file'])) {
             $file = $_FILES['csv_file']['tmp_name'];
             if (($handle = fopen($file, "r")) !== FALSE) {
@@ -122,7 +129,22 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
 
 <?php if (isset($_GET['import_success'])): ?>
     <div style="background: #dff6dd; color: #107c10; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #107c10;">
+        <i data-lucide="check-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
         Данные пациентов успешно импортированы.
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['delete_success'])): ?>
+    <div style="background: #dff6dd; color: #107c10; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #107c10;">
+        <i data-lucide="check-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        Пациент успешно удален из системы.
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['error'])): ?>
+    <div style="background: #fde7e9; color: #d13438; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #d13438;">
+        <i data-lucide="alert-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        Ошибка: <?php echo htmlspecialchars($_GET['error']); ?>
     </div>
 <?php endif; ?>
 
@@ -474,6 +496,7 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
         .then(data => {
             hideLoader();
             if (data.success) {
+                showToast('Пациент успешно добавлен', 'success');
                 const doctor = formData.get('treating_doctor');
                 if (doctor) {
                     document.getElementById('addModal').style.display = 'none';
@@ -488,12 +511,12 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
                     location.reload();
                 }
             } else {
-                alert('Ошибка при сохранении: ' + (data.error || 'Неизвестная ошибка'));
+                showToast('Ошибка при сохранении: ' + (data.error || 'Неизвестная ошибка'), 'error');
             }
         })
         .catch(err => {
             hideLoader();
-            alert('Сетевая ошибка');
+            showToast('Сетевая ошибка', 'error');
         });
     });
 
@@ -508,14 +531,15 @@ $doctors = array_filter($staffManager->getAll(), function($s) {
         .then(data => {
             hideLoader();
             if (data.success) {
-                location.reload();
+                showToast('Данные обновлены', 'success');
+                setTimeout(() => location.reload(), 800);
             } else {
-                alert('Ошибка при обновлении');
+                showToast('Ошибка при обновлении', 'error');
             }
         })
         .catch(err => {
             hideLoader();
-            alert('Сетевая ошибка');
+            showToast('Сетевая ошибка', 'error');
         });
     });
 

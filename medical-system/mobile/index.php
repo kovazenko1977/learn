@@ -5,11 +5,25 @@ require_once __DIR__ . '/../Core/Autoloader.php';
 \Medical\Core\Auth::requireLogin();
 
 $analytics = new \Medical\Core\Managers\AnalyticsManager();
+$am = new \Medical\Core\Managers\AnnouncementManager();
+$activeAnnouncements = $am->getActive();
 $user = \Medical\Core\Auth::getUser();
 $summary = $analytics->getSummary(date('Y-m-d'), date('Y-m-d')); // Summary for today
 
 include __DIR__ . '/includes/header.php';
 ?>
+
+<?php if (!empty($activeAnnouncements)): ?>
+    <div style="padding: 12px 16px 0 16px;">
+        <?php foreach ($activeAnnouncements as $a): ?>
+            <div class="md-card" style="margin: 0 0 12px 0; border-left: 4px solid var(--md-primary); background: #fef7ff; padding: 12px;">
+                <div style="font-weight: 600; font-size: 15px; color: var(--md-primary); margin-bottom: 4px;"><?php echo htmlspecialchars($a['title']); ?></div>
+                <div style="font-size: 13px; line-height: 1.4;"><?php echo nl2br(htmlspecialchars($a['content'])); ?></div>
+                <div style="font-size: 11px; color: #888; margin-top: 8px;"><?php echo date('d.m H:i', strtotime($a['created_at'])); ?> • <?php echo htmlspecialchars($a['author']); ?></div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
 <div style="padding: 16px;">
     <h2 style="font-weight: 400; margin-bottom: 8px;">Добро пожаловать,</h2>

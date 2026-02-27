@@ -34,8 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         header("Location: patient_card.php?id=$id");
         exit;
     } elseif ($_POST['action'] === 'cancel_appointment' && \Medical\Core\Auth::can('procedures_cancel')) {
-        $scheduleManager->cancel($_POST['appointment_id']);
+        $scheduleManager->cancel($_POST['appointment_id'], $_POST['cancel_reason'] ?? '');
         header("Location: patient_card.php?id=$id&success=cancelled");
+        exit;
+    } elseif ($_POST['action'] === 'restore_appointment' && \Medical\Core\Auth::can('procedures_assign')) {
+        $scheduleManager->restore($_POST['appointment_id']);
+        header("Location: patient_card.php?id=$id&success=restored");
         exit;
     } elseif ($_POST['action'] === 'delete_appointment' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
         $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
@@ -85,6 +89,7 @@ require_once __DIR__ . '/includes/header.php';
         <?php
             if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
             if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
+            if ($_GET['success'] === 'restored') echo "Назначение успешно восстановлено.";
         ?>
     </div>
 <?php endif; ?>
@@ -231,8 +236,15 @@ require_once __DIR__ . '/includes/header.php';
                 </thead>
                 <tbody>
                     <?php foreach (array_reverse($appointments) as $app): ?>
-                    <tr class="appointment-row">
-                        <td style="font-weight: 500;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
+                    <tr class="appointment-row" style="<?php echo ($app['status'] ?? '') === 'cancelled' ? 'background: rgba(209, 52, 56, 0.03);' : ''; ?>">
+                        <td style="font-weight: 500;">
+                            <?php echo htmlspecialchars($app['procedure_name']); ?>
+                            <?php if (!empty($app['cancel_reason'])): ?>
+                                <div style="font-size: 0.75rem; color: #d13438; font-weight: normal; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                    <i data-lucide="info" style="width:12px; height:12px;"></i> Причина: <?php echo htmlspecialchars($app['cancel_reason']); ?>
+                                </div>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo $app['date']; ?> <span style="color: var(--win-text-secondary);"><?php echo $app['time']; ?></span></td>
                         <td>
                             <?php if ($app['attended']): ?>
@@ -259,12 +271,17 @@ require_once __DIR__ . '/includes/header.php';
                                     </form>
                                 <?php endif; ?>
                                 <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
-                                    <form method="POST" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите ОТМЕНИТЬ эту процедуру?\n\nЗапись останется в истории со статусом «Отменена».')">
+                                    <button class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение" onclick="openCancelModal('<?php echo $app['id']; ?>', <?php echo ($app['status'] === 'paid' ? 'true' : 'false'); ?>)">
+                                        <i data-lucide="ban" class="icon" style="width: 14px; height: 14px; margin: 0 4px 0 0; color: #d13438;"></i> Отменить
+                                    </button>
+                                <?php endif; ?>
+                                <?php if (($app['status'] ?? '') === 'cancelled' && \Medical\Core\Auth::can('procedures_assign')): ?>
+                                    <form method="POST" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                                        <input type="hidden" name="action" value="cancel_appointment">
+                                        <input type="hidden" name="action" value="restore_appointment">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                        <button type="submit" class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05);" title="Отменить назначение">
-                                            <i data-lucide="ban" class="icon" style="width: 14px; height: 14px; margin: 0 4px 0 0; color: #d13438;"></i> Отменить
+                                        <button type="submit" class="btn btn-sm btn-ghost" style="color: var(--win-accent); padding: 4px 8px;" title="Восстановить">
+                                            <i data-lucide="rotate-ccw" class="icon" style="width: 14px; height: 14px; margin: 0 4px 0 0;"></i> Восстановить
                                         </button>
                                     </form>
                                 <?php endif; ?>
@@ -372,6 +389,32 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </div>
 
+<!-- Cancel Modal -->
+<div id="cancelModal" style="display:none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 400px; margin: 150px auto; padding: 32px;">
+        <h2 style="margin-bottom: 20px; color: #d13438;">Отмена процедуры</h2>
+        <div id="cancel_warning" style="display:none; background: #fff8e1; border: 1px solid #fbd38d; color: #856404; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px;">
+            <i data-lucide="alert-triangle" style="width:16px; height:16px; vertical-align: middle;"></i>
+            <strong>Внимание:</strong> Процедура уже ОПЛАЧЕНА. Отмена не выполняет автоматический возврат средств.
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="cancel_appointment">
+            <input type="hidden" name="appointment_id" id="cancel_app_id">
+
+            <div style="margin-bottom: 24px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Причина отмены (необязательно)</label>
+                <textarea name="cancel_reason" style="width: 100%; height: 80px; resize: none;" placeholder="Напр. Отказ пациента, Противопоказания..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('cancelModal').style.display='none'">Назад</button>
+                <button type="submit" class="btn btn-danger">Подтвердить отмену</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- History Modal -->
 <div id="historyModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
     <div class="card mica-effect" style="width: 600px; margin: 60px auto; padding: 32px;">
@@ -433,6 +476,13 @@ function selectMKB(code, name) {
     document.getElementById('diag_text').value = name;
     document.getElementById('mkb_results').style.display = 'none';
     document.getElementById('mkb_search').value = '';
+}
+
+function openCancelModal(id, isPaid) {
+    document.getElementById('cancel_app_id').value = id;
+    document.getElementById('cancel_warning').style.display = isPaid ? 'block' : 'none';
+    document.getElementById('cancelModal').style.display = 'block';
+    if (window.lucide) lucide.createIcons();
 }
 </script>
 <script>

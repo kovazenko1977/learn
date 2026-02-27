@@ -243,10 +243,33 @@ class ScheduleManager {
         return $res;
     }
 
-    public function cancel($id) {
-        $res = $this->store->updateById($id, ['status' => 'cancelled']);
+    public function cancel($id, $reason = '') {
+        $res = $this->store->updateById($id, [
+            'status' => 'cancelled',
+            'cancel_reason' => $reason,
+            'cancelled_at' => date('Y-m-d H:i:s'),
+            'cancelled_by' => \Medical\Core\Auth::getUser()['name'] ?? 'System'
+        ]);
         if ($res) {
-            (new LogManager())->log('Отмена назначения', ['appointment_id' => $id]);
+            (new LogManager())->log('Отмена назначения', ['appointment_id' => $id, 'reason' => $reason]);
+        }
+        return $res;
+    }
+
+    public function restore($id) {
+        $app = $this->getById($id);
+        if (!$app) return false;
+
+        $newStatus = ($app['price'] ?? 0) > 0 ? 'unpaid' : 'free';
+
+        $res = $this->store->updateById($id, [
+            'status' => $newStatus,
+            'cancel_reason' => null,
+            'cancelled_at' => null,
+            'cancelled_by' => null
+        ]);
+        if ($res) {
+            (new LogManager())->log('Восстановление назначения', ['appointment_id' => $id]);
         }
         return $res;
     }

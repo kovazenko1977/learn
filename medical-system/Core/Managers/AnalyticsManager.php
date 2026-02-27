@@ -148,17 +148,25 @@ class AnalyticsManager {
         $patients = $this->patientsStore->getAll();
         $appointments = $this->appointmentsStore->getAll();
 
+        // Group appointments by patient ID first (O(N) optimization)
+        $appsByPatient = [];
+        foreach ($appointments as $app) {
+            $pid = $app['patient_id'];
+            if (!isset($appsByPatient[$pid])) $appsByPatient[$pid] = [];
+            $appsByPatient[$pid][] = strtotime($app['date']);
+        }
+
         $durations = [];
         foreach ($patients as $p) {
             $pid = $p['id'];
-            $pApps = array_filter($appointments, function($a) use ($pid) { return $a['patient_id'] === $pid; });
-            if (empty($pApps)) continue;
+            if (!isset($appsByPatient[$pid])) continue;
 
-            $dates = array_map(function($a) { return strtotime($a['date']); }, $pApps);
+            $dates = $appsByPatient[$pid];
             $minDate = min($dates);
             $maxDate = max($dates);
 
-            $days = ceil(($maxDate - $minDate) / (60 * 60 * 24)) + 1;
+            $days = (int)ceil(($maxDate - $minDate) / (60 * 60 * 24)) + 1;
+            if ($days < 1) $days = 1;
             if (!isset($durations[$days])) $durations[$days] = 0;
             $durations[$days]++;
         }
@@ -254,20 +262,18 @@ class AnalyticsManager {
         $unpaidMissed = [];
         $paidMissed = [];
 
+        // Cache patients to avoid multiple findById calls (O(N) optimization)
+        $patients = [];
+        foreach ($this->patientsStore->getAll() as $p) {
+            $patients[$p['id']] = $p['name'];
+        }
+
         foreach ($appointments as $app) {
-            // A procedure is considered "missed" if its scheduled time has passed
-            // and it was not marked as attended.
             $appTime = strtotime($app['date'] . ' ' . $app['time']);
-
-            // Skip future appointments
             if ($appTime > $now) continue;
-
-            // Skip attended appointments
             if (!empty($app['attended'])) continue;
 
-            // Collect patient info for the report
-            $patient = $this->patientsStore->findById($app['patient_id']);
-            $patientName = $patient ? $patient['name'] : 'Неизвестный пациент';
+            $patientName = $patients[$app['patient_id']] ?? 'Неизвестный пациент';
 
             $item = [
                 'id' => $app['id'],

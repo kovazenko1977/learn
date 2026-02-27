@@ -77,9 +77,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             }
         }
     } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
-        $scheduleManager->cancel($_POST['appointment_id']);
+        $scheduleManager->cancel($_POST['appointment_id'], $_POST['cancel_reason'] ?? '');
         $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
         header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=cancelled");
+        exit;
+    } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'restore' && \Medical\Core\Auth::can('procedures_assign')) {
+        $scheduleManager->restore($_POST['appointment_id']);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=restored");
         exit;
     } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
         $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
@@ -116,6 +121,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
         <?php
             if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
             if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
+            if ($_GET['success'] === 'restored') echo "Назначение успешно восстановлено.";
         ?>
     </div>
 <?php endif; ?>
@@ -203,6 +209,11 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                         <div>
                             <label style="display:block;">С даты</label>
                             <input type="date" name="date" id="start_date" value="<?php echo date('Y-m-d'); ?>" style="width: 100%;" required>
+                            <div style="display: flex; gap: 4px; margin-top: 5px;">
+                                <button type="button" class="btn btn-sm btn-ghost" style="padding: 2px 6px; font-size: 0.7rem;" onclick="quickSetDate(0)">Сегодня</button>
+                                <button type="button" class="btn btn-sm btn-ghost" style="padding: 2px 6px; font-size: 0.7rem;" onclick="quickSetDate(1)">Завтра</button>
+                                <button type="button" class="btn btn-sm btn-ghost" style="padding: 2px 6px; font-size: 0.7rem;" onclick="quickSetDate(7)">+7 дн.</button>
+                            </div>
                         </div>
                         <div>
                             <label style="display:block;">По дату (необяз.)</label>
@@ -287,9 +298,16 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                     </thead>
                     <tbody>
                         <?php foreach (array_reverse($patientAppointments) as $app): ?>
-                        <tr style="border-bottom: 1px solid var(--win-border);" class="appointment-row">
+                        <tr style="border-bottom: 1px solid var(--win-border); <?php echo ($app['status'] ?? '') === 'cancelled' ? 'background: rgba(209, 52, 56, 0.03);' : ''; ?>" class="appointment-row">
                             <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
-                            <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
+                            <td style="padding: 10px;">
+                                <?php echo htmlspecialchars($app['procedure_name']); ?>
+                                <?php if (!empty($app['cancel_reason'])): ?>
+                                    <div style="font-size: 0.75rem; color: #d13438; font-weight: normal; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="info" style="width:12px; height:12px;"></i> Причина: <?php echo htmlspecialchars($app['cancel_reason']); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
                             <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor'] ?? '-'); ?></td>
                             <td style="padding: 10px;">
                                 <?php
@@ -302,13 +320,18 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                                 ?>
                                 <span class="<?php echo $class; ?>"><?php echo $text; ?></span>
                                 <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
-                                    <form method="POST" style="display:inline; margin-left: 10px;" onsubmit="return confirm('Вы уверены, что хотите ОТМЕНИТЬ эту процедуру?\n\nЗапись останется в истории со статусом «Отменена».')">
+                                    <button class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение" onclick="openCancelModal('<?php echo $app['id']; ?>', <?php echo ($app['status'] === 'paid' ? 'true' : 'false'); ?>)">
+                                        <i data-lucide="ban" style="width: 14px; height: 14px; color: #d13438;"></i>
+                                    </button>
+                                <?php endif; ?>
+                                <?php if (($app['status'] ?? '') === 'cancelled' && \Medical\Core\Auth::can('procedures_assign')): ?>
+                                    <form method="POST" style="display:inline; margin-left: 5px;">
                                         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                                        <input type="hidden" name="action" value="cancel">
+                                        <input type="hidden" name="action" value="restore">
                                         <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
                                         <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                        <button type="submit" class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение">
-                                            <i data-lucide="ban" style="width: 14px; height: 14px; color: #d13438;"></i>
+                                        <button type="submit" class="btn btn-sm btn-ghost" style="color: var(--win-accent); padding: 4px 8px;" title="Восстановить">
+                                            <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
                                         </button>
                                     </form>
                                 <?php endif; ?>
@@ -338,7 +361,41 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
     </div>
 <?php endif; ?>
 
+<!-- Cancel Modal -->
+<div id="cancelModal" style="display:none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 400px; margin: 150px auto; padding: 32px;">
+        <h2 style="margin-bottom: 20px; color: #d13438;">Отмена процедуры</h2>
+        <div id="cancel_warning" style="display:none; background: #fff8e1; border: 1px solid #fbd38d; color: #856404; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px;">
+            <i data-lucide="alert-triangle" style="width:16px; height:16px; vertical-align: middle;"></i>
+            <strong>Внимание:</strong> Процедура ОПЛАЧЕНА.
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="cancel">
+            <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+            <input type="hidden" name="appointment_id" id="cancel_app_id">
+
+            <div style="margin-bottom: 24px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Причина отмены</label>
+                <textarea name="cancel_reason" style="width: 100%; height: 80px; resize: none;" placeholder="Напр. Противопоказания..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('cancelModal').style.display='none'">Назад</button>
+                <button type="submit" class="btn btn-danger">Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openCancelModal(id, isPaid) {
+        document.getElementById('cancel_app_id').value = id;
+        document.getElementById('cancel_warning').style.display = isPaid ? 'block' : 'none';
+        document.getElementById('cancelModal').style.display = 'block';
+        if (window.lucide) lucide.createIcons();
+    }
+
     const procedureSelect = document.getElementById('procedure_select');
     const cabinetInput = document.getElementById('cabinet_id');
     const dateInput = document.getElementById('start_date');
@@ -448,6 +505,13 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 
     cabinetInput?.addEventListener('change', updateTimeline);
     dateInput?.addEventListener('change', updateTimeline);
+
+    window.quickSetDate = function(days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        dateInput.value = d.toISOString().split('T')[0];
+        updateTimeline();
+    };
 
     endDateInput?.addEventListener('input', function() {
         bulkOptions.style.display = this.value ? 'block' : 'none';

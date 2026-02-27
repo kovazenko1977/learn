@@ -36,6 +36,17 @@ class PatientManager {
     }
 
     public function delete($id) {
+        // Restriction check: check if has paid or attended procedures
+        $appStore = new JsonStore('appointments');
+        $apps = $appStore->getAll();
+        foreach ($apps as $app) {
+            if ($app['patient_id'] === $id) {
+                if ($app['status'] === 'paid' || !empty($app['attended'])) {
+                    throw new \Exception("Нельзя удалить пациента, у которого есть оплаченные или выполненные процедуры.");
+                }
+            }
+        }
+
         $patient = $this->getById($id);
         $res = $this->store->deleteById($id);
         if ($res) {

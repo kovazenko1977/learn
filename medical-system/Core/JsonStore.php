@@ -6,6 +6,7 @@ class JsonStore {
     private $filePath;
     private $sqlStore = null;
     private $filename;
+    private static $cache = [];
 
     public function __construct($filename) {
         $this->filename = $filename;
@@ -38,16 +39,26 @@ class JsonStore {
 
     public function getAll() {
         if ($this->sqlStore) return $this->sqlStore->getAll();
+
+        if (isset(self::$cache[$this->filename])) {
+            return self::$cache[$this->filename];
+        }
+
         if (!file_exists($this->filePath)) {
             return [];
         }
+
         $content = file_get_contents($this->filePath);
         $data = json_decode($content, true);
-        return is_array($data) ? $data : [];
+        $result = is_array($data) ? $data : [];
+
+        self::$cache[$this->filename] = $result;
+        return $result;
     }
 
     public function save($data) {
         if ($this->sqlStore) return $this->sqlStore->save($data);
+
         $fp = @fopen($this->filePath, 'w');
         if ($fp) {
             if (flock($fp, LOCK_EX)) {
@@ -56,6 +67,7 @@ class JsonStore {
                 flock($fp, LOCK_UN);
             }
             fclose($fp);
+            self::$cache[$this->filename] = $data;
             return true;
         }
         return false;

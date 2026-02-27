@@ -13,8 +13,27 @@ $scheduleManager = new \Medical\Core\Managers\ScheduleManager();
 $scheduleManager->autoCancelUnpaid();
 
 $summary = $analytics->getSummary();
+$am = new \Medical\Core\Managers\AnnouncementManager();
+$activeAnnouncements = $am->getActive();
 ?>
 <h1>Панель управления</h1>
+
+<?php if (!empty($activeAnnouncements)): ?>
+    <div style="margin-bottom: 32px;">
+        <?php foreach ($activeAnnouncements as $a): ?>
+            <div class="card mica-effect" style="border-left: 5px solid var(--win-accent); background: rgba(0, 120, 212, 0.03); margin-bottom: 12px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <h3 style="margin: 0; color: var(--win-accent);"><?php echo htmlspecialchars($a['title']); ?></h3>
+                    <span style="font-size: 0.75rem; color: #888;"><?php echo date('d.m.Y H:i', strtotime($a['created_at'])); ?></span>
+                </div>
+                <p style="margin: 0; font-size: 0.95rem; line-height: 1.5; color: #333;"><?php echo nl2br(htmlspecialchars($a['content'])); ?></p>
+                <div style="margin-top: 10px; font-size: 0.75rem; color: #666; font-style: italic;">
+                    — <?php echo htmlspecialchars($a['author']); ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
     <a href="patients.php" class="card-link">
