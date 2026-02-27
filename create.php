@@ -26,15 +26,33 @@ $locations = $locStore->read();
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     checkCsrf();
-    $photoPath = '';
+
+    $photos = [];
+    // Handle base64 compressed images from frontend
+    if (isset($_POST['compressed_photos']) && is_array($_POST['compressed_photos'])) {
+        foreach ($_POST['compressed_photos'] as $base64) {
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+                $data = substr($base64, strpos($base64, ',') + 1);
+                $type = strtolower($type[1]);
+                if ($type === 'jpeg') $type = 'jpg';
+                if (in_array($type, ['jpg', 'png', 'webp'])) {
+                    $decodedData = base64_decode($data);
+                    $path = 'uploads/' . uniqid() . '.' . $type;
+                    file_put_contents($path, $decodedData);
+                    $photos[] = $path;
+                }
+            }
+        }
+    }
+
+    // Fallback to traditional upload if any
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
         if (in_array($ext, $allowed)) {
-            $photoPath = 'uploads/' . uniqid() . '.' . $ext;
-            move_uploaded_file($_FILES['photo']['tmp_name'], $photoPath);
-        } else {
-            $message = 'Недопустимый тип файла.';
+            $path = 'uploads/' . uniqid() . '.' . $ext;
+            move_uploaded_file($_FILES['photo']['tmp_name'], $path);
+            $photos[] = $path;
         }
     }
 
@@ -63,7 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'room' => $_POST['room']
         ],
         'priority' => $_POST['priority'],
-        'photo' => $photoPath
+        'photo' => $photos[0] ?? '',
+        'photos' => $photos
     ]);
 
     if ($requestId) {
@@ -84,7 +103,7 @@ include 'includes/header.php';
         <p style="color:var(--win-text-secondary);">Пожалуйста, опишите проблему для технической службы</p>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" style="animation: slideUp 0.6s ease-out;">
+    <form id="request-form" method="POST" enctype="multipart/form-data" style="animation: slideUp 0.6s ease-out;">
         <input type="hidden" name="csrf_token" value="<?php echo generateCsrfToken(); ?>">
 
         <div style="display: grid; grid-template-columns: 1fr 340px; gap: 24px;">
@@ -100,19 +119,17 @@ include 'includes/header.php';
                     </div>
 
                     <div class="form-group" style="margin-bottom:0;">
-                        <label>Фотография (рекомендуется)</label>
+                        <label>Фотографии (можно несколько)</label>
                         <div class="photo-upload-zone" onclick="document.getElementById('photo-upload').click()">
-                            <input type="file" name="photo" id="photo-upload" accept="image/*" capture="environment" style="display: none;" onchange="updateFileName(this)">
+                            <input type="file" id="photo-upload" accept="image/*" capture="environment" multiple style="display: none;" onchange="handleFiles(this.files)">
                             <div id="upload-placeholder">
                                 <i data-lucide="camera" style="width: 32px; height: 32px; margin-bottom: 8px;"></i>
                                 <div style="font-weight: 600;">Нажмите для снимка</div>
-                                <div style="font-size: 12px; color: var(--win-text-secondary);">или выберите файл</div>
+                                <div style="font-size: 12px; color: var(--win-text-secondary);">сжатие выполняется автоматически</div>
                             </div>
-                            <div id="file-selected" style="display:none;">
-                                <i data-lucide="check-circle" style="width: 32px; height: 32px; color: var(--status-completed); margin-bottom: 8px;"></i>
-                                <div id="filename-text" style="font-weight: 600;">Файл выбран</div>
-                            </div>
+                            <div id="file-previews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;"></div>
                         </div>
+                        <div id="compressed-inputs"></div>
                     </div>
                 </section>
 
@@ -243,12 +260,68 @@ function updateFloors() {
     }
 }
 
-function updateFileName(input) {
-    if (input.files && input.files.length > 0) {
-        document.getElementById('upload-placeholder').style.display = 'none';
-        document.getElementById('file-selected').style.display = 'block';
-        document.getElementById('filename-text').textContent = input.files[0].name;
+let selectedFiles = [];
+
+async function handleFiles(files) {
+    const previewContainer = document.getElementById('file-previews');
+    const inputContainer = document.getElementById('compressed-inputs');
+
+    for (let file of files) {
+        if (!file.type.startsWith('image/')) continue;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const compressed = compressImage(img);
+
+                const preview = document.createElement('div');
+                preview.style.width = '80px';
+                preview.style.height = '80px';
+                preview.style.borderRadius = '8px';
+                preview.style.backgroundSize = 'cover';
+                preview.style.backgroundImage = `url(${compressed})`;
+                preview.style.border = '2px solid var(--win-accent)';
+                previewContainer.appendChild(preview);
+
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'compressed_photos[]';
+                hidden.value = compressed;
+                inputContainer.appendChild(hidden);
+
+                lucide.createIcons();
+            };
+        };
+        reader.readAsDataURL(file);
     }
+    document.getElementById('upload-placeholder').style.display = 'none';
+}
+
+function compressImage(img) {
+    const canvas = document.createElement('canvas');
+    const MAX_WIDTH = 1200;
+    const MAX_HEIGHT = 1200;
+    let width = img.width;
+    let height = img.height;
+
+    if (width > height) {
+        if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+        }
+    } else {
+        if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+        }
+    }
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL('image/jpeg', 0.7);
 }
 
 function applyTemplate() {
@@ -289,9 +362,72 @@ document.querySelectorAll('input, textarea, select').forEach(el => {
     el.addEventListener('input', saveDraft);
 });
 
-document.querySelector('form').addEventListener('submit', () => {
+document.getElementById('request-form').addEventListener('submit', async (e) => {
+    if (!navigator.onLine) {
+        e.preventDefault();
+        saveToOfflineQueue();
+        alert('Вы оффлайн. Заявка сохранена в очереди и будет отправлена автоматически при восстановлении связи.');
+        window.location.href = 'index.php';
+        return;
+    }
     localStorage.removeItem('hop_request_draft');
 });
+
+function saveToOfflineQueue() {
+    const formData = new FormData(document.getElementById('request-form'));
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key === 'compressed_photos[]') {
+            if (!data[key]) data[key] = [];
+            data[key].push(value);
+        } else {
+            data[key] = value;
+        }
+    });
+
+    const queue = JSON.parse(localStorage.getItem('hop_offline_queue') || '[]');
+    queue.push(data);
+    localStorage.setItem('hop_offline_queue', JSON.stringify(queue));
+    localStorage.removeItem('hop_request_draft');
+}
+
+async function processOfflineQueue() {
+    if (!navigator.onLine) return;
+    const queue = JSON.parse(localStorage.getItem('hop_offline_queue') || '[]');
+    if (queue.length === 0) return;
+
+    console.log('Processing offline queue...', queue.length);
+    const remaining = [];
+
+    for (let item of queue) {
+        const formData = new FormData();
+        for (let key in item) {
+            if (Array.isArray(item[key])) {
+                item[key].forEach(v => formData.append(key, v));
+            } else {
+                formData.append(key, item[key]);
+            }
+        }
+
+        try {
+            const resp = await fetch('create.php', {
+                method: 'POST',
+                body: formData
+            });
+            if (!resp.ok) throw new Error('Upload failed');
+        } catch (e) {
+            remaining.push(item);
+        }
+    }
+
+    localStorage.setItem('hop_offline_queue', JSON.stringify(remaining));
+    if (remaining.length === 0 && queue.length > 0) {
+        alert('Все отложенные заявки успешно отправлены!');
+        window.location.reload();
+    }
+}
+
+window.addEventListener('online', processOfflineQueue);
 
 window.addEventListener('load', loadDraft);
 </script>

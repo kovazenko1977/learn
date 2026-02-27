@@ -21,16 +21,16 @@
         $uiStyle = $globalSettings['ui_style'] ?? 'windows';
     ?>
     <style>
-        :root {
+        body.ui-<?php echo $uiStyle; ?> {
             --accent: <?php echo $accentColor; ?>;
             --font-main: <?php echo $primaryFont === 'Inter' ? "'Inter', sans-serif" : $primaryFont; ?>;
             --win-accent: <?php echo $accentColor; ?>; /* Compat */
+            font-size: <?php echo $fontSize; ?> !important;
+        }
+        :root {
             --win-text: var(--text-main); /* Compat */
             --win-text-secondary: var(--text-dim); /* Compat */
             --win-border: var(--border); /* Compat */
-        }
-        body {
-            font-size: <?php echo $fontSize; ?> !important;
         }
     </style>
     <script>
@@ -231,6 +231,11 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 16px;">
+                <div id="online-indicator" title="Подключено к сети" style="display: flex; align-items: center; gap: 4px; color: #27ae60; font-size: 10px; font-weight: 700;">
+                    <i data-lucide="wifi" style="width:14px; height:14px;"></i>
+                    <span class="indicator-text">ONLINE</span>
+                </div>
+
                 <a href="help.php" class="desktop-only" style="color: var(--win-text-secondary); text-decoration: none; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;">
                     <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
                     <span>Справка</span>
@@ -277,7 +282,26 @@
     <div id="sidebar-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001; display:none; backdrop-filter:blur(3px);"></div>
 
     <script>
+    function updateOnlineStatus() {
+        const indicator = document.getElementById('online-indicator');
+        if (!indicator) return;
+        const text = indicator.querySelector('.indicator-text');
+
+        if (navigator.onLine) {
+            indicator.style.color = '#27ae60';
+            text.textContent = 'ONLINE';
+            indicator.title = 'Подключено к сети';
+        } else {
+            indicator.style.color = '#e74c3c';
+            text.textContent = 'OFFLINE';
+            indicator.title = 'Нет подключения к сети';
+        }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
     document.addEventListener('DOMContentLoaded', () => {
+        updateOnlineStatus();
         const toggle = document.getElementById('mobile-sidebar-toggle');
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.getElementById('sidebar-overlay');

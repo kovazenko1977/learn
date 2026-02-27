@@ -8,26 +8,37 @@ session_start();
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $userStore = new JsonStore('data/users.json');
+    $userManager = new UserManager($userStore);
+    $logger = new LogManager();
+    $user = null;
 
-    if ($username && $password) {
-        $userStore = new JsonStore('data/users.json');
-        $userManager = new UserManager($userStore);
-        $user = $userManager->authenticate($username, $password);
-        $logger = new LogManager();
-
-        if ($user) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_role'] = $user['role'];
-            $_SESSION['user_name'] = $user['name'];
-            $logger->log('auth_success', $user['id'], "Вход в систему: $username");
-            header('Location: index.php');
-            exit;
-        } else {
-            $logger->log('auth_failure', 0, "Неудачная попытка входа: $username", 'warning');
-            $error = 'Неверный логин или пароль';
+    if (isset($_POST['access_code']) && !empty($_POST['access_code'])) {
+        $code = $_POST['access_code'];
+        $user = $userManager->authenticateByCode($code);
+        if (!$user) {
+            $logger->log('auth_failure_code', 0, "Неудачный вход по коду: $code", 'warning');
+            $error = 'Неверный код доступа';
         }
+    } else {
+        $username = $_POST['username'] ?? '';
+        $password = $_POST['password'] ?? '';
+        if ($username && $password) {
+            $user = $userManager->authenticate($username, $password);
+            if (!$user) {
+                $logger->log('auth_failure', 0, "Неудачная попытка входа: $username", 'warning');
+                $error = 'Неверный логин или пароль';
+            }
+        }
+    }
+
+    if ($user) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_role'] = $user['role'];
+        $_SESSION['user_name'] = $user['name'];
+        $logger->log('auth_success', $user['id'], "Вход в систему: " . ($user['username'] ?? 'по коду'));
+        header('Location: index.php');
+        exit;
     }
 }
 ?>
@@ -253,11 +264,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <form method="POST">
+            <div style="display: flex; background: rgba(0,0,0,0.05); border-radius: 12px; padding: 4px; margin-bottom: 24px;">
+                <button type="button" onclick="switchMode('pass')" id="btn-mode-pass" style="flex:1; border:none; padding:8px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; background:white; box-shadow:0 2px 4px rgba(0,0,0,0.1);">Пароль</button>
+                <button type="button" onclick="switchMode('code')" id="btn-mode-code" style="flex:1; border:none; padding:8px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; background:transparent;">Код</button>
+            </div>
+
+            <form method="POST" id="form-pass">
                 <div class="form-group">
                     <label>Логин</label>
                     <div class="input-wrapper">
-                        <input type="text" name="username" class="login-input" placeholder="Введите ваш логин" required autofocus autocomplete="username">
+                        <input type="text" name="username" class="login-input" placeholder="Введите ваш логин" autofocus autocomplete="username">
                         <i data-lucide="user"></i>
                     </div>
                 </div>
@@ -265,12 +281,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label>Пароль</label>
                     <div class="input-wrapper">
-                        <input type="password" name="password" class="login-input" placeholder="Введите ваш пароль" required autocomplete="current-password">
+                        <input type="password" name="password" class="login-input" placeholder="Введите ваш пароль" autocomplete="current-password">
                         <i data-lucide="lock"></i>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-submit">Войти в кабинет</button>
+            </form>
+
+            <form method="POST" id="form-code" style="display:none;">
+                <div class="form-group">
+                    <label>Код доступа</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="access_code" class="login-input" placeholder="Уникальный код" maxlength="10" inputmode="numeric">
+                        <i data-lucide="key"></i>
+                    </div>
+                    <p style="font-size:11px; color:#666; margin-top:8px; text-align:center;">Используйте ваш персональный 4-значный код</p>
+                </div>
+
+                <button type="submit" class="btn-submit">Войти по коду</button>
             </form>
 
             <div class="login-footer">
@@ -281,6 +310,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
         lucide.createIcons();
+
+        function switchMode(mode) {
+            const fPass = document.getElementById('form-pass');
+            const fCode = document.getElementById('form-code');
+            const bPass = document.getElementById('btn-mode-pass');
+            const bCode = document.getElementById('btn-mode-code');
+
+            if (mode === 'pass') {
+                fPass.style.display = 'block';
+                fCode.style.display = 'none';
+                bPass.style.background = 'white';
+                bPass.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                bCode.style.background = 'transparent';
+                bCode.style.boxShadow = 'none';
+            } else {
+                fPass.style.display = 'none';
+                fCode.style.display = 'block';
+                bCode.style.background = 'white';
+                bCode.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                bPass.style.background = 'transparent';
+                bPass.style.boxShadow = 'none';
+                fCode.querySelector('input').focus();
+            }
+        }
     </script>
 </body>
 </html>

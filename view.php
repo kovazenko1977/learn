@@ -177,12 +177,20 @@ include 'includes/header.php';
                     </div>
                 <?php endif; ?>
 
-                <?php if (!empty($req['photo'])): ?>
+                <?php if (!empty($req['photo']) || !empty($req['photos'])): ?>
                     <div style="margin-top: 24px;">
                         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--win-text-secondary); font-weight: 700; margin-bottom: 12px;">Фото фиксация</div>
-                        <a href="<?php echo $req['photo']; ?>" target="_blank">
-                            <img src="<?php echo $req['photo']; ?>" style="max-width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" loading="lazy">
-                        </a>
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                            <?php
+                            $allPhotos = $req['photos'] ?? [];
+                            if (empty($allPhotos) && !empty($req['photo'])) $allPhotos = [$req['photo']];
+                            foreach ($allPhotos as $p):
+                            ?>
+                                <a href="<?php echo $p; ?>" target="_blank" style="flex: 1 1 200px; max-width: 300px;">
+                                    <img src="<?php echo $p; ?>" style="width: 100%; height: 200px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" loading="lazy">
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                 <?php endif; ?>
 

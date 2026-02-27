@@ -13,5 +13,5 @@
     "font_size": "18px",
     "polling_interval": 10,
     "theme": "light",
-    "ui_style": "minimal"
+    "ui_style": "windows"
 }

@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'name' => $_POST['name'],
             'username' => $_POST['username'],
             'password' => password_hash($_POST['password'], PASSWORD_DEFAULT),
+            'access_code' => $_POST['access_code'] ?? '',
             'phone' => $_POST['phone'],
             'role' => $_POST['role'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
@@ -29,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updateData = [
             'name' => $_POST['name'],
             'username' => $_POST['username'],
+            'access_code' => $_POST['access_code'] ?? '',
             'phone' => $_POST['phone'],
             'role' => $_POST['role'],
             'service_id' => !empty($_POST['service_id']) ? (int)$_POST['service_id'] : null,
@@ -117,6 +119,13 @@ include 'includes/header.php';
             <div class="form-group">
                 <label>Пароль</label>
                 <input type="password" name="password" required placeholder="Введите пароль">
+            </div>
+            <div class="form-group">
+                <label>Код доступа (для быстрого входа)</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" name="access_code" id="new-access-code" placeholder="Напр. 1234" style="flex:1;">
+                    <button type="button" class="btn-secondary" onclick="generateCode('new-access-code')" style="padding:0 12px;"><i data-lucide="refresh-cw" style="width:14px;"></i></button>
+                </div>
             </div>
             <div class="form-group">
                 <label>Служба (для исполнителей)</label>
@@ -215,9 +224,13 @@ include 'includes/header.php';
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <div style="text-align: right; font-family: monospace; color: var(--win-text-secondary); font-size: 14px;">
+                    <?php if (!empty($u['access_code'])): ?>
+                        <span title="Код доступа" style="background:#eef2f7; padding:2px 6px; border-radius:4px; margin-right:8px; border:1px solid #d1d9e6;">
+                            <i data-lucide="key" style="width:12px; height:12px; vertical-align:middle;"></i> <?php echo htmlspecialchars($u['access_code']); ?>
+                        </span>
+                    <?php endif; ?>
                     @<?php echo htmlspecialchars($u['username'] ?? ''); ?>
                 </div>
-
                 <button class="btn-icon" style="background:none; border:none; color:var(--win-accent); cursor:pointer; padding:8px;"
                         onclick="openEditModal(<?php echo htmlspecialchars(json_encode($u)); ?>)">
                     <i data-lucide="edit-3"></i>
@@ -284,6 +297,14 @@ include 'includes/header.php';
             </div>
 
             <div class="form-group">
+                <label>Код доступа</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" name="access_code" id="edit-access_code" placeholder="4-значный код" style="flex:1;">
+                    <button type="button" class="btn-secondary" onclick="generateCode('edit-access_code')" style="padding:0 12px;"><i data-lucide="refresh-cw" style="width:14px;"></i></button>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label>Служба</label>
                 <select name="service_id" id="edit-service_id">
                     <option value="">Не привязано</option>
@@ -319,10 +340,16 @@ function openEditModal(user) {
     document.getElementById('edit-role').value = user.role;
     document.getElementById('edit-username').value = user.username || "";
     document.getElementById('edit-password').value = "";
+    document.getElementById('edit-access_code').value = user.access_code || "";
     document.getElementById('edit-service_id').value = user.service_id || "";
     document.getElementById('edit-telegram_chat_id').value = user.telegram_chat_id || "";
     document.getElementById('edit-info').value = user.info || "";
     document.getElementById('editModal').style.display = 'flex';
+}
+
+function generateCode(targetId) {
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    document.getElementById(targetId).value = code;
 }
 
 function closeEditModal() {

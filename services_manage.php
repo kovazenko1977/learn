@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'id' => $id,
             'name' => $_POST['name'],
             'description' => $_POST['description'],
+            'sla_hours' => (int)($_POST['sla_hours'] ?? 24),
             'performer_id' => (int)($_POST['performer_id'] ?? 0)
         ];
         $serviceStore->save($services);
@@ -30,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $serviceManager->updateService((int)$_POST['id'], [
             'name' => $_POST['name'],
             'description' => $_POST['description'],
+            'sla_hours' => (int)($_POST['sla_hours'] ?? 24),
             'performer_id' => (int)($_POST['performer_id'] ?? 0)
         ]);
         $message = 'Данные службы обновлены';
@@ -79,6 +81,10 @@ include 'includes/header.php';
                 <textarea name="description" rows="2" required placeholder="Краткое описание выполняемых работ..."></textarea>
             </div>
             <div class="form-group">
+                <label>SLA (Срок выполнения по умолчанию, часы)</label>
+                <input type="number" name="sla_hours" value="24" required>
+            </div>
+            <div class="form-group">
                 <label>Закрепленный исполнитель</label>
                 <select name="performer_id">
                     <option value="0">-- Не назначен --</option>
@@ -100,7 +106,7 @@ include 'includes/header.php';
                 <div>
                     <h3 style="margin: 0 0 4px 0; font-size: 16px;"><?php echo htmlspecialchars($s['name']); ?></h3>
                     <p style="margin: 0; font-size: 13px; color: var(--win-text-secondary); line-height: 1.5;">
-                        <?php echo htmlspecialchars($s['description']); ?>
+                        <?php echo htmlspecialchars($s['description'] ?? ''); ?>
                     </p>
                 </div>
                 <div style="display: flex; gap: 8px;">
@@ -119,7 +125,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div style="margin-top: 12px; border-top: 1px solid var(--win-border); padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--win-text-secondary);">
-                <span>ID: <?php echo $s['id']; ?></span>
+                <span>ID: <?php echo $s['id']; ?> | SLA: <?php echo $s['sla_hours'] ?? 24; ?>ч</span>
                 <span style="display:flex; align-items:center; gap:4px;">
                     <i data-lucide="user" style="width:14px;"></i>
                     <?php
@@ -159,6 +165,11 @@ include 'includes/header.php';
             </div>
 
             <div class="form-group">
+                <label>SLA (часы)</label>
+                <input type="number" name="sla_hours" id="edit-sla_hours" required>
+            </div>
+
+            <div class="form-group">
                 <label>Закрепленный исполнитель</label>
                 <select name="performer_id" id="edit-performer_id">
                     <option value="0">-- Не назначен --</option>
@@ -181,6 +192,7 @@ function openEditModal(svc) {
     document.getElementById('edit-id').value = svc.id;
     document.getElementById('edit-name').value = svc.name || '';
     document.getElementById('edit-description').value = svc.description || '';
+    document.getElementById('edit-sla_hours').value = svc.sla_hours || 24;
     document.getElementById('edit-performer_id').value = svc.performer_id || 0;
     document.getElementById('editModal').style.display = 'flex';
 }

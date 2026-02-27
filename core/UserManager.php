@@ -30,12 +30,26 @@ class UserManager {
         return null;
     }
 
+    public function getByCode(string $code): ?array {
+        $users = $this->getAll();
+        foreach ($users as $user) {
+            if (isset($user['access_code']) && (string)$user['access_code'] === (string)$code) {
+                return $user;
+            }
+        }
+        return null;
+    }
+
     public function authenticate(string $username, string $password): ?array {
         $user = $this->getByUsername($username);
         if ($user && isset($user['password']) && password_verify($password, $user['password'])) {
             return $user;
         }
         return null;
+    }
+
+    public function authenticateByCode(string $code): ?array {
+        return $this->getByCode($code);
     }
 
     public function create(array $data): int {

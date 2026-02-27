@@ -185,6 +185,7 @@ include 'includes/header.php';
                 <thead>
                     <tr>
                         <th>Сотрудник</th>
+                        <th style="text-align:center;">Подробно</th>
                         <th style="text-align:center;">Всего задач</th>
                         <th style="text-align:center;">Выполнено</th>
                         <th style="text-align:center;">КПД</th>
@@ -198,9 +199,15 @@ include 'includes/header.php';
                         $efficiency = $pstats['total'] > 0 ? round(($pstats['completed'] / $pstats['total']) * 100) : 0;
                         $avgTime = $pstats['completed'] > 0 ? round($pstats['total_hours'] / $pstats['completed'], 1) : 0;
                         $link = "index.php?performer_id=$pid" . ($startDate ? "&start_date=$startDate" : "") . ($endDate ? "&end_date=$endDate" : "");
+                        $reportLink = "staff_report.php?id=$pid" . ($startDate ? "&start_date=$startDate" : "") . ($endDate ? "&end_date=$endDate" : "");
                     ?>
-                        <tr onclick="window.location='<?php echo $link; ?>'" style="cursor:pointer;" class="table-hover-row">
-                            <td style="font-weight: 600;"><?php echo htmlspecialchars($users[$pid] ?? "ID: $pid"); ?></td>
+                        <tr class="table-hover-row">
+                            <td style="font-weight: 600; cursor:pointer;" onclick="window.location='<?php echo $link; ?>'"><?php echo htmlspecialchars($users[$pid] ?? "ID: $pid"); ?></td>
+                            <td style="text-align:center;">
+                                <a href="<?php echo $reportLink; ?>" class="btn-icon" style="color:var(--win-accent); text-decoration:none;" title="Личный отчет">
+                                    <i data-lucide="file-bar-chart" style="width:18px;"></i>
+                                </a>
+                            </td>
                             <td style="text-align:center;"><?php echo $pstats['total']; ?></td>
                             <td style="text-align:center;"><?php echo $pstats['completed']; ?></td>
                             <td style="text-align:center;">

@@ -210,6 +210,7 @@ include 'includes/header.php';
                     <select name="ui_style">
                         <option value="windows" <?php echo ($settings['ui_style'] ?? 'windows') === 'windows' ? 'selected' : ''; ?>>Windows 11 (Fluent)</option>
                         <option value="macos" <?php echo ($settings['ui_style'] ?? '') === 'macos' ? 'selected' : ''; ?>>macOS (Monterey)</option>
+                        <option value="winxp" <?php echo ($settings['ui_style'] ?? '') === 'winxp' ? 'selected' : ''; ?>>Windows XP (Luna)</option>
                         <option value="minimal" <?php echo ($settings['ui_style'] ?? '') === 'minimal' ? 'selected' : ''; ?>>Professional (Minimal)</option>
                     </select>
                 </div>

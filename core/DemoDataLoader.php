@@ -16,10 +16,10 @@ class DemoDataLoader {
 
         // 1. Services
         $services = [
-            ['id' => 1, 'name' => 'Техническая служба (Сантехника/Электрика)'],
-            ['id' => 2, 'name' => 'ИТ-отдел'],
-            ['id' => 3, 'name' => 'Хозяйственная служба (Мебель/Уборка)'],
-            ['id' => 4, 'name' => 'Медтехника']
+            ['id' => 1, 'name' => 'Техническая служба (Сантехника/Электрика)', 'sla_hours' => 24],
+            ['id' => 2, 'name' => 'ИТ-отдел', 'sla_hours' => 8],
+            ['id' => 3, 'name' => 'Хозяйственная служба (Мебель/Уборка)', 'sla_hours' => 48],
+            ['id' => 4, 'name' => 'Медтехника', 'sla_hours' => 12]
         ];
         $svcStore->save($services);
 
@@ -31,6 +31,7 @@ class DemoDataLoader {
             'role' => 'admin',
             'username' => 'admin',
             'password' => password_hash('admin', PASSWORD_DEFAULT),
+            'access_code' => '1111',
             'service_id' => null
         ];
 
@@ -48,6 +49,7 @@ class DemoDataLoader {
                 'role' => 'initiator',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
+                'access_code' => (string)(1000 + $i),
                 'service_id' => null
             ];
         }
@@ -62,6 +64,7 @@ class DemoDataLoader {
                 'role' => 'performer',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
+                'access_code' => (string)(2000 + $i),
                 'service_id' => $svcId
             ];
         }
@@ -76,6 +79,7 @@ class DemoDataLoader {
                 'role' => 'service_lead',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
+                'access_code' => (string)(3000 + $i),
                 'service_id' => $svcId
             ];
         }
@@ -89,6 +93,7 @@ class DemoDataLoader {
                 'role' => 'controller',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
+                'access_code' => (string)(4000 + $i),
                 'service_id' => null
             ];
         }
@@ -100,6 +105,7 @@ class DemoDataLoader {
             'role' => 'manager',
             'username' => 'glavvrach',
             'password' => password_hash('777777', PASSWORD_DEFAULT),
+            'access_code' => '7777',
             'service_id' => null
         ];
 

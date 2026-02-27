@@ -1,0 +1,10 @@
+[
+    {
+        "timestamp": "2026-02-27 06:29:22",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    }
+]
