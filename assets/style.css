@@ -318,9 +318,33 @@ header {
     background: var(--bg-sidebar);
     backdrop-filter: blur(var(--blur));
     border-right: 1px solid var(--border);
-    transition: left 0.3s ease;
+    transition: left 0.3s ease, width 0.3s ease;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+}
+
+body.sidebar-collapsed .sidebar {
+    width: 68px;
+}
+
+body.sidebar-collapsed .sidebar .sidebar-header span,
+body.sidebar-collapsed .sidebar .sidebar-nav span,
+body.sidebar-collapsed .sidebar .sidebar-footer,
+body.sidebar-collapsed .sidebar .sidebar-nav div[style*="text-transform:uppercase"],
+body.sidebar-collapsed .sidebar .sidebar-group-header .group-chevron {
+    display: none !important;
+}
+
+body.sidebar-collapsed .sidebar .sidebar-item {
+    justify-content: center;
+    padding: 12px 0;
+    margin: 4px 10px;
+}
+
+body.sidebar-collapsed .sidebar .sidebar-header {
+    padding: 20px 0 !important;
+    justify-content: center;
 }
 
 .sidebar-nav {
@@ -498,7 +522,14 @@ body.ui-macos .stat-card {
 .nav-item i { width: 22px; height: 22px; margin-bottom: 2px; }
 
 @media (min-width: 992px) {
-    main { margin-left: 280px; }
+    main, header {
+        margin-left: 280px;
+        transition: margin-left 0.3s ease;
+    }
+    body.sidebar-collapsed main,
+    body.sidebar-collapsed header {
+        margin-left: 68px;
+    }
     .bottom-nav { display: none !important; }
 }
 

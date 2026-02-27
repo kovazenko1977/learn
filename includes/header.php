@@ -217,6 +217,11 @@
 
     <header class="mica">
         <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%; padding: 0 24px; height: 100%;">
+            <div class="desktop-only" style="margin-right: 20px;">
+                <button id="sidebar-toggle" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--win-text); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
             <div class="mobile-only-header" style="display:none; align-items:center; gap:12px;">
                 <button id="mobile-sidebar-toggle" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--win-text);">
                     <i data-lucide="menu"></i>
@@ -348,6 +353,19 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         updateOnlineStatus();
+
+        const desktopToggle = document.getElementById('sidebar-toggle');
+        if (desktopToggle) {
+            desktopToggle.addEventListener('click', () => {
+                document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebar-collapsed', document.body.classList.contains('sidebar-collapsed'));
+            });
+
+            if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        }
+
         const toggle = document.getElementById('mobile-sidebar-toggle');
         const sidebar = document.querySelector('.sidebar');
         const overlay = document.getElementById('sidebar-overlay');

@@ -28,6 +28,7 @@ include 'includes/header.php';
         <a href="#analytics" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Рейтинги и КПД</a>
         <a href="#telegram" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Настройка Telegram</a>
         <a href="#pwa" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Мобильная версия</a>
+        <a href="#tech" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Технические детали</a>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr; gap: 40px; animation: slideUp 0.6s ease-out;">
@@ -144,6 +145,27 @@ include 'includes/header.php';
             </div>
         </section>
 
+        <!-- SECTION: TECH -->
+        <section id="tech">
+            <h2 style="font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="cpu" style="color:var(--win-accent);"></i> Технические механизмы системы
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+                <div class="card mica">
+                    <h3 style="margin-top:0; font-size: 16px;">Хранение данных (NoDB)</h3>
+                    <p style="font-size: 13px; line-height: 1.6;">Система не требует установки MySQL или PostgreSQL. Все данные хранятся в формате <b>JSON</b> в папке <code>/data/</code>. Для предотвращения повреждения файлов при одновременном доступе используется механизм <b>flock</b> (файловая блокировка), что гарантирует целостность данных даже при высокой нагрузке.</p>
+                </div>
+                <div class="card mica">
+                    <h3 style="margin-top:0; font-size: 16px;">Безопасность и Сессии</h3>
+                    <p style="font-size: 13px; line-height: 1.6;">Пароли пользователей хранятся в виде защищенных хешей (BCRYPT). Все формы защищены от <b>CSRF-атак</b> уникальными токенами. Прямой доступ к файлам данных через браузер заблокирован файлом <code>.htaccess</code>.</p>
+                </div>
+                <div class="card mica">
+                    <h3 style="margin-top:0; font-size: 16px;">Целостность данных</h3>
+                    <p style="font-size: 13px; line-height: 1.6;">В разделе обслуживания (Настройки -> Maintenance) встроен инструмент диагностики. Он автоматически находит «сиротские» записи (заявки, привязанные к удаленным сотрудникам или службам) и исправляет их, предотвращая ошибки в работе интерфейса.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- SECTION: ADMIN -->
         <section id="admin">
             <h2 style="font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
@@ -197,6 +219,20 @@ include 'includes/header.php';
                         <li>Вставьте ID в "Target Chat ID" и нажмите "Тест".</li>
                     </ol>
                 </div>
+            </div>
+        </section>
+
+        <!-- SECTION: INTERFACE -->
+        <section id="interface">
+            <h2 style="font-size: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                <i data-lucide="layout" style="color:var(--win-accent);"></i> Интерфейс и удобство работы
+            </h2>
+            <div class="card mica">
+                <h4 style="margin-top:0;">Сворачиваемое боковое меню</h4>
+                <p style="font-size: 13px; line-height: 1.6;">Для экономии места на широких экранах вы можете свернуть левую панель навигации, нажав на иконку «бургер» (три полоски) в левом верхнем углу шапки. В свернутом состоянии остаются только иконки, что позволяет максимально расширить рабочую область для таблиц и графиков аналитики.</p>
+
+                <h4 style="margin-top:20px;">Глобальный поиск</h4>
+                <p style="font-size: 13px; line-height: 1.6;">В верхней части экрана расположен умный поиск. Вы можете вводить как номер заявки (например, <code>42</code>), так и текст из описания. Поиск работает мгновенно и показывает результаты без перезагрузки страницы.</p>
             </div>
         </section>
 
