@@ -19,16 +19,21 @@ if ($doctorFilter) {
 include __DIR__ . '/includes/header.php';
 ?>
 
-<div style="padding: 16px; position: sticky; top: 64px; background: var(--md-bg); z-index: 90;">
-    <form method="GET" style="position: relative;">
-        <input type="text" name="q" value="<?php echo htmlspecialchars($query); ?>" class="md-input" placeholder="Поиск пациента..." style="margin-bottom: 0; padding-left: 48px;">
-        <i data-lucide="search" style="position: absolute; left: 16px; top: 16px; color: var(--md-secondary);"></i>
+<div style="padding: 16px; position: sticky; top: 64px; background: var(--md-bg); z-index: 90; display: flex; gap: 8px;">
+    <form method="GET" style="position: relative; flex-grow: 1;">
+        <input type="text" name="q" value="<?php echo htmlspecialchars($query); ?>" class="md-input" placeholder="Поиск пациента..." style="margin-bottom: 0; padding-left: 48px; height: 48px; border-radius: 24px;">
+        <i data-lucide="search" style="position: absolute; left: 16px; top: 12px; color: var(--md-secondary);"></i>
     </form>
+    <?php if (\Medical\Core\Auth::can('patients_edit')): ?>
+        <a href="patient_form.php" class="md-btn md-btn-primary" style="width: 48px; height: 48px; padding: 0; border-radius: 50%;">
+            <i data-lucide="user-plus"></i>
+        </a>
+    <?php endif; ?>
 </div>
 
 <div style="padding-bottom: 100px;">
     <?php foreach (array_slice($patients, 0, 50) as $p): ?>
-        <div class="md-list-item" onclick="location.href='attendance.php?patient_id=<?php echo $p['id']; ?>'">
+        <div class="md-list-item" onclick="location.href='patient_details.php?id=<?php echo $p['id']; ?>'">
             <div style="width: 40px; height: 40px; background: #E8DEF8; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--md-primary); flex-shrink: 0;">
                 <i data-lucide="user"></i>
             </div>
