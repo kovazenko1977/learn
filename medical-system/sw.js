@@ -13,9 +13,17 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Only cache GET requests
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+      return response || fetch(event.request).then(networkResponse => {
+        // Cache new assets dynamically? Optional, but let's stick to base for now
+        return networkResponse;
+      });
+    }).catch(() => {
+        // Fallback or ignore
     })
   );
 });

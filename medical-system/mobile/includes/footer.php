@@ -83,6 +83,60 @@
             iosHint.style.display = 'block';
         }, 2000);
     }
+
+    // Mobile Toast System
+    window.showToast = function(message, type = 'info') {
+        const container = document.getElementById('mobile-toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = 'md-card';
+        toast.style.cssText = `
+            margin: 8px 16px;
+            padding: 12px 16px;
+            background: ${type === 'error' ? '#F9DEDC' : '#EADDFF'};
+            color: ${type === 'error' ? '#410E0B' : '#21005D'};
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            animation: mdSlideUp 0.3s ease-out;
+            font-size: 14px;
+        `;
+
+        const icon = type === 'error' ? 'alert-circle' : 'info';
+        toast.innerHTML = `
+            <i data-lucide="${icon}" style="width:20px; height:20px;"></i>
+            <span style="flex-grow:1;">${message}</span>
+        `;
+
+        container.appendChild(toast);
+        lucide.createIcons();
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    };
+
+    // Form Preloader
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', () => {
+            if (form.checkValidity && !form.checkValidity()) return;
+            const p = document.getElementById('global-preloader');
+            if (p) p.style.display = 'flex';
+        });
+    });
 </script>
+
+<div id="mobile-toast-container" style="position: fixed; bottom: 90px; left: 0; width: 100%; z-index: 3000; pointer-events: none;"></div>
+
+<style>
+    @keyframes mdSlideUp {
+        from { transform: translateY(100%); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
 </body>
 </html>
