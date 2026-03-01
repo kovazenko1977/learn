@@ -60,6 +60,7 @@ class Schema {
                 cancel_reason TEXT,
                 cancelled_at DATETIME,
                 cancelled_by VARCHAR(255),
+                package_name VARCHAR(255),
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 
@@ -105,6 +106,14 @@ class Schema {
                 total_cost DECIMAL(10,2),
                 status VARCHAR(50),
                 comment TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
+
+            'procedure_packages' => "CREATE TABLE IF NOT EXISTS procedure_packages (
+                id VARCHAR(50) PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                description TEXT,
+                items JSON,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
 

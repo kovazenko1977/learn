@@ -239,6 +239,11 @@ require_once __DIR__ . '/includes/header.php';
                     <tr class="appointment-row" style="<?php echo ($app['status'] ?? '') === 'cancelled' ? 'background: rgba(209, 52, 56, 0.03);' : ''; ?>">
                         <td style="font-weight: 500;">
                             <?php echo htmlspecialchars($app['procedure_name']); ?>
+                            <?php if (!empty($app['package_name'])): ?>
+                                <div style="font-size: 0.75rem; color: var(--win-accent); font-weight: 500; margin-top: 2px;">
+                                    Пакет: <?php echo htmlspecialchars($app['package_name']); ?>
+                                </div>
+                            <?php endif; ?>
                             <?php if (!empty($app['cancel_reason'])): ?>
                                 <div style="font-size: 0.75rem; color: #d13438; font-weight: normal; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
                                     <i data-lucide="info" style="width:12px; height:12px;"></i> Причина: <?php echo htmlspecialchars($app['cancel_reason']); ?>

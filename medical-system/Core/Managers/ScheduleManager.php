@@ -243,6 +243,24 @@ class ScheduleManager {
         return $res;
     }
 
+    public function shiftPatientSchedule($patientId, $days) {
+        $apps = $this->getByPatient($patientId);
+        $count = 0;
+        foreach ($apps as $app) {
+            if ($app['attended'] || ($app['status'] ?? '') === 'cancelled') continue;
+
+            $oldDate = $app['date'];
+            $newDate = date('Y-m-d', strtotime("$oldDate +$days days"));
+
+            $this->store->updateById($app['id'], ['date' => $newDate]);
+            $count++;
+        }
+        if ($count > 0) {
+            (new LogManager())->log('Сдвиг графика пациента', ['patient_id' => $patientId, 'days' => $days, 'count' => $count]);
+        }
+        return $count;
+    }
+
     public function cancel($id, $reason = '') {
         $res = $this->store->updateById($id, [
             'status' => 'cancelled',

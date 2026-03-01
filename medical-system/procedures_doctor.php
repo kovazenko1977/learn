@@ -110,6 +110,59 @@ $myAppointments = array_filter($allAppointments, function($app) use ($currentUse
 });
 
 $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
+
+$pkgManager = new \Medical\Core\Managers\PackageManager();
+$allPackages = $pkgManager->getAll();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'shift_schedule') {
+    if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
+        $days = (int)$_POST['shift_days'];
+        $count = $scheduleManager->shiftPatientSchedule($_POST['patient_id'], $days);
+        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id'] . "&success=shifted&count=$count");
+        exit;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'confirm_assign_package') {
+    if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
+        $patientData = $patientManager->getById($_POST['patient_id']);
+        $items = $_POST['package_items'] ?? [];
+        $pkgName = $_POST['package_name'] ?? '';
+        $errors = [];
+
+        foreach ($items as $item) {
+            $proc = $procedureManager->getById($item['procedure_id']);
+            if (!$proc) continue;
+
+            $assignment = [
+                'patient_id' => $_POST['patient_id'],
+                'patient_name' => $patientData['name'],
+                'procedure_id' => $item['procedure_id'],
+                'procedure_name' => $proc['name'],
+                'date' => $item['date'],
+                'time' => $item['time'],
+                'cabinet_id' => $item['cabinet_id'],
+                'price' => ($proc['is_paid'] ?? false) ? ($proc['price'] ?? 0) : 0,
+                'status' => ($proc['is_paid'] ?? false) ? 'unpaid' : 'free',
+                'attended' => false,
+                'doctor' => \Medical\Core\Auth::getUser()['name'],
+                'package_name' => $pkgName
+            ];
+
+            $res = $scheduleManager->assign($assignment);
+            if (isset($res['error'])) {
+                $errors[] = "Ошибка {$item['date']} {$item['time']}: " . $res['error'];
+            }
+        }
+
+        if (!empty($errors)) {
+            $error = implode("<br>", $errors);
+        } else {
+            header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id'] . "&success=package_assigned");
+            exit;
+        }
+    }
+}
 ?>
 
 <h1>Назначение процедур</h1>
@@ -122,6 +175,7 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
             if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
             if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
             if ($_GET['success'] === 'restored') echo "Назначение успешно восстановлено.";
+            if ($_GET['success'] === 'shifted') echo "График пациента успешно сдвинут на {$_GET['count']} процедур.";
         ?>
     </div>
 <?php endif; ?>
@@ -182,6 +236,28 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
 <?php else: ?>
     <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
         <div>
+            <div class="card mica-effect mb-4">
+                <h3>Пакет процедур</h3>
+                <div style="margin-bottom: 15px;">
+                    <label>Выберите пакет</label>
+                    <select id="package_selector" class="form-control" style="width: 100%;">
+                        <option value="">-- Выберите пакет --</option>
+                        <?php foreach ($allPackages as $pkg): ?>
+                            <option value="<?php echo $pkg['id']; ?>" data-items='<?php echo json_encode($pkg['items'], ENT_QUOTES); ?>'>
+                                <?php echo htmlspecialchars($pkg['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label>Дата начала</label>
+                    <input type="date" id="package_start_date" value="<?php echo date('Y-m-d'); ?>" class="form-control" style="width: 100%;">
+                </div>
+
+                <button type="button" class="btn btn-sm btn-primary" style="width: 100%;" onclick="previewPackage()">Подготовить назначения</button>
+            </div>
+
             <div class="card mica-effect">
                 <h3>Новое назначение для: <?php echo htmlspecialchars($patient['name']); ?></h3>
                 <form method="POST">
@@ -302,6 +378,11 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                             <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
                             <td style="padding: 10px;">
                                 <?php echo htmlspecialchars($app['procedure_name']); ?>
+                                <?php if (!empty($app['package_name'])): ?>
+                                    <div style="font-size: 0.75rem; color: var(--win-accent); font-weight: 500; margin-top: 2px;">
+                                        Пакет: <?php echo htmlspecialchars($app['package_name']); ?>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if (!empty($app['cancel_reason'])): ?>
                                     <div style="font-size: 0.75rem; color: #d13438; font-weight: normal; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
                                         <i data-lucide="info" style="width:12px; height:12px;"></i> Причина: <?php echo htmlspecialchars($app['cancel_reason']); ?>
@@ -351,15 +432,140 @@ $patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) :
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-                <div style="margin-top: 20px;">
-                    <a href="export.php?action=print_schedule&patient_id=<?php echo $patientId; ?>" target="_blank" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <a href="export.php?action=print_schedule&patient_id=<?php echo $patientId; ?>" target="_blank" class="btn btn-primary" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i data-lucide="printer" class="icon" style="margin: 0;"></i> Печать карты процедур
                     </a>
+                    <button type="button" class="btn" onclick="document.getElementById('shiftModal').style.display='block'">
+                        <i data-lucide="calendar-days" class="icon"></i> Сдвинуть график
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 <?php endif; ?>
+
+<!-- Package Preview Modal -->
+<div id="packagePreviewModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); overflow-y: auto;">
+    <div class="card mica-effect" style="width: 900px; margin: 40px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Проверка и настройка времени пакета</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="confirm_assign_package">
+            <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+            <input type="hidden" name="package_name" id="preview_pkg_name">
+
+            <div id="package_items_preview" style="max-height: 500px; overflow-y: auto; margin-bottom: 24px; padding-right: 10px;">
+                <!-- Filled via JS -->
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--win-border); padding-top: 20px;">
+                <button type="button" class="btn" onclick="document.getElementById('packagePreviewModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Подтвердить все назначения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const allProcs = <?php echo json_encode($procedures); ?>;
+
+function previewPackage() {
+    const selector = document.getElementById('package_selector');
+    const pkgId = selector.value;
+    if (!pkgId) {
+        alert('Выберите пакет');
+        return;
+    }
+
+    const startDateStr = document.getElementById('package_start_date').value;
+    const pkgName = selector.options[selector.selectedIndex].text.trim();
+    document.getElementById('preview_pkg_name').value = pkgName;
+    const items = JSON.parse(selector.options[selector.selectedIndex].dataset.items);
+    const container = document.getElementById('package_items_preview');
+    container.innerHTML = '';
+
+    let currentIdx = 0;
+    items.forEach(item => {
+        const proc = allProcs.find(p => p.id === item.procedure_id);
+        if (!proc) return;
+
+        let currentDate = new Date(startDateStr);
+        for (let i = 0; i < item.quantity; i++) {
+            const dateISO = currentDate.toISOString().split('T')[0];
+            const div = document.createElement('div');
+            div.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 12px; border-bottom: 1px solid var(--win-border); align-items: center; background: rgba(0,0,0,0.01); margin-bottom: 8px; border-radius: 8px;';
+
+            div.innerHTML = `
+                <div>
+                    <input type="hidden" name="package_items[${currentIdx}][procedure_id]" value="${proc.id}">
+                    <strong style="font-size: 0.9rem;">${proc.name}</strong>
+                </div>
+                <div>
+                    <input type="date" name="package_items[${currentIdx}][date]" value="${dateISO}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
+                </div>
+                <div>
+                    <input type="time" name="package_items[${currentIdx}][time]" id="time_p_${currentIdx}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
+                </div>
+                <div>
+                    <input type="text" name="package_items[${currentIdx}][cabinet_id]" value="${proc.default_cabinet || ''}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
+                </div>
+            `;
+            container.appendChild(div);
+
+            // Fetch earliest free slot for this specific day/proc
+            fetchEarliestSlot(proc.id, proc.default_cabinet, dateISO, `time_p_${currentIdx}`);
+
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentIdx++;
+        }
+    });
+
+    document.getElementById('packagePreviewModal').style.display = 'block';
+}
+
+function fetchEarliestSlot(procId, cabinet, date, targetId) {
+    if (!cabinet) return;
+    fetch(`?ajax_action=get_slots&procedure_id=${procId}&cabinet_id=${cabinet}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.earliest) {
+                document.getElementById(targetId).value = data.earliest;
+            } else if (data.free && data.free.length > 0) {
+                document.getElementById(targetId).value = data.free[0];
+            } else {
+                document.getElementById(targetId).value = '09:00';
+                document.getElementById(targetId).style.borderColor = '#d13438';
+                document.getElementById(targetId).title = 'Нет свободных слотов!';
+            }
+        });
+}
+</script>
+
+<!-- Shift Schedule Modal -->
+<div id="shiftModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 400px; margin: 150px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Сдвинуть график</h2>
+        <p style="font-size: 0.9rem; color: var(--win-text-secondary); margin-bottom: 20px;">
+            Все предстоящие (не выполненные) процедуры пациента будут перенесены на указанное количество дней.
+        </p>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="shift_schedule">
+            <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+
+            <div class="mb-4">
+                <label>Количество дней (напр. 1 или -1)</label>
+                <input type="number" name="shift_days" class="form-control" value="1" required style="width: 100%;">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('shiftModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Выполнить перенос</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Cancel Modal -->
 <div id="cancelModal" style="display:none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">

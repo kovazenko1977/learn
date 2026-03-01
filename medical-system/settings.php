@@ -24,7 +24,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = $_POST['action'] ?? '';
 
-    if ($action === 'add_staff' && \Medical\Core\Auth::canManageStaff()) {
+    if ($action === 'add_package' && \Medical\Core\Auth::can('settings_procs')) {
+        $pm = new \Medical\Core\Managers\PackageManager();
+        $items = [];
+        if (isset($_POST['proc_ids'])) {
+            foreach ($_POST['proc_ids'] as $index => $pid) {
+                $items[] = [
+                    'procedure_id' => $pid,
+                    'quantity' => (int)$_POST['proc_qtys'][$index]
+                ];
+            }
+        }
+        $pm->add([
+            'name' => $_POST['name'],
+            'description' => $_POST['description'] ?? '',
+            'items' => $items
+        ]);
+        $message = 'Пакет процедур создан';
+    } elseif ($action === 'edit_package' && \Medical\Core\Auth::can('settings_procs')) {
+        $pm = new \Medical\Core\Managers\PackageManager();
+        $items = [];
+        if (isset($_POST['proc_ids'])) {
+            foreach ($_POST['proc_ids'] as $index => $pid) {
+                $items[] = [
+                    'procedure_id' => $pid,
+                    'quantity' => (int)$_POST['proc_qtys'][$index]
+                ];
+            }
+        }
+        $pm->update($_POST['id'], [
+            'name' => $_POST['name'],
+            'description' => $_POST['description'] ?? '',
+            'items' => $items
+        ]);
+        $message = 'Пакет обновлен';
+    } elseif ($action === 'delete_package' && \Medical\Core\Auth::can('settings_procs')) {
+        $pm = new \Medical\Core\Managers\PackageManager();
+        $pm->delete($_POST['id']);
+        $message = 'Пакет удален';
+    } elseif ($action === 'add_staff' && \Medical\Core\Auth::canManageStaff()) {
         $staffManager->create([
             'name' => $_POST['name'],
             'role' => $_POST['role'],
@@ -332,6 +370,7 @@ $permissions = [
     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <?php if (\Medical\Core\Auth::can('settings_procs')): ?>
             <a href="?sub=procedures" class="btn <?php echo $activeSub === 'procedures' ? 'btn-primary' : ''; ?>">Процедуры</a>
+            <a href="?sub=packages" class="btn <?php echo $activeSub === 'packages' ? 'btn-primary' : ''; ?>">Пакеты</a>
         <?php endif; ?>
         <?php if (\Medical\Core\Auth::can('settings_staff')): ?>
             <a href="?sub=staff" class="btn <?php echo $activeSub === 'staff' ? 'btn-primary' : ''; ?>">Персонал</a>
@@ -416,9 +455,105 @@ $permissions = [
         </form>
     </div>
 
+<?php elseif ($activeSub === 'packages' && \Medical\Core\Auth::can('settings_procs')):
+    $pm = new \Medical\Core\Managers\PackageManager();
+    $packages = $pm->getAll();
+?>
+    <div class="card mica-effect mb-4">
+        <h2>Создать пакет процедур</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="add_package">
+
+            <div class="mb-3">
+                <label>Название пакета</label>
+                <input type="text" name="name" class="form-control" placeholder="Напр. Здоровое сердце" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Состав пакета</label>
+                <div id="package_items_container">
+                    <div class="package-item row mb-2" style="display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; align-items: center;">
+                        <select name="proc_ids[]" class="form-control" required>
+                            <option value="">-- Выберите процедуру --</option>
+                            <?php foreach ($allProcedures as $p): ?>
+                                <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <input type="number" name="proc_qtys[]" class="form-control" value="5" min="1" required>
+                        <button type="button" class="btn btn-sm" onclick="this.parentElement.remove()" style="color: #d13438;">&times;</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-ghost" onclick="addPackageItem()" style="margin-top: 10px;">+ Добавить строку</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Создать пакет</button>
+        </form>
+    </div>
+
+    <script>
+        function addPackageItem() {
+            const container = document.getElementById('package_items_container');
+            const div = document.createElement('div');
+            div.className = 'package-item row mb-2';
+            div.style.cssText = 'display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; align-items: center;';
+            div.innerHTML = `
+                <select name="proc_ids[]" class="form-control" required>
+                    <option value="">-- Выберите процедуру --</option>
+                    <?php foreach ($allProcedures as $p): ?>
+                        <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <input type="number" name="proc_qtys[]" class="form-control" value="5" min="1" required>
+                <button type="button" class="btn btn-sm" onclick="this.parentElement.remove()" style="color: #d13438;">&times;</button>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+
     <div class="card mica-effect">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>Список процедур</h2>
+        <h2>Список пакетов</h2>
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Состав (количество)</th>
+                    <th style="text-align: right;">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($packages as $pkg): ?>
+                    <tr style="border-top: 1px solid var(--win-border);">
+                        <td style="padding: 15px;"><strong><?php echo htmlspecialchars($pkg['name']); ?></strong></td>
+                        <td style="padding: 15px;">
+                            <?php
+                            foreach ($pkg['items'] as $item) {
+                                $proc = $procedureManager->getById($item['procedure_id']);
+                                echo '<div style="font-size: 0.85rem;">' . ($proc ? htmlspecialchars($proc['name']) : '???') . ' &mdash; <strong>' . $item['quantity'] . ' шт.</strong></div>';
+                            }
+                            ?>
+                        </td>
+                        <td style="padding: 15px; text-align: right;">
+                            <button onclick='openEditPackageModal(<?php echo htmlspecialchars(json_encode($pkg), ENT_QUOTES); ?>)' style="background: none; border: none; color: var(--win-accent); cursor: pointer; margin-right: 10px;"><i data-lucide="edit" class="icon"></i></button>
+                            <form method="POST" onsubmit="return confirm('Удалить пакет?')">
+                                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                <input type="hidden" name="action" value="delete_package">
+                                <input type="hidden" name="id" value="<?php echo $pkg['id']; ?>">
+                                <button type="submit" style="background:none; border:none; color: #d13438;"><i data-lucide="trash-2" class="icon-sm"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                <?php if (empty($packages)): ?>
+                    <tr><td colspan="3" style="text-align:center; padding: 20px; color: #999;">Пакеты еще не созданы</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+
+<?php elseif ($activeSub === 'procedures'): ?>
+    <div class="card mica-effect mb-4">
+        <h2>Добавить процедуру</h2>
             <div style="display: flex; gap: 10px;">
                 <a href="export.php?action=export_procedures" class="btn btn-sm">
                     <i data-lucide="download" class="icon"></i> Экспорт
@@ -1362,4 +1497,65 @@ window.onload = () => {
 };
 </script>
 
+<!-- Edit Package Modal -->
+<div id="editPkgModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 600px; margin: 60px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Редактировать пакет</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="edit_package">
+            <input type="hidden" name="id" id="edit_pkg_id">
+
+            <div class="mb-3">
+                <label>Название пакета</label>
+                <input type="text" name="name" id="edit_pkg_name" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Состав пакета</label>
+                <div id="edit_package_items_container"></div>
+                <button type="button" class="btn btn-sm btn-ghost" onclick="addEditPackageItem()" style="margin-top: 10px;">+ Добавить строку</button>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="document.getElementById('editPkgModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditPackageModal(pkg) {
+    document.getElementById('edit_pkg_id').value = pkg.id;
+    document.getElementById('edit_pkg_name').value = pkg.name;
+    const container = document.getElementById('edit_package_items_container');
+    container.innerHTML = '';
+
+    pkg.items.forEach(item => {
+        addEditPackageItem(item.procedure_id, item.quantity);
+    });
+
+    document.getElementById('editPkgModal').style.display = 'block';
+}
+
+function addEditPackageItem(procId = '', qty = 5) {
+    const container = document.getElementById('edit_package_items_container');
+    const div = document.createElement('div');
+    div.className = 'package-item row mb-2';
+    div.style.cssText = 'display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; align-items: center;';
+
+    let options = '<option value="">-- Выберите процедуру --</option>';
+    <?php foreach ($allProcedures as $p): ?>
+        options += `<option value="<?php echo $p['id']; ?>" ${procId == '<?php echo $p['id']; ?>' ? 'selected' : ''}><?php echo htmlspecialchars($p['name']); ?></option>`;
+    <?php endforeach; ?>
+
+    div.innerHTML = `
+        <select name="proc_ids[]" class="form-control" required>${options}</select>
+        <input type="number" name="proc_qtys[]" class="form-control" value="${qty}" min="1" required>
+        <button type="button" class="btn btn-sm" onclick="this.parentElement.remove()" style="color: #d13438;">&times;</button>
+    `;
+    container.appendChild(div);
+}
+</script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

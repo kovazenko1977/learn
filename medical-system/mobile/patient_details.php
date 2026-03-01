@@ -16,7 +16,12 @@ if (!$patient) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
-        if ($_POST['action'] === 'add_comment') {
+        if ($_POST['action'] === 'shift_schedule') {
+            $days = (int)$_POST['shift_days'];
+            $scheduleManager->shiftPatientSchedule($id, $days);
+            header("Location: patient_details.php?id=$id&shifted=1");
+            exit;
+        } elseif ($_POST['action'] === 'add_comment') {
             $patientManager->addComment($id, [
                 'author' => \Medical\Core\Auth::getUser()['name'],
                 'role' => \Medical\Core\Auth::getUser()['role'],
@@ -77,11 +82,16 @@ include __DIR__ . '/includes/header.php';
     </div>
 
     <div id="tab-history">
-        <?php if (\Medical\Core\Auth::can('history_add')): ?>
-            <button onclick="document.getElementById('addHistoryModal').style.display='flex'" class="md-btn md-btn-primary" style="width: 100%; margin-bottom: 16px;">
-                <i data-lucide="plus" style="width:18px; height:18px; margin-right: 8px;"></i> Добавить запись
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <?php if (\Medical\Core\Auth::can('history_add')): ?>
+                <button onclick="document.getElementById('addHistoryModal').style.display='flex'" class="md-btn md-btn-primary" style="flex: 1;">
+                    <i data-lucide="plus" style="width:18px; height:18px; margin-right: 8px;"></i> Запись
+                </button>
+            <?php endif; ?>
+            <button onclick="document.getElementById('shiftMobileModal').style.display='flex'" class="md-btn" style="flex: 1; background: #EADDFF; color: #21005D;">
+                <i data-lucide="calendar-days" style="width:18px; height:18px; margin-right: 8px;"></i> Сдвиг
             </button>
-        <?php endif; ?>
+        </div>
 
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <?php if (!empty($patient['history'])): ?>
@@ -164,5 +174,25 @@ function switchTab(tab) {
     document.getElementById('tab-btn-notes').style.borderBottom = tab === 'notes' ? '3px solid var(--md-primary)' : 'none';
 }
 </script>
+
+<!-- Shift Modal -->
+<div id="shiftMobileModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
+    <div class="md-card" style="width: 100%; margin: 0;">
+        <h3 style="margin-top: 0;">Сдвинуть график</h3>
+        <p style="font-size: 13px; color: var(--md-secondary); margin-bottom: 20px;">Перенести все предстоящие процедуры на X дней.</p>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="shift_schedule">
+
+            <label style="display: block; font-size: 12px; color: var(--md-secondary); margin-bottom: 4px;">Количество дней (напр. 1 или -1)</label>
+            <input type="number" name="shift_days" value="1" class="md-input" required>
+
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button type="button" onclick="document.getElementById('shiftMobileModal').style.display='none'" class="md-btn" style="flex: 1; background: #eee;">Отмена</button>
+                <button type="submit" class="md-btn md-btn-primary" style="flex: 1;">Выполнить</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

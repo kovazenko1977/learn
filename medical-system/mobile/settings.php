@@ -22,9 +22,10 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <div style="padding: 16px; padding-bottom: 100px;">
-    <div style="display: flex; gap: 8px; margin-bottom: 24px;">
-        <button onclick="switchTab('staff')" id="tab-btn-staff" style="flex: 1; padding: 12px; border: none; background: none; border-bottom: 2px solid var(--md-primary); color: var(--md-primary); font-weight: 500;">Персонал</button>
-        <button onclick="switchTab('procedures')" id="tab-btn-procedures" style="flex: 1; padding: 12px; border: none; background: none; color: var(--md-secondary); font-weight: 500;">Процедуры</button>
+    <div style="display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px;">
+        <button onclick="switchTab('staff')" id="tab-btn-staff" style="flex: 1; min-width: 100px; padding: 12px; border: none; background: none; border-bottom: 2px solid var(--md-primary); color: var(--md-primary); font-weight: 500; white-space: nowrap;">Персонал</button>
+        <button onclick="switchTab('procedures')" id="tab-btn-procedures" style="flex: 1; min-width: 100px; padding: 12px; border: none; background: none; color: var(--md-secondary); font-weight: 500; white-space: nowrap;">Процедуры</button>
+        <button onclick="switchTab('packages')" id="tab-btn-packages" style="flex: 1; min-width: 100px; padding: 12px; border: none; background: none; color: var(--md-secondary); font-weight: 500; white-space: nowrap;">Пакеты</button>
     </div>
 
     <div id="settings-tab-staff">
@@ -40,6 +41,27 @@ include __DIR__ . '/includes/header.php';
                 </div>
                 <div style="font-size: 12px; color: var(--md-primary); background: #fef7ff; padding: 2px 8px; border-radius: 12px; border: 1px solid #CAC4D0;">
                     Каб. <?php echo htmlspecialchars($s['cabinet'] ?? '-'); ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <div id="settings-tab-packages" style="display: none;">
+        <h3 style="margin-top: 0; font-size: 16px; font-weight: 500; margin-bottom: 12px;">Пакеты процедур</h3>
+        <?php
+        $pkgManager = new \Medical\Core\Managers\PackageManager();
+        foreach ($pkgManager->getAll() as $pkg): ?>
+            <div class="md-card" style="margin: 0 0 12px 0; padding: 12px;">
+                <div style="font-weight: 600; color: var(--md-primary); margin-bottom: 8px;"><?php echo htmlspecialchars($pkg['name']); ?></div>
+                <div style="font-size: 13px; color: var(--md-secondary);">
+                    <?php foreach ($pkg['items'] as $item):
+                        $pr = $procedureManager->getById($item['procedure_id']);
+                    ?>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                            <span><?php echo $pr ? htmlspecialchars($pr['name']) : '???'; ?></span>
+                            <span style="font-weight: 500;"><?php echo $item['quantity']; ?> шт.</span>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -74,12 +96,19 @@ include __DIR__ . '/includes/header.php';
 function switchTab(tab) {
     document.getElementById('settings-tab-staff').style.display = tab === 'staff' ? 'block' : 'none';
     document.getElementById('settings-tab-procedures').style.display = tab === 'procedures' ? 'block' : 'none';
+    document.getElementById('settings-tab-packages').style.display = tab === 'packages' ? 'block' : 'none';
 
-    document.getElementById('tab-btn-staff').style.color = tab === 'staff' ? 'var(--md-primary)' : 'var(--md-secondary)';
-    document.getElementById('tab-btn-staff').style.borderBottom = tab === 'staff' ? '2px solid var(--md-primary)' : 'none';
-
-    document.getElementById('tab-btn-procedures').style.color = tab === 'procedures' ? 'var(--md-primary)' : 'var(--md-secondary)';
-    document.getElementById('tab-btn-procedures').style.borderBottom = tab === 'procedures' ? '2px solid var(--md-primary)' : 'none';
+    const tabs = ['staff', 'procedures', 'packages'];
+    tabs.forEach(t => {
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tab) {
+            btn.style.color = 'var(--md-primary)';
+            btn.style.borderBottom = '2px solid var(--md-primary)';
+        } else {
+            btn.style.color = 'var(--md-secondary)';
+            btn.style.borderBottom = 'none';
+        }
+    });
 }
 </script>
 

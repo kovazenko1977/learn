@@ -69,7 +69,12 @@ include __DIR__ . '/includes/header.php';
                 <div style="font-size: 12px; color: var(--md-secondary);"><?php echo date('d.m.Y', strtotime($app['date'])); ?></div>
             </div>
 
-            <div style="font-weight: 500; font-size: 16px; margin-bottom: 4px;"><?php echo htmlspecialchars($app['procedure_name']); ?></div>
+            <div style="font-weight: 500; font-size: 16px; margin-bottom: 4px;">
+                <?php echo htmlspecialchars($app['procedure_name']); ?>
+                <?php if (!empty($app['package_name'])): ?>
+                    <div style="font-size: 11px; color: var(--md-primary); font-weight: 600;">Пакет: <?php echo htmlspecialchars($app['package_name']); ?></div>
+                <?php endif; ?>
+            </div>
             <div style="font-size: 14px; margin-bottom: 12px;">Пациент: <strong><?php echo htmlspecialchars($app['patient_name']); ?></strong></div>
 
             <div style="display: flex; justify-content: space-between; align-items: center;">

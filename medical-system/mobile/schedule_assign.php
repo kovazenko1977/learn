@@ -17,6 +17,36 @@ $patientId = $_GET['patient_id'] ?? '';
 $patient = $patientId ? $patientManager->getById($patientId) : null;
 $procedures = $procedureManager->getAll();
 $staff = $staffManager->getAll();
+$pkgManager = new \Medical\Core\Managers\PackageManager();
+$packages = $pkgManager->getAll();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'confirm_assign_package') {
+    if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
+        $items = $_POST['package_items'] ?? [];
+        $pkgName = $_POST['package_name'] ?? '';
+        foreach ($items as $item) {
+            $proc = $procedureManager->getById($item['procedure_id']);
+            if (!$proc) continue;
+            $assignment = [
+                'patient_id' => $_POST['patient_id'],
+                'patient_name' => $patient['name'] ?? '?',
+                'procedure_id' => $item['procedure_id'],
+                'procedure_name' => $proc['name'],
+                'date' => $item['date'],
+                'time' => $item['time'],
+                'cabinet_id' => $item['cabinet_id'],
+                'price' => ($proc['is_paid'] ?? false) ? ($proc['price'] ?? 0) : 0,
+                'status' => ($proc['is_paid'] ?? false) ? 'unpaid' : 'free',
+                'attended' => false,
+                'doctor' => \Medical\Core\Auth::getUser()['name'],
+                'package_name' => $pkgName
+            ];
+            $scheduleManager->assign($assignment);
+        }
+        header("Location: attendance.php?patient_id=" . $_POST['patient_id'] . "&assigned=1");
+        exit;
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
@@ -58,6 +88,25 @@ include __DIR__ . '/includes/header.php';
     <div style="margin-bottom: 20px; font-weight: 500; font-size: 18px; color: var(--md-primary);">
         Пациент: <?php echo htmlspecialchars($patient['name'] ?? 'Не выбран'); ?>
     </div>
+
+    <!-- Package Assignment -->
+    <div class="md-card" style="margin: 0 0 24px 0; background: #E8DEF8;">
+        <h3 style="margin-top: 0; font-size: 16px;">Назначить пакет</h3>
+        <div style="margin-bottom: 12px;">
+            <select id="mobile_package_selector" class="md-input" style="height: 48px; background: #fff;">
+                <option value="">Выберите пакет...</option>
+                <?php foreach ($packages as $pkg): ?>
+                    <option value="<?php echo $pkg['id']; ?>" data-items='<?php echo json_encode($pkg['items'], ENT_QUOTES); ?>'><?php echo htmlspecialchars($pkg['name']); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div style="margin-bottom: 12px;">
+            <input type="date" id="mobile_package_start" value="<?php echo date('Y-m-d'); ?>" class="md-input" style="height: 48px; background: #fff;">
+        </div>
+        <button type="button" class="md-btn md-btn-primary" style="width: 100%;" onclick="openMobilePackagePreview()">Подготовить пакет</button>
+    </div>
+
+    <div style="text-align: center; color: var(--md-secondary); font-size: 12px; margin-bottom: 24px;">ИЛИ ОТДЕЛЬНУЮ ПРОЦЕДУРУ</div>
 
     <form method="POST" id="assignForm">
         <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
@@ -166,6 +215,86 @@ function updateSlots() {
         })
         .catch(() => {
             list.innerHTML = '<span style="font-size: 12px; color: var(--md-error);">Ошибка загрузки</span>';
+        });
+}
+</script>
+
+<!-- Package Preview Modal -->
+<div id="mobilePackageModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 2000; flex-direction: column;">
+    <div class="md-header">
+        <button onclick="document.getElementById('mobilePackageModal').style.display='none'" style="background:none; border:none; padding: 0 16px;"><i data-lucide="x"></i></button>
+        <h1 style="font-size: 18px; margin: 0;">Настройка пакета</h1>
+    </div>
+    <form method="POST" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;">
+        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+        <input type="hidden" name="action" value="confirm_assign_package">
+        <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+        <input type="hidden" name="package_name" id="mobile_preview_pkg_name">
+
+        <div id="mobile_package_items" style="flex-grow: 1; overflow-y: auto; padding: 16px;"></div>
+
+        <div style="padding: 16px; border-top: 1px solid #eee; background: #fff;">
+            <button type="submit" class="md-btn md-btn-primary" style="width: 100%; height: 48px; border-radius: 24px;">Подтвердить все</button>
+        </div>
+    </form>
+</div>
+
+<script>
+const mobileProcs = <?php echo json_encode($procedures); ?>;
+
+function openMobilePackagePreview() {
+    const sel = document.getElementById('mobile_package_selector');
+    const pkgId = sel.value;
+    if (!pkgId) return;
+
+    const startDateStr = document.getElementById('mobile_package_start').value;
+    const pkgName = sel.options[sel.selectedIndex].text.trim();
+    document.getElementById('mobile_preview_pkg_name').value = pkgName;
+    const items = JSON.parse(sel.options[sel.selectedIndex].dataset.items);
+    const container = document.getElementById('mobile_package_items');
+    container.innerHTML = '';
+
+    let idx = 0;
+    items.forEach(item => {
+        const proc = mobileProcs.find(p => p.id === item.procedure_id);
+        if (!proc) return;
+
+        let curDate = new Date(startDateStr);
+        for (let i = 0; i < item.quantity; i++) {
+            const dStr = curDate.toISOString().split('T')[0];
+            const card = document.createElement('div');
+            card.className = 'md-card';
+            card.style.margin = '0 0 12px 0';
+            card.style.padding = '12px';
+
+            card.innerHTML = `
+                <input type="hidden" name="package_items[${idx}][procedure_id]" value="${proc.id}">
+                <div style="font-weight: 600; margin-bottom: 8px;">${proc.name}</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <input type="date" name="package_items[${idx}][date]" value="${dStr}" class="md-input" style="height: 40px; font-size: 13px;">
+                    <input type="time" name="package_items[${idx}][time]" id="m_time_${idx}" class="md-input" style="height: 40px; font-size: 13px;">
+                </div>
+                <input type="text" name="package_items[${idx}][cabinet_id]" value="${proc.default_cabinet || ''}" class="md-input" style="height: 40px; font-size: 13px; margin-top: 8px; margin-bottom: 0;">
+            `;
+            container.appendChild(card);
+
+            fetchEarliestMobile(proc.id, proc.default_cabinet, dStr, `m_time_${idx}`);
+
+            curDate.setDate(curDate.getDate() + 1);
+            idx++;
+        }
+    });
+
+    document.getElementById('mobilePackageModal').style.display = 'flex';
+    lucide.createIcons();
+}
+
+function fetchEarliestMobile(procId, cabinet, date, targetId) {
+    if (!cabinet) return;
+    fetch(`../procedures_doctor.php?ajax_action=get_slots&procedure_id=${procId}&cabinet_id=${cabinet}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById(targetId).value = data.earliest || (data.free && data.free[0]) || '09:00';
         });
 }
 </script>
