@@ -31,7 +31,7 @@ class DemoDataLoader {
             'role' => 'admin',
             'username' => 'admin',
             'password' => password_hash('admin', PASSWORD_DEFAULT),
-            'access_code' => '1111',
+            'access_code' => '111111',
             'service_id' => null
         ];
 
@@ -49,7 +49,7 @@ class DemoDataLoader {
                 'role' => 'initiator',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
-                'access_code' => (string)(1000 + $i),
+                'access_code' => (string)(100000 + $i),
                 'service_id' => null
             ];
         }
@@ -64,7 +64,7 @@ class DemoDataLoader {
                 'role' => 'performer',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
-                'access_code' => (string)(2000 + $i),
+                'access_code' => (string)(200000 + $i),
                 'service_id' => $svcId
             ];
         }
@@ -79,7 +79,7 @@ class DemoDataLoader {
                 'role' => 'service_lead',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
-                'access_code' => (string)(3000 + $i),
+                'access_code' => (string)(300000 + $i),
                 'service_id' => $svcId
             ];
         }
@@ -93,7 +93,7 @@ class DemoDataLoader {
                 'role' => 'controller',
                 'username' => $firstNamesEn[$fnIdx] . $i,
                 'password' => password_hash($i . $i . $i . $i, PASSWORD_DEFAULT),
-                'access_code' => (string)(4000 + $i),
+                'access_code' => (string)(400000 + $i),
                 'service_id' => null
             ];
         }
@@ -105,7 +105,7 @@ class DemoDataLoader {
             'role' => 'manager',
             'username' => 'glavvrach',
             'password' => password_hash('777777', PASSWORD_DEFAULT),
-            'access_code' => '7777',
+            'access_code' => '777777',
             'service_id' => null
         ];
 

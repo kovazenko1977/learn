@@ -123,7 +123,7 @@ include 'includes/header.php';
             <div class="form-group">
                 <label>Код доступа (для быстрого входа)</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" name="access_code" id="new-access-code" placeholder="Напр. 1234" style="flex:1;">
+                    <input type="text" name="access_code" id="new-access-code" placeholder="Напр. 123456" style="flex:1;">
                     <button type="button" class="btn-secondary" onclick="generateCode('new-access-code')" style="padding:0 12px;"><i data-lucide="refresh-cw" style="width:14px;"></i></button>
                 </div>
             </div>
@@ -299,7 +299,7 @@ include 'includes/header.php';
             <div class="form-group">
                 <label>Код доступа</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" name="access_code" id="edit-access_code" placeholder="4-значный код" style="flex:1;">
+                    <input type="text" name="access_code" id="edit-access_code" placeholder="6-значный код" style="flex:1;">
                     <button type="button" class="btn-secondary" onclick="generateCode('edit-access_code')" style="padding:0 12px;"><i data-lucide="refresh-cw" style="width:14px;"></i></button>
                 </div>
             </div>
@@ -348,7 +348,7 @@ function openEditModal(user) {
 }
 
 function generateCode(targetId) {
-    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     document.getElementById(targetId).value = code;
 }
 

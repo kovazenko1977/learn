@@ -297,7 +297,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="access_code" class="login-input" placeholder="Уникальный код" maxlength="10" inputmode="numeric">
                         <i data-lucide="key"></i>
                     </div>
-                    <p style="font-size:11px; color:#666; margin-top:8px; text-align:center;">Используйте ваш персональный 4-значный код</p>
+                    <p style="font-size:11px; color:#666; margin-top:8px; text-align:center;">Используйте ваш персональный 6-значный код</p>
                 </div>
 
                 <button type="submit" class="btn-submit">Войти по коду</button>
