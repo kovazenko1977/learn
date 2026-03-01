@@ -1,0 +1,17 @@
+{
+    "hospital_name": "Verified Hospital 1771749722",
+    "sla": {
+        "low": 48,
+        "medium": 24,
+        "high": 4,
+        "critical": 1
+    },
+    "telegram_token": "",
+    "telegram_chat_id": "",
+    "accent_color": "#e81123",
+    "primary_font": "'Roboto', sans-serif",
+    "font_size": "18px",
+    "polling_interval": 10,
+    "theme": "light",
+    "ui_style": "windows"
+}

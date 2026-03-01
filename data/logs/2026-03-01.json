@@ -1,0 +1,34 @@
+[
+    {
+        "timestamp": "2026-03-01 07:26:21",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-03-01 07:34:47",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-03-01 13:39:40",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-03-01 13:47:18",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    }
+]

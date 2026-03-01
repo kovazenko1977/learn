@@ -1,0 +1,49 @@
+[Fri Feb 27 07:30:23 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8080) started
+[Fri Feb 27 07:30:28 2026] 127.0.0.1:34128 Accepted
+[Fri Feb 27 07:30:28 2026] 127.0.0.1:34128 [200]: GET /login.php
+[Fri Feb 27 07:30:28 2026] 127.0.0.1:34128 Closing
+[Fri Feb 27 07:30:28 2026] 127.0.0.1:34136 Accepted
+[Fri Feb 27 07:30:28 2026] 127.0.0.1:34136 [200]: GET /assets/style.css
+[Fri Feb 27 07:30:28 2026] 127.0.0.1:34136 Closing
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50844 Accepted
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50844 [302]: POST /login.php
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50844 Closing
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50850 Accepted
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50850 [200]: GET /index.php
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50850 Closing
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50858 Accepted
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50858 [200]: GET /index.php
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50858 Closing
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50872 Accepted
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50872 [200]: GET /assets/style.css
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50872 Closing
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50876 Accepted
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50876 [200]: GET /assets/style.css
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50876 Closing
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50890 Accepted
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50890 [200]: GET /api_notifications.php
+[Fri Feb 27 07:30:30 2026] 127.0.0.1:50890 Closing
+[Fri Feb 27 07:30:32 2026] 127.0.0.1:50906 Accepted
+[Fri Feb 27 07:30:32 2026] 127.0.0.1:50906 [200]: GET /login.php
+[Fri Feb 27 07:30:32 2026] 127.0.0.1:50906 Closing
+[Fri Feb 27 07:30:32 2026] 127.0.0.1:50910 Accepted
+[Fri Feb 27 07:30:32 2026] 127.0.0.1:50910 [200]: GET /assets/style.css
+[Fri Feb 27 07:30:32 2026] 127.0.0.1:50910 Closing
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50924 Accepted
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50924 [302]: POST /login.php
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50924 Closing
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50938 Accepted
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50938 [200]: GET /index.php
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50938 Closing
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50952 Accepted
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50952 [200]: GET /index.php
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50952 Closing
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50966 Accepted
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50966 [200]: GET /assets/style.css
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50966 Closing
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50980 Accepted
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50980 [200]: GET /assets/style.css
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50980 Closing
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50982 Accepted
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50982 [200]: GET /api_notifications.php
+[Fri Feb 27 07:30:34 2026] 127.0.0.1:50982 Closing

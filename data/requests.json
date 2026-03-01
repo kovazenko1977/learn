@@ -1,0 +1,4434 @@
+[
+    {
+        "id": 1,
+        "initiator_id": 5,
+        "description": "Не работает лифт (Заявка №1)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "463"
+        },
+        "priority": "low",
+        "status": "returned",
+        "created_at": "2026-02-13 23:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-13 23:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 04:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 2,
+        "initiator_id": 4,
+        "description": "Не работает розетка (Заявка №2)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "377"
+        },
+        "priority": "critical",
+        "status": "checking",
+        "created_at": "2026-02-23 14:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-23 14:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-23 15:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-24 02:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-24 14:02:03",
+                "status": "checking",
+                "user_id": 19,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 3,
+        "initiator_id": 6,
+        "description": "Сломался стул (Заявка №3)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "549"
+        },
+        "priority": "high",
+        "status": "working",
+        "created_at": "2026-02-12 15:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-12 15:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-12 17:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            },
+            {
+                "timestamp": "2026-02-12 22:02:03",
+                "status": "working",
+                "user_id": 17,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 4,
+        "initiator_id": 7,
+        "description": "Не работает лифт (Заявка №4)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "373"
+        },
+        "priority": "high",
+        "status": "working",
+        "created_at": "2026-02-02 10:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-02 10:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-02 13:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-02 18:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 5,
+        "initiator_id": 8,
+        "description": "Перегорела лампа (Заявка №5)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "443"
+        },
+        "priority": "low",
+        "status": "new",
+        "created_at": "2026-02-12 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-12 04:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "initiator_id": 5,
+        "description": "Перегорела лампа (Заявка №6)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "287"
+        },
+        "priority": "critical",
+        "status": "assigned",
+        "created_at": "2026-02-04 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-04 03:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-04 04:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Федоров"
+            }
+        ],
+        "performer_id": 15
+    },
+    {
+        "id": 7,
+        "initiator_id": 5,
+        "description": "Засор в раковине (Заявка №7)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "326"
+        },
+        "priority": "low",
+        "status": "new",
+        "created_at": "2026-01-31 22:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-31 22:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "initiator_id": 3,
+        "description": "Не работает розетка (Заявка №8)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "414"
+        },
+        "priority": "critical",
+        "status": "assigned",
+        "created_at": "2026-02-10 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-10 07:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-10 09:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 9,
+        "initiator_id": 7,
+        "description": "Перегорела лампа (Заявка №9)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "360"
+        },
+        "priority": "high",
+        "status": "assigned",
+        "created_at": "2026-03-01 02:02:03",
+        "history": [
+            {
+                "timestamp": "2026-03-01 02:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-03-01 06:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 10,
+        "initiator_id": 8,
+        "description": "Плохо греет батарея (Заявка №10)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "367"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-07 17:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-07 17:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-07 20:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-08 02:02:03",
+                "status": "working",
+                "user_id": 21,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-08 13:02:03",
+                "status": "checking",
+                "user_id": 21,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-09 14:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-10 09:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 11,
+        "initiator_id": 6,
+        "description": "Перегорела лампа (Заявка №11)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "335"
+        },
+        "priority": "high",
+        "status": "returned",
+        "created_at": "2026-02-25 21:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-25 21:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-26 00:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 12,
+        "initiator_id": 7,
+        "description": "Перегорела лампа (Заявка №12)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "293"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-21 21:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-21 21:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-22 00:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-22 05:02:03",
+                "status": "working",
+                "user_id": 21,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-22 12:02:03",
+                "status": "checking",
+                "user_id": 21,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-23 10:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 13,
+        "initiator_id": 6,
+        "description": "Скрипит дверь (Заявка №13)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "269"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-03 09:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-03 09:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-03 11:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-03 18:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 14,
+        "initiator_id": 7,
+        "description": "Нужен картридж (Заявка №14)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "538"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-13 12:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-13 12:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "initiator_id": 6,
+        "description": "Скрипит дверь (Заявка №15)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "174"
+        },
+        "priority": "low",
+        "status": "assigned",
+        "created_at": "2026-02-10 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-10 04:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-10 05:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 16,
+        "initiator_id": 1,
+        "description": "Засор в раковине (Заявка №16)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "448"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-01-30 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-30 08:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-30 09:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            },
+            {
+                "timestamp": "2026-01-30 14:02:03",
+                "status": "working",
+                "user_id": 20,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-01-31 07:02:03",
+                "status": "checking",
+                "user_id": 20,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-01-31 22:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 17,
+        "initiator_id": 4,
+        "description": "Протечка трубы (Заявка №17)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "567"
+        },
+        "priority": "critical",
+        "status": "new",
+        "created_at": "2026-02-05 11:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-05 11:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "initiator_id": 8,
+        "description": "Оторвался плинтус (Заявка №18)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "2",
+            "room": "521"
+        },
+        "priority": "low",
+        "status": "checking",
+        "created_at": "2026-02-09 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 01:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 02:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Федоров"
+            },
+            {
+                "timestamp": "2026-02-09 11:02:03",
+                "status": "working",
+                "user_id": 15,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-09 19:02:03",
+                "status": "checking",
+                "user_id": 15,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 15
+    },
+    {
+        "id": 19,
+        "initiator_id": 8,
+        "description": "Нужен картридж (Заявка №19)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "2",
+            "room": "372"
+        },
+        "priority": "low",
+        "status": "returned",
+        "created_at": "2026-02-25 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-25 03:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-25 06:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Александр Кузнецов"
+            }
+        ],
+        "performer_id": 12
+    },
+    {
+        "id": 20,
+        "initiator_id": 6,
+        "description": "Протечка трубы (Заявка №20)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "362"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-07 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-07 03:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-07 05:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-07 10:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-07 18:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-08 21:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-09 10:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 21,
+        "initiator_id": 1,
+        "description": "Не работает розетка (Заявка №21)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "3",
+            "room": "404"
+        },
+        "priority": "high",
+        "status": "new",
+        "created_at": "2026-02-24 17:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-24 17:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 22,
+        "initiator_id": 5,
+        "description": "Засор в раковине (Заявка №22)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "544"
+        },
+        "priority": "low",
+        "status": "checking",
+        "created_at": "2026-02-17 19:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-17 19:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-18 00:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-18 04:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-18 15:02:03",
+                "status": "checking",
+                "user_id": 18,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 23,
+        "initiator_id": 1,
+        "description": "Плохо греет батарея (Заявка №23)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "560"
+        },
+        "priority": "high",
+        "status": "new",
+        "created_at": "2026-02-11 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-11 03:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "initiator_id": 6,
+        "description": "Сломался стул (Заявка №24)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "541"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-09 05:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 05:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 25,
+        "initiator_id": 2,
+        "description": "Нужен картридж (Заявка №25)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "436"
+        },
+        "priority": "critical",
+        "status": "new",
+        "created_at": "2026-01-31 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-31 04:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 26,
+        "initiator_id": 4,
+        "description": "Скрипит дверь (Заявка №26)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "223"
+        },
+        "priority": "high",
+        "status": "closed",
+        "created_at": "2026-02-27 18:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-27 18:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-27 22:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-28 05:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-28 10:02:03",
+                "status": "checking",
+                "user_id": 18,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-28 20:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-03-02 03:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 27,
+        "initiator_id": 5,
+        "description": "Сломался стул (Заявка №27)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "441"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-09 00:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 00:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 04:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Федоров"
+            },
+            {
+                "timestamp": "2026-02-09 12:02:03",
+                "status": "working",
+                "user_id": 15,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-09 21:02:03",
+                "status": "checking",
+                "user_id": 15,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-10 09:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 15
+    },
+    {
+        "id": 28,
+        "initiator_id": 9,
+        "description": "Засор в раковине (Заявка №28)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "412"
+        },
+        "priority": "high",
+        "status": "working",
+        "created_at": "2026-02-16 17:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-16 17:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-16 22:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-17 02:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 29,
+        "initiator_id": 9,
+        "description": "Сломался стул (Заявка №29)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "551"
+        },
+        "priority": "low",
+        "status": "checking",
+        "created_at": "2026-01-30 18:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-30 18:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-30 19:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-01-31 06:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-01-31 13:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 30,
+        "initiator_id": 7,
+        "description": "Нужен картридж (Заявка №30)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "2",
+            "room": "472"
+        },
+        "priority": "high",
+        "status": "completed",
+        "created_at": "2026-02-07 22:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-07 22:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-08 00:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-08 09:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-08 17:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-08 23:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 31,
+        "initiator_id": 9,
+        "description": "Перегорела лампа (Заявка №31)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "366"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-17 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-17 07:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 32,
+        "initiator_id": 4,
+        "description": "Не работает розетка (Заявка №32)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "426"
+        },
+        "priority": "high",
+        "status": "returned",
+        "created_at": "2026-02-28 11:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-28 11:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-28 16:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Александр Кузнецов"
+            }
+        ],
+        "performer_id": 12
+    },
+    {
+        "id": 33,
+        "initiator_id": 6,
+        "description": "Не работает лифт (Заявка №33)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "197"
+        },
+        "priority": "medium",
+        "status": "closed",
+        "created_at": "2026-02-12 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-12 01:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-12 06:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            },
+            {
+                "timestamp": "2026-02-12 13:02:03",
+                "status": "working",
+                "user_id": 17,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-12 16:02:03",
+                "status": "checking",
+                "user_id": 17,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-13 03:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-14 18:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 34,
+        "initiator_id": 5,
+        "description": "Плохо греет батарея (Заявка №34)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "585"
+        },
+        "priority": "critical",
+        "status": "returned",
+        "created_at": "2026-02-03 16:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-03 16:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-03 19:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 35,
+        "initiator_id": 5,
+        "description": "Сломался стул (Заявка №35)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "434"
+        },
+        "priority": "critical",
+        "status": "assigned",
+        "created_at": "2026-02-09 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 08:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 09:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 36,
+        "initiator_id": 4,
+        "description": "Скрипит дверь (Заявка №36)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "210"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-28 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-28 08:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-28 12:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-28 17:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-28 23:02:03",
+                "status": "checking",
+                "user_id": 18,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-03-01 09:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 37,
+        "initiator_id": 4,
+        "description": "Сломался стул (Заявка №37)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "2",
+            "room": "423"
+        },
+        "priority": "high",
+        "status": "returned",
+        "created_at": "2026-02-11 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-11 04:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-11 09:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 38,
+        "initiator_id": 8,
+        "description": "Перегорела лампа (Заявка №38)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "261"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-01-31 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-31 08:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-31 09:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-01-31 18:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 39,
+        "initiator_id": 9,
+        "description": "Сломался стул (Заявка №39)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "342"
+        },
+        "priority": "low",
+        "status": "closed",
+        "created_at": "2026-02-14 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-14 03:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 04:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-02-14 12:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-14 17:02:03",
+                "status": "checking",
+                "user_id": 23,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-15 18:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-16 20:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 40,
+        "initiator_id": 1,
+        "description": "Не работает розетка (Заявка №40)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "3",
+            "room": "491"
+        },
+        "priority": "low",
+        "status": "checking",
+        "created_at": "2026-02-15 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-15 01:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-15 03:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-15 11:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-15 14:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 41,
+        "initiator_id": 5,
+        "description": "Перегорела лампа (Заявка №41)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "5",
+            "room": "425"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-02 13:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-02 13:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-02 14:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Федоров"
+            },
+            {
+                "timestamp": "2026-02-03 00:02:03",
+                "status": "working",
+                "user_id": 15,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-03 11:02:03",
+                "status": "checking",
+                "user_id": 15,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-03 16:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-05 11:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 15
+    },
+    {
+        "id": 42,
+        "initiator_id": 4,
+        "description": "Плохо греет батарея (Заявка №42)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "124"
+        },
+        "priority": "medium",
+        "status": "returned",
+        "created_at": "2026-02-10 05:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-10 05:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-10 10:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 43,
+        "initiator_id": 6,
+        "description": "Оторвался плинтус (Заявка №43)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "254"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-09 05:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 05:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 08:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-09 16:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-09 21:02:03",
+                "status": "checking",
+                "user_id": 18,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 44,
+        "initiator_id": 7,
+        "description": "Нужен картридж (Заявка №44)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "5",
+            "room": "449"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-28 15:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-28 15:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-28 20:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            },
+            {
+                "timestamp": "2026-03-01 03:02:03",
+                "status": "working",
+                "user_id": 17,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 45,
+        "initiator_id": 10,
+        "description": "Протечка трубы (Заявка №45)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "261"
+        },
+        "priority": "critical",
+        "status": "working",
+        "created_at": "2026-02-13 12:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-13 12:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-13 16:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            },
+            {
+                "timestamp": "2026-02-13 19:02:03",
+                "status": "working",
+                "user_id": 17,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 46,
+        "initiator_id": 6,
+        "description": "Засор в раковине (Заявка №46)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "365"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-18 10:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-18 10:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 47,
+        "initiator_id": 8,
+        "description": "Перегорела лампа (Заявка №47)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "3",
+            "room": "258"
+        },
+        "priority": "medium",
+        "status": "assigned",
+        "created_at": "2026-02-17 22:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-17 22:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-18 03:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 48,
+        "initiator_id": 7,
+        "description": "Оторвался плинтус (Заявка №48)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "5",
+            "room": "595"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-15 16:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-15 16:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-15 19:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Федоров"
+            },
+            {
+                "timestamp": "2026-02-16 00:02:03",
+                "status": "working",
+                "user_id": 15,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 15
+    },
+    {
+        "id": 49,
+        "initiator_id": 2,
+        "description": "Сломался стул (Заявка №49)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "120"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-11 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-11 08:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-11 12:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            },
+            {
+                "timestamp": "2026-02-11 16:02:03",
+                "status": "working",
+                "user_id": 13,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-12 04:02:03",
+                "status": "checking",
+                "user_id": 13,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-12 12:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-13 21:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 50,
+        "initiator_id": 1,
+        "description": "Оторвался плинтус (Заявка №50)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "353"
+        },
+        "priority": "medium",
+        "status": "closed",
+        "created_at": "2026-01-31 09:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-31 09:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-31 11:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Александр Кузнецов"
+            },
+            {
+                "timestamp": "2026-01-31 17:02:03",
+                "status": "working",
+                "user_id": 12,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-01 03:02:03",
+                "status": "checking",
+                "user_id": 12,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-01 23:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-03 07:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 12
+    },
+    {
+        "id": 51,
+        "initiator_id": 4,
+        "description": "Сломался стул (Заявка №51)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "388"
+        },
+        "priority": "critical",
+        "status": "returned",
+        "created_at": "2026-02-01 06:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-01 06:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-01 08:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 52,
+        "initiator_id": 3,
+        "description": "Нужна уборка после ремонта (Заявка №52)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "254"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-24 06:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-24 06:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-24 09:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-24 16:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-24 21:02:03",
+                "status": "checking",
+                "user_id": 18,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 53,
+        "initiator_id": 10,
+        "description": "Нужен картридж (Заявка №53)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "234"
+        },
+        "priority": "medium",
+        "status": "completed",
+        "created_at": "2026-02-18 23:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-18 23:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-19 00:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-19 07:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-19 22:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-20 02:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 54,
+        "initiator_id": 1,
+        "description": "Засор в раковине (Заявка №54)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "348"
+        },
+        "priority": "high",
+        "status": "working",
+        "created_at": "2026-02-03 12:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-03 12:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-03 17:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-03 22:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 55,
+        "initiator_id": 9,
+        "description": "Засор в раковине (Заявка №55)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "2",
+            "room": "321"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-13 17:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-13 17:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-13 18:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-14 03:02:03",
+                "status": "working",
+                "user_id": 21,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-14 16:02:03",
+                "status": "checking",
+                "user_id": 21,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-15 12:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-16 01:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 56,
+        "initiator_id": 4,
+        "description": "Протечка трубы (Заявка №56)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "265"
+        },
+        "priority": "critical",
+        "status": "checking",
+        "created_at": "2026-02-25 16:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-25 16:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-25 19:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-26 02:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-26 06:02:03",
+                "status": "checking",
+                "user_id": 19,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 57,
+        "initiator_id": 3,
+        "description": "Не работает лифт (Заявка №57)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "2",
+            "room": "493"
+        },
+        "priority": "high",
+        "status": "checking",
+        "created_at": "2026-02-08 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-08 04:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-08 05:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-08 14:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-08 21:02:03",
+                "status": "checking",
+                "user_id": 19,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 58,
+        "initiator_id": 9,
+        "description": "Оторвался плинтус (Заявка №58)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "5",
+            "room": "564"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-03 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-03 07:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-03 12:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            },
+            {
+                "timestamp": "2026-02-03 19:02:03",
+                "status": "working",
+                "user_id": 13,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-04 03:02:03",
+                "status": "checking",
+                "user_id": 13,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-05 04:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 59,
+        "initiator_id": 5,
+        "description": "Нужен картридж (Заявка №59)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "2",
+            "room": "257"
+        },
+        "priority": "low",
+        "status": "new",
+        "created_at": "2026-02-06 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-06 04:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 60,
+        "initiator_id": 5,
+        "description": "Засор в раковине (Заявка №60)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "136"
+        },
+        "priority": "medium",
+        "status": "completed",
+        "created_at": "2026-02-23 02:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-23 02:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-23 03:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-23 10:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-24 02:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-24 21:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 61,
+        "initiator_id": 6,
+        "description": "Не работает розетка (Заявка №61)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "249"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-09 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 07:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 08:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-09 17:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-10 01:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-10 17:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 62,
+        "initiator_id": 1,
+        "description": "Оторвался плинтус (Заявка №62)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "5",
+            "room": "375"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-03 23:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-03 23:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 63,
+        "initiator_id": 2,
+        "description": "Нужна уборка после ремонта (Заявка №63)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "226"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-17 15:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-17 15:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-17 16:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Сергей Михайлов"
+            },
+            {
+                "timestamp": "2026-02-18 03:02:03",
+                "status": "working",
+                "user_id": 22,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-18 08:02:03",
+                "status": "checking",
+                "user_id": 22,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-18 17:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 22
+    },
+    {
+        "id": 64,
+        "initiator_id": 8,
+        "description": "Сломался стул (Заявка №64)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "232"
+        },
+        "priority": "low",
+        "status": "new",
+        "created_at": "2026-02-17 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-17 08:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 65,
+        "initiator_id": 1,
+        "description": "Не работает лифт (Заявка №65)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "576"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-14 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-14 01:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 05:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            },
+            {
+                "timestamp": "2026-02-14 13:02:03",
+                "status": "working",
+                "user_id": 17,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-14 15:02:03",
+                "status": "checking",
+                "user_id": 17,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-15 07:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-17 00:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 66,
+        "initiator_id": 1,
+        "description": "Засор в раковине (Заявка №66)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "5",
+            "room": "299"
+        },
+        "priority": "medium",
+        "status": "completed",
+        "created_at": "2026-02-22 20:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-22 20:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-22 23:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-23 08:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-23 11:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-24 01:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 67,
+        "initiator_id": 5,
+        "description": "Не работает розетка (Заявка №67)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "5",
+            "room": "352"
+        },
+        "priority": "high",
+        "status": "closed",
+        "created_at": "2026-02-07 17:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-07 17:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-07 22:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-08 02:02:03",
+                "status": "working",
+                "user_id": 21,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-08 08:02:03",
+                "status": "checking",
+                "user_id": 21,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-09 04:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-10 16:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 68,
+        "initiator_id": 7,
+        "description": "Плохо греет батарея (Заявка №68)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "394"
+        },
+        "priority": "low",
+        "status": "working",
+        "created_at": "2026-01-31 06:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-31 06:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-31 09:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            },
+            {
+                "timestamp": "2026-01-31 15:02:03",
+                "status": "working",
+                "user_id": 21,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 69,
+        "initiator_id": 4,
+        "description": "Ошибка в программе (Заявка №69)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "3",
+            "room": "365"
+        },
+        "priority": "high",
+        "status": "closed",
+        "created_at": "2026-02-21 14:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-21 14:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-21 17:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Сергей Михайлов"
+            },
+            {
+                "timestamp": "2026-02-22 02:02:03",
+                "status": "working",
+                "user_id": 22,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-22 07:02:03",
+                "status": "checking",
+                "user_id": 22,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-23 09:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-24 14:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 22
+    },
+    {
+        "id": 70,
+        "initiator_id": 7,
+        "description": "Плохо греет батарея (Заявка №70)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "360"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-16 14:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-16 14:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-16 17:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-16 20:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-17 14:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 71,
+        "initiator_id": 2,
+        "description": "Ошибка в программе (Заявка №71)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "200"
+        },
+        "priority": "critical",
+        "status": "new",
+        "created_at": "2026-02-08 12:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-08 12:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 72,
+        "initiator_id": 3,
+        "description": "Протечка трубы (Заявка №72)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "387"
+        },
+        "priority": "high",
+        "status": "new",
+        "created_at": "2026-02-26 13:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-26 13:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 73,
+        "initiator_id": 7,
+        "description": "Не работает розетка (Заявка №73)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "520"
+        },
+        "priority": "low",
+        "status": "working",
+        "created_at": "2026-02-22 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-22 01:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-22 03:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-22 13:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 74,
+        "initiator_id": 1,
+        "description": "Не работает розетка (Заявка №74)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "486"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-06 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-06 03:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-06 07:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-06 10:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-06 18:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 75,
+        "initiator_id": 3,
+        "description": "Скрипит дверь (Заявка №75)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "491"
+        },
+        "priority": "high",
+        "status": "completed",
+        "created_at": "2026-02-22 19:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-22 19:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-22 20:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Федоров"
+            },
+            {
+                "timestamp": "2026-02-23 02:02:03",
+                "status": "working",
+                "user_id": 15,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-23 09:02:03",
+                "status": "checking",
+                "user_id": 15,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-24 02:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 15
+    },
+    {
+        "id": 76,
+        "initiator_id": 5,
+        "description": "Нужен картридж (Заявка №76)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "531"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-02 15:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-02 15:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 77,
+        "initiator_id": 5,
+        "description": "Не работает розетка (Заявка №77)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "365"
+        },
+        "priority": "critical",
+        "status": "returned",
+        "created_at": "2026-02-09 00:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 00:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 04:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 78,
+        "initiator_id": 4,
+        "description": "Засор в раковине (Заявка №78)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "115"
+        },
+        "priority": "high",
+        "status": "working",
+        "created_at": "2026-02-14 10:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-14 10:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 11:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            },
+            {
+                "timestamp": "2026-02-14 19:02:03",
+                "status": "working",
+                "user_id": 20,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 79,
+        "initiator_id": 7,
+        "description": "Оторвался плинтус (Заявка №79)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "5",
+            "room": "304"
+        },
+        "priority": "medium",
+        "status": "returned",
+        "created_at": "2026-01-31 20:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-31 20:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-31 21:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 80,
+        "initiator_id": 6,
+        "description": "Нужен картридж (Заявка №80)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "350"
+        },
+        "priority": "critical",
+        "status": "returned",
+        "created_at": "2026-02-07 06:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-07 06:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-07 08:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 81,
+        "initiator_id": 6,
+        "description": "Перегорела лампа (Заявка №81)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "458"
+        },
+        "priority": "medium",
+        "status": "closed",
+        "created_at": "2026-02-26 06:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-26 06:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-26 08:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-02-26 16:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-26 21:02:03",
+                "status": "checking",
+                "user_id": 23,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-27 18:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-28 10:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 82,
+        "initiator_id": 6,
+        "description": "Скрипит дверь (Заявка №82)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "423"
+        },
+        "priority": "high",
+        "status": "completed",
+        "created_at": "2026-02-27 05:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-27 05:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-27 06:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-02-27 13:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-27 21:02:03",
+                "status": "checking",
+                "user_id": 23,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-28 16:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 83,
+        "initiator_id": 3,
+        "description": "Нужна уборка после ремонта (Заявка №83)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "184"
+        },
+        "priority": "medium",
+        "status": "closed",
+        "created_at": "2026-02-07 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-07 01:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-07 05:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Александр Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-07 08:02:03",
+                "status": "working",
+                "user_id": 12,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-07 20:02:03",
+                "status": "checking",
+                "user_id": 12,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-08 07:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-09 23:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 12
+    },
+    {
+        "id": 84,
+        "initiator_id": 10,
+        "description": "Не работает лифт (Заявка №84)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "206"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-25 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-25 01:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-25 06:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-25 12:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 85,
+        "initiator_id": 9,
+        "description": "Нужна уборка после ремонта (Заявка №85)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "5",
+            "room": "591"
+        },
+        "priority": "low",
+        "status": "working",
+        "created_at": "2026-02-19 21:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-19 21:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-19 22:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-20 09:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 86,
+        "initiator_id": 8,
+        "description": "Ошибка в программе (Заявка №86)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "396"
+        },
+        "priority": "low",
+        "status": "new",
+        "created_at": "2026-02-25 12:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-25 12:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 87,
+        "initiator_id": 5,
+        "description": "Оторвался плинтус (Заявка №87)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "535"
+        },
+        "priority": "critical",
+        "status": "new",
+        "created_at": "2026-02-20 14:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-20 14:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 88,
+        "initiator_id": 2,
+        "description": "Плохо греет батарея (Заявка №88)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "2",
+            "room": "192"
+        },
+        "priority": "high",
+        "status": "returned",
+        "created_at": "2026-02-26 03:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-26 03:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-26 08:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 89,
+        "initiator_id": 10,
+        "description": "Протечка трубы (Заявка №89)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "3",
+            "room": "475"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-06 13:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-06 13:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-06 15:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-06 21:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-07 09:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 90,
+        "initiator_id": 5,
+        "description": "Засор в раковине (Заявка №90)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "498"
+        },
+        "priority": "high",
+        "status": "checking",
+        "created_at": "2026-02-26 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-26 04:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-26 06:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-26 10:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-27 03:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 91,
+        "initiator_id": 4,
+        "description": "Засор в раковине (Заявка №91)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "598"
+        },
+        "priority": "critical",
+        "status": "checking",
+        "created_at": "2026-02-11 19:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-11 19:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-11 21:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Сергей Соколов"
+            },
+            {
+                "timestamp": "2026-02-12 01:02:03",
+                "status": "working",
+                "user_id": 16,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-12 19:02:03",
+                "status": "checking",
+                "user_id": 16,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 16
+    },
+    {
+        "id": 92,
+        "initiator_id": 7,
+        "description": "Не работает лифт (Заявка №92)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "5",
+            "room": "469"
+        },
+        "priority": "low",
+        "status": "checking",
+        "created_at": "2026-02-14 18:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-14 18:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 23:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-15 02:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-15 18:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 93,
+        "initiator_id": 10,
+        "description": "Засор в раковине (Заявка №93)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "485"
+        },
+        "priority": "medium",
+        "status": "assigned",
+        "created_at": "2026-02-01 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-01 07:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-01 10:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 94,
+        "initiator_id": 10,
+        "description": "Ошибка в программе (Заявка №94)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "161"
+        },
+        "priority": "medium",
+        "status": "returned",
+        "created_at": "2026-02-09 21:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 21:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 22:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 95,
+        "initiator_id": 10,
+        "description": "Засор в раковине (Заявка №95)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "5",
+            "room": "296"
+        },
+        "priority": "critical",
+        "status": "closed",
+        "created_at": "2026-02-04 10:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-04 10:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-04 12:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-02-04 16:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-05 09:02:03",
+                "status": "checking",
+                "user_id": 23,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-06 08:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-07 04:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 96,
+        "initiator_id": 1,
+        "description": "Ошибка в программе (Заявка №96)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "386"
+        },
+        "priority": "critical",
+        "status": "returned",
+        "created_at": "2026-02-04 20:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-04 20:02:03",
+                "status": "new",
+                "user_id": 1,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-05 00:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 97,
+        "initiator_id": 10,
+        "description": "Не работает розетка (Заявка №97)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "256"
+        },
+        "priority": "high",
+        "status": "working",
+        "created_at": "2026-02-28 09:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-28 09:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-28 13:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Сергей Михайлов"
+            },
+            {
+                "timestamp": "2026-02-28 17:02:03",
+                "status": "working",
+                "user_id": 22,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 22
+    },
+    {
+        "id": 98,
+        "initiator_id": 3,
+        "description": "Плохо греет батарея (Заявка №98)",
+        "service_id": 4,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "509"
+        },
+        "priority": "high",
+        "status": "checking",
+        "created_at": "2026-02-21 22:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-21 22:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-22 02:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-02-22 06:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-22 16:02:03",
+                "status": "checking",
+                "user_id": 23,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 99,
+        "initiator_id": 6,
+        "description": "Перегорела лампа (Заявка №99)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "4",
+            "room": "526"
+        },
+        "priority": "medium",
+        "status": "assigned",
+        "created_at": "2026-02-17 02:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-17 02:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-17 03:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Александр Кузнецов"
+            }
+        ],
+        "performer_id": 12
+    },
+    {
+        "id": 100,
+        "initiator_id": 5,
+        "description": "Плохо греет батарея (Заявка №100)",
+        "service_id": 1,
+        "location": {
+            "building": "C",
+            "floor": "2",
+            "room": "557"
+        },
+        "priority": "critical",
+        "status": "checking",
+        "created_at": "2026-02-15 02:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-15 02:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-15 03:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Александр Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-15 13:02:03",
+                "status": "working",
+                "user_id": 12,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-15 20:02:03",
+                "status": "checking",
+                "user_id": 12,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 12
+    },
+    {
+        "id": 101,
+        "initiator_id": 3,
+        "description": "Скрипит дверь (Заявка №101)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "363"
+        },
+        "priority": "high",
+        "status": "returned",
+        "created_at": "2026-02-11 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-11 07:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-11 08:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 102,
+        "initiator_id": 10,
+        "description": "Нужна уборка после ремонта (Заявка №102)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "1",
+            "room": "597"
+        },
+        "priority": "medium",
+        "status": "completed",
+        "created_at": "2026-02-14 12:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-14 12:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 14:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-14 22:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-15 11:02:03",
+                "status": "checking",
+                "user_id": 19,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-16 12:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 103,
+        "initiator_id": 7,
+        "description": "Не работает розетка (Заявка №103)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "580"
+        },
+        "priority": "low",
+        "status": "closed",
+        "created_at": "2026-02-22 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-22 01:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-22 04:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            },
+            {
+                "timestamp": "2026-02-22 11:02:03",
+                "status": "working",
+                "user_id": 20,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-22 16:02:03",
+                "status": "checking",
+                "user_id": 20,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-23 09:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-24 20:02:03",
+                "status": "closed",
+                "user_id": 29,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 104,
+        "initiator_id": 8,
+        "description": "Скрипит дверь (Заявка №104)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "589"
+        },
+        "priority": "low",
+        "status": "completed",
+        "created_at": "2026-02-16 09:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-16 09:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-16 12:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Сергей Михайлов"
+            },
+            {
+                "timestamp": "2026-02-16 16:02:03",
+                "status": "working",
+                "user_id": 22,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-17 03:02:03",
+                "status": "checking",
+                "user_id": 22,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-18 04:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 22
+    },
+    {
+        "id": 105,
+        "initiator_id": 10,
+        "description": "Нужен картридж (Заявка №105)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "1",
+            "room": "526"
+        },
+        "priority": "high",
+        "status": "completed",
+        "created_at": "2026-02-09 14:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-09 14:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-09 17:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            },
+            {
+                "timestamp": "2026-02-10 01:02:03",
+                "status": "working",
+                "user_id": 13,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-10 05:02:03",
+                "status": "checking",
+                "user_id": 13,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-10 16:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 106,
+        "initiator_id": 7,
+        "description": "Оторвался плинтус (Заявка №106)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "337"
+        },
+        "priority": "high",
+        "status": "returned",
+        "created_at": "2026-02-10 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-10 01:02:03",
+                "status": "new",
+                "user_id": 7,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-10 03:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 107,
+        "initiator_id": 3,
+        "description": "Скрипит дверь (Заявка №107)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "3",
+            "room": "134"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-23 22:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-23 22:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-24 03:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Кузнецов"
+            },
+            {
+                "timestamp": "2026-02-24 10:02:03",
+                "status": "working",
+                "user_id": 21,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 21
+    },
+    {
+        "id": 108,
+        "initiator_id": 6,
+        "description": "Не работает лифт (Заявка №108)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "4",
+            "room": "265"
+        },
+        "priority": "medium",
+        "status": "closed",
+        "created_at": "2026-02-03 07:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-03 07:02:03",
+                "status": "new",
+                "user_id": 6,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-03 08:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-03 19:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-04 01:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-04 14:02:03",
+                "status": "completed",
+                "user_id": 28,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-05 13:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 109,
+        "initiator_id": 4,
+        "description": "Оторвался плинтус (Заявка №109)",
+        "service_id": 3,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "415"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-21 10:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-21 10:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-21 12:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-02-21 16:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 18
+    },
+    {
+        "id": 110,
+        "initiator_id": 5,
+        "description": "Скрипит дверь (Заявка №110)",
+        "service_id": 1,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "215"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-12 05:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-12 05:02:03",
+                "status": "new",
+                "user_id": 5,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 111,
+        "initiator_id": 2,
+        "description": "Перегорела лампа (Заявка №111)",
+        "service_id": 2,
+        "location": {
+            "building": "A",
+            "floor": "2",
+            "room": "165"
+        },
+        "priority": "low",
+        "status": "returned",
+        "created_at": "2026-02-10 22:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-10 22:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-10 23:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 112,
+        "initiator_id": 10,
+        "description": "Оторвался плинтус (Заявка №112)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "1",
+            "room": "545"
+        },
+        "priority": "low",
+        "status": "assigned",
+        "created_at": "2026-01-30 09:02:03",
+        "history": [
+            {
+                "timestamp": "2026-01-30 09:02:03",
+                "status": "new",
+                "user_id": 10,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-01-30 12:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Иван Новиков"
+            }
+        ],
+        "performer_id": 17
+    },
+    {
+        "id": 113,
+        "initiator_id": 4,
+        "description": "Оторвался плинтус (Заявка №113)",
+        "service_id": 3,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "478"
+        },
+        "priority": "critical",
+        "status": "completed",
+        "created_at": "2026-02-14 15:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-14 15:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-14 20:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Алексей Васильев"
+            },
+            {
+                "timestamp": "2026-02-14 22:02:03",
+                "status": "working",
+                "user_id": 14,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-15 15:02:03",
+                "status": "checking",
+                "user_id": 14,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-16 01:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            }
+        ],
+        "performer_id": 14
+    },
+    {
+        "id": 114,
+        "initiator_id": 9,
+        "description": "Ошибка в программе (Заявка №114)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "5",
+            "room": "207"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-18 08:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-18 08:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-18 10:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            },
+            {
+                "timestamp": "2026-02-18 18:02:03",
+                "status": "working",
+                "user_id": 13,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-19 06:02:03",
+                "status": "checking",
+                "user_id": 13,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 115,
+        "initiator_id": 9,
+        "description": "Не работает лифт (Заявка №115)",
+        "service_id": 1,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "187"
+        },
+        "priority": "low",
+        "status": "working",
+        "created_at": "2026-02-08 00:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-08 00:02:03",
+                "status": "new",
+                "user_id": 9,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-08 04:02:03",
+                "status": "assigned",
+                "user_id": 24,
+                "comment": "Назначен исполнитель Петр Васильев"
+            },
+            {
+                "timestamp": "2026-02-08 10:02:03",
+                "status": "working",
+                "user_id": 20,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 20
+    },
+    {
+        "id": 116,
+        "initiator_id": 8,
+        "description": "Оторвался плинтус (Заявка №116)",
+        "service_id": 4,
+        "location": {
+            "building": "C",
+            "floor": "4",
+            "room": "101"
+        },
+        "priority": "medium",
+        "status": "closed",
+        "created_at": "2026-02-04 18:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-04 18:02:03",
+                "status": "new",
+                "user_id": 8,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-04 22:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Михаил Михайлов"
+            },
+            {
+                "timestamp": "2026-02-05 00:02:03",
+                "status": "working",
+                "user_id": 23,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-05 09:02:03",
+                "status": "checking",
+                "user_id": 23,
+                "comment": "Работы выполнены, прошу проверить"
+            },
+            {
+                "timestamp": "2026-02-06 14:02:03",
+                "status": "completed",
+                "user_id": 29,
+                "comment": "Проверка пройдена успешно"
+            },
+            {
+                "timestamp": "2026-02-07 08:02:03",
+                "status": "closed",
+                "user_id": 28,
+                "comment": "Закрыто в архив"
+            }
+        ],
+        "performer_id": 23
+    },
+    {
+        "id": 117,
+        "initiator_id": 4,
+        "description": "Сломался стул (Заявка №117)",
+        "service_id": 2,
+        "location": {
+            "building": "C",
+            "floor": "2",
+            "room": "360"
+        },
+        "priority": "medium",
+        "status": "new",
+        "created_at": "2026-02-01 18:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-01 18:02:03",
+                "status": "new",
+                "user_id": 4,
+                "comment": "Создана"
+            }
+        ]
+    },
+    {
+        "id": 118,
+        "initiator_id": 2,
+        "description": "Нужен картридж (Заявка №118)",
+        "service_id": 2,
+        "location": {
+            "building": "B",
+            "floor": "2",
+            "room": "227"
+        },
+        "priority": "medium",
+        "status": "working",
+        "created_at": "2026-02-06 04:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-06 04:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-06 08:02:03",
+                "status": "assigned",
+                "user_id": 25,
+                "comment": "Назначен исполнитель Андрей Петров"
+            },
+            {
+                "timestamp": "2026-02-06 11:02:03",
+                "status": "working",
+                "user_id": 13,
+                "comment": "Принято в работу"
+            }
+        ],
+        "performer_id": 13
+    },
+    {
+        "id": 119,
+        "initiator_id": 2,
+        "description": "Не работает розетка (Заявка №119)",
+        "service_id": 4,
+        "location": {
+            "building": "A",
+            "floor": "3",
+            "room": "347"
+        },
+        "priority": "medium",
+        "status": "checking",
+        "created_at": "2026-02-18 01:02:03",
+        "history": [
+            {
+                "timestamp": "2026-02-18 01:02:03",
+                "status": "new",
+                "user_id": 2,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-02-18 06:02:03",
+                "status": "assigned",
+                "user_id": 27,
+                "comment": "Назначен исполнитель Виктор Васильев"
+            },
+            {
+                "timestamp": "2026-02-18 09:02:03",
+                "status": "working",
+                "user_id": 19,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-02-19 01:02:03",
+                "status": "checking",
+                "user_id": 19,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 19
+    },
+    {
+        "id": 120,
+        "initiator_id": 3,
+        "description": "Ошибка в программе (Заявка №120)",
+        "service_id": 3,
+        "location": {
+            "building": "C",
+            "floor": "3",
+            "room": "217"
+        },
+        "priority": "critical",
+        "status": "checking",
+        "created_at": "2026-03-01 05:02:03",
+        "history": [
+            {
+                "timestamp": "2026-03-01 05:02:03",
+                "status": "new",
+                "user_id": 3,
+                "comment": "Создана"
+            },
+            {
+                "timestamp": "2026-03-01 10:02:03",
+                "status": "assigned",
+                "user_id": 26,
+                "comment": "Назначен исполнитель Андрей Сидоров"
+            },
+            {
+                "timestamp": "2026-03-01 11:02:03",
+                "status": "working",
+                "user_id": 18,
+                "comment": "Принято в работу"
+            },
+            {
+                "timestamp": "2026-03-01 22:02:03",
+                "status": "checking",
+                "user_id": 18,
+                "comment": "Работы выполнены, прошу проверить"
+            }
+        ],
+        "performer_id": 18
+    }
+]

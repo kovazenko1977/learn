@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "user_id": 1,
+        "text": "Test message from Admin",
+        "timestamp": "2026-02-20 10:56:39"
+    },
+    {
+        "id": 2,
+        "user_id": 1,
+        "text": "Test message from Admin",
+        "timestamp": "2026-02-20 10:57:22"
+    }
+]

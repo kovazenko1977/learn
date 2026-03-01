@@ -1,0 +1,170 @@
+[
+    {
+        "timestamp": "2026-02-27 06:29:22",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 07:30:30",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 07:30:34",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 07:44:10",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 07:47:22",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 08:00:11",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 08:03:22",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 08:08:58",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 08:24:06",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 08:28:58",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 08:36:22",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 08:39:53",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 08:42:44",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 08:45:57",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 08:57:02",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 09:02:17",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 09:08:30",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-02-27 17:53:28",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 17:56:35",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 17:59:22",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    },
+    {
+        "timestamp": "2026-02-27 18:04:24",
+        "user_id": 1,
+        "action": "auth_success",
+        "details": "Вход в систему: admin",
+        "level": "info",
+        "ip": "127.0.0.1"
+    }
+]
