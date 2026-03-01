@@ -29,6 +29,9 @@ include 'includes/header.php';
         <a href="#telegram" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Настройка Telegram</a>
         <a href="#pwa" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Мобильная версия</a>
         <a href="#tech" class="btn-secondary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">Технические детали</a>
+        <a href="презентация_хоп.txt" target="_blank" class="btn-primary" style="font-size: 13px; text-decoration: none; white-space: nowrap;">
+            <i data-lucide="presentation" style="width:14px; height:14px;"></i> Текстовая презентация
+        </a>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr; gap: 40px; animation: slideUp 0.6s ease-out;">

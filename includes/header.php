@@ -222,12 +222,15 @@
                     <i data-lucide="menu"></i>
                 </button>
             </div>
-            <div class="mobile-only-header" style="display:none; align-items:center; gap:12px;">
+            <div class="mobile-only-header" style="display:none; align-items:center; gap:8px; flex: 1;">
                 <button id="mobile-sidebar-toggle" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--win-text);">
                     <i data-lucide="menu"></i>
                 </button>
-                <div style="width:32px; height:32px; background:var(--win-accent-gradient); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px;">Х</div>
-                <h1 style="font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.02em;">ХОП</h1>
+                <div style="width:32px; height:32px; background:var(--win-accent-gradient); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px; flex-shrink: 0;">Х</div>
+                <h1 style="font-size: 18px; margin: 0; font-weight: 800; letter-spacing: -0.02em; flex: 1;">ХОП</h1>
+                <button id="mobile-search-toggle" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--win-text);">
+                    <i data-lucide="search"></i>
+                </button>
             </div>
 
             <div class="header-search desktop-only" style="flex: 1; max-width: 400px; position: relative;">
@@ -287,49 +290,61 @@
 
     <div id="sidebar-overlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1001; display:none; backdrop-filter:blur(3px);"></div>
 
+    <div id="mobile-search-bar" class="mica" style="position:fixed; top:0; left:0; width:100%; height:64px; z-index:2000; display:none; align-items:center; padding: 0 16px; gap: 12px; border-bottom: 1px solid var(--win-border);">
+        <input type="text" id="mobile-search-input" placeholder="Поиск по ID или тексту..." style="flex:1; height:40px; border-radius:20px; border:none; background:rgba(0,0,0,0.05); padding:0 16px;">
+        <button id="mobile-search-close" style="background:none; border:none; padding:8px; cursor:pointer; color:var(--win-text);"><i data-lucide="x"></i></button>
+        <div id="mobile-search-results" class="mica" style="position: absolute; top: 100%; left: 0; right: 0; max-height: calc(100vh - 64px); overflow-y: auto; z-index: 2000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);"></div>
+    </div>
+
     <script>
     let searchTimeout = null;
-    document.getElementById('global-search')?.addEventListener('input', (e) => {
-        const query = e.target.value.trim();
-        const resultsDiv = document.getElementById('search-results');
 
-        if (query.length < 2) {
-            resultsDiv.style.display = 'none';
-            return;
-        }
+    function initSearch(inputEl, resultsDiv) {
+        inputEl?.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
 
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            fetch(`api_search.php?q=${encodeURIComponent(query)}`)
-                .then(r => r.json())
-                .then(data => {
-                    resultsDiv.innerHTML = '';
-                    if (data.length === 0) {
-                        resultsDiv.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--win-text-secondary); font-size: 13px;">Ничего не найдено</div>';
-                    } else {
-                        data.forEach(item => {
-                            const div = document.createElement('div');
-                            div.style.padding = '12px 16px';
-                            div.style.cursor = 'pointer';
-                            div.style.borderBottom = '1px solid var(--win-border)';
-                            div.innerHTML = `
-                                <div style="font-weight: 700; font-size: 13px;">#${item.id} - ${item.service}</div>
-                                <div style="font-size: 11px; color: var(--win-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.description}</div>
-                            `;
-                            div.onclick = () => window.location.href = `view.php?id=${item.id}`;
-                            div.onmouseover = () => div.style.background = 'rgba(0,120,212,0.05)';
-                            div.onmouseout = () => div.style.background = 'transparent';
-                            resultsDiv.appendChild(div);
-                        });
-                    }
-                    resultsDiv.style.display = 'block';
-                });
-        }, 300);
-    });
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetch(`api_search.php?q=${encodeURIComponent(query)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        resultsDiv.innerHTML = '';
+                        if (data.length === 0) {
+                            resultsDiv.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--win-text-secondary); font-size: 13px;">Ничего не найдено</div>';
+                        } else {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.style.padding = '12px 16px';
+                                div.style.cursor = 'pointer';
+                                div.style.borderBottom = '1px solid var(--win-border)';
+                                div.innerHTML = `
+                                    <div style="font-weight: 700; font-size: 13px;">#${item.id} - ${item.service}</div>
+                                    <div style="font-size: 11px; color: var(--win-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.description}</div>
+                                `;
+                                div.onclick = () => window.location.href = `view.php?id=${item.id}`;
+                                div.onmouseover = () => div.style.background = 'rgba(0,120,212,0.05)';
+                                div.onmouseout = () => div.style.background = 'transparent';
+                                resultsDiv.appendChild(div);
+                            });
+                        }
+                        resultsDiv.style.display = 'block';
+                    });
+            }, 300);
+        });
+    }
+
+    initSearch(document.getElementById('global-search'), document.getElementById('search-results'));
+    initSearch(document.getElementById('mobile-search-input'), document.getElementById('mobile-search-results'));
 
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.header-search')) {
+        if (!e.target.closest('.header-search') && !e.target.closest('#mobile-search-bar')) {
             document.getElementById('search-results').style.display = 'none';
+            document.getElementById('mobile-search-results').style.display = 'none';
         }
     });
 
@@ -353,6 +368,23 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         updateOnlineStatus();
+
+        const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+        const mobileSearchBar = document.getElementById('mobile-search-bar');
+        const mobileSearchClose = document.getElementById('mobile-search-close');
+
+        if (mobileSearchToggle) {
+            mobileSearchToggle.addEventListener('click', () => {
+                mobileSearchBar.style.display = 'flex';
+                document.getElementById('mobile-search-input').focus();
+            });
+        }
+
+        if (mobileSearchClose) {
+            mobileSearchClose.addEventListener('click', () => {
+                mobileSearchBar.style.display = 'none';
+            });
+        }
 
         const desktopToggle = document.getElementById('sidebar-toggle');
         if (desktopToggle) {

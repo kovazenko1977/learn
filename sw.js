@@ -1,9 +1,13 @@
-const CACHE_NAME = 'hop-v1';
+const CACHE_NAME = 'hop-v2';
 const ASSETS = [
   '/',
-  '/index.php',
-  '/assets/style.css',
-  'https://unpkg.com/lucide@latest'
+  'index.php',
+  'login.php',
+  'help.php',
+  'assets/style.css',
+  'manifest.json',
+  'https://unpkg.com/lucide@latest',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
