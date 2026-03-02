@@ -337,6 +337,31 @@ class ScheduleManager {
         }
     }
 
+    public function bulkCancel($ids, $reason = '') {
+        $count = 0;
+        foreach ($ids as $id) {
+            if ($this->cancel($id, $reason)) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    public function bulkDelete($ids) {
+        $count = 0;
+        foreach ($ids as $id) {
+            $app = $this->getById($id);
+            // Safety: don't bulk delete paid unless admin
+            if ($app && $app['status'] === 'paid' && !\Medical\Core\Auth::can('settings_system')) {
+                continue;
+            }
+            if ($this->delete($id)) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
     public function deleteOverdueUnpaid() {
         $apps = $this->store->getAll();
         $now = time();

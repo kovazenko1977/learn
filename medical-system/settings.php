@@ -209,6 +209,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'is_booking_enabled' => isset($_POST['is_booking_enabled'])
         ]));
         $message = 'Системные настройки сохранены';
+    } elseif ($action === 'save_widget_settings') {
+        $settingsStore = new \Medical\Core\JsonStore('settings');
+        $existing = $settingsStore->getAll();
+        $settingsStore->save(array_merge($existing, [
+            'widget_title' => $_POST['widget_title'],
+            'widget_success_msg' => $_POST['widget_success_msg'],
+            'widget_show_email' => isset($_POST['widget_show_email']),
+            'widget_show_birthdate' => isset($_POST['widget_show_birthdate']),
+            'widget_show_guests' => isset($_POST['widget_show_guests']),
+            'widget_show_notes' => isset($_POST['widget_show_notes']),
+            'widget_show_packages' => isset($_POST['widget_show_packages']),
+            'widget_primary_color' => $_POST['widget_primary_color']
+        ]));
+        $message = 'Настройки виджета сохранены';
     } elseif ($action === 'save_db_settings') {
         $settingsStore = new \Medical\Core\JsonStore('settings');
         $existing = $settingsStore->getAll();
@@ -1121,13 +1135,57 @@ $permissions = [
                 </table>
             </div>
 
-            <div class="card mica-effect">
+            <div class="card mica-effect mb-4">
                 <h2>Сайт-виджет (Интеграция)</h2>
                 <p style="font-size: 0.9rem; color: var(--win-text-secondary); margin-bottom: 10px;">
                     Скопируйте этот код и вставьте его на свой сайт для отображения формы бронирования:
                 </p>
-                <textarea class="form-control" style="height: 120px; font-family: monospace; font-size: 12px;" readonly><script src="<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/medical-system/assets/js/booking-widget.js"></script>
+                <textarea class="form-control" style="height: 100px; font-family: monospace; font-size: 11px;" readonly><script src="<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/medical-system/assets/js/booking-widget.js"></script>
 <div id="wes-booking-widget" data-url="<?php echo (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>/medical-system/"></div></textarea>
+            </div>
+
+            <div class="card mica-effect">
+                <h2>Настройки формы на сайте</h2>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="save_widget_settings">
+                    <?php $ws = (new \Medical\Core\JsonStore('settings'))->getAll(); ?>
+
+                    <div class="mb-3">
+                        <label>Заголовок виджета</label>
+                        <input type="text" name="widget_title" class="form-control" value="<?php echo htmlspecialchars($ws['widget_title'] ?? 'Онлайн-бронирование'); ?>">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Сообщение после успеха</label>
+                        <input type="text" name="widget_success_msg" class="form-control" value="<?php echo htmlspecialchars($ws['widget_success_msg'] ?? 'Ваша заявка принята! Менеджер свяжется с вами.'); ?>">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox" name="widget_show_email" <?php echo ($ws['widget_show_email'] ?? false) ? 'checked' : ''; ?>> E-mail
+                        </label>
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox" name="widget_show_birthdate" <?php echo ($ws['widget_show_birthdate'] ?? false) ? 'checked' : ''; ?>> Дата рождения
+                        </label>
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox" name="widget_show_guests" <?php echo ($ws['widget_show_guests'] ?? false) ? 'checked' : ''; ?>> Кол-во гостей
+                        </label>
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox" name="widget_show_notes" <?php echo ($ws['widget_show_notes'] ?? false) ? 'checked' : ''; ?>> Комментарий
+                        </label>
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox" name="widget_show_packages" <?php echo ($ws['widget_show_packages'] ?? false) ? 'checked' : ''; ?>> Выбор пакетов
+                        </label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Основной цвет виджета</label>
+                        <input type="color" name="widget_primary_color" class="form-control" value="<?php echo $ws['widget_primary_color'] ?? '#0078d4'; ?>" style="height: 38px;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Сохранить настройки формы</button>
+                </form>
             </div>
         </div>
 

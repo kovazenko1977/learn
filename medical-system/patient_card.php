@@ -44,7 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     } elseif ($_POST['action'] === 'delete_appointment' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
         $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
         if ($appToDelete && ($appToDelete['status'] ?? '') === 'paid' && !\Medical\Core\Auth::can('settings_system')) {
-            die("Нельзя удалить оплаченную процедуру без прав администратора. Сначала выполните возврат.");
+            header("Location: patient_card.php?id=$id&error=paid_delete");
+            exit;
         }
         $scheduleManager->delete($_POST['appointment_id']);
         header("Location: patient_card.php?id=$id&success=deleted");
@@ -76,11 +77,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         ]);
         header("Location: patient_card.php?id=$id");
         exit;
+    } elseif ($_POST['action'] === 'bulk_cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
+        $ids = $_POST['selected_apps'] ?? [];
+        $scheduleManager->bulkCancel($ids, $_POST['bulk_cancel_reason'] ?? '');
+        header("Location: patient_card.php?id=$id&success=bulk_cancelled");
+        exit;
+    } elseif ($_POST['action'] === 'bulk_delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
+        $ids = $_POST['selected_apps'] ?? [];
+        $scheduleManager->bulkDelete($ids);
+        header("Location: patient_card.php?id=$id&success=bulk_deleted");
+        exit;
     }
 }
 
 require_once __DIR__ . '/includes/header.php';
 ?>
+
+<?php if (isset($_GET['error'])): ?>
+    <div class="card mica-effect" style="background: #fde7e9; color: #d13438; border-color: #d13438; margin-bottom: 20px; padding: 15px;">
+        <i data-lucide="alert-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        <strong>Ошибка:</strong>
+        <?php
+            if ($_GET['error'] === 'paid_delete') echo "Нельзя удалить ОПЛАЧЕННУЮ процедуру. Пожалуйста, выполните возврат средств через кассу или обратитесь к администратору.";
+        ?>
+    </div>
+<?php endif; ?>
 
 <?php if (isset($_GET['success'])): ?>
     <div class="card mica-effect" style="background: #dff6dd; color: #107c10; border-color: #107c10; margin-bottom: 20px; padding: 15px;">
@@ -90,6 +111,8 @@ require_once __DIR__ . '/includes/header.php';
             if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
             if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
             if ($_GET['success'] === 'restored') echo "Назначение успешно восстановлено.";
+            if ($_GET['success'] === 'bulk_cancelled') echo "Выбранные процедуры успешно отменены.";
+            if ($_GET['success'] === 'bulk_deleted') echo "Выбранные процедуры успешно удалены.";
         ?>
     </div>
 <?php endif; ?>
@@ -225,9 +248,15 @@ require_once __DIR__ . '/includes/header.php';
                     </select>
                 </div>
             </div>
+            <form id="bulk-actions-form" method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                <input type="hidden" name="action" id="bulk_action_input" value="">
+                <input type="hidden" name="bulk_cancel_reason" id="bulk_cancel_reason_input" value="">
+
             <table style="font-size: 0.9rem;" id="appointments-table">
                 <thead>
                     <tr>
+                        <th style="width: 20px;"><input type="checkbox" onclick="toggleAllCheckboxes(this)"></th>
                         <th>Процедура</th>
                         <th>Дата/Время</th>
                         <th>Статус</th>
@@ -237,6 +266,7 @@ require_once __DIR__ . '/includes/header.php';
                 <tbody>
                     <?php foreach (array_reverse($appointments) as $app): ?>
                     <tr class="appointment-row" style="<?php echo ($app['status'] ?? '') === 'cancelled' ? 'background: rgba(209, 52, 56, 0.03);' : ''; ?>">
+                        <td><input type="checkbox" name="selected_apps[]" value="<?php echo $app['id']; ?>"></td>
                         <td style="font-weight: 500;">
                             <?php echo htmlspecialchars($app['procedure_name']); ?>
                             <?php if (!empty($app['package_name'])): ?>
@@ -306,10 +336,17 @@ require_once __DIR__ . '/includes/header.php';
                     </tr>
                     <?php endforeach; ?>
                     <?php if (empty($appointments)): ?>
-                        <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--win-text-secondary);">Процедуры еще не назначены</td></tr>
+                        <tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--win-text-secondary);">Процедуры еще не назначены</td></tr>
                     <?php endif; ?>
                 </tbody>
             </table>
+            </form>
+
+            <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.02); border-radius: 8px; display: flex; gap: 10px; align-items: center;">
+                <span style="font-size: 0.8rem; color: #666;">С выбранными:</span>
+                <button type="button" class="btn btn-sm" style="color: #d13438;" onclick="submitBulk('bulk_cancel')"><i data-lucide="ban" class="icon" style="width:14px; height:14px;"></i> Отменить</button>
+                <button type="button" class="btn btn-sm" style="color: #d13438;" onclick="submitBulk('bulk_delete')"><i data-lucide="trash-2" class="icon" style="width:14px; height:14px;"></i> Удалить</button>
+            </div>
         </div>
 
         <div class="card mica-effect">
@@ -511,5 +548,30 @@ document.addEventListener('DOMContentLoaded', () => {
     limitSelect.addEventListener('change', updatePagination);
     updatePagination();
 });
+
+function toggleAllCheckboxes(master) {
+    document.querySelectorAll('input[name="selected_apps[]"]').forEach(cb => cb.checked = master.checked);
+}
+
+function submitBulk(action) {
+    const selected = document.querySelectorAll('input[name="selected_apps[]"]:checked');
+    if (selected.length === 0) {
+        alert('Ничего не выбрано');
+        return;
+    }
+
+    if (action === 'bulk_delete') {
+        if (!confirm(`Удалить ${selected.length} назначений навсегда?`)) return;
+    }
+
+    if (action === 'bulk_cancel') {
+        const reason = prompt('Укажите причину отмены для выбранных процедур:');
+        if (reason === null) return;
+        document.getElementById('bulk_cancel_reason_input').value = reason;
+    }
+
+    document.getElementById('bulk_action_input').value = action;
+    document.getElementById('bulk-actions-form').submit();
+}
 </script>
 <?php include __DIR__ . '/includes/footer.php'; ?>

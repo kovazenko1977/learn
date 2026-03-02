@@ -270,11 +270,16 @@ function openMobilePackagePreview() {
             card.innerHTML = `
                 <input type="hidden" name="package_items[${idx}][procedure_id]" value="${proc.id}">
                 <div style="font-weight: 600; margin-bottom: 8px;">${proc.name}</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <input type="date" name="package_items[${idx}][date]" value="${dStr}" class="md-input" style="height: 40px; font-size: 13px;">
-                    <input type="time" name="package_items[${idx}][time]" id="m_time_${idx}" class="md-input" style="height: 40px; font-size: 13px;">
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 8px;">
+                    <input type="date" name="package_items[${idx}][date]" value="${dStr}" class="md-input" style="height: 40px; font-size: 13px; padding: 0 8px;">
+                    <div style="position: relative;">
+                        <input type="time" name="package_items[${idx}][time]" id="m_time_${idx}" class="md-input" style="height: 40px; font-size: 13px; padding: 0 8px;">
+                        <button type="button" onclick="showMobilePkgSlots('${proc.id}', '${proc.default_cabinet}', '${dStr}', 'm_time_${idx}')" style="position: absolute; right: 0; top: 0; height: 40px; width: 32px; background: none; border: none; color: var(--md-primary);">
+                            <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
                 </div>
-                <input type="text" name="package_items[${idx}][cabinet_id]" value="${proc.default_cabinet || ''}" class="md-input" style="height: 40px; font-size: 13px; margin-top: 8px; margin-bottom: 0;">
+                <input type="text" name="package_items[${idx}][cabinet_id]" value="${proc.default_cabinet || ''}" class="md-input" style="height: 40px; font-size: 13px; margin-top: 8px; margin-bottom: 0; padding: 0 8px;">
             `;
             container.appendChild(card);
 
@@ -297,6 +302,47 @@ function fetchEarliestMobile(procId, cabinet, date, targetId) {
             document.getElementById(targetId).value = data.earliest || (data.free && data.free[0]) || '09:00';
         });
 }
+
+function showMobilePkgSlots(procId, cabinet, date, targetId) {
+    const picker = document.getElementById('mobile_slot_picker');
+    const container = document.getElementById('mobile_slot_chips');
+    const title = document.getElementById('mobile_slot_title');
+
+    title.innerText = `Свободно: ${date}`;
+    container.innerHTML = '<div style="width:100%; text-align:center; padding: 20px;"><div class="md-spinner" style="width:24px; height:24px; border-width:2px; margin: 0 auto;"></div></div>';
+    picker.style.display = 'flex';
+
+    fetch(`../procedures_doctor.php?ajax_action=get_slots&procedure_id=${procId}&cabinet_id=${cabinet}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            const free = data.free || [];
+            container.innerHTML = '';
+            if (free.length === 0) {
+                container.innerHTML = '<div style="width:100%; text-align:center; padding: 20px; color: var(--md-error);">Нет свободных мест</div>';
+            } else {
+                free.forEach(time => {
+                    const chip = document.createElement('div');
+                    chip.textContent = time;
+                    chip.style.cssText = 'padding: 8px 16px; background: #E8DEF8; color: #1D192B; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;';
+                    chip.onclick = () => {
+                        document.getElementById(targetId).value = time;
+                        picker.style.display = 'none';
+                    };
+                    container.appendChild(chip);
+                });
+            }
+        });
+}
 </script>
+
+<div id="mobile_slot_picker" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; align-items: center; justify-content: center; padding: 24px;">
+    <div class="md-card" style="width: 100%; margin: 0; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 id="mobile_slot_title" style="margin: 0; font-size: 18px;">Свободные слоты</h3>
+            <button onclick="document.getElementById('mobile_slot_picker').style.display='none'" style="background:none; border:none;"><i data-lucide="x"></i></button>
+        </div>
+        <div id="mobile_slot_chips" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+</div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

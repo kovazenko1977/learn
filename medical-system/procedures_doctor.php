@@ -88,12 +88,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         exit;
     } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
         $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
         if ($appToDelete && ($appToDelete['status'] ?? '') === 'paid' && !\Medical\Core\Auth::can('settings_system')) {
-            die("Нельзя удалить оплаченную процедуру без прав администратора.");
+            header("Location: procedures_doctor.php?patient_id=" . $pId . "&error=paid_delete");
+            exit;
         }
         $scheduleManager->delete($_POST['appointment_id']);
-        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
         header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=deleted");
+        exit;
+    } elseif ($_POST['action'] === 'bulk_cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
+        $ids = $_POST['selected_apps'] ?? [];
+        $scheduleManager->bulkCancel($ids, $_POST['bulk_cancel_reason'] ?? '');
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=bulk_cancelled");
+        exit;
+    } elseif ($_POST['action'] === 'bulk_delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
+        $ids = $_POST['selected_apps'] ?? [];
+        $scheduleManager->bulkDelete($ids);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=bulk_deleted");
         exit;
     }
 }
@@ -176,13 +189,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
             if ($_GET['success'] === 'restored') echo "Назначение успешно восстановлено.";
             if ($_GET['success'] === 'shifted') echo "График пациента успешно сдвинут на {$_GET['count']} процедур.";
+            if ($_GET['success'] === 'bulk_cancelled') echo "Выбранные процедуры успешно отменены.";
+            if ($_GET['success'] === 'bulk_deleted') echo "Выбранные процедуры успешно удалены.";
         ?>
     </div>
 <?php endif; ?>
 
-<?php if (isset($error)): ?>
-    <div class="card mica-effect" style="color: #d83b01; border-color: #d83b01; margin-bottom: 20px;">
-        <strong>Ошибка:</strong> <?php echo $error; ?>
+<?php if (isset($error) || isset($_GET['error'])): ?>
+    <div class="card mica-effect" style="background: #fde7e9; color: #d13438; border-color: #d13438; margin-bottom: 20px; padding: 15px;">
+        <i data-lucide="alert-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        <strong>Ошибка:</strong>
+        <?php
+            if (isset($error)) echo $error;
+            elseif ($_GET['error'] === 'paid_delete') echo "Нельзя удалить ОПЛАЧЕННУЮ процедуру. Пожалуйста, выполните возврат средств через кассу или обратитесь к администратору.";
+        ?>
     </div>
 <?php endif; ?>
 
@@ -259,7 +279,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
 
             <div class="card mica-effect">
-                <h3>Новое назначение для: <?php echo htmlspecialchars($patient['name']); ?></h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin:0;">Новое назначение для: <?php echo htmlspecialchars($patient['name']); ?></h3>
+                    <a href="patient_card.php?id=<?php echo $patient['id']; ?>" class="btn btn-sm btn-ghost" style="display: flex; align-items: center; gap: 8px; border: 1px solid var(--win-border);">
+                        <i data-lucide="contact" style="width:16px; height:16px;"></i> Карточка
+                    </a>
+                </div>
                 <form method="POST">
                     <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
                     <input type="hidden" name="action" value="assign">
@@ -362,9 +387,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         </select>
                     </div>
                 </div>
+                <form id="bulk-actions-form" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" id="bulk_action_input" value="">
+                    <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+                    <input type="hidden" name="bulk_cancel_reason" id="bulk_cancel_reason_input" value="">
+
                 <table style="width: 100%; border-collapse: collapse;" id="appointments-table">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
+                            <th style="padding: 10px; width: 30px;"><input type="checkbox" onclick="toggleAllCheckboxes(this)"></th>
                             <th style="padding: 10px;">Дата/Время</th>
                             <th style="padding: 10px;">Процедура</th>
                             <th style="padding: 10px;">Врач</th>
@@ -375,6 +407,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <tbody>
                         <?php foreach (array_reverse($patientAppointments) as $app): ?>
                         <tr style="border-bottom: 1px solid var(--win-border); <?php echo ($app['status'] ?? '') === 'cancelled' ? 'background: rgba(209, 52, 56, 0.03);' : ''; ?>" class="appointment-row">
+                            <td style="padding: 10px;"><input type="checkbox" name="selected_apps[]" value="<?php echo $app['id']; ?>"></td>
                             <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
                             <td style="padding: 10px;">
                                 <?php echo htmlspecialchars($app['procedure_name']); ?>
@@ -417,21 +450,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                     </form>
                                 <?php endif; ?>
                                 <?php if (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete')): ?>
-                                    <form method="POST" style="display:inline; margin-left: 5px;" onsubmit="return confirm('Удалить назначение навсегда?')">
-                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
-                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger" style="padding: 4px 8px;" title="Удалить ошибку">
-                                            <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-danger" style="padding: 4px 8px;" title="Удалить ошибку" onclick="singleAction('<?php echo $app['id']; ?>', 'delete')">
+                                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    </button>
                                 <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </form>
+
+                <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.02); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <span style="font-size: 0.85rem; color: #666;">С выбранными:</span>
+                        <button type="button" class="btn btn-sm" style="color: #d13438;" onclick="submitBulk('bulk_cancel')"><i data-lucide="ban" class="icon" style="width:14px; height:14px;"></i> Отменить</button>
+                        <button type="button" class="btn btn-sm" style="color: #d13438;" onclick="submitBulk('bulk_delete')"><i data-lucide="trash-2" class="icon" style="width:14px; height:14px;"></i> Удалить</button>
+                    </div>
+                </div>
+
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
                     <a href="export.php?action=print_schedule&patient_id=<?php echo $patientId; ?>" target="_blank" class="btn btn-primary" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i data-lucide="printer" class="icon" style="margin: 0;"></i> Печать карты процедур
@@ -504,8 +541,11 @@ function previewPackage() {
                 <div>
                     <input type="date" name="package_items[${currentIdx}][date]" value="${dateISO}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
                 </div>
-                <div>
-                    <input type="time" name="package_items[${currentIdx}][time]" id="time_p_${currentIdx}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
+                <div style="display: flex; gap: 4px;">
+                    <input type="time" name="package_items[${currentIdx}][time]" id="time_p_${currentIdx}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px; flex: 1;">
+                    <button type="button" class="btn btn-sm" style="padding: 0 6px;" title="Показать свободные слоты" onclick="showPkgSlotPicker('${proc.id}', '${proc.default_cabinet}', '${dateISO}', 'time_p_${currentIdx}')">
+                        <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+                    </button>
                 </div>
                 <div>
                     <input type="text" name="package_items[${currentIdx}][cabinet_id]" value="${proc.default_cabinet || ''}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
@@ -540,7 +580,47 @@ function fetchEarliestSlot(procId, cabinet, date, targetId) {
             }
         });
 }
+
+function showPkgSlotPicker(procId, cabinet, date, targetId) {
+    const picker = document.getElementById('pkg_slot_picker');
+    const container = document.getElementById('pkg_slot_chips');
+    const title = document.getElementById('pkg_slot_title');
+
+    title.innerText = `Свободно на ${date}`;
+    container.innerHTML = '<span style="font-size: 0.8rem;">Загрузка...</span>';
+    picker.style.display = 'block';
+
+    fetch(`?ajax_action=get_slots&procedure_id=${procId}&cabinet_id=${cabinet}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            const free = data.free || [];
+            container.innerHTML = '';
+            if (free.length === 0) {
+                container.innerHTML = '<span style="font-size: 0.8rem; color: #d13438;">Нет свободных мест</span>';
+            } else {
+                free.forEach(time => {
+                    const chip = document.createElement('div');
+                    chip.textContent = time;
+                    chip.style.cssText = 'padding: 4px 8px; background: var(--win-accent); color: white; border-radius: 4px; font-size: 0.75rem; cursor: pointer;';
+                    chip.onclick = () => {
+                        document.getElementById(targetId).value = time;
+                        picker.style.display = 'none';
+                    };
+                    container.appendChild(chip);
+                });
+            }
+        });
+}
 </script>
+
+<!-- Floating Slot Picker for Packages -->
+<div id="pkg_slot_picker" class="card mica-effect" style="display:none; position: fixed; z-index: 2001; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h4 id="pkg_slot_title" style="margin:0; font-size: 0.9rem;">Свободные слоты</h4>
+        <button type="button" onclick="document.getElementById('pkg_slot_picker').style.display='none'" style="background:none; border:none; cursor:pointer; font-size: 1.2rem;">&times;</button>
+    </div>
+    <div id="pkg_slot_chips" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 200px; overflow-y: auto;"></div>
+</div>
 
 <!-- Shift Schedule Modal -->
 <div id="shiftModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
@@ -725,6 +805,44 @@ function fetchEarliestSlot(procId, cabinet, date, targetId) {
 
     // Initial timeline
     updateTimeline();
+
+    function toggleAllCheckboxes(master) {
+        document.querySelectorAll('input[name="selected_apps[]"]').forEach(cb => cb.checked = master.checked);
+    }
+
+    function singleAction(id, action) {
+        if (action === 'delete') {
+            if (!confirm('Удалить назначение навсегда?')) return;
+        }
+
+        // Uncheck all, check only this one
+        document.querySelectorAll('input[name="selected_apps[]"]').forEach(cb => cb.checked = false);
+        const targetCb = document.querySelector(`input[name="selected_apps[]"][value="${id}"]`);
+        if (targetCb) targetCb.checked = true;
+
+        submitBulk('bulk_' + action);
+    }
+
+    function submitBulk(action) {
+        const selected = document.querySelectorAll('input[name="selected_apps[]"]:checked');
+        if (selected.length === 0) {
+            alert('Ничего не выбрано');
+            return;
+        }
+
+        if (action === 'bulk_delete') {
+            if (!confirm(`Удалить ${selected.length} назначений навсегда?`)) return;
+        }
+
+        if (action === 'bulk_cancel') {
+            const reason = prompt('Укажите причину отмены для выбранных процедур:');
+            if (reason === null) return;
+            document.getElementById('bulk_cancel_reason_input').value = reason;
+        }
+
+        document.getElementById('bulk_action_input').value = action;
+        document.getElementById('bulk-actions-form').submit();
+    }
 </script>
 
 <div class="card mica-effect" style="margin-top: 40px;">
