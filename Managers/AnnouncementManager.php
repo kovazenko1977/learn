@@ -10,11 +10,16 @@ class AnnouncementManager {
     }
 
     public function create($data) {
+        $data['target'] = $data['target'] ?? 'all';
         $data['created_at'] = date('Y-m-d H:i:s');
         return $this->store->create($data);
     }
 
-    public function getActive() {
-        return $this->store->findAll();
+    public function getActive($role = 'all') {
+        $all = $this->store->findAll();
+        if ($role === 'admin') return $all;
+        return array_filter($all, function($a) use ($role) {
+            return $a['target'] === 'all' || $a['target'] === $role;
+        });
     }
 }

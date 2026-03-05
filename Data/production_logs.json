@@ -33,5 +33,86 @@
         ],
         "timestamp": "2026-03-05 20:07:42",
         "id": "f7b7f9028e9a5a6a-1772741262"
+    },
+    {
+        "product_id": "p1",
+        "product_name": "Сидр Яблочный Традиционный 0.5",
+        "quantity": 100,
+        "batch": "BATCH-E2E",
+        "waste_factor": 0.05,
+        "materials_used": [
+            {
+                "rm_id": "rm-juice",
+                "qty": 47.25
+            },
+            {
+                "rm_id": "rm-sugar",
+                "qty": 5.25
+            },
+            {
+                "rm_id": "rm-bottle",
+                "qty": 105
+            },
+            {
+                "rm_id": "rm-label",
+                "qty": 105
+            }
+        ],
+        "timestamp": "2026-03-05 20:34:17",
+        "id": "5c4cc5348cd83797-1772742857"
+    },
+    {
+        "product_id": "p1",
+        "product_name": "Сидр Яблочный Традиционный 0.5",
+        "quantity": 100,
+        "batch": "BATCH-E2E",
+        "waste_factor": 0.05,
+        "materials_used": [
+            {
+                "rm_id": "rm-juice",
+                "qty": 47.25
+            },
+            {
+                "rm_id": "rm-sugar",
+                "qty": 5.25
+            },
+            {
+                "rm_id": "rm-bottle",
+                "qty": 105
+            },
+            {
+                "rm_id": "rm-label",
+                "qty": 105
+            }
+        ],
+        "timestamp": "2026-03-05 20:35:02",
+        "id": "90981a95118771c6-1772742902"
+    },
+    {
+        "product_id": "p1",
+        "product_name": "Сидр Яблочный Традиционный 0.5",
+        "quantity": 100,
+        "batch": "BATCH-E2E",
+        "waste_factor": 0.05,
+        "materials_used": [
+            {
+                "rm_id": "rm-juice",
+                "qty": 47.25
+            },
+            {
+                "rm_id": "rm-sugar",
+                "qty": 5.25
+            },
+            {
+                "rm_id": "rm-bottle",
+                "qty": 105
+            },
+            {
+                "rm_id": "rm-label",
+                "qty": 105
+            }
+        ],
+        "timestamp": "2026-03-05 20:35:57",
+        "id": "0da82f8e379927d9-1772742957"
     }
 ]

@@ -43,6 +43,9 @@ $user = $auth->getCurrentUser();
                     <?php endif; ?>
                     <button onclick="showPage('products')" id="nav-products" class="nav-link h-20 transition-all hover:text-indigo-600">Продукция</button>
                     <button onclick="showPage('orders')" id="nav-orders" class="nav-link h-20 transition-all hover:text-indigo-600">Заказы</button>
+                    <?php if ($user['role'] === 'client'): ?>
+                    <button onclick="showPage('docs')" id="nav-docs" class="nav-link h-20 transition-all hover:text-indigo-600">Документы</button>
+                    <?php endif; ?>
                     <?php if ($auth->hasPermission('*')): ?>
                     <button onclick="showPage('admin')" id="nav-admin" class="nav-link h-20 transition-all hover:text-indigo-600">Админ</button>
                     <?php endif; ?>
@@ -103,6 +106,7 @@ $user = $auth->getCurrentUser();
                 case 'products': renderProducts(content); break;
                 case 'orders': renderOrders(content); break;
                 case 'admin': renderAdmin(content); break;
+                case 'docs': renderDocs(content); break;
                 default: renderDashboard(content);
             }
         }
@@ -221,7 +225,13 @@ $user = $auth->getCurrentUser();
         }
 
         function renderWarehouse(content) {
-            content.innerHTML = `<h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Склад Сырья</h1><div id="rm-list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>`;
+            content.innerHTML = `
+                <div class="flex justify-between items-center mb-12">
+                    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Склад Сырья</h1>
+                    <button onclick="exportData('warehouse')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl hover:bg-indigo-100 transition-all">Экспорт CSV</button>
+                </div>
+                <div id="rm-list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+            `;
             fetch('api.php?action=get_raw_materials').then(r => r.json()).then(data => {
                 document.getElementById('rm-list').innerHTML = data.map(rm => `
                     <div class="card-grad p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex justify-between items-center group hover:scale-105 transition-all">
@@ -242,7 +252,10 @@ $user = $auth->getCurrentUser();
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-12">
                     <h1 class="text-4xl font-black text-slate-800 tracking-tight">Производственный Цех</h1>
-                    <button onclick="showProduceModal()" class="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-2xl hover:bg-indigo-600 transition-all">Запуск линии</button>
+                    <div class="flex space-x-4">
+                        <button onclick="exportData('production')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl">Отчет по сырью</button>
+                        <button onclick="showProduceModal()" class="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-2xl hover:bg-indigo-600 transition-all">Запуск линии</button>
+                    </div>
                 </div>
                 <div id="prod-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center">
                     <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-xl w-full">
@@ -270,7 +283,12 @@ $user = $auth->getCurrentUser();
             });
         }
 
-        function showProduceModal() { document.getElementById('prod-modal').classList.remove('hidden'); }
+        function showProduceModal() {
+            document.getElementById('prod-modal').classList.remove('hidden');
+            fetch('api.php?action=get_products').then(r => r.json()).then(data => {
+                document.querySelector('[name=pid]').innerHTML = data.map(p => `<option value="${p.id}">${p.name} (${p.sku})</option>`).join('');
+            });
+        }
         function handleProduce(e) {
             e.preventDefault();
             const body = { product_id: e.target.pid.value, quantity: parseInt(e.target.qty.value), batch: e.target.batch.value };
@@ -283,6 +301,7 @@ $user = $auth->getCurrentUser();
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-12">
                     <h1 class="text-4xl font-black text-slate-800 tracking-tight">Витрина Завода</h1>
+                    ${currentUser.role !== 'client' ? `<button onclick="exportData('products')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl hover:bg-indigo-100 transition-all">Экспорт CSV</button>` : ''}
                     <div id="cart-btn" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-2xl cursor-pointer hover:bg-indigo-700 transition-all">
                         🛒 Корзина: <span id="cc">0</span>
                     </div>
@@ -375,26 +394,81 @@ $user = $auth->getCurrentUser();
                                 <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Сумма</p>
                                 <p class="text-2xl font-black text-slate-800">${o.total} <span class="text-sm font-medium">BYN</span></p>
                              </div>
-                             <div class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] ${o.status === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600'}">
-                                ${o.status === 'pending' ? 'Обработка' : 'Отгружен'}
+                             <div class="flex items-center space-x-3">
+                                 <div class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] ${o.status === 'pending' ? 'bg-amber-100 text-amber-600' : o.status === 'shipped' ? 'bg-indigo-100 text-indigo-600' : 'bg-rose-100 text-rose-600'}">
+                                    ${o.status === 'pending' ? 'Обработка' : o.status === 'shipped' ? 'Отгружен' : 'Возврат'}
+                                 </div>
+                                 ${(currentUser.role === 'admin' || currentUser.role === 'sales_manager') && o.status === 'pending' ?
+                                    `<button onclick="updateOrderStatus('${o.id}', 'shipped')" class="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition-all"><i class="lucide-truck text-xs"></i></button>` : ''}
+                                 ${(currentUser.role === 'admin' || currentUser.role === 'sales_manager') && o.status === 'shipped' ?
+                                    `<button onclick="updateOrderStatus('${o.id}', 'returned')" class="bg-rose-500 text-white p-2 rounded-xl hover:bg-rose-600 transition-all"><i class="lucide-undo-2 text-xs"></i></button>` : ''}
                              </div>
                         </div>
                     </div>
-                `).join('');
+                `).join('') || '<div class="p-20 text-center text-slate-400 font-bold">Заказы не найдены</div>';
+            });
+        }
+
+        function updateOrderStatus(id, status) {
+            if(!confirm(`Сменить статус заказа на "${status}"?`)) return;
+            fetch('api.php?action=update_order_status', {
+                method: 'POST',
+                body: JSON.stringify({ id, status })
+            }).then(r => r.json()).then(res => {
+                if (res.success) {
+                    alert('Статус обновлен!');
+                    renderOrders(document.getElementById('app-content'));
+                } else alert(res.message);
             });
         }
 
         function renderAdmin(content) {
             content.innerHTML = `
                 <h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Управление Системой</h1>
+                <div class="flex space-x-4 mb-8">
+                    <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest">Персонал</button>
+                    <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2 bg-white text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest border">Аудит Действий</button>
+                </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black mb-8">Сотрудники и Доступ</h3>
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xl font-black">Сотрудники и Доступ</h3>
+                            <button onclick="showUserModal()" class="text-indigo-600 font-bold hover:underline">+ Новый</button>
+                        </div>
+                        <div id="prod-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+                            <!-- Using prod-modal id for consistency with existing css styles if any, but better use unique for user -->
+                        </div>
+                        <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+                            <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-xl w-full">
+                                <h3 class="text-2xl font-black mb-8">Новый пользователь</h3>
+                                <form onsubmit="handleCreateUser(event)" class="space-y-4">
+                                    <input type="text" name="name" placeholder="Полное имя" required class="w-full bg-slate-50 p-4 rounded-2xl outline-none">
+                                    <input type="text" name="username" placeholder="Логин" required class="w-full bg-slate-50 p-4 rounded-2xl outline-none">
+                                    <input type="password" name="password" placeholder="Пароль" required class="w-full bg-slate-50 p-4 rounded-2xl outline-none">
+                                    <select name="role" class="w-full bg-slate-50 p-4 rounded-2xl outline-none">
+                                        <option value="admin">Администратор</option>
+                                        <option value="sales_manager">Менеджер по продажам</option>
+                                        <option value="production_chief">Начальник производства</option>
+                                        <option value="client">Клиент</option>
+                                    </select>
+                                    <div class="flex space-x-4 pt-6">
+                                        <button type="submit" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-bold">Создать</button>
+                                        <button type="button" onclick="document.getElementById('user-modal').classList.add('hidden')" class="px-8 py-4 bg-slate-100 rounded-2xl font-bold">Отмена</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <div id="ul" class="space-y-4"></div>
                     </div>
                     <div class="bg-indigo-900 rounded-[3rem] p-10 shadow-2xl text-white">
                         <h3 class="text-xl font-black mb-8 italic">Глобальное Оповещение</h3>
                         <p class="text-xs text-indigo-300 mb-4 font-medium uppercase tracking-widest leading-relaxed">Рассылка сообщений во все отделы предприятия через главную панель дашборда.</p>
+                        <select id="ann-target" class="w-full bg-indigo-800/50 rounded-2xl p-4 border-none text-white outline-none mb-4 font-bold">
+                            <option value="all">Для всех</option>
+                            <option value="sales_manager">Только Отдел Продаж</option>
+                            <option value="production_chief">Только Производство</option>
+                            <option value="client">Только Клиенты</option>
+                        </select>
                         <textarea id="ann-text" class="w-full bg-indigo-800/50 rounded-2xl p-6 border-none text-white outline-none focus:ring-4 focus:ring-indigo-500 mb-6" rows="4" placeholder="Текст сообщения..."></textarea>
                         <button onclick="sendAnn()" class="w-full bg-white text-indigo-900 py-5 rounded-2xl font-black shadow-xl hover:scale-[1.02] transition-all">Опубликовать в систему</button>
                     </div>
@@ -413,10 +487,96 @@ $user = $auth->getCurrentUser();
             });
         }
 
+        function showUserModal() { document.getElementById('user-modal').classList.remove('hidden'); }
+
+        function handleCreateUser(e) {
+            e.preventDefault();
+            const f = e.target;
+            const data = { name: f.name.value, username: f.username.value, password: f.password.value, role: f.role.value, permissions: [] };
+            // Simple default permissions based on role
+            if (data.role === 'admin') data.permissions = ['*'];
+            else if (data.role === 'client') data.permissions = ['products_view', 'orders_create', 'orders_view_own'];
+
+            fetch('api.php?action=add_user', { method: 'POST', body: JSON.stringify(data) }).then(() => {
+                alert('Пользователь создан!');
+                document.getElementById('user-modal').classList.add('hidden');
+                renderAdmin(document.getElementById('app-content'));
+            });
+        }
+
+        function renderDocs(content) {
+            content.innerHTML = `
+                <h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Центр Документации</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-black mb-6">Счета и Накладные</h3>
+                        <div id="invoice-list" class="space-y-4">
+                             <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-center">
+                                <div><p class="font-bold">Счет-фактура #INV-9402</p><p class="text-xs text-slate-400">От 05.03.2024</p></div>
+                                <button class="text-indigo-600 font-bold text-sm hover:underline">PDF</button>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
+                        <h3 class="text-xl font-black mb-6">Сертификаты Качества</h3>
+                        <div class="space-y-4">
+                             <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-center">
+                                <div><p class="font-bold">Декларация на Сидр Яблочный</p><p class="text-[10px] text-emerald-500 font-black uppercase">ДЕЙСТВУЕТ</p></div>
+                                <button class="text-indigo-600 font-bold text-sm hover:underline">Скачать</button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function exportData(type) {
+            alert(`Подготовка экспорта: ${type}...`);
+            const action = type === 'warehouse' ? 'get_raw_materials' : 'get_products';
+            fetch('api.php?action=' + action).then(r => r.json()).then(data => {
+                const headers = Object.keys(data[0]).join(';');
+                const rows = data.map(obj => Object.values(obj).join(';')).join('\n');
+                const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + headers + "\n" + rows;
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `${type}_export_${Date.now()}.csv`);
+                document.body.appendChild(link);
+                link.click();
+            });
+        }
+
+        function renderAudit(content) {
+            content.innerHTML = `
+                <h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Журнал Аудита</h1>
+                <div class="flex space-x-4 mb-8">
+                    <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2 bg-white text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest border">Персонал</button>
+                    <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest">Аудит Действий</button>
+                </div>
+                <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead><tr class="bg-slate-50 border-b"><th class="p-6 uppercase tracking-widest font-black text-slate-400">Время</th><th class="p-6 uppercase tracking-widest font-black text-slate-400">Юзер</th><th class="p-6 uppercase tracking-widest font-black text-slate-400">Действие</th><th class="p-6 uppercase tracking-widest font-black text-slate-400">Объект</th></tr></thead>
+                        <tbody id="audit-table"></tbody>
+                    </table>
+                </div>
+            `;
+            fetch('api.php?action=get_audit').then(r => r.json()).then(data => {
+                document.getElementById('audit-table').innerHTML = data.reverse().map(l => `
+                    <tr class="border-b hover:bg-slate-50 transition-colors">
+                        <td class="p-6 text-slate-400">${l.timestamp}</td>
+                        <td class="p-6 font-bold text-indigo-600">${l.user}</td>
+                        <td class="p-6 uppercase font-black tracking-tighter">${l.action}</td>
+                        <td class="p-6 text-slate-600">${l.collection} (${l.item_id.slice(0,8)}...)</td>
+                    </tr>
+                `).join('');
+            });
+        }
+
         function sendAnn() {
             const text = document.getElementById('ann-text').value;
+            const target = document.getElementById('ann-target').value;
             if(!text) return;
-            fetch('api.php?action=add_announcement', { method: 'POST', body: JSON.stringify({ text }) }).then(() => {
+            fetch('api.php?action=add_announcement', { method: 'POST', body: JSON.stringify({ text, target }) }).then(() => {
                 alert('Объявление опубликовано!');
                 showPage('dashboard');
             });

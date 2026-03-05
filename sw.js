@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alco-erp-v1';
+const CACHE_NAME = 'alco-erp-v2';
 const ASSETS = [
   'index.php',
   'https://cdn.tailwindcss.com',

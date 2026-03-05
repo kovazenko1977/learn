@@ -3,8 +3,8 @@
         "id": "p1",
         "name": "Сидр Яблочный Традиционный 0.5",
         "sku": "CIDER-001",
-        "batch": "B-E2E-FINAL",
-        "quantity": 1250,
+        "batch": "BATCH-E2E",
+        "quantity": 1545,
         "price": 3.5,
         "expiration_date": "2025-12-01",
         "bom": [

@@ -97,7 +97,7 @@ switch ($action) {
         echo json_encode($alertManager->getActiveAlerts());
         break;
     case 'get_announcements':
-        echo json_encode($announcementManager->getActive());
+        echo json_encode($announcementManager->getActive($auth->getCurrentUser()['role']));
         break;
     case 'add_announcement':
         if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
@@ -107,8 +107,17 @@ switch ($action) {
         if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
         echo json_encode($userManager->getUsers());
         break;
+    case 'add_user':
+        if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
+        echo json_encode($userManager->createUser($input));
+        break;
     case 'get_user':
         echo json_encode($auth->getCurrentUser());
+        break;
+    case 'get_audit':
+        if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
+        $auditStore = new \Core\JsonStore('audit_logs');
+        echo json_encode($auditStore->findAll());
         break;
     default:
         http_response_code(404);
