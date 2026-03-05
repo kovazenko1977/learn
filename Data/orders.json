@@ -1,0 +1,80 @@
+[
+    {
+        "client_id": "u4",
+        "items": [
+            {
+                "id": "p1",
+                "name": "Водка 'Белорусская Премиум'",
+                "qty": 50,
+                "price": 12.5
+            }
+        ],
+        "status": "shipped",
+        "total": 625,
+        "created_at": "2026-03-05 17:31:51",
+        "id": "69a9be07176c2"
+    },
+    {
+        "client_id": "u4",
+        "client_name": "ООО 'Альфа-Трейд'",
+        "items": [
+            {
+                "id": "p1",
+                "name": "Водка 'Белорусская Премиум'",
+                "qty": 100,
+                "price": 12.5
+            }
+        ],
+        "status": "shipped",
+        "total": 1250,
+        "created_at": "2026-03-05 17:49:52",
+        "id": "0dc2b9f77dbd15ee-1772732992"
+    },
+    {
+        "client_id": "u4",
+        "items": [
+            {
+                "id": "p1",
+                "name": "Водка 'Белорусская Премиум'",
+                "qty": 50,
+                "price": 12.5
+            }
+        ],
+        "status": "shipped",
+        "total": 625,
+        "created_at": "2026-03-05 17:51:19",
+        "id": "790d96c4f3532d72-1772733079"
+    },
+    {
+        "client_id": "u4",
+        "client_name": "ООО 'Альфа-Трейд'",
+        "items": [
+            {
+                "id": "p1",
+                "name": "Водка 'Белорусская Премиум'",
+                "qty": 100,
+                "price": 12.5
+            }
+        ],
+        "status": "shipped",
+        "total": 1250,
+        "created_at": "2026-03-05 17:51:19",
+        "id": "eccdab506dedf055-1772733079"
+    },
+    {
+        "client_id": "u4",
+        "client_name": "ООО ВиноТрейд",
+        "items": [
+            {
+                "id": "p1",
+                "name": "Сидр Яблочный Традиционный 0.5",
+                "qty": 50,
+                "price": 3.5
+            }
+        ],
+        "status": "shipped",
+        "total": 175,
+        "created_at": "2026-03-05 20:07:42",
+        "id": "04fcdb89227bf6d9-1772741262"
+    }
+]

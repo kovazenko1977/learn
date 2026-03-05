@@ -1,0 +1,52 @@
+[
+    {
+        "id": "p1",
+        "name": "Сидр Яблочный Традиционный 0.5",
+        "sku": "CIDER-001",
+        "batch": "B-E2E-FINAL",
+        "quantity": 1250,
+        "price": 3.5,
+        "expiration_date": "2025-12-01",
+        "bom": [
+            {
+                "rm_id": "rm-juice",
+                "qty": 0.45
+            },
+            {
+                "rm_id": "rm-sugar",
+                "qty": 0.05
+            },
+            {
+                "rm_id": "rm-bottle",
+                "qty": 1
+            },
+            {
+                "rm_id": "rm-label",
+                "qty": 1
+            }
+        ]
+    },
+    {
+        "id": "p2",
+        "name": "Вино Плодовое 'Вишневый Сад' 0.7",
+        "sku": "WINE-CH-07",
+        "batch": "W2024-05",
+        "quantity": 800,
+        "price": 8.2,
+        "expiration_date": "2027-05-15",
+        "bom": [
+            {
+                "rm_id": "rm-juice-ch",
+                "qty": 0.6
+            },
+            {
+                "rm_id": "rm-sugar",
+                "qty": 0.1
+            },
+            {
+                "rm_id": "rm-bottle-07",
+                "qty": 1
+            }
+        ]
+    }
+]
