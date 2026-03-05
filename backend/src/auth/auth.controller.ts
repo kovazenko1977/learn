@@ -10,7 +10,7 @@ export class AuthController {
   async login(@Body() body: any) {
     const user = await this.authService.validateUser(body.username, body.password);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Неверные учетные данные');
     }
     return this.authService.login(user);
   }

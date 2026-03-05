@@ -18,17 +18,17 @@ export default function LoginPage() {
       login(response.user, response.access_token);
       router.push('/lk');
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setError(err.message === 'Invalid credentials' ? 'Неверные учетные данные' : err.message || 'Ошибка входа');
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-12 p-8 bg-white rounded-lg shadow-md border border-gray-100">
-      <h1 className="text-2xl font-bold text-center mb-6">Login to ALCO.BY</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Вход в ALCO.BY</h1>
       {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700">Имя пользователя</label>
           <input
             id="username"
             type="text"
@@ -39,7 +39,7 @@ export default function LoginPage() {
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Пароль</label>
           <input
             id="password"
             type="password"
@@ -53,11 +53,11 @@ export default function LoginPage() {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
         >
-          Sign In
+          Войти
         </button>
       </form>
       <div className="mt-6 text-center text-xs text-gray-400">
-        Demo: admin / admin123 or client / client123
+        Демо: admin / admin123 или client / client123
       </div>
     </div>
   );
