@@ -14,8 +14,13 @@ class ProductionManager {
     }
 
     public function produce($productId, $batchSize, $batchNumber, $wasteFactor = 0.05) {
+        $batchSize = (int)$batchSize;
+        $wasteFactor = (float)$wasteFactor;
+        if ($batchSize <= 0) return ['success' => false, 'message' => 'Invalid batch size'];
+
         $product = $this->productStore->findOne($productId);
-        if (!$product || !isset($product['bom'])) return ['success' => false, 'message' => 'Product not found or no BOM'];
+        if (!$product) return ['success' => false, 'message' => 'Product not found'];
+        if (!isset($product['bom']) || empty($product['bom'])) return ['success' => false, 'message' => 'Product has no Bill of Materials (BOM)'];
 
         // 1. Check ingredients including waste
         $rawMaterials = $this->rmStore->findAll();

@@ -36,7 +36,10 @@ class OrderManager {
         $order = $this->store->findOne($id);
         if (!$order) return ['success' => false, 'message' => 'Order not found'];
 
-        if ($status === 'shipped' && $order['status'] !== 'shipped') {
+        // Prevent redundant status updates
+        if ($order['status'] === $status) return ['success' => true, 'order' => $order];
+
+        if ($status === 'shipped' && $order['status'] === 'pending') {
             $products = $this->productStore->findAll();
             $pMap = [];
             foreach ($products as $p) $pMap[$p['id']] = $p;

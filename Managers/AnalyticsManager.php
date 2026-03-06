@@ -15,6 +15,48 @@ class AnalyticsManager {
         $this->prodStore = new JsonStore('production_logs');
     }
 
+    public function getExpandedAnalytics() {
+        $orders = $this->orderStore->findAll();
+        $products = $this->productStore->findAll();
+        $rms = $this->rmStore->findAll();
+        $logs = $this->prodStore->findAll();
+
+        $skuPerformance = [];
+        foreach ($products as $p) {
+            $sold = 0;
+            foreach ($orders as $o) {
+                if ($o['status'] === 'shipped') {
+                    foreach ($o['items'] as $item) {
+                        if ($item['id'] === $p['id']) $sold += $item['qty'];
+                    }
+                }
+            }
+            $skuPerformance[] = [
+                'name' => $p['name'],
+                'sku' => $p['sku'],
+                'price' => $p['price'],
+                'sold' => $sold,
+                'stock' => $p['quantity']
+            ];
+        }
+
+        $yieldData = [];
+        foreach (array_slice($logs, -5) as $log) {
+             $yieldData[] = [
+                 'batch' => $log['batch'],
+                 'product' => $log['product_name'],
+                 'efficiency' => (1 - $log['waste_factor']) * 100
+             ];
+        }
+
+        return [
+            'raw_materials' => $rms,
+            'sku_performance' => $skuPerformance,
+            'recent_logs' => array_slice(array_reverse($logs), 0, 10),
+            'yield_data' => $yieldData
+        ];
+    }
+
     public function getExecutiveSummary() {
         $orders = $this->orderStore->findAll();
         $products = $this->productStore->findAll();

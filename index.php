@@ -14,15 +14,17 @@ $user = $auth->getCurrentUser();
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/font/lucide.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         h1, h2, .brand { font-family: 'Unbounded', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
         .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; }
         .card-grad { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
+        .sidebar-item-active { background: #4f46e5; color: white; }
     </style>
 </head>
-<body class="bg-[#f1f5f9] text-[#1e293b] min-h-screen flex flex-col">
+<body class="bg-[#f8fafc] text-[#0f172a] min-h-screen flex flex-col">
 
     <div id="alerts-container" class="fixed top-20 right-6 z-[100] flex flex-col space-y-3 max-w-sm"></div>
 
@@ -145,7 +147,25 @@ $user = $auth->getCurrentUser();
             }
 
             fetch(`api.php?action=${action}`).then(r => r.json()).then(data => {
-                if (metric === 'revenue' || metric === 'orders') {
+                if (metric === 'production') {
+                    content.innerHTML = `
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-50 border-b">
+                                <tr><th class="p-4 font-black">Время</th><th class="p-4 font-black">Продукт</th><th class="p-4 font-black">Объем</th><th class="p-4 font-black">Партия</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.slice(-15).reverse().map(l => `
+                                    <tr class="border-b">
+                                        <td class="p-4 font-mono text-slate-400">${l.timestamp}</td>
+                                        <td class="p-4 font-bold text-slate-800">${l.product_name}</td>
+                                        <td class="p-4 font-black text-indigo-600">${l.quantity} ед.</td>
+                                        <td class="p-4 font-mono font-bold">${l.batch}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else if (metric === 'revenue' || metric === 'orders') {
                     content.innerHTML = `
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 border-b">
@@ -203,6 +223,7 @@ $user = $auth->getCurrentUser();
                 case 'products': renderProducts(content); break;
                 case 'orders': renderOrders(content); break;
                 case 'admin': renderAdmin(content); break;
+                case 'analytics': renderAnalytics(content); break;
                 case 'docs': renderDocs(content); break;
                 default: renderDashboard(content);
             }
@@ -260,34 +281,51 @@ $user = $auth->getCurrentUser();
         function renderDashboard(content) {
             content.innerHTML = `
                 <div id="ann-bar"></div>
-                <div class="mb-12 flex justify-between items-end">
+                <div class="mb-10 flex justify-between items-center">
                     <div>
-                        <h1 class="text-4xl font-black text-slate-800 tracking-tight">Рабочая панель</h1>
-                        <p class="text-slate-400 font-medium mt-2">Оперативная сводка по предприятию [v4.2.0-PRO]</p>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Панель Управления</h1>
+                        <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em] mt-1">Industrial ERP System v5.0 // ALCO.BY</p>
                     </div>
-                    <button onclick="toggleHelpOverlay()" class="text-indigo-600 font-bold text-xs uppercase tracking-widest border-b-2 border-indigo-100 hover:border-indigo-600 pb-1">Справка системы</button>
-                </div>
-                <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-0 mb-12 border border-slate-200 rounded-[2rem] overflow-hidden bg-white shadow-sm"></div>
-
-                <div id="system-status" class="mb-12 hidden"></div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black mb-8 text-slate-800">Динамика отгрузок</h3>
-                        <div class="h-80 bg-slate-50 rounded-[2.5rem] p-10 flex items-end justify-between space-x-6">
-                            <div class="w-full bg-indigo-500 rounded-t-2xl shadow-lg shadow-indigo-100" style="height: 65%"></div>
-                            <div class="w-full bg-indigo-300 rounded-t-2xl" style="height: 45%"></div>
-                            <div class="w-full bg-indigo-600 rounded-t-2xl shadow-lg shadow-indigo-200" style="height: 85%"></div>
-                            <div class="w-full bg-emerald-400 rounded-t-2xl" style="height: 30%"></div>
-                            <div class="w-full bg-indigo-500 rounded-t-2xl shadow-lg shadow-indigo-100" style="height: 70%"></div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleHelpOverlay()" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all">Инструкции</button>
+                        <div class="bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-xl flex items-center space-x-2 border border-emerald-100">
+                            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                            <span class="text-[10px] font-black uppercase tracking-widest">Система Online</span>
                         </div>
                     </div>
-                    <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black mb-8 text-slate-800">События</h3>
-                        <div id="events-list" class="space-y-6">
-                             <div class="flex items-start space-x-4">
-                                <div class="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="lucide-zap"></i></div>
-                                <div><p class="font-bold text-sm">Линия #1 запущена</p><p class="text-xs text-slate-400">Сидр Яблочный (500 ед)</p></div>
+                </div>
+
+                <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10"></div>
+
+                <div id="system-status" class="mb-10 hidden"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Аналитический Срез</h3>
+                            <button onclick="showPage('analytics')" class="text-indigo-600 text-[10px] font-black uppercase tracking-widest hover:underline">Подробный отчет -></button>
+                        </div>
+                        <div class="h-64 flex items-end justify-between space-x-4 px-4">
+                            ${[40, 70, 45, 90, 60, 80, 50].map(h => `
+                                <div class="flex-grow bg-slate-100 rounded-t-lg relative group transition-all hover:bg-indigo-100" style="height: ${h}%">
+                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold">${h * 12}k</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex justify-between mt-4 px-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-8">Лог Системы</h3>
+                        <div id="events-list" class="space-y-5">
+                             <div class="flex items-start space-x-3 pb-5 border-b border-slate-50">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="lucide-activity text-sm"></i></div>
+                                <div><p class="font-bold text-xs text-slate-800">Линия #1 Розлив</p><p class="text-[10px] text-slate-400 mt-1 uppercase font-bold">12:45 // Сидр Яблочный</p></div>
+                             </div>
+                             <div class="flex items-start space-x-3 pb-5 border-b border-slate-50">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600"><i class="lucide-check-circle text-sm"></i></div>
+                                <div><p class="font-bold text-xs text-slate-800">Заказ #9422 Отгружен</p><p class="text-[10px] text-slate-400 mt-1 uppercase font-bold">11:20 // ООО "Ритейл"</p></div>
                              </div>
                         </div>
                     </div>
@@ -295,25 +333,21 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_analytics').then(r => r.json()).then(data => {
                 document.getElementById('stats').innerHTML = `
-                    <div onclick="showMetricDetails('revenue')" title="Кликните для просмотра истории выручки" class="p-10 border-r border-slate-100 hover:bg-slate-50 cursor-pointer transition-all relative group">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Выручка (Общая)</p>
-                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.revenue} <span class="text-xs font-bold text-slate-300 ml-1">BYN</span></p>
-                        <div class="mt-4 h-1 w-12 bg-indigo-500 rounded-full"></div>
+                    <div onclick="showMetricDetails('revenue')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Выручка Brutto</p>
+                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.revenue.toLocaleString()}<span class="text-xs text-slate-300 ml-1 font-bold">BYN</span></p>
                     </div>
-                    <div onclick="showMetricDetails('stock')" title="Кликните для просмотра остатков продукции" class="p-10 border-r border-slate-100 hover:bg-slate-50 cursor-pointer transition-all relative group">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Оценка Склада</p>
-                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.stock_value} <span class="text-xs font-bold text-slate-300 ml-1">BYN</span></p>
-                        <div class="mt-4 h-1 w-12 bg-indigo-300 rounded-full"></div>
+                    <div onclick="showMetricDetails('stock')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Активы Склада</p>
+                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.stock_value.toLocaleString()}<span class="text-xs text-slate-300 ml-1 font-bold">BYN</span></p>
                     </div>
-                    <div onclick="showMetricDetails('orders')" title="Кликните для просмотра активных заказов" class="p-10 border-r border-slate-100 hover:bg-slate-50 cursor-pointer transition-all relative group">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Объем Заказов</p>
-                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.order_count} <span class="text-xs font-bold text-slate-300 ml-1">ЕД.</span></p>
-                        <div class="mt-4 h-1 w-12 bg-orange-400 rounded-full"></div>
+                    <div onclick="showMetricDetails('orders')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Портфель Заказов</p>
+                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.order_count}<span class="text-xs text-slate-300 ml-1 font-bold">ЕД.</span></p>
                     </div>
-                    <div onclick="showMetricDetails('production')" title="Кликните для просмотра журнала выпуска" class="p-10 hover:bg-slate-50 cursor-pointer transition-all relative group">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Готовая Продукция</p>
-                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.production_volume} <span class="text-xs font-bold text-slate-300 ml-1">ШТ.</span></p>
-                        <div class="mt-4 h-1 w-12 bg-emerald-400 rounded-full"></div>
+                    <div onclick="showMetricDetails('production')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Выпуск / 30дн</p>
+                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.production_volume}<span class="text-xs text-slate-300 ml-1 font-bold">ШТ.</span></p>
                     </div>
                 `;
 
@@ -426,11 +460,28 @@ $user = $auth->getCurrentUser();
                         </form>
                     </div>
                 </div>
-                <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
-                    <h3 class="text-xl font-black mb-8">Журнал производства</h3>
-                    <div id="logs" class="space-y-4"></div>
+                <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-black mb-8 uppercase tracking-widest text-slate-500">Архив Выпуска (Последние 10 партий)</h3>
+                    <div id="logs" class="space-y-3"></div>
                 </div>
             `;
+            fetch('api.php?action=get_production_logs').then(r => r.json()).then(data => {
+                document.getElementById('logs').innerHTML = data.slice(-10).reverse().map(l => `
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-indigo-200 transition-all">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-xs font-black mono text-slate-400">#${l.batch.slice(-4)}</div>
+                            <div>
+                                <p class="text-xs font-black text-slate-800 uppercase">${l.product_name}</p>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${l.timestamp}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-sm font-black text-indigo-600">${l.quantity} ед.</p>
+                             <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">OK // BOM SYNC</p>
+                        </div>
+                    </div>
+                `).join('') || '<p class="text-[10px] text-slate-400 font-bold uppercase p-10 text-center">Логи не найдены</p>';
+            });
             fetch('api.php?action=get_products').then(r => r.json()).then(data => {
                 document.querySelector('[name=pid]').innerHTML = data.map(p => `<option value="${p.id}">${p.name} (${p.sku})</option>`).join('');
             });
@@ -655,12 +706,17 @@ $user = $auth->getCurrentUser();
 
         function renderAdmin(content) {
             content.innerHTML = `
-                <h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Управление Системой</h1>
-                <div class="flex space-x-4 mb-8">
-                    <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest">Персонал</button>
-                    <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2 bg-white text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest border">Аудит Действий</button>
+                <div class="mb-10 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Центр Администрирования</h1>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Управление персоналом и аудит безопасности</p>
+                    </div>
+                    <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 bg-white shadow-sm rounded-xl text-[10px] font-black uppercase tracking-widest text-indigo-600">Сотрудники</button>
+                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-700">Журнал Аудита</button>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
                         <div class="flex justify-between items-center mb-8">
                             <h3 class="text-xl font-black">Сотрудники и Доступ</h3>
@@ -777,16 +833,96 @@ $user = $auth->getCurrentUser();
             });
         }
 
+        function renderAnalytics(content) {
+            content.innerHTML = `
+                <div class="mb-10 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Глобальная Аналитика</h1>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Развернутый отчет по эффективности предприятия</p>
+                    </div>
+                    <button onclick="exportData('analytics')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-100">Экспорт данных (XLS)</button>
+                </div>
+
+                <div id="analytics-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+                    <div class="bg-white border border-slate-200 rounded-3xl p-8">
+                        <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-500">Оборачиваемость Сырья</h3>
+                        <div id="rm-turnover" class="space-y-4"></div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-3xl p-8">
+                        <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-500">Эффективность Производства (Yield)</h3>
+                        <div id="production-efficiency" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 text-white rounded-3xl p-10">
+                    <h3 class="text-sm font-black uppercase tracking-widest mb-10">Финансовые показатели по SKU</h3>
+                    <div id="sku-finance" class="overflow-x-auto"></div>
+                </div>
+            `;
+
+            fetch('api.php?action=get_expanded_analytics').then(r => r.json()).then(data => {
+                document.getElementById('production-efficiency').innerHTML = data.yield_data.map(y => `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">${y.product} (${y.batch})</span>
+                        <span class="text-[10px] font-black mono text-emerald-500">${y.efficiency}% YIELD</span>
+                    </div>
+                `).join('') || '<p class="text-[10px] text-slate-400 font-bold uppercase">Нет данных по выпуску</p>';
+
+                document.getElementById('rm-turnover').innerHTML = data.raw_materials.map(rm => `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">${rm.name}</span>
+                        <div class="flex-grow mx-4 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-500" style="width: ${Math.min(100, (rm.quantity / rm.min_quantity) * 50)}%"></div>
+                        </div>
+                        <span class="text-[10px] font-black mono text-slate-500">${rm.quantity} / ${rm.min_quantity}</span>
+                    </div>
+                `).join('');
+
+                document.getElementById('sku-finance').innerHTML = `
+                    <table class="w-full text-left text-[11px]">
+                        <thead>
+                            <tr class="border-b border-white/10 opacity-50 uppercase tracking-widest font-black">
+                                <th class="pb-6">Продукт</th><th class="pb-6">SKU</th><th class="pb-6 text-right">Цена</th><th class="pb-6 text-right">Продано (ед)</th><th class="pb-6 text-right">Выручка</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            ${data.sku_performance.map(p => `
+                                <tr class="group">
+                                    <td class="py-6 font-bold">${p.name}</td>
+                                    <td class="py-6 font-mono opacity-60">${p.sku}</td>
+                                    <td class="py-6 text-right font-black">${p.price} BYN</td>
+                                    <td class="py-6 text-right font-black text-indigo-400">${p.sold}</td>
+                                    <td class="py-6 text-right font-black text-emerald-400">${(p.sold * p.price).toLocaleString()} BYN</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            });
+        }
+
         function renderAudit(content) {
             content.innerHTML = `
-                <h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Журнал Аудита</h1>
-                <div class="flex space-x-4 mb-8">
-                    <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2 bg-white text-slate-600 rounded-xl text-xs font-bold uppercase tracking-widest border">Персонал</button>
-                    <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest">Аудит Действий</button>
+                <div class="mb-10 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Журнал Аудита</h1>
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Протокол всех значимых действий в системе</p>
+                    </div>
+                    <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-700">Сотрудники</button>
+                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 bg-white shadow-sm rounded-xl text-[10px] font-black uppercase tracking-widest text-indigo-600">Журнал Аудита</button>
+                    </div>
                 </div>
-                <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
-                    <table class="w-full text-left text-xs">
-                        <thead><tr class="bg-slate-50 border-b"><th class="p-6 uppercase tracking-widest font-black text-slate-400">Время</th><th class="p-6 uppercase tracking-widest font-black text-slate-400">Юзер</th><th class="p-6 uppercase tracking-widest font-black text-slate-400">Действие</th><th class="p-6 uppercase tracking-widest font-black text-slate-400">Объект</th></tr></thead>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left text-[11px]">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="p-6 uppercase tracking-widest font-black text-slate-500">Timestamp</th>
+                                <th class="p-6 uppercase tracking-widest font-black text-slate-500">Operator</th>
+                                <th class="p-6 uppercase tracking-widest font-black text-slate-500">Action</th>
+                                <th class="p-6 uppercase tracking-widest font-black text-slate-500">Object ID</th>
+                            </tr>
+                        </thead>
                         <tbody id="audit-table"></tbody>
                     </table>
                 </div>

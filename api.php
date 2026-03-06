@@ -64,10 +64,16 @@ switch ($action) {
         break;
     case 'add_product':
         if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
+        if (empty($input['name']) || empty($input['price'])) {
+            echo json_encode(['success' => false, 'message' => 'Missing required fields']); exit;
+        }
         echo json_encode($productManager->addProduct($input));
         break;
     case 'update_product':
         if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
+        if (empty($input['id'])) {
+            echo json_encode(['success' => false, 'message' => 'Missing ID']); exit;
+        }
         echo json_encode($productManager->updateProduct($input['id'], $input));
         break;
     case 'delete_product':
@@ -108,6 +114,14 @@ switch ($action) {
     case 'get_analytics':
         if ($auth->getCurrentUser()['role'] !== 'admin' && $auth->getCurrentUser()['role'] !== 'sales_manager') { http_response_code(403); exit; }
         echo json_encode($analyticsManager->getExecutiveSummary());
+        break;
+    case 'get_expanded_analytics':
+        if ($auth->getCurrentUser()['role'] !== 'admin' && $auth->getCurrentUser()['role'] !== 'sales_manager') { http_response_code(403); exit; }
+        echo json_encode($analyticsManager->getExpandedAnalytics());
+        break;
+    case 'get_production_logs':
+        if (!$auth->hasPermission('production_log')) { http_response_code(403); exit; }
+        echo json_encode($productionManager->getLogs());
         break;
     case 'get_alerts':
         echo json_encode($alertManager->getActiveAlerts());
