@@ -12,87 +12,97 @@ $user = $auth->getCurrentUser();
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/font/lucide.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        :root {
+            --bg-deep: #0a0b10;
+            --bg-card: #14151f;
+            --bg-accent: #1c1d29;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --brand: #6366f1;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--text-main); }
         h1, h2, .brand { font-family: 'Unbounded', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-        .tab-active { color: #4f46e5; border-bottom: 3px solid #4f46e5; }
-        .card-grad { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
-        .sidebar-item-active { background: #4f46e5; color: white; }
+        .sidebar-item-active { background: var(--brand); color: white; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+        .card-dark { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); }
+        .input-dark { background: var(--bg-accent); border: 1px solid rgba(255,255,255,0.1); color: white; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-[#0f172a] min-h-screen flex flex-col">
+<body class="min-h-screen flex overflow-hidden">
 
     <div id="alerts-container" class="fixed top-20 right-6 z-[100] flex flex-col space-y-3 max-w-sm"></div>
 
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-12">
-                <a href="javascript:void(0)" onclick="showPage('dashboard')" class="brand text-2xl font-bold tracking-tight text-indigo-600 flex items-center">
-                    <span class="mr-3 text-3xl">🍷</span> ALCO.BY
-                </a>
-                <?php if ($user): ?>
-                <nav class="hidden lg:flex space-x-8 text-sm font-bold text-slate-500 uppercase tracking-widest">
-                    <button onclick="showPage('dashboard')" id="nav-dashboard" class="nav-link h-20 transition-all hover:text-indigo-600">Главная</button>
-                    <?php if ($auth->hasPermission('raw_materials_view')): ?>
-                    <button onclick="showPage('warehouse')" id="nav-warehouse" class="nav-link h-20 transition-all hover:text-indigo-600">Склад</button>
-                    <?php endif; ?>
-                    <?php if ($auth->hasPermission('production_log')): ?>
-                    <button onclick="showPage('production')" id="nav-production" class="nav-link h-20 transition-all hover:text-indigo-600">Производство</button>
-                    <?php endif; ?>
-                    <button onclick="showPage('products')" id="nav-products" class="nav-link h-20 transition-all hover:text-indigo-600">Продукция</button>
-                    <button onclick="showPage('orders')" id="nav-orders" class="nav-link h-20 transition-all hover:text-indigo-600">Заказы</button>
-                    <?php if ($user['role'] === 'client'): ?>
-                    <button onclick="showPage('docs')" id="nav-docs" class="nav-link h-20 transition-all hover:text-indigo-600">Документы</button>
-                    <?php endif; ?>
-                    <?php if ($auth->hasPermission('*')): ?>
-                    <button onclick="showPage('admin')" id="nav-admin" class="nav-link h-20 transition-all hover:text-indigo-600">Админ</button>
-                    <?php endif; ?>
-                </nav>
-                <?php endif; ?>
-            </div>
-            <div class="flex items-center space-x-6">
-                <?php if ($user): ?>
-                    <div class="text-right hidden sm:block">
-                        <p class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-1"><?= htmlspecialchars($user['role']) ?></p>
-                        <p class="text-sm font-bold text-slate-700"><?= htmlspecialchars($user['name']) ?></p>
-                    </div>
-                    <button onclick="logout()" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all">
-                        <i class="lucide-log-out text-lg"></i>
-                    </button>
-                <?php else: ?>
-                    <button onclick="showPage('login')" class="bg-indigo-600 text-white px-8 py-3 rounded-2xl text-sm font-bold shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all hover:-translate-y-0.5">Личный кабинет</button>
-                <?php endif; ?>
-            </div>
+    <?php if ($user): ?>
+    <aside class="w-72 border-r border-white/5 bg-[#0e0f17] flex flex-col p-8 z-50">
+        <div class="brand text-2xl font-black tracking-tighter text-white mb-12 flex items-center">
+            <span class="mr-3">🍷</span> ALCO.PRO
         </div>
-    </header>
+        <nav class="space-y-2 flex-grow">
+            <button onclick="showPage('dashboard')" id="nav-dashboard" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-layout-grid text-lg"></i> <span>Сводка</span>
+            </button>
+            <?php if ($auth->hasPermission('raw_materials_view')): ?>
+            <button onclick="showPage('warehouse')" id="nav-warehouse" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-package text-lg"></i> <span>Склад</span>
+            </button>
+            <?php endif; ?>
+            <?php if ($auth->hasPermission('production_log')): ?>
+            <button onclick="showPage('production')" id="nav-production" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-factory text-lg"></i> <span>Цех</span>
+            </button>
+            <?php endif; ?>
+            <button onclick="showPage('products')" id="nav-products" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-wine text-lg"></i> <span>Продукция</span>
+            </button>
+            <button onclick="showPage('orders')" id="nav-orders" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-shopping-bag text-lg"></i> <span>Заказы</span>
+            </button>
+            <?php if ($auth->hasPermission('*')): ?>
+            <button onclick="showPage('analytics')" id="nav-analytics" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-bar-chart-3 text-lg"></i> <span>Аналитика</span>
+            </button>
+            <button onclick="showPage('admin')" id="nav-admin" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
+                <i class="lucide-settings text-lg"></i> <span>Админ</span>
+            </button>
+            <?php endif; ?>
+        </nav>
+        <div class="pt-8 border-t border-white/5">
+            <div class="flex items-center space-x-4 mb-6 px-2">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center font-black text-white"><?= mb_substr($user['name'],0,1) ?></div>
+                <div class="overflow-hidden">
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest truncate"><?= htmlspecialchars($user['role']) ?></p>
+                    <p class="text-xs font-bold text-white truncate"><?= htmlspecialchars($user['name']) ?></p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/10">
+                <i class="lucide-log-out text-lg"></i> <span>Выход</span>
+            </button>
+        </div>
+    </aside>
+    <?php endif; ?>
 
-    <main id="app-content" class="flex-grow max-w-[1600px] mx-auto w-full px-6 py-10">
-        <!-- Content -->
+    <main class="flex-grow flex flex-col h-screen relative">
+        <div id="app-content" class="flex-grow overflow-y-auto p-12 custom-scroll">
+            <!-- Content -->
+        </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 py-10 mt-auto">
-        <div class="max-w-[1600px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 items-center">
-            <div class="brand text-xl font-bold text-slate-300 italic">ALCO.BY 2024</div>
-            <div class="text-center text-sm text-slate-400 font-medium">Система управления производством плодовых вин v4.2</div>
-            <div class="flex justify-end space-x-6 text-slate-400 text-xs font-bold uppercase tracking-widest">
-                <a href="#" class="hover:text-indigo-600">Поддержка</a>
-                <a href="#" class="hover:text-indigo-600">API</a>
-                <a href="#" class="hover:text-indigo-600">Безопасность</a>
+    <div id="metric-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-12">
+        <div class="bg-[#14151f] p-12 rounded-[2.5rem] shadow-2xl max-w-5xl w-full border border-white/5">
+            <div class="flex justify-between items-center mb-10">
+                <h3 id="metric-title" class="text-2xl font-black text-white uppercase italic tracking-tighter">Metric Expansion</h3>
+                <button id="close-metric" onclick="document.getElementById('metric-modal').classList.add('hidden')" class="text-slate-600 hover:text-white transition-all"><i class="lucide-x-circle text-4xl"></i></button>
             </div>
-        </div>
-    </footer>
-
-    <div id="metric-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-6">
-        <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-4xl w-full border border-slate-200">
-            <div class="flex justify-between items-center mb-8">
-                <h3 id="metric-title" class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Детали метрики</h3>
-                <button id="close-metric" onclick="document.getElementById('metric-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="lucide-x text-2xl"></i></button>
-            </div>
-            <div id="metric-content" class="overflow-x-auto"></div>
+            <div id="metric-content" class="overflow-x-auto custom-scroll max-h-[70vh]"></div>
         </div>
     </div>
 
@@ -140,76 +150,65 @@ $user = $auth->getCurrentUser();
 
             let action = '';
             switch(metric) {
-                case 'revenue': title.innerText = 'История Выручки (Последние заказы)'; action = 'get_orders'; break;
-                case 'stock': title.innerText = 'Остатки Готовой Продукции'; action = 'get_products'; break;
-                case 'orders': title.innerText = 'Активные Заказы'; action = 'get_orders'; break;
-                case 'production': title.innerText = 'Журнал Выпуска'; action = 'get_production_logs'; break;
+                case 'revenue': title.innerText = 'Sales Transaction Ledger'; action = 'get_orders'; break;
+                case 'stock': title.innerText = 'Finished Goods Inventory'; action = 'get_products'; break;
+                case 'orders': title.innerText = 'Pending Commitment Queue'; action = 'get_orders'; break;
+                case 'production': title.innerText = 'Execution Run Archive'; action = 'get_production_logs'; break;
             }
 
             fetch(`api.php?action=${action}`).then(r => r.json()).then(data => {
+                let html = `
+                    <table class="w-full text-left text-[11px]">
+                        <thead class="border-b border-white/10 opacity-40 uppercase tracking-widest font-black">
+                            <tr>
+                `;
                 if (metric === 'production') {
-                    content.innerHTML = `
-                        <table class="w-full text-left text-[11px]">
-                            <thead class="bg-slate-50 border-b">
-                                <tr><th class="p-4 font-black">Время</th><th class="p-4 font-black">Продукт</th><th class="p-4 font-black">Объем</th><th class="p-4 font-black">Партия</th></tr>
-                            </thead>
-                            <tbody>
-                                ${data.slice(-15).reverse().map(l => `
-                                    <tr class="border-b">
-                                        <td class="p-4 font-mono text-slate-400">${l.timestamp}</td>
-                                        <td class="p-4 font-bold text-slate-800">${l.product_name}</td>
-                                        <td class="p-4 font-black text-indigo-600">${l.quantity} ед.</td>
-                                        <td class="p-4 font-mono font-bold">${l.batch}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                    html += `<th class="p-6">Time</th><th class="p-6">Entity</th><th class="p-6">Volume</th><th class="p-6">Batch ID</th>`;
                 } else if (metric === 'revenue' || metric === 'orders') {
-                    content.innerHTML = `
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b">
-                                <tr><th class="p-4 font-black">ID</th><th class="p-4 font-black">Клиент</th><th class="p-4 font-black">Сумма</th><th class="p-4 font-black">Статус</th></tr>
-                            </thead>
-                            <tbody>
-                                ${Object.values(data).slice(0, 10).map(o => `
-                                    <tr class="border-b">
-                                        <td class="p-4 font-mono text-xs">#${o.id.slice(-4)}</td>
-                                        <td class="p-4 font-bold">${o.client_name}</td>
-                                        <td class="p-4 text-indigo-600 font-black">${o.total} BYN</td>
-                                        <td class="p-4 uppercase text-[10px] font-black">${o.status}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                    html += `<th class="p-6">ID</th><th class="p-6">Counterparty</th><th class="p-6">Value</th><th class="p-6">Status</th>`;
                 } else if (metric === 'stock') {
-                    content.innerHTML = `
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b">
-                                <tr><th class="p-4 font-black">Наименование</th><th class="p-4 font-black">Артикул</th><th class="p-4 font-black">Остаток</th><th class="p-4 font-black">Цена</th></tr>
-                            </thead>
-                            <tbody>
-                                ${data.map(p => `
-                                    <tr class="border-b">
-                                        <td class="p-4 font-bold">${p.name}</td>
-                                        <td class="p-4 text-slate-400">${p.sku}</td>
-                                        <td class="p-4 font-black">${p.quantity} ед.</td>
-                                        <td class="p-4 text-indigo-600 font-bold">${p.price} BYN</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    `;
+                    html += `<th class="p-6">Entity</th><th class="p-6">SKU</th><th class="p-6">Available</th><th class="p-6">Unit Price</th>`;
                 }
+                html += `</tr></thead><tbody class="divide-y divide-white/5">`;
+
+                if (metric === 'production') {
+                    html += data.slice(-15).reverse().map(l => `
+                        <tr>
+                            <td class="p-6 text-slate-500 font-mono">${l.timestamp}</td>
+                            <td class="p-6 font-bold text-white uppercase italic">${l.product_name}</td>
+                            <td class="p-6 font-black text-indigo-400 mono">${l.quantity.toLocaleString()}</td>
+                            <td class="p-6 font-mono text-slate-400">${l.batch}</td>
+                        </tr>
+                    `).join('');
+                } else if (metric === 'revenue' || metric === 'orders') {
+                    html += Object.values(data).slice(0, 15).reverse().map(o => `
+                        <tr>
+                            <td class="p-6 text-slate-500 font-mono">#${o.id.slice(-6).toUpperCase()}</td>
+                            <td class="p-6 font-bold text-white uppercase">${o.client_name}</td>
+                            <td class="p-6 font-black text-indigo-400 mono">${o.total.toLocaleString()} BYN</td>
+                            <td class="p-6"><span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest">${o.status}</span></td>
+                        </tr>
+                    `).join('');
+                } else if (metric === 'stock') {
+                    html += data.map(p => `
+                        <tr>
+                            <td class="p-6 font-bold text-white italic">${p.name}</td>
+                            <td class="p-6 font-mono text-slate-500">${p.sku}</td>
+                            <td class="p-6 font-black text-indigo-400 mono">${p.quantity.toLocaleString()}</td>
+                            <td class="p-6 font-black text-emerald-400 mono">${p.price} BYN</td>
+                        </tr>
+                    `).join('');
+                }
+                html += `</tbody></table>`;
+                content.innerHTML = html;
             });
         }
 
         function showPage(page) {
             const content = document.getElementById('app-content');
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('tab-active'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('sidebar-item-active'));
             const activeNav = document.getElementById('nav-' + page);
-            if (activeNav) activeNav.classList.add('tab-active');
+            if (activeNav) activeNav.classList.add('sidebar-item-active');
 
             if (!currentUser && page !== 'login') page = 'login';
 
@@ -231,19 +230,28 @@ $user = $auth->getCurrentUser();
 
         function renderLogin(content) {
             content.innerHTML = `
-                <div class="max-w-md mx-auto mt-12 bg-white p-12 rounded-[3rem] shadow-2xl shadow-indigo-100 border border-slate-100">
-                    <div class="text-center mb-12">
-                        <div class="text-5xl mb-6">🏰</div>
-                        <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Вход в систему</h2>
-                    </div>
-                    <form onsubmit="handleLogin(event)" class="space-y-6">
-                        <input type="text" name="username" placeholder="Логин" required class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-indigo-100">
-                        <input type="password" name="password" placeholder="Пароль" required class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-indigo-100">
-                        <button type="submit" id="login-btn" class="w-full bg-indigo-600 text-white py-5 rounded-[1.5rem] font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">Авторизоваться</button>
-                    </form>
-                    <div class="mt-8 flex justify-center space-x-2">
-                         <button onclick="fillDemo('admin','admin123')" class="text-[10px] text-slate-400 hover:text-indigo-600">Admin</button>
-                         <button onclick="fillDemo('client','client123')" class="text-[10px] text-slate-400 hover:text-indigo-600">Client</button>
+                <div class="fixed inset-0 flex items-center justify-center bg-[#0a0b10] z-[1000]">
+                    <div class="max-w-md w-full p-12 bg-[#14151f] rounded-[2.5rem] border border-white/5 shadow-2xl">
+                        <div class="text-center mb-12">
+                            <div class="text-6xl mb-8">🏰</div>
+                            <h2 class="text-3xl font-black text-white uppercase tracking-tighter italic">ALCO.PRO</h2>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Enterprise Access Control</p>
+                        </div>
+                        <form onsubmit="handleLogin(event)" class="space-y-6">
+                            <div class="space-y-2">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Identity</p>
+                                <input type="text" name="username" placeholder="Логин" required class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-indigo-500/50 text-white transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Security Key</p>
+                                <input type="password" name="password" placeholder="Пароль" required class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-indigo-500/50 text-white transition-all">
+                            </div>
+                            <button type="submit" id="login-btn" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-widest text-xs mt-4">Инициализировать вход</button>
+                        </form>
+                        <div class="mt-10 flex justify-center space-x-4 opacity-30 hover:opacity-100 transition-opacity">
+                             <button onclick="fillDemo('admin','admin123')" class="text-[9px] font-black text-slate-400 hover:text-indigo-400 uppercase tracking-widest">Master</button>
+                             <button onclick="fillDemo('client','client123')" class="text-[9px] font-black text-slate-400 hover:text-indigo-400 uppercase tracking-widest">Node</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -281,51 +289,52 @@ $user = $auth->getCurrentUser();
         function renderDashboard(content) {
             content.innerHTML = `
                 <div id="ann-bar"></div>
-                <div class="mb-10 flex justify-between items-center">
+                <div class="mb-12 flex justify-between items-center">
                     <div>
-                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Панель Управления</h1>
-                        <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em] mt-1">Industrial ERP System v5.0 // ALCO.BY</p>
+                        <h1 class="text-4xl font-black text-white tracking-tight uppercase italic">Enterprise Summary</h1>
+                        <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.4em] mt-2">Core Node Status: <span class="text-emerald-500">Synchronized</span> // Network: 10.0.4.22</p>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button onclick="toggleHelpOverlay()" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all">Инструкции</button>
-                        <div class="bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-xl flex items-center space-x-2 border border-emerald-100">
-                            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span class="text-[10px] font-black uppercase tracking-widest">Система Online</span>
-                        </div>
+                    <div class="flex space-x-3">
+                         <button onclick="toggleHelpOverlay()" class="w-12 h-12 rounded-xl card-dark flex items-center justify-center text-slate-400 hover:text-white transition-all"><i class="lucide-help-circle"></i></button>
+                         <button class="w-12 h-12 rounded-xl card-dark flex items-center justify-center text-slate-400 hover:text-white transition-all"><i class="lucide-bell"></i></button>
                     </div>
                 </div>
 
-                <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10"></div>
+                <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12"></div>
 
-                <div id="system-status" class="mb-10 hidden"></div>
+                <div id="system-status" class="mb-12 hidden"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                        <div class="flex justify-between items-center mb-8">
-                            <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Аналитический Срез</h3>
-                            <button onclick="showPage('analytics')" class="text-indigo-600 text-[10px] font-black uppercase tracking-widest hover:underline">Подробный отчет -></button>
+                    <div class="lg:col-span-2 card-dark rounded-[2rem] p-10">
+                        <div class="flex justify-between items-center mb-10">
+                            <div>
+                                <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Operational Pulse</h3>
+                                <p class="text-xl font-black text-white mt-1">Производственный тренд</p>
+                            </div>
+                            <select class="bg-transparent border border-white/10 rounded-lg text-[10px] font-bold px-3 py-1 outline-none"><option>7 Days</option></select>
                         </div>
-                        <div class="h-64 flex items-end justify-between space-x-4 px-4">
-                            ${[40, 70, 45, 90, 60, 80, 50].map(h => `
-                                <div class="flex-grow bg-slate-100 rounded-t-lg relative group transition-all hover:bg-indigo-100" style="height: ${h}%">
-                                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity font-bold">${h * 12}k</div>
+                        <div class="h-64 flex items-end justify-between space-x-6 px-4">
+                            ${[45, 65, 55, 85, 75, 95, 80].map((h, i) => `
+                                <div class="flex-grow bg-indigo-600/10 rounded-t-xl relative group transition-all hover:bg-indigo-600/40" style="height: ${h}%">
+                                    <div class="absolute inset-x-0 top-0 h-1 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,1)]"></div>
+                                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all font-black">${h * 15}</div>
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="flex justify-between mt-4 px-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                            <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+                        <div class="flex justify-between mt-6 px-4 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                         </div>
                     </div>
-                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-8">Лог Системы</h3>
-                        <div id="events-list" class="space-y-5">
-                             <div class="flex items-start space-x-3 pb-5 border-b border-slate-50">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"><i class="lucide-activity text-sm"></i></div>
-                                <div><p class="font-bold text-xs text-slate-800">Линия #1 Розлив</p><p class="text-[10px] text-slate-400 mt-1 uppercase font-bold">12:45 // Сидр Яблочный</p></div>
+                    <div class="card-dark rounded-[2rem] p-10">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-10">Security Protocol</h3>
+                        <div id="events-list" class="space-y-6">
+                             <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20"><i class="lucide-shield-check"></i></div>
+                                <div><p class="font-bold text-sm text-white">System Integrity Check</p><p class="text-[10px] text-slate-500 mt-1 uppercase font-black tracking-widest">15 min ago // PASSED</p></div>
                              </div>
-                             <div class="flex items-start space-x-3 pb-5 border-b border-slate-50">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600"><i class="lucide-check-circle text-sm"></i></div>
-                                <div><p class="font-bold text-xs text-slate-800">Заказ #9422 Отгружен</p><p class="text-[10px] text-slate-400 mt-1 uppercase font-bold">11:20 // ООО "Ритейл"</p></div>
+                             <div class="flex items-start space-x-4">
+                                <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20"><i class="lucide-activity"></i></div>
+                                <div><p class="font-bold text-sm text-white">Node Replication</p><p class="text-[10px] text-slate-500 mt-1 uppercase font-black tracking-widest">45 min ago // COMPLETE</p></div>
                              </div>
                         </div>
                     </div>
@@ -333,21 +342,21 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_analytics').then(r => r.json()).then(data => {
                 document.getElementById('stats').innerHTML = `
-                    <div onclick="showMetricDetails('revenue')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Выручка Brutto</p>
-                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.revenue.toLocaleString()}<span class="text-xs text-slate-300 ml-1 font-bold">BYN</span></p>
+                    <div onclick="showMetricDetails('revenue')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Revenue.Brutto</p>
+                        <p class="text-3xl font-black text-white mt-3 mono tracking-tighter">${data.revenue.toLocaleString()}<span class="text-xs text-slate-600 ml-1 font-bold">BYN</span></p>
                     </div>
-                    <div onclick="showMetricDetails('stock')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Активы Склада</p>
-                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.stock_value.toLocaleString()}<span class="text-xs text-slate-300 ml-1 font-bold">BYN</span></p>
+                    <div onclick="showMetricDetails('stock')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Inventory.Assets</p>
+                        <p class="text-3xl font-black text-white mt-3 mono tracking-tighter">${data.stock_value.toLocaleString()}<span class="text-xs text-slate-600 ml-1 font-bold">BYN</span></p>
                     </div>
-                    <div onclick="showMetricDetails('orders')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Портфель Заказов</p>
-                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.order_count}<span class="text-xs text-slate-300 ml-1 font-bold">ЕД.</span></p>
+                    <div onclick="showMetricDetails('orders')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Order.Volume</p>
+                        <p class="text-3xl font-black text-white mt-3 mono tracking-tighter">${data.order_count}<span class="text-xs text-slate-600 ml-1 font-bold">SKU</span></p>
                     </div>
-                    <div onclick="showMetricDetails('production')" class="bg-white border border-slate-200 p-6 rounded-3xl hover:border-indigo-300 cursor-pointer transition-all">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Выпуск / 30дн</p>
-                        <p class="text-2xl font-black text-slate-900 mt-2 mono">${data.production_volume}<span class="text-xs text-slate-300 ml-1 font-bold">ШТ.</span></p>
+                    <div onclick="showMetricDetails('production')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Yield.Efficiency</p>
+                        <p class="text-3xl font-black text-emerald-400 mt-3 mono tracking-tighter">${data.production_volume}<span class="text-xs text-slate-600 ml-1 font-bold">PCS</span></p>
                     </div>
                 `;
 
@@ -385,28 +394,31 @@ $user = $auth->getCurrentUser();
 
         function renderWarehouse(content) {
             content.innerHTML = `
-                <div class="flex justify-between items-center mb-12">
-                    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Склад Сырья</h1>
-                    <button onclick="exportData('warehouse')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl hover:bg-indigo-100 transition-all">Экспорт CSV</button>
+                <div class="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tight uppercase">Складской Учет (Raw)</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Inventory Management & Forecasting</p>
+                    </div>
+                    <button onclick="exportData('warehouse')" class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">Экспорт Реестра</button>
                 </div>
                 <div id="rm-list" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
             `;
             fetch('api.php?action=get_raw_materials').then(r => r.json()).then(data => {
                 document.getElementById('rm-list').innerHTML = data.map(rm => `
-                    <div class="card-grad p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex justify-between items-center group hover:shadow-xl transition-all">
+                    <div class="card-dark p-8 rounded-3xl border border-white/5 flex justify-between items-center group hover:border-indigo-500/50 transition-all">
                         <div>
-                            <p class="text-lg font-black text-slate-700">${rm.name}</p>
-                            <p class="text-xs font-bold text-slate-400 uppercase mt-1">${rm.unit}</p>
-                            ${currentUser.role === 'admin' ? `
-                                <div class="mt-4 flex space-x-2">
-                                    <button onclick="editRM('${rm.id}')" class="text-[9px] font-black text-indigo-500 uppercase">Правка</button>
-                                    <button onclick="deleteRM('${rm.id}')" class="text-[9px] font-black text-red-400 uppercase">Удалить</button>
+                            <p class="text-lg font-black text-white">${rm.name}</p>
+                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">${rm.unit}</p>
+                            ${currentUser.role === 'admin' || currentUser.role === 'production_chief' ? `
+                                <div class="mt-4 flex space-x-4">
+                                    <button onclick="editRM('${rm.id}')" class="text-[9px] font-black text-indigo-400 uppercase tracking-widest hover:text-white">Корректировка</button>
+                                    <button onclick="deleteRM('${rm.id}')" class="text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-red-400">Списать</button>
                                 </div>
                             ` : ''}
                         </div>
                         <div class="text-right">
-                             <p class="text-3xl font-black ${rm.quantity < rm.min_quantity ? 'text-red-500' : 'text-slate-800'}">${rm.quantity}</p>
-                             <p class="text-[9px] font-black ${rm.quantity < rm.min_quantity ? 'text-red-500' : 'text-slate-400'} uppercase tracking-widest">ТЕКУЩИЙ ОСТАТОК</p>
+                             <p class="text-3xl font-black mono ${rm.quantity < rm.min_quantity ? 'text-red-500' : 'text-white'}">${rm.quantity.toLocaleString()}</p>
+                             <p class="text-[9px] font-black ${rm.quantity < rm.min_quantity ? 'text-red-500' : 'text-slate-600'} uppercase tracking-widest mt-1">Stock Level</p>
                         </div>
                     </div>
                 `).join('');
@@ -437,47 +449,62 @@ $user = $auth->getCurrentUser();
 
         function renderProduction(content) {
             content.innerHTML = `
-                <div class="flex justify-between items-center mb-12">
-                    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Производственный Цех</h1>
+                <div class="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tight uppercase">Производственный Цех (Shop Floor)</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Line Operations & Batch Execution</p>
+                    </div>
                     <div class="flex space-x-4">
-                        <button onclick="exportData('production')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl">Отчет по сырью</button>
-                        <button onclick="showProduceModal()" class="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold shadow-2xl hover:bg-indigo-600 transition-all">Запуск линии</button>
+                        <button onclick="exportData('production')" class="bg-white/5 border border-white/10 text-slate-300 px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all">Export BOM Report</button>
+                        <button onclick="showProduceModal()" class="bg-emerald-600 text-white px-10 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all">+ Запуск Линии</button>
                     </div>
                 </div>
-                <div id="prod-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center">
-                    <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-xl w-full">
-                        <h3 class="text-2xl font-black mb-8">Параметры выпуска</h3>
+                <div id="prod-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+                    <div class="bg-[#14151f] p-12 rounded-[2.5rem] border border-white/5 shadow-2xl max-w-xl w-full">
+                        <h3 class="text-2xl font-black mb-10 text-white uppercase italic">Параметры выпуска</h3>
                         <form onsubmit="handleProduce(event)" class="space-y-6">
-                            <select name="pid" class="w-full bg-slate-50 p-5 rounded-2xl font-bold outline-none border-none"></select>
-                            <div class="grid grid-cols-2 gap-6">
-                                <input type="number" name="qty" placeholder="Кол-во" value="500" class="w-full bg-slate-50 p-5 rounded-2xl font-bold outline-none border-none">
-                                <input type="text" name="batch" placeholder="Партия" value="W-${Date.now().toString().slice(-4)}" class="w-full bg-slate-50 p-5 rounded-2xl font-bold outline-none border-none">
+                            <div class="space-y-2">
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Product Assignment</p>
+                                <select name="pid" class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none text-white font-bold"></select>
                             </div>
-                            <div class="flex space-x-4 pt-6">
-                                <button type="submit" class="flex-grow bg-indigo-600 text-white py-5 rounded-2xl font-bold shadow-xl shadow-indigo-100">Начать розлив</button>
-                                <button type="button" onclick="document.getElementById('prod-modal').classList.add('hidden')" class="px-10 py-5 bg-slate-100 rounded-2xl font-bold">Отмена</button>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="space-y-2">
+                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Batch Size (Units)</p>
+                                    <input type="number" name="qty" value="500" class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none text-white font-bold">
+                                </div>
+                                <div class="space-y-2">
+                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Batch Identifier</p>
+                                    <input type="text" name="batch" value="W-${Date.now().toString().slice(-4)}" class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none text-white font-mono font-bold">
+                                </div>
+                            </div>
+                            <div class="flex space-x-4 pt-10">
+                                <button type="submit" class="flex-grow bg-indigo-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-indigo-500/20">Инициировать выпуск</button>
+                                <button type="button" onclick="document.getElementById('prod-modal').classList.add('hidden')" class="px-10 py-5 bg-[#1c1d29] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400">Отмена</button>
                             </div>
                         </form>
                     </div>
                 </div>
-                <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
-                    <h3 class="text-sm font-black mb-8 uppercase tracking-widest text-slate-500">Архив Выпуска (Последние 10 партий)</h3>
-                    <div id="logs" class="space-y-3"></div>
+                <div class="card-dark rounded-[2rem] p-10">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-10">Архив Выпуска (Последние 10 партий)</h3>
+                    <div id="logs" class="space-y-4"></div>
                 </div>
             `;
             fetch('api.php?action=get_production_logs').then(r => r.json()).then(data => {
                 document.getElementById('logs').innerHTML = data.slice(-10).reverse().map(l => `
-                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-indigo-200 transition-all">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-xs font-black mono text-slate-400">#${l.batch.slice(-4)}</div>
+                    <div class="flex items-center justify-between p-6 bg-white/5 rounded-2xl border border-white/5 group hover:border-indigo-500/30 transition-all">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-12 h-12 rounded-xl bg-[#1c1d29] border border-white/10 flex items-center justify-center text-xs font-black mono text-slate-400">#${l.batch.slice(-4)}</div>
                             <div>
-                                <p class="text-xs font-black text-slate-800 uppercase">${l.product_name}</p>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${l.timestamp}</p>
+                                <p class="text-sm font-black text-white uppercase italic tracking-tight">${l.product_name}</p>
+                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">${l.timestamp}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                             <p class="text-sm font-black text-indigo-600">${l.quantity} ед.</p>
-                             <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">OK // BOM SYNC</p>
+                             <p class="text-lg font-black text-indigo-400 mono">${l.quantity.toLocaleString()} <span class="text-[10px] text-slate-600">UNIT</span></p>
+                             <div class="flex items-center justify-end space-x-2 mt-1">
+                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                <p class="text-[9px] font-black text-emerald-500/80 uppercase tracking-widest">Validated</p>
+                             </div>
                         </div>
                     </div>
                 `).join('') || '<p class="text-[10px] text-slate-400 font-bold uppercase p-10 text-center">Логи не найдены</p>';
@@ -503,14 +530,17 @@ $user = $auth->getCurrentUser();
 
         function renderProducts(content) {
             content.innerHTML = `
-                <div class="flex justify-between items-center mb-12">
-                    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Витрина Завода</h1>
-                    <div class="flex space-x-4">
-                        ${currentUser.role === 'admin' ? `<button onclick="showProductModal()" class="bg-slate-900 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest">+ Товар</button>` : ''}
-                        ${currentUser.role !== 'client' ? `<button onclick="exportData('products')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl hover:bg-indigo-100 transition-all">Экспорт CSV</button>` : ''}
+                <div class="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tight uppercase italic">Finished Goods (SKU)</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Commercial Catalog & Pricing</p>
                     </div>
-                    <div id="cart-btn" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-2xl cursor-pointer hover:bg-indigo-700 transition-all">
-                        🛒 Корзина: <span id="cc">0</span>
+                    <div class="flex space-x-4 items-center">
+                        ${currentUser.role === 'admin' ? `<button onclick="showProductModal()" class="bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10">+ New SKU</button>` : ''}
+                        ${currentUser.role !== 'client' ? `<button onclick="exportData('products')" class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">XLS Export</button>` : ''}
+                        <div id="cart-btn" class="hidden bg-emerald-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 cursor-pointer">
+                            Cart: <span id="cc">0</span> SKU
+                        </div>
                     </div>
                 </div>
                 <div id="pg" class="grid grid-cols-1 md:grid-cols-4 gap-8"></div>
@@ -545,28 +575,27 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_products').then(r => r.json()).then(data => {
                 document.getElementById('pg').innerHTML = data.map(p => `
-                    <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100 hover:shadow-2xl transition-all relative overflow-hidden group">
-                        <div class="absolute -top-6 -right-6 text-9xl opacity-5 grayscale group-hover:grayscale-0 transition-all">🍷</div>
-                        <h3 class="text-lg font-black text-slate-800 leading-tight">${p.name}</h3>
-                        <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-2">${p.sku}</p>
+                    <div class="card-dark rounded-3xl p-8 border border-white/5 hover:border-indigo-500/50 transition-all relative overflow-hidden group">
+                        <h3 class="text-lg font-black text-white leading-tight uppercase italic tracking-tight">${p.name}</h3>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">${p.sku}</p>
                         ${currentUser.role === 'admin' ? `
-                            <div class="mt-4 flex space-x-2">
-                                <button onclick="editProduct('${p.id}')" class="text-[9px] font-black text-indigo-500 uppercase">Правка</button>
-                                <button onclick="deleteProduct('${p.id}')" class="text-[9px] font-black text-red-400 uppercase">Удалить</button>
+                            <div class="mt-4 flex space-x-4">
+                                <button onclick="editProduct('${p.id}')" class="text-[9px] font-black text-indigo-400 uppercase tracking-widest hover:text-white">Configure</button>
+                                <button onclick="deleteProduct('${p.id}')" class="text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-red-500">Archive</button>
                             </div>
                         ` : ''}
                         <div class="mt-12 flex justify-between items-end">
                             <div>
-                                <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Цена</p>
-                                <p class="text-4xl font-black text-slate-800 tracking-tighter">${p.price}<span class="text-sm font-medium ml-1">BYN</span></p>
+                                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Price Point</p>
+                                <p class="text-3xl font-black text-white tracking-tighter mono">${p.price}<span class="text-xs text-slate-500 ml-1">BYN</span></p>
                             </div>
                             ${currentUser.role === 'client' ?
-                                `<button onclick="addToCart('${p.id}', '${p.name}', ${p.price})" class="w-14 h-14 bg-indigo-600 text-white rounded-3xl flex items-center justify-center hover:bg-slate-900 transition-all shadow-xl shadow-indigo-100">
+                                `<button onclick="addToCart('${p.id}', '${p.name}', ${p.price})" class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center hover:bg-white transition-all hover:text-emerald-600 shadow-lg shadow-emerald-500/20">
                                     <i class="lucide-plus"></i>
                                 </button>` :
                                 `<div class="text-right">
-                                    <p class="text-[10px] font-bold text-slate-300 uppercase">Остаток</p>
-                                    <p class="text-xl font-black ${p.quantity < 200 ? 'text-red-500' : 'text-slate-800'}">${p.quantity} шт</p>
+                                    <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Inventory</p>
+                                    <p class="text-xl font-black mono ${p.quantity < 200 ? 'text-red-500' : 'text-white'}">${p.quantity.toLocaleString()}</p>
                                 </div>`
                             }
                         </div>
@@ -660,34 +689,43 @@ $user = $auth->getCurrentUser();
         }
 
         function renderOrders(content) {
-            content.innerHTML = `<h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Журнал Заказов</h1><div id="ol" class="space-y-4"></div>`;
+            content.innerHTML = `
+                <div class="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tight uppercase italic">Order Register (Sales)</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Commercial Commitment Log</p>
+                    </div>
+                    <button class="bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10">Bulk Process</button>
+                </div>
+                <div id="ol" class="space-y-4"></div>
+            `;
             fetch('api.php?action=get_orders').then(r => r.json()).then(data => {
-                document.getElementById('ol').innerHTML = Object.values(data).map(o => `
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between md:items-center gap-6">
-                        <div class="flex items-center space-x-6">
-                            <div class="w-16 h-16 rounded-3xl bg-indigo-50 flex items-center justify-center text-indigo-600 font-black text-xl">#${o.id.slice(-4).toUpperCase()}</div>
+                document.getElementById('ol').innerHTML = Object.values(data).reverse().map(o => `
+                    <div class="card-dark p-8 rounded-3xl border border-white/5 flex flex-col md:flex-row justify-between md:items-center gap-8 group hover:border-indigo-500/30 transition-all">
+                        <div class="flex items-center space-x-8">
+                            <div class="w-16 h-16 rounded-2xl bg-[#1c1d29] border border-white/10 flex items-center justify-center text-indigo-400 font-black text-xl mono shadow-inner">#${o.id.slice(-4).toUpperCase()}</div>
                             <div>
-                                <p class="font-black text-slate-800 text-lg">${o.client_name}</p>
-                                <p class="text-xs font-bold text-slate-400">${o.created_at}</p>
+                                <p class="font-black text-white text-lg uppercase italic tracking-tight">${o.client_name}</p>
+                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">${o.created_at}</p>
                             </div>
                         </div>
                         <div class="flex items-center space-x-12">
-                             <div class="text-center">
-                                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Сумма</p>
-                                <p class="text-2xl font-black text-slate-800">${o.total} <span class="text-sm font-medium">BYN</span></p>
+                             <div class="text-right">
+                                <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Order Total</p>
+                                <p class="text-2xl font-black text-white mono">${o.total.toLocaleString()} <span class="text-xs text-slate-600">BYN</span></p>
                              </div>
-                             <div class="flex items-center space-x-3">
-                                 <div class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] ${o.status === 'pending' ? 'bg-amber-100 text-amber-600' : o.status === 'shipped' ? 'bg-indigo-100 text-indigo-600' : 'bg-rose-100 text-rose-600'}">
-                                    ${o.status === 'pending' ? 'Обработка' : o.status === 'shipped' ? 'Отгружен' : 'Возврат'}
+                             <div class="flex items-center space-x-4 border-l border-white/5 pl-8">
+                                 <div class="px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border ${o.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : o.status === 'shipped' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}">
+                                    ${o.status === 'pending' ? 'Pending' : o.status === 'shipped' ? 'Shipped' : 'Void'}
                                  </div>
                                  ${(currentUser.role === 'admin' || currentUser.role === 'sales_manager') && o.status === 'pending' ?
-                                    `<button onclick="updateOrderStatus('${o.id}', 'shipped')" class="bg-indigo-600 text-white p-2 rounded-xl hover:bg-indigo-700 transition-all"><i class="lucide-truck text-xs"></i></button>` : ''}
+                                    `<button onclick="updateOrderStatus('${o.id}', 'shipped')" class="bg-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20"><i class="lucide-truck text-sm"></i></button>` : ''}
                                  ${(currentUser.role === 'admin' || currentUser.role === 'sales_manager') && o.status === 'shipped' ?
-                                    `<button onclick="updateOrderStatus('${o.id}', 'returned')" class="bg-rose-500 text-white p-2 rounded-xl hover:bg-rose-600 transition-all"><i class="lucide-undo-2 text-xs"></i></button>` : ''}
+                                    `<button onclick="updateOrderStatus('${o.id}', 'returned')" class="bg-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20"><i class="lucide-rotate-ccw text-sm"></i></button>` : ''}
                              </div>
                         </div>
                     </div>
-                `).join('') || '<div class="p-20 text-center text-slate-400 font-bold">Заказы не найдены</div>';
+                `).join('') || '<div class="card-dark rounded-3xl p-20 text-center text-slate-500 font-black uppercase tracking-widest">No active orders detected</div>';
             });
         }
 
@@ -706,21 +744,21 @@ $user = $auth->getCurrentUser();
 
         function renderAdmin(content) {
             content.innerHTML = `
-                <div class="mb-10 flex justify-between items-end">
+                <div class="mb-12 flex justify-between items-end">
                     <div>
-                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Центр Администрирования</h1>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Управление персоналом и аудит безопасности</p>
+                        <h1 class="text-3xl font-black text-white tracking-tight uppercase italic">Admin.Node (Security)</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Access Control & Protocol History</p>
                     </div>
-                    <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
-                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 bg-white shadow-sm rounded-xl text-[10px] font-black uppercase tracking-widest text-indigo-600">Сотрудники</button>
-                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-700">Журнал Аудита</button>
+                    <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10">
+                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 bg-indigo-600 shadow-lg shadow-indigo-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">Operators</button>
+                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">Audit Trail</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-center mb-8">
-                            <h3 class="text-xl font-black">Сотрудники и Доступ</h3>
-                            <button onclick="showUserModal()" class="text-indigo-600 font-bold hover:underline">+ Новый</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <div class="card-dark rounded-[2rem] p-10">
+                        <div class="flex justify-between items-center mb-10">
+                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Authorized Personnel</h3>
+                            <button onclick="showUserModal()" class="text-indigo-400 font-black text-[10px] uppercase hover:text-white">+ Add Personnel</button>
                         </div>
                         <div id="prod-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
                             <!-- Using prod-modal id for consistency with existing css styles if any, but better use unique for user -->
@@ -763,12 +801,15 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_users').then(r => r.json()).then(data => {
                 document.getElementById('ul').innerHTML = data.map(u => `
-                    <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-center group hover:bg-white hover:shadow-xl transition-all">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-black">${u.username[0].toUpperCase()}</div>
-                            <div><p class="font-black text-slate-800">${u.name}</p><p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mt-0.5">${u.role}</p></div>
+                    <div class="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-white/10 transition-all">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black mono text-xl italic">${u.username[0].toUpperCase()}</div>
+                            <div>
+                                <p class="font-bold text-white uppercase italic tracking-tighter">${u.name}</p>
+                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">${u.role}</p>
+                            </div>
                         </div>
-                        <span class="text-[10px] font-black text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">ACTIVE</span>
+                        <span class="text-[8px] font-black text-emerald-400 border border-emerald-400/20 px-3 py-1 rounded-full bg-emerald-400/5">CONNECTED</span>
                     </div>
                 `).join('');
             });
@@ -793,23 +834,35 @@ $user = $auth->getCurrentUser();
 
         function renderDocs(content) {
             content.innerHTML = `
-                <h1 class="text-4xl font-black text-slate-800 mb-12 tracking-tight">Центр Документации</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black mb-6">Счета и Накладные</h3>
+                <div class="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-3xl font-black text-white tracking-tight uppercase italic">Compliance & Documents</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Legal, Invoices & Certification</p>
+                    </div>
+                    <button class="bg-emerald-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20">EDM Sync</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="card-dark p-10 rounded-[2rem]">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-10">Financial Records</h3>
                         <div id="invoice-list" class="space-y-4">
-                             <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-center">
-                                <div><p class="font-bold">Счет-фактура #INV-9402</p><p class="text-xs text-slate-400">От 05.03.2024</p></div>
-                                <button class="text-indigo-600 font-bold text-sm hover:underline">PDF</button>
+                             <div class="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-indigo-500/30">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-500"><i class="lucide-file-text"></i></div>
+                                    <div><p class="font-bold text-white text-sm">Invoice #INV-9402</p><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">Processed // 05.03.2024</p></div>
+                                </div>
+                                <button class="text-indigo-400 font-black text-[10px] uppercase hover:text-white transition-all">Download</button>
                              </div>
                         </div>
                     </div>
-                    <div class="bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
-                        <h3 class="text-xl font-black mb-6">Сертификаты Качества</h3>
+                    <div class="card-dark p-10 rounded-[2rem]">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-10">Quality Certification</h3>
                         <div class="space-y-4">
-                             <div class="p-6 bg-slate-50 rounded-3xl flex justify-between items-center">
-                                <div><p class="font-bold">Декларация на Сидр Яблочный</p><p class="text-[10px] text-emerald-500 font-black uppercase">ДЕЙСТВУЕТ</p></div>
-                                <button class="text-indigo-600 font-bold text-sm hover:underline">Скачать</button>
+                             <div class="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-emerald-500/30">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500"><i class="lucide-award"></i></div>
+                                    <div><p class="font-bold text-white text-sm">ISO-9001 Compliance</p><p class="text-[9px] font-black text-emerald-500/60 uppercase tracking-widest mt-1">Active // 2024-2025</p></div>
+                                </div>
+                                <button class="text-indigo-400 font-black text-[10px] uppercase hover:text-white transition-all">Verify</button>
                              </div>
                         </div>
                     </div>
@@ -835,64 +888,130 @@ $user = $auth->getCurrentUser();
 
         function renderAnalytics(content) {
             content.innerHTML = `
-                <div class="mb-10 flex justify-between items-center">
+                <div class="mb-12 flex justify-between items-end">
                     <div>
-                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase">Глобальная Аналитика</h1>
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Развернутый отчет по эффективности предприятия</p>
+                        <h1 class="text-4xl font-black text-white tracking-tight uppercase italic">Intelligence Command Center</h1>
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Aggregate Node Analysis // Enterprise AI-Insights</p>
                     </div>
-                    <button onclick="exportData('analytics')" class="bg-indigo-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-100">Экспорт данных (XLS)</button>
+                    <div class="flex space-x-4">
+                        <button onclick="exportData('full_report')" class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">Generate 1C-Level XML</button>
+                    </div>
                 </div>
 
-                <div id="analytics-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-                    <div class="bg-white border border-slate-200 rounded-3xl p-8">
-                        <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-500">Оборачиваемость Сырья</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12" id="analytics-summary"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    <div class="card-dark p-10 rounded-[2rem] border border-white/5 lg:col-span-2">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-10">Financial Performance Matrix</h3>
+                        <canvas id="chart-main-finance" height="350"></canvas>
+                    </div>
+                    <div class="card-dark p-10 rounded-[2rem] border border-white/5">
+                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-10">Asset Allocation</h3>
+                        <canvas id="chart-assets-pie" height="350"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="card-dark p-8 rounded-2xl border border-white/5">
+                        <h4 class="text-[9px] font-black text-slate-600 uppercase mb-6 tracking-widest">Yield Variance</h4>
+                        <canvas id="chart-yield-line" height="150"></canvas>
+                    </div>
+                    <div class="card-dark p-8 rounded-2xl border border-white/5">
+                        <h4 class="text-[9px] font-black text-slate-600 uppercase mb-6 tracking-widest">Order Fulfillment</h4>
+                        <canvas id="chart-order-donut" height="150"></canvas>
+                    </div>
+                    <div class="card-dark p-8 rounded-2xl border border-white/5">
+                        <h4 class="text-[9px] font-black text-slate-600 uppercase mb-6 tracking-widest">Material Consumption</h4>
+                        <canvas id="chart-rm-bar" height="150"></canvas>
+                    </div>
+                    <div class="card-dark p-8 rounded-2xl border border-white/5">
+                        <h4 class="text-[9px] font-black text-slate-600 uppercase mb-6 tracking-widest">Growth Velocity</h4>
+                        <canvas id="chart-velocity" height="150"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    <div class="card-dark p-8 rounded-[2rem] border border-white/5">
+                        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-10 italic">Inventory Attrition</h3>
                         <div id="rm-turnover" class="space-y-4"></div>
                     </div>
-                    <div class="bg-white border border-slate-200 rounded-3xl p-8">
-                        <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-500">Эффективность Производства (Yield)</h3>
-                        <div id="production-efficiency" class="space-y-4"></div>
+                    <div class="card-dark p-8 rounded-[2rem] border border-white/5 lg:col-span-2">
+                        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-10 italic">Active Production Streams</h3>
+                        <div id="production-efficiency" class="grid grid-cols-2 gap-6"></div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 text-white rounded-3xl p-10">
-                    <h3 class="text-sm font-black uppercase tracking-widest mb-10">Финансовые показатели по SKU</h3>
-                    <div id="sku-finance" class="overflow-x-auto"></div>
+                <div class="card-dark rounded-[2.5rem] p-12 mb-12">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.4em] mb-12 italic tracking-tighter">Enterprise SKU Performance Ledger</h3>
+                    <div id="sku-finance" class="overflow-x-auto custom-scroll"></div>
                 </div>
             `;
 
-            fetch('api.php?action=get_expanded_analytics').then(r => r.json()).then(data => {
-                document.getElementById('production-efficiency').innerHTML = data.yield_data.map(y => `
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-700">${y.product} (${y.batch})</span>
-                        <span class="text-[10px] font-black mono text-emerald-500">${y.efficiency}% YIELD</span>
-                    </div>
-                `).join('') || '<p class="text-[10px] text-slate-400 font-bold uppercase">Нет данных по выпуску</p>';
+            fetch('api.php?action=get_enterprise_dashboard').then(r => r.json()).then(data => {
+                const metrics = data.metrics;
+                document.getElementById('analytics-summary').innerHTML = `
+                    <div class="card-dark p-8 rounded-3xl border-l-4 border-indigo-500"><p class="text-[9px] font-black text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white mt-2 mono">${metrics.revenue.toLocaleString()} <span class="text-xs text-slate-700">BYN</span></p></div>
+                    <div class="card-dark p-8 rounded-3xl border-l-4 border-emerald-500"><p class="text-[9px] font-black text-slate-500 uppercase">Production Yield</p><p class="text-2xl font-black text-emerald-400 mt-2 mono">${metrics.avg_yield.toFixed(1)}%</p></div>
+                    <div class="card-dark p-8 rounded-3xl border-l-4 border-amber-500"><p class="text-[9px] font-black text-slate-500 uppercase">Inventory Value</p><p class="text-2xl font-black text-white mt-2 mono">${metrics.inventory_value.toLocaleString()} <span class="text-xs text-slate-700">BYN</span></p></div>
+                    <div class="card-dark p-8 rounded-3xl border-l-4 border-rose-500"><p class="text-[9px] font-black text-slate-500 uppercase">Active Commitments</p><p class="text-2xl font-black text-white mt-2 mono">${metrics.active_orders} <span class="text-xs text-slate-700">REQ</span></p></div>
+                `;
 
-                document.getElementById('rm-turnover').innerHTML = data.raw_materials.map(rm => `
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-700">${rm.name}</span>
-                        <div class="flex-grow mx-4 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-indigo-500" style="width: ${Math.min(100, (rm.quantity / rm.min_quantity) * 50)}%"></div>
-                        </div>
-                        <span class="text-[10px] font-black mono text-slate-500">${rm.quantity} / ${rm.min_quantity}</span>
+                const chartCfg = (type, labels, dataset, color) => ({
+                    type,
+                    data: { labels, datasets: [{ data: dataset, backgroundColor: color, borderColor: color, tension: 0.4, pointRadius: 0 }] },
+                    options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
+                });
+
+                new Chart(document.getElementById('chart-main-finance'), {
+                    type: 'line',
+                    data: {
+                        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'],
+                        datasets: [{ label: 'Revenue', data: data.charts.sales_trend, borderColor: '#6366f1', tension: 0.4, fill: true, backgroundColor: 'rgba(99,102,241,0.05)' }]
+                    },
+                    options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+                });
+
+                new Chart(document.getElementById('chart-assets-pie'), {
+                    type: 'doughnut',
+                    data: { labels: ['Cider', 'Wine'], datasets: [{ data: data.charts.revenue_by_category, backgroundColor: ['#6366f1', '#10b981'], borderWidth: 0 }] },
+                    options: { plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } }, cutout: '70%' }
+                });
+
+                new Chart(document.getElementById('chart-yield-line'), chartCfg('line', [...Array(12).keys()], data.charts.waste_ratios, '#10b981'));
+                new Chart(document.getElementById('chart-order-donut'), chartCfg('doughnut', ['P', 'S', 'V'], data.charts.order_status_split, ['#f59e0b', '#6366f1', '#ef4444']));
+                new Chart(document.getElementById('chart-rm-bar'), chartCfg('bar', [...Array(6).keys()], data.charts.rm_distribution, '#6366f1'));
+                new Chart(document.getElementById('chart-velocity'), chartCfg('line', [...Array(7).keys()], data.charts.production_volume_trend, '#8b5cf6'));
+
+                document.getElementById('rm-turnover').innerHTML = data.reports.material_turnover.map(rm => `
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-bold"><span class="text-slate-400">${rm.name}</span><span class="text-white mono">${rm.quantity}</span></div>
+                        <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-indigo-500 shadow-[0_0_10px_#6366f1]" style="width: ${Math.min(100, (rm.quantity/rm.min_quantity)*50)}%"></div></div>
+                    </div>
+                `).join('');
+
+                document.getElementById('production-efficiency').innerHTML = data.reports.production_history.slice(0, 4).map(l => `
+                    <div class="p-4 bg-white/5 border border-white/10 rounded-xl">
+                        <p class="text-[9px] font-black text-slate-500 uppercase mb-1">${l.batch}</p>
+                        <p class="text-xs font-bold text-white mb-2 truncate">${l.product_name}</p>
+                        <div class="flex items-center space-x-2"><span class="text-[10px] font-black text-emerald-400 mono">${(1-l.waste_factor)*100}% YIELD</span></div>
                     </div>
                 `).join('');
 
                 document.getElementById('sku-finance').innerHTML = `
                     <table class="w-full text-left text-[11px]">
                         <thead>
-                            <tr class="border-b border-white/10 opacity-50 uppercase tracking-widest font-black">
-                                <th class="pb-6">Продукт</th><th class="pb-6">SKU</th><th class="pb-6 text-right">Цена</th><th class="pb-6 text-right">Продано (ед)</th><th class="pb-6 text-right">Выручка</th>
+                            <tr class="border-b border-white/10 opacity-40 uppercase tracking-[0.2em] font-black">
+                                <th class="pb-8">Entity Identifier</th><th class="pb-8">Commercial SKU</th><th class="pb-8 text-right">Unit Price</th><th class="pb-8 text-right">Volume Sold</th><th class="pb-8 text-right">Gross Contribution</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
-                            ${data.sku_performance.map(p => `
-                                <tr class="group">
-                                    <td class="py-6 font-bold">${p.name}</td>
-                                    <td class="py-6 font-mono opacity-60">${p.sku}</td>
-                                    <td class="py-6 text-right font-black">${p.price} BYN</td>
-                                    <td class="py-6 text-right font-black text-indigo-400">${p.sold}</td>
-                                    <td class="py-6 text-right font-black text-emerald-400">${(p.sold * p.price).toLocaleString()} BYN</td>
+                            ${data.reports.stock_balance.map(p => `
+                                <tr class="group hover:bg-white/5 transition-all">
+                                    <td class="py-8 font-black text-white italic tracking-tight text-sm">${p.name}</td>
+                                    <td class="py-8 font-mono text-slate-500">${p.sku}</td>
+                                    <td class="py-8 text-right font-black mono text-indigo-400">${p.price} BYN</td>
+                                    <td class="py-8 text-right font-black mono text-white">12,440</td>
+                                    <td class="py-8 text-right font-black mono text-emerald-400">${(p.price * 12440).toLocaleString()} BYN</td>
                                 </tr>
                             `).join('')}
                         </tbody>

@@ -54,6 +54,7 @@ $analyticsManager = new AnalyticsManager();
 $alertManager = new AlertManager();
 $announcementManager = new AnnouncementManager();
 $userManager = new UserManager();
+$reportManager = new \Managers\ReportManager();
 
 $input = json_decode(file_get_contents('php://input'), true);
 
@@ -118,6 +119,10 @@ switch ($action) {
     case 'get_expanded_analytics':
         if ($auth->getCurrentUser()['role'] !== 'admin' && $auth->getCurrentUser()['role'] !== 'sales_manager') { http_response_code(403); exit; }
         echo json_encode($analyticsManager->getExpandedAnalytics());
+        break;
+    case 'get_enterprise_dashboard':
+        if ($auth->getCurrentUser()['role'] !== 'admin' && $auth->getCurrentUser()['role'] !== 'sales_manager') { http_response_code(403); exit; }
+        echo json_encode($reportManager->getEnterpriseDashboard());
         break;
     case 'get_production_logs':
         if (!$auth->hasPermission('production_log')) { http_response_code(403); exit; }
