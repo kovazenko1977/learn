@@ -84,9 +84,106 @@ $user = $auth->getCurrentUser();
         </div>
     </footer>
 
+    <div id="metric-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-6">
+        <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-4xl w-full border border-slate-200">
+            <div class="flex justify-between items-center mb-8">
+                <h3 id="metric-title" class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Детали метрики</h3>
+                <button id="close-metric" onclick="document.getElementById('metric-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="lucide-x text-2xl"></i></button>
+            </div>
+            <div id="metric-content" class="overflow-x-auto"></div>
+        </div>
+    </div>
+
+    <div id="help-overlay" class="hidden fixed inset-0 bg-indigo-900/90 backdrop-blur-xl z-[300] p-12 text-white overflow-y-auto">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="text-4xl font-black uppercase tracking-tighter italic">Руководство Системы ALCO.BY</h2>
+                <button id="close-help" onclick="toggleHelpOverlay()" class="text-white/60 hover:text-white"><i class="lucide-x-circle text-4xl"></i></button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <section>
+                    <h4 class="text-indigo-300 font-black uppercase tracking-widest text-xs mb-4">Для Администратора</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li>• <span class="text-indigo-200">Склад:</span> Полный контроль остатков сырья. Кнопка "Правка" позволяет корректировать инвентаризацию.</li>
+                        <li>• <span class="text-indigo-200">Аудит:</span> Каждое действие в системе протоколируется. Проверяйте журнал в разделе Админ.</li>
+                        <li>• <span class="text-indigo-200">Оповещения:</span> Используйте Глобальное Оповещение для связи с отделами.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h4 class="text-indigo-300 font-black uppercase tracking-widest text-xs mb-4">Производство и Продажи</h4>
+                    <ul class="space-y-4 text-sm font-medium">
+                        <li>• <span class="text-indigo-200">Выпуск:</span> Запуск линии автоматически списывает сырье согласно рецептуре (BOM).</li>
+                        <li>• <span class="text-indigo-200">Заказы:</span> Статус "Отгружен" резервирует и списывает готовую продукцию со склада.</li>
+                        <li>• <span class="text-indigo-200">Интерактивность:</span> Кликните на любую цифру дашборда для получения расшифровки.</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+
     <script>
         const currentUser = <?= json_encode($user) ?>;
         let cart = [];
+
+        function toggleHelpOverlay() {
+            document.getElementById('help-overlay').classList.toggle('hidden');
+        }
+
+        function showMetricDetails(metric) {
+            const modal = document.getElementById('metric-modal');
+            const title = document.getElementById('metric-title');
+            const content = document.getElementById('metric-content');
+            modal.classList.remove('hidden');
+            content.innerHTML = '<div class="p-20 text-center"><div class="animate-spin inline-block w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div></div>';
+
+            let action = '';
+            switch(metric) {
+                case 'revenue': title.innerText = 'История Выручки (Последние заказы)'; action = 'get_orders'; break;
+                case 'stock': title.innerText = 'Остатки Готовой Продукции'; action = 'get_products'; break;
+                case 'orders': title.innerText = 'Активные Заказы'; action = 'get_orders'; break;
+                case 'production': title.innerText = 'Журнал Выпуска'; action = 'get_production_logs'; break;
+            }
+
+            fetch(`api.php?action=${action}`).then(r => r.json()).then(data => {
+                if (metric === 'revenue' || metric === 'orders') {
+                    content.innerHTML = `
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b">
+                                <tr><th class="p-4 font-black">ID</th><th class="p-4 font-black">Клиент</th><th class="p-4 font-black">Сумма</th><th class="p-4 font-black">Статус</th></tr>
+                            </thead>
+                            <tbody>
+                                ${Object.values(data).slice(0, 10).map(o => `
+                                    <tr class="border-b">
+                                        <td class="p-4 font-mono text-xs">#${o.id.slice(-4)}</td>
+                                        <td class="p-4 font-bold">${o.client_name}</td>
+                                        <td class="p-4 text-indigo-600 font-black">${o.total} BYN</td>
+                                        <td class="p-4 uppercase text-[10px] font-black">${o.status}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                } else if (metric === 'stock') {
+                    content.innerHTML = `
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b">
+                                <tr><th class="p-4 font-black">Наименование</th><th class="p-4 font-black">Артикул</th><th class="p-4 font-black">Остаток</th><th class="p-4 font-black">Цена</th></tr>
+                            </thead>
+                            <tbody>
+                                ${data.map(p => `
+                                    <tr class="border-b">
+                                        <td class="p-4 font-bold">${p.name}</td>
+                                        <td class="p-4 text-slate-400">${p.sku}</td>
+                                        <td class="p-4 font-black">${p.quantity} ед.</td>
+                                        <td class="p-4 text-indigo-600 font-bold">${p.price} BYN</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                }
+            });
+        }
 
         function showPage(page) {
             const content = document.getElementById('app-content');
@@ -163,11 +260,17 @@ $user = $auth->getCurrentUser();
         function renderDashboard(content) {
             content.innerHTML = `
                 <div id="ann-bar"></div>
-                <div class="mb-12">
-                    <h1 class="text-4xl font-black text-slate-800 tracking-tight">Рабочая панель</h1>
-                    <p class="text-slate-400 font-medium mt-2">Оперативная сводка по предприятию</p>
+                <div class="mb-12 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-4xl font-black text-slate-800 tracking-tight">Рабочая панель</h1>
+                        <p class="text-slate-400 font-medium mt-2">Оперативная сводка по предприятию [v4.2.0-PRO]</p>
+                    </div>
+                    <button onclick="toggleHelpOverlay()" class="text-indigo-600 font-bold text-xs uppercase tracking-widest border-b-2 border-indigo-100 hover:border-indigo-600 pb-1">Справка системы</button>
                 </div>
-                <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12"></div>
+                <div id="stats" class="grid grid-cols-1 md:grid-cols-4 gap-0 mb-12 border border-slate-200 rounded-[2rem] overflow-hidden bg-white shadow-sm"></div>
+
+                <div id="system-status" class="mb-12 hidden"></div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div class="bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100">
                         <h3 class="text-xl font-black mb-8 text-slate-800">Динамика отгрузок</h3>
@@ -192,27 +295,49 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_analytics').then(r => r.json()).then(data => {
                 document.getElementById('stats').innerHTML = `
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                        <div class="absolute -right-4 -bottom-4 text-7xl opacity-5">💰</div>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Выручка</p>
-                        <p class="text-3xl font-black text-slate-800 mt-2">${data.revenue} <span class="text-sm font-medium text-slate-400">BYN</span></p>
+                    <div onclick="showMetricDetails('revenue')" title="Кликните для просмотра истории выручки" class="p-10 border-r border-slate-100 hover:bg-slate-50 cursor-pointer transition-all relative group">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Выручка (Общая)</p>
+                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.revenue} <span class="text-xs font-bold text-slate-300 ml-1">BYN</span></p>
+                        <div class="mt-4 h-1 w-12 bg-indigo-500 rounded-full"></div>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                        <div class="absolute -right-4 -bottom-4 text-7xl opacity-5">🍾</div>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Продукция</p>
-                        <p class="text-3xl font-black text-indigo-600 mt-2">${data.stock_value} <span class="text-sm font-medium text-slate-400">BYN</span></p>
+                    <div onclick="showMetricDetails('stock')" title="Кликните для просмотра остатков продукции" class="p-10 border-r border-slate-100 hover:bg-slate-50 cursor-pointer transition-all relative group">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Оценка Склада</p>
+                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.stock_value} <span class="text-xs font-bold text-slate-300 ml-1">BYN</span></p>
+                        <div class="mt-4 h-1 w-12 bg-indigo-300 rounded-full"></div>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                         <div class="absolute -right-4 -bottom-4 text-7xl opacity-5">📦</div>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Заказов</p>
-                        <p class="text-3xl font-black text-orange-500 mt-2">${data.order_count}</p>
+                    <div onclick="showMetricDetails('orders')" title="Кликните для просмотра активных заказов" class="p-10 border-r border-slate-100 hover:bg-slate-50 cursor-pointer transition-all relative group">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Объем Заказов</p>
+                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.order_count} <span class="text-xs font-bold text-slate-300 ml-1">ЕД.</span></p>
+                        <div class="mt-4 h-1 w-12 bg-orange-400 rounded-full"></div>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 relative overflow-hidden">
-                         <div class="absolute -right-4 -bottom-4 text-7xl opacity-5">🧪</div>
-                        <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Произведено</p>
-                        <p class="text-3xl font-black text-emerald-600 mt-2">${data.production_volume} <span class="text-sm font-medium text-slate-400">ед.</span></p>
+                    <div onclick="showMetricDetails('production')" title="Кликните для просмотра журнала выпуска" class="p-10 hover:bg-slate-50 cursor-pointer transition-all relative group">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Готовая Продукция</p>
+                        <p class="text-3xl font-black text-slate-800 mt-3 group-hover:text-indigo-600 transition-colors">${data.production_volume} <span class="text-xs font-bold text-slate-300 ml-1">ШТ.</span></p>
+                        <div class="mt-4 h-1 w-12 bg-emerald-400 rounded-full"></div>
                     </div>
                 `;
+
+                if (currentUser.role === 'admin') {
+                    const sys = document.getElementById('system-status');
+                    sys.classList.remove('hidden');
+                    sys.innerHTML = `
+                        <div class="bg-slate-900 rounded-[2rem] p-10 text-white flex justify-between items-center shadow-2xl">
+                            <div class="flex items-center space-x-12">
+                                <div><p class="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-2">Статус Хранилища</p><p class="text-sm font-bold">JSON: Synchronized</p></div>
+                                <div><p class="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-2">Последний Аудит</p><p class="text-sm font-bold">${new Date().toLocaleTimeString()}</p></div>
+                                <div><p class="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-2">Системное время</p><p class="text-sm font-bold" id="live-clock">${new Date().toLocaleTimeString()}</p></div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                                <p class="text-[10px] font-black tracking-widest uppercase">System Online</p>
+                            </div>
+                        </div>
+                    `;
+                    setInterval(() => {
+                        const cl = document.getElementById('live-clock');
+                        if (cl) cl.innerText = new Date().toLocaleTimeString();
+                    }, 1000);
+                }
             });
             fetch('api.php?action=get_announcements').then(r => r.json()).then(data => {
                 document.getElementById('ann-bar').innerHTML = data.map(a => `
@@ -234,18 +359,46 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_raw_materials').then(r => r.json()).then(data => {
                 document.getElementById('rm-list').innerHTML = data.map(rm => `
-                    <div class="card-grad p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex justify-between items-center group hover:scale-105 transition-all">
+                    <div class="card-grad p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex justify-between items-center group hover:shadow-xl transition-all">
                         <div>
                             <p class="text-lg font-black text-slate-700">${rm.name}</p>
                             <p class="text-xs font-bold text-slate-400 uppercase mt-1">${rm.unit}</p>
+                            ${currentUser.role === 'admin' ? `
+                                <div class="mt-4 flex space-x-2">
+                                    <button onclick="editRM('${rm.id}')" class="text-[9px] font-black text-indigo-500 uppercase">Правка</button>
+                                    <button onclick="deleteRM('${rm.id}')" class="text-[9px] font-black text-red-400 uppercase">Удалить</button>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="text-right">
                              <p class="text-3xl font-black ${rm.quantity < rm.min_quantity ? 'text-red-500' : 'text-slate-800'}">${rm.quantity}</p>
-                             ${rm.quantity < rm.min_quantity ? '<p class="text-[9px] font-black text-red-500 uppercase tracking-widest">ДЕФИЦИТ</p>' : ''}
+                             <p class="text-[9px] font-black ${rm.quantity < rm.min_quantity ? 'text-red-500' : 'text-slate-400'} uppercase tracking-widest">ТЕКУЩИЙ ОСТАТОК</p>
                         </div>
                     </div>
                 `).join('');
             });
+        }
+
+        function editRM(id) {
+            fetch('api.php?action=get_raw_materials').then(r => r.json()).then(data => {
+                const rm = data.find(x => x.id === id);
+                const val = prompt(`Корректировка остатка для ${rm.name} (${rm.unit}):`, rm.quantity);
+                if (val !== null) {
+                    fetch('api.php?action=update_raw_material', {
+                        method: 'POST',
+                        body: JSON.stringify({ id, quantity: parseFloat(val) })
+                    }).then(() => renderWarehouse(document.getElementById('app-content')));
+                }
+            });
+        }
+
+        function deleteRM(id) {
+            if (confirm('Вы уверены, что хотите удалить этот материал со склада?')) {
+                fetch('api.php?action=delete_raw_material', {
+                    method: 'POST',
+                    body: JSON.stringify({ id })
+                }).then(() => renderWarehouse(document.getElementById('app-content')));
+            }
         }
 
         function renderProduction(content) {
@@ -301,7 +454,10 @@ $user = $auth->getCurrentUser();
             content.innerHTML = `
                 <div class="flex justify-between items-center mb-12">
                     <h1 class="text-4xl font-black text-slate-800 tracking-tight">Витрина Завода</h1>
-                    ${currentUser.role !== 'client' ? `<button onclick="exportData('products')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl hover:bg-indigo-100 transition-all">Экспорт CSV</button>` : ''}
+                    <div class="flex space-x-4">
+                        ${currentUser.role === 'admin' ? `<button onclick="showProductModal()" class="bg-slate-900 text-white px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-widest">+ Товар</button>` : ''}
+                        ${currentUser.role !== 'client' ? `<button onclick="exportData('products')" class="text-xs font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-6 py-3 rounded-xl hover:bg-indigo-100 transition-all">Экспорт CSV</button>` : ''}
+                    </div>
                     <div id="cart-btn" class="hidden bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black shadow-2xl cursor-pointer hover:bg-indigo-700 transition-all">
                         🛒 Корзина: <span id="cc">0</span>
                     </div>
@@ -317,6 +473,24 @@ $user = $auth->getCurrentUser();
                         </div>
                     </div>
                 </div>
+                <div id="prod-edit-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-6">
+                     <div class="bg-white p-12 rounded-[3rem] shadow-2xl max-w-xl w-full">
+                        <h3 class="text-2xl font-black mb-8" id="pem-title">Редактирование товара</h3>
+                        <form onsubmit="handleProductSubmit(event)" class="space-y-4">
+                            <input type="hidden" name="id">
+                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Название</span>
+                            <input type="text" name="name" placeholder="Сидр Яблочный 0.5" required class="w-full bg-slate-50 p-4 rounded-2xl outline-none mt-1"></label>
+                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Цена (BYN)</span>
+                            <input type="number" step="0.01" name="price" placeholder="4.50" required class="w-full bg-slate-50 p-4 rounded-2xl outline-none mt-1"></label>
+                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Артикул (SKU)</span>
+                            <input type="text" name="sku" placeholder="CIDER-APPLE-05" required class="w-full bg-slate-50 p-4 rounded-2xl outline-none mt-1"></label>
+                            <div class="flex space-x-4 pt-6">
+                                <button type="submit" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-bold">Сохранить</button>
+                                <button type="button" onclick="document.getElementById('prod-edit-modal').classList.add('hidden')" class="px-8 py-4 bg-slate-100 rounded-2xl font-bold">Отмена</button>
+                            </div>
+                        </form>
+                     </div>
+                </div>
             `;
             fetch('api.php?action=get_products').then(r => r.json()).then(data => {
                 document.getElementById('pg').innerHTML = data.map(p => `
@@ -324,6 +498,12 @@ $user = $auth->getCurrentUser();
                         <div class="absolute -top-6 -right-6 text-9xl opacity-5 grayscale group-hover:grayscale-0 transition-all">🍷</div>
                         <h3 class="text-lg font-black text-slate-800 leading-tight">${p.name}</h3>
                         <p class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-2">${p.sku}</p>
+                        ${currentUser.role === 'admin' ? `
+                            <div class="mt-4 flex space-x-2">
+                                <button onclick="editProduct('${p.id}')" class="text-[9px] font-black text-indigo-500 uppercase">Правка</button>
+                                <button onclick="deleteProduct('${p.id}')" class="text-[9px] font-black text-red-400 uppercase">Удалить</button>
+                            </div>
+                        ` : ''}
                         <div class="mt-12 flex justify-between items-end">
                             <div>
                                 <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Цена</p>
@@ -343,6 +523,57 @@ $user = $auth->getCurrentUser();
                 `).join('');
                 updCart();
             });
+        }
+
+        function showProductModal() {
+            const m = document.getElementById('prod-edit-modal');
+            const f = m.querySelector('form');
+            f.reset();
+            f.id.value = '';
+            document.getElementById('pem-title').innerText = 'Новый товар';
+            m.classList.remove('hidden');
+        }
+
+        function editProduct(id) {
+            fetch('api.php?action=get_products').then(r => r.json()).then(data => {
+                const p = data.find(x => x.id === id);
+                const m = document.getElementById('prod-edit-modal');
+                const f = m.querySelector('form');
+                f.id.value = p.id;
+                f.name.value = p.name;
+                f.price.value = p.price;
+                f.sku.value = p.sku;
+                document.getElementById('pem-title').innerText = 'Редактирование товара';
+                m.classList.remove('hidden');
+            });
+        }
+
+        function handleProductSubmit(e) {
+            e.preventDefault();
+            const f = e.target;
+            const data = {
+                id: f.id.value,
+                name: f.name.value,
+                price: parseFloat(f.price.value),
+                sku: f.sku.value
+            };
+            const action = data.id ? 'update_product' : 'add_product';
+            fetch(`api.php?action=${action}`, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            }).then(() => {
+                document.getElementById('prod-edit-modal').classList.add('hidden');
+                renderProducts(document.getElementById('app-content'));
+            });
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Удалить товар из каталога?')) {
+                fetch('api.php?action=delete_product', {
+                    method: 'POST',
+                    body: JSON.stringify({ id })
+                }).then(() => renderProducts(document.getElementById('app-content')));
+            }
         }
 
         function addToCart(id, name, price) {

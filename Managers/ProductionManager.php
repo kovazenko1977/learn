@@ -64,6 +64,14 @@ class ProductionManager {
         return $this->rmStore->findAll();
     }
 
+    public function updateRawMaterial($id, $data) {
+        return $this->rmStore->update($id, $data);
+    }
+
+    public function deleteRawMaterial($id) {
+        return $this->rmStore->delete($id);
+    }
+
     public function getLogs() {
         return $this->logStore->findAll();
     }

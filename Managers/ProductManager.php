@@ -17,6 +17,14 @@ class ProductManager {
         return $this->store->create($data);
     }
 
+    public function updateProduct($id, $data) {
+        return $this->store->update($id, $data);
+    }
+
+    public function deleteProduct($id) {
+        return $this->store->delete($id);
+    }
+
     public function getProduct($id) {
         return $this->store->findOne($id);
     }

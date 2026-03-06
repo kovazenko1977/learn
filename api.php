@@ -66,6 +66,14 @@ switch ($action) {
         if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
         echo json_encode($productManager->addProduct($input));
         break;
+    case 'update_product':
+        if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
+        echo json_encode($productManager->updateProduct($input['id'], $input));
+        break;
+    case 'delete_product':
+        if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
+        echo json_encode($productManager->deleteProduct($input['id']));
+        break;
     case 'get_orders':
         if (!$auth->hasPermission('orders_view_all') && !$auth->hasPermission('orders_view_own')) { http_response_code(403); exit; }
         $clientId = $auth->hasPermission('orders_view_all') ? null : $auth->getCurrentUser()['id'];
@@ -84,6 +92,14 @@ switch ($action) {
     case 'get_raw_materials':
         if (!$auth->hasPermission('raw_materials_view')) { http_response_code(403); exit; }
         echo json_encode($productionManager->getRawMaterials());
+        break;
+    case 'update_raw_material':
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; } // Strict for Admin only
+        echo json_encode($productionManager->updateRawMaterial($input['id'], $input));
+        break;
+    case 'delete_raw_material':
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; }
+        echo json_encode($productionManager->deleteRawMaterial($input['id']));
         break;
     case 'produce':
         if (!$auth->hasPermission('production_log')) { http_response_code(403); exit; }
