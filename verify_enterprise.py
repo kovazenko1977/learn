@@ -16,23 +16,23 @@ def verify_enterprise_features(page):
 
     # 3. Analytics Command Center
     page.click("#nav-analytics")
-    page.wait_for_selector("text=Intelligence Command Center")
+    page.wait_for_selector("text=Центр бизнес-аналитики")
     page.wait_for_selector("canvas") # Check for Charts
-    page.wait_for_selector("text=Enterprise SKU Performance Ledger")
+    page.wait_for_selector("text=Реестр эффективности SKU")
     print("Analytics Command Center confirmed.")
 
     # 4. Role Cabinet Check (Warehouse)
     page.click("#nav-warehouse")
-    page.wait_for_selector("text=Складской Учет (Raw)")
+    page.wait_for_selector("text=Складской Учет")
     print("Operational Cabinets (Warehouse) confirmed.")
 
     # 5. Logout verification
     page.click("text=Выход")
-    page.wait_for_selector("text=Identity")
+    page.wait_for_selector("text=Идентификация")
     print("Security Protocol (Logout) confirmed.")
 
     # Final Screenshot
-    page.screenshot(path="/home/jules/verification/enterprise_final.png", full_page=True)
+    page.screenshot(path="/home/jules/verification/enterprise_final_localized.png", full_page=True)
 
 with sync_playwright() as p:
     browser = p.chromium.launch()
@@ -43,6 +43,6 @@ with sync_playwright() as p:
         print("Enterprise verification successful.")
     except Exception as e:
         print(f"Enterprise verification FAILED: {e}")
-        page.screenshot(path="/home/jules/verification/enterprise_failure.png")
+        page.screenshot(path="/home/jules/verification/enterprise_failure_localized.png")
     finally:
         browser.close()

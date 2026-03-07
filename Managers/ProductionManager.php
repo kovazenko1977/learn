@@ -16,11 +16,11 @@ class ProductionManager {
     public function produce($productId, $batchSize, $batchNumber, $wasteFactor = 0.05) {
         $batchSize = (int)$batchSize;
         $wasteFactor = (float)$wasteFactor;
-        if ($batchSize <= 0) return ['success' => false, 'message' => 'Invalid batch size'];
+        if ($batchSize <= 0) return ['success' => false, 'message' => 'Неверный объем партии'];
 
         $product = $this->productStore->findOne($productId);
-        if (!$product) return ['success' => false, 'message' => 'Product not found'];
-        if (!isset($product['bom']) || empty($product['bom'])) return ['success' => false, 'message' => 'Product has no Bill of Materials (BOM)'];
+        if (!$product) return ['success' => false, 'message' => 'Товар не найден'];
+        if (!isset($product['bom']) || empty($product['bom'])) return ['success' => false, 'message' => 'Для товара не задана спецификация (BOM)'];
 
         // 1. Check ingredients including waste
         $rawMaterials = $this->rmStore->findAll();
@@ -30,7 +30,7 @@ class ProductionManager {
         foreach ($product['bom'] as $item) {
             $required = ($item['qty'] * $batchSize) * (1 + $wasteFactor);
             if (!isset($rmMap[$item['rm_id']]) || $rmMap[$item['rm_id']]['quantity'] < $required) {
-                return ['success' => false, 'message' => "Insufficient raw materials: " . ($rmMap[$item['rm_id']]['name'] ?? $item['rm_id'])];
+                return ['success' => false, 'message' => "Недостаточно сырья: " . ($rmMap[$item['rm_id']]['name'] ?? $item['rm_id'])];
             }
         }
 

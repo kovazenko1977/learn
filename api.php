@@ -39,7 +39,7 @@ if ($action === 'logout') {
 
 if (!$auth->isAuthenticated()) {
     http_response_code(403);
-    echo json_encode(['error' => 'Unauthorized']);
+    echo json_encode(['error' => 'Доступ запрещен']);
     exit;
 }
 
@@ -66,14 +66,14 @@ switch ($action) {
     case 'add_product':
         if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
         if (empty($input['name']) || empty($input['price'])) {
-            echo json_encode(['success' => false, 'message' => 'Missing required fields']); exit;
+            echo json_encode(['success' => false, 'message' => 'Отсутствуют обязательные поля']); exit;
         }
         echo json_encode($productManager->addProduct($input));
         break;
     case 'update_product':
         if (!$auth->hasPermission('products_manage')) { http_response_code(403); exit; }
         if (empty($input['id'])) {
-            echo json_encode(['success' => false, 'message' => 'Missing ID']); exit;
+            echo json_encode(['success' => false, 'message' => 'Отсутствует ID']); exit;
         }
         echo json_encode($productManager->updateProduct($input['id'], $input));
         break;
@@ -138,6 +138,11 @@ switch ($action) {
         if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
         echo json_encode($announcementManager->create($input));
         break;
+    case 'delete_announcement':
+        if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
+        $annStore = new \Core\JsonStore('announcements');
+        echo json_encode($annStore->delete($input['id']));
+        break;
     case 'get_users':
         if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
         echo json_encode($userManager->getUsers());
@@ -156,5 +161,5 @@ switch ($action) {
         break;
     default:
         http_response_code(404);
-        echo json_encode(['error' => 'Action not found: ' . $action]);
+        echo json_encode(['error' => 'Действие не найдено: ' . $action]);
 }
