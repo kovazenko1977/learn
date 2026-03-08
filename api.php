@@ -112,6 +112,10 @@ switch ($action) {
         if (!$auth->hasPermission('production_log')) { http_response_code(403); exit; }
         echo json_encode($productionManager->produce($input['product_id'], $input['quantity'], $input['batch']));
         break;
+    case 'update_recipe':
+        if (!$auth->hasPermission('recipes_view')) { http_response_code(403); exit; }
+        echo json_encode($productManager->updateProduct($input['product_id'], ['bom' => $input['bom']]));
+        break;
     case 'get_analytics':
         if ($auth->getCurrentUser()['role'] !== 'admin' && $auth->getCurrentUser()['role'] !== 'sales_manager') { http_response_code(403); exit; }
         echo json_encode($analyticsManager->getExecutiveSummary());
@@ -144,12 +148,24 @@ switch ($action) {
         echo json_encode($annStore->delete($input['id']));
         break;
     case 'get_users':
-        if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; }
         echo json_encode($userManager->getUsers());
         break;
+    case 'get_user_details':
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; }
+        echo json_encode($userManager->getUser($_GET['id']));
+        break;
     case 'add_user':
-        if ($auth->getCurrentUser()['role'] !== 'admin') { http_response_code(403); exit; }
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; }
         echo json_encode($userManager->createUser($input));
+        break;
+    case 'update_user_permissions':
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; }
+        echo json_encode($userManager->updateUserPermissions($input['id'], $input['permissions']));
+        break;
+    case 'delete_user':
+        if (!$auth->hasPermission('*')) { http_response_code(403); exit; }
+        echo json_encode($userManager->deleteUser($input['id']));
         break;
     case 'get_user':
         echo json_encode($auth->getCurrentUser());

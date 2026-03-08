@@ -17,25 +17,25 @@ $user = $auth->getCurrentUser();
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
         :root {
-            --bg-deep: #0a0b10;
-            --bg-card: #14151f;
-            --bg-accent: #1c1d29;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --brand: #4f46e5;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+            --bg-deep: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-accent: #f8fafc;
+            --text-main: #0f172a;
+            --text-dim: #64748b;
+            --brand: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --sidebar-bg: #1e293b;
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg-deep); color: var(--text-main); }
         h1, h2, .brand { font-family: 'Unbounded', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .sidebar-item-active { background: var(--brand); color: white; box-shadow: 0 0 20px rgba(79, 70, 229, 0.4); }
-        .card-dark { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .input-dark { background: var(--bg-accent); border: 1px solid rgba(255,255,255,0.1); color: white; }
-        .acrylic { backdrop-filter: blur(20px); background: rgba(20, 21, 31, 0.8); }
+        .sidebar-item-active { background: var(--brand); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .card-dark { background: var(--bg-card); border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+        .input-dark { background: white; border: 1px solid #cbd5e1; color: var(--text-main); }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen flex overflow-hidden">
@@ -43,9 +43,9 @@ $user = $auth->getCurrentUser();
     <div id="alerts-container" class="fixed top-20 right-6 z-[100] flex flex-col space-y-3 max-w-sm"></div>
 
     <?php if ($user): ?>
-    <aside class="w-72 border-r border-white/5 bg-[#0e0f17] flex flex-col p-8 z-50 transition-all duration-300">
+    <aside class="w-72 border-r border-slate-200 bg-[#1e293b] flex flex-col p-8 z-50 transition-all duration-300 shadow-xl">
         <div class="brand text-2xl font-black tracking-tighter text-white mb-12 flex items-center">
-            <span class="mr-3 text-indigo-500"><i class="lucide-shield-half"></i></span> ALCO.PRO
+            <span class="mr-3 text-blue-400"><i class="lucide-shield-half"></i></span> ALCO.PRO
         </div>
         <nav class="space-y-2 flex-grow">
             <button onclick="showPage('dashboard')" id="nav-dashboard" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
@@ -64,27 +64,35 @@ $user = $auth->getCurrentUser();
             <button onclick="showPage('products')" id="nav-products" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
                 <i class="lucide-wine text-lg"></i> <span>Продукция</span>
             </button>
+            <?php if ($auth->hasPermission('orders_view_all') || $auth->hasPermission('orders_view_own')): ?>
             <button onclick="showPage('orders')" id="nav-orders" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
                 <i class="lucide-shopping-bag text-lg"></i> <span>Заказы</span>
             </button>
+            <?php endif; ?>
+            <?php if ($auth->hasPermission('logistics_view')): ?>
             <button onclick="showPage('logistics')" id="nav-logistics" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
                 <i class="lucide-truck text-lg"></i> <span>Логистика</span>
             </button>
-            <?php if ($auth->hasPermission('*')): ?>
+            <?php endif; ?>
+            <?php if ($auth->hasPermission('recipes_view')): ?>
             <button onclick="showPage('recipes')" id="nav-recipes" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
                 <i class="lucide-book-open text-lg"></i> <span>Рецептура</span>
             </button>
+            <?php endif; ?>
+            <?php if ($auth->hasPermission('analytics_view')): ?>
             <button onclick="showPage('analytics')" id="nav-analytics" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
                 <i class="lucide-bar-chart-3 text-lg"></i> <span>Аналитика</span>
             </button>
+            <?php endif; ?>
+            <?php if ($auth->hasPermission('admin_panel')): ?>
             <button onclick="showPage('admin')" id="nav-admin" class="nav-link w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:bg-white/5 hover:text-white">
                 <i class="lucide-settings text-lg"></i> <span>Админ</span>
             </button>
             <?php endif; ?>
         </nav>
-        <div class="pt-8 border-t border-white/5">
+        <div class="pt-8 border-t border-slate-700">
             <div class="flex items-center space-x-4 mb-6 px-2">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center font-black text-white"><?= mb_substr($user['name'],0,1) ?></div>
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white shadow-lg shadow-blue-500/20"><?= mb_substr($user['name'],0,1) ?></div>
                 <div class="overflow-hidden">
                     <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest truncate"><?= htmlspecialchars($user['role']) ?></p>
                     <p class="text-xs font-bold text-white truncate"><?= htmlspecialchars($user['name']) ?></p>
@@ -93,7 +101,7 @@ $user = $auth->getCurrentUser();
             <button onclick="logout()" class="w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all text-[11px] font-bold uppercase tracking-widest text-red-400 hover:bg-red-500/10 mb-4">
                 <i class="lucide-log-out text-lg"></i> <span>Выход</span>
             </button>
-            <p class="text-[8px] font-black text-slate-600 uppercase tracking-widest text-center">© 2006 WES.BY</p>
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest text-center">© 2006 WES.BY</p>
         </div>
     </aside>
     <?php endif; ?>
@@ -104,13 +112,28 @@ $user = $auth->getCurrentUser();
         </div>
     </main>
 
-    <div id="metric-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex items-center justify-center p-12">
-        <div class="bg-[#14151f] p-12 rounded-[2.5rem] shadow-2xl max-w-5xl w-full border border-white/5">
+    <div id="metric-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-12">
+        <div class="bg-white p-12 rounded-[2.5rem] shadow-2xl max-w-5xl w-full border border-slate-200">
             <div class="flex justify-between items-center mb-10">
-                <h3 id="metric-title" class="text-2xl font-black text-white uppercase italic tracking-tighter">Детализация показателя</h3>
-                <button id="close-metric" onclick="document.getElementById('metric-modal').classList.add('hidden')" class="text-slate-600 hover:text-white transition-all"><i class="lucide-x-circle text-4xl"></i></button>
+                <h3 id="metric-title" class="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">Детализация показателя</h3>
+                <button id="close-metric" onclick="document.getElementById('metric-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 transition-all"><i class="lucide-x-circle text-4xl"></i></button>
             </div>
             <div id="metric-content" class="overflow-x-auto custom-scroll max-h-[70vh]"></div>
+        </div>
+    </div>
+
+    <div id="user-perm-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[250] flex items-center justify-center p-12">
+        <div class="bg-white p-12 rounded-[3rem] border border-slate-200 shadow-2xl max-w-3xl w-full">
+            <div class="flex justify-between items-center mb-10">
+                <h3 class="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">Матрица полномочий</h3>
+                <button onclick="document.getElementById('user-perm-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-900 transition-all"><i class="lucide-x-circle text-4xl"></i></button>
+            </div>
+            <div id="user-info-brief" class="mb-10 p-6 bg-blue-50 border border-blue-100 rounded-2xl"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto custom-scroll pr-4" id="permissions-matrix"></div>
+            <div class="mt-12 pt-10 border-t border-slate-100 flex justify-end space-x-4">
+                <button onclick="saveUserPermissions()" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all">Сохранить доступ</button>
+                <button onclick="document.getElementById('user-perm-modal').classList.add('hidden')" class="px-10 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400">Отмена</button>
+            </div>
         </div>
     </div>
 
@@ -144,6 +167,12 @@ $user = $auth->getCurrentUser();
     <script>
         const currentUser = <?= json_encode($user) ?>;
         let cart = [];
+
+        function hasPerm(p) {
+            if (!currentUser) return false;
+            if (currentUser.permissions.includes('*')) return true;
+            return currentUser.permissions.includes(p);
+        }
 
         function toggleHelpOverlay() {
             document.getElementById('help-overlay').classList.toggle('hidden');
@@ -264,30 +293,30 @@ $user = $auth->getCurrentUser();
 
         function renderLogin(content) {
             content.innerHTML = `
-                <div class="fixed inset-0 flex items-center justify-center bg-[#0a0b10] z-[1000]">
-                    <div class="max-w-md w-full p-12 bg-[#14151f] rounded-[2.5rem] border border-white/5 shadow-2xl">
+                <div class="fixed inset-0 flex items-center justify-center bg-slate-50 z-[1000]">
+                    <div class="max-w-md w-full p-12 bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl">
                         <div class="text-center mb-12">
-                            <div class="text-6xl mb-8">🏰</div>
-                            <h2 class="text-3xl font-black text-white uppercase tracking-tighter italic">ALCO.PRO</h2>
+                            <div class="text-6xl mb-8">🏢</div>
+                            <h2 class="text-3xl font-black text-slate-900 uppercase tracking-tighter italic">ALCO.PRO</h2>
                             <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2">Система управления заводом</p>
                         </div>
                         <form onsubmit="handleLogin(event)" class="space-y-6">
                             <div class="space-y-2">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Идентификация</p>
-                                <input type="text" name="username" placeholder="Логин" required class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-indigo-500/50 text-white transition-all">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Идентификация</p>
+                                <input type="text" name="username" placeholder="Логин" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 transition-all">
                             </div>
                             <div class="space-y-2">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Ключ безопасности</p>
-                                <input type="password" name="password" placeholder="Пароль" required class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-indigo-500/50 text-white transition-all">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ключ безопасности</p>
+                                <input type="password" name="password" placeholder="Пароль" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 transition-all">
                             </div>
-                            <button type="submit" id="login-btn" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-widest text-xs mt-4">Вход в систему</button>
+                            <button type="submit" id="login-btn" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-widest text-xs mt-4">Вход в систему</button>
                         </form>
                         <div class="mt-12 text-center">
-                            <p class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Разработка: 2006 WES.BY</p>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Разработка: 2006 WES.BY</p>
                         </div>
                         <div class="mt-6 flex justify-center space-x-4 opacity-10 hover:opacity-100 transition-opacity">
-                             <button onclick="fillDemo('admin','admin123')" class="text-[9px] font-black text-slate-400 hover:text-indigo-400 uppercase tracking-widest">Master</button>
-                             <button onclick="fillDemo('client','client123')" class="text-[9px] font-black text-slate-400 hover:text-indigo-400 uppercase tracking-widest">Node</button>
+                             <button onclick="fillDemo('admin','admin123')" class="text-[9px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest">Master</button>
+                             <button onclick="fillDemo('client','client123')" class="text-[9px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest">Node</button>
                         </div>
                     </div>
                 </div>
@@ -328,12 +357,12 @@ $user = $auth->getCurrentUser();
                 <div id="ann-bar"></div>
                 <div class="mb-12 flex justify-between items-center">
                     <div>
-                        <h1 class="text-4xl font-black text-white tracking-tight uppercase italic">Панель управления</h1>
-                        <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.4em] mt-2">Статус узла: <span class="text-emerald-500">Синхронизировано</span> // 2006 WES.BY</p>
+                        <h1 class="text-4xl font-black text-slate-900 tracking-tight uppercase italic">Панель управления</h1>
+                        <p class="text-slate-500 font-bold text-[10px] uppercase tracking-[0.4em] mt-2">Статус узла: <span class="text-emerald-600">Синхронизировано</span> // 2006 WES.BY</p>
                     </div>
                     <div class="flex space-x-3">
-                         <button onclick="toggleHelpOverlay()" class="w-12 h-12 rounded-xl card-dark flex items-center justify-center text-slate-400 hover:text-white transition-all"><i class="lucide-help-circle"></i></button>
-                         <button class="w-12 h-12 rounded-xl card-dark flex items-center justify-center text-slate-400 hover:text-white transition-all"><i class="lucide-bell"></i></button>
+                         <button onclick="toggleHelpOverlay()" class="w-12 h-12 rounded-xl card-dark flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all bg-white"><i class="lucide-help-circle"></i></button>
+                         <button class="w-12 h-12 rounded-xl card-dark flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all bg-white"><i class="lucide-bell"></i></button>
                     </div>
                 </div>
 
@@ -342,36 +371,36 @@ $user = $auth->getCurrentUser();
                 <div id="system-status" class="mb-12 hidden"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 card-dark rounded-[2rem] p-10">
+                    <div class="lg:col-span-2 card-dark rounded-[2rem] p-10 bg-white shadow-sm">
                         <div class="flex justify-between items-center mb-10">
                             <div>
-                                <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Операционный пульс</h3>
-                                <p class="text-xl font-black text-white mt-1">Динамика производства</p>
+                                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Операционный пульс</h3>
+                                <p class="text-xl font-black text-slate-900 mt-1">Динамика производства</p>
                             </div>
-                            <select class="bg-transparent border border-white/10 rounded-lg text-[10px] font-bold px-3 py-1 outline-none text-slate-400"><option>7 Дней</option></select>
+                            <select class="bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold px-3 py-1 outline-none text-slate-600"><option>7 Дней</option></select>
                         </div>
                         <div class="h-64 flex items-end justify-between space-x-6 px-4">
                             ${[45, 65, 55, 85, 75, 95, 80].map((h, i) => `
-                                <div class="flex-grow bg-indigo-600/10 rounded-t-xl relative group transition-all hover:bg-indigo-600/40" style="height: ${h}%">
-                                    <div class="absolute inset-x-0 top-0 h-1 bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,1)]"></div>
-                                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all font-black">${h * 15}</div>
+                                <div class="flex-grow bg-blue-50 rounded-t-xl relative group transition-all hover:bg-blue-100" style="height: ${h}%">
+                                    <div class="absolute inset-x-0 top-0 h-1 bg-blue-600"></div>
+                                    <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-3 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all font-black">${h * 15}</div>
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="flex justify-between mt-6 px-4 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                        <div class="flex justify-between mt-6 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                             <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
                         </div>
                     </div>
-                    <div class="card-dark rounded-[2rem] p-10">
-                        <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-10">Протокол безопасности</h3>
+                    <div class="card-dark rounded-[2rem] p-10 bg-white shadow-sm">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-10">Протокол безопасности</h3>
                         <div id="events-list" class="space-y-6">
                              <div class="flex items-start space-x-4">
-                                <div class="w-10 h-10 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20"><i class="lucide-shield-check"></i></div>
-                                <div><p class="font-bold text-sm text-white">Целостность данных</p><p class="text-[10px] text-slate-500 mt-1 uppercase font-black tracking-widest">15 мин назад // ОК</p></div>
+                                <div class="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100"><i class="lucide-shield-check"></i></div>
+                                <div><p class="font-bold text-sm text-slate-900">Целостность данных</p><p class="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">15 мин назад // ОК</p></div>
                              </div>
                              <div class="flex items-start space-x-4">
-                                <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20"><i class="lucide-activity"></i></div>
-                                <div><p class="font-bold text-sm text-white">Репликация хранилища</p><p class="text-[10px] text-slate-500 mt-1 uppercase font-black tracking-widest">45 мин назад // ЗАВЕРШЕНО</p></div>
+                                <div class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100"><i class="lucide-activity"></i></div>
+                                <div><p class="font-bold text-sm text-slate-900">Репликация хранилища</p><p class="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">45 мин назад // ЗАВЕРШЕНО</p></div>
                              </div>
                         </div>
                     </div>
@@ -379,33 +408,33 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_analytics').then(r => r.json()).then(data => {
                 document.getElementById('stats').innerHTML = `
-                    <div onclick="showMetricDetails('revenue')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer group">
+                    <div onclick="showMetricDetails('revenue')" class="card-dark p-8 rounded-3xl hover:border-blue-600 transition-all cursor-pointer group bg-white">
                         <div class="flex justify-between items-start">
-                             <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Выручка (Брутто)</p>
-                             <i class="lucide-chevron-right text-slate-800 group-hover:text-indigo-500 transition-all"></i>
+                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Выручка (Брутто)</p>
+                             <i class="lucide-chevron-right text-slate-200 group-hover:text-blue-600 transition-all"></i>
                         </div>
-                        <p class="text-3xl font-black text-white mt-3 mono tracking-tighter">${data.revenue.toLocaleString()}<span class="text-xs text-slate-600 ml-1 font-bold">BYN</span></p>
+                        <p class="text-3xl font-black text-slate-900 mt-3 mono tracking-tighter">${data.revenue.toLocaleString()}<span class="text-xs text-slate-400 ml-1 font-bold">BYN</span></p>
                     </div>
-                    <div onclick="showMetricDetails('stock')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer group">
+                    <div onclick="showMetricDetails('stock')" class="card-dark p-8 rounded-3xl hover:border-blue-600 transition-all cursor-pointer group bg-white">
                         <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Активы склада</p>
-                            <i class="lucide-chevron-right text-slate-800 group-hover:text-indigo-500 transition-all"></i>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Активы склада</p>
+                            <i class="lucide-chevron-right text-slate-200 group-hover:text-blue-600 transition-all"></i>
                         </div>
-                        <p class="text-3xl font-black text-white mt-3 mono tracking-tighter">${data.stock_value.toLocaleString()}<span class="text-xs text-slate-600 ml-1 font-bold">BYN</span></p>
+                        <p class="text-3xl font-black text-slate-900 mt-3 mono tracking-tighter">${data.stock_value.toLocaleString()}<span class="text-xs text-slate-400 ml-1 font-bold">BYN</span></p>
                     </div>
-                    <div onclick="showMetricDetails('orders')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer group">
+                    <div onclick="showMetricDetails('orders')" class="card-dark p-8 rounded-3xl hover:border-blue-600 transition-all cursor-pointer group bg-white">
                         <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Объем заказов</p>
-                            <i class="lucide-chevron-right text-slate-800 group-hover:text-indigo-500 transition-all"></i>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Объем заказов</p>
+                            <i class="lucide-chevron-right text-slate-200 group-hover:text-blue-600 transition-all"></i>
                         </div>
-                        <p class="text-3xl font-black text-white mt-3 mono tracking-tighter">${data.order_count}<span class="text-xs text-slate-600 ml-1 font-bold">ЕД</span></p>
+                        <p class="text-3xl font-black text-slate-900 mt-3 mono tracking-tighter">${data.order_count}<span class="text-xs text-slate-400 ml-1 font-bold">ЕД</span></p>
                     </div>
-                    <div onclick="showMetricDetails('production')" class="card-dark p-8 rounded-3xl hover:border-indigo-500 transition-all cursor-pointer group">
+                    <div onclick="showMetricDetails('production')" class="card-dark p-8 rounded-3xl hover:border-blue-600 transition-all cursor-pointer group bg-white">
                         <div class="flex justify-between items-start">
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Эффективность</p>
-                            <i class="lucide-chevron-right text-slate-800 group-hover:text-indigo-500 transition-all"></i>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Эффективность</p>
+                            <i class="lucide-chevron-right text-slate-200 group-hover:text-blue-600 transition-all"></i>
                         </div>
-                        <p class="text-3xl font-black text-emerald-400 mt-3 mono tracking-tighter">${data.production_volume}<span class="text-xs text-slate-600 ml-1 font-bold">ШТ</span></p>
+                        <p class="text-3xl font-black text-emerald-600 mt-3 mono tracking-tighter">${data.production_volume}<span class="text-xs text-slate-400 ml-1 font-bold">ШТ</span></p>
                     </div>
                 `;
 
@@ -413,14 +442,14 @@ $user = $auth->getCurrentUser();
                     const sys = document.getElementById('system-status');
                     sys.classList.remove('hidden');
                     sys.innerHTML = `
-                        <div class="bg-slate-900 rounded-[2rem] p-10 text-white flex justify-between items-center shadow-2xl">
+                        <div class="bg-slate-800 rounded-[2rem] p-10 text-white flex justify-between items-center shadow-lg">
                             <div class="flex items-center space-x-12">
-                                <div><p class="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-2">Статус Хранилища</p><p class="text-sm font-bold">JSON: Synchronized</p></div>
-                                <div><p class="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-2">Последний Аудит</p><p class="text-sm font-bold">${new Date().toLocaleTimeString()}</p></div>
-                                <div><p class="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-2">Системное время</p><p class="text-sm font-bold" id="live-clock">${new Date().toLocaleTimeString()}</p></div>
+                                <div><p class="text-[9px] font-black uppercase text-blue-400 tracking-widest mb-2">Статус Хранилища</p><p class="text-sm font-bold">JSON: Synchronized</p></div>
+                                <div><p class="text-[9px] font-black uppercase text-blue-400 tracking-widest mb-2">Последний Аудит</p><p class="text-sm font-bold">${new Date().toLocaleTimeString()}</p></div>
+                                <div><p class="text-[9px] font-black uppercase text-blue-400 tracking-widest mb-2">Системное время</p><p class="text-sm font-bold" id="live-clock">${new Date().toLocaleTimeString()}</p></div>
                             </div>
                             <div class="flex items-center space-x-4">
-                                <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                                <span class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
                                 <p class="text-[10px] font-black tracking-widest uppercase">System Online</p>
                             </div>
                         </div>
@@ -433,7 +462,7 @@ $user = $auth->getCurrentUser();
             });
             fetch('api.php?action=get_announcements').then(r => r.json()).then(data => {
                 document.getElementById('ann-bar').innerHTML = data.map(a => `
-                    <div class="mb-6 bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-6 rounded-[2rem] flex justify-between items-center shadow-xl shadow-indigo-200">
+                    <div class="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-[2rem] flex justify-between items-center shadow-lg shadow-blue-500/20">
                         <div class="flex items-center space-x-4"><span class="text-2xl">📢</span><p class="font-bold">${a.text}</p></div>
                         <p class="text-[10px] font-black opacity-60">${a.created_at}</p>
                     </div>
@@ -458,7 +487,7 @@ $user = $auth->getCurrentUser();
                         <div>
                             <p class="text-lg font-black text-white">${rm.name}</p>
                             <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">${rm.unit}</p>
-                            ${currentUser.role === 'admin' || currentUser.role === 'production_chief' ? `
+                            ${hasPerm('raw_materials_manage') ? `
                                 <div class="mt-4 flex space-x-4">
                                     <button onclick="editRM('${rm.id}')" class="text-[9px] font-black text-indigo-400 uppercase tracking-widest hover:text-white">Корректировка</button>
                                     <button onclick="deleteRM('${rm.id}')" class="text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-red-400">Списать</button>
@@ -508,27 +537,27 @@ $user = $auth->getCurrentUser();
                         <button onclick="showProduceModal()" class="bg-emerald-600 text-white px-10 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all">+ Запуск Линии</button>
                     </div>
                 </div>
-                <div id="prod-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
-                    <div class="bg-[#14151f] p-12 rounded-[2.5rem] border border-white/5 shadow-2xl max-w-xl w-full">
-                        <h3 class="text-2xl font-black mb-10 text-white uppercase italic">Параметры выпуска</h3>
+                <div id="prod-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+                    <div class="bg-white p-12 rounded-[2.5rem] border border-slate-200 shadow-2xl max-w-xl w-full">
+                        <h3 class="text-2xl font-black mb-10 text-slate-900 uppercase italic">Параметры выпуска</h3>
                         <form onsubmit="handleProduce(event)" class="space-y-6">
                             <div class="space-y-2">
-                                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Назначение продукции</p>
-                                <select name="pid" class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none text-white font-bold"></select>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Назначение продукции</p>
+                                <select name="pid" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none text-slate-900 font-bold"></select>
                             </div>
                             <div class="grid grid-cols-2 gap-6">
                                 <div class="space-y-2">
-                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Объем партии (ЕД)</p>
-                                    <input type="number" name="qty" value="500" class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none text-white font-bold">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Объем партии (ЕД)</p>
+                                    <input type="number" name="qty" value="500" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none text-slate-900 font-bold">
                                 </div>
                                 <div class="space-y-2">
-                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Идентификатор партии</p>
-                                    <input type="text" name="batch" value="W-${Date.now().toString().slice(-4)}" class="w-full bg-[#1c1d29] border border-white/10 rounded-2xl px-6 py-5 outline-none text-white font-mono font-bold">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Идентификатор партии</p>
+                                    <input type="text" name="batch" value="W-${Date.now().toString().slice(-4)}" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-5 outline-none text-slate-900 font-mono font-bold">
                                 </div>
                             </div>
                             <div class="flex space-x-4 pt-10">
-                                <button type="submit" class="flex-grow bg-indigo-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-indigo-500/20">Начать выпуск</button>
-                                <button type="button" onclick="document.getElementById('prod-modal').classList.add('hidden')" class="px-10 py-5 bg-[#1c1d29] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400">Отмена</button>
+                                <button type="submit" class="flex-grow bg-blue-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-500/20">Начать выпуск</button>
+                                <button type="button" onclick="document.getElementById('prod-modal').classList.add('hidden')" class="px-10 py-5 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400">Отмена</button>
                             </div>
                         </form>
                     </div>
@@ -585,8 +614,8 @@ $user = $auth->getCurrentUser();
                         <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Каталог и ценовая политика</p>
                     </div>
                     <div class="flex space-x-4 items-center">
-                        ${currentUser.role === 'admin' ? `<button onclick="showProductModal()" class="bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10">+ Новый SKU</button>` : ''}
-                        ${currentUser.role !== 'client' ? `<button onclick="exportData('products')" class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">Экспорт XLS</button>` : ''}
+                        ${hasPerm('products_manage') ? `<button onclick="showProductModal()" class="bg-white/5 border border-white/10 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10">+ Новый SKU</button>` : ''}
+                        ${!hasPerm('client_portal') ? `<button onclick="exportData('products')" class="bg-indigo-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">Экспорт XLS</button>` : ''}
                         <div id="cart-btn" class="hidden bg-emerald-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 cursor-pointer">
                             Корзина: <span id="cc">0</span> SKU
                         </div>
@@ -604,19 +633,19 @@ $user = $auth->getCurrentUser();
                     </div>
                 </div>
                 <div id="prod-edit-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-6">
-                     <div class="bg-[#14151f] p-12 rounded-[3rem] border border-white/5 shadow-2xl max-w-xl w-full">
-                        <h3 class="text-2xl font-black mb-8 text-white" id="pem-title">Редактирование товара</h3>
+                     <div class="bg-white p-12 rounded-[3rem] border border-slate-200 shadow-2xl max-w-xl w-full">
+                        <h3 class="text-2xl font-black mb-8 text-slate-900" id="pem-title">Редактирование товара</h3>
                         <form onsubmit="handleProductSubmit(event)" class="space-y-4">
                             <input type="hidden" name="id">
-                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Название</span>
-                            <input type="text" name="name" placeholder="Сидр Яблочный 0.5" required class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none mt-1 text-white"></label>
-                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Цена (BYN)</span>
-                            <input type="number" step="0.01" name="price" placeholder="4.50" required class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none mt-1 text-white"></label>
-                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">Артикул (SKU)</span>
-                            <input type="text" name="sku" placeholder="CIDER-APPLE-05" required class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none mt-1 text-white"></label>
+                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Название</span>
+                            <input type="text" name="name" placeholder="Сидр Яблочный 0.5" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none mt-1 text-slate-900"></label>
+                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Цена (BYN)</span>
+                            <input type="number" step="0.01" name="price" placeholder="4.50" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none mt-1 text-slate-900"></label>
+                            <label class="block"><span class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Артикул (SKU)</span>
+                            <input type="text" name="sku" placeholder="CIDER-APPLE-05" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none mt-1 text-slate-900"></label>
                             <div class="flex space-x-4 pt-6">
-                                <button type="submit" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs">Сохранить</button>
-                                <button type="button" onclick="document.getElementById('prod-edit-modal').classList.add('hidden')" class="px-8 py-4 bg-[#1c1d29] border border-white/10 rounded-2xl font-black uppercase tracking-widest text-xs text-slate-400">Отмена</button>
+                                <button type="submit" class="flex-grow bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs">Сохранить</button>
+                                <button type="button" onclick="document.getElementById('prod-edit-modal').classList.add('hidden')" class="px-8 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-black uppercase tracking-widest text-xs text-slate-400">Отмена</button>
                             </div>
                         </form>
                      </div>
@@ -627,7 +656,7 @@ $user = $auth->getCurrentUser();
                     <div class="card-dark rounded-3xl p-8 border border-white/5 hover:border-indigo-500/50 transition-all relative overflow-hidden group">
                         <h3 class="text-lg font-black text-white leading-tight uppercase italic tracking-tight">${p.name}</h3>
                         <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">${p.sku}</p>
-                        ${currentUser.role === 'admin' ? `
+                        ${hasPerm('products_manage') ? `
                             <div class="mt-4 flex space-x-4">
                                 <button onclick="editProduct('${p.id}')" class="text-[9px] font-black text-indigo-400 uppercase tracking-widest hover:text-white">Конфигурация</button>
                                 <button onclick="deleteProduct('${p.id}')" class="text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-red-500">Архив</button>
@@ -767,9 +796,9 @@ $user = $auth->getCurrentUser();
                                  <div class="px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border ${o.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : o.status === 'shipped' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-rose-500/10 text-rose-500 border-rose-500/20'}">
                                     ${o.status === 'pending' ? 'Ожидание' : o.status === 'shipped' ? 'Отгружен' : 'Возврат'}
                                  </div>
-                                 ${(currentUser.role === 'admin' || currentUser.role === 'sales_manager') && o.status === 'pending' ?
+                                 ${hasPerm('orders_manage') && o.status === 'pending' ?
                                     `<button onclick="updateOrderStatus('${o.id}', 'shipped')" class="bg-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/20"><i class="lucide-truck text-sm"></i></button>` : ''}
-                                 ${(currentUser.role === 'admin' || currentUser.role === 'sales_manager') && o.status === 'shipped' ?
+                                 ${hasPerm('orders_manage') && o.status === 'shipped' ?
                                     `<button onclick="updateOrderStatus('${o.id}', 'returned')" class="bg-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-rose-600 transition-all shadow-lg shadow-rose-500/20"><i class="lucide-rotate-ccw text-sm"></i></button>` : ''}
                              </div>
                         </div>
@@ -791,41 +820,58 @@ $user = $auth->getCurrentUser();
             });
         }
 
+        let activeEditingUserId = null;
+        const availablePermissions = [
+            { id: 'products_view', name: 'Просмотр продукции' },
+            { id: 'products_manage', name: 'Управление SKU' },
+            { id: 'orders_view_all', name: 'Доступ ко всем заказам' },
+            { id: 'orders_manage', name: 'Управление продажами' },
+            { id: 'raw_materials_view', name: 'Просмотр склада сырья' },
+            { id: 'raw_materials_manage', name: 'Корректировка остатков' },
+            { id: 'production_chief', name: 'Запуск производственной линии' },
+            { id: 'production_log', name: 'Просмотр журналов цеха' },
+            { id: 'analytics_view', name: 'Доступ к бизнес-аналитике' },
+            { id: 'logistics_view', name: 'Контроль логистики' },
+            { id: 'recipes_view', name: 'Доступ к рецептурам' },
+            { id: 'admin_panel', name: 'Доступ к панели администрирования' },
+            { id: '*', name: 'ПОЛНЫЙ ДОСТУП (Superuser)' }
+        ];
+
         function renderAdmin(content) {
             content.innerHTML = `
                 <div class="mb-12 flex justify-between items-end">
                     <div>
-                        <h1 class="text-3xl font-black text-white tracking-tight uppercase italic">Панель управления</h1>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Безопасность и конфигурация узлов</p>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase italic">Управление персоналом</h1>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Контроль доступа и матрица полномочий</p>
                     </div>
-                    <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10">
-                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 bg-indigo-600 shadow-lg shadow-indigo-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">Персонал</button>
-                        <button onclick="renderAnnManagement(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">Оповещения</button>
-                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">Аудит</button>
+                    <div class="flex bg-slate-200/50 p-1 rounded-2xl border border-slate-200">
+                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 bg-blue-600 shadow-lg shadow-blue-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">Персонал</button>
+                        <button onclick="renderAnnManagement(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-all">Оповещения</button>
+                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-all">Аудит</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    <div class="card-dark rounded-[2rem] p-10">
+                    <div class="card-dark rounded-[2rem] p-10 bg-white">
                         <div class="flex justify-between items-center mb-10">
-                            <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Авторизованный персонал</h3>
-                            <button onclick="showUserModal()" class="text-indigo-400 font-black text-[10px] uppercase hover:text-white">+ Новый сотрудник</button>
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Реестр сотрудников</h3>
+                            <button onclick="showUserModal()" class="text-blue-600 font-black text-[10px] uppercase hover:text-blue-700 transition-all">+ Принять сотрудника</button>
                         </div>
                         <div id="user-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-6">
-                            <div class="bg-[#14151f] p-12 rounded-[3rem] border border-white/5 shadow-2xl max-w-xl w-full">
-                                <h3 class="text-2xl font-black mb-8 text-white uppercase italic">Новый пользователь</h3>
+                            <div class="bg-white p-12 rounded-[3rem] border border-slate-200 shadow-2xl max-w-xl w-full">
+                                <h3 class="text-2xl font-black mb-8 text-slate-900 uppercase italic">Новый пользователь</h3>
                                 <form onsubmit="handleCreateUser(event)" class="space-y-4">
-                                    <input type="text" name="name" placeholder="Полное имя" required class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none text-white">
-                                    <input type="text" name="username" placeholder="Логин" required class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none text-white">
-                                    <input type="password" name="password" placeholder="Пароль" required class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none text-white">
-                                    <select name="role" class="w-full bg-[#1c1d29] border border-white/10 p-4 rounded-2xl outline-none text-white">
+                                    <input type="text" name="name" placeholder="Полное имя" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none text-slate-900">
+                                    <input type="text" name="username" placeholder="Логин" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none text-slate-900">
+                                    <input type="password" name="password" placeholder="Пароль" required class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none text-slate-900">
+                                    <select name="role" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-2xl outline-none text-slate-900">
                                         <option value="admin">Администратор</option>
                                         <option value="sales_manager">Менеджер по продажам</option>
                                         <option value="production_chief">Начальник производства</option>
                                         <option value="client">Клиент</option>
                                     </select>
                                     <div class="flex space-x-4 pt-6">
-                                        <button type="submit" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs">Создать</button>
-                                        <button type="button" onclick="document.getElementById('user-modal').classList.add('hidden')" class="px-8 py-4 bg-[#1c1d29] border border-white/10 rounded-2xl font-black uppercase tracking-widest text-xs text-slate-400">Отмена</button>
+                                        <button type="submit" class="flex-grow bg-blue-600 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-xs">Создать</button>
+                                        <button type="button" onclick="document.getElementById('user-modal').classList.add('hidden')" class="px-8 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-black uppercase tracking-widest text-xs text-slate-400">Отмена</button>
                                     </div>
                                 </form>
                             </div>
@@ -848,15 +894,18 @@ $user = $auth->getCurrentUser();
             `;
             fetch('api.php?action=get_users').then(r => r.json()).then(data => {
                 document.getElementById('ul').innerHTML = data.map(u => `
-                    <div class="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-white/10 transition-all">
+                    <div class="p-6 bg-slate-50 border border-slate-100 rounded-2xl flex justify-between items-center group hover:border-blue-100 transition-all">
                         <div class="flex items-center space-x-6">
-                            <div class="w-12 h-12 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black mono text-xl italic">${u.username[0].toUpperCase()}</div>
+                            <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 font-black mono text-xl italic">${u.username[0].toUpperCase()}</div>
                             <div>
-                                <p class="font-bold text-white uppercase italic tracking-tighter">${u.name}</p>
-                                <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">${u.role}</p>
+                                <p class="font-bold text-slate-900 uppercase italic tracking-tighter">${u.name}</p>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">${u.role} // ${u.permissions.includes('*') ? 'Все права' : u.permissions.length + ' лимитов'}</p>
                             </div>
                         </div>
-                        <span class="text-[8px] font-black text-emerald-400 border border-emerald-400/20 px-3 py-1 rounded-full bg-emerald-400/5">АКТИВЕН</span>
+                        <div class="flex items-center space-x-2">
+                             <button onclick="openPermissionEditor('${u.id}')" class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-all shadow-sm"><i class="lucide-shield-check"></i></button>
+                             <button onclick="deleteUser('${u.id}')" class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-rose-500 hover:bg-rose-600 hover:text-white transition-all shadow-sm"><i class="lucide-trash-2"></i></button>
+                        </div>
                     </div>
                 `).join('');
             });
@@ -969,27 +1018,73 @@ $user = $auth->getCurrentUser();
                 const p = data.find(x => x.id === pid);
                 const details = document.getElementById('recipe-details');
                 fetch('api.php?action=get_raw_materials').then(rmR => rmR.json()).then(rms => {
-                    let html = `<h4 class="text-xl font-black text-white italic mb-8">${p.name}</h4>`;
-                    html += `<div class="space-y-4">`;
+                    let html = `<h4 class="text-xl font-black text-slate-900 italic mb-8">${p.name}</h4>`;
+                    html += `<div class="space-y-4" id="bom-items">`;
                     (p.bom || []).forEach((item, idx) => {
                         const rm = rms.find(r => r.id === item.rm_id);
                         html += `
-                            <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <div class="flex items-center space-x-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 bom-row" data-rm-id="${item.rm_id}">
                                 <div class="flex-grow">
-                                    <p class="text-xs font-black text-white uppercase">${rm ? rm.name : item.rm_id}</p>
+                                    <p class="text-xs font-black text-slate-900 uppercase">${rm ? rm.name : item.rm_id}</p>
                                     <p class="text-[9px] text-slate-500 uppercase font-bold">${rm ? rm.unit : ''}</p>
                                 </div>
                                 <div class="w-32">
-                                    <input type="number" step="0.001" value="${item.qty}" class="w-full bg-[#1c1d29] border border-white/10 rounded-xl px-4 py-2 text-white font-mono text-xs">
+                                    <input type="number" step="0.001" value="${item.qty}" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 font-mono text-xs bom-qty">
                                 </div>
-                                <button class="text-rose-500 hover:text-white"><i class="lucide-trash-2"></i></button>
+                                <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700"><i class="lucide-trash-2"></i></button>
                             </div>
                         `;
                     });
                     html += `</div>`;
-                    html += `<button class="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">Добавить компонент</button>`;
+                    html += `
+                        <div class="mt-8 flex space-x-4">
+                            <button onclick="addBomItem('${pid}')" class="bg-slate-100 text-slate-600 px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all">Добавить компонент</button>
+                            <button onclick="saveRecipe('${pid}')" class="bg-blue-600 text-white px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all">Сохранить рецепт</button>
+                        </div>
+                    `;
                     details.innerHTML = html;
                 });
+            });
+        }
+
+        function addBomItem(pid) {
+            fetch('api.php?action=get_raw_materials').then(r => r.json()).then(rms => {
+                const rmId = prompt("Введите ID сырья или выберите из списка:\n" + rms.map(r => `${r.id}: ${r.name}`).join('\n'));
+                if (!rmId) return;
+                const rm = rms.find(r => r.id === rmId);
+                if (!rm) return alert("Сырье не найдено");
+
+                const container = document.getElementById('bom-items');
+                const div = document.createElement('div');
+                div.className = "flex items-center space-x-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 bom-row";
+                div.dataset.rmId = rmId;
+                div.innerHTML = `
+                    <div class="flex-grow">
+                        <p class="text-xs font-black text-slate-900 uppercase">${rm.name}</p>
+                        <p class="text-[9px] text-slate-500 uppercase font-bold">${rm.unit}</p>
+                    </div>
+                    <div class="w-32">
+                        <input type="number" step="0.001" value="0.000" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-slate-900 font-mono text-xs bom-qty">
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700"><i class="lucide-trash-2"></i></button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function saveRecipe(pid) {
+            const rows = document.querySelectorAll('.bom-row');
+            const bom = Array.from(rows).map(row => ({
+                rm_id: row.dataset.rmId,
+                qty: parseFloat(row.querySelector('.bom-qty').value)
+            }));
+
+            fetch('api.php?action=update_recipe', {
+                method: 'POST',
+                body: JSON.stringify({ product_id: pid, bom: bom })
+            }).then(r => r.json()).then(res => {
+                if (res.success) alert('Технологическая карта обновлена');
+                else alert('Ошибка при сохранении: ' + res.message);
             });
         }
 
@@ -1229,44 +1324,88 @@ $user = $auth->getCurrentUser();
              content.innerHTML = `
                 <div class="mb-12 flex justify-between items-end">
                     <div>
-                        <h1 class="text-3xl font-black text-white tracking-tight uppercase italic">Управление рассылками</h1>
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mt-2">Контроль внутренних уведомлений и триггеров</p>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight uppercase italic">Управление рассылками</h1>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">Контроль внутренних уведомлений и триггеров</p>
                     </div>
-                    <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10">
-                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-white">Персонал</button>
-                        <button class="px-6 py-2.5 bg-indigo-600 shadow-lg shadow-indigo-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">Оповещения</button>
-                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-white transition-all">Аудит</button>
+                    <div class="flex bg-slate-200/50 p-1 rounded-2xl border border-slate-200">
+                        <button onclick="renderAdmin(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-all">Персонал</button>
+                        <button class="px-6 py-2.5 bg-blue-600 shadow-lg shadow-blue-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-white">Оповещения</button>
+                        <button onclick="renderAudit(document.getElementById('app-content'))" class="px-6 py-2.5 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-all">Аудит</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div class="lg:col-span-2 card-dark rounded-[2.5rem] p-10">
-                         <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-10">Активные сообщения</h3>
+                    <div class="lg:col-span-2 card-dark rounded-[2.5rem] p-10 bg-white">
+                         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-10">Активные сообщения</h3>
                          <div id="ann-admin-list" class="space-y-4"></div>
                     </div>
-                    <div class="bg-indigo-900 rounded-[3rem] p-10 shadow-2xl text-white">
+                    <div class="bg-slate-800 rounded-[3rem] p-10 shadow-2xl text-white">
                         <h3 class="text-xl font-black mb-8 italic">Новое Оповещение</h3>
-                        <p class="text-xs text-indigo-200 mb-4 font-medium uppercase tracking-widest leading-relaxed">Публикация в информационные каналы предприятия.</p>
-                        <select id="ann-target-admin" class="w-full bg-indigo-800/50 rounded-2xl p-4 border-none text-white outline-none mb-4 font-bold">
+                        <p class="text-xs text-slate-300 mb-4 font-medium uppercase tracking-widest leading-relaxed">Публикация в информационные каналы предприятия.</p>
+                        <select id="ann-target-admin" class="w-full bg-slate-700 rounded-2xl p-4 border-none text-white outline-none mb-4 font-bold">
                             <option value="all">Для всех</option>
                             <option value="sales_manager">Отдел Продаж</option>
                             <option value="production_chief">Производство</option>
                             <option value="client">Клиенты</option>
                         </select>
-                        <textarea id="ann-text-admin" class="w-full bg-indigo-800/50 rounded-2xl p-6 border-none text-white outline-none focus:ring-4 focus:ring-indigo-500 mb-6" rows="4" placeholder="Текст..."></textarea>
-                        <button onclick="sendAnnAdmin()" class="w-full bg-white text-indigo-900 py-5 rounded-2xl font-black shadow-xl hover:scale-[1.02] transition-all uppercase tracking-widest text-xs">Опубликовать</button>
+                        <textarea id="ann-text-admin" class="w-full bg-slate-700 rounded-2xl p-6 border-none text-white outline-none focus:ring-2 focus:ring-blue-500 mb-6" rows="4" placeholder="Текст..."></textarea>
+                        <button onclick="sendAnnAdmin()" class="w-full bg-white text-slate-900 py-5 rounded-2xl font-black shadow-xl hover:scale-[1.02] transition-all uppercase tracking-widest text-xs">Опубликовать</button>
                     </div>
                 </div>
             `;
             fetch('api.php?action=get_announcements').then(r => r.json()).then(data => {
                 document.getElementById('ann-admin-list').innerHTML = data.reverse().map(a => `
-                    <div class="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group">
+                    <div class="p-6 bg-slate-50 border border-slate-100 rounded-2xl flex justify-between items-center group">
                         <div>
-                            <p class="font-bold text-white text-sm mb-1">${a.text}</p>
-                            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Цель: ${a.target} // ${a.created_at}</p>
+                            <p class="font-bold text-slate-900 text-sm mb-1">${a.text}</p>
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Цель: ${a.target} // ${a.created_at}</p>
                         </div>
-                        <button onclick="deleteAnn('${a.id}')" class="text-rose-500 hover:text-white transition-all"><i class="lucide-trash-2 text-lg"></i></button>
+                        <button onclick="deleteAnn('${a.id}')" class="text-rose-500 hover:text-rose-700 transition-all"><i class="lucide-trash-2 text-lg"></i></button>
                     </div>
-                `).join('') || '<p class="text-center p-10 text-slate-600 font-bold uppercase text-[10px]">Сообщений не найдено</p>';
+                `).join('') || '<p class="text-center p-10 text-slate-400 font-bold uppercase text-[10px]">Сообщений не найдено</p>';
+            });
+        }
+
+        function openPermissionEditor(userId) {
+            activeEditingUserId = userId;
+            fetch(`api.php?action=get_user_details&id=${userId}`).then(r => r.json()).then(user => {
+                const info = document.getElementById('user-info-brief');
+                info.innerHTML = `
+                    <div class="flex justify-between items-center w-full">
+                        <div><p class="text-xs font-black text-white uppercase tracking-widest">${user.name}</p><p class="text-[9px] text-slate-500 font-mono mt-1">${user.username}</p></div>
+                        <div class="text-right"><p class="text-[8px] font-black text-indigo-400 uppercase tracking-widest">Employee Node ID</p><p class="text-[10px] text-white font-mono uppercase">${user.id.slice(0,12)}</p></div>
+                    </div>
+                `;
+
+                const matrix = document.getElementById('permissions-matrix');
+                matrix.innerHTML = availablePermissions.map(p => `
+                    <label class="flex items-center space-x-4 p-4 bg-white/5 border border-white/5 rounded-2xl hover:border-indigo-500/50 cursor-pointer transition-all group">
+                        <input type="checkbox" value="${p.id}" ${user.permissions.includes(p.id) || user.permissions.includes('*') ? 'checked' : ''} class="w-5 h-5 rounded bg-black/20 border-white/10 text-indigo-600 outline-none">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-white transition-all">${p.name}</span>
+                    </label>
+                `).join('');
+
+                document.getElementById('user-perm-modal').classList.remove('hidden');
+            });
+        }
+
+        function saveUserPermissions() {
+            const selected = Array.from(document.querySelectorAll('#permissions-matrix input:checked')).map(i => i.value);
+            fetch('api.php?action=update_user_permissions', {
+                method: 'POST',
+                body: JSON.stringify({ id: activeEditingUserId, permissions: selected })
+            }).then(r => r.json()).then(res => {
+                if (res.success) {
+                    alert('Матрица полномочий сотрудника обновлена в реестре');
+                    document.getElementById('user-perm-modal').classList.add('hidden');
+                    renderAdmin(document.getElementById('app-content'));
+                }
+            });
+        }
+
+        function deleteUser(id) {
+            if(!confirm('Удалить запись о сотруднике из реестра?')) return;
+            fetch('api.php?action=delete_user', { method: 'POST', body: JSON.stringify({ id }) }).then(() => {
+                 renderAdmin(document.getElementById('app-content'));
             });
         }
 

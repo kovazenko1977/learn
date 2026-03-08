@@ -1,34 +1,34 @@
 [
     {
-        "id": "u1",
+        "id": "U1",
+        "name": "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
         "username": "admin",
-        "password": "$2y$10$azDBAi1W8QRym8fnMudTtONnXWIDn2n7ebQxCOEztv4BqeA4Wmo3m",
-        "name": "Генеральный Директор",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
         "role": "admin",
         "permissions": ["*"]
     },
     {
-        "id": "u2",
+        "id": "U2",
+        "name": "ОТДЕЛ МАРКЕТИНГА",
         "username": "sales",
-        "password": "$2y$10$ZIWLqkdRY6JRCh2lgYZecOK.hWXgNOVScZQgvwhadPSaBnb7DR3eS",
-        "name": "Отдел Маркетинга",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
         "role": "sales_manager",
-        "permissions": ["products_view", "clients_view", "clients_manage", "orders_view_all", "orders_manage", "pricelists_view", "pricelists_manage", "analytics_view"]
+        "permissions": ["products_view", "orders_view_all", "orders_manage", "analytics_view"]
     },
     {
-        "id": "u3",
-        "username": "production",
-        "password": "$2y$10$nDCpC.IMPLyVkYQlbXmvAO4uohlmN1VTglLNRU0npj/3XeNMBpwN.",
-        "name": "Начальник Производства",
+        "id": "U3",
+        "name": "НАЧАЛЬНИК ПРОИЗВОДСТВА",
+        "username": "prod",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
         "role": "production_chief",
-        "permissions": ["products_view", "raw_materials_view", "raw_materials_manage", "production_log"]
+        "permissions": ["raw_materials_view", "production_log", "recipes_view"]
     },
     {
-        "id": "u4",
+        "id": "U4",
+        "name": "ООО ВИНОТРЕЙД",
         "username": "client",
-        "password": "$2y$10$UKUkW3B3CsBe7brLvlOEXO6SHwSl/hx/v/43bcD566qFGeui/NGf6",
-        "name": "ООО ВиноТрейд",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
         "role": "client",
-        "permissions": ["products_view", "orders_create", "orders_view_own", "pricelists_view"]
+        "permissions": ["products_view", "orders_view_own", "orders_create"]
     }
 ]

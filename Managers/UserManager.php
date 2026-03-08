@@ -28,4 +28,14 @@ class UserManager {
     public function deleteUser($id) {
         return $this->store->delete($id);
     }
+
+    public function updateUserPermissions($id, $permissions) {
+        return $this->store->update($id, ['permissions' => $permissions]);
+    }
+
+    public function getUser($id) {
+        $user = $this->store->findOne($id);
+        if ($user) unset($user['password']);
+        return $user;
+    }
 }
