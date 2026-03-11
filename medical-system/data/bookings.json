@@ -1,0 +1,15 @@
+[
+    {
+        "room_id": "699f5bac8c958",
+        "guest_name": "Sync Test 1772051372",
+        "guest_phone": "+375 00 0000000",
+        "guest_birth_date": "1985-05-05",
+        "check_in": "2026-02-25",
+        "check_out": "2026-02-28",
+        "status": "confirmed",
+        "id": "699f5bac8ceae",
+        "created_at": "2026-02-25 20:29:32",
+        "patient_id": "699f5bac8e864",
+        "total_cost": 3000
+    }
+]

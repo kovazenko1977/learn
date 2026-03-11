@@ -1,0 +1,905 @@
+<?php
+require_once __DIR__ . '/Core/Autoloader.php';
+\Medical\Core\Autoloader::register();
+\Medical\Core\Auth::init();
+\Medical\Core\Auth::requireLogin();
+
+if (!\Medical\Core\Auth::can('procedures_assign')) {
+    die("У вас недостаточно прав для назначения процедур.");
+}
+
+$patientManager = new \Medical\Core\Managers\PatientManager();
+$procedureManager = new \Medical\Core\Managers\ProcedureManager();
+$scheduleManager = new \Medical\Core\Managers\ScheduleManager();
+
+if (isset($_GET['ajax_action']) && $_GET['ajax_action'] === 'get_slots') {
+    $cabinetId = $_GET['cabinet_id'];
+    $date = $_GET['date'];
+    $procId = $_GET['procedure_id'] ?? null;
+    $occupied = $scheduleManager->getOccupiedSlots($cabinetId, $date);
+    $free = $procId ? $scheduleManager->getFreeSlots($procId, $cabinetId, $date) : [];
+    $earliest = $procId ? $scheduleManager->getEarliestFreeSlot($procId, $cabinetId, $date) : null;
+    header('Content-Type: application/json');
+    echo json_encode(['occupied' => $occupied, 'free' => $free, 'earliest' => $earliest]);
+    exit;
+}
+
+$patientId = $_GET['patient_id'] ?? '';
+$patient = $patientId ? $patientManager->getById($patientId) : null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'assign') {
+    if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
+        $procId = $_POST['procedure_id'];
+        $proc = $procedureManager->getById($procId);
+
+        $isPaidProc = $proc['is_paid'] ?? false;
+
+        $assignment = [
+            'patient_id' => $_POST['patient_id'],
+            'patient_name' => $patientManager->getById($_POST['patient_id'])['name'],
+            'procedure_id' => $procId,
+            'procedure_name' => $proc['name'],
+            'date' => $_POST['date'],
+            'time' => $_POST['time'],
+            'cabinet_id' => $_POST['cabinet_id'],
+            'price' => $proc['price'] ?? 0,
+            'status' => $isPaidProc ? 'unpaid' : 'free',
+            'attended' => false,
+            'doctor' => \Medical\Core\Auth::getUser()['name']
+        ];
+
+        // Storage uses Y-m-d (ISO 8601) for consistency and sorting
+        $startDate = $_POST['date'];
+        $assignment['date'] = $startDate;
+
+        $isBulk = !empty($_POST['end_date']);
+        if ($isBulk) {
+            $endDate = $_POST['end_date'];
+            $result = $scheduleManager->bulkAssign($assignment, $startDate, $endDate, $_POST['frequency'] ?? 'daily');
+
+            $errors = [];
+            foreach ($result as $d => $res) {
+                if (isset($res['error'])) $errors[] = "$d: " . $res['error'];
+            }
+            if (!empty($errors)) {
+                $error = "Ошибки при массовом назначении: " . implode(', ', $errors);
+            } else {
+                header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+                exit;
+            }
+        } else {
+            $result = $scheduleManager->assign($assignment);
+            if (isset($result['error'])) {
+                $error = $result['error'];
+            } else {
+                header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id']);
+                exit;
+            }
+        }
+    } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
+        $scheduleManager->cancel($_POST['appointment_id'], $_POST['cancel_reason'] ?? '');
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=cancelled");
+        exit;
+    } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'restore' && \Medical\Core\Auth::can('procedures_assign')) {
+        $scheduleManager->restore($_POST['appointment_id']);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=restored");
+        exit;
+    } elseif (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '') && $_POST['action'] === 'delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
+        $appToDelete = $scheduleManager->getById($_POST['appointment_id']);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        if ($appToDelete && ($appToDelete['status'] ?? '') === 'paid' && !\Medical\Core\Auth::can('settings_system')) {
+            header("Location: procedures_doctor.php?patient_id=" . $pId . "&error=paid_delete");
+            exit;
+        }
+        $scheduleManager->delete($_POST['appointment_id']);
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=deleted");
+        exit;
+    } elseif ($_POST['action'] === 'bulk_cancel' && \Medical\Core\Auth::can('procedures_cancel')) {
+        $ids = $_POST['selected_apps'] ?? [];
+        $scheduleManager->bulkCancel($ids, $_POST['bulk_cancel_reason'] ?? '');
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=bulk_cancelled");
+        exit;
+    } elseif ($_POST['action'] === 'bulk_delete' && (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete'))) {
+        $ids = $_POST['selected_apps'] ?? [];
+        $scheduleManager->bulkDelete($ids);
+        $pId = !empty($_POST['patient_id']) ? $_POST['patient_id'] : $patientId;
+        header("Location: procedures_doctor.php?patient_id=" . $pId . "&success=bulk_deleted");
+        exit;
+    }
+}
+
+require_once __DIR__ . '/includes/header.php';
+
+$procedures = $procedureManager->getAll();
+$allAppointments = $scheduleManager->getAll();
+
+// Filter for doctor: only what concerns him (assigned by him)
+$currentUser = \Medical\Core\Auth::getUser();
+$myAppointments = array_filter($allAppointments, function($app) use ($currentUser) {
+    return isset($app['doctor']) && $app['doctor'] === $currentUser['name'];
+});
+
+$patientAppointments = $patientId ? $scheduleManager->getByPatient($patientId) : [];
+
+$pkgManager = new \Medical\Core\Managers\PackageManager();
+$allPackages = $pkgManager->getAll();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'shift_schedule') {
+    if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
+        $days = (int)$_POST['shift_days'];
+        $count = $scheduleManager->shiftPatientSchedule($_POST['patient_id'], $days);
+        header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id'] . "&success=shifted&count=$count");
+        exit;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'confirm_assign_package') {
+    if (\Medical\Core\Auth::checkCsrf($_POST['csrf_token'] ?? '')) {
+        $patientData = $patientManager->getById($_POST['patient_id']);
+        $items = $_POST['package_items'] ?? [];
+        $pkgName = $_POST['package_name'] ?? '';
+        $errors = [];
+
+        foreach ($items as $item) {
+            $proc = $procedureManager->getById($item['procedure_id']);
+            if (!$proc) continue;
+
+            $assignment = [
+                'patient_id' => $_POST['patient_id'],
+                'patient_name' => $patientData['name'],
+                'procedure_id' => $item['procedure_id'],
+                'procedure_name' => $proc['name'],
+                'date' => $item['date'],
+                'time' => $item['time'],
+                'cabinet_id' => $item['cabinet_id'],
+                'price' => ($proc['is_paid'] ?? false) ? ($proc['price'] ?? 0) : 0,
+                'status' => ($proc['is_paid'] ?? false) ? 'unpaid' : 'free',
+                'attended' => false,
+                'doctor' => \Medical\Core\Auth::getUser()['name'],
+                'package_name' => $pkgName
+            ];
+
+            $res = $scheduleManager->assign($assignment);
+            if (isset($res['error'])) {
+                $errors[] = "Ошибка {$item['date']} {$item['time']}: " . $res['error'];
+            }
+        }
+
+        if (!empty($errors)) {
+            $error = implode("<br>", $errors);
+        } else {
+            header("Location: procedures_doctor.php?patient_id=" . $_POST['patient_id'] . "&success=package_assigned");
+            exit;
+        }
+    }
+}
+?>
+
+<h1>Назначение процедур</h1>
+
+<?php if (isset($_GET['success'])): ?>
+    <div class="card mica-effect" style="background: #dff6dd; color: #107c10; border-color: #107c10; margin-bottom: 20px; padding: 15px;">
+        <i data-lucide="check-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        <strong>Успешно:</strong>
+        <?php
+            if ($_GET['success'] === 'deleted') echo "Назначение полностью удалено из системы.";
+            if ($_GET['success'] === 'cancelled') echo "Назначение отменено (статус обновлен).";
+            if ($_GET['success'] === 'restored') echo "Назначение успешно восстановлено.";
+            if ($_GET['success'] === 'shifted') echo "График пациента успешно сдвинут на {$_GET['count']} процедур.";
+            if ($_GET['success'] === 'bulk_cancelled') echo "Выбранные процедуры успешно отменены.";
+            if ($_GET['success'] === 'bulk_deleted') echo "Выбранные процедуры успешно удалены.";
+        ?>
+    </div>
+<?php endif; ?>
+
+<?php if (isset($error) || isset($_GET['error'])): ?>
+    <div class="card mica-effect" style="background: #fde7e9; color: #d13438; border-color: #d13438; margin-bottom: 20px; padding: 15px;">
+        <i data-lucide="alert-circle" style="width:18px; height:18px; vertical-align: middle; margin-right: 8px;"></i>
+        <strong>Ошибка:</strong>
+        <?php
+            if (isset($error)) echo $error;
+            elseif ($_GET['error'] === 'paid_delete') echo "Нельзя удалить ОПЛАЧЕННУЮ процедуру. Пожалуйста, выполните возврат средств через кассу или обратитесь к администратору.";
+        ?>
+    </div>
+<?php endif; ?>
+
+<?php if (!$patient): ?>
+    <div class="card mica-effect">
+        <h2 style="margin-bottom: 20px;">Выберите пациента для назначения процедур</h2>
+        <form method="GET" style="display: flex; gap: 12px; margin-bottom: 24px;">
+            <input type="text" name="q" placeholder="Поиск пациента..." style="flex-grow: 1;">
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </form>
+
+        <?php
+        $searchQuery = $_GET['q'] ?? '';
+        $displayPatients = [];
+        if ($searchQuery) {
+            $displayPatients = $patientManager->search($searchQuery);
+        } else {
+            // By default, show patients of the current doctor
+            $displayPatients = array_filter($patientManager->getAll(), function($p) use ($currentUser) {
+                return ($p['treating_doctor'] ?? '') === $currentUser['name'];
+            });
+            if (empty($displayPatients)) {
+                $displayPatients = array_slice($patientManager->getAll(), 0, 10);
+            }
+        }
+        ?>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>№ Карты</th>
+                    <th>Врач</th>
+                    <th style="text-align: right;">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($displayPatients as $p): ?>
+                <tr>
+                    <td><strong><?php echo htmlspecialchars($p['name']); ?></strong></td>
+                    <td><code><?php echo htmlspecialchars($p['card_number'] ?? '-'); ?></code></td>
+                    <td><?php echo htmlspecialchars($p['treating_doctor'] ?? 'не назначен'); ?></td>
+                    <td style="text-align: right;">
+                        <a href="?patient_id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary">Выбрать</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php else: ?>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+        <div>
+            <div class="card mica-effect mb-4">
+                <h3>Пакет процедур</h3>
+                <div style="margin-bottom: 15px;">
+                    <label>Выберите пакет</label>
+                    <select id="package_selector" class="form-control" style="width: 100%;">
+                        <option value="">-- Выберите пакет --</option>
+                        <?php foreach ($allPackages as $pkg): ?>
+                            <option value="<?php echo $pkg['id']; ?>" data-items='<?php echo json_encode($pkg['items'], ENT_QUOTES); ?>'>
+                                <?php echo htmlspecialchars($pkg['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label>Дата начала</label>
+                    <input type="date" id="package_start_date" value="<?php echo date('Y-m-d'); ?>" class="form-control" style="width: 100%;">
+                </div>
+
+                <button type="button" class="btn btn-sm btn-primary" style="width: 100%;" onclick="previewPackage()">Подготовить назначения</button>
+            </div>
+
+            <div class="card mica-effect">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="margin:0;">Новое назначение для: <?php echo htmlspecialchars($patient['name']); ?></h3>
+                    <a href="patient_card.php?id=<?php echo $patient['id']; ?>" class="btn btn-sm btn-ghost" style="display: flex; align-items: center; gap: 8px; border: 1px solid var(--win-border);">
+                        <i data-lucide="contact" style="width:16px; height:16px;"></i> Карточка
+                    </a>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" value="assign">
+                    <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block;">Процедура</label>
+                        <select name="procedure_id" id="procedure_select" style="width: 100%;" required>
+                            <option value="">-- Выберите процедуру --</option>
+                            <?php foreach ($procedures as $proc): ?>
+                                <option value="<?php echo $proc['id']; ?>"
+                                        data-cabinet="<?php echo htmlspecialchars($proc['default_cabinet'] ?? ''); ?>"
+                                        data-start="<?php echo $proc['work_start'] ?? '08:00'; ?>"
+                                        data-end="<?php echo $proc['work_end'] ?? '17:00'; ?>">
+                                    <?php echo htmlspecialchars($proc['name']); ?>
+                                    (<?php echo $proc['work_start'] ?? '08:00'; ?>-<?php echo $proc['work_end'] ?? '17:00'; ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display:block;">С даты</label>
+                            <input type="date" name="date" id="start_date" value="<?php echo date('Y-m-d'); ?>" style="width: 100%;" required>
+                            <div style="display: flex; gap: 4px; margin-top: 5px;">
+                                <button type="button" class="btn btn-sm btn-ghost" style="padding: 2px 6px; font-size: 0.7rem;" onclick="quickSetDate(0)">Сегодня</button>
+                                <button type="button" class="btn btn-sm btn-ghost" style="padding: 2px 6px; font-size: 0.7rem;" onclick="quickSetDate(1)">Завтра</button>
+                                <button type="button" class="btn btn-sm btn-ghost" style="padding: 2px 6px; font-size: 0.7rem;" onclick="quickSetDate(7)">+7 дн.</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display:block;">По дату (необяз.)</label>
+                            <input type="date" name="end_date" id="end_date" style="width: 100%;">
+                        </div>
+                    </div>
+
+                    <div id="bulk_options" style="display: none; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 4px;">
+                        <label style="display:block;">Периодичность</label>
+                        <select name="frequency" style="width: 100%;">
+                            <option value="daily">Ежедневно</option>
+                            <option value="every_other">Через день</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block;">Кабинет</label>
+                        <input type="text" name="cabinet_id" id="cabinet_id" placeholder="Напр. 101" style="width: 100%;" required>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="display:block;">Время (выберите из списка или введите вручную)</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="time" name="time" id="time_input" style="flex-grow: 1;" required>
+                            <button type="button" class="btn btn-sm" onclick="document.getElementById('free_slots_wrapper').style.display = 'block';">Свободные слоты</button>
+                        </div>
+                    </div>
+
+                    <div id="free_slots_wrapper" style="display: none; margin-bottom: 15px; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 8px; border: 1px dashed var(--win-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 0.85rem; font-weight: 600;">Доступное время:</span>
+                            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.style.display='none'" style="background:none; border:none; cursor:pointer; font-size: 1.2rem;">&times;</button>
+                        </div>
+                        <div id="free_slots_container" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 150px; overflow-y: auto; padding-right: 5px;">
+                            <span style="font-size: 0.8rem; color: #666;">Выберите процедуру, кабинет и дату...</span>
+                        </div>
+                    </div>
+
+                    <div id="timeline_container" style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom: 5px;">Загруженность кабинета (Рабочие часы выделены белым)</label>
+                        <div id="timeline" style="height: 30px; background: #e5e5e5; border-radius: 4px; position: relative; overflow: hidden; border: 1px solid var(--win-border);">
+                            <div id="working_hours_bg" style="position: absolute; height: 100%; background: #fff; z-index: 1;"></div>
+                            <div id="busy_slots_container" style="position: absolute; width: 100%; height: 100%; z-index: 2;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #666; margin-top: 2px;">
+                            <span>08:00</span>
+                            <span>12:00</span>
+                            <span>16:00</span>
+                            <span>20:00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 45px; font-weight: 600;">Назначить процедуру</button>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <div class="card mica-effect">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin:0;">История назначений пациента</h3>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 0.8rem; color: var(--win-text-secondary);">Показывать по:</label>
+                        <select id="pagination-limit" style="padding: 4px 8px; font-size: 0.8rem;">
+                            <option value="19">19</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="all">Все</option>
+                        </select>
+                    </div>
+                </div>
+                <form id="bulk-actions-form" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                    <input type="hidden" name="action" id="bulk_action_input" value="">
+                    <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+                    <input type="hidden" name="bulk_cancel_reason" id="bulk_cancel_reason_input" value="">
+
+                <table style="width: 100%; border-collapse: collapse;" id="appointments-table">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
+                            <th style="padding: 10px; width: 30px;"><input type="checkbox" onclick="toggleAllCheckboxes(this)"></th>
+                            <th style="padding: 10px;">Дата/Время</th>
+                            <th style="padding: 10px;">Процедура</th>
+                            <th style="padding: 10px;">Врач</th>
+                            <th style="padding: 10px;">Статус</th>
+                            <th style="padding: 10px; text-align: right;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach (array_reverse($patientAppointments) as $app): ?>
+                        <tr style="border-bottom: 1px solid var(--win-border); <?php echo ($app['status'] ?? '') === 'cancelled' ? 'background: rgba(209, 52, 56, 0.03);' : ''; ?>" class="appointment-row">
+                            <td style="padding: 10px;"><input type="checkbox" name="selected_apps[]" value="<?php echo $app['id']; ?>"></td>
+                            <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
+                            <td style="padding: 10px;">
+                                <?php echo htmlspecialchars($app['procedure_name']); ?>
+                                <?php if (!empty($app['package_name'])): ?>
+                                    <div style="font-size: 0.75rem; color: var(--win-accent); font-weight: 500; margin-top: 2px;">
+                                        Пакет: <?php echo htmlspecialchars($app['package_name']); ?>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if (!empty($app['cancel_reason'])): ?>
+                                    <div style="font-size: 0.75rem; color: #d13438; font-weight: normal; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                        <i data-lucide="info" style="width:12px; height:12px;"></i> Причина: <?php echo htmlspecialchars($app['cancel_reason']); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td style="padding: 10px; font-size: 0.8em;"><?php echo htmlspecialchars($app['doctor'] ?? '-'); ?></td>
+                            <td style="padding: 10px;">
+                                <?php
+                                    $class = 'status-gray';
+                                    $text = 'Бесплатно';
+                                    if (($app['status'] ?? '') === 'unpaid') { $class = 'status-red'; $text = 'Не оплачено'; }
+                                    if (($app['status'] ?? '') === 'paid') { $class = 'status-green'; $text = 'Оплачено'; }
+                                    if (($app['status'] ?? '') === 'cancelled') { $class = 'status-red'; $text = 'Отменено'; }
+                                    if ($app['attended'] ?? false) { $text .= ' (Проведена)'; }
+                                ?>
+                                <span class="<?php echo $class; ?>"><?php echo $text; ?></span>
+                                <?php if (($app['status'] ?? '') !== 'cancelled' && !$app['attended'] && \Medical\Core\Auth::can('procedures_cancel')): ?>
+                                    <button class="btn btn-sm" style="border-color: #d13438; color: #d13438; background: rgba(209, 52, 56, 0.05); padding: 4px 8px;" title="Отменить назначение" onclick="openCancelModal('<?php echo $app['id']; ?>', <?php echo ($app['status'] === 'paid' ? 'true' : 'false'); ?>)">
+                                        <i data-lucide="ban" style="width: 14px; height: 14px; color: #d13438;"></i>
+                                    </button>
+                                <?php endif; ?>
+                                <?php if (($app['status'] ?? '') === 'cancelled' && \Medical\Core\Auth::can('procedures_assign')): ?>
+                                    <form method="POST" style="display:inline; margin-left: 5px;">
+                                        <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+                                        <input type="hidden" name="action" value="restore">
+                                        <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+                                        <input type="hidden" name="appointment_id" value="<?php echo $app['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-ghost" style="color: var(--win-accent); padding: 4px 8px;" title="Восстановить">
+                                            <i data-lucide="rotate-ccw" style="width: 14px; height: 14px;"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if (\Medical\Core\Auth::can('settings_system') || \Medical\Core\Auth::can('procedures_delete')): ?>
+                                    <button type="button" class="btn btn-sm btn-danger" style="padding: 4px 8px;" title="Удалить ошибку" onclick="singleAction('<?php echo $app['id']; ?>', 'delete')">
+                                        <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>
+                                    </button>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                </form>
+
+                <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.02); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <span style="font-size: 0.85rem; color: #666;">С выбранными:</span>
+                        <button type="button" class="btn btn-sm" style="color: #d13438;" onclick="submitBulk('bulk_cancel')"><i data-lucide="ban" class="icon" style="width:14px; height:14px;"></i> Отменить</button>
+                        <button type="button" class="btn btn-sm" style="color: #d13438;" onclick="submitBulk('bulk_delete')"><i data-lucide="trash-2" class="icon" style="width:14px; height:14px;"></i> Удалить</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <a href="export.php?action=print_schedule&patient_id=<?php echo $patientId; ?>" target="_blank" class="btn btn-primary" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i data-lucide="printer" class="icon" style="margin: 0;"></i> Печать карты процедур
+                    </a>
+                    <button type="button" class="btn" onclick="document.getElementById('shiftModal').style.display='block'">
+                        <i data-lucide="calendar-days" class="icon"></i> Сдвинуть график
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
+<!-- Package Preview Modal -->
+<div id="packagePreviewModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); overflow-y: auto;">
+    <div class="card mica-effect" style="width: 900px; margin: 40px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Проверка и настройка времени пакета</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="confirm_assign_package">
+            <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+            <input type="hidden" name="package_name" id="preview_pkg_name">
+
+            <div id="package_items_preview" style="max-height: 500px; overflow-y: auto; margin-bottom: 24px; padding-right: 10px;">
+                <!-- Filled via JS -->
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--win-border); padding-top: 20px;">
+                <button type="button" class="btn" onclick="document.getElementById('packagePreviewModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Подтвердить все назначения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const allProcs = <?php echo json_encode($procedures); ?>;
+
+function previewPackage() {
+    const selector = document.getElementById('package_selector');
+    const pkgId = selector.value;
+    if (!pkgId) {
+        alert('Выберите пакет');
+        return;
+    }
+
+    const startDateStr = document.getElementById('package_start_date').value;
+    const pkgName = selector.options[selector.selectedIndex].text.trim();
+    document.getElementById('preview_pkg_name').value = pkgName;
+    const items = JSON.parse(selector.options[selector.selectedIndex].dataset.items);
+    const container = document.getElementById('package_items_preview');
+    container.innerHTML = '';
+
+    let currentIdx = 0;
+    items.forEach(item => {
+        const proc = allProcs.find(p => p.id === item.procedure_id);
+        if (!proc) return;
+
+        let currentDate = new Date(startDateStr);
+        for (let i = 0; i < item.quantity; i++) {
+            const dateISO = currentDate.toISOString().split('T')[0];
+            const div = document.createElement('div');
+            div.style.cssText = 'display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; padding: 12px; border-bottom: 1px solid var(--win-border); align-items: center; background: rgba(0,0,0,0.01); margin-bottom: 8px; border-radius: 8px;';
+
+            div.innerHTML = `
+                <div>
+                    <input type="hidden" name="package_items[${currentIdx}][procedure_id]" value="${proc.id}">
+                    <strong style="font-size: 0.9rem;">${proc.name}</strong>
+                </div>
+                <div>
+                    <input type="date" name="package_items[${currentIdx}][date]" value="${dateISO}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
+                </div>
+                <div style="display: flex; gap: 4px;">
+                    <input type="time" name="package_items[${currentIdx}][time]" id="time_p_${currentIdx}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px; flex: 1;">
+                    <button type="button" class="btn btn-sm" style="padding: 0 6px;" title="Показать свободные слоты" onclick="showPkgSlotPicker('${proc.id}', '${proc.default_cabinet}', '${dateISO}', 'time_p_${currentIdx}')">
+                        <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+                    </button>
+                </div>
+                <div>
+                    <input type="text" name="package_items[${currentIdx}][cabinet_id]" value="${proc.default_cabinet || ''}" class="form-control" style="font-size: 0.8rem; padding: 4px 8px;">
+                </div>
+            `;
+            container.appendChild(div);
+
+            // Fetch earliest free slot for this specific day/proc
+            fetchEarliestSlot(proc.id, proc.default_cabinet, dateISO, `time_p_${currentIdx}`);
+
+            currentDate.setDate(currentDate.getDate() + 1);
+            currentIdx++;
+        }
+    });
+
+    document.getElementById('packagePreviewModal').style.display = 'block';
+}
+
+function fetchEarliestSlot(procId, cabinet, date, targetId) {
+    if (!cabinet) return;
+    fetch(`?ajax_action=get_slots&procedure_id=${procId}&cabinet_id=${cabinet}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.earliest) {
+                document.getElementById(targetId).value = data.earliest;
+            } else if (data.free && data.free.length > 0) {
+                document.getElementById(targetId).value = data.free[0];
+            } else {
+                document.getElementById(targetId).value = '09:00';
+                document.getElementById(targetId).style.borderColor = '#d13438';
+                document.getElementById(targetId).title = 'Нет свободных слотов!';
+            }
+        });
+}
+
+function showPkgSlotPicker(procId, cabinet, date, targetId) {
+    const picker = document.getElementById('pkg_slot_picker');
+    const container = document.getElementById('pkg_slot_chips');
+    const title = document.getElementById('pkg_slot_title');
+
+    title.innerText = `Свободно на ${date}`;
+    container.innerHTML = '<span style="font-size: 0.8rem;">Загрузка...</span>';
+    picker.style.display = 'block';
+
+    fetch(`?ajax_action=get_slots&procedure_id=${procId}&cabinet_id=${cabinet}&date=${date}`)
+        .then(r => r.json())
+        .then(data => {
+            const free = data.free || [];
+            container.innerHTML = '';
+            if (free.length === 0) {
+                container.innerHTML = '<span style="font-size: 0.8rem; color: #d13438;">Нет свободных мест</span>';
+            } else {
+                free.forEach(time => {
+                    const chip = document.createElement('div');
+                    chip.textContent = time;
+                    chip.style.cssText = 'padding: 4px 8px; background: var(--win-accent); color: white; border-radius: 4px; font-size: 0.75rem; cursor: pointer;';
+                    chip.onclick = () => {
+                        document.getElementById(targetId).value = time;
+                        picker.style.display = 'none';
+                    };
+                    container.appendChild(chip);
+                });
+            }
+        });
+}
+</script>
+
+<!-- Floating Slot Picker for Packages -->
+<div id="pkg_slot_picker" class="card mica-effect" style="display:none; position: fixed; z-index: 2001; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h4 id="pkg_slot_title" style="margin:0; font-size: 0.9rem;">Свободные слоты</h4>
+        <button type="button" onclick="document.getElementById('pkg_slot_picker').style.display='none'" style="background:none; border:none; cursor:pointer; font-size: 1.2rem;">&times;</button>
+    </div>
+    <div id="pkg_slot_chips" style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 200px; overflow-y: auto;"></div>
+</div>
+
+<!-- Shift Schedule Modal -->
+<div id="shiftModal" style="display:none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 400px; margin: 150px auto; padding: 32px;">
+        <h2 style="margin-bottom: 24px;">Сдвинуть график</h2>
+        <p style="font-size: 0.9rem; color: var(--win-text-secondary); margin-bottom: 20px;">
+            Все предстоящие (не выполненные) процедуры пациента будут перенесены на указанное количество дней.
+        </p>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="shift_schedule">
+            <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+
+            <div class="mb-4">
+                <label>Количество дней (напр. 1 или -1)</label>
+                <input type="number" name="shift_days" class="form-control" value="1" required style="width: 100%;">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('shiftModal').style.display='none'">Отмена</button>
+                <button type="submit" class="btn btn-primary">Выполнить перенос</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+<div id="cancelModal" style="display:none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);">
+    <div class="card mica-effect" style="width: 400px; margin: 150px auto; padding: 32px;">
+        <h2 style="margin-bottom: 20px; color: #d13438;">Отмена процедуры</h2>
+        <div id="cancel_warning" style="display:none; background: #fff8e1; border: 1px solid #fbd38d; color: #856404; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px;">
+            <i data-lucide="alert-triangle" style="width:16px; height:16px; vertical-align: middle;"></i>
+            <strong>Внимание:</strong> Процедура ОПЛАЧЕНА.
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo \Medical\Core\Auth::getCsrfToken(); ?>">
+            <input type="hidden" name="action" value="cancel">
+            <input type="hidden" name="patient_id" value="<?php echo $patientId; ?>">
+            <input type="hidden" name="appointment_id" id="cancel_app_id">
+
+            <div style="margin-bottom: 24px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Причина отмены</label>
+                <textarea name="cancel_reason" style="width: 100%; height: 80px; resize: none;" placeholder="Напр. Противопоказания..."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn" onclick="document.getElementById('cancelModal').style.display='none'">Назад</button>
+                <button type="submit" class="btn btn-danger">Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCancelModal(id, isPaid) {
+        document.getElementById('cancel_app_id').value = id;
+        document.getElementById('cancel_warning').style.display = isPaid ? 'block' : 'none';
+        document.getElementById('cancelModal').style.display = 'block';
+        if (window.lucide) lucide.createIcons();
+    }
+
+    const procedureSelect = document.getElementById('procedure_select');
+    const cabinetInput = document.getElementById('cabinet_id');
+    const dateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const bulkOptions = document.getElementById('bulk_options');
+    const timeline = document.getElementById('timeline');
+    const workingHoursBg = document.getElementById('working_hours_bg');
+    const busySlotsContainer = document.getElementById('busy_slots_container');
+
+    const timeInput = document.getElementById('time_input');
+    const freeSlotsContainer = document.getElementById('free_slots_container');
+    const freeSlotsWrapper = document.getElementById('free_slots_wrapper');
+
+    function updateTimeline() {
+        const selectedOption = procedureSelect.options[procedureSelect.selectedIndex];
+        const procId = procedureSelect.value;
+        const workStart = selectedOption?.getAttribute('data-start') || '08:00';
+        const workEnd = selectedOption?.getAttribute('data-end') || '17:00';
+
+        // Update working hours background
+        const startDay = 8 * 60;
+        const totalDay = 12 * 60; // 08:00 to 20:00
+
+        const [wsH, wsM] = workStart.split(':').map(Number);
+        const [weH, weM] = workEnd.split(':').map(Number);
+
+        const wsMin = (wsH * 60 + wsM) - startDay;
+        const weMin = (weH * 60 + weM) - startDay;
+
+        workingHoursBg.style.left = Math.max(0, (wsMin / totalDay) * 100) + '%';
+        workingHoursBg.style.width = Math.max(0, ((weMin - wsMin) / totalDay) * 100) + '%';
+
+        const cabinet = cabinetInput.value;
+        let date = dateInput.value; // Y-m-d
+        if (!cabinet || !date) return;
+
+        fetch(`?ajax_action=get_slots&cabinet_id=${cabinet}&date=${date}&procedure_id=${procId}`)
+            .then(r => r.json())
+            .then(data => {
+                const occupied = data.occupied || [];
+                const free = data.free || [];
+                const earliest = data.earliest;
+
+                // Suggest earliest slot
+                if (earliest && !timeInput.value) {
+                    timeInput.value = earliest;
+                }
+
+                // Update Timeline (Busy Slots)
+                busySlotsContainer.innerHTML = '';
+                const sDay = 8 * 60;
+                const tDay = 12 * 60;
+
+                occupied.forEach(slot => {
+                    const [hS, mS] = slot.start.split(':').map(Number);
+                    const [hE, mE] = slot.end.split(':').map(Number);
+
+                    const startMin = (hS * 60 + mS) - sDay;
+                    const endMin = (hE * 60 + mE) - sDay;
+
+                    if (startMin < 0 && endMin <= 0) return;
+
+                    const left = Math.max(0, (startMin / tDay) * 100);
+                    const width = ((endMin - Math.max(0, startMin)) / tDay) * 100;
+
+                    const block = document.createElement('div');
+                    block.style.position = 'absolute';
+                    block.style.left = left + '%';
+                    block.style.width = width + '%';
+                    block.style.height = '100%';
+                    block.style.background = 'rgba(255, 241, 0, 0.8)'; // Yellow for busy
+                    block.title = `${slot.procedure} (${slot.start} - ${slot.end})`;
+                    busySlotsContainer.appendChild(block);
+                });
+
+                // Update Free Slots Chips
+                freeSlotsContainer.innerHTML = '';
+                if (free.length === 0) {
+                    freeSlotsContainer.innerHTML = '<span style="font-size: 0.8rem; color: #d83b01;">Нет свободных слотов</span>';
+                } else {
+                    free.forEach(time => {
+                        const chip = document.createElement('div');
+                        chip.textContent = time;
+                        chip.className = 'time-chip';
+                        chip.style.cssText = 'padding: 4px 10px; background: var(--win-accent); color: white; border-radius: 12px; font-size: 0.8rem; cursor: pointer; transition: opacity 0.2s;';
+                        chip.onclick = () => {
+                            timeInput.value = time;
+                            freeSlotsWrapper.style.display = 'none';
+                            // Highlighting selection
+                            document.querySelectorAll('.time-chip').forEach(c => c.style.opacity = '1');
+                            chip.style.opacity = '0.7';
+                        };
+                        freeSlotsContainer.appendChild(chip);
+                    });
+                }
+            });
+    }
+
+    procedureSelect?.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const cabinet = selectedOption.getAttribute('data-cabinet');
+        if (cabinet) {
+            cabinetInput.value = cabinet;
+            updateTimeline();
+        }
+    });
+
+    cabinetInput?.addEventListener('change', updateTimeline);
+    dateInput?.addEventListener('change', updateTimeline);
+
+    window.quickSetDate = function(days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        dateInput.value = d.toISOString().split('T')[0];
+        updateTimeline();
+    };
+
+    endDateInput?.addEventListener('input', function() {
+        bulkOptions.style.display = this.value ? 'block' : 'none';
+    });
+
+    // Initial timeline
+    updateTimeline();
+
+    function toggleAllCheckboxes(master) {
+        document.querySelectorAll('input[name="selected_apps[]"]').forEach(cb => cb.checked = master.checked);
+    }
+
+    function singleAction(id, action) {
+        if (action === 'delete') {
+            if (!confirm('Удалить назначение навсегда?')) return;
+        }
+
+        // Uncheck all, check only this one
+        document.querySelectorAll('input[name="selected_apps[]"]').forEach(cb => cb.checked = false);
+        const targetCb = document.querySelector(`input[name="selected_apps[]"][value="${id}"]`);
+        if (targetCb) targetCb.checked = true;
+
+        submitBulk('bulk_' + action);
+    }
+
+    function submitBulk(action) {
+        const selected = document.querySelectorAll('input[name="selected_apps[]"]:checked');
+        if (selected.length === 0) {
+            alert('Ничего не выбрано');
+            return;
+        }
+
+        if (action === 'bulk_delete') {
+            if (!confirm(`Удалить ${selected.length} назначений навсегда?`)) return;
+        }
+
+        if (action === 'bulk_cancel') {
+            const reason = prompt('Укажите причину отмены для выбранных процедур:');
+            if (reason === null) return;
+            document.getElementById('bulk_cancel_reason_input').value = reason;
+        }
+
+        document.getElementById('bulk_action_input').value = action;
+        document.getElementById('bulk-actions-form').submit();
+    }
+</script>
+
+<div class="card mica-effect" style="margin-top: 40px;">
+    <h2>Мои последние назначения</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--win-border); text-align: left;">
+                <th style="padding: 10px;">Пациент</th>
+                <th style="padding: 10px;">Процедура</th>
+                <th style="padding: 10px;">Дата/Время</th>
+                <th style="padding: 10px;">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $myRecent = array_slice(array_reverse($myAppointments), 0, 10);
+            foreach ($myRecent as $app):
+            ?>
+            <tr style="border-bottom: 1px solid var(--win-border);">
+                <td style="padding: 10px;"><strong><?php echo htmlspecialchars($app['patient_name']); ?></strong></td>
+                <td style="padding: 10px;"><?php echo htmlspecialchars($app['procedure_name']); ?></td>
+                <td style="padding: 10px;"><?php echo $app['date']; ?> <?php echo $app['time']; ?></td>
+                <td style="padding: 10px;">
+                    <?php if ($app['attended'] ?? false): ?>
+                        <span class="status-green">Проведена (<?php echo htmlspecialchars($app['performed_by'] ?? 'медсестра'); ?>)</span>
+                    <?php else: ?>
+                        <span class="status-gray">Ожидает</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const limitSelect = document.getElementById('pagination-limit');
+    const table = document.getElementById('appointments-table');
+    if (limitSelect && table) {
+        const rows = Array.from(table.querySelectorAll('.appointment-row'));
+
+        function updatePagination() {
+            const limit = limitSelect.value;
+            if (limit === 'all') {
+                rows.forEach(row => row.style.display = '');
+            } else {
+                const count = parseInt(limit);
+                rows.forEach((row, index) => {
+                    row.style.display = index < count ? '' : 'none';
+                });
+            }
+        }
+
+        limitSelect.addEventListener('change', updatePagination);
+        updatePagination();
+    }
+});
+</script>
+<?php include __DIR__ . '/includes/footer.php'; ?>

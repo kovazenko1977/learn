@@ -1,0 +1,13 @@
+{
+    "font_family": "'Segoe UI', sans-serif",
+    "font_size": 16,
+    "accent_color": "#0078d4",
+    "border_radius": 12,
+    "db_driver": "json",
+    "db_host": "localhost",
+    "db_name": "",
+    "db_user": "",
+    "db_pass": "",
+    "is_logging_enabled": false,
+    "is_booking_enabled": true
+}
