@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
         view: 'chat',
         messages: [],
         tasks: [],
+        achievements: [],
+        shopping: [],
         settings: {
             theme: 'dark',
             accentColor: '#0078d4',
@@ -12,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sounds: true,
             push: false
         },
+        users: [],
         currentTaskId: null,
         pollingInterval: null
     };
@@ -25,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const views = {
         chat: document.getElementById('chat-view'),
         tasks: document.getElementById('tasks-view'),
+        achievements: document.getElementById('achievements-view'),
+        shopping: document.getElementById('shopping-view'),
         settings: document.getElementById('settings-view')
     };
 
@@ -43,6 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmNewTaskBtn = document.getElementById('confirm-new-task');
     const taskModal = document.getElementById('task-modal');
     const taskDetailContent = document.getElementById('task-detail-content');
+
+    const shoppingList = document.getElementById('shopping-list');
+    const shoppingInput = document.getElementById('shopping-input');
+    const addShoppingBtn = document.getElementById('add-shopping-btn');
+
+    const achievementsList = document.getElementById('achievements-list');
+    const userManagementList = document.getElementById('user-management-list');
+    const myNameInput = document.getElementById('setting-my-name');
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    const addUserNameInput = document.getElementById('add-user-name');
+    const addUserPasscodeInput = document.getElementById('add-user-passcode');
+    const addUserBtn = document.getElementById('add-user-btn');
 
     const navItems = document.querySelectorAll('.nav-item[data-view]');
     const viewTitle = document.getElementById('view-title');
@@ -92,6 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initialization ---
     async function initApp() {
+        const preloader = document.getElementById('global-preloader');
+        if (preloader) preloader.style.display = 'flex';
+
         document.getElementById('current-username').textContent = state.user.username;
         if (state.user.avatar) {
             document.getElementById('current-avatar').style.backgroundImage = `url(${state.user.avatar})`;
@@ -102,6 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
         switchView(state.view);
 
         startPolling();
+
+        if (preloader) {
+            preloader.style.opacity = '0';
+            setTimeout(() => preloader.style.display = 'none', 500);
+        }
     }
 
     function showScreen(screenId) {
@@ -118,14 +143,26 @@ document.addEventListener('DOMContentLoaded', () => {
             item.classList.toggle('active', item.dataset.view === viewId);
         });
 
-        const titles = { chat: 'Чат', tasks: 'Задачи', settings: 'Настройки' };
-        viewTitle.textContent = titles[viewId];
+        const titles = {
+            chat: 'Чат семьи',
+            tasks: 'Список дел',
+            achievements: 'Наши успехи',
+            shopping: 'Список покупок',
+            settings: 'Настройки'
+        };
+        viewTitle.textContent = titles[viewId] || 'Приложение';
 
         if (viewId === 'chat') {
             loadMessages();
             setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
         } else if (viewId === 'tasks') {
             loadTasks();
+        } else if (viewId === 'shopping') {
+            loadShopping();
+        } else if (viewId === 'achievements') {
+            loadAchievements();
+        } else if (viewId === 'settings') {
+            loadUsers();
         }
     }
 
@@ -152,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function escapeHTML(str) {
+        if (!str) return '';
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
@@ -207,21 +245,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderTasks() {
         taskList.innerHTML = '';
         state.tasks.forEach(task => {
-            const completedSubtasks = task.subtasks.filter(s => s.completed).length;
-            const totalSubtasks = task.subtasks.length;
-            const progress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
+            const completedSubtasks = (task.subtasks || []).filter(s => s.completed).length;
+            const totalSubtasks = (task.subtasks || []).length;
+            const progress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : (task.completed ? 100 : 0);
 
             const div = document.createElement('div');
             div.className = 'task-card';
             div.innerHTML = `
-                <h3>${task.title}</h3>
-                <p>${task.description || 'Нет описания'}</p>
+                <h3>${escapeHTML(task.title)}</h3>
+                <p>${escapeHTML(task.description || 'Нет описания')}</p>
                 <div class="task-progress">
                     <div class="progress-bar" style="width: ${progress}%"></div>
                 </div>
                 <div class="task-meta">
                     <span>${completedSubtasks}/${totalSubtasks} этапов</span>
-                    <span>${task.username}</span>
+                    <span>${escapeHTML(task.username)}</span>
                 </div>
             `;
             div.onclick = () => openTaskDetails(task.id);
@@ -269,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="subtask-section">
                 <h3>Под-этапы</h3>
                 <div class="subtask-list">
-                    ${task.subtasks.map(sub => `
+                    ${(task.subtasks || []).map(sub => `
                         <div class="subtask-item ${sub.completed ? 'completed' : ''}" onclick="toggleSubtask('${sub.id}')">
                             <i class="far ${sub.completed ? 'fa-check-square' : 'fa-square'}"></i>
                             <span>${escapeHTML(sub.text)}</span>
@@ -277,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `).join('')}
                 </div>
                 <div class="input-group" style="display: flex; gap: 10px;">
-                    <input type="text" id="new-subtask-input" placeholder="Новый этап..." style="flex:1; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary);">
+                    <input type="text" id="new-subtask-input" placeholder="Новый этап..." style="flex:1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary);">
                     <button class="btn-primary" onclick="addSubtask()">Добавить</button>
                 </div>
             </div>
@@ -285,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="task-comments">
                 <h3>Обсуждение</h3>
                 <div id="comment-list">
-                    ${task.comments.map(c => `
+                    ${(task.comments || []).map(c => `
                         <div class="comment-item">
                             <div class="comment-header">
                                 <span>${escapeHTML(c.username)}</span>
@@ -296,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `).join('')}
                 </div>
                 <div class="input-group" style="display: flex; gap: 10px; margin-top: 15px;">
-                    <input type="text" id="new-comment-input" placeholder="Написать комментарий..." style="flex:1; padding: 8px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary);">
+                    <input type="text" id="new-comment-input" placeholder="Написать комментарий..." style="flex:1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary);">
                     <button class="btn-primary" onclick="addComment()">Отправить</button>
                 </div>
             </div>
@@ -338,10 +376,104 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTaskDetail();
     };
 
-    // --- Settings ---
+    // --- Shopping List ---
+    async function loadShopping() {
+        const resp = await fetch('api/tasks.php?action=shopping_list');
+        state.shopping = await resp.json();
+        renderShopping();
+    }
+
+    function renderShopping() {
+        shoppingList.innerHTML = '';
+        state.shopping.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `shopping-item ${item.checked ? 'checked' : ''}`;
+            div.innerHTML = `
+                <i class="far ${item.checked ? 'fa-check-circle' : 'fa-circle'}" onclick="toggleShopping('${item.id}')"></i>
+                <span style="flex-grow:1">${escapeHTML(item.text)}</span>
+                <i class="fas fa-trash-alt" style="color:var(--error-color); cursor:pointer" onclick="deleteShopping('${item.id}')"></i>
+            `;
+            shoppingList.appendChild(div);
+        });
+    }
+
+    window.addShopping = async () => {
+        const text = shoppingInput.value.trim();
+        if (!text) return;
+        const formData = new FormData();
+        formData.append('text', text);
+        await fetch('api/tasks.php?action=shopping_add', { method: 'POST', body: formData });
+        shoppingInput.value = '';
+        loadShopping();
+    };
+
+    window.toggleShopping = async (id) => {
+        const formData = new FormData();
+        formData.append('id', id);
+        await fetch('api/tasks.php?action=shopping_toggle', { method: 'POST', body: formData });
+        loadShopping();
+    };
+
+    window.deleteShopping = async (id) => {
+        const formData = new FormData();
+        formData.append('id', id);
+        await fetch('api/tasks.php?action=shopping_delete', { method: 'POST', body: formData });
+        loadShopping();
+    };
+
+    // --- Achievements ---
+    async function loadAchievements() {
+        const resp = await fetch('api/tasks.php?action=achievements');
+        state.achievements = await resp.json();
+        renderAchievements();
+    }
+
+    function renderAchievements() {
+        achievementsList.innerHTML = '';
+        state.achievements.forEach(ach => {
+            const div = document.createElement('div');
+            div.className = 'achievement-card';
+            div.innerHTML = `
+                <div class="achievement-icon"><i class="fas ${ach.icon || 'fa-medal'}"></i></div>
+                <div class="achievement-info">
+                    <h4>${escapeHTML(ach.title)}</h4>
+                    <p>${escapeHTML(ach.description)}</p>
+                    <div class="role-badge">${ach.points} очков</div>
+                </div>
+            `;
+            achievementsList.appendChild(div);
+        });
+    }
+
+    // --- Settings & User Management ---
+    async function loadUsers() {
+        const resp = await fetch('api/auth.php?action=users');
+        state.users = await resp.json();
+        renderUsers();
+    }
+
+    function renderUsers() {
+        userManagementList.innerHTML = '';
+        state.users.forEach(u => {
+            const div = document.createElement('div');
+            div.className = 'user-list-item';
+            div.innerHTML = `
+                <div class="avatar" style="width:30px; height:30px; background-image:url(${u.avatar})"></div>
+                <div style="flex-grow:1">
+                    <div>${escapeHTML(u.username)}</div>
+                    <div style="font-size:10px; color:var(--text-secondary)">Код: ${u.passcode}</div>
+                </div>
+                <div class="role-badge ${u.role === 'admin' ? 'admin' : ''}">${u.role || 'Участник'}</div>
+            `;
+            userManagementList.appendChild(div);
+        });
+    }
+
     async function loadSettings() {
         const resp = await fetch('api/settings.php?action=read');
         state.settings = await resp.json();
+
+        myNameInput.value = state.user.username;
 
         // Update UI inputs
         document.getElementById('setting-theme').value = state.settings.theme || 'dark';
@@ -350,6 +482,53 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('setting-font-size').value = state.settings.fontSize || '14px';
         document.getElementById('setting-sounds').checked = state.settings.sounds !== false;
         document.getElementById('setting-push').checked = state.settings.push || false;
+    }
+
+    async function saveProfile() {
+        const username = myNameInput.value.trim();
+        if (!username) return;
+
+        const formData = new FormData();
+        formData.append('username', username);
+
+        const resp = await fetch('api/auth.php?action=update_profile', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await resp.json();
+        if (data.success) {
+            state.user = data.user;
+            document.getElementById('current-username').textContent = state.user.username;
+            alert('Профиль обновлен');
+        }
+    }
+
+    async function addUser() {
+        const username = addUserNameInput.value.trim();
+        const passcode = addUserPasscodeInput.value.trim();
+
+        if (!username || !/^\d{6}$/.test(passcode)) {
+            alert('Введите корректные данные (имя и 6 цифр кода)');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('passcode', passcode);
+
+        const resp = await fetch('api/auth.php?action=add_user', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await resp.json();
+        if (data.success) {
+            addUserNameInput.value = '';
+            addUserPasscodeInput.value = '';
+            loadUsers();
+            alert('Участник добавлен');
+        } else {
+            alert(data.error);
+        }
     }
 
     async function saveSettings() {
@@ -377,8 +556,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.style.setProperty('--accent-color', state.settings.accentColor);
         document.documentElement.style.setProperty('--font-family', state.settings.font);
         document.documentElement.style.setProperty('--font-size', state.settings.fontSize);
-
-        // Calculate hover color (simpler version)
         document.documentElement.style.setProperty('--accent-hover', state.settings.accentColor + 'dd');
     }
 
@@ -388,6 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.pollingInterval = setInterval(() => {
             if (state.view === 'chat') loadMessages();
             if (state.view === 'tasks') loadTasks();
+            if (state.view === 'shopping') loadShopping();
         }, 3000);
     }
 
@@ -412,6 +590,9 @@ document.addEventListener('DOMContentLoaded', () => {
     newTaskBtn.addEventListener('click', () => newTaskModal.classList.add('active'));
     confirmNewTaskBtn.addEventListener('click', createNewTask);
 
+    addShoppingBtn.addEventListener('click', window.addShopping);
+    shoppingInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') window.addShopping(); });
+
     document.querySelectorAll('.close-modal').forEach(btn => {
         btn.addEventListener('click', () => {
             newTaskModal.classList.remove('active');
@@ -420,6 +601,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+    saveProfileBtn.addEventListener('click', saveProfile);
+    addUserBtn.addEventListener('click', addUser);
 
     // Initial check
     checkAuth();

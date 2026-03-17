@@ -9,6 +9,9 @@ if (!Auth::check()) {
 }
 
 $storage = new Storage('tasks.json');
+$shoppingStorage = new Storage('shopping.json');
+$achievementsStorage = new Storage('achievements.json');
+$user = Auth::user();
 $action = $_GET['action'] ?? 'list';
 
 if ($action === 'list') {
@@ -20,7 +23,6 @@ if ($action === 'list') {
 if ($action === 'create') {
     $title = $_POST['title'] ?? '';
     $description = $_POST['description'] ?? '';
-    $user = Auth::user();
 
     if (empty($title)) {
         echo json_encode(['success' => false, 'error' => 'Title required']);
@@ -91,7 +93,6 @@ if ($action === 'toggle_subtask') {
 if ($action === 'add_comment') {
     $task_id = $_POST['task_id'] ?? '';
     $comment = $_POST['comment'] ?? '';
-    $user = Auth::user();
 
     if (empty($task_id) || empty($comment)) exit;
 
@@ -110,5 +111,56 @@ if ($action === 'add_comment') {
     }
     $storage->write($tasks);
     echo json_encode(['success' => true]);
+    exit;
+}
+
+// --- Shopping ---
+if ($action === 'shopping_list') {
+    echo json_encode($shoppingStorage->read());
+    exit;
+}
+
+if ($action === 'shopping_add') {
+    $text = $_POST['text'] ?? '';
+    if (empty($text)) exit;
+    $items = $shoppingStorage->read();
+    $items[] = ['id' => uniqid(), 'text' => $text, 'checked' => false, 'user_id' => $user['id']];
+    $shoppingStorage->write($items);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+if ($action === 'shopping_toggle') {
+    $id = $_POST['id'] ?? '';
+    $items = $shoppingStorage->read();
+    foreach ($items as &$item) {
+        if ($item['id'] === $id) $item['checked'] = !$item['checked'];
+    }
+    $shoppingStorage->write($items);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+if ($action === 'shopping_delete') {
+    $id = $_POST['id'] ?? '';
+    $items = $shoppingStorage->read();
+    $items = array_values(array_filter($items, fn($i) => $i['id'] !== $id));
+    $shoppingStorage->write($items);
+    echo json_encode(['success' => true]);
+    exit;
+}
+
+// --- Achievements ---
+if ($action === 'achievements') {
+    $ach = $achievementsStorage->read();
+    if (empty($ach)) {
+        $ach = [
+            ['id' => '1', 'title' => 'Помощник года', 'description' => 'Выполните 10 семейных дел', 'points' => 100, 'icon' => 'fa-star'],
+            ['id' => '2', 'title' => 'Чистюля', 'description' => 'Поддерживайте порядок 7 дней подряд', 'points' => 50, 'icon' => 'fa-broom'],
+            ['id' => '3', 'title' => 'Шеф-повар', 'description' => 'Приготовьте ужин для всей семьи', 'points' => 75, 'icon' => 'fa-utensils'],
+        ];
+        $achievementsStorage->write($ach);
+    }
+    echo json_encode($ach);
     exit;
 }

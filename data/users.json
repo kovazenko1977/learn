@@ -4,5 +4,12 @@
         "passcode": "123456",
         "username": "User_456",
         "avatar": "assets\/img\/default-avatar.png"
+    },
+    {
+        "id": "69b8e43122246",
+        "passcode": "654321",
+        "username": "TestUser",
+        "avatar": "assets\/img\/default-avatar.png",
+        "role": "member"
     }
 ]

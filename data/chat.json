@@ -22,5 +22,13 @@
         "message": "Привет всем! Это тестовое сообщение.",
         "image": null,
         "timestamp": 1773723618
+    },
+    {
+        "id": "69b8e2f5176c0",
+        "user_id": "69b8df467c282",
+        "username": "User_456",
+        "message": "Все купил!",
+        "image": null,
+        "timestamp": 1773724405
     }
 ]

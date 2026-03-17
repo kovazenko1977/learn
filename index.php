@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Symphony - Совместная работа</title>
+    <title>Моя Семья - Профессиональное управление домом</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0078d4">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
 </head>
 <body class="theme-dark">
     <div id="app">
@@ -13,8 +16,8 @@
         <div id="login-screen" class="screen active">
             <div class="login-card">
                 <div class="logo">
-                    <i class="fas fa-layer-group"></i>
-                    <span>SYMPHONY</span>
+                    <i class="fas fa-house-user"></i>
+                    <span>МОЯ СЕМЬЯ</span>
                 </div>
                 <h2>Авторизация</h2>
                 <p>Введите ваш шестизначный код доступа</p>
@@ -28,24 +31,39 @@
 
         <!-- Main App Screen -->
         <div id="main-screen" class="screen">
+            <div id="global-preloader" class="preloader">
+                <div class="spinner"></div>
+            </div>
             <nav class="sidebar">
                 <div class="logo-mini">
-                    <i class="fas fa-layer-group"></i>
+                    <i class="fas fa-house-user"></i>
                 </div>
                 <div class="nav-items">
                     <div class="nav-item active" data-view="chat" title="Чат">
                         <i class="fas fa-comments"></i>
+                        <span class="nav-label">Чат</span>
                     </div>
-                    <div class="nav-item" data-view="tasks" title="Задачи">
+                    <div class="nav-item" data-view="tasks" title="Дела">
                         <i class="fas fa-tasks"></i>
+                        <span class="nav-label">Дела</span>
+                    </div>
+                    <div class="nav-item" data-view="achievements" title="Успехи">
+                        <i class="fas fa-award"></i>
+                        <span class="nav-label">Успехи</span>
+                    </div>
+                    <div class="nav-item" data-view="shopping" title="Купить">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="nav-label">Купить</span>
                     </div>
                     <div class="nav-item" data-view="settings" title="Настройки">
                         <i class="fas fa-cog"></i>
+                        <span class="nav-label">Настройки</span>
                     </div>
                 </div>
                 <div class="nav-bottom">
                     <div class="nav-item" id="logout-btn" title="Выйти">
                         <i class="fas fa-sign-out-alt"></i>
+                        <span class="nav-label">Выход</span>
                     </div>
                 </div>
             </nav>
@@ -80,9 +98,39 @@
                     <div id="task-list" class="task-grid"></div>
                 </section>
 
+                <!-- Achievements View -->
+                <section id="achievements-view" class="view">
+                    <div class="achievements-header">
+                        <h2>Наши достижения</h2>
+                        <p>Накапливайте очки за выполненные дела!</p>
+                    </div>
+                    <div id="achievements-list" class="achievements-grid">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Shopping View -->
+                <section id="shopping-view" class="view">
+                    <div class="shopping-controls">
+                        <input type="text" id="shopping-input" placeholder="Что нужно купить?">
+                        <button id="add-shopping-btn" class="btn-primary"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div id="shopping-list" class="shopping-container">
+                        <!-- Will be populated by JS -->
+                    </div>
+                </section>
+
                 <!-- Settings View -->
                 <section id="settings-view" class="view">
                     <div class="settings-container">
+                        <div class="setting-group">
+                            <h3>Мой профиль</h3>
+                            <div class="setting-row">
+                                <label>Имя в семье</label>
+                                <input type="text" id="setting-my-name" placeholder="Как вас зовут?">
+                            </div>
+                            <button id="save-profile-btn" class="btn-primary" style="margin-top:10px">Обновить профиль</button>
+                        </div>
                         <div class="setting-group">
                             <h3>Тема</h3>
                             <div class="setting-row">
@@ -117,6 +165,24 @@
                                     <option value="16px">Крупный</option>
                                     <option value="18px">Очень крупный</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <h3>Пользователи</h3>
+                            <div id="user-management-list" class="user-list">
+                                <!-- List of users with roles -->
+                            </div>
+                            <div class="add-user-form" style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border-color)">
+                                <h4>Добавить участника</h4>
+                                <div class="setting-row">
+                                    <label>Имя</label>
+                                    <input type="text" id="add-user-name" placeholder="Имя">
+                                </div>
+                                <div class="setting-row">
+                                    <label>Код (6 цифр)</label>
+                                    <input type="password" id="add-user-passcode" maxlength="6" placeholder="000000">
+                                </div>
+                                <button id="add-user-btn" class="btn-primary" style="margin-top:10px">Добавить в семью</button>
                             </div>
                         </div>
                         <div class="setting-group">
@@ -157,5 +223,10 @@
     </div>
 
     <script src="assets/js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>
