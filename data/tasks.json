@@ -1,0 +1,27 @@
+[
+    {
+        "id": "69b8df47cfd1e",
+        "title": "Тестовая задача",
+        "description": "Описание тестовой задачи для проверки",
+        "status": "new",
+        "created_at": 1773723463,
+        "created_by": "69b8df467c282",
+        "username": "User_456",
+        "subtasks": [
+            {
+                "id": "69b8df485d762",
+                "text": "Под-этап 1",
+                "completed": false
+            }
+        ],
+        "comments": [
+            {
+                "id": "69b8df4872b85",
+                "user_id": "69b8df467c282",
+                "username": "User_456",
+                "text": "Это обсуждение задачи.",
+                "timestamp": 1773723464
+            }
+        ]
+    }
+]
