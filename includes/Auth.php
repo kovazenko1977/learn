@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'Storage.php';
+require_once __DIR__ . '/Storage.php';
 
 class Auth {
     private $storage;

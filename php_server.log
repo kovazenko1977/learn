@@ -1,0 +1,214 @@
+[Tue Mar 17 05:40:21 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Tue Mar 17 05:41:16 2026] [::1]:44972 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:44972 [200]: GET /
+[Tue Mar 17 05:41:16 2026] [::1]:44972 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:44982 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:44986 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:44982 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:41:16 2026] [::1]:44986 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:41:16 2026] [::1]:44982 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:44986 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:45002 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:45002 [200]: GET /sw.js
+[Tue Mar 17 05:41:16 2026] [::1]:45002 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:45014 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:45024 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:45026 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:45014 [200]: GET /index.php
+[Tue Mar 17 05:41:16 2026] [::1]:45014 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:45024 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:41:16 2026] [::1]:45026 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:41:16 2026] [::1]:45024 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:45026 Closing
+[Tue Mar 17 05:41:16 2026] [::1]:45028 Accepted
+[Tue Mar 17 05:41:16 2026] [::1]:45028 [200]: GET /api/auth.php?action=check
+[Tue Mar 17 05:41:16 2026] [::1]:45028 Closing
+[Tue Mar 17 05:41:17 2026] [::1]:45042 Accepted
+[Tue Mar 17 05:41:17 2026] [::1]:45042 [200]: POST /api/auth.php?action=login
+[Tue Mar 17 05:41:17 2026] [::1]:45042 Closing
+[Tue Mar 17 05:41:17 2026] [::1]:45048 Accepted
+[Tue Mar 17 05:41:17 2026] [::1]:45048 [200]: GET /api/settings.php?action=read
+[Tue Mar 17 05:41:17 2026] [::1]:45048 Closing
+[Tue Mar 17 05:41:17 2026] [::1]:45060 Accepted
+[Tue Mar 17 05:41:17 2026] [::1]:45060 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 05:41:17 2026] [::1]:45060 Closing
+[Tue Mar 17 05:41:17 2026] [::1]:45068 Accepted
+[Tue Mar 17 05:41:17 2026] [::1]:45068 [200]: GET /assets/img/default-avatar.png
+[Tue Mar 17 05:41:17 2026] [::1]:45068 Closing
+[Tue Mar 17 05:41:18 2026] [::1]:45084 Accepted
+[Tue Mar 17 05:41:18 2026] [::1]:45084 [200]: GET /api/tasks.php?action=achievements
+[Tue Mar 17 05:41:18 2026] [::1]:45084 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42322 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42322 [200]: GET /
+[Tue Mar 17 05:42:40 2026] [::1]:42322 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42338 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42344 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42338 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:42:40 2026] [::1]:42344 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:42:40 2026] [::1]:42338 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42344 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42348 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42348 [200]: GET /sw.js
+[Tue Mar 17 05:42:40 2026] [::1]:42348 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42358 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42358 [200]: GET /index.php
+[Tue Mar 17 05:42:40 2026] [::1]:42358 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42360 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42362 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42360 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:42:40 2026] [::1]:42362 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:42:40 2026] [::1]:42360 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42362 Closing
+[Tue Mar 17 05:42:40 2026] [::1]:42372 Accepted
+[Tue Mar 17 05:42:40 2026] [::1]:42372 [200]: GET /api/auth.php?action=check
+[Tue Mar 17 05:42:40 2026] [::1]:42372 Closing
+[Tue Mar 17 05:42:42 2026] [::1]:42376 Accepted
+[Tue Mar 17 05:42:42 2026] [::1]:42376 [200]: POST /api/auth.php?action=login
+[Tue Mar 17 05:42:42 2026] [::1]:42376 Closing
+[Tue Mar 17 05:42:42 2026] [::1]:42380 Accepted
+[Tue Mar 17 05:42:42 2026] [::1]:42380 [200]: GET /api/settings.php?action=read
+[Tue Mar 17 05:42:42 2026] [::1]:42380 Closing
+[Tue Mar 17 05:42:42 2026] [::1]:42384 Accepted
+[Tue Mar 17 05:42:42 2026] [::1]:42384 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 05:42:42 2026] [::1]:42384 Closing
+[Tue Mar 17 05:42:42 2026] [::1]:42392 Accepted
+[Tue Mar 17 05:42:42 2026] [::1]:42392 [200]: GET /assets/img/default-avatar.png
+[Tue Mar 17 05:42:42 2026] [::1]:42392 Closing
+[Tue Mar 17 05:42:43 2026] [::1]:42408 Accepted
+[Tue Mar 17 05:42:43 2026] [::1]:42408 [200]: GET /api/tasks.php?action=achievements
+[Tue Mar 17 05:42:43 2026] [::1]:42408 Closing
+[Tue Mar 17 05:45:50 2026] [::1]:57996 Accepted
+[Tue Mar 17 05:45:50 2026] [::1]:57996 [200]: GET /
+[Tue Mar 17 05:45:50 2026] [::1]:57996 Closing
+[Tue Mar 17 05:45:50 2026] [::1]:58006 Accepted
+[Tue Mar 17 05:45:50 2026] [::1]:58008 Accepted
+[Tue Mar 17 05:45:50 2026] [::1]:58006 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:45:50 2026] [::1]:58008 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:45:50 2026] [::1]:58006 Closing
+[Tue Mar 17 05:45:50 2026] [::1]:58008 Closing
+[Tue Mar 17 05:45:51 2026] [::1]:58022 Accepted
+[Tue Mar 17 05:45:51 2026] [::1]:58022 [200]: GET /api/auth.php?action=check
+[Tue Mar 17 05:45:51 2026] [::1]:58022 Closing
+[Tue Mar 17 05:45:51 2026] [::1]:58032 Accepted
+[Tue Mar 17 05:45:51 2026] [::1]:58032 [200]: GET /sw.js
+[Tue Mar 17 05:45:51 2026] [::1]:58032 Closing
+[Tue Mar 17 05:45:51 2026] [::1]:58044 Accepted
+[Tue Mar 17 05:45:51 2026] [::1]:58046 Accepted
+[Tue Mar 17 05:45:51 2026] [::1]:58054 Accepted
+[Tue Mar 17 05:45:51 2026] [::1]:58044 [200]: GET /index.php
+[Tue Mar 17 05:45:51 2026] [::1]:58044 Closing
+[Tue Mar 17 05:45:51 2026] [::1]:58046 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:45:51 2026] [::1]:58054 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:45:51 2026] [::1]:58046 Closing
+[Tue Mar 17 05:45:51 2026] [::1]:58054 Closing
+[Tue Mar 17 05:45:52 2026] [::1]:58068 Accepted
+[Tue Mar 17 05:45:52 2026] [::1]:58068 [200]: POST /api/auth.php?action=login
+[Tue Mar 17 05:45:52 2026] [::1]:58068 Closing
+[Tue Mar 17 05:45:52 2026] [::1]:58070 Accepted
+[Tue Mar 17 05:45:52 2026] [::1]:58070 [200]: GET /api/settings.php?action=read
+[Tue Mar 17 05:45:52 2026] [::1]:58070 Closing
+[Tue Mar 17 05:45:52 2026] [::1]:58086 Accepted
+[Tue Mar 17 05:45:52 2026] [::1]:58086 [200]: GET /assets/img/default-avatar.png
+[Tue Mar 17 05:45:52 2026] [::1]:58086 Closing
+[Tue Mar 17 05:45:52 2026] [::1]:58088 Accepted
+[Tue Mar 17 05:45:52 2026] [::1]:58088 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 05:45:52 2026] [::1]:58088 Closing
+[Tue Mar 17 05:45:52 2026] [::1]:58104 Accepted
+[Tue Mar 17 05:45:52 2026] [::1]:58104 [200]: GET /api/tasks.php?action=list
+[Tue Mar 17 05:45:52 2026] [::1]:58104 Closing
+[Tue Mar 17 05:45:52 2026] [::1]:58118 Accepted
+[Tue Mar 17 05:45:52 2026] [::1]:58118 [200]: GET /api/tasks.php?action=achievements
+[Tue Mar 17 05:45:52 2026] [::1]:58118 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58130 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58130 [200]: GET /api/auth.php?action=users
+[Tue Mar 17 05:45:53 2026] [::1]:58130 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58140 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58140 [200]: GET /
+[Tue Mar 17 05:45:53 2026] [::1]:58140 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58150 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58162 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58150 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:45:53 2026] [::1]:58162 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:45:53 2026] [::1]:58150 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58162 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58170 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58170 [200]: GET /sw.js
+[Tue Mar 17 05:45:53 2026] [::1]:58170 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58180 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58184 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58198 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58180 [200]: GET /index.php
+[Tue Mar 17 05:45:53 2026] [::1]:58180 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58184 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:45:53 2026] [::1]:58198 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:45:53 2026] [::1]:58184 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58198 Closing
+[Tue Mar 17 05:45:53 2026] [::1]:58208 Accepted
+[Tue Mar 17 05:45:53 2026] [::1]:58208 [200]: GET /api/auth.php?action=check
+[Tue Mar 17 05:45:53 2026] [::1]:58208 Closing
+[Tue Mar 17 05:45:54 2026] [::1]:60636 Accepted
+[Tue Mar 17 05:45:54 2026] [::1]:60636 [200]: POST /api/auth.php?action=login
+[Tue Mar 17 05:45:54 2026] [::1]:60636 Closing
+[Tue Mar 17 05:45:54 2026] [::1]:60646 Accepted
+[Tue Mar 17 05:45:54 2026] [::1]:60646 [200]: GET /api/settings.php?action=read
+[Tue Mar 17 05:45:54 2026] [::1]:60646 Closing
+[Tue Mar 17 05:45:54 2026] [::1]:60658 Accepted
+[Tue Mar 17 05:45:54 2026] [::1]:60658 [200]: GET /assets/img/default-avatar.png
+[Tue Mar 17 05:45:54 2026] [::1]:60658 Closing
+[Tue Mar 17 05:45:54 2026] [::1]:60674 Accepted
+[Tue Mar 17 05:45:54 2026] [::1]:60674 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 05:45:54 2026] [::1]:60674 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40866 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40866 [200]: GET /
+[Tue Mar 17 05:50:36 2026] [::1]:40866 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40872 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40876 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40872 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:50:36 2026] [::1]:40872 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40876 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:50:36 2026] [::1]:40876 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40878 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40878 [200]: GET /sw.js
+[Tue Mar 17 05:50:36 2026] [::1]:40878 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40880 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40886 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40894 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40880 [200]: GET /index.php
+[Tue Mar 17 05:50:36 2026] [::1]:40880 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40886 [200]: GET /assets/css/style.css
+[Tue Mar 17 05:50:36 2026] [::1]:40894 [200]: GET /assets/js/app.js
+[Tue Mar 17 05:50:36 2026] [::1]:40886 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40894 Closing
+[Tue Mar 17 05:50:36 2026] [::1]:40906 Accepted
+[Tue Mar 17 05:50:36 2026] [::1]:40906 [200]: GET /api/auth.php?action=check
+[Tue Mar 17 05:50:36 2026] [::1]:40906 Closing
+[Tue Mar 17 05:50:37 2026] [::1]:40918 Accepted
+[Tue Mar 17 05:50:37 2026] [::1]:40918 [200]: POST /api/auth.php?action=login
+[Tue Mar 17 05:50:37 2026] [::1]:40918 Closing
+[Tue Mar 17 05:50:37 2026] [::1]:40932 Accepted
+[Tue Mar 17 05:50:37 2026] [::1]:40932 [200]: GET /api/settings.php?action=read
+[Tue Mar 17 05:50:37 2026] [::1]:40932 Closing
+[Tue Mar 17 05:50:37 2026] [::1]:40946 Accepted
+[Tue Mar 17 05:50:37 2026] [::1]:40946 [200]: GET /assets/img/default-avatar.png
+[Tue Mar 17 05:50:37 2026] [::1]:40946 Closing
+[Tue Mar 17 05:50:37 2026] [::1]:40958 Accepted
+[Tue Mar 17 05:50:37 2026] [::1]:40958 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 05:50:37 2026] [::1]:40958 Closing
+[Tue Mar 17 05:50:38 2026] [::1]:40970 Accepted
+[Tue Mar 17 05:50:38 2026] [::1]:40970 [200]: GET /api/tasks.php?action=list
+[Tue Mar 17 05:50:38 2026] [::1]:40970 Closing
+[Tue Mar 17 05:50:40 2026] [::1]:40980 Accepted
+[Tue Mar 17 05:50:40 2026] [::1]:40982 Accepted
+[Tue Mar 17 05:50:40 2026] [::1]:40980 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 05:50:40 2026] [::1]:40980 Closing
+[Tue Mar 17 05:50:40 2026] [::1]:40982 [200]: GET /api/tasks.php?action=list
+[Tue Mar 17 05:50:40 2026] [::1]:40982 Closing
+[Tue Mar 17 05:50:41 2026] [::1]:40996 Accepted
+[Tue Mar 17 05:50:41 2026] [::1]:40996 [200]: GET /api/tasks.php?action=shopping_list
+[Tue Mar 17 05:50:41 2026] [::1]:40996 Closing
+[Tue Mar 17 05:50:41 2026] [::1]:41006 Accepted
+[Tue Mar 17 05:50:41 2026] [::1]:41006 [200]: GET /api/tasks.php?action=achievements
+[Tue Mar 17 05:50:41 2026] [::1]:41006 Closing
+[Tue Mar 17 05:50:42 2026] [::1]:41022 Accepted
+[Tue Mar 17 05:50:42 2026] [::1]:41022 [200]: GET /api/auth.php?action=users
+[Tue Mar 17 05:50:42 2026] [::1]:41022 Closing

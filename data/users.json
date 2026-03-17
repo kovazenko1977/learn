@@ -11,5 +11,11 @@
         "username": "TestUser",
         "avatar": "assets\/img\/default-avatar.png",
         "role": "member"
+    },
+    {
+        "id": "69b8e97d672b7",
+        "passcode": "111111",
+        "username": "User_111",
+        "avatar": "assets\/img\/default-avatar.png"
     }
 ]

@@ -1,6 +1,7 @@
 <?php
-require_once '../includes/Auth.php';
-require_once '../includes/Storage.php';
+require_once __DIR__ . '/../includes/Auth.php';
+require_once __DIR__ . '/../includes/Storage.php';
+require_once __DIR__ . '/../includes/Achievements.php';
 
 if (!Auth::check()) {
     http_response_code(403);
@@ -79,6 +80,10 @@ if ($action === 'toggle_subtask') {
             foreach ($task['subtasks'] as &$sub) {
                 if ($sub['id'] === $subtask_id) {
                     $sub['completed'] = !$sub['completed'];
+                    if ($sub['completed']) {
+                        $ach = new Achievements();
+                        $ach->addProgress($user['id'], 'tasks_completed');
+                    }
                     break;
                 }
             }
@@ -126,6 +131,10 @@ if ($action === 'shopping_add') {
     $items = $shoppingStorage->read();
     $items[] = ['id' => uniqid(), 'text' => $text, 'checked' => false, 'user_id' => $user['id']];
     $shoppingStorage->write($items);
+
+    $ach = new Achievements();
+    $ach->addProgress($user['id'], 'shopping_items_added');
+
     echo json_encode(['success' => true]);
     exit;
 }
@@ -152,15 +161,7 @@ if ($action === 'shopping_delete') {
 
 // --- Achievements ---
 if ($action === 'achievements') {
-    $ach = $achievementsStorage->read();
-    if (empty($ach)) {
-        $ach = [
-            ['id' => '1', 'title' => 'Помощник года', 'description' => 'Выполните 10 семейных дел', 'points' => 100, 'icon' => 'fa-star'],
-            ['id' => '2', 'title' => 'Чистюля', 'description' => 'Поддерживайте порядок 7 дней подряд', 'points' => 50, 'icon' => 'fa-broom'],
-            ['id' => '3', 'title' => 'Шеф-повар', 'description' => 'Приготовьте ужин для всей семьи', 'points' => 75, 'icon' => 'fa-utensils'],
-        ];
-        $achievementsStorage->write($ach);
-    }
-    echo json_encode($ach);
+    $ach = new Achievements();
+    echo json_encode($ach->getUserAchievements($user['id']));
     exit;
 }

@@ -6,6 +6,7 @@
     <title>Моя Семья - Профессиональное управление домом</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0078d4">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
@@ -197,6 +198,14 @@
                             </div>
                         </div>
                         <button id="save-settings-btn" class="btn-primary">Сохранить изменения</button>
+
+                        <div class="setting-group" style="margin-top:30px; background: rgba(59, 130, 246, 0.1)">
+                            <h3>Установка</h3>
+                            <p style="margin-bottom:15px; font-size:13px">Для установки на телефон: Нажмите "Поделиться" (в Safari) или "Три точки" (в Chrome) и выберите <b>"На экран Домой"</b>.</p>
+                            <button id="install-pwa-btn" class="btn-primary" style="display:none; background: var(--accent-chat); width:100%; justify-content:center">
+                                <i class="fas fa-mobile-alt"></i> Установить приложение
+                            </button>
+                        </div>
                     </div>
                 </section>
             </main>

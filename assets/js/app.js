@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addUserNameInput = document.getElementById('add-user-name');
     const addUserPasscodeInput = document.getElementById('add-user-passcode');
     const addUserBtn = document.getElementById('add-user-btn');
+    const installPwaBtn = document.getElementById('install-pwa-btn');
 
     const navItems = document.querySelectorAll('.nav-item[data-view]');
     const viewTitle = document.getElementById('view-title');
@@ -168,23 +169,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Chat ---
     async function loadMessages() {
-        const resp = await fetch('api/chat.php?action=read');
-        const messages = await resp.json();
+        try {
+            const resp = await fetch('api/chat.php?action=read');
+            const messages = await resp.json();
 
-        const isAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 100;
+            const isAtBottom = chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 100;
 
-        if (JSON.stringify(messages) !== JSON.stringify(state.messages)) {
-            const oldLength = state.messages.length;
-            state.messages = messages;
-            renderMessages();
+            if (JSON.stringify(messages) !== JSON.stringify(state.messages)) {
+                const oldLength = state.messages.length;
+                state.messages = messages;
 
-            if (isAtBottom) {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                if (state.view === 'chat') {
+                    renderMessages();
+                    if (isAtBottom) {
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                }
+
+                if (oldLength > 0 && messages.length > oldLength) {
+                    const lastMsg = messages[messages.length - 1];
+                    if (lastMsg.user_id !== state.user.id) {
+                        if (state.settings.sounds) playNotifySound();
+                        showBrowserNotification(`Новое сообщение от ${lastMsg.username}`, lastMsg.message || 'Изображение');
+                    }
+                }
             }
-
-            if (oldLength > 0 && messages.length > oldLength && state.view !== 'chat' && state.settings.sounds) {
-                playNotifySound();
-            }
+        } catch (e) {
+            console.error("Failed to load messages", e);
         }
     }
 
@@ -196,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderMessages() {
+        if (state.view !== 'chat') return;
         chatContainer.innerHTML = '';
         state.messages.forEach(msg => {
             const isOwn = msg.user_id === state.user.id;
@@ -432,13 +444,23 @@ document.addEventListener('DOMContentLoaded', () => {
         achievementsList.innerHTML = '';
         state.achievements.forEach(ach => {
             const div = document.createElement('div');
-            div.className = 'achievement-card';
+            div.className = `achievement-card ${ach.earned ? 'earned' : 'locked'}`;
+            const progress = Math.min(100, (ach.progress / ach.threshold) * 100);
+
             div.innerHTML = `
-                <div class="achievement-icon"><i class="fas ${ach.icon || 'fa-medal'}"></i></div>
+                <div class="achievement-icon" style="color: ${ach.earned ? '#f59e0b' : '#64748b'}">
+                    <i class="fas ${ach.icon || 'fa-medal'}"></i>
+                </div>
                 <div class="achievement-info">
-                    <h4>${escapeHTML(ach.title)}</h4>
+                    <h4>${escapeHTML(ach.title)} ${ach.earned ? '🏆' : ''}</h4>
                     <p>${escapeHTML(ach.description)}</p>
-                    <div class="role-badge">${ach.points} очков</div>
+                    <div class="achievement-progress-container">
+                        <div class="achievement-progress-bar" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="achievement-meta">
+                        <span>${ach.progress} / ${ach.threshold}</span>
+                        <span class="role-badge">${ach.points} очков</span>
+                    </div>
                 </div>
             `;
             achievementsList.appendChild(div);
@@ -560,18 +582,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Utilities ---
+    async function requestNotificationPermission() {
+        if (!("Notification" in window)) return;
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            await Notification.requestPermission();
+        }
+    }
+
+    function showBrowserNotification(title, body) {
+        if (state.settings.push && Notification.permission === "granted" && document.hidden) {
+            new Notification(title, { body, icon: 'assets/img/icon-192.png' });
+        }
+    }
+
     function startPolling() {
         if (state.pollingInterval) clearInterval(state.pollingInterval);
         state.pollingInterval = setInterval(() => {
-            if (state.view === 'chat') loadMessages();
+            if (!state.user) return;
+
+            // Always poll messages for notifications
+            loadMessages();
+
             if (state.view === 'tasks') loadTasks();
-            if (state.view === 'shopping') loadShopping();
+            else if (state.view === 'shopping') loadShopping();
         }, 3000);
     }
 
     function playNotifySound() {
         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
         audio.play().catch(e => {});
+    }
+
+    // --- PWA Install ---
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installPwaBtn) installPwaBtn.style.display = 'flex';
+    });
+
+    if (installPwaBtn) {
+        installPwaBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') deferredPrompt = null;
+            }
+        });
     }
 
     // --- Event Listeners ---
@@ -600,7 +657,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+    document.getElementById('save-settings-btn').addEventListener('click', () => {
+        saveSettings();
+        if (state.settings.push) requestNotificationPermission();
+    });
     saveProfileBtn.addEventListener('click', saveProfile);
     addUserBtn.addEventListener('click', addUser);
 

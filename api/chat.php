@@ -1,6 +1,7 @@
 <?php
-require_once '../includes/Auth.php';
-require_once '../includes/Storage.php';
+require_once __DIR__ . '/../includes/Auth.php';
+require_once __DIR__ . '/../includes/Storage.php';
+require_once __DIR__ . '/../includes/Achievements.php';
 
 if (!Auth::check()) {
     http_response_code(403);
@@ -33,7 +34,13 @@ if ($action === 'send') {
         $mimeType = $finfo->file($_FILES['image']['tmp_name']);
 
         if (in_array($mimeType, $allowedTypes)) {
-            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $extMap = [
+                'image/jpeg' => 'jpg',
+                'image/png'  => 'png',
+                'image/gif'  => 'gif',
+                'image/webp' => 'webp'
+            ];
+            $ext = $extMap[$mimeType] ?? 'jpg';
             $filename = uniqid() . '.' . $ext;
             move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $filename);
             $image_path = 'uploads/' . $filename;
@@ -52,6 +59,10 @@ if ($action === 'send') {
         ];
         $messages[] = $newMessage;
         $storage->write($messages);
+
+        $ach = new Achievements();
+        $ach->addProgress($user['id'], 'messages_sent');
+
         echo json_encode(['success' => true, 'message' => $newMessage]);
     } else {
         echo json_encode(['success' => false, 'error' => 'Empty message']);
