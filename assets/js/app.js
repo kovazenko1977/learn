@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addUserPasscodeInput = document.getElementById('add-user-passcode');
     const addUserBtn = document.getElementById('add-user-btn');
     const installPwaBtn = document.getElementById('install-pwa-btn');
+    const iosPrompt = document.getElementById('ios-install-prompt');
+    const closeIosPrompt = document.getElementById('close-ios-prompt');
 
     const navItems = document.querySelectorAll('.nav-item[data-view]');
     const viewTitle = document.getElementById('view-title');
@@ -637,6 +639,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') deferredPrompt = null;
             }
+        });
+    }
+
+    // Show iOS prompt if on iOS and not standalone
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    };
+    const isStandalone = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+    if (isIos() && !isStandalone()) {
+        setTimeout(() => {
+            if (iosPrompt) iosPrompt.style.display = 'block';
+        }, 3000);
+    }
+
+    if (closeIosPrompt) {
+        closeIosPrompt.addEventListener('click', () => {
+            if (iosPrompt) iosPrompt.style.display = 'none';
         });
     }
 

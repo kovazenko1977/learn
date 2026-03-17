@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0078d4">
+    <meta name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Моя Семья">
 </head>
 <body class="theme-light">
     <div id="app">
@@ -225,6 +228,15 @@
                 <input type="text" id="new-task-title" placeholder="Заголовок задачи">
                 <textarea id="new-task-desc" placeholder="Описание задачи"></textarea>
                 <button id="confirm-new-task" class="btn-primary">Создать</button>
+            </div>
+        </div>
+
+        <!-- iOS Install Prompt -->
+        <div id="ios-install-prompt" class="ios-prompt">
+            <div class="ios-prompt-content">
+                <i class="fas fa-arrow-up-from-bracket"></i>
+                <p>Установите приложение: нажмите <strong>«Поделиться»</strong>, затем <strong>«На экран „Домой“»</strong></p>
+                <button id="close-ios-prompt">Понятно</button>
             </div>
         </div>
     </div>

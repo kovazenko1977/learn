@@ -28,6 +28,7 @@
     --sidebar-width: 260px;
     --top-bar-height: 64px;
     --nav-bar-height: 72px; /* For mobile */
+    --safe-area-bottom: env(safe-area-inset-bottom);
 }
 
 .theme-dark {
@@ -318,11 +319,11 @@ input, textarea, select {
 
     .sidebar {
         width: 100%;
-        height: var(--nav-bar-height);
+        height: calc(var(--nav-bar-height) + var(--safe-area-bottom));
         flex-direction: row;
         border-right: none;
         border-top: 1px solid var(--border-color);
-        padding: 0 8px;
+        padding: 0 8px var(--safe-area-bottom) 8px;
         justify-content: space-around;
         background: var(--bg-secondary);
         z-index: 100;
@@ -371,7 +372,7 @@ input, textarea, select {
     }
 
     .content {
-        height: calc(100vh - var(--nav-bar-height));
+        height: calc(100vh - var(--nav-bar-height) - var(--safe-area-bottom));
     }
 
     .top-bar {
@@ -401,6 +402,12 @@ input, textarea, select {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+@media (max-width: 768px) {
+    #chat-messages {
+        bottom: 90px;
+    }
 }
 
 .chat-input-area {
@@ -1046,4 +1053,53 @@ input, textarea, select {
     font-size: 14px;
     margin-bottom: 16px;
     font-weight: 600;
+}
+
+/* iOS Prompt Styling */
+.ios-prompt {
+    display: none;
+    position: fixed;
+    bottom: calc(var(--nav-bar-height) + var(--safe-area-bottom) + 20px);
+    left: 20px;
+    right: 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    z-index: 2000;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.5s ease-out;
+}
+
+.ios-prompt-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.ios-prompt i {
+    font-size: 24px;
+    color: var(--accent-color);
+}
+
+.ios-prompt p {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#close-ios-prompt {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 8px 24px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
