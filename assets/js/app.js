@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
         achievements: [],
         shopping: [],
         settings: {
-            theme: 'dark',
-            accentColor: '#0078d4',
+            theme: 'light',
+            accentColor: '#3b82f6',
             font: "'Segoe UI', sans-serif",
-            fontSize: '14px',
+            fontSize: '16px',
             sounds: true,
             push: false
         },

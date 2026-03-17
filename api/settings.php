@@ -15,10 +15,10 @@ if ($action === 'read') {
     $settings = $storage->read();
     $user = Auth::user();
     $userSettings = $settings[$user['id']] ?? [
-        'theme' => 'dark',
-        'accentColor' => '#0078d4',
+        'theme' => 'light',
+        'accentColor' => '#3b82f6',
         'font' => 'Segoe UI',
-        'fontSize' => '14px'
+        'fontSize' => '16px'
     ];
     echo json_encode($userSettings);
     exit;

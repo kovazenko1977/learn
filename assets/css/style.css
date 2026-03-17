@@ -1,9 +1,36 @@
 :root {
-    /* New Minimalist Premium Palette (Soft Dark & Clean Light) */
+    /* New Minimalist Premium Palette (Clean Light & Soft Dark) */
     --accent-color: #3b82f6; /* Elegant Blue */
     --accent-hover: #2563eb;
 
-    /* Dark Theme (Default) */
+    /* Light Theme (Default) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --bg-surface: #ffffff;
+
+    --text-primary: #000000;
+    --text-secondary: #4b5563;
+    --text-tertiary: #9ca3af;
+
+    --border-color: #e5e7eb;
+    --border-strong: #d1d5db;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    --sidebar-width: 260px;
+    --top-bar-height: 64px;
+    --nav-bar-height: 72px; /* For mobile */
+}
+
+.theme-dark {
     --bg-primary: #0a0a0c;
     --bg-secondary: #16161a;
     --bg-tertiary: #1f1f23;
@@ -15,33 +42,6 @@
 
     --border-color: #27272a;
     --border-strong: #3f3f46;
-
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
-    --radius-xl: 20px;
-
-    --sidebar-width: 260px;
-    --top-bar-height: 64px;
-    --nav-bar-height: 72px; /* For mobile */
-}
-
-.theme-light {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    --bg-surface: #ffffff;
-
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --text-tertiary: #9ca3af;
-
-    --border-color: #e5e7eb;
-    --border-strong: #d1d5db;
 }
 
 /* Base resets and Typography */
@@ -507,7 +507,7 @@ input, textarea, select {
 }
 
 .message.received .msg-content {
-    background: var(--bg-surface);
+    background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     border-bottom-left-radius: 4px;
