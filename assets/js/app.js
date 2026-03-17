@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const navItems = document.querySelectorAll('.nav-item[data-view]');
     const viewTitle = document.getElementById('view-title');
+    const logoutBtn = document.getElementById('logout-btn');
 
     // --- Authentication ---
     async function checkAuth() {
@@ -635,7 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.addEventListener('click', login);
     loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
 
-    document.getElementById('logout-btn').addEventListener('click', logout);
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
     navItems.forEach(item => {
         item.addEventListener('click', () => switchView(item.dataset.view));

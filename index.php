@@ -61,17 +61,14 @@
                         <span class="nav-label">Настройки</span>
                     </div>
                 </div>
-                <div class="nav-bottom">
-                    <div class="nav-item" id="logout-btn" title="Выйти">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span class="nav-label">Выход</span>
-                    </div>
-                </div>
             </nav>
 
             <main class="content">
                 <header class="top-bar">
-                    <h1 id="view-title">Чат</h1>
+                    <div class="app-info">
+                        <i class="fas fa-house-user logo-icon"></i>
+                        <h1 id="view-title">Чат</h1>
+                    </div>
                     <div class="user-info">
                         <span id="current-username"></span>
                         <div class="avatar" id="current-avatar"></div>
@@ -82,21 +79,19 @@
                 <section id="chat-view" class="view active">
                     <div id="chat-messages" class="messages-container"></div>
                     <div class="chat-input-area">
-                        <label for="image-upload" class="upload-btn">
-                            <i class="fas fa-paperclip"></i>
+                        <label for="image-upload" class="upload-btn-icon">
+                            <i class="fas fa-plus-circle"></i>
                             <input type="file" id="image-upload" accept="image/*" hidden>
                         </label>
-                        <input type="text" id="chat-input" placeholder="Введите сообщение...">
-                        <button id="send-chat-btn"><i class="fas fa-paper-plane"></i></button>
+                        <input type="text" id="chat-input" placeholder="Сообщение...">
+                        <button id="send-chat-btn"><i class="fas fa-arrow-up"></i></button>
                     </div>
                 </section>
 
                 <!-- Tasks View -->
                 <section id="tasks-view" class="view">
-                    <div class="task-controls">
-                        <button id="new-task-btn" class="btn-primary"><i class="fas fa-plus"></i> Новая задача</button>
-                    </div>
                     <div id="task-list" class="task-grid"></div>
+                    <button id="new-task-btn" class="fab"><i class="fas fa-plus"></i></button>
                 </section>
 
                 <!-- Achievements View -->
@@ -112,18 +107,21 @@
 
                 <!-- Shopping View -->
                 <section id="shopping-view" class="view">
-                    <div class="shopping-controls">
-                        <input type="text" id="shopping-input" placeholder="Что нужно купить?">
-                        <button id="add-shopping-btn" class="btn-primary"><i class="fas fa-plus"></i></button>
-                    </div>
                     <div id="shopping-list" class="shopping-container">
                         <!-- Will be populated by JS -->
+                    </div>
+                    <div class="shopping-fab-area">
+                        <input type="text" id="shopping-input" placeholder="Купить...">
+                        <button id="add-shopping-btn" class="fab-sm"><i class="fas fa-plus"></i></button>
                     </div>
                 </section>
 
                 <!-- Settings View -->
                 <section id="settings-view" class="view">
                     <div class="settings-container">
+                        <div class="setting-group logout-group">
+                            <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Выйти из аккаунта</button>
+                        </div>
                         <div class="setting-group">
                             <h3>Мой профиль</h3>
                             <div class="setting-row">
