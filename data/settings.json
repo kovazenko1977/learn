@@ -6,5 +6,13 @@
         "fontSize": "14px",
         "sounds": true,
         "push": false
+    },
+    "69b8e97d672b7": {
+        "theme": "light",
+        "accentColor": "#0078d4",
+        "font": "",
+        "fontSize": "14px",
+        "sounds": true,
+        "push": false
     }
 }

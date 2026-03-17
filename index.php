@@ -17,15 +17,15 @@
         <div id="login-screen" class="screen active">
             <div class="login-card">
                 <div class="logo">
-                    <i class="fas fa-house-user"></i>
-                    <span>МОЯ СЕМЬЯ</span>
+                    <i class="fas fa-circle-nodes"></i>
+                    <span>FAMILY NODE</span>
                 </div>
-                <h2>Авторизация</h2>
-                <p>Введите ваш шестизначный код доступа</p>
+                <h2>Привет!</h2>
+                <p>Введи 6-значный код доступа</p>
                 <div class="passcode-input">
-                    <input type="password" id="passcode" maxlength="6" placeholder="000000">
+                    <input type="password" id="passcode" maxlength="6" inputmode="numeric" placeholder="••••••">
                 </div>
-                <button id="login-btn">Войти</button>
+                <button id="login-btn">Продолжить</button>
                 <div id="login-error" class="error-msg"></div>
             </div>
         </div>
@@ -35,56 +35,66 @@
             <div id="global-preloader" class="preloader">
                 <div class="spinner"></div>
             </div>
-            <nav class="sidebar">
-                <div class="logo-mini">
-                    <i class="fas fa-house-user"></i>
-                </div>
-                <div class="nav-items">
-                    <div class="nav-item active" data-view="chat" title="Чат">
-                        <i class="fas fa-comments"></i>
-                        <span class="nav-label">Чат</span>
+
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo-mini">
+                        <i class="fas fa-circle-nodes"></i>
                     </div>
-                    <div class="nav-item" data-view="tasks" title="Дела">
-                        <i class="fas fa-tasks"></i>
-                        <span class="nav-label">Дела</span>
-                    </div>
-                    <div class="nav-item" data-view="achievements" title="Успехи">
-                        <i class="fas fa-award"></i>
-                        <span class="nav-label">Успехи</span>
-                    </div>
-                    <div class="nav-item" data-view="shopping" title="Купить">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="nav-label">Купить</span>
-                    </div>
-                    <div class="nav-item" data-view="settings" title="Настройки">
-                        <i class="fas fa-cog"></i>
-                        <span class="nav-label">Настройки</span>
+                    <div class="user-profile-mini">
+                        <div class="avatar" id="current-avatar"></div>
+                        <div class="user-meta">
+                            <span id="current-username"></span>
+                        </div>
                     </div>
                 </div>
-            </nav>
+                <nav class="nav-items">
+                    <div class="nav-item active" data-view="chat">
+                        <i class="fas fa-bubble-message"></i>
+                        <span class="nav-label">Сообщения</span>
+                    </div>
+                    <div class="nav-item" data-view="tasks">
+                        <i class="fas fa-layer-group"></i>
+                        <span class="nav-label">Проекты</span>
+                    </div>
+                    <div class="nav-item" data-view="achievements">
+                        <i class="fas fa-bolt-lightning"></i>
+                        <span class="nav-label">Рейтинг</span>
+                    </div>
+                    <div class="nav-item" data-view="shopping">
+                        <i class="fas fa-bag-shopping"></i>
+                        <span class="nav-label">Покупки</span>
+                    </div>
+                    <div class="nav-item" data-view="settings">
+                        <i class="fas fa-sliders"></i>
+                        <span class="nav-label">Опции</span>
+                    </div>
+                </nav>
+                <div class="sidebar-footer">
+                    <button id="logout-btn-sidebar" class="btn-ghost"><i class="fas fa-arrow-right-from-bracket"></i></button>
+                </div>
+            </aside>
 
             <main class="content">
                 <header class="top-bar">
-                    <div class="app-info">
-                        <i class="fas fa-house-user logo-icon"></i>
-                        <h1 id="view-title">Чат</h1>
-                    </div>
-                    <div class="user-info">
-                        <span id="current-username"></span>
-                        <div class="avatar" id="current-avatar"></div>
+                    <h1 id="view-title">Сообщения</h1>
+                    <div class="top-actions">
+                        <!-- Contextual actions will appear here -->
                     </div>
                 </header>
 
                 <!-- Chat View -->
                 <section id="chat-view" class="view active">
-                    <div id="chat-messages" class="messages-container"></div>
+                    <div id="chat-messages"></div>
                     <div class="chat-input-area">
-                        <label for="image-upload" class="upload-btn-icon">
-                            <i class="fas fa-plus-circle"></i>
-                            <input type="file" id="image-upload" accept="image/*" hidden>
-                        </label>
-                        <input type="text" id="chat-input" placeholder="Сообщение...">
-                        <button id="send-chat-btn"><i class="fas fa-arrow-up"></i></button>
+                        <div class="input-wrapper">
+                            <label for="image-upload" class="upload-btn-icon">
+                                <i class="fas fa-paperclip"></i>
+                                <input type="file" id="image-upload" accept="image/*" hidden>
+                            </label>
+                            <input type="text" id="chat-input" placeholder="Напишите что-нибудь..." autocomplete="off">
+                            <button id="send-chat-btn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
                     </div>
                 </section>
 
@@ -96,98 +106,88 @@
 
                 <!-- Achievements View -->
                 <section id="achievements-view" class="view">
-                    <div class="achievements-header">
-                        <h2>Наши достижения</h2>
-                        <p>Накапливайте очки за выполненные дела!</p>
+                    <div class="view-header-description">
+                        <h2>Рейтинг активности</h2>
+                        <p>Выполняйте задачи, чтобы получать баллы и открывать новые уровни.</p>
                     </div>
-                    <div id="achievements-list" class="achievements-grid">
-                        <!-- Will be populated by JS -->
-                    </div>
+                    <div id="achievements-list" class="achievements-grid"></div>
                 </section>
 
                 <!-- Shopping View -->
                 <section id="shopping-view" class="view">
-                    <div id="shopping-list" class="shopping-container">
-                        <!-- Will be populated by JS -->
-                    </div>
+                    <div id="shopping-list" class="shopping-container"></div>
                     <div class="shopping-fab-area">
-                        <input type="text" id="shopping-input" placeholder="Купить...">
-                        <button id="add-shopping-btn" class="fab-sm"><i class="fas fa-plus"></i></button>
+                        <div class="input-wrapper">
+                            <input type="text" id="shopping-input" placeholder="Что нужно купить?">
+                            <button id="add-shopping-btn" class="btn-icon-accent"><i class="fas fa-plus"></i></button>
+                        </div>
                     </div>
                 </section>
 
                 <!-- Settings View -->
                 <section id="settings-view" class="view">
                     <div class="settings-container">
-                        <div class="setting-group logout-group">
-                            <button id="logout-btn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Выйти из аккаунта</button>
-                        </div>
                         <div class="setting-group">
-                            <h3>Мой профиль</h3>
+                            <h3>Профиль</h3>
                             <div class="setting-row">
-                                <label>Имя в семье</label>
-                                <input type="text" id="setting-my-name" placeholder="Как вас зовут?">
+                                <label>Ваше имя</label>
+                                <input type="text" id="setting-my-name" placeholder="Имя">
                             </div>
-                            <button id="save-profile-btn" class="btn-primary" style="margin-top:10px">Обновить профиль</button>
+                            <button id="save-profile-btn" class="btn-secondary">Обновить данные</button>
                         </div>
+
                         <div class="setting-group">
-                            <h3>Тема</h3>
+                            <h3>Внешний вид</h3>
                             <div class="setting-row">
-                                <label>Световая схема</label>
+                                <label>Тема оформления</label>
                                 <select id="setting-theme">
-                                    <option value="dark">Темная</option>
-                                    <option value="light">Светлая</option>
-                                    <option value="glass">Стеклянная</option>
+                                    <option value="dark">Темная (Deep)</option>
+                                    <option value="light">Светлая (Clean)</option>
                                 </select>
                             </div>
                             <div class="setting-row">
                                 <label>Акцентный цвет</label>
-                                <input type="color" id="setting-accent" value="#0078d4">
+                                <input type="color" id="setting-accent" value="#3b82f6">
                             </div>
                         </div>
+
                         <div class="setting-group">
-                            <h3>Шрифт</h3>
+                            <h3>Текст</h3>
                             <div class="setting-row">
-                                <label>Семейство шрифтов</label>
+                                <label>Шрифт</label>
                                 <select id="setting-font">
-                                    <option value="'Segoe UI', sans-serif">Segoe UI</option>
-                                    <option value="'Roboto', sans-serif">Roboto</option>
+                                    <option value="'Inter', sans-serif">Inter (Modern)</option>
                                     <option value="'Montserrat', sans-serif">Montserrat</option>
-                                    <option value="'Courier New', monospace">Courier New</option>
+                                    <option value="'Roboto', sans-serif">Roboto</option>
                                 </select>
                             </div>
                             <div class="setting-row">
-                                <label>Размер шрифта</label>
+                                <label>Размер</label>
                                 <select id="setting-font-size">
-                                    <option value="12px">Маленький</option>
-                                    <option value="14px">Средний</option>
-                                    <option value="16px">Крупный</option>
-                                    <option value="18px">Очень крупный</option>
+                                    <option value="14px">Компактный</option>
+                                    <option value="16px">Стандарт</option>
+                                    <option value="18px">Крупный</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="setting-group">
-                            <h3>Пользователи</h3>
-                            <div id="user-management-list" class="user-list">
-                                <!-- List of users with roles -->
-                            </div>
-                            <div class="add-user-form" style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border-color)">
+                            <h3>Семья</h3>
+                            <div id="user-management-list" class="user-list"></div>
+                            <div class="add-user-section">
                                 <h4>Добавить участника</h4>
                                 <div class="setting-row">
-                                    <label>Имя</label>
                                     <input type="text" id="add-user-name" placeholder="Имя">
+                                    <input type="password" id="add-user-passcode" maxlength="6" placeholder="Код (6 цифр)">
                                 </div>
-                                <div class="setting-row">
-                                    <label>Код (6 цифр)</label>
-                                    <input type="password" id="add-user-passcode" maxlength="6" placeholder="000000">
-                                </div>
-                                <button id="add-user-btn" class="btn-primary" style="margin-top:10px">Добавить в семью</button>
+                                <button id="add-user-btn" class="btn-secondary">Добавить в систему</button>
                             </div>
                         </div>
+
                         <div class="setting-group">
-                            <h3>Уведомления</h3>
+                            <h3>Система</h3>
                             <div class="setting-row">
-                                <label>Звуковые уведомления</label>
+                                <label>Звуки уведомлений</label>
                                 <input type="checkbox" id="setting-sounds" checked>
                             </div>
                             <div class="setting-row">
@@ -195,14 +195,14 @@
                                 <input type="checkbox" id="setting-push">
                             </div>
                         </div>
-                        <button id="save-settings-btn" class="btn-primary">Сохранить изменения</button>
 
-                        <div class="setting-group" style="margin-top:30px; background: rgba(59, 130, 246, 0.1)">
-                            <h3>Установка</h3>
-                            <p style="margin-bottom:15px; font-size:13px">Для установки на телефон: Нажмите "Поделиться" (в Safari) или "Три точки" (в Chrome) и выберите <b>"На экран Домой"</b>.</p>
-                            <button id="install-pwa-btn" class="btn-primary" style="display:none; background: var(--accent-chat); width:100%; justify-content:center">
-                                <i class="fas fa-mobile-alt"></i> Установить приложение
-                            </button>
+                        <button id="save-settings-btn" class="btn-primary">Применить настройки</button>
+
+                        <button id="logout-btn" class="btn-danger">Выйти из аккаунта</button>
+
+                        <div id="install-section" class="install-prompt" style="display:none">
+                            <p>Установите приложение для быстрого доступа</p>
+                            <button id="install-pwa-btn" class="btn-accent-soft">Установить</button>
                         </div>
                     </div>
                 </section>

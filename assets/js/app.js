@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navItems = document.querySelectorAll('.nav-item[data-view]');
     const viewTitle = document.getElementById('view-title');
     const logoutBtn = document.getElementById('logout-btn');
+    const logoutBtnSidebar = document.getElementById('logout-btn-sidebar');
 
     // --- Authentication ---
     async function checkAuth() {
@@ -146,11 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const titles = {
-            chat: 'Чат семьи',
-            tasks: 'Список дел',
-            achievements: 'Наши успехи',
-            shopping: 'Список покупок',
-            settings: 'Настройки'
+            chat: 'Сообщения',
+            tasks: 'Проекты',
+            achievements: 'Рейтинг',
+            shopping: 'Покупки',
+            settings: 'Опции'
         };
         viewTitle.textContent = titles[viewId] || 'Приложение';
 
@@ -213,13 +214,19 @@ document.addEventListener('DOMContentLoaded', () => {
         state.messages.forEach(msg => {
             const isOwn = msg.user_id === state.user.id;
             const div = document.createElement('div');
-            div.className = `message ${isOwn ? 'own' : ''}`;
+            div.className = `message ${isOwn ? 'sent' : 'received'}`;
 
-            let content = `<div class="msg-meta">${escapeHTML(msg.username)} • ${new Date(msg.timestamp * 1000).toLocaleTimeString()}</div>
-                           <div class="msg-bubble">
-                               ${msg.message ? `<div class="msg-text">${escapeHTML(msg.message)}</div>` : ''}
-                               ${msg.image ? `<img src="${msg.image}" class="msg-image" onclick="window.open('${msg.image}')">` : ''}
-                           </div>`;
+            const time = new Date(msg.timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let content = `
+                <div class="msg-info">
+                    ${isOwn ? '' : `<span>${escapeHTML(msg.username)}</span>`}
+                    <span>${time}</span>
+                </div>
+                <div class="msg-content">
+                    ${msg.message ? `<div class="msg-text">${escapeHTML(msg.message)}</div>` : ''}
+                    ${msg.image ? `<img src="${msg.image}" class="msg-image" onclick="window.open('${msg.image}')">` : ''}
+                </div>`;
             div.innerHTML = content;
             chatContainer.appendChild(div);
         });
@@ -266,9 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'task-card';
             div.innerHTML = `
                 <h3>${escapeHTML(task.title)}</h3>
-                <p>${escapeHTML(task.description || 'Нет описания')}</p>
-                <div class="task-progress">
-                    <div class="progress-bar" style="width: ${progress}%"></div>
+                <p class="task-desc">${escapeHTML(task.description || 'Нет описания')}</p>
+                <div class="task-progress-bar">
+                    <div class="task-progress-fill" style="width: ${progress}%"></div>
                 </div>
                 <div class="task-meta">
                     <span>${completedSubtasks}/${totalSubtasks} этапов</span>
@@ -619,7 +626,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        if (installPwaBtn) installPwaBtn.style.display = 'flex';
+        const installSection = document.getElementById('install-section');
+        if (installSection) installSection.style.display = 'block';
     });
 
     if (installPwaBtn) {
@@ -637,6 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') login(); });
 
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
+    if (logoutBtnSidebar) logoutBtnSidebar.addEventListener('click', logout);
 
     navItems.forEach(item => {
         item.addEventListener('click', () => switchView(item.dataset.view));

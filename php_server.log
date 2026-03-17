@@ -599,3 +599,42 @@
 [Tue Mar 17 06:23:13 2026] [::1]:43906 Closing
 [Tue Mar 17 06:23:13 2026] [::1]:43912 [200]: GET /api/tasks.php?action=list
 [Tue Mar 17 06:23:13 2026] [::1]:43912 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36934 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36934 [200]: GET /
+[Tue Mar 17 06:52:47 2026] [::1]:36934 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36946 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36954 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36946 [200]: GET /assets/css/style.css
+[Tue Mar 17 06:52:47 2026] [::1]:36954 [200]: GET /assets/js/app.js
+[Tue Mar 17 06:52:47 2026] [::1]:36946 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36954 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36956 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36956 [200]: GET /api/auth.php?action=check
+[Tue Mar 17 06:52:47 2026] [::1]:36956 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36972 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36972 [200]: GET /sw.js
+[Tue Mar 17 06:52:47 2026] [::1]:36972 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36980 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36988 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:37000 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:36980 [200]: GET /index.php
+[Tue Mar 17 06:52:47 2026] [::1]:36980 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:36988 [200]: GET /assets/css/style.css
+[Tue Mar 17 06:52:47 2026] [::1]:37000 [200]: GET /assets/js/app.js
+[Tue Mar 17 06:52:47 2026] [::1]:36988 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:37000 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:37014 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:37014 [200]: POST /api/auth.php?action=login
+[Tue Mar 17 06:52:47 2026] [::1]:37014 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:37022 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:37022 [200]: GET /api/settings.php?action=read
+[Tue Mar 17 06:52:47 2026] [::1]:37022 Closing
+[Tue Mar 17 06:52:47 2026] [::1]:37036 Accepted
+[Tue Mar 17 06:52:47 2026] [::1]:37036 [200]: GET /api/chat.php?action=read
+[Tue Mar 17 06:52:47 2026] [::1]:37036 Closing
+[Tue Mar 17 06:52:48 2026] [::1]:37052 Accepted
+[Tue Mar 17 06:52:48 2026] [::1]:37052 [200]: GET /api/auth.php?action=users
+[Tue Mar 17 06:52:48 2026] [::1]:37052 Closing
+[Tue Mar 17 06:52:48 2026] [::1]:37056 Accepted
+[Tue Mar 17 06:52:48 2026] [::1]:37056 [200]: GET /assets/img/default-avatar.png
+[Tue Mar 17 06:52:48 2026] [::1]:37056 Closing
