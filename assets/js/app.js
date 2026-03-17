@@ -506,8 +506,8 @@ document.addEventListener('DOMContentLoaded', () => {
         myNameInput.value = state.user.username;
 
         // Update UI inputs
-        document.getElementById('setting-theme').value = state.settings.theme || 'dark';
-        document.getElementById('setting-accent').value = state.settings.accentColor || '#0078d4';
+        document.getElementById('setting-theme').value = state.settings.theme || 'light';
+        document.getElementById('setting-accent').value = state.settings.accentColor || '#3b82f6';
         document.getElementById('setting-font').value = state.settings.font || "'Segoe UI', sans-serif";
         document.getElementById('setting-font-size').value = state.settings.fontSize || '14px';
         document.getElementById('setting-sounds').checked = state.settings.sounds !== false;

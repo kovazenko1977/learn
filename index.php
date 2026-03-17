@@ -11,7 +11,7 @@
     <meta name="theme-color" content="#0078d4">
     <link rel="apple-touch-icon" href="assets/img/icon-192.png">
 </head>
-<body class="theme-dark">
+<body class="theme-light">
     <div id="app">
         <!-- Login Screen -->
         <div id="login-screen" class="screen active">
