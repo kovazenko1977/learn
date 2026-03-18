@@ -38,4 +38,22 @@ if ($method === 'GET') {
     $orders[] = $order;
     Storage::write('orders', $orders);
     echo json_encode(['success' => true, 'order' => $order]);
+} elseif ($method === 'PUT') {
+    if (!Auth::isAdmin()) {
+        http_response_code(403);
+        exit;
+    }
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = $_GET['id'];
+    $status = $data['status'];
+
+    $orders = Storage::read('orders');
+    foreach ($orders as &$o) {
+        if ($o['id'] === $id) {
+            $o['status'] = $status;
+            break;
+        }
+    }
+    Storage::write('orders', $orders);
+    echo json_encode(['success' => true]);
 }

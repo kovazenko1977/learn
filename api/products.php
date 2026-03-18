@@ -19,7 +19,7 @@ if ($method === 'GET') {
     $products = Storage::read('products');
     $data = $_POST;
 
-    $id = $data['id'] ?? uniqid();
+    $id = !empty($data['id']) ? $data['id'] : uniqid();
     $image = $data['existing_image'] ?? '';
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {

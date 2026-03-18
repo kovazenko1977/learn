@@ -120,6 +120,28 @@ th, td {
     border-bottom: 1px solid #eee;
 }
 
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background: #323130;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
 @media (max-width: 600px) {
     .grid { grid-template-columns: 1fr; }
     header { flex-direction: column; gap: 10px; }

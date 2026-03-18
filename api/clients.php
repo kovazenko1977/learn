@@ -19,7 +19,7 @@ if ($method === 'GET') {
     $clients = Storage::read('clients');
     $data = json_decode(file_get_contents('php://input'), true);
 
-    $id = $data['id'] ?? uniqid();
+    $id = !empty($data['id']) ? $data['id'] : uniqid();
 
     // Check if password needs hashing (if it's new or changed)
     $password = $data['password'];

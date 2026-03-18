@@ -19,6 +19,8 @@
         <div class="modal-content" id="modal-body"></div>
     </div>
 
+    <div id="toast-container"></div>
+
     <script src="assets/js/app.js"></script>
 </body>
 </html>

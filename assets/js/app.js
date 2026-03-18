@@ -1,6 +1,7 @@
 const App = {
     user: null,
     products: [],
+    filteredProducts: [],
     clients: [],
     orders: [],
     cart: [],
@@ -8,6 +9,15 @@ const App = {
     init() {
         this.checkAuth();
         this.bindEvents();
+    },
+
+    toast(msg) {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
     },
 
     escapeHTML(str) {
@@ -38,6 +48,18 @@ const App = {
             if (e.target.id === 'client-form') this.handleClientSave(e);
         });
 
+        document.body.addEventListener('input', (e) => {
+            if (e.target.id === 'product-search') {
+                this.filterProducts(e.target.value);
+            }
+        });
+
+        document.body.addEventListener('change', (e) => {
+            const action = e.target.dataset.action;
+            const id = e.target.dataset.id;
+            if (action === 'update-status') this.updateOrderStatus(id, e.target.value);
+        });
+
         document.body.addEventListener('click', (e) => {
             const action = e.target.dataset.action;
             const id = e.target.dataset.id;
@@ -55,6 +77,7 @@ const App = {
             if (action === 'add-to-cart') this.addToCart(id);
             if (action === 'place-order') this.placeOrder();
             if (action === 'export-1c') window.location.href = `api/export.php?id=${id}`;
+            if (action === 'view-client-details') this.showClientDetails(id);
         });
     },
 
@@ -69,8 +92,9 @@ const App = {
             const data = await res.json();
             this.user = data.user;
             this.render();
+            this.toast('Успешный вход');
         } else {
-            alert('Неверный логин или пароль');
+            this.toast('Неверный логин или пароль');
         }
     },
 
@@ -124,20 +148,48 @@ const App = {
         if (view === 'orders') this.renderOrders();
     },
 
+    filterProducts(query) {
+        query = query.toLowerCase();
+        this.filteredProducts = this.products.filter(p =>
+            p.name.toLowerCase().includes(query) ||
+            p.description.toLowerCase().includes(query)
+        );
+        this.renderProductsList(true);
+    },
+
     async renderProducts() {
         const res = await fetch('api/products.php');
         this.products = await res.json();
+        this.filteredProducts = [...this.products];
+        this.renderProductsList();
+    },
+
+    renderProductsList(isFiltering = false) {
         const main = document.getElementById('main');
+        const query = document.getElementById('product-search')?.value || '';
 
         let html = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <style>
+                #product-search:focus { outline: 2px solid var(--accent-color); }
+            </style>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
                 <h2>Товары</h2>
+                <div style="flex-grow:1; max-width:400px;">
+                    <input type="text" id="product-search" placeholder="Поиск товаров..." style="width:100%" value="${this.escapeHTML(query)}">
+                </div>
                 ${this.user.role === 'admin' ? '<button class="btn" data-action="add-product">+ Добавить товар</button>' : ''}
             </div>
-            <div class="grid">
+            <div class="grid" id="products-grid">
         `;
 
-        this.products.forEach(p => {
+        this.renderGridItems(html, isFiltering);
+    },
+
+    renderGridItems(htmlPrefix, isFiltering) {
+        const main = document.getElementById('main');
+        let html = htmlPrefix;
+
+        this.filteredProducts.forEach(p => {
             html += `
                 <div class="card">
                     <img src="${p.image || 'assets/placeholder.png'}" class="product-img">
@@ -212,23 +264,52 @@ const App = {
         main.innerHTML = html;
     },
 
+    async updateOrderStatus(id, status) {
+        await fetch(`api/orders.php?id=${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ status })
+        });
+        this.renderOrders();
+        this.toast('Статус заказа обновлен');
+    },
+
     async renderOrders() {
-        const res = await fetch('api/orders.php');
-        this.orders = await res.json();
+        const resOrders = await fetch('api/orders.php');
+        this.orders = await resOrders.json();
+        const resClients = await fetch('api/clients.php');
+        this.clients = await resClients.json();
         const main = document.getElementById('main');
+
+        const statuses = {
+            'pending': 'Ожидается',
+            'processing': 'В обработке',
+            'shipped': 'Отгружен',
+            'completed': 'Завершен',
+            'cancelled': 'Отменен'
+        };
 
         let html = `<h2>История заказов</h2>`;
         this.orders.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(o => {
+            const currentStatusLabel = statuses[o.status] || o.status;
             html += `
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between;">
+                    <div style="display:flex; justify-content:space-between; align-items: flex-start;">
                         <div>
-                            <strong>Заказ #${o.id}</strong> - ${o.date} (${o.status})<br>
-                            Клиент: ${this.escapeHTML(o.client_name)}
+                            <strong>Заказ #${o.id}</strong> - ${o.date} (${currentStatusLabel})<br>
+                            Клиент: <a href="#" data-action="view-client-details" data-id="${o.client_id}" style="color:var(--accent-color); text-decoration:none">${this.escapeHTML(o.client_name)}</a>
                         </div>
-                        <div>
-                            <strong>${o.total} BYN</strong>
-                            ${this.user.role === 'admin' ? `<button class="btn" data-action="export-1c" data-id="${o.id}">Выгрузить в 1С</button>` : ''}
+                        <div style="text-align:right">
+                            <strong>${o.total} BYN</strong><br>
+                            <div style="margin-top:5px; display:flex; gap:5px; justify-content:flex-end;">
+                                ${this.user.role === 'admin' ? `
+                                    <select class="btn" style="background:#fff; color:#000; padding:4px;" data-action="update-status" data-id="${o.id}">
+                                        ${Object.entries(statuses).map(([val, label]) => `
+                                            <option value="${val}" ${o.status === val ? 'selected' : ''}>${label}</option>
+                                        `).join('')}
+                                    </select>
+                                    <button class="btn" data-action="export-1c" data-id="${o.id}">Выгрузить в 1С</button>
+                                ` : ''}
+                            </div>
                         </div>
                     </div>
                     <ul style="margin-top:10px;">
@@ -270,12 +351,14 @@ const App = {
         await fetch('api/products.php', { method: 'POST', body: fd });
         document.getElementById('modal').style.display = 'none';
         this.renderProducts();
+        this.toast('Товар сохранен');
     },
 
     async deleteProduct(id) {
         if (!confirm('Вы уверены?')) return;
         await fetch(`api/products.php?id=${id}`, { method: 'DELETE' });
         this.renderProducts();
+        this.toast('Товар удален');
     },
 
     showClientModal(id = null) {
@@ -304,12 +387,25 @@ const App = {
         });
         document.getElementById('modal').style.display = 'none';
         this.renderClients();
+        this.toast('Клиент сохранен');
     },
 
     async deleteClient(id) {
         if (!confirm('Вы уверены?')) return;
         await fetch(`api/clients.php?id=${id}`, { method: 'DELETE' });
         this.renderClients();
+        this.toast('Клиент удален');
+    },
+
+    showClientDetails(id) {
+        const c = this.clients.find(x => x.id === id);
+        if (!c) return;
+        document.getElementById('modal-body').innerHTML = `
+            <h3>Реквизиты: ${this.escapeHTML(c.name)}</h3>
+            <div class="card" style="white-space: pre-wrap; background: #f9f9f9;">${this.escapeHTML(c.details)}</div>
+            <button type="button" class="btn" onclick="document.getElementById('modal').style.display='none'">Закрыть</button>
+        `;
+        document.getElementById('modal').style.display = 'flex';
     },
 
     addToCart(id) {
@@ -320,7 +416,8 @@ const App = {
         } else {
             this.cart.push({ id: p.id, name: p.name, price: p.price, quantity: 1 });
         }
-        this.renderProducts();
+        this.renderProductsList(true);
+        this.toast('Добавлено в корзину');
     },
 
     async placeOrder() {
@@ -332,7 +429,7 @@ const App = {
             })
         });
         if (res.ok) {
-            alert('Заказ успешно размещен!');
+            this.toast('Заказ успешно размещен!');
             this.cart = [];
             this.render('orders');
         }
