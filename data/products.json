@@ -1,0 +1,38 @@
+[
+    {
+        "id": "alco_1",
+        "name": "Напиток газированный «Лимонад»",
+        "description": "Классический вкус лимонада, приготовленный по традиционной рецептуре.",
+        "price": 1.5,
+        "stock": 1000,
+        "sufficient": true,
+        "image": "https://alco.by/upload/iblock/c32/c326082260799443216779779450166.jpg"
+    },
+    {
+        "id": "alco_2",
+        "name": "Вода питьевая «АкваЛюкс» 0.5л",
+        "description": "Природная артезианская вода высшей категории.",
+        "price": 0.8,
+        "stock": 5000,
+        "sufficient": true,
+        "image": "https://alco.by/upload/iblock/a21/a216082260799443216779779450167.jpg"
+    },
+    {
+        "id": "alco_3",
+        "name": "Сок яблочный прямого отжима",
+        "description": "100% натуральный сок из отборных яблок без добавления сахара.",
+        "price": 3.2,
+        "stock": 250,
+        "sufficient": false,
+        "image": "https://alco.by/upload/iblock/b15/b156082260799443216779779450168.jpg"
+    },
+    {
+        "id": "alco_4",
+        "name": "Квас «Хлебный»",
+        "description": "Настоящий квас живого брожения.",
+        "price": 2.1,
+        "stock": 1200,
+        "sufficient": true,
+        "image": "https://alco.by/upload/iblock/d44/d446082260799443216779779450169.jpg"
+    }
+]
