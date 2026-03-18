@@ -12,12 +12,12 @@ $clients = Storage::read('clients');
 $orderId = $_GET['id'] ?? null;
 
 if (!$orderId) {
-    die('Order ID required');
+    die('Требуется ID заказа');
 }
 
 $order = array_values(array_filter($orders, fn($o) => $o['id'] === $orderId))[0] ?? null;
 if (!$order) {
-    die('Order not found');
+    die('Заказ не найден');
 }
 
 $client = array_values(array_filter($clients, fn($c) => $c['id'] === $order['client_id']))[0] ?? null;

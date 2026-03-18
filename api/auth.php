@@ -12,7 +12,7 @@ if ($action === 'login') {
         echo json_encode(['success' => true, 'user' => Auth::user()]);
     } else {
         http_response_code(401);
-        echo json_encode(['success' => false, 'message' => 'Invalid credentials']);
+        echo json_encode(['success' => false, 'message' => 'Неверные учетные данные']);
     }
     exit;
 }

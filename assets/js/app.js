@@ -70,7 +70,7 @@ const App = {
             this.user = data.user;
             this.render();
         } else {
-            alert('Invalid credentials');
+            alert('Неверный логин или пароль');
         }
     },
 
@@ -85,14 +85,14 @@ const App = {
         const header = document.getElementById('app-header');
 
         if (!this.user || view === 'login') {
-            header.innerHTML = '<h1>B2B Vitrina</h1>';
+            header.innerHTML = '<h1>Витрина B2B</h1>';
             main.innerHTML = `
                 <div class="card" style="max-width:400px; margin: 100px auto;">
-                    <h2>Login</h2>
+                    <h2>Вход в систему</h2>
                     <form id="login-form">
-                        <div><input type="text" name="username" placeholder="Username" required></div>
-                        <div><input type="password" name="password" placeholder="Password" required></div>
-                        <button type="submit" class="btn">Enter</button>
+                        <div><input type="text" name="username" placeholder="Логин" required></div>
+                        <div><input type="password" name="password" placeholder="Пароль" required></div>
+                        <button type="submit" class="btn">Войти</button>
                     </form>
                 </div>
             `;
@@ -101,21 +101,21 @@ const App = {
 
         header.innerHTML = `
             <div>
-                <h1>B2B Vitrina</h1>
+                <h1>Витрина B2B</h1>
                 <nav>
                     ${this.user.role === 'admin' ? `
-                        <button class="btn" data-action="view-products">Products</button>
-                        <button class="btn" data-action="view-clients">Clients</button>
-                        <button class="btn" data-action="view-orders">Orders</button>
+                        <button class="btn" data-action="view-products">Товары</button>
+                        <button class="btn" data-action="view-clients">Клиенты</button>
+                        <button class="btn" data-action="view-orders">Заказы</button>
                     ` : `
-                        <button class="btn" data-action="view-products">Showcase</button>
-                        <button class="btn" data-action="view-orders">My Orders</button>
+                        <button class="btn" data-action="view-products">Витрина</button>
+                        <button class="btn" data-action="view-orders">Мои заказы</button>
                     `}
                 </nav>
             </div>
             <div>
                 <span>${this.user.name}</span>
-                <button class="btn" data-action="logout">Logout</button>
+                <button class="btn" data-action="logout">Выйти</button>
             </div>
         `;
 
@@ -131,8 +131,8 @@ const App = {
 
         let html = `
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h2>Products</h2>
-                ${this.user.role === 'admin' ? '<button class="btn" data-action="add-product">+ Add Product</button>' : ''}
+                <h2>Товары</h2>
+                ${this.user.role === 'admin' ? '<button class="btn" data-action="add-product">+ Добавить товар</button>' : ''}
             </div>
             <div class="grid">
         `;
@@ -143,18 +143,18 @@ const App = {
                     <img src="${p.image || 'assets/placeholder.png'}" class="product-img">
                     <h3>${this.escapeHTML(p.name)}</h3>
                     <p>${this.escapeHTML(p.description)}</p>
-                    <p><strong>${p.price} RUB</strong></p>
-                    <p>Stock:
+                    <p><strong>${p.price} BYN</strong></p>
+                    <p>Остаток:
                         ${p.sufficient ?
-                            '<span class="stock-tag sufficient">Sufficient</span>' :
-                            `<span class="stock-tag">${p.stock} pcs</span>`
+                            '<span class="stock-tag sufficient">Достаточно</span>' :
+                            `<span class="stock-tag">${p.stock} шт.</span>`
                         }
                     </p>
                     ${this.user.role === 'admin' ? `
-                        <button class="btn" data-action="edit-product" data-id="${p.id}">Edit</button>
-                        <button class="btn" data-action="delete-product" data-id="${p.id}" style="background:red">Delete</button>
+                        <button class="btn" data-action="edit-product" data-id="${p.id}">Редактировать</button>
+                        <button class="btn" data-action="delete-product" data-id="${p.id}" style="background:red">Удалить</button>
                     ` : `
-                        <button class="btn" data-action="add-to-cart" data-id="${p.id}">Add to Order</button>
+                        <button class="btn" data-action="add-to-cart" data-id="${p.id}">В заказ</button>
                     `}
                 </div>
             `;
@@ -165,12 +165,12 @@ const App = {
         if (this.user.role === 'client' && this.cart.length > 0) {
             html += `
                 <div class="card" style="position:sticky; bottom:20px; border-top: 4px solid var(--accent-color);">
-                    <h3>Your Cart</h3>
+                    <h3>Ваша корзина</h3>
                     <ul>
                         ${this.cart.map(i => `<li>${this.escapeHTML(i.name)} - ${i.quantity} x ${i.price}</li>`).join('')}
                     </ul>
-                    <p><strong>Total: ${this.cart.reduce((s, i) => s + i.price * i.quantity, 0)} RUB</strong></p>
-                    <button class="btn" data-action="place-order">Confirm Order</button>
+                    <p><strong>Итого: ${this.cart.reduce((s, i) => s + i.price * i.quantity, 0)} BYN</strong></p>
+                    <button class="btn" data-action="place-order">Подтвердить заказ</button>
                 </div>
             `;
         }
@@ -185,13 +185,13 @@ const App = {
 
         let html = `
             <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h2>Clients</h2>
-                <button class="btn" data-action="add-client">+ Add Client</button>
+                <h2>Клиенты</h2>
+                <button class="btn" data-action="add-client">+ Добавить клиента</button>
             </div>
             <div class="card">
                 <table>
                     <thead>
-                        <tr><th>Name</th><th>Username</th><th>Details</th><th>Actions</th></tr>
+                        <tr><th>Наименование</th><th>Логин</th><th>Реквизиты</th><th>Действия</th></tr>
                     </thead>
                     <tbody>
                         ${this.clients.map(c => `
@@ -200,8 +200,8 @@ const App = {
                                 <td>${this.escapeHTML(c.username)}</td>
                                 <td>${this.escapeHTML(c.details)}</td>
                                 <td>
-                                    <button class="btn" data-action="edit-client" data-id="${c.id}">Edit</button>
-                                    <button class="btn" data-action="delete-client" data-id="${c.id}" style="background:red">Delete</button>
+                                    <button class="btn" data-action="edit-client" data-id="${c.id}">Ред.</button>
+                                    <button class="btn" data-action="delete-client" data-id="${c.id}" style="background:red">Удал.</button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -217,18 +217,18 @@ const App = {
         this.orders = await res.json();
         const main = document.getElementById('main');
 
-        let html = `<h2>Orders History</h2>`;
+        let html = `<h2>История заказов</h2>`;
         this.orders.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(o => {
             html += `
                 <div class="card">
                     <div style="display:flex; justify-content:space-between;">
                         <div>
-                            <strong>Order #${o.id}</strong> - ${o.date} (${o.status})<br>
-                            Client: ${this.escapeHTML(o.client_name)}
+                            <strong>Заказ #${o.id}</strong> - ${o.date} (${o.status})<br>
+                            Клиент: ${this.escapeHTML(o.client_name)}
                         </div>
                         <div>
-                            <strong>${o.total} RUB</strong>
-                            ${this.user.role === 'admin' ? `<button class="btn" data-action="export-1c" data-id="${o.id}">Export to 1C</button>` : ''}
+                            <strong>${o.total} BYN</strong>
+                            ${this.user.role === 'admin' ? `<button class="btn" data-action="export-1c" data-id="${o.id}">Выгрузить в 1С</button>` : ''}
                         </div>
                     </div>
                     <ul style="margin-top:10px;">
@@ -243,22 +243,22 @@ const App = {
     showProductModal(id = null) {
         const p = id ? this.products.find(x => x.id === id) : {id:'', name:'', description:'', price:0, stock:0, sufficient:false, image:''};
         document.getElementById('modal-body').innerHTML = `
-            <h3>${id ? 'Edit' : 'Add'} Product</h3>
+            <h3>${id ? 'Редактировать' : 'Добавить'} товар</h3>
             <form id="product-form">
                 <input type="hidden" name="id" value="${p.id}">
                 <input type="hidden" name="existing_image" value="${p.image}">
-                <div><input type="text" name="name" placeholder="Name" value="${p.name}" required></div>
-                <div><textarea name="description" placeholder="Description">${p.description}</textarea></div>
-                <div><input type="number" step="0.01" name="price" placeholder="Price" value="${p.price}" required></div>
-                <div><input type="number" name="stock" placeholder="Stock Quantity" value="${p.stock}"></div>
+                <div><input type="text" name="name" placeholder="Наименование" value="${p.name}" required></div>
+                <div><textarea name="description" placeholder="Описание">${p.description}</textarea></div>
+                <div><input type="number" step="0.01" name="price" placeholder="Цена" value="${p.price}" required></div>
+                <div><input type="number" name="stock" placeholder="Количество на остатке" value="${p.stock}"></div>
                 <div>
                     <label>
-                        <input type="checkbox" name="sufficient" value="true" ${p.sufficient ? 'checked' : ''} style="width:auto"> Sufficient Stock (hide quantity)
+                        <input type="checkbox" name="sufficient" value="true" ${p.sufficient ? 'checked' : ''} style="width:auto"> Достаточный остаток (скрыть количество)
                     </label>
                 </div>
                 <div><input type="file" name="image" accept="image/*"></div>
-                <button type="submit" class="btn">Save</button>
-                <button type="button" class="btn" style="background:#ccc" onclick="document.getElementById('modal').style.display='none'">Cancel</button>
+                <button type="submit" class="btn">Сохранить</button>
+                <button type="button" class="btn" style="background:#ccc" onclick="document.getElementById('modal').style.display='none'">Отмена</button>
             </form>
         `;
         document.getElementById('modal').style.display = 'flex';
@@ -273,7 +273,7 @@ const App = {
     },
 
     async deleteProduct(id) {
-        if (!confirm('Are you sure?')) return;
+        if (!confirm('Вы уверены?')) return;
         await fetch(`api/products.php?id=${id}`, { method: 'DELETE' });
         this.renderProducts();
     },
@@ -281,15 +281,15 @@ const App = {
     showClientModal(id = null) {
         const c = id ? this.clients.find(x => x.id === id) : {id:'', username:'', password:'', name:'', details:''};
         document.getElementById('modal-body').innerHTML = `
-            <h3>${id ? 'Edit' : 'Add'} Client</h3>
+            <h3>${id ? 'Редактировать' : 'Добавить'} клиента</h3>
             <form id="client-form">
                 <input type="hidden" name="id" value="${c.id}">
-                <div><input type="text" name="name" placeholder="Client Name" value="${c.name}" required></div>
-                <div><input type="text" name="username" placeholder="Username" value="${c.username}" required></div>
-                <div><input type="text" name="password" placeholder="Password" value="${c.password}" required></div>
-                <div><textarea name="details" placeholder="Details (INN, Bank, etc.)">${c.details}</textarea></div>
-                <button type="submit" class="btn">Save</button>
-                <button type="button" class="btn" style="background:#ccc" onclick="document.getElementById('modal').style.display='none'">Cancel</button>
+                <div><input type="text" name="name" placeholder="Наименование компании" value="${c.name}" required></div>
+                <div><input type="text" name="username" placeholder="Логин" value="${c.username}" required></div>
+                <div><input type="text" name="password" placeholder="Пароль" value="${c.password}" required></div>
+                <div><textarea name="details" placeholder="Реквизиты (ИНН, КПП, Банк и т.д.)">${c.details}</textarea></div>
+                <button type="submit" class="btn">Сохранить</button>
+                <button type="button" class="btn" style="background:#ccc" onclick="document.getElementById('modal').style.display='none'">Отмена</button>
             </form>
         `;
         document.getElementById('modal').style.display = 'flex';
@@ -307,7 +307,7 @@ const App = {
     },
 
     async deleteClient(id) {
-        if (!confirm('Are you sure?')) return;
+        if (!confirm('Вы уверены?')) return;
         await fetch(`api/clients.php?id=${id}`, { method: 'DELETE' });
         this.renderClients();
     },
@@ -332,7 +332,7 @@ const App = {
             })
         });
         if (res.ok) {
-            alert('Order placed successfully!');
+            alert('Заказ успешно размещен!');
             this.cart = [];
             this.render('orders');
         }

@@ -5,7 +5,7 @@ require_once 'Storage.php';
 class Auth {
     public static function login($username, $password) {
         if ($username === 'admin' && $password === 'admin123') {
-            $_SESSION['user'] = ['id' => 'admin', 'name' => 'Administrator', 'role' => 'admin'];
+            $_SESSION['user'] = ['id' => 'admin', 'name' => 'Администратор', 'role' => 'admin'];
             return true;
         }
 
