@@ -1,0 +1,85 @@
+:root {
+    --primary: #0078d4;
+    --accent: #2b88d8;
+    --bg: #ffffff;
+    --fg: #000000;
+    --border: #e1e1e1;
+    --surface: #f3f2f1;
+    --radius: 8px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #faf9f8;
+    color: var(--fg);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#booking-app {
+    background: var(--bg);
+    width: 100%;
+    max-width: 600px;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin: 20px;
+}
+
+h1, h2 { margin-top: 0; font-weight: 600; }
+
+.step { display: none; }
+.step.active { display: block; }
+
+.btn {
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--accent); }
+
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-size: 0.9em; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 1em;
+}
+
+.grid-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.card-item {
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.card-item.selected {
+    border-color: var(--primary);
+    background-color: #eff6fc;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 32px;
+}
