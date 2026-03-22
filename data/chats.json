@@ -1,0 +1,13 @@
+{
+    "1c4bde84d5d242af_admin_001": [
+        {
+            "id": "527aa7c073a00678",
+            "from": "admin_001",
+            "to": "1c4bde84d5d242af",
+            "message": "Тестовое сообщение в стиле Viber",
+            "image": null,
+            "timestamp": 1774168871,
+            "read": false
+        }
+    ]
+}

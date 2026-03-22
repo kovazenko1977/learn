@@ -10,19 +10,23 @@ const notifySound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAA
 // Let's use a slightly more audible synthesized beep for now.
 const playNotificationSound = () => {
     const context = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = context.createOscillator();
-    const gainNode = context.createGain();
 
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(880, context.currentTime); // A5 note
-    gainNode.gain.setValueAtTime(0.1, context.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+    // Synthesize a "double-pop" messenger sound
+    const playPop = (delay, freq, volume) => {
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, context.currentTime + delay);
+        gain.gain.setValueAtTime(volume, context.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + delay + 0.1);
+        osc.connect(gain);
+        gain.connect(context.destination);
+        osc.start(context.currentTime + delay);
+        osc.stop(context.currentTime + delay + 0.1);
+    };
 
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.1);
+    playPop(0, 1046, 0.1); // C6
+    playPop(0.08, 1318, 0.08); // E6
 };
 
 function escapeHTML(str) {
@@ -246,24 +250,48 @@ async function clearShoppingList() {
 // Messenger Logic
 async function renderUserList() {
     const container = document.getElementById('view-container');
+    container.innerHTML = `
+        <div style="background: white; padding: 10px 15px; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 10;">
+            <input type="text" id="user-search" placeholder="Поиск контактов..." style="padding: 10px 15px; border-radius: 10px; font-size: 14px; background: #f0f0f5;">
+        </div>
+        <div id="users-box"></div>
+    `;
+
     const response = await fetch(`${API_URL}?action=list_users`);
     const result = await response.json();
 
     if (result.success) {
-        result.users.forEach(user => {
-            if (user.id === currentUser.id) return;
-            const div = document.createElement('div');
-            div.className = 'user-item';
-            div.innerHTML = `
-                <div class="avatar">${escapeHTML(user.username[0].toUpperCase())}</div>
-                <div class="user-info">
-                    <strong>${escapeHTML(user.username)}</strong>
-                    <div style="font-size: 12px; color: #666;">${escapeHTML(user.status || '')}</div>
-                </div>
-            `;
-            div.onclick = () => openChat(user);
-            container.appendChild(div);
-        });
+        const usersBox = document.getElementById('users-box');
+        const renderUsers = (filter = '') => {
+            usersBox.innerHTML = '';
+            result.users.forEach(user => {
+                if (user.id === currentUser.id) return;
+                if (filter && !user.username.toLowerCase().includes(filter.toLowerCase())) return;
+
+                const isOnline = user.status && user.status !== '';
+
+                const div = document.createElement('div');
+                div.className = 'user-item';
+                div.innerHTML = `
+                    <div style="position: relative;">
+                        <div class="avatar" style="background: #bdbdbd;">${escapeHTML(user.username[0].toUpperCase())}</div>
+                        ${isOnline ? '<div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #4cd964; border: 2px solid white; border-radius: 50%;"></div>' : ''}
+                    </div>
+                    <div class="user-info" style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>${escapeHTML(user.username)}</strong>
+                            <span style="font-size: 11px; color: ${isOnline ? '#4cd964' : '#9e9e9e'};">${isOnline ? 'в сети' : 'был(а) недавно'}</span>
+                        </div>
+                        <div style="font-size: 13px; color: #757575; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(user.status || 'Привет! Я пользуюсь Жанной')}</div>
+                    </div>
+                `;
+                div.onclick = () => openChat(user);
+                usersBox.appendChild(div);
+            });
+        };
+
+        renderUsers();
+        document.getElementById('user-search').oninput = (e) => renderUsers(e.target.value);
     }
 }
 
@@ -274,7 +302,7 @@ async function openChat(user) {
     document.getElementById('view-title').innerText = user.username;
 
     container.innerHTML = `
-        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 250px;"></div>
+        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 250px; background: #f0eff5;"></div>
         <div class="chat-input-area">
             <button id="upload-btn" class="icon-btn">📷</button>
             <input type="file" id="image-input" hidden accept="image/*">
@@ -356,9 +384,9 @@ async function fetchChatHistory() {
                 ${currentUser.role === 'admin' ? `<button onclick="adminDeleteMessage('${msg.id}')" style="position: absolute; top: -10px; right: -10px; background: #ff3b30; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; z-index: 10;">×</button>` : ''}
                 ${msg.image ? `<img src="${escapeHTML(msg.image)}" style="max-width: 100%; border-radius: 10px; margin-bottom: 5px;">` : ''}
                 ${msg.message ? `<div>${escapeHTML(msg.message)}</div>` : ''}
-                <div style="font-size: 10px; opacity: 0.6; text-align: right; margin-top: 4px;">
+                <div style="font-size: 10px; opacity: 0.5; text-align: right; margin-top: 4px; color: ${msg.from === currentUser.id ? '#6c63ff' : '#9e9e9e'};">
                     ${new Date(msg.timestamp * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    ${msg.from === currentUser.id ? (msg.read ? ' ✓✓' : ' ✓') : ''}
+                    ${msg.from === currentUser.id ? (msg.read ? ' <span style="font-weight:bold; color: #7360f2;">✓✓</span>' : ' ✓') : ''}
                 </div>
             </div>
         `).join('');
@@ -604,7 +632,7 @@ function renderSettings() {
 }
 
 function applySettings(settings) {
-    if (!settings) settings = JSON.parse(localStorage.getItem('family_settings') || '{"theme":"light","fontSize":"16","accent":"#007aff"}');
+    if (!settings) settings = JSON.parse(localStorage.getItem('family_settings') || '{"theme":"light","fontSize":"16","accent":"#7360f2"}');
 
     const root = document.documentElement;
     root.style.setProperty('--font-size', settings.fontSize + 'px');
