@@ -19,9 +19,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // Force check for installation state on load
 window.addEventListener('load', () => {
     if (!isInStandaloneMode()) {
-        // If it's not iOS (which has its own check), we might still want to show a generic prompt
-        // if the browser supports beforeinstallprompt it will trigger above.
-        // For browsers that don't support it, we could show a generic message.
+        // PWA check
     }
 });
 
@@ -34,7 +32,7 @@ function showInstallPromotion() {
         <div style="display: flex; align-items: center; gap: 15px;">
             <img src="assets/img/icon-192.png" width="50" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
             <div style="flex: 1;">
-                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v4</p>
+                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v5</p>
                 <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Для более удобного общения и работы с задачами</p>
             </div>
             <div style="display: flex; flex-direction: column; gap: 5px;">
@@ -87,9 +85,7 @@ window.addEventListener('load', () => {
         if (os === "iOS") {
             showIosPrompt();
         } else if (os === "Android") {
-            // Android prompt is handled by beforeinstallprompt, but we can force it if needed
             if (!deferredPrompt) {
-                // Wait a bit more for the event
                 setTimeout(() => { if(!deferredPrompt) showGenericInstallGuide(); }, 3000);
             }
         }
@@ -105,7 +101,7 @@ function showIosPrompt() {
         <div style="display: flex; align-items: center; gap: 15px;">
             <img src="assets/img/icon-192.png" width="50" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
             <div style="flex: 1;">
-                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v4</p>
+                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v5</p>
                 <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Нажмите <img src="assets/img/ios-share.png" height="20" style="vertical-align: middle;"> и затем <strong>"На экран «Домой»"</strong></p>
             </div>
             <button onclick="this.parentElement.parentElement.remove()" style="background: #f2f2f7; border: none; color: #7360f2; font-weight: bold; font-size: 14px; padding: 10px 15px; border-radius: 12px;">ОК</button>
@@ -115,6 +111,5 @@ function showIosPrompt() {
 }
 
 function showGenericInstallGuide() {
-    // For cases where beforeinstallprompt didn't fire yet or is not supported
     showInstallPromotion();
 }

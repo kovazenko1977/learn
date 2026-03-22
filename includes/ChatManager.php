@@ -166,6 +166,28 @@ class ChatManager {
         return false;
     }
 
+    public function getUnreadCounts($user_id) {
+        $chats = $this->storage->read($this->filename);
+        $counts = [];
+        foreach ($chats as $key => $messages) {
+            $unread = 0;
+            foreach ($messages as $msg) {
+                // For private chats: match recipient ID
+                // For groups: match participant but mark as read individually isn't fully implemented yet,
+                // for now we'll check messages where the user is NOT the sender and read is false.
+                if ($msg['from'] !== $user_id && !$msg['read']) {
+                    // This is a simplification; in a real group chat 'read' should be per-user.
+                    // Given the JSON architecture, we'll stick to a simple flag for now.
+                    if ($msg['to'] === $user_id || strpos($msg['to'], 'group_') === 0) {
+                         $unread++;
+                    }
+                }
+            }
+            if ($unread > 0) $counts[$key] = $unread;
+        }
+        return $counts;
+    }
+
     private function getChatKey($id1, $id2) {
         $ids = [$id1, $id2];
         sort($ids);

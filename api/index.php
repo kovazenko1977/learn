@@ -42,13 +42,21 @@ switch ($action) {
 
     case 'list_users':
         if ($user) {
-            $response = ['success' => true, 'users' => $auth->listUsers()];
+            $response = [
+                'success' => true,
+                'users' => $auth->listUsers(),
+                'unread_counts' => $chat->getUnreadCounts($user['id'])
+            ];
         }
         break;
 
     case 'list_groups':
         if ($user) {
-            $response = ['success' => true, 'groups' => $chat->listMyGroups($user['id'])];
+            $response = [
+                'success' => true,
+                'groups' => $chat->listMyGroups($user['id']),
+                'unread_counts' => $chat->getUnreadCounts($user['id'])
+            ];
         }
         break;
 

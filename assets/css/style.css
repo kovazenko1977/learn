@@ -344,6 +344,34 @@ input:focus, textarea:focus, select:focus {
     font-size: 18px;
 }
 
+.unread-badge {
+    background: #ff3b30;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(255,59,48,0.3);
+}
+
+.nav-unread-badge {
+    position: absolute;
+    top: 5px;
+    right: 15%;
+    background: #ff3b30;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
 /* Modals & Prompts */
 @keyframes slideUp {
     from { transform: translateY(100%); }
