@@ -32,7 +32,10 @@ class Storage {
         if (!$fp) return [];
 
         flock($fp, LOCK_SH);
-        $content = file_get_contents($path);
+        $content = '';
+        while (!feof($fp)) {
+            $content .= fread($fp, 8192);
+        }
         flock($fp, LOCK_UN);
         fclose($fp);
 

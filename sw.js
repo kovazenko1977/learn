@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zhanna-v2';
+const CACHE_NAME = 'zhanna-v3';
 const ASSETS = [
   'index.php',
   'assets/css/style.css',

@@ -32,8 +32,11 @@
         <!-- Main Content View -->
         <div id="main-view" class="view">
             <header>
-                <h2 id="view-title">Чаты</h2>
-                <button id="logout-btn" class="icon-btn">🚪</button>
+                <div style="display: flex; flex-direction: column;">
+                    <h2 id="view-title" style="margin: 0;">Чаты</h2>
+                    <span id="header-username" style="font-size: 11px; opacity: 0.8; font-weight: 400;"></span>
+                </div>
+                <button id="logout-btn" class="icon-btn" style="background: none; border: none; font-size: 20px;">🚪</button>
             </header>
 
             <main id="view-container">

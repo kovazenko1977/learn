@@ -107,6 +107,8 @@ function showMainView() {
     document.getElementById('auth-view').classList.remove('active');
     document.getElementById('main-view').classList.add('active');
 
+    document.getElementById('header-username').innerText = currentUser.username;
+
     const navAdmin = document.getElementById('nav-admin');
     if (currentUser && currentUser.role === 'admin') {
         navAdmin.classList.remove('hidden');
@@ -180,7 +182,7 @@ function renderAbout() {
                 Разработана и посвящается моей любимой жене Жанне 2026г.
             </p>
             <div style="margin-top: 40px; font-size: 14px; opacity: 0.5;">
-                Версия 2.0 "Любовь"
+                Версия 3.0 "Полное Обновление"
             </div>
         </div>
     `;
@@ -380,13 +382,13 @@ async function fetchChatHistory() {
         if (!chatBox) return;
 
         chatBox.innerHTML = result.history.map(msg => `
-            <div class="chat-bubble ${msg.from === currentUser.id ? 'sent' : 'received'}" style="position: relative;">
+            <div class="chat-bubble ${msg.from === currentUser.id ? 'sent' : 'received'}" style="position: relative; margin-bottom: 12px;">
                 ${currentUser.role === 'admin' ? `<button onclick="adminDeleteMessage('${msg.id}')" style="position: absolute; top: -10px; right: -10px; background: #ff3b30; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; z-index: 10;">×</button>` : ''}
                 ${msg.image ? `<img src="${escapeHTML(msg.image)}" style="max-width: 100%; border-radius: 10px; margin-bottom: 5px;">` : ''}
                 ${msg.message ? `<div>${escapeHTML(msg.message)}</div>` : ''}
-                <div style="font-size: 10px; opacity: 0.5; text-align: right; margin-top: 4px; color: ${msg.from === currentUser.id ? '#6c63ff' : '#9e9e9e'};">
-                    ${new Date(msg.timestamp * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    ${msg.from === currentUser.id ? (msg.read ? ' <span style="font-weight:bold; color: #7360f2;">✓✓</span>' : ' ✓') : ''}
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: 10px; opacity: 0.6; margin-top: 4px; color: ${msg.from === currentUser.id ? '#6c63ff' : '#757575'};">
+                    <span>${new Date(msg.timestamp * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    ${msg.from === currentUser.id ? (msg.read ? ' <span style="font-weight:bold; color: #7360f2; font-size: 12px;">✓✓</span>' : ' <span style="font-size: 12px;">✓</span>') : ''}
                 </div>
             </div>
         `).join('');
@@ -396,7 +398,19 @@ async function fetchChatHistory() {
 
 function startPolling(fn) {
     stopPolling();
-    pollInterval = setInterval(fn, 3000);
+    // Use slightly variable interval for efficiency
+    pollInterval = setInterval(fn, 3500);
+
+    // Stop polling if tab is inactive for long time
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopPolling();
+            pollInterval = setInterval(fn, 15000); // Slower polling in background
+        } else {
+            stopPolling();
+            pollInterval = setInterval(fn, 3500);
+        }
+    });
 }
 
 function stopPolling() {

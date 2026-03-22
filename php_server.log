@@ -1,0 +1,142 @@
+[Sun Mar 22 09:06:15 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sun Mar 22 09:06:18 2026] [::1]:54698 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54698 [200]: GET /
+[Sun Mar 22 09:06:18 2026] [::1]:54698 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54704 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54710 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54718 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54704 [200]: GET /assets/css/style.css
+[Sun Mar 22 09:06:18 2026] [::1]:54710 [200]: GET /assets/js/pwa.js
+[Sun Mar 22 09:06:18 2026] [::1]:54718 [200]: GET /assets/js/app.js
+[Sun Mar 22 09:06:18 2026] [::1]:54704 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54710 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54718 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54734 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54734 [200]: GET /api/index.php?action=get_current_user
+[Sun Mar 22 09:06:18 2026] [::1]:54734 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54740 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54744 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54740 [200]: GET /assets/img/icon-192.png
+[Sun Mar 22 09:06:18 2026] [::1]:54744 [200]: GET /assets/img/ios-share.png
+[Sun Mar 22 09:06:18 2026] [::1]:54740 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54744 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54746 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54746 [200]: GET /sw.js
+[Sun Mar 22 09:06:18 2026] [::1]:54746 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54748 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54756 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54766 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54748 [200]: GET /index.php
+[Sun Mar 22 09:06:18 2026] [::1]:54748 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54756 [200]: GET /assets/css/style.css
+[Sun Mar 22 09:06:18 2026] [::1]:54766 [200]: GET /assets/js/app.js
+[Sun Mar 22 09:06:18 2026] [::1]:54756 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54766 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54778 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54794 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54808 Accepted
+[Sun Mar 22 09:06:18 2026] [::1]:54778 [200]: GET /assets/js/pwa.js
+[Sun Mar 22 09:06:18 2026] [::1]:54778 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54794 [200]: GET /assets/img/icon-512.png
+[Sun Mar 22 09:06:18 2026] [::1]:54794 Closing
+[Sun Mar 22 09:06:18 2026] [::1]:54808 [200]: GET /assets/img/icon-192.png
+[Sun Mar 22 09:06:18 2026] [::1]:54808 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53018 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53018 [200]: GET /
+[Sun Mar 22 09:07:22 2026] [::1]:53018 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53026 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53034 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53042 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53026 [200]: GET /assets/css/style.css
+[Sun Mar 22 09:07:22 2026] [::1]:53034 [200]: GET /assets/js/pwa.js
+[Sun Mar 22 09:07:22 2026] [::1]:53026 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53034 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53042 [200]: GET /assets/js/app.js
+[Sun Mar 22 09:07:22 2026] [::1]:53042 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53050 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53050 [200]: GET /api/index.php?action=get_current_user
+[Sun Mar 22 09:07:22 2026] [::1]:53050 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53052 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53058 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53052 [200]: GET /assets/img/icon-192.png
+[Sun Mar 22 09:07:22 2026] [::1]:53052 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53058 [200]: GET /assets/img/ios-share.png
+[Sun Mar 22 09:07:22 2026] [::1]:53058 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53062 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53062 [200]: GET /sw.js
+[Sun Mar 22 09:07:22 2026] [::1]:53062 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53072 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53080 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53084 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53072 [200]: GET /index.php
+[Sun Mar 22 09:07:22 2026] [::1]:53072 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53080 [200]: GET /assets/css/style.css
+[Sun Mar 22 09:07:22 2026] [::1]:53084 [200]: GET /assets/js/app.js
+[Sun Mar 22 09:07:22 2026] [::1]:53080 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53084 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53092 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53104 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53092 [200]: GET /assets/js/pwa.js
+[Sun Mar 22 09:07:22 2026] [::1]:53104 [200]: GET /assets/img/icon-192.png
+[Sun Mar 22 09:07:22 2026] [::1]:53092 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53104 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53114 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53114 [200]: GET /assets/img/icon-512.png
+[Sun Mar 22 09:07:22 2026] [::1]:53114 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53120 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53120 [200]: POST /api/index.php?action=login
+[Sun Mar 22 09:07:22 2026] [::1]:53120 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53136 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53136 [200]: GET /api/index.php?action=list_users
+[Sun Mar 22 09:07:22 2026] [::1]:53136 Closing
+[Sun Mar 22 09:07:22 2026] [::1]:53140 Accepted
+[Sun Mar 22 09:07:22 2026] [::1]:53140 [200]: GET /api/index.php?action=get_task_lists
+[Sun Mar 22 09:07:22 2026] [::1]:53140 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39018 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39018 [200]: GET /
+[Sun Mar 22 09:08:15 2026] [::1]:39018 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39024 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39032 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39036 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39024 [200]: GET /assets/css/style.css
+[Sun Mar 22 09:08:15 2026] [::1]:39032 [200]: GET /assets/js/pwa.js
+[Sun Mar 22 09:08:15 2026] [::1]:39024 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39032 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39036 [200]: GET /assets/js/app.js
+[Sun Mar 22 09:08:15 2026] [::1]:39036 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39042 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39042 [200]: GET /api/index.php?action=get_current_user
+[Sun Mar 22 09:08:15 2026] [::1]:39042 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39048 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39058 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39048 [200]: GET /assets/img/icon-192.png
+[Sun Mar 22 09:08:15 2026] [::1]:39058 [200]: GET /assets/img/ios-share.png
+[Sun Mar 22 09:08:15 2026] [::1]:39048 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39058 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39070 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39070 [200]: GET /sw.js
+[Sun Mar 22 09:08:15 2026] [::1]:39070 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39072 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39082 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39098 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39072 [200]: GET /index.php
+[Sun Mar 22 09:08:15 2026] [::1]:39072 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39082 [200]: GET /assets/css/style.css
+[Sun Mar 22 09:08:15 2026] [::1]:39098 [200]: GET /assets/js/app.js
+[Sun Mar 22 09:08:15 2026] [::1]:39082 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39098 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39104 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39104 [200]: GET /assets/js/pwa.js
+[Sun Mar 22 09:08:15 2026] [::1]:39104 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39116 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39124 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39116 [200]: GET /assets/img/icon-512.png
+[Sun Mar 22 09:08:15 2026] [::1]:39124 [200]: GET /assets/img/icon-192.png
+[Sun Mar 22 09:08:15 2026] [::1]:39116 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39124 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39136 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39136 [200]: POST /api/index.php?action=login
+[Sun Mar 22 09:08:15 2026] [::1]:39136 Closing
+[Sun Mar 22 09:08:15 2026] [::1]:39148 Accepted
+[Sun Mar 22 09:08:15 2026] [::1]:39148 [200]: GET /api/index.php?action=list_users
+[Sun Mar 22 09:08:15 2026] [::1]:39148 Closing
