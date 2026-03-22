@@ -87,20 +87,32 @@ class AuthManager {
             $list[] = [
                 'id' => $user['id'],
                 'username' => $user['username'],
-                'status' => isset($user['status']) ? $user['status'] : ''
+                'status' => isset($user['status']) ? $user['status'] : '',
+                'avatar' => isset($user['avatar']) ? $user['avatar'] : null,
+                'bio' => isset($user['bio']) ? $user['bio'] : '',
+                'last_seen' => isset($user['last_seen']) ? $user['last_seen'] : 0,
+                'typing_in' => isset($user['typing_in']) ? $user['typing_in'] : null
             ];
         }
         return $list;
     }
 
-    public function updateStatus($user_id, $status) {
+    public function updateProfile($user_id, $data) {
         $users = $this->storage->read($this->filename);
         foreach ($users as &$user) {
             if ($user['id'] === $user_id) {
-                $user['status'] = $status;
+                if (isset($data['status'])) $user['status'] = $data['status'];
+                if (isset($data['bio'])) $user['bio'] = $data['bio'];
+                if (isset($data['avatar'])) $user['avatar'] = $data['avatar'];
+                if (isset($data['typing_in'])) $user['typing_in'] = $data['typing_in'];
+                $user['last_seen'] = time();
                 break;
             }
         }
         return $this->storage->write($this->filename, $users);
+    }
+
+    public function updateStatus($user_id, $status) {
+        return $this->updateProfile($user_id, ['status' => $status]);
     }
 }

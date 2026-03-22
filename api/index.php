@@ -46,17 +46,89 @@ switch ($action) {
         }
         break;
 
+    case 'list_groups':
+        if ($user) {
+            $response = ['success' => true, 'groups' => $chat->listMyGroups($user['id'])];
+        }
+        break;
+
+    case 'create_group':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $group = $chat->createGroup($data['title'], $user['id'], $data['participant_ids']);
+            $response = ['success' => (bool)$group, 'group' => $group];
+        }
+        break;
+
     case 'send_message':
         if ($user) {
             $data = json_decode(file_get_contents('php://input'), true);
-            $success = $chat->sendMessage($user['id'], $data['to_id'], $data['message'], isset($data['image']) ? $data['image'] : null);
+            $success = $chat->sendMessage(
+                $user['id'],
+                $data['to_id'],
+                $data['message'],
+                isset($data['image']) ? $data['image'] : null,
+                isset($data['reply_to']) ? $data['reply_to'] : null,
+                isset($data['file']) ? $data['file'] : null,
+                isset($data['location']) ? $data['location'] : null,
+                isset($data['voice']) ? $data['voice'] : null
+            );
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'toggle_star':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $chat->toggleStar($user['id'], $data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'toggle_reaction':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $chat->toggleReaction($user['id'], $data['id'], $data['reaction']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'toggle_pin':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $chat->togglePin($data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'edit_message':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $chat->editMessage($user['id'], $data['id'], $data['message']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'delete_message_everyone':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $chat->deleteMessageForEveryone($user['id'], $data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'update_profile':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $auth->updateProfile($user['id'], $data);
             $response = ['success' => $success];
         }
         break;
 
     case 'get_chat_history':
         if ($user) {
-            $history = $chat->getHistory($user['id'], $_GET['with_id']);
+            $target_id = isset($_GET['with_id']) ? $_GET['with_id'] : $_GET['group_id'];
+            $history = $chat->getHistory($user['id'], $target_id);
             $response = ['success' => true, 'history' => $history];
         }
         break;

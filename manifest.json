@@ -1,7 +1,9 @@
 {
-  "name": "Жанна v4 — Семейный Помощник",
-  "short_name": "Жанна v4",
-  "start_url": "index.php",
+  "id": "zhanna-v5-premium",
+  "name": "Жанна v5 — Семейный Помощник",
+  "short_name": "Жанна v5",
+  "start_url": "./index.php",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#7360f2",
   "theme_color": "#7360f2",
