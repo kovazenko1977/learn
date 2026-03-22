@@ -18,7 +18,9 @@ class AuthManager {
         $users[$username] = [
             'username' => $username,
             'password' => password_hash($password, PASSWORD_BCRYPT),
-            'id' => $this->storage->generateId()
+            'id' => $this->storage->generateId(),
+            'status' => '',
+            'achievements' => []
         ];
 
         if ($this->storage->write($this->filename, $users)) {
@@ -65,9 +67,21 @@ class AuthManager {
         foreach ($users as $user) {
             $list[] = [
                 'id' => $user['id'],
-                'username' => $user['username']
+                'username' => $user['username'],
+                'status' => isset($user['status']) ? $user['status'] : ''
             ];
         }
         return $list;
+    }
+
+    public function updateStatus($user_id, $status) {
+        $users = $this->storage->read($this->filename);
+        foreach ($users as &$user) {
+            if ($user['id'] === $user_id) {
+                $user['status'] = $status;
+                break;
+            }
+        }
+        return $this->storage->write($this->filename, $users);
     }
 }

@@ -3,10 +3,16 @@ header('Content-Type: application/json');
 require_once '../includes/AuthManager.php';
 require_once '../includes/ChatManager.php';
 require_once '../includes/TaskManager.php';
+require_once '../includes/ShoppingManager.php';
+require_once '../includes/AchievementManager.php';
+require_once '../includes/EventManager.php';
 
 $auth = new AuthManager();
 $chat = new ChatManager();
 $tasks = new TaskManager();
+$shopping = new ShoppingManager();
+$achievements = new AchievementManager();
+$events = new EventManager();
 
 $user = $auth->getCurrentUser();
 $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -95,6 +101,75 @@ switch ($action) {
         if ($user) {
             $data = json_decode(file_get_contents('php://input'), true);
             $success = $tasks->deleteTask($data['list_id'], $data['task_id'], $user['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'get_shopping_list':
+        if ($user) {
+            $response = ['success' => true, 'items' => $shopping->getList($user['id'])];
+        }
+        break;
+
+    case 'add_shopping_item':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $shopping->addItem($data['text'], $user['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'toggle_shopping_item':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $shopping->toggleItem($data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'clear_shopping_list':
+        if ($user) {
+            $success = $shopping->clearCompleted();
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'update_status':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $auth->updateStatus($user['id'], $data['status']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'get_achievements':
+        if ($user) {
+            $response = [
+                'success' => true,
+                'my_achievements' => $achievements->getAchievements($user['id']),
+                'metadata' => AchievementManager::getMetadata()
+            ];
+        }
+        break;
+
+    case 'get_events':
+        if ($user) {
+            $response = ['success' => true, 'events' => $events->getEvents()];
+        }
+        break;
+
+    case 'add_event':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $events->addEvent($data['title'], $data['date'], $data['description'], $user['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'delete_event':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $events->deleteEvent($data['id']);
             $response = ['success' => $success];
         }
         break;

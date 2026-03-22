@@ -1,0 +1,20 @@
+{
+    "global": {
+        "items": [
+            {
+                "id": "a25dc479e52fa134",
+                "text": "Milk",
+                "completed": false,
+                "user_id": "1c4bde84d5d242af",
+                "timestamp": 1774162873
+            },
+            {
+                "id": "b18573a5c70df242",
+                "text": "Flowers for Zhanna",
+                "completed": false,
+                "user_id": "1c4bde84d5d242af",
+                "timestamp": 1774162986
+            }
+        ]
+    }
+}

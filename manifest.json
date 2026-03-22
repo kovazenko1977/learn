@@ -1,10 +1,10 @@
 {
-  "name": "Семейный Мессенджер & Задачи",
-  "short_name": "Семья",
+  "name": "Жанна — Семейный Помощник",
+  "short_name": "Жанна",
   "start_url": "index.php",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ff4d94",
   "orientation": "portrait",
   "icons": [
     {

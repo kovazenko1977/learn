@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <title>Семейный Мессенджер & Задачи</title>
+    <title>Жанна — Семейный Помощник</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/css/style.css">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@
         <!-- Auth View -->
         <div id="auth-view" class="view active">
             <div class="auth-container">
-                <h1>Семья</h1>
+                <h1>Жанна</h1>
                 <div class="tabs">
                     <button id="login-tab" class="active">Вход</button>
                     <button id="register-tab">Регистрация</button>
@@ -49,9 +49,25 @@
                     <span class="icon">📋</span>
                     <span class="label">Задачи</span>
                 </button>
+                <button class="nav-item" data-view="achievements">
+                    <span class="icon">🏆</span>
+                    <span class="label">Награды</span>
+                </button>
+                <button class="nav-item" data-view="events">
+                    <span class="icon">📅</span>
+                    <span class="label">События</span>
+                </button>
+                <button class="nav-item" data-view="shopping">
+                    <span class="icon">🛒</span>
+                    <span class="label">Покупки</span>
+                </button>
                 <button class="nav-item" data-view="settings">
                     <span class="icon">⚙️</span>
                     <span class="label">Настройки</span>
+                </button>
+                <button class="nav-item" data-view="about">
+                    <span class="icon">❤️</span>
+                    <span class="label">О Жанне</span>
                 </button>
             </nav>
         </div>

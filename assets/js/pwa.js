@@ -42,6 +42,14 @@ function showInstallPromotion() {
     });
 }
 
+function triggerInstall() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+    } else {
+        alert('Пожалуйста, воспользуйтесь стандартным меню браузера ("Установить" или "Добавить на экран «Домой»").');
+    }
+}
+
 // iOS specific detection
 const isIos = () => {
   const userAgent = window.navigator.userAgent.toLowerCase();
