@@ -28,6 +28,20 @@
                 "completed": false,
                 "user_id": "1c4bde84d5d242af",
                 "timestamp": 1774166192
+            },
+            {
+                "id": "1daec4e3dfa248ef",
+                "text": "Test Item Author Deletion",
+                "completed": false,
+                "user_id": "admin_001",
+                "timestamp": 1774178753
+            },
+            {
+                "id": "2bcdae49b9cdc206",
+                "text": "Test Item Author Deletion",
+                "completed": false,
+                "user_id": "admin_001",
+                "timestamp": 1774178821
             }
         ]
     }

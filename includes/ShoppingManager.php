@@ -49,6 +49,27 @@ class ShoppingManager {
         return $this->storage->write($this->filename, $lists);
     }
 
+    public function deleteItem($id, $user_id, $is_admin = false) {
+        $lists = $this->storage->read($this->filename);
+        if (!isset($lists['global'])) return false;
+
+        $found = false;
+        $lists['global']['items'] = array_filter($lists['global']['items'], function($item) use ($id, $user_id, $is_admin, &$found) {
+            if ($item['id'] === $id) {
+                if ($item['user_id'] === $user_id || $is_admin) {
+                    $found = true;
+                    return false; // delete
+                }
+            }
+            return true; // keep
+        });
+
+        if ($found) {
+            return $this->storage->write($this->filename, $lists);
+        }
+        return false;
+    }
+
     public function clearCompleted() {
         $lists = $this->storage->read($this->filename);
         if (!isset($lists['global'])) return false;

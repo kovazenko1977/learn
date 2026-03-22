@@ -129,6 +129,15 @@ switch ($action) {
         }
         break;
 
+    case 'delete_shopping_item':
+        if ($user) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $is_admin = (isset($user['role']) && $user['role'] === 'admin');
+            $success = $shopping->deleteItem($data['id'], $user['id'], $is_admin);
+            $response = ['success' => $success];
+        }
+        break;
+
     case 'clear_shopping_list':
         if ($user) {
             $success = $shopping->clearCompleted();

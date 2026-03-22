@@ -182,7 +182,7 @@ function renderAbout() {
                 Разработана и посвящается моей любимой жене Жанне 2026г.
             </p>
             <div style="margin-top: 40px; font-size: 14px; opacity: 0.5;">
-                Версия 3.0 "Полное Обновление"
+                Версия 4.0 "Premium Edition"
             </div>
         </div>
     `;
@@ -227,11 +227,25 @@ async function fetchShoppingList() {
     if (result.success) {
         const box = document.getElementById('shopping-container');
         box.innerHTML = result.items.map(item => `
-            <div class="task-item ${item.completed ? 'completed' : ''}" onclick="toggleShoppingItem('${item.id}')">
-                <div class="checkbox ${item.completed ? 'checked' : ''}"></div>
-                <span>${escapeHTML(item.text)}</span>
+            <div class="task-item ${item.completed ? 'completed' : ''}">
+                <div class="checkbox ${item.completed ? 'checked' : ''}" onclick="toggleShoppingItem('${item.id}')"></div>
+                <span style="flex: 1;" onclick="toggleShoppingItem('${item.id}')">${escapeHTML(item.text)}</span>
+                ${(item.user_id === currentUser.id || currentUser.role === 'admin') ? `
+                    <button onclick="deleteShoppingItem('${item.id}')" style="background:none; border:none; font-size: 18px; padding: 5px;">🗑️</button>
+                ` : ''}
             </div>
         `).join('');
+    }
+}
+
+async function deleteShoppingItem(id) {
+    if (!confirm('Удалить этот пункт?')) return;
+    const res = await fetch(`${API_URL}?action=delete_shopping_item`, {
+        method: 'POST',
+        body: JSON.stringify({ id })
+    });
+    if ((await res.json()).success) {
+        fetchShoppingList();
     }
 }
 
@@ -642,6 +656,23 @@ function renderSettings() {
 
     document.getElementById('manual-install').onclick = () => {
         if (typeof triggerInstall === 'function') triggerInstall();
+    };
+
+    const extraMenu = document.createElement('div');
+    extraMenu.style.cssText = 'margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;';
+    extraMenu.innerHTML = `
+        <button id="view-achievements-btn" style="padding: 15px; border-radius: 15px; background: #f2f2f7; border: none; font-weight: 600;">🏆 Награды</button>
+        <button id="view-about-btn" style="padding: 15px; border-radius: 15px; background: #f2f2f7; border: none; font-weight: 600;">❤️ О Жанне</button>
+    `;
+    container.appendChild(extraMenu);
+
+    document.getElementById('view-achievements-btn').onclick = () => {
+        currentView = 'achievements';
+        renderView('achievements');
+    };
+    document.getElementById('view-about-btn').onclick = () => {
+        currentView = 'about';
+        renderView('about');
     };
 }
 

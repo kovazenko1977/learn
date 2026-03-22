@@ -26,6 +26,7 @@ window.addEventListener('load', () => {
 });
 
 function showInstallPromotion() {
+    if (document.querySelector('.install-prompt')) return;
     const promptEl = document.createElement('div');
     promptEl.className = 'install-prompt';
     promptEl.style.animation = 'slideUp 0.5s forwards';
@@ -33,12 +34,12 @@ function showInstallPromotion() {
         <div style="display: flex; align-items: center; gap: 15px;">
             <img src="assets/img/icon-192.png" width="50" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
             <div style="flex: 1;">
-                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну</p>
+                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v4</p>
                 <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Для более удобного общения и работы с задачами</p>
             </div>
             <div style="display: flex; flex-direction: column; gap: 5px;">
-                <button id="install-btn" style="background: var(--accent-color); border: none; color: white; border-radius: 12px; padding: 8px 12px; font-weight: 600; font-size: 13px;">Установить</button>
-                <button id="close-prompt" style="background: none; border: none; color: #8e8e93; font-size: 12px;">Позже</button>
+                <button id="install-btn" style="background: var(--accent-color); border: none; color: white; border-radius: 12px; padding: 10px 16px; font-weight: 700; font-size: 14px; box-shadow: 0 4px 15px rgba(115, 96, 242, 0.4);">Установить</button>
+                <button id="close-prompt" style="background: none; border: none; color: #8e8e93; font-size: 12px; margin-top: 5px;">Позже</button>
             </div>
         </div>
     `;
@@ -96,6 +97,7 @@ window.addEventListener('load', () => {
 });
 
 function showIosPrompt() {
+    if (document.querySelector('.install-prompt-ios')) return;
     const iosPrompt = document.createElement('div');
     iosPrompt.className = 'install-prompt-ios';
     iosPrompt.style.animation = 'slideUp 0.5s forwards';
@@ -103,10 +105,10 @@ function showIosPrompt() {
         <div style="display: flex; align-items: center; gap: 15px;">
             <img src="assets/img/icon-192.png" width="50" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
             <div style="flex: 1;">
-                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v3</p>
-                <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Нажмите <img src="assets/img/ios-share.png" height="18" style="vertical-align: middle;"> и <strong>"На экран «Домой»"</strong></p>
+                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну v4</p>
+                <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Нажмите <img src="assets/img/ios-share.png" height="20" style="vertical-align: middle;"> и затем <strong>"На экран «Домой»"</strong></p>
             </div>
-            <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: #7360f2; font-weight: bold; font-size: 14px;">ОК</button>
+            <button onclick="this.parentElement.parentElement.remove()" style="background: #f2f2f7; border: none; color: #7360f2; font-weight: bold; font-size: 14px; padding: 10px 15px; border-radius: 12px;">ОК</button>
         </div>
     `;
     document.body.appendChild(iosPrompt);

@@ -52,25 +52,17 @@
                     <span class="icon">📋</span>
                     <span class="label">Задачи</span>
                 </button>
-                <button class="nav-item" data-view="achievements">
-                    <span class="icon">🏆</span>
-                    <span class="label">Награды</span>
+                <button class="nav-item" data-view="shopping">
+                    <span class="icon">🛒</span>
+                    <span class="label">Покупки</span>
                 </button>
                 <button class="nav-item" data-view="events">
                     <span class="icon">📅</span>
                     <span class="label">События</span>
                 </button>
-                <button class="nav-item" data-view="shopping">
-                    <span class="icon">🛒</span>
-                    <span class="label">Покупки</span>
-                </button>
                 <button class="nav-item" data-view="settings">
                     <span class="icon">⚙️</span>
                     <span class="label">Настройки</span>
-                </button>
-                <button class="nav-item" data-view="about">
-                    <span class="icon">❤️</span>
-                    <span class="label">О Жанне</span>
                 </button>
                 <button class="nav-item hidden" data-view="admin" id="nav-admin">
                     <span class="icon">🛡️</span>
