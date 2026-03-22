@@ -19,6 +19,7 @@ class ChatManager {
         }
 
         $chats[$chat_key][] = [
+            'id' => $this->storage->generateId(),
             'from' => $from_id,
             'to' => $to_id,
             'message' => $message,

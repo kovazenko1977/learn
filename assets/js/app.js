@@ -102,6 +102,14 @@ function showAuthView() {
 function showMainView() {
     document.getElementById('auth-view').classList.remove('active');
     document.getElementById('main-view').classList.add('active');
+
+    const navAdmin = document.getElementById('nav-admin');
+    if (currentUser && currentUser.role === 'admin') {
+        navAdmin.classList.remove('hidden');
+    } else {
+        navAdmin.classList.add('hidden');
+    }
+
     renderView(currentView);
 }
 
@@ -150,6 +158,10 @@ function renderView(view) {
         case 'about':
             title.innerText = 'О Жанне';
             renderAbout();
+            break;
+        case 'admin':
+            title.innerText = 'Панель Администратора';
+            renderAdmin();
             break;
     }
 }
@@ -340,7 +352,8 @@ async function fetchChatHistory() {
         if (!chatBox) return;
 
         chatBox.innerHTML = result.history.map(msg => `
-            <div class="chat-bubble ${msg.from === currentUser.id ? 'sent' : 'received'}">
+            <div class="chat-bubble ${msg.from === currentUser.id ? 'sent' : 'received'}" style="position: relative;">
+                ${currentUser.role === 'admin' ? `<button onclick="adminDeleteMessage('${msg.id}')" style="position: absolute; top: -10px; right: -10px; background: #ff3b30; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; z-index: 10;">×</button>` : ''}
                 ${msg.image ? `<img src="${escapeHTML(msg.image)}" style="max-width: 100%; border-radius: 10px; margin-bottom: 5px;">` : ''}
                 ${msg.message ? `<div>${escapeHTML(msg.message)}</div>` : ''}
                 <div style="font-size: 10px; opacity: 0.6; text-align: right; margin-top: 4px;">
@@ -451,9 +464,9 @@ async function openTaskList(listId) {
                 <div class="task-item ${task.completed ? 'completed' : ''}">
                     <div class="checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${list.id}', '${task.id}')"></div>
                     <span style="flex: 1;">${escapeHTML(task.text)}</span>
-                    ${task.author_id === currentUser.id ? `
-                        <button onclick="editTaskPrompt('${list.id}', '${task.id}', '${escapeHTML(task.text).replace(/'/g, "\\'")}')" style="background:none; border:none; font-size: 18px;">✏️</button>
-                        <button onclick="deleteTask('${list.id}', '${task.id}')" style="background:none; border:none; font-size: 18px;">🗑️</button>
+                    ${(task.author_id === currentUser.id || currentUser.role === 'admin') ? `
+                        ${task.author_id === currentUser.id ? `<button onclick="editTaskPrompt('${list.id}', '${task.id}', '${escapeHTML(task.text).replace(/'/g, "\\'")}')" style="background:none; border:none; font-size: 18px;">✏️</button>` : ''}
+                        <button onclick="deleteTaskAdmin('${list.id}', '${task.id}')" style="background:none; border:none; font-size: 18px;">🗑️</button>
                     ` : ''}
                 </div>
             `).join('')}
@@ -506,9 +519,15 @@ async function toggleTask(listId, taskId) {
     }
 }
 
-async function deleteTask(listId, taskId) {
+async function deleteTaskAdmin(listId, taskId) {
     if (!confirm('Удалить задачу?')) return;
-    const res = await fetch(`${API_URL}?action=delete_task`, {
+
+    let action = 'delete_task';
+    if (currentUser.role === 'admin') {
+        action = 'admin_delete_task';
+    }
+
+    const res = await fetch(`${API_URL}?action=${action}`, {
         method: 'POST',
         body: JSON.stringify({ list_id: listId, task_id: taskId })
     });
@@ -696,4 +715,92 @@ async function deleteEvent(id) {
         body: JSON.stringify({ id })
     });
     fetchEvents();
+}
+
+// Admin View Logic
+async function renderAdmin() {
+    const container = document.getElementById('view-container');
+    const response = await fetch(`${API_URL}?action=admin_get_summary`);
+    const result = await response.json();
+
+    if (!result.success) {
+        container.innerHTML = '<p>Доступ запрещен</p>';
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="background: var(--secondary-color); padding: 20px; border-radius: 20px; margin-bottom: 20px;">
+            <h3>Статистика системы</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                <div style="background: white; padding: 15px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold;">${result.summary.users}</div>
+                    <div style="font-size: 12px; opacity: 0.6;">Юзеров</div>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: bold;">${result.summary.tasks}</div>
+                    <div style="font-size: 12px; opacity: 0.6;">Списков задач</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3>Управление пользователями</h3>
+            <div id="admin-user-list" style="margin-top: 15px;"></div>
+        </div>
+
+        <div style="margin-bottom: 20px; padding-bottom: 300px;">
+            <h3>Последние сообщения</h3>
+            <div id="admin-messages-list" style="margin-top: 15px;"></div>
+        </div>
+    `;
+
+    const msgBox = document.getElementById('admin-messages-list');
+    msgBox.innerHTML = result.recent_messages.map(m => `
+        <div style="background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; font-size: 13px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <strong>${escapeHTML(m.from)} ➡️ ${escapeHTML(m.to)}</strong>
+                <button onclick="adminDeleteMessage('${m.id}')" style="color: #ff3b30; background: none; border: none; font-size: 11px;">Удалить</button>
+            </div>
+            <div>${escapeHTML(m.message || '[Изображение]')}</div>
+            <div style="font-size: 10px; opacity: 0.5; margin-top: 5px;">${new Date(m.timestamp * 1000).toLocaleString()}</div>
+        </div>
+    `).join('');
+
+    const userRes = await fetch(`${API_URL}?action=list_users`);
+    const userList = await userRes.json();
+
+    const userBox = document.getElementById('admin-user-list');
+    userBox.innerHTML = userList.users.map(u => `
+        <div class="user-item">
+            <div style="flex: 1;">
+                <strong>${escapeHTML(u.username)}</strong>
+                <div style="font-size: 11px; opacity: 0.5;">ID: ${u.id}</div>
+            </div>
+            ${u.username !== 'admin' ? `
+                <button onclick="adminDeleteUser('${u.id}')" style="background: #ff3b30; color: white; border: none; padding: 5px 10px; border-radius: 8px; font-size: 12px;">Удалить</button>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+async function adminDeleteUser(id) {
+    if (!confirm('Внимание! Это удалит пользователя и все его данные. Продолжить?')) return;
+    await fetch(`${API_URL}?action=admin_delete_user`, {
+        method: 'POST',
+        body: JSON.stringify({ id })
+    });
+    renderAdmin();
+}
+
+async function adminDeleteMessage(id) {
+    if (!confirm('Удалить это сообщение?')) return;
+    await fetch(`${API_URL}?action=admin_delete_message`, {
+        method: 'POST',
+        body: JSON.stringify({ id })
+    });
+    if (currentView === 'admin') {
+        renderAdmin();
+    } else {
+        fetchChatHistory();
+    }
 }

@@ -16,14 +16,30 @@ window.addEventListener('beforeinstallprompt', (e) => {
   showInstallPromotion();
 });
 
+// Force check for installation state on load
+window.addEventListener('load', () => {
+    if (!isInStandaloneMode()) {
+        // If it's not iOS (which has its own check), we might still want to show a generic prompt
+        // if the browser supports beforeinstallprompt it will trigger above.
+        // For browsers that don't support it, we could show a generic message.
+    }
+});
+
 function showInstallPromotion() {
     const promptEl = document.createElement('div');
     promptEl.className = 'install-prompt';
+    promptEl.style.animation = 'slideUp 0.5s forwards';
     promptEl.innerHTML = `
-        <div class="install-prompt-content">
-            <p>Установите приложение для быстрого доступа</p>
-            <button id="install-btn">Установить</button>
-            <button id="close-prompt">Закрыть</button>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="assets/img/icon-192.png" width="50" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+            <div style="flex: 1;">
+                <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну</p>
+                <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Для более удобного общения и работы с задачами</p>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <button id="install-btn" style="background: var(--accent-color); border: none; color: white; border-radius: 12px; padding: 8px 12px; font-weight: 600; font-size: 13px;">Установить</button>
+                <button id="close-prompt" style="background: none; border: none; color: #8e8e93; font-size: 12px;">Позже</button>
+            </div>
         </div>
     `;
     document.body.appendChild(promptEl);

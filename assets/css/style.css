@@ -73,11 +73,12 @@ header h2 {
 
 nav {
     position: fixed;
-    bottom: calc(max(var(--safe-area-inset-bottom), 20px) + 15px);
-    left: 20px;
-    right: 20px;
+    bottom: calc(max(var(--safe-area-inset-bottom), 25px) + 25px);
+    left: 15px;
+    right: 15px;
     display: flex;
-    justify-content: space-around;
+    overflow-x: auto;
+    gap: 5px;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -86,10 +87,15 @@ nav {
     padding: 8px 10px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.12);
     z-index: 1000;
+    scrollbar-width: none;
+}
+
+nav::-webkit-scrollbar {
+    display: none;
 }
 
 .nav-item {
-    flex: 1;
+    flex: 0 0 70px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -199,7 +205,7 @@ input:focus, textarea:focus, select:focus {
 #view-container {
     flex: 1;
     overflow-y: auto;
-    padding: 10px 25px;
+    padding: 10px 25px 300px;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
 }
@@ -247,7 +253,7 @@ input:focus, textarea:focus, select:focus {
     align-items: center;
     gap: 12px;
     position: fixed;
-    bottom: calc(max(var(--safe-area-inset-bottom), 20px) + 95px);
+    bottom: calc(max(var(--safe-area-inset-bottom), 25px) + 115px);
     left: 15px;
     right: 15px;
     z-index: 150;
@@ -343,7 +349,7 @@ input:focus, textarea:focus, select:focus {
 
 .install-prompt, .install-prompt-ios {
     position: fixed;
-    top: calc(var(--safe-area-inset-top) + 20px);
+    top: calc(var(--safe-area-inset-top) + 25px);
     left: 20px;
     right: 20px;
     background: #ffffff;

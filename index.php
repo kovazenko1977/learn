@@ -69,6 +69,10 @@
                     <span class="icon">❤️</span>
                     <span class="label">О Жанне</span>
                 </button>
+                <button class="nav-item hidden" data-view="admin" id="nav-admin">
+                    <span class="icon">🛡️</span>
+                    <span class="label">Админ</span>
+                </button>
             </nav>
         </div>
     </div>

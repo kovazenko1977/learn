@@ -6,6 +6,7 @@ require_once '../includes/TaskManager.php';
 require_once '../includes/ShoppingManager.php';
 require_once '../includes/AchievementManager.php';
 require_once '../includes/EventManager.php';
+require_once '../includes/AdminManager.php';
 
 $auth = new AuthManager();
 $chat = new ChatManager();
@@ -13,6 +14,7 @@ $tasks = new TaskManager();
 $shopping = new ShoppingManager();
 $achievements = new AchievementManager();
 $events = new EventManager();
+$admin = new AdminManager();
 
 $user = $auth->getCurrentUser();
 $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -170,6 +172,41 @@ switch ($action) {
         if ($user) {
             $data = json_decode(file_get_contents('php://input'), true);
             $success = $events->deleteEvent($data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    // Admin Actions
+    case 'admin_get_summary':
+        if ($user && $admin->isAdmin($user['id'])) {
+            $response = [
+                'success' => true,
+                'summary' => $admin->getAllDataSummary(),
+                'recent_messages' => array_slice($admin->getAllMessages(), 0, 50)
+            ];
+        }
+        break;
+
+    case 'admin_delete_user':
+        if ($user && $admin->isAdmin($user['id'])) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $admin->deleteUser($data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'admin_delete_message':
+        if ($user && $admin->isAdmin($user['id'])) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $admin->deleteMessage($data['id']);
+            $response = ['success' => $success];
+        }
+        break;
+
+    case 'admin_delete_task':
+        if ($user && $admin->isAdmin($user['id'])) {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $success = $admin->deleteTask($data['list_id'], $data['task_id']);
             $response = ['success' => $success];
         }
         break;

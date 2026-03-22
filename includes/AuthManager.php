@@ -9,7 +9,23 @@ class AuthManager {
         $this->storage = new Storage();
     }
 
+    public function seedAdmin() {
+        $users = $this->storage->read($this->filename);
+        if (!isset($users['admin'])) {
+            $users['admin'] = [
+                'username' => 'admin',
+                'password' => password_hash('123456', PASSWORD_BCRYPT),
+                'id' => 'admin_001',
+                'status' => 'Администратор системы',
+                'role' => 'admin',
+                'achievements' => []
+            ];
+            $this->storage->write($this->filename, $users);
+        }
+    }
+
     public function register($username, $password) {
+        $this->seedAdmin();
         $users = $this->storage->read($this->filename);
         if (isset($users[$username])) {
             return ['success' => false, 'message' => 'Пользователь уже существует'];
@@ -20,6 +36,7 @@ class AuthManager {
             'password' => password_hash($password, PASSWORD_BCRYPT),
             'id' => $this->storage->generateId(),
             'status' => '',
+            'role' => 'user',
             'achievements' => []
         ];
 
@@ -30,6 +47,7 @@ class AuthManager {
     }
 
     public function login($username, $password) {
+        $this->seedAdmin();
         $users = $this->storage->read($this->filename);
         if (!isset($users[$username]) || !password_verify($password, $users[$username]['password'])) {
             return ['success' => false, 'message' => 'Неверное имя пользователя или пароль'];
@@ -40,7 +58,8 @@ class AuthManager {
         }
         $_SESSION['user'] = [
             'id' => $users[$username]['id'],
-            'username' => $username
+            'username' => $username,
+            'role' => isset($users[$username]['role']) ? $users[$username]['role'] : 'user'
         ];
 
         return ['success' => true, 'user' => $_SESSION['user']];
