@@ -63,9 +63,11 @@ header {
 nav {
     display: flex;
     justify-content: space-around;
-    padding-bottom: calc(var(--safe-area-inset-bottom) + 5px);
+    padding-bottom: calc(max(var(--safe-area-inset-bottom), 15px) + 10px);
     background: var(--bg-color);
     border-top: 1px solid rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 200;
 }
 
 .nav-item {
@@ -73,7 +75,7 @@ nav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 12px 0;
+    padding: 15px 0 5px;
     border: none;
     background: transparent;
     color: #8e8e93;
@@ -216,18 +218,18 @@ input:focus, textarea:focus, select:focus {
 }
 
 .chat-input-area {
-    padding: 12px 20px calc(var(--safe-area-inset-bottom) + 12px);
+    padding: 15px 20px;
     background: var(--bg-color);
     border-top: 1px solid rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
     gap: 12px;
     position: fixed;
-    bottom: calc(var(--safe-area-inset-bottom) + 65px);
+    bottom: calc(max(var(--safe-area-inset-bottom), 15px) + 65px);
     left: 0;
     right: 0;
-    z-index: 50;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.02);
+    z-index: 150;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
 }
 
 .icon-btn {
@@ -311,17 +313,28 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* Modals & Prompts */
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
 .install-prompt, .install-prompt-ios {
     position: fixed;
-    bottom: 20px;
+    top: calc(var(--safe-area-inset-top) + 20px);
     left: 20px;
     right: 20px;
-    background: #000;
-    color: #fff;
+    background: #ffffff;
+    color: #000;
     padding: 20px;
-    border-radius: 20px;
-    z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-radius: 24px;
+    z-index: 3000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.install-prompt-ios {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
 }
 
 .install-prompt button {

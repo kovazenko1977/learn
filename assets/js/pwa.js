@@ -12,6 +12,7 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
+  // Trigger immediately as requested
   showInstallPromotion();
 });
 
@@ -59,13 +60,21 @@ const isIos = () => {
 const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
 if (isIos() && !isInStandaloneMode()) {
-    setTimeout(() => {
+    // Show iOS prompt immediately on load
+    window.addEventListener('DOMContentLoaded', () => {
         const iosPrompt = document.createElement('div');
         iosPrompt.className = 'install-prompt-ios';
+        iosPrompt.style.animation = 'slideUp 0.5s forwards';
         iosPrompt.innerHTML = `
-            <p>Для установки: нажмите <img src="assets/img/ios-share.png" height="20"> и <strong>"На экран «Домой»"</strong></p>
-            <button onclick="this.parentElement.remove()">Понятно</button>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="assets/img/icon-192.png" width="50" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                <div style="flex: 1;">
+                    <p style="margin: 0; font-weight: bold; font-size: 16px;">Установите Жанну</p>
+                    <p style="margin: 3px 0 0; font-size: 13px; opacity: 0.9;">Нажмите <img src="assets/img/ios-share.png" height="18" style="vertical-align: middle;"> и <strong>"На экран «Домой»"</strong></p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: #007aff; font-weight: bold; font-size: 14px;">ОК</button>
+            </div>
         `;
         document.body.appendChild(iosPrompt);
-    }, 3000);
+    });
 }

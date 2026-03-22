@@ -3,6 +3,27 @@ let currentUser = null;
 let currentView = 'chats';
 let activeChatUserId = null;
 let pollInterval = null;
+let lastMessageCount = 0;
+const notifySound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YTdvT18AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABXQVZFAAA='); // Placeholder short beep or silent but valid wav
+
+// Better sound: a simple "pop" or "ding" can be synthesized or used as a small base64.
+// Let's use a slightly more audible synthesized beep for now.
+const playNotificationSound = () => {
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, context.currentTime); // A5 note
+    gainNode.gain.setValueAtTime(0.1, context.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.1);
+};
 
 function escapeHTML(str) {
     if (!str) return '';
@@ -153,7 +174,7 @@ function renderAbout() {
 async function renderShoppingList() {
     const container = document.getElementById('view-container');
     container.innerHTML = `
-        <div id="shopping-container" style="padding-bottom: 150px;"></div>
+        <div id="shopping-container" style="padding-bottom: 200px;"></div>
         <button id="clear-shop-btn" style="width: 100%; padding: 18px; margin-top: 20px; border-radius: 20px; border: none; background: #f2f2f7; color: #ff3b30; font-weight: 600;">Очистить купленное</button>
 
         <div class="chat-input-area">
@@ -236,11 +257,12 @@ async function renderUserList() {
 
 async function openChat(user) {
     activeChatUserId = user.id;
+    lastMessageCount = 0;
     const container = document.getElementById('view-container');
     document.getElementById('view-title').innerText = user.username;
 
     container.innerHTML = `
-        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 150px;"></div>
+        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 200px;"></div>
         <div class="chat-input-area">
             <button id="upload-btn" class="icon-btn">📷</button>
             <input type="file" id="image-input" hidden accept="image/*">
@@ -305,6 +327,15 @@ async function fetchChatHistory() {
     const response = await fetch(`${API_URL}?action=get_chat_history&with_id=${activeChatUserId}`);
     const result = await response.json();
     if (result.success) {
+        // Sound notification for new messages
+        if (result.history.length > lastMessageCount) {
+            const lastMsg = result.history[result.history.length - 1];
+            if (lastMsg.from !== currentUser.id && lastMessageCount > 0) {
+                playNotificationSound();
+            }
+            lastMessageCount = result.history.length;
+        }
+
         const chatBox = document.getElementById('chat-messages');
         if (!chatBox) return;
 
@@ -415,7 +446,7 @@ async function openTaskList(listId) {
     document.getElementById('view-title').innerText = list.title;
 
     container.innerHTML = `
-        <div id="tasks-container" style="margin-bottom: 150px;">
+        <div id="tasks-container" style="margin-bottom: 200px;">
             ${list.tasks.map(task => `
                 <div class="task-item ${task.completed ? 'completed' : ''}">
                     <div class="checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${list.id}', '${task.id}')"></div>
