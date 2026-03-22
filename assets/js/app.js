@@ -153,12 +153,13 @@ function renderAbout() {
 async function renderShoppingList() {
     const container = document.getElementById('view-container');
     container.innerHTML = `
-        <div class="chat-input-area" style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 15px;">
+        <div id="shopping-container" style="padding-bottom: 150px;"></div>
+        <button id="clear-shop-btn" style="width: 100%; padding: 18px; margin-top: 20px; border-radius: 20px; border: none; background: #f2f2f7; color: #ff3b30; font-weight: 600;">Очистить купленное</button>
+
+        <div class="chat-input-area">
             <input type="text" id="shop-input" placeholder="Что купить?">
             <button id="add-shop-btn" class="icon-btn">➕</button>
         </div>
-        <div id="shopping-container"></div>
-        <button id="clear-shop-btn" style="width: 100%; padding: 12px; margin-top: 20px; border-radius: 15px; border: none; background: #f2f2f7; color: #ff3b30;">Очистить купленное</button>
     `;
 
     document.getElementById('add-shop-btn').onclick = addShoppingItem;
@@ -239,8 +240,8 @@ async function openChat(user) {
     document.getElementById('view-title').innerText = user.username;
 
     container.innerHTML = `
-        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 80px;"></div>
-        <div class="chat-input-area" style="position: fixed; bottom: calc(var(--safe-area-inset-bottom) + 60px); left: 0; right: 0; background: white;">
+        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 150px;"></div>
+        <div class="chat-input-area">
             <button id="upload-btn" class="icon-btn">📷</button>
             <input type="file" id="image-input" hidden accept="image/*">
             <input type="text" id="msg-input" placeholder="Сообщение...">
@@ -414,7 +415,7 @@ async function openTaskList(listId) {
     document.getElementById('view-title').innerText = list.title;
 
     container.innerHTML = `
-        <div id="tasks-container" style="margin-bottom: 80px;">
+        <div id="tasks-container" style="margin-bottom: 150px;">
             ${list.tasks.map(task => `
                 <div class="task-item ${task.completed ? 'completed' : ''}">
                     <div class="checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${list.id}', '${task.id}')"></div>
@@ -426,7 +427,7 @@ async function openTaskList(listId) {
                 </div>
             `).join('')}
         </div>
-        <div class="chat-input-area" style="position: fixed; bottom: calc(var(--safe-area-inset-bottom) + 60px); left: 0; right: 0; background: white;">
+        <div class="chat-input-area">
             <input type="text" id="task-input" placeholder="Добавить задачу...">
             <button id="add-task-btn" class="icon-btn">➕</button>
         </div>
