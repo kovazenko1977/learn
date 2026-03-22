@@ -1,0 +1,19 @@
+{
+    "3819a9e0b8ca9746": {
+        "id": "3819a9e0b8ca9746",
+        "title": "Bob's List",
+        "creator_id": "1c4bde84d5d242af",
+        "participants": [
+            "1c4bde84d5d242af"
+        ],
+        "tasks": [
+            {
+                "id": "1d92bb20fcaca309",
+                "text": "Buy organic milk",
+                "author_id": "1c4bde84d5d242af",
+                "completed": false,
+                "created_at": 1774160017
+            }
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "bob": {
+        "username": "bob",
+        "password": "$2y$10$rg5aj0Tz.15LtJCv4W.WrOMVQOR9O8\/cjBwNlWUCdtAm619fLC4IC",
+        "id": "1c4bde84d5d242af"
+    },
+    "testuser_1774167134": {
+        "username": "testuser_1774167134",
+        "password": "$2y$10$r7xnZEBRfbEDHL05O2XdwebTKpxIxwbRRynW6ppIRqNsInZbchmza",
+        "id": "25f4d65f79f05b0d",
+        "status": "",
+        "achievements": []
+    },
+    "user1774167136": {
+        "username": "user1774167136",
+        "password": "$2y$10$6hi7wBumn8JvaB4DFI5Yeeq\/0gwtM0frJfWmSxZKuSBZbQDMhxlSe",
+        "id": "2245ed1c3b9dbe59",
+        "status": "",
+        "achievements": []
+    },
+    "admin": {
+        "username": "admin",
+        "password": "$2y$10$TZbnc8pvmX5GzT.I3Cz50.0mfRfP886F1tcfWEfyt4TlBUBrcvIbW",
+        "id": "admin_001",
+        "status": "Администратор системы",
+        "role": "admin",
+        "achievements": []
+    }
+}
