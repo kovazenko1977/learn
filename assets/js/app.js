@@ -174,7 +174,7 @@ function renderAbout() {
 async function renderShoppingList() {
     const container = document.getElementById('view-container');
     container.innerHTML = `
-        <div id="shopping-container" style="padding-bottom: 200px;"></div>
+        <div id="shopping-container" style="padding-bottom: 250px;"></div>
         <button id="clear-shop-btn" style="width: 100%; padding: 18px; margin-top: 20px; border-radius: 20px; border: none; background: #f2f2f7; color: #ff3b30; font-weight: 600;">Очистить купленное</button>
 
         <div class="chat-input-area">
@@ -262,7 +262,7 @@ async function openChat(user) {
     document.getElementById('view-title').innerText = user.username;
 
     container.innerHTML = `
-        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 200px;"></div>
+        <div id="chat-messages" style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; padding-bottom: 250px;"></div>
         <div class="chat-input-area">
             <button id="upload-btn" class="icon-btn">📷</button>
             <input type="file" id="image-input" hidden accept="image/*">
@@ -446,7 +446,7 @@ async function openTaskList(listId) {
     document.getElementById('view-title').innerText = list.title;
 
     container.innerHTML = `
-        <div id="tasks-container" style="margin-bottom: 200px;">
+        <div id="tasks-container" style="margin-bottom: 250px;">
             ${list.tasks.map(task => `
                 <div class="task-item ${task.completed ? 'completed' : ''}">
                     <div class="checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${list.id}', '${task.id}')"></div>
