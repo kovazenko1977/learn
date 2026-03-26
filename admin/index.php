@@ -312,7 +312,9 @@ AuthManager::check();
 
             // Update embed code
             const scriptUrl = window.location.origin + '/assets/js/embed.js';
-            document.getElementById('embed-code').value = `<div data-zhanna-booking data-form-id="${currentEditingId}"></div>\n<script src="${scriptUrl}"><\/script>`;
+            const oneTag = `<script src="${scriptUrl}" data-form-id="${currentEditingId}"><\/script>`;
+            const twoTags = `<div data-zhanna-booking data-form-id="${currentEditingId}"></div>\n<script src="${scriptUrl}"><\/script>`;
+            document.getElementById('embed-code').value = `Один тег (рекомендуется):\n${oneTag}\n\nДля вставки в определенное место:\n${twoTags}`;
         }
 
         async function saveCurrentForm() {

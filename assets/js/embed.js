@@ -1,11 +1,39 @@
 (function() {
     function initAllForms() {
         const containers = document.querySelectorAll('[data-zhanna-booking]');
-        // Also support the old ID for backward compatibility
         const oldContainer = document.getElementById('zhanna-booking-form');
         const allContainers = Array.from(containers);
         if (oldContainer && !allContainers.includes(oldContainer)) {
             allContainers.push(oldContainer);
+        }
+
+        // One-tag embedding: find the script that loaded us
+        let selfScript = document.currentScript;
+        if (!selfScript) {
+            const scripts = document.getElementsByTagName('script');
+            for (let i = scripts.length - 1; i >= 0; i--) {
+                const s = scripts[i];
+                if (s.src && (s.src.includes('embed.js') || s.src.includes('wes.by')) && s.hasAttribute('data-form-id')) {
+                    selfScript = s;
+                    break;
+                }
+            }
+        }
+
+        if (selfScript && selfScript.hasAttribute('data-form-id')) {
+            const formId = selfScript.getAttribute('data-form-id');
+            const wrapperId = 'zhanna-wrapper-' + formId;
+            // Prevent duplicate insertion
+            if (!document.getElementById(wrapperId)) {
+                const wrapper = document.createElement('div');
+                wrapper.id = wrapperId;
+                wrapper.setAttribute('data-zhanna-booking', '');
+                wrapper.setAttribute('data-form-id', formId);
+                selfScript.parentNode.insertBefore(wrapper, selfScript);
+                if (!allContainers.includes(wrapper)) {
+                    allContainers.push(wrapper);
+                }
+            }
         }
 
         if (allContainers.length === 0) return;
