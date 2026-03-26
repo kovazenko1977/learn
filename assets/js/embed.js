@@ -15,12 +15,18 @@
             apiBase = (new URL(document.currentScript.src)).origin;
         } else {
             const scripts = document.getElementsByTagName('script');
-            for (let s of scripts) {
-                if (s.src && s.src.includes('embed.js')) {
+            for (let i = scripts.length - 1; i >= 0; i--) {
+                const s = scripts[i];
+                if (s.src && (s.src.includes('embed.js') || s.src.includes('wes.by'))) {
                     apiBase = (new URL(s.src)).origin;
                     break;
                 }
             }
+        }
+
+        if (!apiBase) {
+            // Last resort: assume current origin
+            apiBase = window.location.origin;
         }
 
         allContainers.forEach(container => {
@@ -83,7 +89,7 @@
 
         html += `
                 <button type="submit" class="zhanna-submit">Отправить заявку</button>
-                <div id="zhanna-status" class="zhanna-message"></div>
+                <div class="zhanna-status zhanna-message"></div>
             </form>
         `;
 
@@ -93,13 +99,14 @@
             e.preventDefault();
             const form = e.target;
             const submitBtn = form.querySelector('.zhanna-submit');
-            const statusDiv = document.getElementById('zhanna-status');
+            const statusDiv = container.querySelector('.zhanna-status');
 
             // Honeypot check
             if (form.hp_name.value) return;
 
             submitBtn.disabled = true;
-            statusDiv.className = 'zhanna-message';
+            statusDiv.classList.remove('success', 'error');
+            statusDiv.classList.add('zhanna-message');
             statusDiv.textContent = 'Отправка...';
             statusDiv.style.display = 'block';
 
@@ -116,14 +123,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    statusDiv.className = 'zhanna-message success';
-                    statusDiv.textContent = 'Ваша заявка успешно отправлена!';
+                    statusDiv.classList.add('success');
+                    statusDiv.classList.remove('error');
+                    statusDiv.textContent = result.message || 'Ваша заявка успешно отправлена!';
                     form.reset();
                 } else {
                     throw new Error(result.error || 'Ошибка при отправке');
                 }
             } catch (err) {
-                statusDiv.className = 'zhanna-message error';
+                statusDiv.classList.add('error');
+                statusDiv.classList.remove('success');
                 statusDiv.textContent = 'Ошибка: ' + err.message;
             } finally {
                 submitBtn.disabled = false;
