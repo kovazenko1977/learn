@@ -3,6 +3,13 @@ require_once '../includes/Storage.php';
 require_once '../includes/AuthManager.php';
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
 
 $action = $_GET['action'] ?? '';
 $type = $_GET['type'] ?? 'forms'; // 'forms' or 'settings'
@@ -24,7 +31,6 @@ switch ($action) {
     case 'get':
         $data = $storage->read();
         if ($type === 'forms' && isset($_GET['id'])) {
-            header('Access-Control-Allow-Origin: *');
             $formId = $_GET['id'];
             if (empty($formId)) {
                 http_response_code(400);

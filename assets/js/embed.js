@@ -1,23 +1,49 @@
 (function() {
-    const container = document.getElementById('zhanna-booking-form');
-    if (!container) return;
+    function initAllForms() {
+        const containers = document.querySelectorAll('[data-zhanna-booking]');
+        // Also support the old ID for backward compatibility
+        const oldContainer = document.getElementById('zhanna-booking-form');
+        const allContainers = Array.from(containers);
+        if (oldContainer && !allContainers.includes(oldContainer)) {
+            allContainers.push(oldContainer);
+        }
 
-    const formId = container.getAttribute('data-form-id');
-    const apiBase = (new URL(document.currentScript.src)).origin;
+        if (allContainers.length === 0) return;
 
-    async function init() {
+        let apiBase = '';
+        if (document.currentScript && document.currentScript.src) {
+            apiBase = (new URL(document.currentScript.src)).origin;
+        } else {
+            const scripts = document.getElementsByTagName('script');
+            for (let s of scripts) {
+                if (s.src && s.src.includes('embed.js')) {
+                    apiBase = (new URL(s.src)).origin;
+                    break;
+                }
+            }
+        }
+
+        allContainers.forEach(container => {
+            const formId = container.getAttribute('data-form-id');
+            if (formId) {
+                loadAndRenderForm(container, formId, apiBase);
+            }
+        });
+    }
+
+    async function loadAndRenderForm(container, formId, apiBase) {
         try {
             const resp = await fetch(`${apiBase}/api/config.php?action=get&type=forms&id=${formId}`);
             if (!resp.ok) throw new Error('Form not found');
             const formConfig = await resp.json();
-            renderForm(formConfig);
+            renderForm(container, formConfig, apiBase);
         } catch (e) {
             console.error('Failed to load booking form:', e);
             container.innerHTML = '<p style="color:red;">Form configuration not found.</p>';
         }
     }
 
-    function renderForm(config) {
+    function renderForm(container, config, apiBase) {
         const btnColor = config.btnColor || '#7360f2';
         const borderRadius = (config.borderRadius || 8) + 'px';
 
@@ -37,7 +63,7 @@
                 .zhanna-message.error { background: #f8d7da; color: #721c24; display: block; }
                 .zhanna-hp { display: none; }
             </style>
-            <form class="zhanna-form" id="zhanna-actual-form">
+            <form class="zhanna-form zhanna-actual-form">
                 <input type="hidden" name="form_id" value="${config.id}">
                 <div class="zhanna-hp"><input type="text" name="hp_name"></div>
         `;
@@ -63,7 +89,7 @@
 
         container.innerHTML = html;
 
-        document.getElementById('zhanna-actual-form').addEventListener('submit', async (e) => {
+        container.querySelector('.zhanna-actual-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.target;
             const submitBtn = form.querySelector('.zhanna-submit');
@@ -105,5 +131,9 @@
         });
     }
 
-    init();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAllForms);
+    } else {
+        initAllForms();
+    }
 })();

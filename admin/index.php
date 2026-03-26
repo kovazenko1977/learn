@@ -153,6 +153,7 @@ AuthManager::check();
                     <div class="preview-container" id="form-preview"></div>
                     <div class="card" style="margin-top: 20px;">
                         <h3>Код для вставки</h3>
+                        <p style="font-size:0.8rem; color:#666; background: #fff3cd; padding: 10px; border-radius: 4px; border: 1px solid #ffeeba;"><strong>Внимание:</strong> Сначала сохраните форму, прежде чем копировать код!</p>
                         <p style="font-size:0.8rem; color:#666;">Скопируйте этот код на ваш сайт:</p>
                         <textarea id="embed-code" readonly style="height: 100px; font-family: monospace; font-size: 0.8rem;"></textarea>
                     </div>
@@ -311,7 +312,7 @@ AuthManager::check();
 
             // Update embed code
             const scriptUrl = window.location.origin + '/assets/js/embed.js';
-            document.getElementById('embed-code').value = `<div id="zhanna-booking-form" data-form-id="${currentEditingId}"></div>\n<script src="${scriptUrl}"><\/script>`;
+            document.getElementById('embed-code').value = `<div data-zhanna-booking data-form-id="${currentEditingId}"></div>\n<script src="${scriptUrl}"><\/script>`;
         }
 
         async function saveCurrentForm() {
