@@ -1,0 +1,16 @@
+{
+  "name": "ALCO.BY Industrial ERP",
+  "short_name": "ALCO ERP",
+  "description": "Industrial Management System for Beverage Factories",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3061/3061341.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+[
+    {
+        "id": "U1",
+        "name": "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
+        "username": "admin",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "role": "admin",
+        "permissions": ["*"]
+    },
+    {
+        "id": "U2",
+        "name": "ОТДЕЛ МАРКЕТИНГА",
+        "username": "sales",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "role": "sales_manager",
+        "permissions": ["products_view", "orders_view_all", "orders_manage", "analytics_view"]
+    },
+    {
+        "id": "U3",
+        "name": "НАЧАЛЬНИК ПРОИЗВОДСТВА",
+        "username": "prod",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "role": "production_chief",
+        "permissions": ["raw_materials_view", "production_log", "recipes_view"]
+    },
+    {
+        "id": "U4",
+        "name": "ООО ВИНОТРЕЙД",
+        "username": "client",
+        "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+        "role": "client",
+        "permissions": ["products_view", "orders_view_own", "orders_create"]
+    }
+]
