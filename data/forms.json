@@ -1,0 +1,30 @@
+[
+    {
+        "id": "form_gojny7gzs",
+        "name": "Тестовая форма",
+        "recipient": "test@example.com",
+        "subject": "Заявка с сайта",
+        "btnColor": "#7360f2",
+        "borderRadius": "8",
+        "fields": [
+            {
+                "label": "Имя",
+                "type": "text",
+                "required": true,
+                "name": "field_96xtm"
+            },
+            {
+                "label": "Телефон",
+                "type": "text",
+                "required": true,
+                "name": "field_tu7nz"
+            },
+            {
+                "label": "Дата заезда",
+                "type": "date",
+                "required": true,
+                "name": "field_1q3x2"
+            }
+        ]
+    }
+]
