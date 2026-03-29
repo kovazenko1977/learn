@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $action = $_GET['action'] ?? '';
-$type = $_GET['type'] ?? 'forms'; // 'forms' or 'settings'
+$type = $_GET['type'] ?? 'forms'; // 'forms', 'settings', 'mailing_contacts', etc.
 $storage = new Storage($type . '.json');
 
 // Public access: only GET 'forms' with a specific 'id'
