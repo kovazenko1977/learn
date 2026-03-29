@@ -1,0 +1,18 @@
+{
+    "smtp_host": "smtp.example.com",
+    "smtp_port": 587,
+    "smtp_user": "user@example.com",
+    "smtp_pass": "",
+    "smtp_secure": "tls",
+    "from_name": "My Business",
+    "from_email": "noreply@example.com",
+    "interval_sec": 10,
+    "batch_size": 10,
+    "personalization_tags": [
+        "name",
+        "company",
+        "position"
+    ],
+    "app_theme": "light",
+    "ui_accent_color": "#7360f2"
+}

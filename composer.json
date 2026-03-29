@@ -1,0 +1,14 @@
+{
+    "name": "zhanna/mailer",
+    "description": "Document Distribution Web App",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "authors": [
+        {
+            "name": "Jules",
+            "email": "jules@example.com"
+        }
+    ]
+}
