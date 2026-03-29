@@ -1,0 +1,14 @@
+[
+    {
+        "email": "test@example.com",
+        "name": "Test User",
+        "group": "Beta",
+        "id": "69c95a6c428dd"
+    },
+    {
+        "email": "verify@test.com",
+        "name": "Verify User",
+        "group": "",
+        "id": "69c95b45c926d"
+    }
+]
