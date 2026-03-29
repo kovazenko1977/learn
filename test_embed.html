@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестовая страница вставки формы</title>
+    <style>
+        body { font-family: sans-serif; background: #eee; padding: 50px; }
+        .site-container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .booking-widget-container { margin-top: 30px; border: 1px dashed #ccc; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="site-container">
+        <h1>Добро пожаловать на наш сайт Санатория!</h1>
+        <p>Для бронирования места, пожалуйста, заполните форму ниже:</p>
+
+        <div class="booking-widget-container">
+            <!-- Вставляем форму по ID (нужно будет заменить на реальный ID после создания) -->
+            <div id="zhanna-booking-form" data-form-id="form_gojny7gzs"></div>
+        </div>
+
+        <p style="margin-top: 40px; color: #666; font-size: 0.8rem;">© 2026 Наш Санаторий. Все права защищены.</p>
+    </div>
+
+    <!-- Подключаем скрипт вставки -->
+    <script src="assets/js/embed.js"></script>
+</body>
+</html>
