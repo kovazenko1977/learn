@@ -1,0 +1,67 @@
+[Tue Mar 31 07:23:10 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Tue Mar 31 07:23:30 2026] [::1]:37316 Accepted
+[Tue Mar 31 07:23:30 2026] [::1]:37316 [200]: GET /
+[Tue Mar 31 07:23:30 2026] [::1]:37316 Closing
+[Tue Mar 31 07:23:30 2026] [::1]:37322 Accepted
+[Tue Mar 31 07:23:30 2026] [::1]:37322 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:23:30 2026] [::1]:37322 Closing
+[Tue Mar 31 07:24:28 2026] [::1]:33300 Accepted
+[Tue Mar 31 07:24:28 2026] [::1]:33300 [200]: GET /
+[Tue Mar 31 07:24:28 2026] [::1]:33300 Closing
+[Tue Mar 31 07:24:28 2026] [::1]:33304 Accepted
+[Tue Mar 31 07:24:28 2026] [::1]:33304 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:24:28 2026] [::1]:33304 Closing
+[Tue Mar 31 07:24:28 2026] [::1]:33308 Accepted
+[Tue Mar 31 07:24:28 2026] [::1]:33308 [200]: GET /?
+[Tue Mar 31 07:24:28 2026] [::1]:33308 Closing
+[Tue Mar 31 07:24:28 2026] [::1]:33310 Accepted
+[Tue Mar 31 07:24:28 2026] [::1]:33310 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:24:28 2026] [::1]:33310 Closing
+[Tue Mar 31 07:24:43 2026] [::1]:50284 Accepted
+[Tue Mar 31 07:24:43 2026] [::1]:50284 [200]: GET /
+[Tue Mar 31 07:24:43 2026] [::1]:50284 Closing
+[Tue Mar 31 07:24:43 2026] [::1]:50298 Accepted
+[Tue Mar 31 07:24:43 2026] [::1]:50298 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:24:43 2026] [::1]:50298 Closing
+[Tue Mar 31 07:25:04 2026] [::1]:47532 Accepted
+[Tue Mar 31 07:25:04 2026] [::1]:47532 [200]: GET /
+[Tue Mar 31 07:25:04 2026] [::1]:47532 Closing
+[Tue Mar 31 07:25:04 2026] [::1]:47542 Accepted
+[Tue Mar 31 07:25:04 2026] [::1]:47542 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:25:04 2026] [::1]:47542 Closing
+[Tue Mar 31 07:25:05 2026] [::1]:47558 Accepted
+[Tue Mar 31 07:25:05 2026] [::1]:47558 [200]: GET /?
+[Tue Mar 31 07:25:05 2026] [::1]:47558 Closing
+[Tue Mar 31 07:25:05 2026] [::1]:47564 Accepted
+[Tue Mar 31 07:25:05 2026] [::1]:47564 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:25:05 2026] [::1]:47564 Closing
+[Tue Mar 31 07:25:30 2026] [::1]:33398 Accepted
+[Tue Mar 31 07:25:30 2026] [::1]:33398 [200]: GET /
+[Tue Mar 31 07:25:30 2026] [::1]:33398 Closing
+[Tue Mar 31 07:25:30 2026] [::1]:33410 Accepted
+[Tue Mar 31 07:25:30 2026] [::1]:33410 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:25:30 2026] [::1]:33410 Closing
+[Tue Mar 31 07:25:30 2026] [::1]:33412 Accepted
+[Tue Mar 31 07:25:30 2026] [::1]:33412 [200]: GET /api/auth.php?action=check
+[Tue Mar 31 07:25:30 2026] [::1]:33412 Closing
+[Tue Mar 31 07:25:31 2026] [::1]:33426 Accepted
+[Tue Mar 31 07:25:31 2026] [::1]:33426 [200]: POST /api/auth.php?action=login
+[Tue Mar 31 07:25:31 2026] [::1]:33426 Closing
+[Tue Mar 31 07:25:31 2026] [::1]:33432 Accepted
+[Tue Mar 31 07:25:31 2026] [::1]:33432 [200]: GET /api/documents.php?action=list
+[Tue Mar 31 07:25:31 2026] [::1]:33432 Closing
+[Tue Mar 31 07:28:41 2026] [::1]:51292 Accepted
+[Tue Mar 31 07:28:41 2026] [::1]:51292 [200]: GET /
+[Tue Mar 31 07:28:41 2026] [::1]:51292 Closing
+[Tue Mar 31 07:28:41 2026] [::1]:51306 Accepted
+[Tue Mar 31 07:28:41 2026] [::1]:51306 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:28:41 2026] [::1]:51306 Closing
+[Tue Mar 31 07:28:41 2026] [::1]:51316 Accepted
+[Tue Mar 31 07:28:41 2026] [::1]:51316 [200]: GET /api/auth.php?action=check
+[Tue Mar 31 07:28:41 2026] [::1]:51316 Closing
+[Tue Mar 31 07:28:42 2026] [::1]:42436 Accepted
+[Tue Mar 31 07:28:42 2026] [::1]:42436 [200]: POST /api/auth.php?action=login
+[Tue Mar 31 07:28:42 2026] [::1]:42436 Closing
+[Tue Mar 31 07:28:42 2026] [::1]:42440 Accepted
+[Tue Mar 31 07:28:42 2026] [::1]:42440 [200]: GET /api/users.php?action=list
+[Tue Mar 31 07:28:42 2026] [::1]:42440 Closing
