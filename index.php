@@ -118,6 +118,7 @@
                     <a class="nav-item" data-view="messages">Сообщения</a>
                     <a class="nav-item admin-only hidden" data-view="users">Клиенты</a>
                     <a class="nav-item admin-only hidden" data-view="logs">Логи</a>
+                    <a class="nav-item" data-view="about">О программе</a>
                     <a class="nav-item" id="logout-btn">Выход</a>
                 </nav>
             </div>

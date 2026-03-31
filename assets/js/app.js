@@ -124,6 +124,9 @@ const App = {
             case 'logs':
                 await this.renderLogs(container);
                 break;
+            case 'about':
+                this.renderAbout(container);
+                break;
         }
     },
 
@@ -145,6 +148,21 @@ const App = {
                     <h3 style="margin-bottom:10px">Сообщения</h3>
                     <p style="font-size:32px; color:var(--primary)">✉️</p>
                 </div>
+            </div>
+        `;
+    },
+
+    renderAbout(container) {
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">О программе</h1>
+            </div>
+            <div class="card">
+                <h2 style="margin-bottom:15px; color:var(--primary)">Enterprise Portal v1.0</h2>
+                <p style="margin-bottom:10px">Система управления личным кабинетом клиента.</p>
+                <hr style="margin-bottom:15px; border:0; border-top:1px solid var(--border)">
+                <p style="font-weight:600">Разработана WES.BY</p>
+                <p>Служба поддержки: <a href="tel:+375333533971" style="color:var(--primary); text-decoration:none">+375 33 353 39 71</a></p>
             </div>
         `;
     },

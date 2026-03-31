@@ -65,3 +65,15 @@
 [Tue Mar 31 07:28:42 2026] [::1]:42440 Accepted
 [Tue Mar 31 07:28:42 2026] [::1]:42440 [200]: GET /api/users.php?action=list
 [Tue Mar 31 07:28:42 2026] [::1]:42440 Closing
+[Tue Mar 31 07:36:02 2026] [::1]:57174 Accepted
+[Tue Mar 31 07:36:02 2026] [::1]:57174 [200]: GET /
+[Tue Mar 31 07:36:02 2026] [::1]:57174 Closing
+[Tue Mar 31 07:36:02 2026] [::1]:57184 Accepted
+[Tue Mar 31 07:36:02 2026] [::1]:57184 [200]: GET /assets/js/app.js
+[Tue Mar 31 07:36:02 2026] [::1]:57184 Closing
+[Tue Mar 31 07:36:02 2026] [::1]:57186 Accepted
+[Tue Mar 31 07:36:02 2026] [::1]:57186 [200]: GET /api/auth.php?action=check
+[Tue Mar 31 07:36:02 2026] [::1]:57186 Closing
+[Tue Mar 31 07:36:03 2026] [::1]:57192 Accepted
+[Tue Mar 31 07:36:03 2026] [::1]:57192 [200]: POST /api/auth.php?action=login
+[Tue Mar 31 07:36:03 2026] [::1]:57192 Closing
