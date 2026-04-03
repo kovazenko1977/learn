@@ -1,0 +1,13 @@
+{
+    "name": "jules/excel-sections-manager",
+    "description": "Manage site sections via Excel",
+    "authors": [
+        {
+            "name": "Jules",
+            "email": "jules@example.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^5.5"
+    }
+}
