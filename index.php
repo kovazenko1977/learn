@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#003366">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://alco.by/wp-content/uploads/2021/04/cropped-logo-192x192.png">
@@ -102,7 +102,7 @@
         @media (max-width: 768px) {
             :root { --header-height: 60px; }
             header .container { padding: 0 15px; }
-            .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 8px 0; justify-content: space-around; gap: 0; padding-bottom: calc(8px + env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+            .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--border); padding: 8px 0; justify-content: space-around; gap: 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 20px rgba(0,0,0,0.05); z-index: 1000; }
             .nav-item { flex-direction: column; align-items: center; font-size: 10px; flex: 1; padding: 5px 0; }
             .nav-item.active { color: var(--primary); background: rgba(0, 51, 102, 0.05); border-radius: 8px; }
             main { padding: 20px 0 100px 0; }
@@ -153,6 +153,7 @@
                     <a class="nav-item" data-view="messages">Сообщения</a>
                     <a class="nav-item admin-only hidden" data-view="users">Клиенты</a>
                     <a class="nav-item admin-only hidden" data-view="logs">Логи</a>
+                    <a class="nav-item admin-only hidden" data-view="maintenance">Сервис</a>
                     <a class="nav-item" data-view="about">О программе</a>
                     <a class="nav-item" id="logout-btn">Выход</a>
                 </nav>

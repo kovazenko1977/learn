@@ -53,7 +53,7 @@ switch ($action) {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="logs_' . date('Y-m-d') . '.csv"');
         $output = fopen('php://output', 'w');
-        fputcsv($output, ['ID', 'Type', 'User ID', 'Object', 'Date', 'IP']);
+        fputcsv($output, ['ID', 'Type', 'User ID', 'Object', 'Date', 'IP', 'Device']);
         foreach ($logs as $log) {
             fputcsv($output, [
                 $log['id'],
@@ -61,11 +61,19 @@ switch ($action) {
                 $log['user_id'],
                 $log['object'],
                 $log['date'],
-                $log['ip']
+                $log['ip'],
+                $log['device'] ?? '-'
             ]);
         }
         fclose($output);
         exit;
+
+    case 'clear_all':
+        Auth::requireRole(['superadmin']);
+        Storage::write('logs', []);
+        Security::log('clear_logs', $_SESSION['user_id'], 'system');
+        echo json_encode(['success' => true]);
+        break;
 
     default:
         http_response_code(404);

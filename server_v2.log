@@ -152,3 +152,38 @@
 [Sat Apr  4 14:07:48 2026] [::1]:58488 Accepted
 [Sat Apr  4 14:07:48 2026] [::1]:58488 [200]: POST /api/external_sync.php?action=sync_users
 [Sat Apr  4 14:07:48 2026] [::1]:58488 Closing
+[Sat Apr  4 15:19:39 2026] [::1]:50616 Accepted
+[Sat Apr  4 15:19:39 2026] [::1]:50616 [200]: GET /
+[Sat Apr  4 15:19:39 2026] [::1]:50616 Closing
+[Sat Apr  4 15:19:40 2026] [::1]:50622 Accepted
+[Sat Apr  4 15:19:40 2026] [::1]:50622 [200]: GET /assets/js/app.js
+[Sat Apr  4 15:19:40 2026] [::1]:50622 Closing
+[Sat Apr  4 15:19:40 2026] [::1]:50624 Accepted
+[Sat Apr  4 15:19:40 2026] [::1]:50624 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 15:19:40 2026] [::1]:50624 Closing
+[Sat Apr  4 15:19:40 2026] [::1]:50626 Accepted
+[Sat Apr  4 15:19:40 2026] [::1]:50626 [200]: GET /sw.js
+[Sat Apr  4 15:19:40 2026] [::1]:50626 Closing
+[Sat Apr  4 15:19:40 2026] [::1]:50636 Accepted
+[Sat Apr  4 15:19:40 2026] [::1]:50652 Accepted
+[Sat Apr  4 15:19:40 2026] [::1]:50664 Accepted
+[Sat Apr  4 15:19:40 2026] [::1]:50636 [200]: GET /
+[Sat Apr  4 15:19:40 2026] [::1]:50636 Closing
+[Sat Apr  4 15:19:40 2026] [::1]:50652 [200]: GET /index.php
+[Sat Apr  4 15:19:40 2026] [::1]:50652 Closing
+[Sat Apr  4 15:19:40 2026] [::1]:50664 [200]: GET /assets/js/app.js
+[Sat Apr  4 15:19:40 2026] [::1]:50664 Closing
+[Sat Apr  4 15:19:44 2026] [::1]:50672 Accepted
+[Sat Apr  4 15:19:44 2026] [::1]:50672 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 15:19:44 2026] [::1]:50672 Closing
+[Sat Apr  4 15:19:44 2026] [::1]:50676 Accepted
+[Sat Apr  4 15:19:44 2026] [::1]:50676 [200]: GET /api/users.php?action=list
+[Sat Apr  4 15:19:44 2026] [::1]:50676 Closing
+[Sat Apr  4 15:19:44 2026] [::1]:50692 Accepted
+[Sat Apr  4 15:19:44 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 16
+[Sat Apr  4 15:19:44 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 18
+[Sat Apr  4 15:19:44 2026] [::1]:50692 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 15:19:44 2026] [::1]:50692 Closing
+[Sat Apr  4 15:19:44 2026] [::1]:50702 Accepted
+[Sat Apr  4 15:19:44 2026] [::1]:50702 [200]: GET /api/logs.php?action=list
+[Sat Apr  4 15:19:44 2026] [::1]:50702 Closing

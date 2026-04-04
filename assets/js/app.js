@@ -174,9 +174,12 @@ const App = {
             case 'logs':
                 await this.renderLogs(container);
                 break;
-                case 'about':
-                    this.renderAbout(container);
-                    break;
+            case 'maintenance':
+                await this.renderMaintenance(container);
+                break;
+            case 'about':
+                this.renderAbout(container);
+                break;
             }
             container.style.opacity = '1';
             container.style.transform = 'translateY(0)';
@@ -419,9 +422,10 @@ const App = {
         container.innerHTML = `
             <div class="view-header">
                 <h1 class="view-title">Журнал аудита</h1>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap">
                     <input type="text" placeholder="Поиск в логах..." id="log-search" style="padding:6px 12px; width:200px;">
                     <a href="api/logs.php?action=export" class="btn btn-outline btn-sm">Экспорт CSV</a>
+                    ${this.user.role === 'superadmin' ? `<button class="btn btn-outline btn-sm" style="color:red" onclick="App.clearLogs()">Очистить все</button>` : ''}
                 </div>
             </div>
             <div class="card">
@@ -431,6 +435,7 @@ const App = {
                             <th>Событие</th>
                             <th>Объект</th>
                             <th>Дата</th>
+                            <th>Устройство</th>
                             <th>IP</th>
                         </tr>
                     </thead>
@@ -440,6 +445,7 @@ const App = {
                                 <td data-label="Событие">${this.escapeHTML(log.type)}</td>
                                 <td data-label="Объект">${this.escapeHTML(log.object)}</td>
                                 <td data-label="Дата">${this.escapeHTML(log.date)}</td>
+                                <td data-label="Устройство">${this.escapeHTML(log.device || '-')}</td>
                                 <td data-label="IP">${this.escapeHTML(log.ip)}</td>
                             </tr>
                         `).reverse().slice(0, 100).join('')}
@@ -456,6 +462,54 @@ const App = {
         rows.forEach(row => {
             row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
         });
+    },
+
+    async renderMaintenance(container) {
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">Оптимизация и Сервис</h1>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                <div class="card">
+                    <h3>Очистка логов</h3>
+                    <p style="color:var(--text-muted); font-size:13px; margin:10px 0;">Удаление всех записей из журнала аудита.</p>
+                    <button class="btn btn-outline" style="color:red; width:100%" onclick="App.clearLogs()">Очистить все логи</button>
+                </div>
+                <div class="card">
+                    <h3>Осистка временных файлов</h3>
+                    <p style="color:var(--text-muted); font-size:13px; margin:10px 0;">Удаление бесхозных файлов в папке uploads (не связанных с документами или сообщениями).</p>
+                    <button class="btn btn-primary" style="width:100%" onclick="App.cleanupOrphans()">Запустить очистку</button>
+                </div>
+                <div class="card">
+                    <h3>Сброс лимитов IP</h3>
+                    <p style="color:var(--text-muted); font-size:13px; margin:10px 0;">Разблокировка всех IP-адресов, попавших в rate-limit.</p>
+                    <button class="btn btn-outline" style="width:100%" onclick="App.clearRateLimits()">Сбросить лимиты</button>
+                </div>
+                <div class="card">
+                    <h3>Режим техобслуживания</h3>
+                    <p style="color:var(--text-muted); font-size:13px; margin:10px 0;">Запрет входа для клиентов на время работ.</p>
+                    <button class="btn btn-outline" style="width:100%" onclick="App.toggleMaintenance()">Переключить режим</button>
+                </div>
+            </div>
+        `;
+    },
+
+    async cleanupOrphans() {
+        const res = await this.apiFetch('api/settings.php?action=maintenance&sub=cleanup_orphans');
+        const data = await res.json();
+        alert(`Очистка завершена. Удалено файлов: ${data.deleted}`);
+        await this.fetchStats();
+    },
+
+    async clearRateLimits() {
+        await this.apiFetch('api/settings.php?action=maintenance&sub=clear_rate_limits');
+        alert('Лимиты сброшены');
+    },
+
+    async toggleMaintenance() {
+        const res = await this.apiFetch('api/settings.php?action=toggle_maintenance');
+        const data = await res.json();
+        alert(`Режим техобслуживания: ${data.maintenance ? 'ВКЛ' : 'ВЫКЛ'}`);
     },
 
     renderAbout(container) {
@@ -698,6 +752,13 @@ const App = {
         const action = isArchived ? 'restore' : 'archive';
         await this.apiFetch(`api/documents.php?action=${action}&id=${id}`);
         this.setView('documents');
+    },
+
+    async clearLogs() {
+        if (confirm('Очистить все логи безвозвратно?')) {
+            await this.apiFetch('api/logs.php?action=clear_all');
+            this.setView('logs');
+        }
     },
 
     async deleteUser(id) {

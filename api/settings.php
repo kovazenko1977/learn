@@ -32,6 +32,40 @@ switch ($action) {
         echo json_encode(['success' => true, 'maintenance' => $settings['maintenance_mode']]);
         break;
 
+    case 'maintenance':
+        Auth::requireRole(['superadmin']);
+        $sub = $_GET['sub'] ?? '';
+
+        if ($sub === 'clear_rate_limits') {
+            Storage::write('rate_limits', []);
+            Security::log('maintenance_clear_rate_limits', $_SESSION['user_id'], 'system');
+            echo json_encode(['success' => true]);
+        } elseif ($sub === 'cleanup_orphans') {
+            $docs = Storage::read('documents');
+            $msgs = Storage::read('messages');
+            $known_files = [];
+            foreach ($docs as $d) $known_files[] = $d['id'] . '.enc';
+            foreach ($msgs as $m) {
+                if (!empty($m['attachments'])) {
+                    foreach ($m['attachments'] as $a) $known_files[] = $a['id'] . '.enc';
+                }
+            }
+
+            $files = glob(__DIR__ . '/../uploads/*.enc');
+            $deleted = 0;
+            foreach ($files as $f) {
+                if (!in_array(basename($f), $known_files)) {
+                    unlink($f);
+                    $deleted++;
+                }
+            }
+            Security::log('maintenance_cleanup_orphans', $_SESSION['user_id'], 'system', ['deleted' => $deleted]);
+            echo json_encode(['success' => true, 'deleted' => $deleted]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Sub-action not found']);
+        }
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Action not found']);

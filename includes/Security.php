@@ -67,6 +67,13 @@ class Security {
 
     public static function log($type, $user_id, $object, $data = []) {
         require_once __DIR__ . '/Storage.php';
+
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
+        $device = 'Desktop';
+        if (preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i', $ua)) {
+            $device = 'Mobile';
+        }
+
         $log_entry = [
             'id' => uniqid(),
             'type' => $type,
@@ -74,6 +81,8 @@ class Security {
             'object' => $object,
             'date' => date('Y-m-d H:i:s'),
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'device' => $device,
+            'user_agent' => $ua,
             'data' => $data
         ];
         Storage::insert('logs', $log_entry);
