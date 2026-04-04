@@ -59,7 +59,7 @@ const App = {
     async login() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const code = document.getElementById('2fa-code').value;
+        const code = document.getElementById('two-fa-code').value;
 
         const res = await this.apiFetch('api/auth.php?action=login', {
             method: 'POST',
@@ -71,7 +71,7 @@ const App = {
             this.user = data.user;
             this.showApp();
         } else if (data['2fa_required']) {
-            document.getElementById('2fa-group').classList.remove('hidden');
+            document.getElementById('two-fa-group').classList.remove('hidden');
             alert('Введите код 2FA (тестовый: 000000)');
         } else {
             alert(data.error || 'Ошибка входа');
@@ -87,11 +87,15 @@ const App = {
     showLogin() {
         document.getElementById('auth-view').classList.remove('hidden');
         document.getElementById('app-view').classList.add('hidden');
+        document.getElementById('app-view').style.opacity = '0';
     },
 
     async showApp() {
         document.getElementById('auth-view').classList.add('hidden');
         document.getElementById('app-view').classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('app-view').style.opacity = '1';
+        }, 50);
 
         const isAdmin = ['superadmin', 'admin_clients', 'admin_content', 'admin_communications'].includes(this.user.role);
         document.querySelectorAll('.admin-only').forEach(el => {
@@ -125,9 +129,13 @@ const App = {
         });
 
         const container = document.getElementById('view-container');
-        container.innerHTML = '<div class="card">Загрузка...</div>';
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(10px)';
+        container.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
 
-        switch (view) {
+        setTimeout(async () => {
+            container.innerHTML = '<div class="card animate-fade">Загрузка...</div>';
+            switch (view) {
             case 'dashboard':
                 await this.renderDashboard(container);
                 break;
@@ -143,10 +151,13 @@ const App = {
             case 'logs':
                 await this.renderLogs(container);
                 break;
-            case 'about':
-                this.renderAbout(container);
-                break;
-        }
+                case 'about':
+                    this.renderAbout(container);
+                    break;
+            }
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        }, 150);
     },
 
     async renderDashboard(container) {
@@ -427,11 +438,15 @@ const App = {
             <h2 style="margin-bottom:20px">${title}</h2>
             ${content}
         `;
-        document.getElementById('modal-container').classList.remove('hidden');
+        const modal = document.getElementById('modal-container');
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('active'), 10);
     },
 
     closeModal() {
-        document.getElementById('modal-container').classList.add('hidden');
+        const modal = document.getElementById('modal-container');
+        modal.classList.remove('active');
+        setTimeout(() => modal.classList.add('hidden'), 300);
     },
 
     showUploadModal() {
@@ -623,7 +638,7 @@ const App = {
                     address: document.getElementById('user-address').value,
                     contact_person: document.getElementById('user-contact').value,
                     phone: document.getElementById('user-phone').value,
-                    2fa_secret: document.getElementById('user-2fa').checked ? 'DEMO_SECRET' : ''
+                    two_fa_secret: document.getElementById('user-2fa').checked ? 'DEMO_SECRET' : ''
                 })
             });
             await this.fetchClients();

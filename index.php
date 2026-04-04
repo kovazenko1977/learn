@@ -16,6 +16,7 @@
             --radius: 12px;
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --header-height: 70px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,15 +25,22 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         .hidden { display: none !important; }
 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-scale { animation: scaleIn 0.3s ease-out forwards; }
+
         /* Auth Layout */
         #auth-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #003366 0%, #001a33 100%); }
-        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: var(--radius); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); width: 100%; max-width: 420px; }
+        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: var(--radius); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); width: 100%; max-width: 420px; animation: scaleIn 0.5s ease-out; }
         .auth-card h1 { font-size: 26px; margin-bottom: 30px; text-align: center; color: var(--primary); font-weight: 800; }
 
         /* Dashboard Layout */
-        header { background: var(--card-bg); height: var(--header-height); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); height: var(--header-height); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         header .container { display: flex; align-items: center; justify-content: space-between; height: 100%; }
-        .logo { font-weight: 700; font-size: 20px; color: var(--primary); text-decoration: none; }
+        .logo { font-weight: 800; font-size: 22px; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
         .nav { display: flex; gap: 20px; }
         .nav-item { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 14px; transition: color 0.2s; cursor: pointer; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
@@ -42,7 +50,8 @@
         .view-title { font-size: 28px; font-weight: 700; }
 
         /* Cards and Lists */
-        .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid rgba(226, 232, 240, 0.6); padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: var(--transition); }
+        .card:hover { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); transform: translateY(-4px); }
         .data-table { width: 100%; border-collapse: collapse; }
         .data-table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase; }
         .data-table td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 14px; }
@@ -52,19 +61,21 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
-        input:focus { border-color: var(--primary); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1); }
 
-        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: transform 0.1s, opacity 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(0, 51, 102, 0.3); transform: translateY(-1px); }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .btn-outline:hover { background: var(--bg); }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
 
         /* Modals */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: var(--card-bg); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 500px; box-shadow: var(--shadow); position: relative; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: var(--radius); width: 100%; max-width: 500px; box-shadow: var(--shadow); position: relative; transform: scale(0.9); transition: var(--transition); }
+        .modal-overlay.active .modal-content { transform: scale(1); }
         .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 20px; color: var(--text-muted); }
 
         /* Badges */
@@ -111,9 +122,9 @@
                     <label>Пароль</label>
                     <input type="password" id="password" required placeholder="Введите пароль">
                 </div>
-                <div id="2fa-group" class="form-group hidden">
+                <div id="two-fa-group" class="form-group hidden">
                     <label>Код 2FA</label>
-                    <input type="text" id="2fa-code" placeholder="Введите код">
+                    <input type="text" id="two-fa-code" placeholder="Введите код">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px; height: 50px;">Войти</button>
             </form>
@@ -123,7 +134,7 @@
         </div>
     </div>
 
-    <div id="app-view" class="hidden">
+    <div id="app-view" class="hidden" style="opacity: 0; transition: opacity 0.5s ease-in-out;">
         <header>
             <div class="container">
                 <a href="#" class="logo" data-view="dashboard">Enterprise Portal</a>

@@ -79,5 +79,14 @@
         "date": "2026-04-04 07:36:32",
         "ip": "::1",
         "data": []
+    },
+    {
+        "id": "69d0ccdbabe6c",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-04 08:33:31",
+        "ip": "::1",
+        "data": []
     }
 ]

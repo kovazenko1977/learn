@@ -35,7 +35,7 @@ class Auth {
 
         // 2FA check (Mocking TOTP-like behavior)
         // In a production environment, use a library like PHPGangsta_GoogleAuthenticator.
-        if (!empty($user['2fa_secret']) || $user['role'] === 'superadmin') {
+        if (!empty($user['two_fa_secret']) || $user['role'] === 'superadmin') {
             if (!$code) {
                 return ['success' => false, '2fa_required' => true];
             }
