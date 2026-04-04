@@ -53,6 +53,21 @@ switch ($action) {
         }
         break;
 
+    case 'mark_read':
+        $id = $_GET['id'] ?? '';
+        $doc = Storage::findOne('documents', ['id' => $id]);
+        if ($doc) {
+            $read_by = $doc['read_by'] ?? [];
+            if (!in_array($_SESSION['user_id'], $read_by)) {
+                $read_by[] = $_SESSION['user_id'];
+                Storage::update('documents', $id, ['read_by' => $read_by]);
+            }
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Document not found']);
+        }
+        break;
+
     case 'download':
         $id = $_GET['id'] ?? '';
         $doc = Storage::findOne('documents', ['id' => $id]);

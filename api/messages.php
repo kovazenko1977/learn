@@ -18,9 +18,14 @@ switch ($action) {
         } else {
             // Admins see all messages addressed to 'admin', all broadcasts, and all messages they sent
             $messages = array_filter($messages, function($msg) use ($user) {
-                $isRelevant = $msg['to'] === 'admin' || $msg['to'] === 'all' || $msg['from'] === $user['id'] || !isset($msg['to']) || $msg['to'] === 'superadmin';
-                $isFromClient = Storage::findOne('users', ['id' => $msg['from']])['role'] === 'client';
-                $isToClient = Storage::findOne('users', ['id' => $msg['to']])['role'] === 'client';
+                $isRelevant = ($msg['to'] ?? '') === 'admin' || ($msg['to'] ?? '') === 'all' || $msg['from'] === $user['id'] || ($msg['to'] ?? '') === 'superadmin';
+
+                $sender = Storage::findOne('users', ['id' => $msg['from']]);
+                $isFromClient = $sender && ($sender['role'] ?? '') === 'client';
+
+                $recipient = Storage::findOne('users', ['id' => ($msg['to'] ?? '')]);
+                $isToClient = $recipient && ($recipient['role'] ?? '') === 'client';
+
                 return $isRelevant || $isFromClient || $isToClient;
             });
         }
@@ -67,6 +72,21 @@ switch ($action) {
         $id = Storage::insert('messages', $message);
         Security::log('send_message', $_SESSION['user_id'], 'messages', ['id' => $id]);
         echo json_encode(['success' => true, 'id' => $id]);
+        break;
+
+    case 'mark_read':
+        $id = $_GET['id'] ?? '';
+        $msg = Storage::findOne('messages', ['id' => $id]);
+        if ($msg) {
+            $read_by = $msg['read_by'] ?? [];
+            if (!in_array($_SESSION['user_id'], $read_by)) {
+                $read_by[] = $_SESSION['user_id'];
+                Storage::update('messages', $id, ['read_by' => $read_by]);
+            }
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Message not found']);
+        }
         break;
 
     case 'download_attachment':

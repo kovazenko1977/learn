@@ -187,3 +187,180 @@
 [Sat Apr  4 15:19:44 2026] [::1]:50702 Accepted
 [Sat Apr  4 15:19:44 2026] [::1]:50702 [200]: GET /api/logs.php?action=list
 [Sat Apr  4 15:19:44 2026] [::1]:50702 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54042 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54042 [200]: GET /
+[Sat Apr  4 16:16:44 2026] [::1]:54042 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54054 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54054 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:16:44 2026] [::1]:54054 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54058 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54058 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 16:16:44 2026] [::1]:54058 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54060 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54060 [200]: GET /sw.js
+[Sat Apr  4 16:16:44 2026] [::1]:54060 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54068 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54080 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54088 Accepted
+[Sat Apr  4 16:16:44 2026] [::1]:54068 [200]: GET /
+[Sat Apr  4 16:16:44 2026] [::1]:54068 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54080 [200]: GET /index.php
+[Sat Apr  4 16:16:44 2026] [::1]:54080 Closing
+[Sat Apr  4 16:16:44 2026] [::1]:54088 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:16:44 2026] [::1]:54088 Closing
+[Sat Apr  4 16:16:48 2026] [::1]:35348 Accepted
+[Sat Apr  4 16:16:48 2026] [::1]:35348 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 16:16:48 2026] [::1]:35348 Closing
+[Sat Apr  4 16:16:48 2026] [::1]:35356 Accepted
+[Sat Apr  4 16:16:48 2026] [::1]:35356 [200]: GET /api/users.php?action=list
+[Sat Apr  4 16:16:48 2026] [::1]:35356 Closing
+[Sat Apr  4 16:16:48 2026] [::1]:35360 Accepted
+[Sat Apr  4 16:16:48 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 17
+[Sat Apr  4 16:16:48 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 19
+[Sat Apr  4 16:16:48 2026] [::1]:35360 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:16:48 2026] [::1]:35360 Closing
+[Sat Apr  4 16:16:48 2026] [::1]:35362 Accepted
+[Sat Apr  4 16:16:48 2026] [::1]:35362 [200]: GET /api/documents.php?action=list
+[Sat Apr  4 16:16:48 2026] [::1]:35362 Closing
+[Sat Apr  4 16:16:48 2026] [::1]:35368 Accepted
+[Sat Apr  4 16:16:48 2026] [::1]:35368 [200]: GET /api/documents.php?action=list
+[Sat Apr  4 16:16:48 2026] [::1]:35368 Closing
+[Sat Apr  4 16:16:48 2026] [::1]:35372 Accepted
+[Sat Apr  4 16:16:48 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 17
+[Sat Apr  4 16:16:48 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 19
+[Sat Apr  4 16:16:48 2026] [::1]:35372 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:16:48 2026] [::1]:35372 Closing
+[Sat Apr  4 16:16:50 2026] [::1]:35376 Accepted
+[Sat Apr  4 16:16:50 2026] [::1]:35376 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 16:16:50 2026] [::1]:35376 Closing
+[Sat Apr  4 16:16:50 2026] [::1]:35380 Accepted
+[Sat Apr  4 16:16:50 2026] [::1]:35380 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 16:16:50 2026] [::1]:35380 Closing
+[Sat Apr  4 16:16:50 2026] [::1]:35390 Accepted
+[Sat Apr  4 16:16:50 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 17
+[Sat Apr  4 16:16:50 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 19
+[Sat Apr  4 16:16:50 2026] [::1]:35390 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:16:50 2026] [::1]:35390 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60028 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60028 [200]: GET /
+[Sat Apr  4 16:19:30 2026] [::1]:60028 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60036 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60036 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:19:30 2026] [::1]:60036 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60046 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60046 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 16:19:30 2026] [::1]:60046 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60058 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60058 [200]: GET /sw.js
+[Sat Apr  4 16:19:30 2026] [::1]:60058 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60072 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60074 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60090 Accepted
+[Sat Apr  4 16:19:30 2026] [::1]:60072 [200]: GET /
+[Sat Apr  4 16:19:30 2026] [::1]:60072 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60074 [200]: GET /index.php
+[Sat Apr  4 16:19:30 2026] [::1]:60074 Closing
+[Sat Apr  4 16:19:30 2026] [::1]:60090 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:19:30 2026] [::1]:60090 Closing
+[Sat Apr  4 16:19:33 2026] [::1]:60092 Accepted
+[Sat Apr  4 16:19:33 2026] [::1]:60092 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 16:19:33 2026] [::1]:60092 Closing
+[Sat Apr  4 16:19:33 2026] [::1]:60096 Accepted
+[Sat Apr  4 16:19:33 2026] [::1]:60096 [403]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:19:33 2026] [::1]:60096 Closing
+[Sat Apr  4 16:19:34 2026] [::1]:60102 Accepted
+[Sat Apr  4 16:19:34 2026] [::1]:60102 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 16:19:34 2026] [::1]:60102 Closing
+[Sat Apr  4 16:19:34 2026] [::1]:60106 Accepted
+[Sat Apr  4 16:19:34 2026] [::1]:60106 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 16:19:34 2026] [::1]:60106 Closing
+[Sat Apr  4 16:19:34 2026] [::1]:60110 Accepted
+[Sat Apr  4 16:19:34 2026] [::1]:60110 [403]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:19:34 2026] [::1]:60110 Closing
+[Sat Apr  4 16:19:34 2026] [::1]:60118 Accepted
+[Sat Apr  4 16:19:34 2026] [::1]:60118 [200]: POST /api/messages.php?action=send
+[Sat Apr  4 16:19:34 2026] [::1]:60118 Closing
+[Sat Apr  4 16:19:34 2026] [::1]:60128 Accepted
+[Sat Apr  4 16:19:34 2026] [::1]:60128 [403]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:19:34 2026] [::1]:60128 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33938 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33938 [200]: GET /
+[Sat Apr  4 16:19:35 2026] [::1]:33938 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33942 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33942 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:19:35 2026] [::1]:33942 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33958 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33958 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 16:19:35 2026] [::1]:33958 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33964 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33964 [200]: GET /sw.js
+[Sat Apr  4 16:19:35 2026] [::1]:33964 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33974 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33982 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33996 Accepted
+[Sat Apr  4 16:19:35 2026] [::1]:33974 [200]: GET /
+[Sat Apr  4 16:19:35 2026] [::1]:33974 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33982 [200]: GET /index.php
+[Sat Apr  4 16:19:35 2026] [::1]:33982 Closing
+[Sat Apr  4 16:19:35 2026] [::1]:33996 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:19:35 2026] [::1]:33996 Closing
+[Sat Apr  4 16:19:36 2026] [::1]:34002 Accepted
+[Sat Apr  4 16:19:36 2026] [::1]:34002 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 16:19:36 2026] [::1]:34002 Closing
+[Sat Apr  4 16:19:36 2026] [::1]:34008 Accepted
+[Sat Apr  4 16:19:36 2026] [::1]:34008 [200]: GET /api/users.php?action=list
+[Sat Apr  4 16:19:36 2026] [::1]:34008 Closing
+[Sat Apr  4 16:19:36 2026] [::1]:34012 Accepted
+[Sat Apr  4 16:19:36 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 17
+[Sat Apr  4 16:19:36 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 19
+[Sat Apr  4 16:19:36 2026] [::1]:34012 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:19:36 2026] [::1]:34012 Closing
+[Sat Apr  4 16:19:37 2026] [::1]:34026 Accepted
+[Sat Apr  4 16:19:37 2026] PHP Warning:  Trying to access array offset on null in /app/api/messages.php on line 23
+[Sat Apr  4 16:19:37 2026] [::1]:34026 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 16:19:37 2026] [::1]:34026 Closing
+[Sat Apr  4 16:19:37 2026] [::1]:34032 Accepted
+[Sat Apr  4 16:19:37 2026] PHP Warning:  Trying to access array offset on null in /app/api/messages.php on line 23
+[Sat Apr  4 16:19:37 2026] [::1]:34032 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 16:19:37 2026] [::1]:34032 Closing
+[Sat Apr  4 16:19:37 2026] [::1]:34046 Accepted
+[Sat Apr  4 16:19:37 2026] [::1]:34046 [200]: GET /api/messages.php?action=mark_read&id=69d13a16adcf9
+[Sat Apr  4 16:19:37 2026] [::1]:34046 Closing
+[Sat Apr  4 16:19:37 2026] [::1]:34056 Accepted
+[Sat Apr  4 16:19:37 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 17
+[Sat Apr  4 16:19:37 2026] PHP Warning:  Undefined array key "role" in /app/api/stats.php on line 19
+[Sat Apr  4 16:19:37 2026] [::1]:34056 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:19:37 2026] [::1]:34056 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:32994 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:32994 [200]: GET /
+[Sat Apr  4 16:23:38 2026] [::1]:32994 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:33002 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:33002 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:23:38 2026] [::1]:33002 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:33006 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:33006 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 16:23:38 2026] [::1]:33006 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:33008 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:33008 [200]: GET /sw.js
+[Sat Apr  4 16:23:38 2026] [::1]:33008 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:33018 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:33028 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:33018 [200]: GET /
+[Sat Apr  4 16:23:38 2026] [::1]:33018 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:33040 Accepted
+[Sat Apr  4 16:23:38 2026] [::1]:33028 [200]: GET /index.php
+[Sat Apr  4 16:23:38 2026] [::1]:33028 Closing
+[Sat Apr  4 16:23:38 2026] [::1]:33040 [200]: GET /assets/js/app.js
+[Sat Apr  4 16:23:38 2026] [::1]:33040 Closing
+[Sat Apr  4 16:23:42 2026] [::1]:33046 Accepted
+[Sat Apr  4 16:23:42 2026] [::1]:33046 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 16:23:42 2026] [::1]:33046 Closing
+[Sat Apr  4 16:23:42 2026] [::1]:33052 Accepted
+[Sat Apr  4 16:23:42 2026] [::1]:33052 [200]: GET /api/users.php?action=list
+[Sat Apr  4 16:23:42 2026] [::1]:33052 Closing
+[Sat Apr  4 16:23:42 2026] [::1]:33062 Accepted
+[Sat Apr  4 16:23:42 2026] [::1]:33062 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 16:23:42 2026] [::1]:33062 Closing
+[Sat Apr  4 16:23:42 2026] [::1]:33078 Accepted
+[Sat Apr  4 16:23:42 2026] [::1]:33078 [200]: GET /api/logs.php?action=list
+[Sat Apr  4 16:23:42 2026] [::1]:33078 Closing

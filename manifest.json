@@ -1,6 +1,6 @@
 {
-  "name": "Enterprise Portal",
-  "short_name": "Portal",
+    "name": "Личный кабинет",
+    "short_name": "ЛК",
   "start_url": "/index.php",
   "display": "standalone",
   "background_color": "#003366",

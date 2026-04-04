@@ -1,0 +1,16 @@
+[
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Test Notification",
+        "body": "Hello from client",
+        "created_at": "2026-04-04 16:19:34",
+        "read_by": [
+            "69cb75ada24e9"
+        ],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d13a16adcf9"
+    }
+]

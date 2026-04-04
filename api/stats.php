@@ -12,15 +12,39 @@ switch ($action) {
         $docs = Storage::read('documents');
         $logs = Storage::read('logs');
         $messages = Storage::read('messages');
+        $user = Auth::getCurrentUser();
 
-        $clients_count = count(array_filter($users, fn($u) => $u['role'] === 'client'));
+        $clients_count = count(array_filter($users, fn($u) => isset($u['role']) && $u['role'] === 'client'));
         $admins_count = count($users) - $clients_count;
-        $active_clients = count(array_filter($users, fn($u) => $u['role'] === 'client' && $u['status'] === 'active'));
+        $active_clients = count(array_filter($users, fn($u) => isset($u['role']) && $u['role'] === 'client' && ($u['status'] ?? '') === 'active'));
 
         // Storage calculation
         $storage_bytes = 0;
         foreach (glob(__DIR__ . '/../uploads/*.enc') as $file) {
             $storage_bytes += filesize($file);
+        }
+
+        $unread_docs = 0;
+        $unread_messages = 0;
+
+        foreach ($docs as $d) {
+            if ($user['role'] === 'client') {
+                if (($d['is_public'] || $d['client_id'] === $user['id']) && !($d['archived'] ?? false)) {
+                    if (!in_array($user['id'], $d['read_by'] ?? [])) $unread_docs++;
+                }
+            }
+        }
+
+        foreach ($messages as $m) {
+            if ($user['role'] === 'client') {
+                if ($m['to'] === 'all' || $m['to'] === $user['id']) {
+                    if (!in_array($user['id'], $m['read_by'] ?? [])) $unread_messages++;
+                }
+            } else {
+                if ($m['to'] === 'admin' || $m['to'] === 'all' || $m['to'] === 'superadmin' || $m['to'] === $user['id']) {
+                    if (!in_array($user['id'], $m['read_by'] ?? [])) $unread_messages++;
+                }
+            }
         }
 
         echo json_encode([
@@ -32,7 +56,9 @@ switch ($action) {
                 'total_documents' => count($docs),
                 'total_messages' => count($messages),
                 'total_logs' => count($logs),
-                'storage_used' => round($storage_bytes / 1024 / 1024, 2) . ' MB'
+                'storage_used' => round($storage_bytes / 1024 / 1024, 2) . ' MB',
+                'unread_docs' => $unread_docs,
+                'unread_messages' => $unread_messages
             ]
         ]);
         break;

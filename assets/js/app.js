@@ -3,6 +3,7 @@ const App = {
     currentView: 'dashboard',
     clients: [],
     stats: null,
+    pollInterval: null,
 
     async init() {
         this.bindEvents();
@@ -102,6 +103,7 @@ const App = {
     },
 
     async logout() {
+        if (this.pollInterval) clearInterval(this.pollInterval);
         await this.apiFetch('api/auth.php?action=logout');
         this.user = null;
         this.showLogin();
@@ -127,10 +129,14 @@ const App = {
 
         if (isAdmin) {
             await this.fetchClients();
-            await this.fetchStats();
         }
+        await this.fetchStats();
 
         this.setView(this.currentView);
+
+        if (!this.pollInterval) {
+            this.pollInterval = setInterval(() => this.fetchStats(), 10000); // 10s polling
+        }
     },
 
     async fetchClients() {
@@ -143,6 +149,28 @@ const App = {
         const res = await this.apiFetch('api/stats.php?action=summary');
         const data = await res.json();
         this.stats = data.stats;
+        this.updateBadges();
+    },
+
+    updateBadges() {
+        this.setBadge('documents', this.stats.unread_docs);
+        this.setBadge('messages', this.stats.unread_messages);
+    },
+
+    setBadge(view, count) {
+        const el = document.querySelector(`.nav-item[data-view="${view}"]`);
+        if (!el) return;
+        let badge = el.querySelector('.badge-nav');
+        if (count > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'badge-nav animate-scale';
+                el.appendChild(badge);
+            }
+            badge.textContent = count > 99 ? '99+' : count;
+        } else if (badge) {
+            badge.remove();
+        }
     },
 
     async setView(view) {
@@ -164,9 +192,11 @@ const App = {
                 break;
             case 'documents':
                 await this.renderDocuments(container);
+                await this.markAllRead('documents');
                 break;
             case 'messages':
                 await this.renderMessages(container);
+                await this.markAllRead('messages');
                 break;
             case 'users':
                 await this.renderUsers(container);
@@ -184,6 +214,27 @@ const App = {
             container.style.opacity = '1';
             container.style.transform = 'translateY(0)';
         }, 150);
+    },
+
+    async markAllRead(type) {
+        if (type === 'documents') {
+            const res = await this.apiFetch('api/documents.php?action=list');
+            const data = await res.json();
+            for (const doc of data.documents) {
+                if (!doc.read_by || !doc.read_by.includes(this.user.id)) {
+                    await this.apiFetch(`api/documents.php?action=mark_read&id=${doc.id}`);
+                }
+            }
+        } else if (type === 'messages') {
+            const res = await this.apiFetch('api/messages.php?action=list');
+            const data = await res.json();
+            for (const msg of data.messages) {
+                if (!msg.read_by || !msg.read_by.includes(this.user.id)) {
+                    await this.apiFetch(`api/messages.php?action=mark_read&id=${msg.id}`);
+                }
+            }
+        }
+        await this.fetchStats();
     },
 
     async renderDashboard(container) {
@@ -229,10 +280,12 @@ const App = {
                 <div class="card" style="text-align:center; cursor:pointer" onclick="App.setView('documents')">
                     <h3 style="margin-bottom:10px">Документы</h3>
                     <p style="font-size:32px; color:var(--primary)">📄</p>
+                    ${this.stats.unread_docs > 0 ? `<span class="badge-nav" style="position:static; display:inline-block">${this.stats.unread_docs}</span>` : ''}
                 </div>
                 <div class="card" style="text-align:center; cursor:pointer" onclick="App.setView('messages')">
                     <h3 style="margin-bottom:10px">Сообщения</h3>
                     <p style="font-size:32px; color:var(--primary)">✉️</p>
+                    ${this.stats.unread_messages > 0 ? `<span class="badge-nav" style="position:static; display:inline-block">${this.stats.unread_messages}</span>` : ''}
                 </div>
             </div>
         `;
@@ -264,11 +317,14 @@ const App = {
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.documents.map(doc => `
-                            <tr style="${doc.archived ? 'opacity:0.6; font-style:italic' : ''}">
+                        ${data.documents.map(doc => {
+                            const isUnread = !doc.read_by || !doc.read_by.includes(this.user.id);
+                            return `
+                            <tr style="${doc.archived ? 'opacity:0.6; font-style:italic' : ''}; ${isUnread ? 'font-weight:bold; background:rgba(0,51,102,0.02)' : ''}">
                                 <td data-label="Название">
                                     ${this.escapeHTML(doc.name)}
                                     ${doc.archived ? ' <small>(архив)</small>' : ''}
+                                    ${isUnread ? ' <span class="badge-success badge" style="font-size:9px">NEW</span>' : ''}
                                 </td>
                                 <td data-label="Тип">${this.escapeHTML(doc.meta.type) || '-'}</td>
                                 <td data-label="Дата">${this.escapeHTML(doc.uploaded_at)}</td>
@@ -283,7 +339,7 @@ const App = {
                                     </div>
                                 </td>
                             </tr>
-                        `).join('')}
+                        `}).join('')}
                         ${data.documents.length === 0 ? '<tr><td colspan="4" style="text-align:center">Нет доступных документов</td></tr>' : ''}
                     </tbody>
                 </table>
@@ -305,10 +361,13 @@ const App = {
             </div>
             <div class="chat-layout">
                 <div class="chat-history" id="chat-history">
-                    ${data.messages.map(msg => `
-                        <div class="chat-bubble ${msg.from === this.user.id ? 'mine' : 'theirs'}">
-                            <div style="font-weight:600; font-size:11px; margin-bottom:4px;">
-                                ${this.escapeHTML(msg.from_name || msg.from)}
+                    ${data.messages.map(msg => {
+                        const isUnread = !msg.read_by || !msg.read_by.includes(this.user.id);
+                        return `
+                        <div class="chat-bubble ${msg.from === this.user.id ? 'mine' : 'theirs'} ${isUnread ? 'animate-fade' : ''}" style="${isUnread ? 'border-left: 4px solid var(--primary)' : ''}">
+                            <div style="font-weight:600; font-size:11px; margin-bottom:4px; display:flex; justify-content:space-between">
+                                <span>${this.escapeHTML(msg.from_name || msg.from)}</span>
+                                ${isUnread && msg.from !== this.user.id ? '<span style="color:var(--primary); font-size:8px">● НОВОЕ</span>' : ''}
                             </div>
                             <div style="margin-bottom:5px;"><strong>${this.escapeHTML(msg.subject)}</strong></div>
                             <div style="white-space: pre-wrap;">${this.escapeHTML(msg.body)}</div>
@@ -324,7 +383,7 @@ const App = {
                                 <span style="cursor:pointer" onclick="App.showReplyModal('${msg.id}', '${this.escapeHTML(msg.subject)}', '${msg.from}')">Ответить</span>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                     ${data.messages.length === 0 ? '<p style="text-align:center; color:var(--text-muted); margin:auto;">Сообщений пока нет.</p>' : ''}
                 </div>
                 <div class="chat-input-area">
@@ -518,7 +577,7 @@ const App = {
                 <h1 class="view-title">О программе</h1>
             </div>
             <div class="card">
-                <h2 style="margin-bottom:15px; color:var(--primary)">Enterprise Portal v2.0</h2>
+                <h2 style="margin-bottom:15px; color:var(--primary)">Личный кабинет v2.2</h2>
                 <p style="margin-bottom:10px">Система управления личным кабинетом клиента.</p>
                 <hr style="margin-bottom:15px; border:0; border-top:1px solid var(--border)">
                 <p style="font-weight:600; margin-bottom:10px;">Разработана WES.BY</p>

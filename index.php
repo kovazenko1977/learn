@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#003366">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://alco.by/wp-content/uploads/2021/04/cropped-logo-192x192.png">
-    <title>Личный кабинет клиента</title>
+    <title>Личный кабинет</title>
     <style>
         :root {
             --primary: #003366;
@@ -45,8 +45,9 @@
         header .container { display: flex; align-items: center; justify-content: space-between; height: 100%; }
         .logo { font-weight: 800; font-size: 22px; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
         .nav { display: flex; gap: 20px; }
-        .nav-item { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 14px; transition: color 0.2s; cursor: pointer; }
+        .nav-item { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 14px; transition: color 0.2s; cursor: pointer; position: relative; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
+        .badge-nav { position: absolute; top: -5px; right: -12px; background: #e74c3c; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; min-width: 14px; text-align: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
         main { padding: 40px 0; }
         .view-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
@@ -146,7 +147,7 @@
     <div id="app-view" class="hidden" style="opacity: 0; transition: opacity 0.5s ease-in-out;">
         <header>
             <div class="container">
-                <a href="#" class="logo" data-view="dashboard">Enterprise Portal</a>
+                <a href="#" class="logo" data-view="dashboard">Личный кабинет</a>
                 <nav class="nav">
                     <a class="nav-item active" data-view="dashboard">Дашборд</a>
                     <a class="nav-item" data-view="documents">Документы</a>
