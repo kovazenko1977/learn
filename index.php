@@ -135,10 +135,11 @@
             .btn { width: 100%; }
             .btn-sm { width: auto; }
 
-            .chat-layout { height: calc(100vh - 220px); grid-template-columns: 1fr !important; }
+            .chat-layout { height: calc(100dvh - 200px); grid-template-columns: 1fr !important; margin-bottom: 20px; }
             .chat-bubble { max-width: 90%; }
             .chat-list.mobile-hidden { display: none; }
             .chat-window.mobile-hidden { display: none; }
+            .chat-input-area { padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
         }
     </style>
 </head>
