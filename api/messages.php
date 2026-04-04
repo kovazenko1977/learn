@@ -120,6 +120,34 @@ switch ($action) {
         }
         break;
 
+    case 'mark_all_read':
+        $user = Auth::getCurrentUser();
+        $client_id = $_GET['client_id'] ?? '';
+        $messages = Storage::read('messages');
+        $updated = false;
+
+        foreach ($messages as &$msg) {
+            $isRelevant = false;
+            if ($user['role'] === 'client') {
+                // Client marking their own messages (from admin or all) as read
+                $isRelevant = $msg['to'] === $user['id'] || $msg['to'] === 'all';
+            } else {
+                // Admin marking messages from a specific client as read
+                $isRelevant = $msg['from'] === $client_id && $msg['to'] === 'admin';
+            }
+
+            if ($isRelevant && !in_array($user['id'], $msg['read_by'] ?? [])) {
+                $msg['read_by'][] = $user['id'];
+                $updated = true;
+            }
+        }
+
+        if ($updated) {
+            Storage::write('messages', $messages);
+        }
+        echo json_encode(['success' => true]);
+        break;
+
     case 'download_attachment':
         $att_id = $_GET['id'] ?? '';
         $messages = Storage::read('messages');
@@ -159,6 +187,24 @@ switch ($action) {
         Security::log('download_attachment', $_SESSION['user_id'], 'messages', ['id' => $att_id]);
         Security::decryptFile($path, $file_name);
         exit;
+
+    case 'delete_chat':
+        Auth::requireRole(['superadmin', 'admin_communications']);
+        $client_id = $_GET['client_id'] ?? '';
+        if (!$client_id) {
+            echo json_encode(['success' => false, 'error' => 'Missing client_id']);
+            break;
+        }
+
+        $messages = Storage::read('messages');
+        $to_keep = array_filter($messages, function($msg) use ($client_id) {
+            return $msg['from'] !== $client_id && $msg['to'] !== $client_id;
+        });
+
+        Storage::write('messages', array_values($to_keep));
+        Security::log('delete_chat', $_SESSION['user_id'], 'messages', ['client_id' => $client_id]);
+        echo json_encode(['success' => true]);
+        break;
 
     case 'broadcast':
         Auth::requireRole(['superadmin', 'admin_communications']);

@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../includes/Auth.php';
 header('Content-Type: application/json');
 
-Auth::requireRole(['superadmin', 'admin_content', 'admin_clients', 'admin_communications']);
+Auth::requireRole(['superadmin', 'admin_content', 'admin_clients', 'admin_communications', 'client']);
 
 $action = $_GET['action'] ?? '';
 

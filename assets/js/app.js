@@ -66,12 +66,45 @@ const App = {
             headers['X-CSRF-TOKEN'] = this.user.csrf_token;
         }
         options.headers = headers;
-        return fetch(url, options);
+        try {
+            const res = await fetch(url, options);
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || `HTTP Error ${res.status}`);
+            }
+            return res;
+        } catch (e) {
+            this.showToast(e.message, 'error');
+            throw e;
+        }
+    },
+
+    showToast(message, type = 'info') {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `animate-fade`;
+        toast.style.cssText = `padding:12px 24px; border-radius:30px; color:white; font-size:14px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.2); pointer-events:auto; background:${type === 'error' ? '#e74c3c' : '#7360f2'}`;
+        toast.textContent = message;
+
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+            toast.style.transition = 'all 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     },
 
     async checkAuth() {
         try {
-            const res = await this.apiFetch('api/auth.php?action=check');
+            const res = await fetch('api/auth.php?action=check');
             const data = await res.json();
             if (data.success) {
                 this.user = data.user;
@@ -103,8 +136,13 @@ const App = {
     },
 
     async logout() {
-        if (this.pollInterval) clearInterval(this.pollInterval);
-        await this.apiFetch('api/auth.php?action=logout');
+        if (this.pollInterval) {
+            clearInterval(this.pollInterval);
+            this.pollInterval = null;
+        }
+        try {
+            await this.apiFetch('api/auth.php?action=logout');
+        } catch (e) {}
         this.user = null;
         this.showLogin();
     },
@@ -135,7 +173,7 @@ const App = {
         this.setView(this.currentView);
 
         if (!this.pollInterval) {
-            this.pollInterval = setInterval(() => this.fetchStats(), 10000); // 10s polling
+            this.pollInterval = setInterval(() => this.fetchStats().catch(() => {}), 10000); // 10s polling
         }
     },
 
@@ -256,6 +294,9 @@ const App = {
     },
 
     async setView(view) {
+        if (this._settingView) return;
+        this._settingView = true;
+
         this.currentView = view;
         document.querySelectorAll('.nav-item').forEach(el => {
             el.classList.toggle('active', el.dataset.view === view);
@@ -264,10 +305,20 @@ const App = {
         const container = document.getElementById('view-container');
         container.style.opacity = '0';
         container.style.transform = 'translateY(10px)';
-        container.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
 
-        setTimeout(async () => {
-            container.innerHTML = '<div class="card animate-fade">Загрузка...</div>';
+        try {
+            // Pre-fetch check for auth to ensure no stale sessions block view loading
+            if (view !== 'about') {
+                const checkRes = await fetch('api/auth.php?action=check');
+                const checkData = await checkRes.json();
+                if (!checkData.success) {
+                    this.showLogin();
+                    this._settingView = false;
+                    return;
+                }
+            }
+
+            container.innerHTML = '<div class="card animate-fade" style="text-align:center; padding:50px">Загрузка...</div>';
             switch (view) {
             case 'dashboard':
                 await this.renderDashboard(container);
@@ -295,10 +346,16 @@ const App = {
             }
             container.style.opacity = '1';
             container.style.transform = 'translateY(0)';
-        }, 150);
+        } catch (e) {
+            console.error('View loading error:', e);
+            container.innerHTML = `<div class="card"><h2>Ошибка загрузки</h2><p>${this.escapeHTML(e.message)}</p><button class="btn btn-primary" onclick="App.setView('${view}')">Повторить</button></div>`;
+            container.style.opacity = '1';
+        } finally {
+            this._settingView = false;
+        }
     },
 
-    async markAllRead(type) {
+    async markAllRead(type, clientId = null) {
         if (type === 'documents') {
             const res = await this.apiFetch('api/documents.php?action=list');
             const data = await res.json();
@@ -308,13 +365,8 @@ const App = {
                 }
             }
         } else if (type === 'messages') {
-            const res = await this.apiFetch('api/messages.php?action=list');
-            const data = await res.json();
-            for (const msg of data.messages) {
-                if (!msg.read_by || !msg.read_by.includes(this.user.id)) {
-                    await this.apiFetch(`api/messages.php?action=mark_read&id=${msg.id}`);
-                }
-            }
+            const url = clientId ? `api/messages.php?action=mark_all_read&client_id=${clientId}` : 'api/messages.php?action=mark_all_read';
+            await this.apiFetch(url);
         }
         await this.fetchStats();
     },
@@ -513,13 +565,16 @@ const App = {
 
         const windowEl = document.getElementById('admin-chat-window');
         windowEl.innerHTML = `
-            <div style="padding:15px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; background:white">
-                ${isMobile ? `<button class="btn btn-outline btn-sm" style="border:none; padding:5px" onclick="App.closeAdminChatWindow()">⬅️</button>` : ''}
-                <div class="chat-avatar" style="width:40px; height:40px; font-size:14px;">${(partner.company_name || partner.username).substring(0,1).toUpperCase()}</div>
-                <div>
-                    <div style="font-weight:600">${this.escapeHTML(partner.company_name || partner.username)}</div>
-                    <div style="font-size:12px; color:var(--primary)">в сети</div>
+            <div style="padding:15px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:white">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    ${isMobile ? `<button class="btn btn-outline btn-sm" style="border:none; padding:5px" onclick="App.closeAdminChatWindow()">⬅️</button>` : ''}
+                    <div class="chat-avatar" style="width:40px; height:40px; font-size:14px;">${(partner.company_name || partner.username).substring(0,1).toUpperCase()}</div>
+                    <div>
+                        <div style="font-weight:600">${this.escapeHTML(partner.company_name || partner.username)}</div>
+                        <div style="font-size:12px; color:var(--primary)">в сети</div>
+                    </div>
                 </div>
+                <button class="btn btn-outline btn-sm" style="color:#e74c3c; border-color:#e74c3c" onclick="App.deleteChat('${partnerId}')" title="Удалить чат">🗑️</button>
             </div>
             <div class="chat-history" id="chat-history-admin">
                 ${this.renderMessageBubbles(chatMessages, partnerId)}
@@ -538,12 +593,7 @@ const App = {
         };
 
         // Mark as read
-        for (const m of chatMessages) {
-            if (m.from === partnerId && (!m.read_by || !m.read_by.includes(this.user.id))) {
-                await this.apiFetch(`api/messages.php?action=mark_read&id=${m.id}`);
-            }
-        }
-        await this.fetchStats();
+        await this.markAllRead('messages', partnerId);
     },
 
     closeAdminChatWindow() {
@@ -577,10 +627,10 @@ const App = {
 
         for (const m of messages) {
             if (m.from !== this.user.id && (!m.read_by || !m.read_by.includes(this.user.id))) {
-                await this.apiFetch(`api/messages.php?action=mark_read&id=${m.id}`);
+                await this.markAllRead('messages');
+                break;
             }
         }
-        await this.fetchStats();
     },
 
     renderMessageBubbles(messages, partnerId = null) {
@@ -634,6 +684,22 @@ const App = {
         await this.openAdminChatWindow(partnerId);
     },
 
+    async deleteChat(clientId) {
+        if (!confirm('Вы уверены, что хотите полностью удалить переписку с этим клиентом? Это действие необратимо.')) return;
+
+        try {
+            await this.apiFetch(`api/messages.php?action=delete_chat&client_id=${clientId}`);
+            this.lastOpenedChatId = null;
+            if (window.innerWidth <= 768) {
+                this.closeAdminChatWindow();
+            }
+            await this.setView('messages');
+            this.showToast('Чат успешно удален');
+        } catch (e) {
+            this.showToast('Ошибка при удалении чата', 'error');
+        }
+    },
+
     async sendClientChatMessage() {
         const input = document.getElementById('client-chat-input');
         const body = input.value.trim();
@@ -646,11 +712,7 @@ const App = {
 
         input.value = '';
         await this.apiFetch('api/messages.php?action=send', { method: 'POST', body: formData });
-        const res = await this.apiFetch('api/messages.php?action=list');
-        const data = await res.json();
-        document.getElementById('chat-history-client').innerHTML = this.renderMessageBubbles(data.messages);
-        const history = document.getElementById('chat-history-client');
-        history.scrollTop = history.scrollHeight;
+        await this.refreshChatData();
     },
 
     async renderUsers(container) {
