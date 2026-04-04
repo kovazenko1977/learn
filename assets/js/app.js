@@ -251,19 +251,35 @@ const App = {
 
         container.innerHTML = `
             <div class="view-header">
-                <h1 class="view-title">Сообщения</h1>
-                ${['superadmin', 'admin_communications'].includes(this.user.role) ? '<button class="btn btn-primary btn-sm" onclick="App.showSendMessageModal()">Отправить</button>' : ''}
+                <h1 class="view-title">Чат и поддержка</h1>
+                <button class="btn btn-primary btn-sm" onclick="App.showSendMessageModal()">Написать сообщение</button>
             </div>
-            <div class="card">
+            <div class="card" id="chat-container">
                 ${data.messages.map(msg => `
-                    <div class="card" style="margin-bottom: 15px; border-left: 4px solid var(--primary); padding: 15px;">
+                    <div class="card" style="margin-bottom: 20px; border-left: 4px solid ${msg.from === this.user.id ? 'var(--primary)' : '#ccc'}; padding: 20px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
                             <strong>${this.escapeHTML(msg.subject)}</strong>
                             <small style="color:var(--text-muted)">${this.escapeHTML(msg.created_at)}</small>
                         </div>
-                        <p style="font-size:14px; color:var(--text)">${this.escapeHTML(msg.body)}</p>
+                        <div style="margin-bottom:10px">
+                            <span class="badge ${msg.from === this.user.id ? 'badge-success' : 'badge-warning'}" style="margin-bottom:5px">
+                                От: ${this.escapeHTML(msg.from_name || (msg.from === this.user.id ? 'Я' : msg.from))}
+                            </span>
+                        </div>
+                        <p style="font-size:14px; color:var(--text); white-space: pre-wrap;">${this.escapeHTML(msg.body)}</p>
+                        ${msg.attachments && msg.attachments.length > 0 ? `
+                            <div style="margin-top:15px; padding-top:10px; border-top: 1px solid var(--border)">
+                                <small style="display:block; margin-bottom:5px">Прикрепленные файлы:</small>
+                                ${msg.attachments.map(att => `
+                                    <a href="api/messages.php?action=download_attachment&id=${att.id}" class="btn btn-outline btn-sm" style="margin-right:5px">📎 ${this.escapeHTML(att.name)}</a>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div style="margin-top:15px">
+                            <button class="btn btn-outline btn-sm" onclick="App.showReplyModal('${msg.id}', '${this.escapeHTML(msg.subject)}')">Ответить</button>
+                        </div>
                     </div>
-                `).join('')}
+                `).reverse().join('')}
                 ${data.messages.length === 0 ? '<p style="text-align:center; color:var(--text-muted); padding:20px;">Сообщений пока нет.</p>' : ''}
             </div>
         `;
@@ -428,9 +444,12 @@ const App = {
     },
 
     showSendMessageModal() {
+        const isAdmin = ['superadmin', 'admin_communications'].includes(this.user.role);
         const clientOptions = this.clients.filter(u => u.role === 'client').map(c => `<option value="${c.id}">${this.escapeHTML(c.company_name || c.username)} (${c.username})</option>`).join('');
-        this.showModal('Отправка сообщения', `
+
+        this.showModal('Написать сообщение', `
             <form id="msg-form">
+                ${isAdmin ? `
                 <div class="form-group">
                     <label>Получатель</label>
                     <select id="msg-to">
@@ -438,28 +457,68 @@ const App = {
                         ${clientOptions}
                     </select>
                 </div>
+                ` : ''}
                 <div class="form-group">
                     <label>Тема</label>
                     <input type="text" id="msg-subject" required>
                 </div>
                 <div class="form-group">
-                    <label>Текст</label>
+                    <label>Текст сообщения</label>
                     <textarea id="msg-body" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Прикрепить файл (опционально)</label>
+                    <input type="file" id="msg-attachment">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Отправить</button>
             </form>
         `);
+
         document.getElementById('msg-form').onsubmit = async (e) => {
             e.preventDefault();
-            await this.apiFetch('api/messages.php?action=send', {
-                method: 'POST',
-                body: JSON.stringify({
-                    to: document.getElementById('msg-to').value,
-                    subject: document.getElementById('msg-subject').value,
-                    body: document.getElementById('msg-body').value
-                })
-            });
+            const formData = new FormData();
+            formData.append('to', isAdmin ? document.getElementById('msg-to').value : 'admin');
+            formData.append('subject', document.getElementById('msg-subject').value);
+            formData.append('body', document.getElementById('msg-body').value);
+            const file = document.getElementById('msg-attachment').files[0];
+            if (file) formData.append('attachment', file);
+
+            await this.apiFetch('api/messages.php?action=send', { method: 'POST', body: formData });
             await this.fetchStats();
+            this.closeModal();
+            this.setView('messages');
+        };
+    },
+
+    showReplyModal(parentId, subject) {
+        this.showModal('Ответить', `
+            <form id="reply-form">
+                <div class="form-group">
+                    <label>Тема</label>
+                    <input type="text" id="msg-subject" value="Re: ${this.escapeHTML(subject)}" required>
+                </div>
+                <div class="form-group">
+                    <label>Текст сообщения</label>
+                    <textarea id="msg-body" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Прикрепить файл</label>
+                    <input type="file" id="msg-attachment">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Отправить ответ</button>
+            </form>
+        `);
+
+        document.getElementById('reply-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('parent_id', parentId);
+            formData.append('subject', document.getElementById('msg-subject').value);
+            formData.append('body', document.getElementById('msg-body').value);
+            const file = document.getElementById('msg-attachment').files[0];
+            if (file) formData.append('attachment', file);
+
+            await this.apiFetch('api/messages.php?action=send', { method: 'POST', body: formData });
             this.closeModal();
             this.setView('messages');
         };

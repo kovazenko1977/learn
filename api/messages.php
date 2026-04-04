@@ -13,27 +13,90 @@ switch ($action) {
 
         if ($user['role'] === 'client') {
             $messages = array_filter($messages, function($msg) use ($user) {
-                return $msg['to'] === 'all' || $msg['to'] === $user['id'];
+                return $msg['to'] === 'all' || $msg['to'] === $user['id'] || $msg['from'] === $user['id'];
+            });
+        } else {
+            // Admins see all messages addressed to 'admin', all broadcasts, and all messages they sent
+            $messages = array_filter($messages, function($msg) use ($user) {
+                return $msg['to'] === 'admin' || $msg['to'] === 'all' || $msg['from'] === $user['id'] || !isset($msg['to']) || $msg['to'] === 'superadmin';
             });
         }
         echo json_encode(['success' => true, 'messages' => array_values($messages)]);
         break;
 
     case 'send':
-        Auth::requireRole(['superadmin', 'admin_communications']);
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $_POST;
+        if (empty($data)) {
+            $data = json_decode(file_get_contents('php://input'), true);
+        }
         $data = Security::sanitize($data);
-        $id = Storage::insert('messages', [
+
+        $attachments = [];
+        if (!empty($_FILES['attachment'])) {
+            $tmp_name = $_FILES['attachment']['tmp_name'];
+            $orig_name = Security::sanitize($_FILES['attachment']['name']);
+            $att_id = uniqid('att_');
+            $dest = __DIR__ . '/../uploads/' . $att_id . '.enc';
+            if (Security::encryptFile($tmp_name, $dest)) {
+                $attachments[] = [
+                    'id' => $att_id,
+                    'name' => $orig_name,
+                    'uploaded_at' => date('Y-m-d H:i:s')
+                ];
+            }
+        }
+
+        $user = Auth::getCurrentUser();
+        $is_client = $user['role'] === 'client';
+
+        $message = [
             'from' => $_SESSION['user_id'],
-            'to' => $data['to'] ?? 'all',
+            'from_name' => $user['username'],
+            'to' => $is_client ? 'admin' : ($data['to'] ?? 'all'),
             'subject' => $data['subject'] ?? 'Untitled',
             'body' => $data['body'] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
-            'read_by' => []
-        ]);
-        Security::log('send_message', $_SESSION['user_id'], 'messages', ['id' => $id, 'subject' => $data['subject']]);
+            'read_by' => [],
+            'attachments' => $attachments,
+            'parent_id' => $data['parent_id'] ?? null
+        ];
+
+        $id = Storage::insert('messages', $message);
+        Security::log('send_message', $_SESSION['user_id'], 'messages', ['id' => $id]);
         echo json_encode(['success' => true, 'id' => $id]);
         break;
+
+    case 'download_attachment':
+        $att_id = $_GET['id'] ?? '';
+        $messages = Storage::read('messages');
+        $found = false;
+        $file_name = '';
+        foreach ($messages as $msg) {
+            foreach ($msg['attachments'] as $att) {
+                if ($att['id'] === $att_id) {
+                    $found = true;
+                    $file_name = $att['name'];
+                    break 2;
+                }
+            }
+        }
+
+        if (!$found) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Attachment not found']);
+            break;
+        }
+
+        $path = __DIR__ . '/../uploads/' . $att_id . '.enc';
+        if (!file_exists($path)) {
+            http_response_code(404);
+            echo json_encode(['error' => 'File missing']);
+            break;
+        }
+
+        Security::log('download_attachment', $_SESSION['user_id'], 'messages', ['id' => $att_id]);
+        Security::decryptFile($path, $file_name);
+        exit;
 
     case 'broadcast':
         Auth::requireRole(['superadmin', 'admin_communications']);
@@ -46,23 +109,11 @@ switch ($action) {
             'body' => $data['body'] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
             'read_by' => [],
-            'is_broadcast' => true
+            'is_broadcast' => true,
+            'attachments' => []
         ]);
         Security::log('broadcast_message', $_SESSION['user_id'], 'messages', ['id' => $id]);
         echo json_encode(['success' => true]);
-        break;
-
-    case 'templates':
-        Auth::requireRole(['superadmin', 'admin_communications']);
-        $templates = Storage::read('message_templates');
-        echo json_encode(['success' => true, 'templates' => $templates]);
-        break;
-
-    case 'save_template':
-        Auth::requireRole(['superadmin', 'admin_communications']);
-        $data = json_decode(file_get_contents('php://input'), true);
-        $id = Storage::insert('message_templates', Security::sanitize($data));
-        echo json_encode(['success' => true, 'id' => $id]);
         break;
 
     default:
