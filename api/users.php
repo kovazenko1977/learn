@@ -12,19 +12,26 @@ switch ($action) {
         foreach ($users as &$user) {
             unset($user['password']);
         }
-        echo json_encode(['success' => true, 'users' => $users]);
+        echo json_encode(['success' => true, 'users' => array_values($users)]);
         break;
 
     case 'create':
         $data = json_decode(file_get_contents('php://input'), true);
-        $data = Security::sanitize($data); // Sanitize input
+        $data = Security::sanitize($data);
         if (Storage::findOne('users', ['username' => $data['username']])) {
             echo json_encode(['success' => false, 'error' => 'Username already exists']);
             break;
         }
         $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-        $data['status'] = 'active';
+        $data['status'] = $data['status'] ?? 'active';
         $data['created_at'] = date('Y-m-d H:i:s');
+        // New fields
+        $data['company_name'] = $data['company_name'] ?? '';
+        $data['tax_id'] = $data['tax_id'] ?? '';
+        $data['address'] = $data['address'] ?? '';
+        $data['contact_person'] = $data['contact_person'] ?? '';
+        $data['phone'] = $data['phone'] ?? '';
+
         $id = Storage::insert('users', $data);
         Security::log('create_user', $_SESSION['user_id'], 'users', ['id' => $id, 'username' => $data['username']]);
         echo json_encode(['success' => true, 'id' => $id]);
@@ -32,7 +39,7 @@ switch ($action) {
 
     case 'update':
         $data = json_decode(file_get_contents('php://input'), true);
-        $data = Security::sanitize($data); // Sanitize input
+        $data = Security::sanitize($data);
         $id = $data['id'];
         unset($data['id']);
         if (!empty($data['password'])) {

@@ -1,6 +1,8 @@
 const App = {
     user: null,
     currentView: 'dashboard',
+    clients: [],
+    stats: null,
 
     async init() {
         this.bindEvents();
@@ -87,7 +89,7 @@ const App = {
         document.getElementById('app-view').classList.add('hidden');
     },
 
-    showApp() {
+    async showApp() {
         document.getElementById('auth-view').classList.add('hidden');
         document.getElementById('app-view').classList.remove('hidden');
 
@@ -96,7 +98,24 @@ const App = {
             el.classList.toggle('hidden', !isAdmin);
         });
 
+        if (isAdmin) {
+            await this.fetchClients();
+            await this.fetchStats();
+        }
+
         this.setView(this.currentView);
+    },
+
+    async fetchClients() {
+        const res = await this.apiFetch('api/users.php?action=list');
+        const data = await res.json();
+        this.clients = data.users;
+    },
+
+    async fetchStats() {
+        const res = await this.apiFetch('api/stats.php?action=summary');
+        const data = await res.json();
+        this.stats = data.stats;
     },
 
     async setView(view) {
@@ -131,7 +150,9 @@ const App = {
     },
 
     async renderDashboard(container) {
-        container.innerHTML = `
+        const isAdmin = ['superadmin', 'admin_clients', 'admin_content', 'admin_communications'].includes(this.user.role);
+
+        let html = `
             <div class="view-header">
                 <h1 class="view-title">Добро пожаловать, ${this.escapeHTML(this.user.username)}</h1>
             </div>
@@ -139,6 +160,34 @@ const App = {
                 <p>Вы вошли как: <strong>${this.escapeHTML(this.user.role)}</strong></p>
                 <p>Используйте меню для навигации по документам и сообщениям.</p>
             </div>
+        `;
+
+        if (isAdmin && this.stats) {
+            html += `
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px; margin-bottom:30px;">
+                    <div class="card" style="text-align:center; padding:15px">
+                        <small style="color:var(--text-muted)">Клиенты</small>
+                        <h3 style="font-size:24px">${this.stats.total_clients}</h3>
+                        <small style="color:green">Активных: ${this.stats.active_clients}</small>
+                    </div>
+                    <div class="card" style="text-align:center; padding:15px">
+                        <small style="color:var(--text-muted)">Документы</small>
+                        <h3 style="font-size:24px">${this.stats.total_documents}</h3>
+                        <small style="color:var(--text-muted)">${this.stats.storage_used}</small>
+                    </div>
+                    <div class="card" style="text-align:center; padding:15px">
+                        <small style="color:var(--text-muted)">Сообщения</small>
+                        <h3 style="font-size:24px">${this.stats.total_messages}</h3>
+                    </div>
+                    <div class="card" style="text-align:center; padding:15px">
+                        <small style="color:var(--text-muted)">Логи</small>
+                        <h3 style="font-size:24px">${this.stats.total_logs}</h3>
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
                 <div class="card" style="text-align:center; cursor:pointer" onclick="App.setView('documents')">
                     <h3 style="margin-bottom:10px">Документы</h3>
@@ -150,21 +199,7 @@ const App = {
                 </div>
             </div>
         `;
-    },
-
-    renderAbout(container) {
-        container.innerHTML = `
-            <div class="view-header">
-                <h1 class="view-title">О программе</h1>
-            </div>
-            <div class="card">
-                <h2 style="margin-bottom:15px; color:var(--primary)">Enterprise Portal v1.0</h2>
-                <p style="margin-bottom:10px">Система управления личным кабинетом клиента.</p>
-                <hr style="margin-bottom:15px; border:0; border-top:1px solid var(--border)">
-                <p style="font-weight:600">Разработана WES.BY</p>
-                <p>Служба поддержки: <a href="tel:+375333533971" style="color:var(--primary); text-decoration:none">+375 33 353 39 71</a></p>
-            </div>
-        `;
+        container.innerHTML = html;
     },
 
     async renderDocuments(container) {
@@ -174,10 +209,13 @@ const App = {
         let html = `
             <div class="view-header">
                 <h1 class="view-title">Документы</h1>
-                ${['superadmin', 'admin_content'].includes(this.user.role) ? '<button class="btn btn-primary btn-sm" onclick="App.showUploadModal()">Загрузить</button>' : ''}
+                <div style="display:flex; gap:10px;">
+                    <input type="text" placeholder="Поиск по названию..." id="doc-search" style="padding:6px 12px; width:200px;">
+                    ${['superadmin', 'admin_content'].includes(this.user.role) ? '<button class="btn btn-primary btn-sm" onclick="App.showUploadModal()">Загрузить</button>' : ''}
+                </div>
             </div>
             <div class="card">
-                <table class="data-table">
+                <table class="data-table" id="doc-table">
                     <thead>
                         <tr>
                             <th>Название</th>
@@ -204,6 +242,7 @@ const App = {
             </div>
         `;
         container.innerHTML = html;
+        document.getElementById('doc-search').oninput = (e) => this.filterTable('doc-table', e.target.value);
     },
 
     async renderMessages(container) {
@@ -237,14 +276,17 @@ const App = {
         container.innerHTML = `
             <div class="view-header">
                 <h1 class="view-title">Управление клиентами</h1>
-                <button class="btn btn-primary btn-sm" onclick="App.showCreateUserModal()">Новый клиент</button>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" placeholder="Поиск клиентов..." id="user-search" style="padding:6px 12px; width:200px;">
+                    <button class="btn btn-primary btn-sm" onclick="App.showCreateUserModal()">Новый клиент</button>
+                </div>
             </div>
             <div class="card">
-                <table class="data-table">
+                <table class="data-table" id="user-table">
                     <thead>
                         <tr>
-                            <th>Логин</th>
-                            <th>Роль</th>
+                            <th>Клиент / Компания</th>
+                            <th>Контакты</th>
                             <th>Статус</th>
                             <th>Действия</th>
                         </tr>
@@ -252,8 +294,15 @@ const App = {
                     <tbody>
                         ${data.users.map(u => `
                             <tr>
-                                <td data-label="Логин">${this.escapeHTML(u.username)}</td>
-                                <td data-label="Роль">${this.escapeHTML(u.role)}</td>
+                                <td data-label="Клиент">
+                                    <strong>${this.escapeHTML(u.username)}</strong><br>
+                                    <small>${this.escapeHTML(u.company_name || '-')}</small><br>
+                                    <small style="color:var(--text-muted)">ИНН: ${this.escapeHTML(u.tax_id || '-')}</small>
+                                </td>
+                                <td data-label="Контакты">
+                                    <small>${this.escapeHTML(u.contact_person || '-')}</small><br>
+                                    <small>${this.escapeHTML(u.phone || '-')}</small>
+                                </td>
                                 <td data-label="Статус"><span class="badge ${u.status === 'active' ? 'badge-success' : 'badge-warning'}">${this.escapeHTML(u.status)}</span></td>
                                 <td data-label="Действия">
                                     <button class="btn btn-outline btn-sm" onclick="App.deleteUser('${u.id}')">Удалить</button>
@@ -264,6 +313,7 @@ const App = {
                 </table>
             </div>
         `;
+        document.getElementById('user-search').oninput = (e) => this.filterTable('user-table', e.target.value);
     },
 
     async renderLogs(container) {
@@ -273,10 +323,13 @@ const App = {
         container.innerHTML = `
             <div class="view-header">
                 <h1 class="view-title">Журнал аудита</h1>
-                <a href="api/logs.php?action=export" class="btn btn-outline btn-sm">Экспорт CSV</a>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" placeholder="Поиск в логах..." id="log-search" style="padding:6px 12px; width:200px;">
+                    <a href="api/logs.php?action=export" class="btn btn-outline btn-sm">Экспорт CSV</a>
+                </div>
             </div>
             <div class="card">
-                <table class="data-table">
+                <table class="data-table" id="log-table">
                     <thead>
                         <tr>
                             <th>Событие</th>
@@ -293,9 +346,33 @@ const App = {
                                 <td data-label="Дата">${this.escapeHTML(log.date)}</td>
                                 <td data-label="IP">${this.escapeHTML(log.ip)}</td>
                             </tr>
-                        `).reverse().slice(0, 50).join('')}
+                        `).reverse().slice(0, 100).join('')}
                     </tbody>
                 </table>
+            </div>
+        `;
+        document.getElementById('log-search').oninput = (e) => this.filterTable('log-table', e.target.value);
+    },
+
+    filterTable(tableId, query) {
+        const q = query.toLowerCase();
+        const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
+        });
+    },
+
+    renderAbout(container) {
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">О программе</h1>
+            </div>
+            <div class="card">
+                <h2 style="margin-bottom:15px; color:var(--primary)">Enterprise Portal v1.0</h2>
+                <p style="margin-bottom:10px">Система управления личным кабинетом клиента.</p>
+                <hr style="margin-bottom:15px; border:0; border-top:1px solid var(--border)">
+                <p style="font-weight:600">Разработана WES.BY</p>
+                <p>Служба поддержки: <a href="tel:+375333533971" style="color:var(--primary); text-decoration:none">+375 33 353 39 71</a></p>
             </div>
         `;
     },
@@ -314,6 +391,7 @@ const App = {
     },
 
     showUploadModal() {
+        const clientOptions = this.clients.filter(u => u.role === 'client').map(c => `<option value="${c.id}">${this.escapeHTML(c.company_name || c.username)} (${c.username})</option>`).join('');
         this.showModal('Загрузка документа', `
             <form id="upload-form">
                 <div class="form-group">
@@ -321,8 +399,11 @@ const App = {
                     <input type="text" id="doc-name" required>
                 </div>
                 <div class="form-group">
-                    <label>ID клиента (оставьте пустым для всех)</label>
-                    <input type="text" id="doc-client-id">
+                    <label>Выбор клиента (оставьте "Все" для общего)</label>
+                    <select id="doc-client-id">
+                        <option value="">Все клиенты (общий)</option>
+                        ${clientOptions}
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Файл</label>
@@ -340,17 +421,22 @@ const App = {
             formData.append('client_id', client_id);
             formData.append('is_public', client_id ? 'false' : 'true');
             await this.apiFetch('api/documents.php?action=upload', { method: 'POST', body: formData });
+            await this.fetchStats();
             this.closeModal();
             this.setView('documents');
         };
     },
 
     showSendMessageModal() {
+        const clientOptions = this.clients.filter(u => u.role === 'client').map(c => `<option value="${c.id}">${this.escapeHTML(c.company_name || c.username)} (${c.username})</option>`).join('');
         this.showModal('Отправка сообщения', `
             <form id="msg-form">
                 <div class="form-group">
-                    <label>ID получателя (оставьте пустым для всех)</label>
-                    <input type="text" id="msg-to" placeholder="all">
+                    <label>Получатель</label>
+                    <select id="msg-to">
+                        <option value="all">Все клиенты</option>
+                        ${clientOptions}
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Тема</label>
@@ -368,35 +454,64 @@ const App = {
             await this.apiFetch('api/messages.php?action=send', {
                 method: 'POST',
                 body: JSON.stringify({
-                    to: document.getElementById('msg-to').value || 'all',
+                    to: document.getElementById('msg-to').value,
                     subject: document.getElementById('msg-subject').value,
                     body: document.getElementById('msg-body').value
                 })
             });
+            await this.fetchStats();
             this.closeModal();
             this.setView('messages');
         };
     },
 
     showCreateUserModal() {
-        this.showModal('Новый пользователь', `
+        this.showModal('Новый клиент / Пользователь', `
             <form id="user-form">
-                <div class="form-group">
-                    <label>Логин</label>
-                    <input type="text" id="user-username" required>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div>
+                        <div class="form-group">
+                            <label>Логин *</label>
+                            <input type="text" id="user-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Пароль *</label>
+                            <input type="password" id="user-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Роль</label>
+                            <select id="user-role">
+                                <option value="client">Клиент</option>
+                                <option value="admin_content">Админ контента</option>
+                                <option value="admin_clients">Админ клиентов</option>
+                                <option value="admin_communications">Админ коммуникаций</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Название компании</label>
+                            <input type="text" id="user-company">
+                        </div>
+                        <div class="form-group">
+                            <label>ИНН / УНП</label>
+                            <input type="text" id="user-tax-id">
+                        </div>
+                        <div class="form-group">
+                            <label>Адрес</label>
+                            <input type="text" id="user-address">
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="user-password" required>
-                </div>
-                <div class="form-group">
-                    <label>Роль</label>
-                    <select id="user-role">
-                        <option value="client">Клиент</option>
-                        <option value="admin_content">Админ контента</option>
-                        <option value="admin_clients">Админ клиентов</option>
-                        <option value="admin_communications">Админ коммуникаций</option>
-                    </select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="form-group">
+                        <label>Контактное лицо</label>
+                        <input type="text" id="user-contact">
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="text" id="user-phone">
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Создать</button>
             </form>
@@ -408,9 +523,16 @@ const App = {
                 body: JSON.stringify({
                     username: document.getElementById('user-username').value,
                     password: document.getElementById('user-password').value,
-                    role: document.getElementById('user-role').value
+                    role: document.getElementById('user-role').value,
+                    company_name: document.getElementById('user-company').value,
+                    tax_id: document.getElementById('user-tax-id').value,
+                    address: document.getElementById('user-address').value,
+                    contact_person: document.getElementById('user-contact').value,
+                    phone: document.getElementById('user-phone').value
                 })
             });
+            await this.fetchClients();
+            await this.fetchStats();
             this.closeModal();
             this.setView('users');
         };
@@ -419,6 +541,7 @@ const App = {
     async deleteDocument(id) {
         if (confirm('Удалить документ?')) {
             await this.apiFetch(`api/documents.php?action=delete&id=${id}`);
+            await this.fetchStats();
             this.setView('documents');
         }
     },
@@ -426,6 +549,8 @@ const App = {
     async deleteUser(id) {
         if (confirm('Удалить пользователя?')) {
             await this.apiFetch(`api/users.php?action=delete&id=${id}`);
+            await this.fetchClients();
+            await this.fetchStats();
             this.setView('users');
         }
     }

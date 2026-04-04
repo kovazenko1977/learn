@@ -27,12 +27,17 @@ class Auth {
             return ['success' => false, 'error' => 'Account blocked'];
         }
 
+        // Maintenance Mode Check
+        $settings = Storage::read('settings');
+        if (($settings['maintenance_mode'] ?? false) && $user['role'] === 'client') {
+            return ['success' => false, 'error' => 'Maintenance mode active. Please try again later.'];
+        }
+
         // 2FA check (Mocking TOTP-like behavior)
         if (!empty($user['2fa_secret'])) {
             if (!$code) {
                 return ['success' => false, '2fa_required' => true];
             }
-            // In real app, use a TOTP library. Here we simulate validation.
             if ($code !== '000000') { // Default testing code
                  return ['success' => false, 'error' => 'Invalid 2FA code'];
             }

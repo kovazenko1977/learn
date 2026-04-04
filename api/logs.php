@@ -19,6 +19,28 @@ switch ($action) {
         echo json_encode(['success' => true, 'logs' => array_values($logs)]);
         break;
 
+    case 'sessions':
+        Auth::requireRole(['superadmin']);
+        $logs = Storage::read('logs');
+        // Simple logic: users who logged in within last 30 mins and haven't logged out.
+        $recent_logins = array_filter($logs, fn($l) => $l['type'] === 'login' && (time() - strtotime($l['date'])) < 1800);
+        $logouts = array_filter($logs, fn($l) => $l['type'] === 'logout' && (time() - strtotime($l['date'])) < 1800);
+
+        $active_sessions = [];
+        foreach ($recent_logins as $login) {
+            $uid = $login['user_id'];
+            $still_active = true;
+            foreach ($logouts as $logout) {
+                if ($logout['user_id'] === $uid && strtotime($logout['date']) > strtotime($login['date'])) {
+                    $still_active = false;
+                    break;
+                }
+            }
+            if ($still_active) $active_sessions[$uid] = $login;
+        }
+        echo json_encode(['success' => true, 'sessions' => array_values($active_sessions)]);
+        break;
+
     case 'export':
         $logs = Storage::read('logs');
         $user = Auth::getCurrentUser();

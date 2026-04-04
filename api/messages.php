@@ -22,7 +22,7 @@ switch ($action) {
     case 'send':
         Auth::requireRole(['superadmin', 'admin_communications']);
         $data = json_decode(file_get_contents('php://input'), true);
-        $data = Security::sanitize($data); // Sanitize input
+        $data = Security::sanitize($data);
         $id = Storage::insert('messages', [
             'from' => $_SESSION['user_id'],
             'to' => $data['to'] ?? 'all',
@@ -35,19 +35,34 @@ switch ($action) {
         echo json_encode(['success' => true, 'id' => $id]);
         break;
 
-    case 'mark_read':
-        $id = $_GET['id'] ?? '';
-        $msg = Storage::findOne('messages', ['id' => $id]);
-        if ($msg) {
-            $user_id = $_SESSION['user_id'];
-            if (!in_array($user_id, $msg['read_by'])) {
-                $msg['read_by'][] = $user_id;
-                Storage::update('messages', $id, ['read_by' => $msg['read_by']]);
-            }
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['success' => false, 'error' => 'Message not found']);
-        }
+    case 'broadcast':
+        Auth::requireRole(['superadmin', 'admin_communications']);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $data = Security::sanitize($data);
+        $id = Storage::insert('messages', [
+            'from' => $_SESSION['user_id'],
+            'to' => 'all',
+            'subject' => '[BROADCAST] ' . ($data['subject'] ?? 'Notification'),
+            'body' => $data['body'] ?? '',
+            'created_at' => date('Y-m-d H:i:s'),
+            'read_by' => [],
+            'is_broadcast' => true
+        ]);
+        Security::log('broadcast_message', $_SESSION['user_id'], 'messages', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'templates':
+        Auth::requireRole(['superadmin', 'admin_communications']);
+        $templates = Storage::read('message_templates');
+        echo json_encode(['success' => true, 'templates' => $templates]);
+        break;
+
+    case 'save_template':
+        Auth::requireRole(['superadmin', 'admin_communications']);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $id = Storage::insert('message_templates', Security::sanitize($data));
+        echo json_encode(['success' => true, 'id' => $id]);
         break;
 
     default:
