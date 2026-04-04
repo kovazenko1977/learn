@@ -248,41 +248,66 @@ const App = {
     async renderMessages(container) {
         const res = await this.apiFetch('api/messages.php?action=list');
         const data = await res.json();
+        const isAdmin = ['superadmin', 'admin_communications'].includes(this.user.role);
 
         container.innerHTML = `
             <div class="view-header">
                 <h1 class="view-title">Чат и поддержка</h1>
-                <button class="btn btn-primary btn-sm" onclick="App.showSendMessageModal()">Написать сообщение</button>
+                ${isAdmin ? '<div style="display:flex; gap:10px;"><select id="chat-filter" style="padding:6px; font-size:12px;"><option value="all">Все сообщения</option></select></div>' : ''}
             </div>
-            <div class="card" id="chat-container">
-                ${data.messages.map(msg => `
-                    <div class="card" style="margin-bottom: 20px; border-left: 4px solid ${msg.from === this.user.id ? 'var(--primary)' : '#ccc'}; padding: 20px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                            <strong>${this.escapeHTML(msg.subject)}</strong>
-                            <small style="color:var(--text-muted)">${this.escapeHTML(msg.created_at)}</small>
-                        </div>
-                        <div style="margin-bottom:10px">
-                            <span class="badge ${msg.from === this.user.id ? 'badge-success' : 'badge-warning'}" style="margin-bottom:5px">
-                                От: ${this.escapeHTML(msg.from_name || (msg.from === this.user.id ? 'Я' : msg.from))}
-                            </span>
-                        </div>
-                        <p style="font-size:14px; color:var(--text); white-space: pre-wrap;">${this.escapeHTML(msg.body)}</p>
-                        ${msg.attachments && msg.attachments.length > 0 ? `
-                            <div style="margin-top:15px; padding-top:10px; border-top: 1px solid var(--border)">
-                                <small style="display:block; margin-bottom:5px">Прикрепленные файлы:</small>
-                                ${msg.attachments.map(att => `
-                                    <a href="api/messages.php?action=download_attachment&id=${att.id}" class="btn btn-outline btn-sm" style="margin-right:5px">📎 ${this.escapeHTML(att.name)}</a>
-                                `).join('')}
+            <div class="chat-layout">
+                <div class="chat-history" id="chat-history">
+                    ${data.messages.map(msg => `
+                        <div class="chat-bubble ${msg.from === this.user.id ? 'mine' : 'theirs'}">
+                            <div style="font-weight:600; font-size:11px; margin-bottom:4px;">
+                                ${this.escapeHTML(msg.from_name || msg.from)}
                             </div>
-                        ` : ''}
-                        <div style="margin-top:15px">
-                            <button class="btn btn-outline btn-sm" onclick="App.showReplyModal('${msg.id}', '${this.escapeHTML(msg.subject)}')">Ответить</button>
+                            <div style="margin-bottom:5px;"><strong>${this.escapeHTML(msg.subject)}</strong></div>
+                            <div style="white-space: pre-wrap;">${this.escapeHTML(msg.body)}</div>
+                            ${msg.attachments && msg.attachments.length > 0 ? `
+                                <div class="chat-attachments">
+                                    ${msg.attachments.map(att => `
+                                        <a href="api/messages.php?action=download_attachment&id=${att.id}" class="chat-att-item">📎 ${this.escapeHTML(att.name)}</a>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            <div class="chat-info">
+                                <span>${this.escapeHTML(msg.created_at)}</span>
+                                <span style="cursor:pointer" onclick="App.showReplyModal('${msg.id}', '${this.escapeHTML(msg.subject)}', '${msg.from}')">Ответить</span>
+                            </div>
                         </div>
-                    </div>
-                `).reverse().join('')}
-                ${data.messages.length === 0 ? '<p style="text-align:center; color:var(--text-muted); padding:20px;">Сообщений пока нет.</p>' : ''}
+                    `).join('')}
+                    ${data.messages.length === 0 ? '<p style="text-align:center; color:var(--text-muted); margin:auto;">Сообщений пока нет.</p>' : ''}
+                </div>
+                <div class="chat-input-area">
+                    <button class="btn btn-primary" style="width:100%" onclick="App.showSendMessageModal()">Написать сообщение</button>
+                </div>
             </div>
         `;
+
+        const history = document.getElementById('chat-history');
+        history.scrollTop = history.scrollHeight;
+
+        if (isAdmin) {
+            const filter = document.getElementById('chat-filter');
+            const clientIds = [...new Set(data.messages.map(m => m.from).filter(id => id !== this.user.id))];
+            clientIds.forEach(id => {
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = `Чат с: ${id}`;
+                filter.appendChild(opt);
+            });
+            filter.onchange = (e) => {
+                const val = e.target.value;
+                document.querySelectorAll('.chat-bubble').forEach(b => {
+                    if (val === 'all') b.style.display = '';
+                    else {
+                        const isRelevant = b.innerHTML.includes(val) || b.classList.contains('mine');
+                        b.style.display = isRelevant ? '' : 'none';
+                    }
+                });
+            };
+        }
     },
 
     async renderUsers(container) {
@@ -490,7 +515,8 @@ const App = {
         };
     },
 
-    showReplyModal(parentId, subject) {
+    showReplyModal(parentId, subject, originalSender) {
+        const isAdmin = ['superadmin', 'admin_communications'].includes(this.user.role);
         this.showModal('Ответить', `
             <form id="reply-form">
                 <div class="form-group">
@@ -513,6 +539,7 @@ const App = {
             e.preventDefault();
             const formData = new FormData();
             formData.append('parent_id', parentId);
+            formData.append('to', isAdmin ? originalSender : 'admin');
             formData.append('subject', document.getElementById('msg-subject').value);
             formData.append('body', document.getElementById('msg-body').value);
             const file = document.getElementById('msg-attachment').files[0];

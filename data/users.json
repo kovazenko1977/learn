@@ -5,5 +5,14 @@
         "role": "superadmin",
         "status": "active",
         "id": "69cb75ada24e9"
+    },
+    {
+        "username": "client1",
+        "password": "$2y$10$vTVsJyghNjUF4mxT7pya.ewdqEd.W.\/93.Gw9.\/h9HxuyEXNjNFMy",
+        "role": "client",
+        "status": "active",
+        "company_name": "Client Co",
+        "tax_id": "999888777",
+        "id": "69d0b9ee882b3"
     }
 ]

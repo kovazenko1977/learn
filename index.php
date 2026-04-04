@@ -72,6 +72,18 @@
         .badge-success { background: #e6fffa; color: #319795; }
         .badge-warning { background: #fffaf0; color: #dd6b20; }
 
+        /* Messenger Styles */
+        .chat-layout { display: flex; flex-direction: column; height: 600px; }
+        .chat-history { flex: 1; overflow-y: auto; padding: 20px; background: #fdfdfd; border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; display: flex; flex-direction: column; gap: 15px; }
+        .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .chat-bubble.mine { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .chat-bubble.theirs { align-self: flex-start; background: #f0f2f5; color: var(--text); border-bottom-left-radius: 4px; }
+        .chat-info { font-size: 10px; margin-top: 5px; opacity: 0.8; display: flex; justify-content: space-between; gap: 10px; }
+        .chat-attachments { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+        .chat-att-item { background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; color: inherit; text-decoration: none; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+        .chat-bubble.theirs .chat-att-item { background: rgba(0,0,0,0.05); }
+        .chat-input-area { padding: 15px; background: var(--card-bg); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); display: flex; gap: 10px; }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             header .container { padding: 0 15px; }
