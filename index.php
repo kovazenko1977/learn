@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#003366">
+    <meta name="theme-color" content="#7360f2">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://alco.by/wp-content/uploads/2021/04/cropped-logo-192x192.png">
     <title>Личный кабинет</title>
     <style>
         :root {
-            --primary: #003366;
-            --primary-dark: #002244;
-            --bg: #f0f2f5;
+            --primary: #7360f2;
+            --primary-dark: #5b4bc4;
+            --bg: #f4f4f9;
             --card-bg: #ffffff;
             --text: #2d3436;
-            --text-muted: #636e72;
-            --border: #e2e8f0;
-            --radius: 12px;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --text-muted: #6e6e80;
+            --border: #e6e6f2;
+            --radius: 16px;
+            --shadow: 0 4px 20px rgba(115, 96, 242, 0.08);
             --header-height: 70px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,15 +36,15 @@
         .animate-scale { animation: scaleIn 0.3s ease-out forwards; }
 
         /* Auth Layout */
-        #auth-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #003366 0%, #001a33 100%); }
-        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: var(--radius); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); width: 100%; max-width: 420px; animation: scaleIn 0.5s ease-out; }
+        #auth-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #7360f2 0%, #5b4bc4 100%); }
+        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); width: 100%; max-width: 420px; animation: scaleIn 0.5s ease-out; }
         .auth-card h1 { font-size: 26px; margin-bottom: 30px; text-align: center; color: var(--primary); font-weight: 800; }
 
         /* Dashboard Layout */
         header { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); height: var(--header-height); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         header .container { display: flex; align-items: center; justify-content: space-between; height: 100%; }
         .logo { font-weight: 800; font-size: 22px; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
-        .nav { display: flex; gap: 20px; }
+        .nav { display: flex; gap: 20px; z-index: 1000; }
         .nav-item { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 14px; transition: color 0.2s; cursor: pointer; position: relative; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
         .badge-nav { position: absolute; top: -5px; right: -12px; background: #e74c3c; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; min-width: 14px; text-align: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: pulse 2s infinite; }
@@ -89,12 +89,26 @@
         .badge-warning { background: #fffaf0; color: #dd6b20; }
 
         /* Messenger Styles */
-        .chat-layout { display: flex; flex-direction: column; height: 600px; }
-        .chat-history { flex: 1; overflow-y: auto; padding: 20px; background: #fdfdfd; border: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; display: flex; flex-direction: column; gap: 15px; }
-        .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 14px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .chat-bubble.mine { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-        .chat-bubble.theirs { align-self: flex-start; background: #f0f2f5; color: var(--text); border-bottom-left-radius: 4px; }
-        .chat-info { font-size: 10px; margin-top: 5px; opacity: 0.8; display: flex; justify-content: space-between; gap: 10px; }
+        .chat-layout { display: flex; flex-direction: column; height: 650px; background: #f4f4f9; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+        .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
+        .chat-bubble { max-width: 75%; padding: 10px 14px; font-size: 15px; position: relative; line-height: 1.4; transition: var(--transition); }
+        .chat-bubble.mine { align-self: flex-end; background: #eff2fe; color: var(--text); border-radius: 18px 18px 4px 18px; border: 1px solid #d1d9ff; }
+        .chat-bubble.theirs { align-self: flex-start; background: #ffffff; color: var(--text); border-radius: 18px 18px 18px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .chat-info { font-size: 11px; margin-top: 4px; color: var(--text-muted); display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+        .chat-bubble.mine .chat-info { color: #8e99c5; }
+
+        .chat-list { border-right: 1px solid var(--border); overflow-y: auto; background: white; }
+        .chat-list-item { padding: 15px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: var(--transition); }
+        .chat-list-item:hover { background: #f8f8ff; }
+        .chat-list-item.active { background: #eff2fe; border-left: 4px solid var(--primary); }
+        .chat-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; flex-shrink: 0; }
+        .chat-item-content { flex: 1; min-width: 0; }
+        .chat-item-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .chat-item-name { font-weight: 600; font-size: 15px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-time { font-size: 12px; color: var(--text-muted); }
+        .chat-item-preview { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-item-badge { background: var(--primary); color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px; font-weight: 600; }
+
         .chat-attachments { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 5px; }
         .chat-att-item { background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; color: inherit; text-decoration: none; font-size: 12px; display: flex; align-items: center; gap: 5px; }
         .chat-bubble.theirs .chat-att-item { background: rgba(0,0,0,0.05); }
@@ -103,10 +117,12 @@
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             :root { --header-height: 60px; }
+            header { backdrop-filter: none; } /* Remove filter to fix fixed positioning of child .nav */
             header .container { padding: 0 15px; }
-            .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); border-top: 1px solid var(--border); padding: 8px 0; justify-content: space-around; gap: 0; padding-bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 -10px 20px rgba(0,0,0,0.05); z-index: 1000; }
-            .nav-item { flex-direction: column; align-items: center; font-size: 10px; flex: 1; padding: 5px 0; }
-            .nav-item.active { color: var(--primary); background: rgba(0, 51, 102, 0.05); border-radius: 8px; }
+            .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid var(--border); padding: 6px 0; justify-content: space-around; gap: 0; padding-bottom: calc(6px + env(safe-area-inset-bottom)); box-shadow: 0 -5px 15px rgba(0,0,0,0.03); z-index: 1000; display: flex; }
+            .nav-item { flex-direction: column; align-items: center; font-size: 11px; flex: 1; padding: 8px 0; color: #6e6e80; text-align: center; display: flex; transition: color 0.2s; }
+            .nav-item.active { color: var(--primary); }
+            .nav-item span { font-size: 20px; margin-bottom: 2px; }
             main { padding: 20px 0 100px 0; }
             .view-title { font-size: 20px; }
             .data-table thead { display: none; }
@@ -119,8 +135,10 @@
             .btn { width: 100%; }
             .btn-sm { width: auto; }
 
-            .chat-layout { height: calc(100vh - 220px); }
+            .chat-layout { height: calc(100vh - 220px); grid-template-columns: 1fr !important; }
             .chat-bubble { max-width: 90%; }
+            .chat-list.mobile-hidden { display: none; }
+            .chat-window.mobile-hidden { display: none; }
         }
     </style>
 </head>
@@ -150,14 +168,14 @@
             <div class="container">
                 <a href="#" class="logo" data-view="dashboard">Личный кабинет</a>
                 <nav class="nav">
-                    <a class="nav-item active" data-view="dashboard">Дашборд</a>
-                    <a class="nav-item" data-view="documents">Документы</a>
-                    <a class="nav-item" data-view="messages">Сообщения</a>
-                    <a class="nav-item admin-only hidden" data-view="users">Клиенты</a>
-                    <a class="nav-item admin-only hidden" data-view="logs">Логи</a>
-                    <a class="nav-item admin-only hidden" data-view="maintenance">Сервис</a>
-                    <a class="nav-item" data-view="about">О программе</a>
-                    <a class="nav-item" id="logout-btn">Выход</a>
+                    <a class="nav-item active" data-view="dashboard"><span>🏠</span>Дашборд</a>
+                    <a class="nav-item" data-view="documents"><span>📁</span>Файлы</a>
+                    <a class="nav-item" data-view="messages"><span>💬</span>Чаты</a>
+                    <a class="nav-item admin-only hidden" data-view="users"><span>👥</span>Клиенты</a>
+                    <a class="nav-item admin-only hidden" data-view="logs"><span>📋</span>Логи</a>
+                    <a class="nav-item admin-only hidden" data-view="maintenance"><span>⚙️</span>Сервис</a>
+                    <a class="nav-item" data-view="about"><span>ℹ️</span>Инфо</a>
+                    <a class="nav-item" id="logout-btn"><span>🚪</span>Выход</a>
                 </nav>
             </div>
         </header>

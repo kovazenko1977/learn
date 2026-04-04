@@ -150,6 +150,82 @@ const App = {
         const data = await res.json();
         this.stats = data.stats;
         this.updateBadges();
+
+        if (this.currentView === 'messages') {
+            this.refreshChatData();
+        }
+    },
+
+    async refreshChatData() {
+        const res = await this.apiFetch('api/messages.php?action=list');
+        const data = await res.json();
+        const isAdmin = ['superadmin', 'admin_communications'].includes(this.user.role);
+
+        if (isAdmin) {
+            // Update unread badges in the sidebar
+            const conversations = this.processConversations(data.messages);
+            Object.keys(conversations).forEach(pid => {
+                const badge = document.querySelector(`#chat-item-${pid} .chat-item-badge`);
+                const unread = conversations[pid].unread;
+                if (badge) {
+                    if (unread > 0) badge.textContent = unread;
+                    else badge.remove();
+                } else if (unread > 0) {
+                    const previewRow = document.querySelector(`#chat-item-${pid} .chat-item-preview`).parentElement;
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'chat-item-badge';
+                    newBadge.textContent = unread;
+                    previewRow.appendChild(newBadge);
+                }
+
+                const preview = document.querySelector(`#chat-item-${pid} .chat-item-preview`);
+                if (preview) {
+                    const lastMsg = conversations[pid].messages[conversations[pid].messages.length - 1];
+                    preview.textContent = lastMsg.body;
+                }
+            });
+
+            if (this.lastOpenedChatId) {
+                const chatMessages = data.messages.filter(m => m.from === this.lastOpenedChatId || m.to === this.lastOpenedChatId);
+                const history = document.getElementById('chat-history-admin');
+                if (history) {
+                    const newHtml = this.renderMessageBubbles(chatMessages, this.lastOpenedChatId);
+                    if (history.innerHTML !== newHtml) {
+                        history.innerHTML = newHtml;
+                        history.scrollTop = history.scrollHeight;
+                    }
+                }
+            }
+        } else {
+            const history = document.getElementById('chat-history-client');
+            if (history) {
+                const newHtml = this.renderMessageBubbles(data.messages);
+                if (history.innerHTML !== newHtml) {
+                    history.innerHTML = newHtml;
+                    history.scrollTop = history.scrollHeight;
+                }
+            }
+        }
+    },
+
+    processConversations(messages) {
+        const conversations = {};
+        messages.forEach(m => {
+            const partnerId = m.from === this.user.id ? m.to : m.from;
+            if (partnerId === 'all' || partnerId === 'admin') return;
+            if (!conversations[partnerId]) {
+                conversations[partnerId] = {
+                    messages: [],
+                    unread: 0,
+                    partner: this.clients.find(c => c.id === partnerId) || { username: partnerId }
+                };
+            }
+            conversations[partnerId].messages.push(m);
+            if (!m.read_by || !m.read_by.includes(this.user.id)) {
+                if (m.from !== this.user.id) conversations[partnerId].unread++;
+            }
+        });
+        return conversations;
     },
 
     updateBadges() {
@@ -354,69 +430,221 @@ const App = {
         const data = await res.json();
         const isAdmin = ['superadmin', 'admin_communications'].includes(this.user.role);
 
+        if (isAdmin) {
+            await this.renderAdminChat(container, data.messages);
+        } else {
+            await this.renderClientChat(container, data.messages);
+        }
+    },
+
+    async renderAdminChat(container, messages) {
+        const conversations = this.processConversations(messages);
+
+        const sortedPartners = Object.keys(conversations).sort((a, b) => {
+            const lastA = conversations[a].messages[conversations[a].messages.length - 1].created_at;
+            const lastB = conversations[b].messages[conversations[b].messages.length - 1].created_at;
+            return lastB.localeCompare(lastA);
+        });
+
         container.innerHTML = `
             <div class="view-header">
-                <h1 class="view-title">Чат и поддержка</h1>
-                ${isAdmin ? '<div style="display:flex; gap:10px;"><select id="chat-filter" style="padding:6px; font-size:12px;"><option value="all">Все сообщения</option></select></div>' : ''}
+                <h1 class="view-title">Мессенджер</h1>
+                <button class="btn btn-primary btn-sm" onclick="App.showSendMessageModal()">Рассылка</button>
             </div>
-            <div class="chat-layout">
-                <div class="chat-history" id="chat-history">
-                    ${data.messages.map(msg => {
-                        const isUnread = !msg.read_by || !msg.read_by.includes(this.user.id);
+            <div class="chat-layout" style="display:grid; grid-template-columns: 320px 1fr;" id="chat-layout-admin">
+                <div class="chat-list" id="admin-chat-list">
+                    ${sortedPartners.map(pid => {
+                        const conv = conversations[pid];
+                        const lastMsg = conv.messages[conv.messages.length - 1];
                         return `
-                        <div class="chat-bubble ${msg.from === this.user.id ? 'mine' : 'theirs'} ${isUnread ? 'animate-fade' : ''}" style="${isUnread ? 'border-left: 4px solid var(--primary)' : ''}">
-                            <div style="font-weight:600; font-size:11px; margin-bottom:4px; display:flex; justify-content:space-between">
-                                <span>${this.escapeHTML(msg.from_name || msg.from)}</span>
-                                ${isUnread && msg.from !== this.user.id ? '<span style="color:var(--primary); font-size:8px">● НОВОЕ</span>' : ''}
-                            </div>
-                            <div style="margin-bottom:5px;"><strong>${this.escapeHTML(msg.subject)}</strong></div>
-                            <div style="white-space: pre-wrap;">${this.escapeHTML(msg.body)}</div>
-                            ${msg.attachments && msg.attachments.length > 0 ? `
-                                <div class="chat-attachments">
-                                    ${msg.attachments.map(att => `
-                                        <a href="api/messages.php?action=download_attachment&id=${att.id}" class="chat-att-item">📎 ${this.escapeHTML(att.name)}</a>
-                                    `).join('')}
+                        <div class="chat-list-item" onclick="App.openAdminChatWindow('${pid}')" id="chat-item-${pid}">
+                            <div class="chat-avatar">${(conv.partner.company_name || conv.partner.username).substring(0,1).toUpperCase()}</div>
+                            <div class="chat-item-content">
+                                <div class="chat-item-header">
+                                    <span class="chat-item-name">${this.escapeHTML(conv.partner.company_name || conv.partner.username)}</span>
+                                    <span class="chat-item-time">${lastMsg.created_at.split(' ')[1].substring(0,5)}</span>
                                 </div>
-                            ` : ''}
-                            <div class="chat-info">
-                                <span>${this.escapeHTML(msg.created_at)}</span>
-                                <span style="cursor:pointer" onclick="App.showReplyModal('${msg.id}', '${this.escapeHTML(msg.subject)}', '${msg.from}')">Ответить</span>
+                                <div style="display:flex; justify-content:space-between; align-items:center">
+                                    <div class="chat-item-preview">${this.escapeHTML(lastMsg.body)}</div>
+                                    ${conv.unread > 0 ? `<span class="chat-item-badge">${conv.unread}</span>` : ''}
+                                </div>
                             </div>
                         </div>
-                    `}).join('')}
-                    ${data.messages.length === 0 ? '<p style="text-align:center; color:var(--text-muted); margin:auto;">Сообщений пока нет.</p>' : ''}
+                        `;
+                    }).join('')}
+                    ${sortedPartners.length === 0 ? '<p style="padding:20px; color:var(--text-muted); text-align:center">Нет активных диалогов</p>' : ''}
                 </div>
-                <div class="chat-input-area">
-                    <button class="btn btn-primary" style="width:100%" onclick="App.showSendMessageModal()">Написать сообщение</button>
+                <div id="admin-chat-window" class="chat-window mobile-hidden" style="display:flex; flex-direction:column; background: white;">
+                    <div style="flex:1; display:flex; align-items:center; justify-content:center; color:var(--text-muted); flex-direction:column; gap:15px;">
+                        <span style="font-size:48px">💬</span>
+                        <p>Выберите чат для начала общения</p>
+                    </div>
                 </div>
             </div>
         `;
 
-        const history = document.getElementById('chat-history');
+        if (this.lastOpenedChatId) {
+            this.openAdminChatWindow(this.lastOpenedChatId);
+        }
+    },
+
+    async openAdminChatWindow(partnerId) {
+        this.lastOpenedChatId = partnerId;
+        document.querySelectorAll('.chat-list-item').forEach(el => el.classList.remove('active'));
+        const activeItem = document.getElementById(`chat-item-${partnerId}`);
+        if (activeItem) activeItem.classList.add('active');
+
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            document.getElementById('admin-chat-list').classList.add('mobile-hidden');
+            document.getElementById('admin-chat-window').classList.remove('mobile-hidden');
+        }
+
+        const res = await this.apiFetch('api/messages.php?action=list');
+        const data = await res.json();
+        const chatMessages = data.messages.filter(m => m.from === partnerId || m.to === partnerId);
+        const partner = this.clients.find(c => c.id === partnerId) || { username: partnerId };
+
+        const windowEl = document.getElementById('admin-chat-window');
+        windowEl.innerHTML = `
+            <div style="padding:15px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; background:white">
+                ${isMobile ? `<button class="btn btn-outline btn-sm" style="border:none; padding:5px" onclick="App.closeAdminChatWindow()">⬅️</button>` : ''}
+                <div class="chat-avatar" style="width:40px; height:40px; font-size:14px;">${(partner.company_name || partner.username).substring(0,1).toUpperCase()}</div>
+                <div>
+                    <div style="font-weight:600">${this.escapeHTML(partner.company_name || partner.username)}</div>
+                    <div style="font-size:12px; color:var(--primary)">в сети</div>
+                </div>
+            </div>
+            <div class="chat-history" id="chat-history-admin">
+                ${this.renderMessageBubbles(chatMessages, partnerId)}
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="admin-chat-input" placeholder="Напишите сообщение..." style="flex:1; border-radius:20px; padding:10px 20px;">
+                <button class="btn btn-primary btn-sm" style="border-radius:50%; width:40px; height:40px; padding:0" onclick="App.sendAdminChatMessage('${partnerId}')">➜</button>
+            </div>
+        `;
+
+        const history = document.getElementById('chat-history-admin');
         history.scrollTop = history.scrollHeight;
 
-        if (isAdmin) {
-            const filter = document.getElementById('chat-filter');
-            const clientIds = [...new Set(data.messages.flatMap(m => [m.from, m.to]).filter(id => id !== this.user.id && id !== 'admin' && id !== 'all'))];
-            clientIds.forEach(id => {
-                const opt = document.createElement('option');
-                opt.value = id;
-                const u = this.clients.find(c => c.id === id);
-                opt.textContent = u ? `Чат с: ${u.company_name || u.username}` : `Чат с: ${id}`;
-                filter.appendChild(opt);
-            });
-            filter.onchange = (e) => {
-                const val = e.target.value;
-                document.querySelectorAll('.chat-bubble').forEach((b, idx) => {
-                    const msg = data.messages[idx];
-                    if (val === 'all') b.style.display = '';
-                    else {
-                        const isRelevant = msg.from === val || msg.to === val;
-                        b.style.display = isRelevant ? '' : 'none';
-                    }
-                });
-            };
+        document.getElementById('admin-chat-input').onkeypress = (e) => {
+            if (e.key === 'Enter') this.sendAdminChatMessage(partnerId);
+        };
+
+        // Mark as read
+        for (const m of chatMessages) {
+            if (m.from === partnerId && (!m.read_by || !m.read_by.includes(this.user.id))) {
+                await this.apiFetch(`api/messages.php?action=mark_read&id=${m.id}`);
+            }
         }
+        await this.fetchStats();
+    },
+
+    closeAdminChatWindow() {
+        this.lastOpenedChatId = null;
+        document.getElementById('admin-chat-list').classList.remove('mobile-hidden');
+        document.getElementById('admin-chat-window').classList.add('mobile-hidden');
+        document.querySelectorAll('.chat-list-item').forEach(el => el.classList.remove('active'));
+    },
+
+    async renderClientChat(container, messages) {
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">Поддержка</h1>
+            </div>
+            <div class="chat-layout">
+                <div class="chat-history" id="chat-history-client">
+                    ${this.renderMessageBubbles(messages)}
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="client-chat-input" placeholder="Ваше сообщение..." style="flex:1; border-radius:20px; padding:10px 20px;">
+                    <button class="btn btn-primary btn-sm" style="border-radius:50%; width:40px; height:40px; padding:0" onclick="App.sendClientChatMessage()">➜</button>
+                </div>
+            </div>
+        `;
+        const history = document.getElementById('chat-history-client');
+        history.scrollTop = history.scrollHeight;
+
+        document.getElementById('client-chat-input').onkeypress = (e) => {
+            if (e.key === 'Enter') this.sendClientChatMessage();
+        };
+
+        for (const m of messages) {
+            if (m.from !== this.user.id && (!m.read_by || !m.read_by.includes(this.user.id))) {
+                await this.apiFetch(`api/messages.php?action=mark_read&id=${m.id}`);
+            }
+        }
+        await this.fetchStats();
+    },
+
+    renderMessageBubbles(messages, partnerId = null) {
+        if (messages.length === 0) return '<p style="text-align:center; color:var(--text-muted); margin:auto;">Сообщений пока нет.</p>';
+
+        let html = '';
+        let lastDate = '';
+
+        messages.forEach(msg => {
+            const date = msg.created_at.split(' ')[0];
+            if (date !== lastDate) {
+                html += `<div style="text-align:center; margin:15px 0;"><span style="background:#e6e6f2; color:var(--text-muted); padding:2px 10px; border-radius:10px; font-size:11px;">${date}</span></div>`;
+                lastDate = date;
+            }
+
+            const isMine = msg.from === this.user.id;
+            const isRead = partnerId ? (msg.read_by && msg.read_by.includes(partnerId)) : (msg.read_by && msg.read_by.length > (isMine ? 0 : 1));
+
+            html += `
+                <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
+                    <div style="white-space: pre-wrap;">${this.escapeHTML(msg.body)}</div>
+                    ${msg.attachments && msg.attachments.length > 0 ? `
+                        <div class="chat-attachments">
+                            ${msg.attachments.map(att => `
+                                <a href="api/messages.php?action=download_attachment&id=${att.id}" class="chat-att-item">📎 ${this.escapeHTML(att.name)}</a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="chat-info">
+                        <span>${msg.created_at.split(' ')[1].substring(0,5)}</span>
+                        ${isMine ? `<span style="font-size:10px; color:${isRead ? 'var(--primary)' : 'inherit'}">✓✓</span>` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        return html;
+    },
+
+    async sendAdminChatMessage(partnerId) {
+        const input = document.getElementById('admin-chat-input');
+        const body = input.value.trim();
+        if (!body) return;
+
+        const formData = new FormData();
+        formData.append('to', partnerId);
+        formData.append('subject', 'Chat Message');
+        formData.append('body', body);
+
+        input.value = '';
+        await this.apiFetch('api/messages.php?action=send', { method: 'POST', body: formData });
+        await this.openAdminChatWindow(partnerId);
+    },
+
+    async sendClientChatMessage() {
+        const input = document.getElementById('client-chat-input');
+        const body = input.value.trim();
+        if (!body) return;
+
+        const formData = new FormData();
+        formData.append('to', 'admin');
+        formData.append('subject', 'Client Message');
+        formData.append('body', body);
+
+        input.value = '';
+        await this.apiFetch('api/messages.php?action=send', { method: 'POST', body: formData });
+        const res = await this.apiFetch('api/messages.php?action=list');
+        const data = await res.json();
+        document.getElementById('chat-history-client').innerHTML = this.renderMessageBubbles(data.messages);
+        const history = document.getElementById('chat-history-client');
+        history.scrollTop = history.scrollHeight;
     },
 
     async renderUsers(container) {
