@@ -42,5 +42,113 @@
         "attachments": [],
         "parent_id": null,
         "id": "69d1426f9c640"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Hello from Client 1",
+        "created_at": "2026-04-04 17:42:57",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d14da129411"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Hello from Client 1",
+        "created_at": "2026-04-04 17:44:40",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d14e081d228"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:46:28",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d14e74739fa"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:48:05",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d14ed5044c7"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:49:53",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d14f41c6c34"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:51:59",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d14fbf77f88"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:53:37",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d150211d782"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:55:12",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d150801032b"
+    },
+    {
+        "from": "69d0b9ee882b3",
+        "from_name": "client1",
+        "to": "admin",
+        "subject": "Client Message",
+        "body": "Isolation Test Message",
+        "created_at": "2026-04-04 17:57:03",
+        "read_by": [],
+        "attachments": [],
+        "parent_id": null,
+        "id": "69d150ef390e4"
     }
 ]

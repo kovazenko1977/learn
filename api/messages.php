@@ -29,7 +29,30 @@ switch ($action) {
                 return $isRelevant || $isFromClient || $isToClient;
             });
         }
-        echo json_encode(['success' => true, 'messages' => array_values($messages)]);
+        // Enhance messages with "read_by_partner" flag for UI
+        $enhanced = [];
+        foreach ($messages as $msg) {
+            $partner_id = $msg['from'] === $user['id'] ? $msg['to'] : $msg['from'];
+            $msg['read_by_partner'] = false;
+            if ($user['role'] === 'client') {
+                // If I am client, partner is admin. Check if any admin read it.
+                foreach ($msg['read_by'] ?? [] as $reader_id) {
+                    $reader = Storage::findOne('users', ['id' => $reader_id]);
+                    if ($reader && strpos($reader['role'], 'admin') !== false) {
+                        $msg['read_by_partner'] = true;
+                        break;
+                    }
+                }
+            } else {
+                // If I am admin, partner is likely a client. Check if they read it.
+                if (in_array($partner_id, $msg['read_by'] ?? [])) {
+                    $msg['read_by_partner'] = true;
+                }
+            }
+            $enhanced[] = $msg;
+        }
+
+        echo json_encode(['success' => true, 'messages' => array_values($enhanced)]);
         break;
 
     case 'send':

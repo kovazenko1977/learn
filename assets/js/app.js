@@ -211,18 +211,24 @@ const App = {
     processConversations(messages) {
         const conversations = {};
         messages.forEach(m => {
-            const partnerId = m.from === this.user.id ? m.to : m.from;
-            if (partnerId === 'all' || partnerId === 'admin') return;
-            if (!conversations[partnerId]) {
-                conversations[partnerId] = {
+            // Find the client in this message (either sender or recipient)
+            const sender = this.clients.find(c => c.id === m.from && c.role === 'client');
+            const recipient = this.clients.find(c => c.id === m.to && c.role === 'client');
+
+            const client = sender || recipient;
+            if (!client) return; // Skip messages between admins or broadcasts to 'all'
+
+            const clientId = client.id;
+            if (!conversations[clientId]) {
+                conversations[clientId] = {
                     messages: [],
                     unread: 0,
-                    partner: this.clients.find(c => c.id === partnerId) || { username: partnerId }
+                    partner: client
                 };
             }
-            conversations[partnerId].messages.push(m);
+            conversations[clientId].messages.push(m);
             if (!m.read_by || !m.read_by.includes(this.user.id)) {
-                if (m.from !== this.user.id) conversations[partnerId].unread++;
+                if (m.from === clientId) conversations[clientId].unread++;
             }
         });
         return conversations;
@@ -550,7 +556,7 @@ const App = {
     async renderClientChat(container, messages) {
         container.innerHTML = `
             <div class="view-header">
-                <h1 class="view-title">Поддержка</h1>
+                <h1 class="view-title">Чат с администратором</h1>
             </div>
             <div class="chat-layout">
                 <div class="chat-history" id="chat-history-client">
@@ -591,7 +597,7 @@ const App = {
             }
 
             const isMine = msg.from === this.user.id;
-            const isRead = partnerId ? (msg.read_by && msg.read_by.includes(partnerId)) : (msg.read_by && msg.read_by.length > (isMine ? 0 : 1));
+            const isRead = isMine && msg.read_by_partner;
 
             html += `
                 <div class="chat-bubble ${isMine ? 'mine' : 'theirs'}">
