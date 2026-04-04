@@ -2,7 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#003366">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://alco.by/wp-content/uploads/2021/04/cropped-logo-192x192.png">
     <title>Личный кабинет клиента</title>
     <style>
         :root {
@@ -97,15 +100,25 @@
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
+            :root { --header-height: 60px; }
             header .container { padding: 0 15px; }
-            .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); padding: 10px 0; justify-content: space-around; gap: 0; }
-            .nav-item { flex-direction: column; align-items: center; font-size: 10px; }
-            main { padding-bottom: 80px; }
-            .view-title { font-size: 22px; }
+            .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); padding: 8px 0; justify-content: space-around; gap: 0; padding-bottom: calc(8px + env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+            .nav-item { flex-direction: column; align-items: center; font-size: 10px; flex: 1; padding: 5px 0; }
+            .nav-item.active { color: var(--primary); background: rgba(0, 51, 102, 0.05); border-radius: 8px; }
+            main { padding: 20px 0 100px 0; }
+            .view-title { font-size: 20px; }
             .data-table thead { display: none; }
-            .data-table tr { display: block; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 15px; padding: 10px; }
-            .data-table td { display: flex; justify-content: space-between; border: none; padding: 5px; }
-            .data-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); }
+            .data-table tr { display: block; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 15px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+            .data-table td { display: flex; justify-content: space-between; align-items: center; border: none; padding: 8px 0; font-size: 13px; }
+            .data-table td:not(:last-child) { border-bottom: 1px solid #f8fafc; }
+            .data-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-muted); font-size: 12px; }
+
+            .card { padding: 20px; }
+            .btn { width: 100%; }
+            .btn-sm { width: auto; }
+
+            .chat-layout { height: calc(100vh - 220px); }
+            .chat-bubble { max-width: 90%; }
         }
     </style>
 </head>
@@ -121,10 +134,6 @@
                 <div class="form-group">
                     <label>Пароль</label>
                     <input type="password" id="password" required placeholder="Введите пароль">
-                </div>
-                <div id="two-fa-group" class="form-group hidden">
-                    <label>Код 2FA</label>
-                    <input type="text" id="two-fa-code" placeholder="Введите код">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px; height: 50px;">Войти</button>
             </form>
@@ -156,6 +165,20 @@
     </div>
 
     <!-- Modals -->
+    <div id="install-prompt" class="card hidden animate-fade" style="position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 2000; display: flex; align-items: center; justify-content: space-between; gap: 15px; border: 2px solid var(--primary);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://alco.by/favicon.ico" width="32" height="32">
+            <div>
+                <strong style="display: block; font-size: 14px;">Установить приложение</strong>
+                <small style="font-size: 11px; color: var(--text-muted);">Для быстрого доступа к порталу</small>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline btn-sm" onclick="this.parentElement.parentElement.classList.add('hidden')">Позже</button>
+            <button class="btn btn-primary btn-sm" id="install-button">Установить</button>
+        </div>
+    </div>
+
     <div id="modal-container" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-close" onclick="App.closeModal()">&times;</div>

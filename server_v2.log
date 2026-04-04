@@ -68,3 +68,87 @@
 [Sat Apr  4 08:33:33 2026] [::1]:45350 Accepted
 [Sat Apr  4 08:33:33 2026] [::1]:45350 [200]: GET /api/documents.php?action=list
 [Sat Apr  4 08:33:33 2026] [::1]:45350 Closing
+[Sat Apr  4 13:48:57 2026] [::1]:35182 Accepted
+[Sat Apr  4 13:48:57 2026] [::1]:35182 [200]: GET /
+[Sat Apr  4 13:48:57 2026] [::1]:35182 Closing
+[Sat Apr  4 13:48:58 2026] [::1]:35198 Accepted
+[Sat Apr  4 13:48:58 2026] [::1]:35198 [200]: GET /assets/js/app.js
+[Sat Apr  4 13:48:58 2026] [::1]:35198 Closing
+[Sat Apr  4 13:48:58 2026] [::1]:35208 Accepted
+[Sat Apr  4 13:48:58 2026] [::1]:35208 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 13:48:58 2026] [::1]:35208 Closing
+[Sat Apr  4 13:48:58 2026] [::1]:35220 Accepted
+[Sat Apr  4 13:48:58 2026] [::1]:35220 [200]: GET /sw.js
+[Sat Apr  4 13:48:58 2026] [::1]:35220 Closing
+[Sat Apr  4 13:48:58 2026] [::1]:35222 Accepted
+[Sat Apr  4 13:48:58 2026] [::1]:35234 Accepted
+[Sat Apr  4 13:48:58 2026] [::1]:35250 Accepted
+[Sat Apr  4 13:48:58 2026] [::1]:35222 [200]: GET /
+[Sat Apr  4 13:48:58 2026] [::1]:35222 Closing
+[Sat Apr  4 13:48:58 2026] [::1]:35234 [200]: GET /index.php
+[Sat Apr  4 13:48:58 2026] [::1]:35234 Closing
+[Sat Apr  4 13:48:58 2026] [::1]:35250 [200]: GET /assets/js/app.js
+[Sat Apr  4 13:48:58 2026] [::1]:35250 Closing
+[Sat Apr  4 13:49:05 2026] [::1]:44412 Accepted
+[Sat Apr  4 13:49:05 2026] [::1]:44412 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 13:49:05 2026] [::1]:44412 Closing
+[Sat Apr  4 13:49:05 2026] [::1]:44422 Accepted
+[Sat Apr  4 13:49:05 2026] [::1]:44422 [200]: GET /api/users.php?action=list
+[Sat Apr  4 13:49:05 2026] [::1]:44422 Closing
+[Sat Apr  4 13:49:05 2026] [::1]:44426 Accepted
+[Sat Apr  4 13:49:05 2026] [::1]:44426 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 13:49:05 2026] [::1]:44426 Closing
+[Sat Apr  4 13:49:06 2026] [::1]:44428 Accepted
+[Sat Apr  4 13:49:06 2026] [::1]:44428 [200]: GET /api/documents.php?action=list
+[Sat Apr  4 13:49:06 2026] [::1]:44428 Closing
+[Sat Apr  4 13:49:08 2026] [::1]:44434 Accepted
+[Sat Apr  4 13:49:08 2026] [::1]:44434 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 13:49:08 2026] [::1]:44434 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54488 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54488 [200]: GET /
+[Sat Apr  4 14:05:58 2026] [::1]:54488 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54492 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54492 [200]: GET /assets/js/app.js
+[Sat Apr  4 14:05:58 2026] [::1]:54492 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54508 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54508 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 14:05:58 2026] [::1]:54508 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54514 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54514 [200]: GET /sw.js
+[Sat Apr  4 14:05:58 2026] [::1]:54514 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54520 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54536 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54550 Accepted
+[Sat Apr  4 14:05:58 2026] [::1]:54520 [200]: GET /
+[Sat Apr  4 14:05:58 2026] [::1]:54520 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54536 [200]: GET /index.php
+[Sat Apr  4 14:05:58 2026] [::1]:54536 Closing
+[Sat Apr  4 14:05:58 2026] [::1]:54550 [200]: GET /assets/js/app.js
+[Sat Apr  4 14:05:58 2026] [::1]:54550 Closing
+[Sat Apr  4 14:06:02 2026] [::1]:54558 Accepted
+[Sat Apr  4 14:06:02 2026] [::1]:54558 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 14:06:02 2026] [::1]:54558 Closing
+[Sat Apr  4 14:06:02 2026] [::1]:54572 Accepted
+[Sat Apr  4 14:06:02 2026] [::1]:54572 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 14:06:02 2026] [::1]:54572 Closing
+[Sat Apr  4 14:06:02 2026] [::1]:54578 Accepted
+[Sat Apr  4 14:06:02 2026] [::1]:54578 [200]: GET /api/users.php?action=list
+[Sat Apr  4 14:06:02 2026] [::1]:54578 Closing
+[Sat Apr  4 14:06:02 2026] [::1]:54582 Accepted
+[Sat Apr  4 14:06:02 2026] [::1]:54582 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 14:06:02 2026] [::1]:54582 Closing
+[Sat Apr  4 14:06:03 2026] [::1]:54584 Accepted
+[Sat Apr  4 14:06:03 2026] [::1]:54584 [200]: GET /api/users.php?action=list
+[Sat Apr  4 14:06:03 2026] [::1]:54584 Closing
+[Sat Apr  4 14:06:03 2026] [::1]:54598 Accepted
+[Sat Apr  4 14:06:03 2026] [::1]:54598 [200]: GET /api/documents.php?action=list
+[Sat Apr  4 14:06:03 2026] [::1]:54598 Closing
+[Sat Apr  4 14:06:03 2026] [::1]:33502 Accepted
+[Sat Apr  4 14:06:03 2026] [::1]:33502 [200]: GET /api/messages.php?action=list
+[Sat Apr  4 14:06:03 2026] [::1]:33502 Closing
+[Sat Apr  4 14:07:35 2026] [::1]:47802 Accepted
+[Sat Apr  4 14:07:35 2026] [::1]:47802 [403]: POST /api/external_sync.php?action=sync_users
+[Sat Apr  4 14:07:35 2026] [::1]:47802 Closing
+[Sat Apr  4 14:07:48 2026] [::1]:58488 Accepted
+[Sat Apr  4 14:07:48 2026] [::1]:58488 [200]: POST /api/external_sync.php?action=sync_users
+[Sat Apr  4 14:07:48 2026] [::1]:58488 Closing

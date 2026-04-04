@@ -9,8 +9,7 @@ switch ($action) {
         $data = json_decode(file_get_contents('php://input'), true);
         $username = $data['username'] ?? '';
         $password = $data['password'] ?? '';
-        $code = $data['code'] ?? null;
-        echo json_encode(Auth::login($username, $password, $code));
+        echo json_encode(Auth::login($username, $password));
         break;
 
     case 'logout':

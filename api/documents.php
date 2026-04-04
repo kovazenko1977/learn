@@ -13,7 +13,7 @@ switch ($action) {
 
         if ($user['role'] === 'client') {
             $docs = array_filter($docs, function($doc) use ($user) {
-                return $doc['is_public'] || $doc['client_id'] === $user['id'];
+                return ($doc['is_public'] || $doc['client_id'] === $user['id']) && !($doc['archived'] ?? false);
             });
         }
         echo json_encode(['success' => true, 'documents' => array_values($docs)]);
@@ -76,9 +76,29 @@ switch ($action) {
             break;
         }
 
+        // Increment download stats
+        $doc['downloads'] = ($doc['downloads'] ?? 0) + 1;
+        Storage::update('documents', $id, ['downloads' => $doc['downloads']]);
+
         Security::log('download_document', $user['id'], 'documents', ['id' => $id, 'name' => $doc['name']]);
         Security::decryptFile($path, $doc['original_name']);
         exit;
+
+    case 'archive':
+        Auth::requireRole(['superadmin', 'admin_content']);
+        $id = $_GET['id'] ?? '';
+        Storage::update('documents', $id, ['archived' => true]);
+        Security::log('archive_document', $_SESSION['user_id'], 'documents', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'restore':
+        Auth::requireRole(['superadmin', 'admin_content']);
+        $id = $_GET['id'] ?? '';
+        Storage::update('documents', $id, ['archived' => false]);
+        Security::log('restore_document', $_SESSION['user_id'], 'documents', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
 
     case 'delete':
         Auth::requireRole(['superadmin', 'admin_content']);

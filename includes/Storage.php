@@ -13,7 +13,8 @@ class Storage {
         if (!$fp) return [];
 
         flock($fp, LOCK_SH);
-        $data = file_get_contents($path);
+        $size = filesize($path);
+        $data = $size > 0 ? fread($fp, $size) : '';
         flock($fp, LOCK_UN);
         fclose($fp);
 
@@ -27,6 +28,7 @@ class Storage {
 
         flock($fp, LOCK_EX);
         ftruncate($fp, 0);
+        rewind($fp);
         $success = fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         fflush($fp);
         flock($fp, LOCK_UN);

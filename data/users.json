@@ -14,5 +14,11 @@
         "company_name": "Client Co",
         "tax_id": "999888777",
         "id": "69d0b9ee882b3"
+    },
+    {
+        "username": "sync_test",
+        "company_name": "Sync Co",
+        "password": "$2y$10$S4j\/qkGTAFqBzet7LD5K1uXBm10hSijQv4gvVtaX1UoJqg333C7iS",
+        "id": "69d11b34ef430"
     }
 ]

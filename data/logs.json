@@ -88,5 +88,34 @@
         "date": "2026-04-04 08:33:31",
         "ip": "::1",
         "data": []
+    },
+    {
+        "id": "69d116d1158e0",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-04 13:49:05",
+        "ip": "::1",
+        "data": []
+    },
+    {
+        "id": "69d11acab643a",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-04 14:06:02",
+        "ip": "::1",
+        "data": []
+    },
+    {
+        "id": "69d11b34ef703",
+        "type": "api_sync_users",
+        "user_id": "system",
+        "object": "1c_sync",
+        "date": "2026-04-04 14:07:48",
+        "ip": "::1",
+        "data": {
+            "count": 1
+        }
     }
 ]

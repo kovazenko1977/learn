@@ -31,7 +31,6 @@ switch ($action) {
         $data['address'] = $data['address'] ?? '';
         $data['contact_person'] = $data['contact_person'] ?? '';
         $data['phone'] = $data['phone'] ?? '';
-        $data['two_fa_secret'] = $data['two_fa_secret'] ?? '';
 
         $id = Storage::insert('users', $data);
         Security::log('create_user', $_SESSION['user_id'], 'users', ['id' => $id, 'username' => $data['username']]);
@@ -41,7 +40,11 @@ switch ($action) {
     case 'update':
         $data = json_decode(file_get_contents('php://input'), true);
         $data = Security::sanitize($data);
-        $id = $data['id'];
+        $id = $_GET['id'] ?? $data['id'] ?? '';
+        if (!$id) {
+            echo json_encode(['success' => false, 'error' => 'ID required']);
+            break;
+        }
         unset($data['id']);
         if (!empty($data['password'])) {
             $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
@@ -51,6 +54,28 @@ switch ($action) {
         Storage::update('users', $id, $data);
         Security::log('update_user', $_SESSION['user_id'], 'users', ['id' => $id]);
         echo json_encode(['success' => true]);
+        break;
+
+    case 'block':
+        $id = $_GET['id'] ?? '';
+        Storage::update('users', $id, ['status' => 'blocked']);
+        Security::log('block_user', $_SESSION['user_id'], 'users', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'unblock':
+        $id = $_GET['id'] ?? '';
+        Storage::update('users', $id, ['status' => 'active']);
+        Security::log('unblock_user', $_SESSION['user_id'], 'users', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'reset_password':
+        $id = $_GET['id'] ?? '';
+        $new_password = bin2hex(random_bytes(4)); // 8 chars random
+        Storage::update('users', $id, ['password' => password_hash($new_password, PASSWORD_BCRYPT)]);
+        Security::log('reset_password', $_SESSION['user_id'], 'users', ['id' => $id]);
+        echo json_encode(['success' => true, 'new_password' => $new_password]);
         break;
 
     case 'delete':

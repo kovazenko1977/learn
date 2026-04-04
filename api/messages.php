@@ -18,7 +18,10 @@ switch ($action) {
         } else {
             // Admins see all messages addressed to 'admin', all broadcasts, and all messages they sent
             $messages = array_filter($messages, function($msg) use ($user) {
-                return $msg['to'] === 'admin' || $msg['to'] === 'all' || $msg['from'] === $user['id'] || !isset($msg['to']) || $msg['to'] === 'superadmin';
+                $isRelevant = $msg['to'] === 'admin' || $msg['to'] === 'all' || $msg['from'] === $user['id'] || !isset($msg['to']) || $msg['to'] === 'superadmin';
+                $isFromClient = Storage::findOne('users', ['id' => $msg['from']])['role'] === 'client';
+                $isToClient = Storage::findOne('users', ['id' => $msg['to']])['role'] === 'client';
+                return $isRelevant || $isFromClient || $isToClient;
             });
         }
         echo json_encode(['success' => true, 'messages' => array_values($messages)]);

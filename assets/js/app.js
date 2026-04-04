@@ -6,7 +6,34 @@ const App = {
 
     async init() {
         this.bindEvents();
+        this.registerPWA();
         await this.checkAuth();
+    },
+
+    registerPWA() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const promptEl = document.getElementById('install-prompt');
+            if (promptEl) promptEl.classList.remove('hidden');
+        });
+
+        const installBtn = document.getElementById('install-button');
+        if (installBtn) {
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                }
+                document.getElementById('install-prompt').classList.add('hidden');
+            });
+        }
     },
 
     bindEvents() {
@@ -59,20 +86,16 @@ const App = {
     async login() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const code = document.getElementById('two-fa-code').value;
 
         const res = await this.apiFetch('api/auth.php?action=login', {
             method: 'POST',
-            body: JSON.stringify({ username, password, code })
+            body: JSON.stringify({ username, password })
         });
         const data = await res.json();
 
         if (data.success) {
             this.user = data.user;
             this.showApp();
-        } else if (data['2fa_required']) {
-            document.getElementById('two-fa-group').classList.remove('hidden');
-            alert('Введите код 2FA (тестовый: 000000)');
         } else {
             alert(data.error || 'Ошибка входа');
         }
@@ -217,12 +240,13 @@ const App = {
         const res = await this.apiFetch('api/documents.php?action=list');
         const data = await res.json();
 
+        const isAdmin = ['superadmin', 'admin_content'].includes(this.user.role);
         let html = `
             <div class="view-header">
                 <h1 class="view-title">Документы</h1>
                 <div style="display:flex; gap:10px;">
                     <input type="text" placeholder="Поиск по названию..." id="doc-search" style="padding:6px 12px; width:200px;">
-                    ${['superadmin', 'admin_content'].includes(this.user.role) ? '<button class="btn btn-primary btn-sm" onclick="App.showUploadModal()">Загрузить</button>' : ''}
+                    ${isAdmin ? '<button class="btn btn-primary btn-sm" onclick="App.showUploadModal()">Загрузить</button>' : ''}
                 </div>
             </div>
             <div class="card">
@@ -232,18 +256,28 @@ const App = {
                             <th>Название</th>
                             <th>Тип</th>
                             <th>Дата</th>
+                            ${isAdmin ? '<th>Скачиваний</th>' : ''}
                             <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${data.documents.map(doc => `
-                            <tr>
-                                <td data-label="Название">${this.escapeHTML(doc.name)}</td>
+                            <tr style="${doc.archived ? 'opacity:0.6; font-style:italic' : ''}">
+                                <td data-label="Название">
+                                    ${this.escapeHTML(doc.name)}
+                                    ${doc.archived ? ' <small>(архив)</small>' : ''}
+                                </td>
                                 <td data-label="Тип">${this.escapeHTML(doc.meta.type) || '-'}</td>
                                 <td data-label="Дата">${this.escapeHTML(doc.uploaded_at)}</td>
+                                ${isAdmin ? `<td data-label="Скачиваний">${doc.downloads || 0}</td>` : ''}
                                 <td data-label="Действия">
-                                    <a href="api/documents.php?action=download&id=${doc.id}" class="btn btn-outline btn-sm">Скачать</a>
-                                    ${['superadmin', 'admin_content'].includes(this.user.role) ? `<button onclick="App.deleteDocument('${doc.id}')" class="btn btn-outline btn-sm" style="color:red">Удалить</button>` : ''}
+                                    <div style="display:flex; gap:5px; flex-wrap:wrap">
+                                        <a href="api/documents.php?action=download&id=${doc.id}" class="btn btn-outline btn-sm">Скачать</a>
+                                        ${isAdmin ? `
+                                            <button onclick="App.toggleArchiveDocument('${doc.id}', ${!!doc.archived})" class="btn btn-outline btn-sm">${doc.archived ? 'Восстановить' : 'В архив'}</button>
+                                            <button onclick="App.deleteDocument('${doc.id}')" class="btn btn-outline btn-sm" style="color:red">Удалить</button>
+                                        ` : ''}
+                                    </div>
                                 </td>
                             </tr>
                         `).join('')}
@@ -301,19 +335,21 @@ const App = {
 
         if (isAdmin) {
             const filter = document.getElementById('chat-filter');
-            const clientIds = [...new Set(data.messages.map(m => m.from).filter(id => id !== this.user.id))];
+            const clientIds = [...new Set(data.messages.flatMap(m => [m.from, m.to]).filter(id => id !== this.user.id && id !== 'admin' && id !== 'all'))];
             clientIds.forEach(id => {
                 const opt = document.createElement('option');
                 opt.value = id;
-                opt.textContent = `Чат с: ${id}`;
+                const u = this.clients.find(c => c.id === id);
+                opt.textContent = u ? `Чат с: ${u.company_name || u.username}` : `Чат с: ${id}`;
                 filter.appendChild(opt);
             });
             filter.onchange = (e) => {
                 const val = e.target.value;
-                document.querySelectorAll('.chat-bubble').forEach(b => {
+                document.querySelectorAll('.chat-bubble').forEach((b, idx) => {
+                    const msg = data.messages[idx];
                     if (val === 'all') b.style.display = '';
                     else {
-                        const isRelevant = b.innerHTML.includes(val) || b.classList.contains('mine');
+                        const isRelevant = msg.from === val || msg.to === val;
                         b.style.display = isRelevant ? '' : 'none';
                     }
                 });
@@ -357,7 +393,15 @@ const App = {
                                 </td>
                                 <td data-label="Статус"><span class="badge ${u.status === 'active' ? 'badge-success' : 'badge-warning'}">${this.escapeHTML(u.status)}</span></td>
                                 <td data-label="Действия">
-                                    <button class="btn btn-outline btn-sm" onclick="App.deleteUser('${u.id}')">Удалить</button>
+                                    <div style="display:flex; gap:5px; flex-wrap:wrap">
+                                        <button class="btn btn-outline btn-sm" onclick="App.showEditUserModal('${u.id}')">✏️</button>
+                                        ${u.status === 'active' ?
+                                            `<button class="btn btn-outline btn-sm" onclick="App.blockUser('${u.id}')" title="Блокировать">🚫</button>` :
+                                            `<button class="btn btn-outline btn-sm" onclick="App.unblockUser('${u.id}')" title="Разблокировать">✅</button>`
+                                        }
+                                        <button class="btn btn-outline btn-sm" onclick="App.resetPassword('${u.id}')" title="Сброс пароля">🔑</button>
+                                        <button class="btn btn-outline btn-sm" style="color:red" onclick="App.deleteUser('${u.id}')">🗑️</button>
+                                    </div>
                                 </td>
                             </tr>
                         `).join('')}
@@ -496,7 +540,7 @@ const App = {
                 <div class="form-group">
                     <label>Получатель</label>
                     <select id="msg-to">
-                        <option value="all">Все клиенты</option>
+                        <option value="all">Все клиенты (Рассылка)</option>
                         ${clientOptions}
                     </select>
                 </div>
@@ -617,11 +661,6 @@ const App = {
                         <input type="text" id="user-phone">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                        <input type="checkbox" id="user-2fa"> Включить двухфакторную аутентификацию (2FA)
-                    </label>
-                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Создать</button>
             </form>
         `);
@@ -637,8 +676,7 @@ const App = {
                     tax_id: document.getElementById('user-tax-id').value,
                     address: document.getElementById('user-address').value,
                     contact_person: document.getElementById('user-contact').value,
-                    phone: document.getElementById('user-phone').value,
-                    two_fa_secret: document.getElementById('user-2fa').checked ? 'DEMO_SECRET' : ''
+                    phone: document.getElementById('user-phone').value
                 })
             });
             await this.fetchClients();
@@ -656,6 +694,12 @@ const App = {
         }
     },
 
+    async toggleArchiveDocument(id, isArchived) {
+        const action = isArchived ? 'restore' : 'archive';
+        await this.apiFetch(`api/documents.php?action=${action}&id=${id}`);
+        this.setView('documents');
+    },
+
     async deleteUser(id) {
         if (confirm('Удалить пользователя?')) {
             await this.apiFetch(`api/users.php?action=delete&id=${id}`);
@@ -663,6 +707,79 @@ const App = {
             await this.fetchStats();
             this.setView('users');
         }
+    },
+
+    async blockUser(id) {
+        if (confirm('Заблокировать пользователя?')) {
+            await this.apiFetch(`api/users.php?action=block&id=${id}`);
+            await this.fetchClients();
+            this.setView('users');
+        }
+    },
+
+    async unblockUser(id) {
+        if (confirm('Разблокировать пользователя?')) {
+            await this.apiFetch(`api/users.php?action=unblock&id=${id}`);
+            await this.fetchClients();
+            this.setView('users');
+        }
+    },
+
+    async resetPassword(id) {
+        if (confirm('Сбросить пароль?')) {
+            const res = await this.apiFetch(`api/users.php?action=reset_password&id=${id}`);
+            const data = await res.json();
+            alert(`Новый пароль: ${data.new_password}`);
+        }
+    },
+
+    async showEditUserModal(id) {
+        const user = this.clients.find(u => u.id === id);
+        if (!user) return;
+
+        this.showModal('Редактировать клиента', `
+            <form id="edit-user-form">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div>
+                        <div class="form-group">
+                            <label>Логин</label>
+                            <input type="text" id="user-username" value="${this.escapeHTML(user.username)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Новый пароль (оставьте пустым)</label>
+                            <input type="password" id="user-password">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label>Название компании</label>
+                            <input type="text" id="user-company" value="${this.escapeHTML(user.company_name || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label>ИНН / УНП</label>
+                            <input type="text" id="user-tax-id" value="${this.escapeHTML(user.tax_id || '')}">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Сохранить</button>
+            </form>
+        `);
+
+        document.getElementById('edit-user-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await this.apiFetch(`api/users.php?action=update&id=${id}`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: document.getElementById('user-username').value,
+                    password: document.getElementById('user-password').value,
+                    company_name: document.getElementById('user-company').value,
+                    tax_id: document.getElementById('user-tax-id').value
+                })
+            });
+            await this.fetchClients();
+            this.closeModal();
+            this.setView('users');
+        };
     }
 };
 

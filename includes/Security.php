@@ -2,7 +2,7 @@
 
 class Security {
     private static $cipher = "aes-256-cbc";
-    private static $key_file = __DIR__ . '/../data/encryption_key.bin';
+    private static $key_file = __DIR__ . '/.secrets/encryption_key.bin';
 
     private static function getKey() {
         if (!file_exists(self::$key_file)) {
