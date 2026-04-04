@@ -31,6 +31,7 @@ switch ($action) {
         $data['address'] = $data['address'] ?? '';
         $data['contact_person'] = $data['contact_person'] ?? '';
         $data['phone'] = $data['phone'] ?? '';
+        $data['2fa_secret'] = $data['2fa_secret'] ?? '';
 
         $id = Storage::insert('users', $data);
         Security::log('create_user', $_SESSION['user_id'], 'users', ['id' => $id, 'username' => $data['username']]);

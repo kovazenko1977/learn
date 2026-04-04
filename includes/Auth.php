@@ -34,12 +34,17 @@ class Auth {
         }
 
         // 2FA check (Mocking TOTP-like behavior)
-        if (!empty($user['2fa_secret'])) {
+        // In a production environment, use a library like PHPGangsta_GoogleAuthenticator.
+        if (!empty($user['2fa_secret']) || $user['role'] === 'superadmin') {
             if (!$code) {
                 return ['success' => false, '2fa_required' => true];
             }
-            if ($code !== '000000') { // Default testing code
-                 return ['success' => false, 'error' => 'Invalid 2FA code'];
+            // Demo 2FA logic: '000000' is the universal bypass for testing.
+            // For demo users, the code is also the last 6 chars of their ID.
+            $demo_code = substr($user['id'], -6);
+            if ($code !== '000000' && $code !== $demo_code) {
+                Security::log('auth_fail_2fa', $user['id'], 'auth', ['username' => $username]);
+                return ['success' => false, 'error' => 'Invalid 2FA code. For demo, use 000000.'];
             }
         }
 

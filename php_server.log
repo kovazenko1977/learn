@@ -134,3 +134,36 @@
 [Sat Apr  4 07:14:27 2026] [::1]:42362 Accepted
 [Sat Apr  4 07:14:27 2026] [::1]:42362 [200]: GET /api/messages.php?action=list
 [Sat Apr  4 07:14:27 2026] [::1]:42362 Closing
+[Sat Apr  4 07:24:38 2026] [::1]:41528 Accepted
+[Sat Apr  4 07:24:38 2026] [::1]:41528 [200]: GET /
+[Sat Apr  4 07:24:38 2026] [::1]:41528 Closing
+[Sat Apr  4 07:24:38 2026] [::1]:41540 Accepted
+[Sat Apr  4 07:24:38 2026] [::1]:41540 [200]: GET /assets/js/app.js
+[Sat Apr  4 07:24:38 2026] [::1]:41540 Closing
+[Sat Apr  4 07:24:38 2026] [::1]:41552 Accepted
+[Sat Apr  4 07:24:38 2026] [::1]:41552 [200]: GET /api/auth.php?action=check
+[Sat Apr  4 07:24:38 2026] [::1]:41552 Closing
+[Sat Apr  4 07:24:39 2026] [::1]:41562 Accepted
+[Sat Apr  4 07:24:39 2026] [::1]:41562 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 07:24:39 2026] [::1]:41562 Closing
+[Sat Apr  4 07:24:39 2026] [::1]:41564 Accepted
+[Sat Apr  4 07:24:39 2026] [::1]:41564 [200]: GET /api/users.php?action=list
+[Sat Apr  4 07:24:39 2026] [::1]:41564 Closing
+[Sat Apr  4 07:24:39 2026] [::1]:41568 Accepted
+[Sat Apr  4 07:24:39 2026] [::1]:41568 [200]: GET /api/stats.php?action=summary
+[Sat Apr  4 07:24:39 2026] [::1]:41568 Closing
+[Sat Apr  4 07:25:24 2026] [::1]:35906 Accepted
+[Sat Apr  4 07:25:24 2026] [::1]:35906 [404]: POST /api/auth.php
+[Sat Apr  4 07:25:24 2026] [::1]:35906 Closing
+[Sat Apr  4 07:25:53 2026] [::1]:60136 Accepted
+[Sat Apr  4 07:25:53 2026] [::1]:60136 [404]: POST /api/auth.php
+[Sat Apr  4 07:25:53 2026] [::1]:60136 Closing
+[Sat Apr  4 07:26:45 2026] [::1]:41394 Accepted
+[Sat Apr  4 07:26:46 2026] [::1]:41394 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 07:26:46 2026] [::1]:41394 Closing
+[Sat Apr  4 07:36:17 2026] [::1]:53418 Accepted
+[Sat Apr  4 07:36:17 2026] [::1]:53418 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 07:36:17 2026] [::1]:53418 Closing
+[Sat Apr  4 07:36:31 2026] [::1]:55914 Accepted
+[Sat Apr  4 07:36:32 2026] [::1]:55914 [200]: POST /api/auth.php?action=login
+[Sat Apr  4 07:36:32 2026] [::1]:55914 Closing

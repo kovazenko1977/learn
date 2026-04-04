@@ -6,9 +6,9 @@
     <title>Личный кабинет клиента</title>
     <style>
         :root {
-            --primary: #7360f2;
-            --primary-dark: #5b4cc4;
-            --bg: #f8f9fc;
+            --primary: #003366;
+            --primary-dark: #002244;
+            --bg: #f0f2f5;
             --card-bg: #ffffff;
             --text: #2d3436;
             --text-muted: #636e72;
@@ -25,9 +25,9 @@
         .hidden { display: none !important; }
 
         /* Auth Layout */
-        #auth-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { background: var(--card-bg); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); width: 100%; max-width: 400px; }
-        .auth-card h1 { font-size: 24px; margin-bottom: 24px; text-align: center; color: var(--primary); }
+        #auth-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, #003366 0%, #001a33 100%); }
+        .auth-card { background: var(--card-bg); padding: 50px 40px; border-radius: var(--radius); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); width: 100%; max-width: 420px; }
+        .auth-card h1 { font-size: 26px; margin-bottom: 30px; text-align: center; color: var(--primary); font-weight: 800; }
 
         /* Dashboard Layout */
         header { background: var(--card-bg); height: var(--header-height); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
@@ -115,8 +115,11 @@
                     <label>Код 2FA</label>
                     <input type="text" id="2fa-code" placeholder="Введите код">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px; height: 50px;">Войти</button>
             </form>
+            <div style="text-align: center; border-top: 1px solid var(--border); padding-top: 20px;">
+                <a href="https://alco.by/instal/" class="btn btn-outline" style="width: 100%; text-decoration: none;">На главную alco.by</a>
+            </div>
         </div>
     </div>
 

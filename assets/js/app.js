@@ -409,11 +409,14 @@ const App = {
                 <h1 class="view-title">О программе</h1>
             </div>
             <div class="card">
-                <h2 style="margin-bottom:15px; color:var(--primary)">Enterprise Portal v1.0</h2>
+                <h2 style="margin-bottom:15px; color:var(--primary)">Enterprise Portal v2.0</h2>
                 <p style="margin-bottom:10px">Система управления личным кабинетом клиента.</p>
                 <hr style="margin-bottom:15px; border:0; border-top:1px solid var(--border)">
-                <p style="font-weight:600">Разработана WES.BY</p>
-                <p>Служба поддержки: <a href="tel:+375333533971" style="color:var(--primary); text-decoration:none">+375 33 353 39 71</a></p>
+                <p style="font-weight:600; margin-bottom:10px;">Разработана WES.BY</p>
+                <p style="margin-bottom:10px;">Служба поддержки: <a href="tel:+375333533971" style="color:var(--primary); text-decoration:none">+375 33 353 39 71</a></p>
+                <p style="font-style: italic; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 15px; margin-top: 15px;">
+                    Такое же приложение вы можете заказать на <a href="https://wes.by" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:600;">WES.BY</a>
+                </p>
             </div>
         `;
     },
@@ -599,6 +602,11 @@ const App = {
                         <input type="text" id="user-phone">
                     </div>
                 </div>
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="user-2fa"> Включить двухфакторную аутентификацию (2FA)
+                    </label>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Создать</button>
             </form>
         `);
@@ -614,7 +622,8 @@ const App = {
                     tax_id: document.getElementById('user-tax-id').value,
                     address: document.getElementById('user-address').value,
                     contact_person: document.getElementById('user-contact').value,
-                    phone: document.getElementById('user-phone').value
+                    phone: document.getElementById('user-phone').value,
+                    2fa_secret: document.getElementById('user-2fa').checked ? 'DEMO_SECRET' : ''
                 })
             });
             await this.fetchClients();
