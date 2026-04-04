@@ -47,7 +47,8 @@
         .nav { display: flex; gap: 20px; }
         .nav-item { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 14px; transition: color 0.2s; cursor: pointer; position: relative; }
         .nav-item:hover, .nav-item.active { color: var(--primary); }
-        .badge-nav { position: absolute; top: -5px; right: -12px; background: #e74c3c; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; min-width: 14px; text-align: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .badge-nav { position: absolute; top: -5px; right: -12px; background: #e74c3c; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; min-width: 14px; text-align: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); } 100% { transform: scale(1); } }
 
         main { padding: 40px 0; }
         .view-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }

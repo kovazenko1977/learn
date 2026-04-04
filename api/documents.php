@@ -57,6 +57,14 @@ switch ($action) {
         $id = $_GET['id'] ?? '';
         $doc = Storage::findOne('documents', ['id' => $id]);
         if ($doc) {
+            $user = Auth::getCurrentUser();
+            if ($user['role'] === 'client') {
+                if (!$doc['is_public'] && $doc['client_id'] !== $user['id']) {
+                    http_response_code(403);
+                    echo json_encode(['error' => 'Forbidden']);
+                    exit;
+                }
+            }
             $read_by = $doc['read_by'] ?? [];
             if (!in_array($_SESSION['user_id'], $read_by)) {
                 $read_by[] = $_SESSION['user_id'];

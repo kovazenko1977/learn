@@ -78,6 +78,14 @@ switch ($action) {
         $id = $_GET['id'] ?? '';
         $msg = Storage::findOne('messages', ['id' => $id]);
         if ($msg) {
+            $user = Auth::getCurrentUser();
+            if ($user['role'] === 'client') {
+                if ($msg['to'] !== 'all' && $msg['to'] !== $user['id'] && $msg['from'] !== $user['id']) {
+                    http_response_code(403);
+                    echo json_encode(['error' => 'Forbidden']);
+                    exit;
+                }
+            }
             $read_by = $msg['read_by'] ?? [];
             if (!in_array($_SESSION['user_id'], $read_by)) {
                 $read_by[] = $_SESSION['user_id'];
@@ -92,11 +100,19 @@ switch ($action) {
     case 'download_attachment':
         $att_id = $_GET['id'] ?? '';
         $messages = Storage::read('messages');
+        $user = Auth::getCurrentUser();
         $found = false;
         $file_name = '';
         foreach ($messages as $msg) {
             foreach ($msg['attachments'] as $att) {
                 if ($att['id'] === $att_id) {
+                    if ($user['role'] === 'client') {
+                        if ($msg['to'] !== 'all' && $msg['to'] !== $user['id'] && $msg['from'] !== $user['id']) {
+                            http_response_code(403);
+                            echo json_encode(['error' => 'Forbidden']);
+                            exit;
+                        }
+                    }
                     $found = true;
                     $file_name = $att['name'];
                     break 2;

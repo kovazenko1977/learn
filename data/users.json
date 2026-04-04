@@ -20,5 +20,18 @@
         "company_name": "Sync Co",
         "password": "$2y$10$S4j\/qkGTAFqBzet7LD5K1uXBm10hSijQv4gvVtaX1UoJqg333C7iS",
         "id": "69d11b34ef430"
+    },
+    {
+        "username": "tester2",
+        "password": "$2y$10$hYGvI4A114mc0q.p\/u.NnO1TudgEUKpOwuaRR56fX82Jft4b2Qn86",
+        "role": "client",
+        "company_name": "",
+        "tax_id": "",
+        "address": "",
+        "contact_person": "",
+        "phone": "",
+        "status": "active",
+        "created_at": "2026-04-04 16:55:13",
+        "id": "69d14271a2eed"
     }
 ]
