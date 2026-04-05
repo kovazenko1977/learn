@@ -155,6 +155,7 @@ main {
 .status-badge.published { background: #e2f9ed; color: #1aae6f; }
 .status-badge.draft { background: #fdf3e5; color: #fb6340; }
 .status-badge.scheduled { background: #e8e5ff; color: #5e72e4; }
+.status-badge.group { background: #f4f3ff; color: var(--primary); border: 1px solid #dcd7ff; }
 
 .news-card h3 { margin-bottom: 1rem; font-size: 1.25rem; }
 .news-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; }

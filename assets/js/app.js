@@ -14,13 +14,18 @@ const vueApp = createApp({
             loading: false,
             loginError: '',
             news: [],
+            groups: [],
             searchQuery: '',
             statusFilter: 'all',
+            groupFilter: 'all',
             showEditor: false,
+            showGroupsModal: false,
             showEmbedModal: false,
             showSettingsModal: false,
             accessCodeInput: '',
             editingItem: {},
+            editingGroup: { name: '', description: '' },
+            embedGroup: 'default',
             quill: null,
             toast: null,
             baseUrl: window.location.origin + window.location.pathname.replace('index.php', '')
@@ -31,11 +36,14 @@ const vueApp = createApp({
             return this.news.filter(item => {
                 const matchesSearch = item.title.toLowerCase().includes(this.searchQuery.toLowerCase());
                 const matchesStatus = this.statusFilter === 'all' || item.status === this.statusFilter;
-                return matchesSearch && matchesStatus;
+                const matchesGroup = this.groupFilter === 'all' || (item.group_id || 'default') === this.groupFilter;
+                return matchesSearch && matchesStatus && matchesGroup;
             });
         },
         embedCode() {
-            return `<div id="news-feed"></div>\n<script src="${this.baseUrl}api/public.php?js"></script>`;
+            const containerId = this.embedGroup === 'default' ? 'news-feed' : `news-feed-${this.embedGroup}`;
+            const groupParam = this.embedGroup === 'default' ? '' : `&group=${this.embedGroup}`;
+            return `<div id="${containerId}"></div>\n<script src="${this.baseUrl}api/public.php?js${groupParam}" data-container="${containerId}"></script>`;
         }
     },
     methods: {
@@ -43,7 +51,10 @@ const vueApp = createApp({
             const res = await fetch('api/auth.php?action=check');
             const data = await res.json();
             this.authenticated = data.authenticated;
-            if (this.authenticated) this.fetchNews();
+            if (this.authenticated) {
+                this.fetchNews();
+                this.fetchGroups();
+            }
         },
         async login() {
             if (this.loginCode.length !== 6) {
@@ -84,6 +95,12 @@ const vueApp = createApp({
                 this.authenticated = false;
             }
         },
+        async fetchGroups() {
+            const res = await fetch('api/groups.php');
+            if (res.ok) {
+                this.groups = await res.json();
+            }
+        },
         initQuill() {
             if (this.quill) return;
 
@@ -120,6 +137,7 @@ const vueApp = createApp({
                     content: '',
                     image: '',
                     image_width: '100%',
+                    group_id: 'default',
                     date: new Date().toISOString().slice(0, 16),
                     status: 'published'
                 };
@@ -168,6 +186,34 @@ const vueApp = createApp({
             } finally {
                 this.loading = false;
             }
+        },
+        async saveGroup() {
+            if (!this.editingGroup.name) return;
+            const method = this.editingGroup.id ? 'PUT' : 'POST';
+            const res = await fetch('api/groups.php', {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.editingGroup)
+            });
+            if (res.ok) {
+                this.showToast('Группа сохранена');
+                this.editingGroup = { name: '', description: '' };
+                this.fetchGroups();
+            }
+        },
+        async deleteGroup(id) {
+            if (!confirm('Удалить группу? Новости в ней останутся, но им будет присвоена группа по умолчанию.')) return;
+            const res = await fetch(`api/groups.php?id=${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                this.showToast('Группа удалена');
+                this.fetchGroups();
+                this.fetchNews(); // Refresh news as they might have been reassigned in future implementations
+            }
+        },
+        getGroupName(groupId) {
+            if (!groupId || groupId === 'default') return 'По умолчанию';
+            const group = this.groups.find(g => g.id === groupId);
+            return group ? group.name : 'По умолчанию';
         },
         async deleteNews(id) {
             if (!confirm('Вы уверены, что хотите удалить эту новость?')) return;

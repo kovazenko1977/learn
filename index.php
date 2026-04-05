@@ -32,6 +32,7 @@
                     <h1>Управление новостями</h1>
                     <div class="header-actions">
                         <button class="btn-secondary" @click="showSettingsModal = true">Настройки</button>
+                        <button class="btn-secondary" @click="showGroupsModal = true">Группы</button>
                         <button class="btn-secondary" @click="showEmbedModal = true">Код для сайта</button>
                         <button class="btn-primary" @click="openEditor()">Добавить новость</button>
                         <button class="btn-logout" @click="logout">Выйти</button>
@@ -47,6 +48,11 @@
                         <option value="published">Опубликовано</option>
                         <option value="draft">Черновик</option>
                     </select>
+                    <select v-model="groupFilter">
+                        <option value="all">Все группы</option>
+                        <option value="default">По умолчанию</option>
+                        <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }}</option>
+                    </select>
                 </div>
 
                 <div class="news-list">
@@ -58,8 +64,11 @@
                         <div class="news-info">
                             <div class="news-header">
                                 <span class="news-date">{{ formatDate(item.date) }}</span>
-                                <span v-if="item.status === 'published' && isFuture(item.date)" class="status-badge scheduled">Запланировано</span>
-                                <span v-else :class="['status-badge', item.status]">{{ item.status === 'published' ? 'Опубликовано' : 'Черновик' }}</span>
+                                <div style="display: flex; gap: 5px;">
+                                    <span class="status-badge group">{{ getGroupName(item.group_id) }}</span>
+                                    <span v-if="item.status === 'published' && isFuture(item.date)" class="status-badge scheduled">Запланировано</span>
+                                    <span v-else :class="['status-badge', item.status]">{{ item.status === 'published' ? 'Опубликовано' : 'Черновик' }}</span>
+                                </div>
                             </div>
                             <h3>{{ item.title }}</h3>
                             <div class="news-preview-content" v-html="truncate(item.content, 100)"></div>
@@ -98,6 +107,13 @@
                     <div class="form-group">
                         <label>Дата</label>
                         <input type="datetime-local" v-model="editingItem.date">
+                    </div>
+                    <div class="form-group">
+                        <label>Группа</label>
+                        <select v-model="editingItem.group_id">
+                            <option value="default">По умолчанию</option>
+                            <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }}</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Статус</label>
@@ -154,6 +170,31 @@
             </div>
         </div>
 
+        <!-- Groups Modal -->
+        <div v-if="showGroupsModal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Управление группами</h2>
+                    <button class="close-btn" @click="showGroupsModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Новая группа</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" v-model="editingGroup.name" placeholder="Название группы">
+                            <button class="btn-primary" @click="saveGroup">Добавить</button>
+                        </div>
+                    </div>
+                    <div class="groups-list" style="margin-top: 20px;">
+                        <div v-for="g in groups" :key="g.id" class="group-item" style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; align-items: center;">
+                            <span>{{ g.name }}</span>
+                            <button class="btn-delete" @click="deleteGroup(g.id)" style="padding: 5px 10px;">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Embed Modal -->
         <div v-if="showEmbedModal" class="modal-overlay">
             <div class="modal">
@@ -162,6 +203,13 @@
                     <button class="close-btn" @click="showEmbedModal = false">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <div class="form-group">
+                        <label>Выберите группу новостей</label>
+                        <select v-model="embedGroup">
+                            <option value="default">По умолчанию</option>
+                            <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }}</option>
+                        </select>
+                    </div>
                     <p>Скопируйте этот код и вставьте в нужное место на вашем сайте:</p>
                     <div class="code-preview">
                         <pre><code>{{ embedCode }}</code></pre>

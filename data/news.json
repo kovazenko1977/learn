@@ -7,5 +7,15 @@
         "image_width": "100%",
         "date": "2026-04-05T18:46",
         "status": "published"
+    },
+    {
+        "id": "69d2b27ce226c",
+        "title": "New Marketing Update",
+        "content": "<p><br><\/p>",
+        "image": "",
+        "image_width": "100%",
+        "group_id": "69d2b27c925f4",
+        "date": "2026-04-05T19:05",
+        "status": "published"
     }
 ]

@@ -52,6 +52,7 @@ if ($method === 'GET') {
         'content' => $data['content'] ?? '',
         'image' => $data['image'] ?? '',
         'image_width' => $data['image_width'] ?? '100%',
+        'group_id' => $data['group_id'] ?? 'default',
         'date' => $data['date'] ?? date('Y-m-d H:i:s'),
         'status' => $data['status'] ?? 'published'
     ];
@@ -70,6 +71,7 @@ if ($method === 'GET') {
             $item['content'] = $data['content'] ?? $item['content'];
             $item['image'] = $data['image'] ?? $item['image'];
             $item['image_width'] = $data['image_width'] ?? ($item['image_width'] ?? '100%');
+            $item['group_id'] = $data['group_id'] ?? ($item['group_id'] ?? 'default');
             $item['date'] = $data['date'] ?? $item['date'];
             $item['status'] = $data['status'] ?? $item['status'];
             $updated = true;

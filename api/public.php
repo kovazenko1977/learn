@@ -6,17 +6,19 @@ header('Pragma: no-cache');
 
 $news_file = __DIR__ . '/../data/news.json';
 $news = [];
+$requested_group = $_GET['group'] ?? 'default';
 
 if (file_exists($news_file)) {
     $news = json_decode(file_get_contents($news_file), true);
 
     $now = time();
 
-    // Only published news AND where date is NOT in the future
-    $news = array_filter($news, function($item) use ($now) {
+    // Only published news AND where date is NOT in the future AND group matches
+    $news = array_filter($news, function($item) use ($now, $requested_group) {
         $is_published = ($item['status'] ?? '') === 'published';
         $is_not_future = strtotime($item['date']) <= $now;
-        return $is_published && $is_not_future;
+        $group_match = ($item['group_id'] ?? 'default') === $requested_group;
+        return $is_published && $is_not_future && $group_match;
     });
 
     // Sort by date descending (Newest first)
@@ -69,10 +71,12 @@ $css_escaped = json_encode('<style>' . $css . '</style>');
 
 echo "
 (function() {
-    const container = document.getElementById('news-feed');
+    const script = document.currentScript;
+    const containerId = script && script.getAttribute('data-container') ? script.getAttribute('data-container') : 'news-feed';
+    const container = document.getElementById(containerId);
     if (container) {
         container.innerHTML = $css_escaped + $html_escaped;
     } else {
-        console.error('Container #news-feed not found');
+        console.error('News Feed Container not found: ' + containerId);
     }
 })();";
