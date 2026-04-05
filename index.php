@@ -8,6 +8,7 @@
     <!-- Quill Rich Text Editor -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -112,6 +113,10 @@
                             <input type="file" @change="uploadImage" accept="image/*">
                             <p v-if="!editingItem.image">Нажмите для выбора фото</p>
                         </div>
+                    </div>
+                    <div class="form-group" v-if="editingItem.image">
+                        <label>Ширина обложки (например: 100%, 500px или auto)</label>
+                        <input type="text" v-model="editingItem.image_width" placeholder="auto">
                     </div>
                 </div>
                 <div class="modal-footer">

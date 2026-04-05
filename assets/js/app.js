@@ -1,6 +1,10 @@
 const { createApp } = Vue;
 
-createApp({
+if (typeof Quill !== 'undefined' && typeof ImageResize !== 'undefined') {
+    Quill.register('modules/imageResize', ImageResize);
+}
+
+const vueApp = createApp({
     data() {
         return {
             authenticated: false,
@@ -80,16 +84,28 @@ createApp({
         },
         initQuill() {
             if (this.quill) return;
+
+            // Add handler for image uploads in Quill
+            const toolbar = [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                ['link', 'image'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ];
+
             this.quill = new Quill('#editor-container', {
                 theme: 'snow',
                 modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        ['link', 'image'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['clean']
-                    ]
+                    toolbar: {
+                        container: toolbar,
+                        handlers: {
+                            image: () => this.handleQuillImage()
+                        }
+                    },
+                    imageResize: {
+                        displaySize: true
+                    }
                 }
             });
         },
@@ -101,6 +117,7 @@ createApp({
                     title: '',
                     content: '',
                     image: '',
+                    image_width: '100%',
                     date: new Date().toISOString().slice(0, 16),
                     status: 'published'
                 };
@@ -163,10 +180,27 @@ createApp({
         async uploadImage(event) {
             const file = event.target.files[0];
             if (!file) return;
+            const url = await this._performUpload(file);
+            if (url) this.editingItem.image = url;
+        },
+        async handleQuillImage() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
 
+            input.onchange = async () => {
+                const file = input.files[0];
+                const url = await this._performUpload(file);
+                if (url) {
+                    const range = this.quill.getSelection();
+                    this.quill.insertEmbed(range.index, 'image', this.baseUrl + url);
+                }
+            };
+        },
+        async _performUpload(file) {
             const formData = new FormData();
             formData.append('image', file);
-
             this.loading = true;
             try {
                 const res = await fetch('api/upload.php', {
@@ -175,7 +209,7 @@ createApp({
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    this.editingItem.image = data.url;
+                    return data.url;
                 } else {
                     this.showToast(data.error || 'Ошибка загрузки', 'error');
                 }
@@ -184,6 +218,7 @@ createApp({
             } finally {
                 this.loading = false;
             }
+            return null;
         },
         async updateSettings() {
             if (this.accessCodeInput.length !== 6) {
@@ -262,4 +297,5 @@ createApp({
     mounted() {
         this.checkAuth();
     }
-}).mount('#app');
+});
+window.newsApp = vueApp.mount('#app');

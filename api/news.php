@@ -51,6 +51,7 @@ if ($method === 'GET') {
         'title' => $data['title'] ?? '',
         'content' => $data['content'] ?? '',
         'image' => $data['image'] ?? '',
+        'image_width' => $data['image_width'] ?? '100%',
         'date' => $data['date'] ?? date('Y-m-d H:i:s'),
         'status' => $data['status'] ?? 'published'
     ];
@@ -68,6 +69,7 @@ if ($method === 'GET') {
             $item['title'] = $data['title'] ?? $item['title'];
             $item['content'] = $data['content'] ?? $item['content'];
             $item['image'] = $data['image'] ?? $item['image'];
+            $item['image_width'] = $data['image_width'] ?? ($item['image_width'] ?? '100%');
             $item['date'] = $data['date'] ?? $item['date'];
             $item['status'] = $data['status'] ?? $item['status'];
             $updated = true;

@@ -35,7 +35,8 @@ $baseUrl = $protocol . "://" . $host . $base_dir;
 $html = '<div class="wes-news-container">';
 foreach ($news as $item) {
     $date = date('d.m.Y H:i', strtotime($item['date']));
-    $img = $item['image'] ? '<img src="' . $baseUrl . $item['image'] . '" class="wes-news-img">' : '';
+    $img_width = $item['image_width'] ?? '100%';
+    $img = $item['image'] ? '<img src="' . $baseUrl . $item['image'] . '" class="wes-news-img" style="width: ' . htmlspecialchars($img_width) . ';">' : '';
     $html .= '
     <div class="wes-news-item">
         ' . $img . '
@@ -59,6 +60,7 @@ $css = '
 .wes-news-date { font-size: 0.9rem; color: #888; margin-bottom: 10px; }
 .wes-news-title { margin: 0 0 15px 0; font-size: 1.8rem; color: #333; line-height: 1.3; }
 .wes-news-text { line-height: 1.8; color: #444; font-size: 1.1rem; }
+.wes-news-text img { max-width: 100%; height: auto; }
 ';
 
 // Escape for JS
