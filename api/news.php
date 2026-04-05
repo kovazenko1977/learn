@@ -3,6 +3,8 @@ require_once __DIR__ . '/../includes/Auth.php';
 Auth::requireAuth();
 
 header('Content-Type: application/json');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 $news_file = __DIR__ . '/../data/news.json';
 
@@ -21,7 +23,12 @@ function getNews() {
 
 function saveNews($news) {
     global $news_file;
-    file_put_contents($news_file, json_encode($news, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
+    $json = json_encode($news, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    if ($json !== false && json_last_error() === JSON_ERROR_NONE) {
+        file_put_contents($news_file, $json, LOCK_EX);
+        return true;
+    }
+    return false;
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -68,6 +75,7 @@ if ($method === 'GET') {
             break;
         }
     }
+    unset($item);
 
     if ($updated) {
         saveNews($news);

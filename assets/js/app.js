@@ -138,7 +138,9 @@ createApp({
                     this.closeEditor();
                     this.fetchNews();
                 } else {
-                    this.showToast('Ошибка при сохранении', 'error');
+                    const errorData = await res.json();
+                    this.showToast('Ошибка: ' + (errorData.error || 'не удалось сохранить'), 'error');
+                    console.error('Save error:', errorData);
                 }
             } catch (e) {
                 this.showToast('Ошибка сети', 'error');
