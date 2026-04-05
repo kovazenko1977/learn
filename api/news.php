@@ -13,7 +13,10 @@ if (!file_exists($news_file)) {
 
 function getNews() {
     global $news_file;
-    return json_decode(file_get_contents($news_file), true);
+    if (!file_exists($news_file)) return [];
+    $content = file_get_contents($news_file);
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : [];
 }
 
 function saveNews($news) {

@@ -95,7 +95,7 @@ createApp({
         },
         openEditor(item = null) {
             if (item) {
-                this.editingItem = { ...item };
+                this.editingItem = JSON.parse(JSON.stringify(item));
             } else {
                 this.editingItem = {
                     title: '',
@@ -239,6 +239,7 @@ createApp({
             return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         },
         truncate(text, length) {
+            if (!text) return '';
             // Remove HTML tags for preview
             const plainText = text.replace(/<[^>]*>/g, '');
             if (plainText.length <= length) return plainText;
