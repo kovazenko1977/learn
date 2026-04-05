@@ -1,0 +1,46 @@
+[Sun Apr  5 18:44:39 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sun Apr  5 18:45:08 2026] [::1]:56394 Accepted
+[Sun Apr  5 18:45:08 2026] [::1]:56394 [200]: GET /index.php
+[Sun Apr  5 18:45:08 2026] [::1]:56394 Closing
+[Sun Apr  5 18:45:08 2026] [::1]:56398 Accepted
+[Sun Apr  5 18:45:08 2026] [::1]:56412 Accepted
+[Sun Apr  5 18:45:08 2026] [::1]:56398 [200]: GET /assets/css/style.css
+[Sun Apr  5 18:45:08 2026] [::1]:56398 Closing
+[Sun Apr  5 18:45:08 2026] [::1]:56412 [200]: GET /assets/js/app.js
+[Sun Apr  5 18:45:08 2026] [::1]:56412 Closing
+[Sun Apr  5 18:45:08 2026] [::1]:56420 Accepted
+[Sun Apr  5 18:45:08 2026] [::1]:56420 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 18:45:08 2026] [::1]:56420 Closing
+[Sun Apr  5 18:45:08 2026] [::1]:56434 Accepted
+[Sun Apr  5 18:45:08 2026] [::1]:56434 [200]: POST /api/auth.php?action=login
+[Sun Apr  5 18:45:08 2026] [::1]:56434 Closing
+[Sun Apr  5 18:45:08 2026] [::1]:56450 Accepted
+[Sun Apr  5 18:45:08 2026] [::1]:56450 [200]: GET /api/news.php
+[Sun Apr  5 18:45:08 2026] [::1]:56450 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45270 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45270 [200]: GET /index.php
+[Sun Apr  5 18:46:14 2026] [::1]:45270 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45284 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45290 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45284 [200]: GET /assets/css/style.css
+[Sun Apr  5 18:46:14 2026] [::1]:45284 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45290 [200]: GET /assets/js/app.js
+[Sun Apr  5 18:46:14 2026] [::1]:45290 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45302 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45302 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 18:46:14 2026] [::1]:45302 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45316 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45316 [200]: POST /api/auth.php?action=login
+[Sun Apr  5 18:46:14 2026] [::1]:45316 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45330 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45330 [200]: GET /api/news.php
+[Sun Apr  5 18:46:14 2026] [::1]:45330 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45342 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45342 [200]: POST /api/news.php
+[Sun Apr  5 18:46:14 2026] [::1]:45342 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45344 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45344 [200]: GET /api/news.php
+[Sun Apr  5 18:46:14 2026] [::1]:45344 Closing
+[Sun Apr  5 18:46:14 2026] [::1]:45354 Accepted
+[Sun Apr  5 18:46:14 2026] [::1]:45354 [200]: GET /assets/img/no-image.png
+[Sun Apr  5 18:46:14 2026] [::1]:45354 Closing

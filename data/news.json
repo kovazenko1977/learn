@@ -1,1 +1,11 @@
-[]
+[
+    {
+        "id": "69d2adf6cc5bd",
+        "title": "Repro News Title",
+        "content": "<p>Repro Content<\/p>",
+        "image": "",
+        "image_width": "100%",
+        "date": "2026-04-05T18:46",
+        "status": "published"
+    }
+]

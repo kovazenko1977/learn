@@ -1,7 +1,9 @@
 const { createApp } = Vue;
 
 if (typeof Quill !== 'undefined' && typeof ImageResize !== 'undefined') {
-    Quill.register('modules/imageResize', ImageResize);
+    // Some versions of the module export as .default
+    const resizeModule = ImageResize.default || ImageResize;
+    Quill.register('modules/imageResize', resizeModule);
 }
 
 const vueApp = createApp({
@@ -140,7 +142,9 @@ const vueApp = createApp({
                 return;
             }
 
-            this.editingItem.content = this.quill.root.innerHTML;
+            if (this.quill) {
+                this.editingItem.content = this.quill.root.innerHTML;
+            }
 
             this.loading = true;
             const method = this.editingItem.id ? 'PUT' : 'POST';
