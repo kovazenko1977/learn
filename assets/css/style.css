@@ -154,6 +154,7 @@ main {
 
 .status-badge.published { background: #e2f9ed; color: #1aae6f; }
 .status-badge.draft { background: #fdf3e5; color: #fb6340; }
+.status-badge.scheduled { background: #e8e5ff; color: #5e72e4; }
 
 .news-card h3 { margin-bottom: 1rem; font-size: 1.25rem; }
 .news-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; }
@@ -265,4 +266,25 @@ main {
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
+}
+
+footer {
+    background: var(--white);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid #eee;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.footer-content a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
 }

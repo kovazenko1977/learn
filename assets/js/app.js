@@ -160,6 +160,9 @@ createApp({
             if (text.length <= length) return text;
             return text.substring(0, length) + '...';
         },
+        isFuture(dateStr) {
+            return new Date(dateStr) > new Date();
+        },
         showToast(message, type = 'success') {
             this.toast = { message, type };
             setTimeout(() => { this.toast = null; }, 3000);

@@ -7,11 +7,17 @@ $news = [];
 
 if (file_exists($news_file)) {
     $news = json_decode(file_get_contents($news_file), true);
-    // Only published news
-    $news = array_filter($news, function($item) {
-        return ($item['status'] ?? '') === 'published';
+
+    $now = time();
+
+    // Only published news AND where date is NOT in the future
+    $news = array_filter($news, function($item) use ($now) {
+        $is_published = ($item['status'] ?? '') === 'published';
+        $is_not_future = strtotime($item['date']) <= $now;
+        return $is_published && $is_not_future;
     });
-    // Sort by date
+
+    // Sort by date descending
     usort($news, function($a, $b) {
         return strtotime($b['date']) - strtotime($a['date']);
     });
@@ -20,8 +26,8 @@ if (file_exists($news_file)) {
 // Robustly calculate the base URL for images
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
 $host = $_SERVER['HTTP_HOST'];
-$script_path = $_SERVER['SCRIPT_NAME']; // e.g., /news/api/public.php
-$base_dir = str_replace('api/public.php', '', $script_path); // e.g., /news/
+$script_path = $_SERVER['SCRIPT_NAME'];
+$base_dir = str_replace('api/public.php', '', $script_path);
 $baseUrl = $protocol . "://" . $host . $base_dir;
 
 $html = '<div class="wes-news-container">';

@@ -53,7 +53,8 @@
                         <div class="news-info">
                             <div class="news-header">
                                 <span class="news-date">{{ formatDate(item.date) }}</span>
-                                <span :class="['status-badge', item.status]">{{ item.status === 'published' ? 'Опубликовано' : 'Черновик' }}</span>
+                                <span v-if="item.status === 'published' && isFuture(item.date)" class="status-badge scheduled">Запланировано</span>
+                                <span v-else :class="['status-badge', item.status]">{{ item.status === 'published' ? 'Опубликовано' : 'Черновик' }}</span>
                             </div>
                             <h3>{{ item.title }}</h3>
                             <p>{{ truncate(item.content, 100) }}</p>
@@ -65,6 +66,12 @@
                     </div>
                 </div>
             </main>
+
+            <footer>
+                <div class="footer-content">
+                    <p>Разработано <strong>WES.BY</strong> &bull; Тел: <a href="tel:+375333533971">+375 33 353 39 71</a></p>
+                </div>
+            </footer>
         </div>
 
         <!-- Editor Modal -->
