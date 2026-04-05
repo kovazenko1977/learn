@@ -1,0 +1,73 @@
+[Sun Apr  5 14:45:31 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41874 Accepted
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41874 [200]: GET /index.php
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41874 Closing
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41882 Accepted
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41896 Accepted
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41882 [200]: GET /assets/css/style.css
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41896 [200]: GET /assets/js/app.js
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41882 Closing
+[Sun Apr  5 14:45:57 2026] 127.0.0.1:41896 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41904 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41904 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41904 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41910 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41910 [200]: POST /api/auth.php?action=login
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41910 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41912 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41912 [200]: GET /api/news.php
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41912 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41928 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41938 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41946 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41928 [200]: GET /assets/img/no-image.png
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41938 [200]: GET /uploads/img_69d254631c263.png
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41946 [200]: GET /uploads/img_69d2544c72549.png
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41928 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41938 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41946 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41948 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41948 [200]: POST /api/news.php
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41948 Closing
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41958 Accepted
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41958 [200]: GET /api/news.php
+[Sun Apr  5 14:45:58 2026] 127.0.0.1:41958 Closing
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60164 Accepted
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60164 [200]: GET /index.php
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60164 Closing
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60168 Accepted
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60178 Accepted
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60168 [200]: GET /assets/css/style.css
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60178 [200]: GET /assets/js/app.js
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60168 Closing
+[Sun Apr  5 14:46:22 2026] 127.0.0.1:60178 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60192 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60192 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60192 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60200 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60200 [200]: POST /api/auth.php?action=login
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60200 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60204 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60204 [200]: GET /api/news.php
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60204 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60210 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60214 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60220 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60210 [200]: GET /assets/img/no-image.png
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60210 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60214 [200]: GET /uploads/img_69d254631c263.png
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60214 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60220 [200]: GET /uploads/img_69d2544c72549.png
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60220 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60232 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60232 [200]: POST /api/news.php
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60232 Closing
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60242 Accepted
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60242 [200]: GET /api/news.php
+[Sun Apr  5 14:46:23 2026] 127.0.0.1:60242 Closing
+[Sun Apr  5 14:46:24 2026] 127.0.0.1:60246 Accepted
+[Sun Apr  5 14:46:24 2026] 127.0.0.1:60246 [200]: POST /api/service.php?action=delete_all
+[Sun Apr  5 14:46:24 2026] 127.0.0.1:60246 Closing
+[Sun Apr  5 14:46:24 2026] 127.0.0.1:60262 Accepted
+[Sun Apr  5 14:46:24 2026] 127.0.0.1:60262 [200]: GET /api/news.php
+[Sun Apr  5 14:46:24 2026] 127.0.0.1:60262 Closing

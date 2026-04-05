@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Управление новостями - WES.BY</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 </head>
 <body>
     <div id="app">
@@ -27,6 +30,7 @@
                 <div class="header-content">
                     <h1>Управление новостями</h1>
                     <div class="header-actions">
+                        <button class="btn-secondary" @click="showSettingsModal = true">Настройки</button>
                         <button class="btn-secondary" @click="showEmbedModal = true">Код для сайта</button>
                         <button class="btn-primary" @click="openEditor()">Добавить новость</button>
                         <button class="btn-logout" @click="logout">Выйти</button>
@@ -57,7 +61,7 @@
                                 <span v-else :class="['status-badge', item.status]">{{ item.status === 'published' ? 'Опубликовано' : 'Черновик' }}</span>
                             </div>
                             <h3>{{ item.title }}</h3>
-                            <p>{{ truncate(item.content, 100) }}</p>
+                            <div class="news-preview-content" v-html="truncate(item.content, 100)"></div>
                             <div class="news-actions">
                                 <button class="btn-edit" @click="openEditor(item)">Изменить</button>
                                 <button class="btn-delete" @click="deleteNews(item.id)">Удалить</button>
@@ -75,11 +79,11 @@
         </div>
 
         <!-- Editor Modal -->
-        <div v-if="showEditor" class="modal-overlay">
+        <div v-show="showEditor" class="modal-overlay">
             <div class="modal">
                 <div class="modal-header">
                     <h2>{{ editingItem.id ? 'Изменить новость' : 'Новая новость' }}</h2>
-                    <button class="close-btn" @click="showEditor = false">&times;</button>
+                    <button class="close-btn" @click="closeEditor">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -87,8 +91,8 @@
                         <input type="text" v-model="editingItem.title" placeholder="Введите заголовок">
                     </div>
                     <div class="form-group">
-                        <label>Контент (HTML поддерживается)</label>
-                        <textarea v-model="editingItem.content" rows="6" placeholder="Текст новости..."></textarea>
+                        <label>Контент новости</label>
+                        <div id="editor-container" style="height: 300px; background: white;"></div>
                     </div>
                     <div class="form-group">
                         <label>Дата</label>
@@ -102,7 +106,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Изображение</label>
+                        <label>Главное изображение (обложка)</label>
                         <div class="upload-area">
                             <img v-if="editingItem.image" :src="editingItem.image" class="preview-img">
                             <input type="file" @change="uploadImage" accept="image/*">
@@ -111,8 +115,36 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-secondary" @click="showEditor = false">Отмена</button>
+                    <button class="btn-secondary" @click="closeEditor">Отмена</button>
                     <button class="btn-primary" @click="saveNews" :disabled="loading">Сохранить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div v-if="showSettingsModal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Настройки и Сервис</h2>
+                    <button class="close-btn" @click="showSettingsModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Код доступа (6 цифр)</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="password" v-model="accessCodeInput" maxlength="6" placeholder="******">
+                            <button class="btn-primary" @click="updateSettings" :disabled="loading">Обновить</button>
+                        </div>
+                    </div>
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                    <div class="service-actions">
+                        <h3>Сервис</h3>
+                        <p style="margin-bottom: 15px; font-size: 0.9rem; color: #888;">Внимание: эти действия необратимы</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button class="btn-delete" @click="cleanupFiles" :disabled="loading">Очистить мусор</button>
+                            <button class="btn-delete" @click="deleteAllNews" :disabled="loading">Удалить все</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
