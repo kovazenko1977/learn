@@ -340,6 +340,9 @@ const App = {
             case 'maintenance':
                 await this.renderMaintenance(container);
                 break;
+            case 'profile':
+                await this.renderProfile(container);
+                break;
             case 'about':
                 this.renderAbout(container);
                 break;
@@ -820,10 +823,35 @@ const App = {
     },
 
     async renderMaintenance(container) {
+        const res = await this.apiFetch('api/settings.php?action=get');
+        const data = await res.json();
+        const settings = data.settings;
+
         container.innerHTML = `
             <div class="view-header">
                 <h1 class="view-title">Оптимизация и Сервис</h1>
             </div>
+
+            <div class="card" style="margin-bottom:30px">
+                <h3>Настройки уведомлений (Email)</h3>
+                <form id="notification-settings-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; margin-top:15px;">
+                    <div class="form-group">
+                        <label>Отправка уведомлений</label>
+                        <select id="smtp_enabled">
+                            <option value="true" ${settings.smtp_enabled ? 'selected' : ''}>Включена</option>
+                            <option value="false" ${!settings.smtp_enabled ? 'selected' : ''}>Выключена</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email отправителя</label>
+                        <input type="email" id="smtp_from" value="${this.escapeHTML(settings.smtp_from || '')}" placeholder="noreply@example.com">
+                    </div>
+                    <div style="grid-column: 1 / -1">
+                        <button type="submit" class="btn btn-primary">Сохранить настройки Email</button>
+                    </div>
+                </form>
+            </div>
+
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
                 <div class="card">
                     <h3>Очистка логов</h3>
@@ -831,7 +859,7 @@ const App = {
                     <button class="btn btn-outline" style="color:red; width:100%" onclick="App.clearLogs()">Очистить все логи</button>
                 </div>
                 <div class="card">
-                    <h3>Осистка временных файлов</h3>
+                    <h3>Очистка временных файлов</h3>
                     <p style="color:var(--text-muted); font-size:13px; margin:10px 0;">Удаление бесхозных файлов в папке uploads (не связанных с документами или сообщениями).</p>
                     <button class="btn btn-primary" style="width:100%" onclick="App.cleanupOrphans()">Запустить очистку</button>
                 </div>
@@ -847,6 +875,18 @@ const App = {
                 </div>
             </div>
         `;
+
+        document.getElementById('notification-settings-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await this.apiFetch('api/settings.php?action=update', {
+                method: 'POST',
+                body: JSON.stringify({
+                    smtp_enabled: document.getElementById('smtp_enabled').value === 'true',
+                    smtp_from: document.getElementById('smtp_from').value
+                })
+            });
+            this.showToast('Настройки уведомлений обновлены');
+        };
     },
 
     async cleanupOrphans() {
@@ -865,6 +905,46 @@ const App = {
         const res = await this.apiFetch('api/settings.php?action=toggle_maintenance');
         const data = await res.json();
         alert(`Режим техобслуживания: ${data.maintenance ? 'ВКЛ' : 'ВЫКЛ'}`);
+    },
+
+    async renderProfile(container) {
+        const res = await this.apiFetch('api/users.php?action=list');
+        const data = await res.json();
+        const me = data.users.find(u => u.id === this.user.id);
+        if (!me) return;
+
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">Мой профиль</h1>
+            </div>
+            <div class="card">
+                <h3>Настройки уведомлений</h3>
+                <form id="profile-form" style="margin-top:20px">
+                    <div class="form-group">
+                        <label>Ваш Email для уведомлений</label>
+                        <input type="email" id="profile-email" value="${this.escapeHTML(me.email || '')}" placeholder="example@mail.com">
+                        <small style="color:var(--text-muted)">На этот адрес будут приходить уведомления о новых документах и сообщениях.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3>Безопасность</h3>
+                <p style="margin:15px 0">Вы можете изменить свой пароль для входа в кабинет.</p>
+                <button class="btn btn-outline" onclick="App.showEditUserModal('${this.user.id}')">Изменить пароль / Данные</button>
+            </div>
+        `;
+
+        document.getElementById('profile-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await this.apiFetch(`api/users.php?action=update&id=${this.user.id}`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: document.getElementById('profile-email').value
+                })
+            });
+            this.showToast('Профиль обновлен');
+        };
     },
 
     renderAbout(container) {
@@ -1036,6 +1116,10 @@ const App = {
                             <input type="password" id="user-password" required>
                         </div>
                         <div class="form-group">
+                            <label>Email для уведомлений</label>
+                            <input type="email" id="user-email">
+                        </div>
+                        <div class="form-group">
                             <label>Роль</label>
                             <select id="user-role">
                                 <option value="client">Клиент</option>
@@ -1082,6 +1166,7 @@ const App = {
                     password: document.getElementById('user-password').value,
                     role: document.getElementById('user-role').value,
                     company_name: document.getElementById('user-company').value,
+                    email: document.getElementById('user-email').value,
                     tax_id: document.getElementById('user-tax-id').value,
                     address: document.getElementById('user-address').value,
                     contact_person: document.getElementById('user-contact').value,
@@ -1165,6 +1250,10 @@ const App = {
                             <label>Новый пароль (оставьте пустым)</label>
                             <input type="password" id="user-password">
                         </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="user-email" value="${this.escapeHTML(user.email || '')}">
+                        </div>
                     </div>
                     <div>
                         <div class="form-group">
@@ -1189,6 +1278,7 @@ const App = {
                     username: document.getElementById('user-username').value,
                     password: document.getElementById('user-password').value,
                     company_name: document.getElementById('user-company').value,
+                    email: document.getElementById('user-email').value,
                     tax_id: document.getElementById('user-tax-id').value
                 })
             });

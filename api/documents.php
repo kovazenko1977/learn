@@ -47,6 +47,20 @@ switch ($action) {
             ];
             Storage::insert('documents', $doc);
             Security::log('upload_document', $_SESSION['user_id'], 'documents', ['id' => $id, 'name' => $doc['name']]);
+
+            // Email Notification
+            require_once __DIR__ . '/../includes/Mailer.php';
+            if ($doc['client_id']) {
+                Mailer::notifyNewDocument($doc['client_id'], $doc['name']);
+            } else if ($doc['is_public']) {
+                $users = Storage::read('users');
+                foreach ($users as $u) {
+                    if (($u['role'] ?? '') === 'client' && !empty($u['email'])) {
+                        Mailer::notifyNewDocument($u['id'], $doc['name']);
+                    }
+                }
+            }
+
             echo json_encode(['success' => true, 'id' => $id]);
         } else {
             echo json_encode(['success' => false, 'error' => 'Encryption failed']);

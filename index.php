@@ -175,6 +175,7 @@
                     <a class="nav-item admin-only hidden" data-view="users"><span>👥</span>Клиенты</a>
                     <a class="nav-item admin-only hidden" data-view="logs"><span>📋</span>Логи</a>
                     <a class="nav-item admin-only hidden" data-view="maintenance"><span>⚙️</span>Сервис</a>
+                    <a class="nav-item" data-view="profile"><span>👤</span>Профиль</a>
                     <a class="nav-item" data-view="about"><span>ℹ️</span>Инфо</a>
                     <a class="nav-item" id="logout-btn"><span>🚪</span>Выход</a>
                 </nav>

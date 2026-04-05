@@ -911,3 +911,69 @@
 [Sat Apr  4 19:09:06 2026] [::1]:42566 Accepted
 [Sat Apr  4 19:09:06 2026] [::1]:42566 [200]: GET /api/messages.php?action=list
 [Sat Apr  4 19:09:06 2026] [::1]:42566 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42756 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42756 [200]: GET /
+[Sun Apr  5 06:33:04 2026] [::1]:42756 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42760 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42760 [200]: GET /assets/js/app.js
+[Sun Apr  5 06:33:04 2026] [::1]:42760 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42768 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42768 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 06:33:04 2026] [::1]:42768 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42776 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42776 [200]: GET /sw.js
+[Sun Apr  5 06:33:04 2026] [::1]:42776 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42778 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42786 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42796 Accepted
+[Sun Apr  5 06:33:04 2026] [::1]:42778 [200]: GET /
+[Sun Apr  5 06:33:04 2026] [::1]:42778 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42786 [200]: GET /index.php
+[Sun Apr  5 06:33:04 2026] [::1]:42786 Closing
+[Sun Apr  5 06:33:04 2026] [::1]:42796 [200]: GET /assets/js/app.js
+[Sun Apr  5 06:33:04 2026] [::1]:42796 Closing
+[Sun Apr  5 06:33:08 2026] [::1]:43408 Accepted
+[Sun Apr  5 06:33:08 2026] [::1]:43408 [200]: POST /api/auth.php?action=login
+[Sun Apr  5 06:33:08 2026] [::1]:43408 Closing
+[Sun Apr  5 06:33:08 2026] [::1]:43414 Accepted
+[Sun Apr  5 06:33:08 2026] [::1]:43414 [200]: GET /api/users.php?action=list
+[Sun Apr  5 06:33:08 2026] [::1]:43414 Closing
+[Sun Apr  5 06:33:08 2026] [::1]:43428 Accepted
+[Sun Apr  5 06:33:08 2026] [::1]:43428 [200]: GET /api/stats.php?action=summary
+[Sun Apr  5 06:33:08 2026] [::1]:43428 Closing
+[Sun Apr  5 06:33:09 2026] [::1]:43436 Accepted
+[Sun Apr  5 06:33:09 2026] [::1]:43436 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 06:33:09 2026] [::1]:43436 Closing
+[Sun Apr  5 06:33:09 2026] [::1]:43440 Accepted
+[Sun Apr  5 06:33:09 2026] [::1]:43440 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 06:33:09 2026] [::1]:43440 Closing
+[Sun Apr  5 06:33:09 2026] [::1]:43456 Accepted
+[Sun Apr  5 06:33:09 2026] [::1]:43456 [200]: GET /api/settings.php?action=get
+[Sun Apr  5 06:33:09 2026] [::1]:43456 Closing
+[Sun Apr  5 06:33:09 2026] [::1]:43470 Accepted
+[Sun Apr  5 06:33:09 2026] [::1]:43470 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 06:33:09 2026] [::1]:43470 Closing
+[Sun Apr  5 06:33:09 2026] [::1]:43476 Accepted
+[Sun Apr  5 06:33:09 2026] [::1]:43476 [200]: GET /api/users.php?action=list
+[Sun Apr  5 06:33:09 2026] [::1]:43476 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43486 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43486 [200]: GET /api/auth.php?action=logout
+[Sun Apr  5 06:33:11 2026] [::1]:43486 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43496 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43496 [200]: POST /api/auth.php?action=login
+[Sun Apr  5 06:33:11 2026] [::1]:43496 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43508 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43508 [200]: GET /api/stats.php?action=summary
+[Sun Apr  5 06:33:11 2026] [::1]:43508 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43524 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43524 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 06:33:11 2026] [::1]:43524 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43540 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43540 [200]: GET /api/users.php?action=list
+[Sun Apr  5 06:33:11 2026] [::1]:43540 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43550 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43550 [200]: GET /api/auth.php?action=check
+[Sun Apr  5 06:33:11 2026] [::1]:43550 Closing
+[Sun Apr  5 06:33:11 2026] [::1]:43556 Accepted
+[Sun Apr  5 06:33:11 2026] [::1]:43556 [200]: GET /api/users.php?action=list
+[Sun Apr  5 06:33:11 2026] [::1]:43556 Closing

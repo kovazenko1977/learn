@@ -94,6 +94,28 @@ switch ($action) {
 
         $id = Storage::insert('messages', $message);
         Security::log('send_message', $_SESSION['user_id'], 'messages', ['id' => $id]);
+
+        // Email Notification
+        require_once __DIR__ . '/../includes/Mailer.php';
+        if ($message['to'] === 'all') {
+            $users = Storage::read('users');
+            foreach ($users as $u) {
+                if (($u['role'] ?? '') === 'client' && !empty($u['email'])) {
+                    Mailer::notifyNewMessage($u['id'], $user['username']);
+                }
+            }
+        } else if ($message['to'] !== 'admin' && $message['to'] !== 'superadmin') {
+            Mailer::notifyNewMessage($message['to'], $user['username']);
+        } else {
+            // Message to admin - notify communications admin
+            $admins = Storage::read('users');
+            foreach ($admins as $adm) {
+                if ($adm['role'] === 'admin_communications' && !empty($adm['email'])) {
+                    Mailer::notifyNewMessage($adm['id'], $user['username']);
+                }
+            }
+        }
+
         echo json_encode(['success' => true, 'id' => $id]);
         break;
 

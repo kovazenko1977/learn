@@ -799,5 +799,38 @@
         "device": "Mobile",
         "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/13.0.3 Mobile\/15E148 Safari\/604.1",
         "data": []
+    },
+    {
+        "id": "69d20224e2b25",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-05 06:33:08",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d2022716871",
+        "type": "logout",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-05 06:33:11",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d2022770d73",
+        "type": "login",
+        "user_id": "69d0b9ee882b3",
+        "object": "auth",
+        "date": "2026-04-05 06:33:11",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
     }
 ]

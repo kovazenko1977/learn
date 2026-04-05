@@ -2,13 +2,20 @@
 require_once __DIR__ . '/../includes/Auth.php';
 header('Content-Type: application/json');
 
-Auth::requireRole(['superadmin', 'admin_clients']);
+Auth::requireRole(['superadmin', 'admin_clients', 'client']);
 
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'list':
         $users = Storage::read('users');
+        $currentUser = Auth::getCurrentUser();
+
+        // Filter: Admin sees all, client sees only self
+        if ($currentUser['role'] === 'client') {
+            $users = array_filter($users, fn($u) => $u['id'] === $currentUser['id']);
+        }
+
         foreach ($users as &$user) {
             unset($user['password']);
         }
@@ -27,6 +34,7 @@ switch ($action) {
         $data['created_at'] = date('Y-m-d H:i:s');
         // New fields
         $data['company_name'] = $data['company_name'] ?? '';
+        $data['email'] = $data['email'] ?? '';
         $data['tax_id'] = $data['tax_id'] ?? '';
         $data['address'] = $data['address'] ?? '';
         $data['contact_person'] = $data['contact_person'] ?? '';
@@ -44,6 +52,13 @@ switch ($action) {
         if (!$id) {
             echo json_encode(['success' => false, 'error' => 'ID required']);
             break;
+        }
+
+        $currentUser = Auth::getCurrentUser();
+        if ($currentUser['role'] === 'client' && $id !== $currentUser['id']) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            exit;
         }
         unset($data['id']);
         if (!empty($data['password'])) {
