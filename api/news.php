@@ -18,7 +18,7 @@ function getNews() {
 
 function saveNews($news) {
     global $news_file;
-    file_put_contents($news_file, json_encode($news, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    file_put_contents($news_file, json_encode($news, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
