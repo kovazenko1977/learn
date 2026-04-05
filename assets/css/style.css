@@ -1,0 +1,291 @@
+:root {
+    --primary: #7360f2;
+    --primary-dark: #5b4bc4;
+    --bg-light: #f8f9fe;
+    --text-dark: #32325d;
+    --text-muted: #8898aa;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+/* Login Screen */
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary) 0%, #a29bfe 100%);
+}
+
+.login-box {
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box h2 { margin-bottom: 1rem; color: var(--primary); }
+.login-box p { color: var(--text-muted); margin-bottom: 1.5rem; }
+
+.code-input input {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    outline: none;
+}
+
+.code-input input:focus { border-color: var(--primary); }
+
+/* Buttons */
+button {
+    cursor: pointer;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #e9ecef; color: var(--text-dark); }
+.btn-logout { background: #f5365c; color: white; }
+
+/* Dashboard */
+header {
+    background: var(--white);
+    padding: 1rem 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.filters input, .filters select {
+    padding: 0.8rem;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.filters input { flex-grow: 1; }
+
+/* News List */
+.news-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.news-card {
+    background: var(--white);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+}
+
+.news-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    background-color: #eee;
+}
+
+.news-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.news-date { color: var(--text-muted); }
+.status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-badge.published { background: #e2f9ed; color: #1aae6f; }
+.status-badge.draft { background: #fdf3e5; color: #fb6340; }
+.status-badge.scheduled { background: #e8e5ff; color: #5e72e4; }
+.status-badge.group { background: #f4f3ff; color: var(--primary); border: 1px solid #dcd7ff; }
+
+.news-card h3 { margin-bottom: 1rem; font-size: 1.25rem; }
+.news-card p { color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem; }
+
+.news-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-edit { background: var(--primary); color: white; flex-grow: 1; }
+.btn-delete { background: #fee7e7; color: #f5365c; }
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--white);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body { padding: 1.5rem; }
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    font-family: inherit;
+}
+
+.upload-area {
+    border: 2px dashed #dee2e6;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    display: block;
+    margin: 0 auto 1rem;
+}
+
+.upload-area input {
+    position: absolute;
+    top: 0; left: 0; opacity: 0;
+    width: 100%; height: 100%;
+    cursor: pointer;
+}
+
+.code-preview {
+    background: #2d3436;
+    color: #fab1a0;
+    padding: 1rem;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+/* Toasts */
+.toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    color: white;
+    z-index: 2000;
+    animation: slideIn 0.3s forwards;
+}
+
+.toast.success { background: #1aae6f; }
+.toast.error { background: #f5365c; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+footer {
+    background: var(--white);
+    padding: 1.5rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid #eee;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.footer-content a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
