@@ -167,13 +167,27 @@ main {
     margin-top: 1rem;
 }
 
-.upload-form input[type="text"] {
-    flex: 1;
-    min-width: 200px;
+.upload-main {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+.upload-form textarea {
+    width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 0.5rem;
     outline: none;
+    resize: vertical;
+}
+
+.group-select, .group-filter {
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    outline: none;
+    background: white;
 }
 
 /* Files Section */
@@ -256,8 +270,29 @@ main {
     margin-bottom: 0.8rem;
 }
 
+.file-tags {
+    margin-bottom: 0.5rem;
+}
+
+.tag {
+    background: var(--primary);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
 .editable-description {
     margin-bottom: 1rem;
+}
+
+.editable-description textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.4rem;
+    border: 1px solid var(--primary);
+    outline: none;
 }
 
 .description-text {
@@ -272,6 +307,10 @@ main {
 
 .description-text:hover {
     border-color: var(--primary);
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
 }
 
 .path-container {

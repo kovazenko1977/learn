@@ -11,6 +11,10 @@ $filesDataFile = __DIR__ . '/../data/files.json';
 if ($action === 'list') {
     $files = json_decode(file_get_contents($filesDataFile), true) ?: [];
     echo json_encode($files);
+} elseif ($action === 'groups') {
+    $groupsFile = __DIR__ . '/../data/groups.json';
+    $groups = json_decode(file_get_contents($groupsFile), true) ?: ["Общее"];
+    echo json_encode($groups);
 } elseif ($action === 'delete') {
     $id = $_GET['id'] ?? '';
     $files = json_decode(file_get_contents($filesDataFile), true) ?: [];

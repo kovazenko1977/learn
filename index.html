@@ -13,7 +13,7 @@
         <div v-if="!authenticated" class="login-container">
             <div class="login-box">
                 <h1>Вход в кабинет</h1>
-                <p>Введите 6-значный ПИН-код</p>
+                <p>Введите пароль</p>
                 <input type="password" v-model="pin" @keyup.enter="login" maxlength="6" placeholder="******" class="pin-input">
                 <button @click="login" :disabled="loading">Войти</button>
                 <p v-if="error" class="error-msg">{{ error }}</p>
@@ -46,8 +46,13 @@
                 <section class="upload-section">
                     <h3>Загрузить файл</h3>
                     <div class="upload-form">
-                        <input type="file" ref="fileInput" @change="handleFileChange">
-                        <input type="text" v-model="uploadDescription" placeholder="Описание файла">
+                        <div class="upload-main">
+                            <input type="file" ref="fileInput" @change="handleFileChange">
+                            <select v-model="selectedGroup" class="group-select">
+                                <option v-for="group in groups" :key="group" :value="group">{{ group }}</option>
+                            </select>
+                        </div>
+                        <textarea v-model="uploadDescription" placeholder="Более подробное описание файла..." rows="3"></textarea>
                         <button @click="uploadFile" :disabled="loading || !selectedFile">
                             {{ loading ? 'Загрузка...' : 'Загрузить' }}
                         </button>
@@ -59,6 +64,10 @@
                     <div class="files-header">
                         <h3>Список файлов</h3>
                         <div class="controls">
+                            <select v-model="filterGroup" class="group-filter">
+                                <option value="">Все группы</option>
+                                <option v-for="group in groups" :key="group" :value="group">{{ group }}</option>
+                            </select>
                             <input type="text" v-model="searchQuery" placeholder="Поиск по названию/описанию" class="search-input">
                             <select v-model="sortBy" class="sort-select">
                                 <option value="date_desc">Сначала новые</option>
@@ -82,15 +91,18 @@
                                 <strong class="file-name">{{ file.name }}</strong>
                                 <p class="file-meta">{{ formatSize(file.size) }} | {{ file.uploadDate }}</p>
 
+                                <div class="file-tags" v-if="file.group">
+                                    <span class="tag">{{ file.group }}</span>
+                                </div>
+
                                 <div class="editable-description">
-                                    <input v-if="editingId === file.id"
-                                           type="text"
+                                    <textarea v-if="editingId === file.id"
                                            v-model="editDescription"
-                                           @keyup.enter="saveDescription(file.id)"
-                                           @blur="editingId = null"
-                                           ref="editInput">
-                                    <p v-else @click="startEditing(file)" class="description-text">
-                                        {{ file.description || 'Добавить описание...' }}
+                                           @blur="saveDescription(file.id)"
+                                           ref="editInput"
+                                           rows="3"></textarea>
+                                    <p v-else @click="startEditing(file)" class="description-text pre-wrap">
+                                        {{ file.description || 'Добавить подробное описание...' }}
                                     </p>
                                 </div>
 

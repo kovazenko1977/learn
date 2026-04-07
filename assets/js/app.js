@@ -8,10 +8,13 @@ createApp({
             loading: false,
             error: '',
             files: [],
+            groups: [],
             stats: { totalFiles: 0, totalSize: 0 },
             selectedFile: null,
             uploadDescription: '',
+            selectedGroup: 'Общее',
             searchQuery: '',
+            filterGroup: '',
             sortBy: 'date_desc',
             editingId: null,
             editDescription: '',
@@ -21,6 +24,11 @@ createApp({
     computed: {
         filteredFiles() {
             let result = [...this.files];
+
+            // Group Filter
+            if (this.filterGroup) {
+                result = result.filter(f => f.group === this.filterGroup);
+            }
 
             // Search
             if (this.searchQuery) {
@@ -94,6 +102,7 @@ createApp({
         },
         async loadDashboard() {
             this.loadFiles();
+            this.loadGroups();
             this.loadStats();
         },
         async loadFiles() {
@@ -104,6 +113,15 @@ createApp({
             const data = await this.apiFetch('api/files.php?action=stats');
             if (data) this.stats = data;
         },
+        async loadGroups() {
+            const data = await this.apiFetch('api/files.php?action=groups');
+            if (data) {
+                this.groups = data;
+                if (this.groups.length > 0 && !this.groups.includes(this.selectedGroup)) {
+                    this.selectedGroup = this.groups[0];
+                }
+            }
+        },
         handleFileChange(e) {
             this.selectedFile = e.target.files[0];
         },
@@ -113,6 +131,7 @@ createApp({
             const formData = new FormData();
             formData.append('file', this.selectedFile);
             formData.append('description', this.uploadDescription);
+            formData.append('group', this.selectedGroup);
 
             const data = await this.apiFetch('api/upload.php', {
                 method: 'POST',

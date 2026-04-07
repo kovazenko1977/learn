@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $file = $_FILES['file'];
     $description = $_POST['description'] ?? '';
+    $group = $_POST['group'] ?? 'Общее';
 
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf', 'zip', 'rar', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
     $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -48,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'id' => uniqid(),
             'name' => basename($file['name']),
             'description' => $description,
+            'group' => $group,
             'fileName' => $fileName,
             'size' => $file['size'],
             'type' => $file['type'],

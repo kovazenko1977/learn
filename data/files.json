@@ -8,5 +8,16 @@
         "type": "text\/plain",
         "uploadDate": "2026-04-07 05:25:27",
         "fullPath": "http:\/\/localhost:8000\/data\/uploads\/1775539527_ed36c13d.txt"
+    },
+    {
+        "id": "69d4982a0f7c6",
+        "name": "v2_test.txt",
+        "description": "Длинное описание\r\nВторая строка.",
+        "group": "Документы",
+        "fileName": "1775540266_cc61f7fe.txt",
+        "size": 15,
+        "type": "text\/plain",
+        "uploadDate": "2026-04-07 05:37:46",
+        "fullPath": "http:\/\/localhost:8000\/data\/uploads\/1775540266_cc61f7fe.txt"
     }
 ]
