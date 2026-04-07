@@ -6,8 +6,17 @@ Security::checkAuth();
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_FILES['file'])) {
-        echo json_encode(['error' => 'No file uploaded']);
+    if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        $error = $_FILES['file']['error'] ?? 'No file uploaded';
+        $msg = 'Ошибка загрузки: ';
+        switch($error) {
+            case UPLOAD_ERR_INI_SIZE: $msg .= 'Файл слишком большой (превышен предел сервера)'; break;
+            case UPLOAD_ERR_FORM_SIZE: $msg .= 'Файл слишком большой (превышен предел формы)'; break;
+            case UPLOAD_ERR_PARTIAL: $msg .= 'Файл загружен частично'; break;
+            case UPLOAD_ERR_NO_FILE: $msg .= 'Файл не выбран'; break;
+            default: $msg .= 'Код ошибки ' . $error;
+        }
+        echo json_encode(['error' => $msg]);
         exit;
     }
 

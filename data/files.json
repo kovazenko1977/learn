@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "id": "69d495476c634",
+        "name": "test_upload.txt",
+        "description": "test",
+        "fileName": "1775539527_ed36c13d.txt",
+        "size": 5,
+        "type": "text\/plain",
+        "uploadDate": "2026-04-07 05:25:27",
+        "fullPath": "http:\/\/localhost:8000\/data\/uploads\/1775539527_ed36c13d.txt"
+    }
+]
