@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Файловый менеджер</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <!-- Login Screen -->
+        <div v-if="!authenticated" class="login-container">
+            <div class="login-box">
+                <h1>Вход в кабинет</h1>
+                <p>Введите 6-значный ПИН-код</p>
+                <input type="password" v-model="pin" @keyup.enter="login" maxlength="6" placeholder="******" class="pin-input">
+                <button @click="login" :disabled="loading">Войти</button>
+                <p v-if="error" class="error-msg">{{ error }}</p>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div v-else class="dashboard">
+            <header>
+                <div class="header-content">
+                    <h2>📁 Файловый архив</h2>
+                    <button @click="logout" class="logout-btn">Выйти</button>
+                </div>
+            </header>
+
+            <main>
+                <!-- Stats Section -->
+                <section class="stats-card">
+                    <div class="stat-item">
+                        <span class="stat-label">Всего файлов:</span>
+                        <span class="stat-value">{{ stats.totalFiles }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Общий объем:</span>
+                        <span class="stat-value">{{ formatSize(stats.totalSize) }}</span>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section class="upload-section">
+                    <h3>Загрузить файл</h3>
+                    <div class="upload-form">
+                        <input type="file" ref="fileInput" @change="handleFileChange">
+                        <input type="text" v-model="uploadDescription" placeholder="Описание файла">
+                        <button @click="uploadFile" :disabled="loading || !selectedFile">
+                            {{ loading ? 'Загрузка...' : 'Загрузить' }}
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Files List Section -->
+                <section class="files-section">
+                    <div class="files-header">
+                        <h3>Список файлов</h3>
+                        <div class="controls">
+                            <input type="text" v-model="searchQuery" placeholder="Поиск по названию/описанию" class="search-input">
+                            <select v-model="sortBy" class="sort-select">
+                                <option value="date_desc">Сначала новые</option>
+                                <option value="date_asc">Сначала старые</option>
+                                <option value="name_asc">По имени (А-Я)</option>
+                                <option value="size_desc">Сначала большие</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="files-grid">
+                        <div v-for="file in filteredFiles" :key="file.id" class="file-card">
+                            <div class="file-preview" v-if="isImage(file.type)">
+                                <img :src="file.fullPath" alt="Preview">
+                            </div>
+                            <div class="file-icon" v-else>
+                                {{ getFileEmoji(file.type) }}
+                            </div>
+
+                            <div class="file-info">
+                                <strong class="file-name">{{ file.name }}</strong>
+                                <p class="file-meta">{{ formatSize(file.size) }} | {{ file.uploadDate }}</p>
+
+                                <div class="editable-description">
+                                    <input v-if="editingId === file.id"
+                                           type="text"
+                                           v-model="editDescription"
+                                           @keyup.enter="saveDescription(file.id)"
+                                           @blur="editingId = null"
+                                           ref="editInput">
+                                    <p v-else @click="startEditing(file)" class="description-text">
+                                        {{ file.description || 'Добавить описание...' }}
+                                    </p>
+                                </div>
+
+                                <div class="path-container">
+                                    <code class="file-path">{{ file.fullPath }}</code>
+                                    <button @click="copyToClipboard(file.fullPath)" class="copy-btn">Копировать путь</button>
+                                </div>
+                            </div>
+
+                            <div class="file-actions">
+                                <a :href="file.fullPath" download :title="file.name" class="download-link">Скачать</a>
+                                <button @click="deleteFile(file.id)" class="delete-btn">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p v-if="filteredFiles.length === 0" class="empty-msg">Файлы не найдены</p>
+                </section>
+            </main>
+
+            <footer>
+                <p>&copy; 2024 WES.BY - Безопасное хранилище</p>
+            </footer>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast" v-if="toast.show" :class="toast.type">
+            {{ toast.message }}
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
