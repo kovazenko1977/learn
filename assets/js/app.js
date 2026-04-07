@@ -13,6 +13,7 @@ createApp({
             selectedFile: null,
             uploadDescription: '',
             selectedGroup: 'Общее',
+            newGroupName: '',
             searchQuery: '',
             filterGroup: '',
             sortBy: 'date_desc',
@@ -114,12 +115,41 @@ createApp({
             if (data) this.stats = data;
         },
         async loadGroups() {
-            const data = await this.apiFetch('api/files.php?action=groups');
+            const data = await this.apiFetch('api/groups.php?action=list');
             if (data) {
                 this.groups = data;
                 if (this.groups.length > 0 && !this.groups.includes(this.selectedGroup)) {
                     this.selectedGroup = this.groups[0];
                 }
+            }
+        },
+        async addGroup() {
+            const name = this.newGroupName.trim();
+            if (!name) return;
+            const data = await this.apiFetch('api/groups.php?action=add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            if (data && data.success) {
+                this.newGroupName = '';
+                this.loadGroups();
+                this.showToast('Группа добавлена', 'success');
+            } else {
+                this.showToast(data ? data.error : 'Ошибка добавления', 'error');
+            }
+        },
+        async deleteGroup(name) {
+            if (!confirm(`Удалить группу "${name}"? Файлы этой группы будут перенесены в "Общее".`)) return;
+            const data = await this.apiFetch('api/groups.php?action=delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            if (data && data.success) {
+                this.loadGroups();
+                this.loadFiles();
+                this.showToast('Группа удалена', 'success');
             }
         },
         handleFileChange(e) {

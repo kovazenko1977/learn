@@ -59,6 +59,23 @@
                     </div>
                 </section>
 
+                <!-- Group Management Section -->
+                <section class="group-mgmt-section">
+                    <h3>Управление группами</h3>
+                    <div class="group-mgmt-container">
+                        <div class="add-group">
+                            <input type="text" v-model="newGroupName" placeholder="Название новой группы" @keyup.enter="addGroup">
+                            <button @click="addGroup" :disabled="!newGroupName.trim()">Добавить группу</button>
+                        </div>
+                        <div class="groups-list">
+                            <div v-for="group in groups" :key="group" class="group-item" :class="{ 'default-group': group === 'Общее' }">
+                                <span>{{ group }}</span>
+                                <button v-if="group !== 'Общее'" @click="deleteGroup(group)" class="delete-btn">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Files List Section -->
                 <section class="files-section">
                     <div class="files-header">

@@ -152,12 +152,68 @@ main {
 }
 
 /* Upload Section */
-.upload-section {
+.upload-section, .group-mgmt-section {
     background: white;
     padding: 1.5rem;
     border-radius: 1rem;
     margin-bottom: 2rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.group-mgmt-container {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.add-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.add-group input {
+    flex: 1;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    outline: none;
+}
+
+.groups-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.group-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fe;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid #eee;
+}
+
+.group-item.default-group {
+    background: #7360f211;
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.group-item .delete-btn {
+    padding: 0;
+    background: none;
+    color: var(--error);
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.group-item .delete-btn:hover {
+    background: none;
+    opacity: 0.7;
 }
 
 .upload-form {

@@ -19,5 +19,16 @@
         "type": "text\/plain",
         "uploadDate": "2026-04-07 05:37:46",
         "fullPath": "http:\/\/localhost:8000\/data\/uploads\/1775540266_cc61f7fe.txt"
+    },
+    {
+        "id": "69d49b276a00e",
+        "name": "group_test.txt",
+        "description": "Описание группы",
+        "group": "Общее",
+        "fileName": "1775541031_dcb23f8a.txt",
+        "size": 18,
+        "type": "text\/plain",
+        "uploadDate": "2026-04-07 05:50:31",
+        "fullPath": "http:\/\/localhost:8000\/data\/uploads\/1775541031_dcb23f8a.txt"
     }
 ]
