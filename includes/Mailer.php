@@ -26,8 +26,6 @@ class Mailer {
             </html>
         ";
 
-        // For now, we use standard mail().
-        // Real SMTP would require a library like PHPMailer or SwiftMailer.
         if (isset($settings['smtp_enabled']) && $settings['smtp_enabled']) {
             return @mail($to, $subject, $html_body, $headers);
         }
@@ -69,10 +67,9 @@ class Mailer {
         $settings = Storage::read('settings');
         $admin_email = $settings['admin_notification_email'] ?? '';
         if (!$admin_email) {
-            // Try to find any admin with email
             $admins = Storage::read('users');
             foreach ($admins as $adm) {
-                if ($adm['role'] === 'superadmin' && !empty($adm['email'])) {
+                if (($adm['role'] ?? '') === 'superadmin' && !empty($adm['email'])) {
                     $admin_email = $adm['email'];
                     break;
                 }
@@ -98,7 +95,7 @@ class Mailer {
         if (!$admin_email) {
             $admins = Storage::read('users');
             foreach ($admins as $adm) {
-                if ($adm['role'] === 'superadmin' && !empty($adm['email'])) {
+                if (($adm['role'] ?? '') === 'superadmin' && !empty($adm['email'])) {
                     $admin_email = $adm['email'];
                     break;
                 }

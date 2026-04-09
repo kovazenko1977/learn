@@ -13,13 +13,50 @@ switch ($action) {
         $orderData = Security::sanitize($orderData);
         $user = Auth::getCurrentUser();
 
+        // Fetch current price list to create snapshots
+        $assigned_pl_id = $user['assigned_pricelist_id'] ?? 'default';
+        $lists = Storage::read('pricelist');
+        $target_list = null;
+        foreach ($lists as $l) {
+            if ($l['id'] === $assigned_pl_id) {
+                $target_list = $l;
+                break;
+            }
+        }
+
+        $enriched_items = [];
+        $total_sum = 0;
+        foreach ($orderData['items'] as $oi) {
+            $product = null;
+            if ($target_list) {
+                foreach ($target_list['items'] as $p) {
+                    if ($p['id'] === $oi['id']) {
+                        $product = $p;
+                        break;
+                    }
+                }
+            }
+
+            $item_price = (float)($product['price'] ?? 0);
+            $enriched_items[] = [
+                'id' => $oi['id'],
+                'qty' => $oi['qty'],
+                'name_snapshot' => $product['name'] ?? 'Удаленный товар',
+                'price_snapshot' => $item_price,
+                'subtotal' => $oi['qty'] * $item_price
+            ];
+            $total_sum += ($oi['qty'] * $item_price);
+        }
+
         $order = [
-            'id' => uniqid(),
+            'id' => uniqid('ord_'),
             'user_id' => $user['id'],
             'username' => $user['username'],
             'company_name' => $user['company_name'] ?? '',
-            'items' => $orderData['items'],
-            'total_items' => count($orderData['items']),
+            'items' => $enriched_items,
+            'total_items' => count($enriched_items),
+            'total_sum' => $total_sum,
+            'comment' => $orderData['comment'] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
             'status' => 'new'
         ];
@@ -34,8 +71,8 @@ switch ($action) {
                 Mailer::send($admin['email'], "Новый заказ от {$order['username']}",
                     "<h1>Новый заказ #{$order['id']}</h1>" .
                     "<p>Клиент: {$order['username']} ({$order['company_name']})</p>" .
-                    "<p>Количество позиций: {$order['total_items']}</p>" .
-                    "<p>Дата: {$order['created_at']}</p>" .
+                    "<p>Сумма: " . number_format($order['total_sum'], 2) . "</p>" .
+                    "<p>Комментарий: " . nl2br($order['comment']) . "</p>" .
                     "<p>Пожалуйста, проверьте панель управления для деталей.</p>"
                 );
             }

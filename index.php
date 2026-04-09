@@ -90,6 +90,21 @@
         .badge-error { background: #fff5f5; color: #e53e3e; }
         .badge-primary { background: #eff2fe; color: var(--primary); }
 
+        /* Glassmorphism & Modern UI */
+        .glass { background: rgba(255, 255, 255, 0.7) !important; backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3) !important; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07) !important; }
+        .summary-bar { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 500; border-top: 1px solid var(--border); transition: transform 0.3s ease; transform: translateY(0); }
+        .summary-bar.hidden { transform: translateY(100%); display: block !important; }
+
+        .price-row { transition: background 0.2s; }
+        .price-row:hover { background: rgba(115, 96, 242, 0.02) !important; }
+        .order-qty:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(115, 96, 242, 0.1); }
+
+        @media (max-width: 768px) {
+            .summary-bar { bottom: var(--nav-height, 60px); }
+            .summary-bar .container { flex-direction: column; gap: 10px; align-items: stretch !important; padding: 10px 15px !important; }
+            .summary-bar button { width: 100%; }
+        }
+
         /* Messenger Styles */
         .chat-layout { display: flex; flex-direction: column; height: 650px; background: #f4f4f9; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
         .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }

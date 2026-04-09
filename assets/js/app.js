@@ -4,6 +4,7 @@ const App = {
     clients: [],
     stats: null,
     pollInterval: null,
+    currentListId: null,
 
     async init() {
         this.bindEvents();
@@ -1049,47 +1050,60 @@ const App = {
     },
 
     async renderPriceList(container) {
-        const res = await this.apiFetch('api/pricelist.php?action=get');
-        const data = await res.json();
         const isAdmin = ['superadmin', 'admin_content'].includes(this.user.role);
-        const { items, config } = data.data;
+
+        // Admin first chooses/manages price lists
+        if (isAdmin && !this.currentListId) {
+            await this.renderPriceListsManager(container);
+            return;
+        }
+
+        const listId = this.currentListId || this.user.assigned_pricelist_id || 'default';
+        const res = await this.apiFetch(`api/pricelist.php?action=get&list_id=${listId}`);
+        const data = await res.json();
+        const list = data.data;
+        const { items, columns } = list;
 
         let html = `
             <div class="view-header">
-                <h1 class="view-title">Прайс-лист и Заказ</h1>
+                <h1 class="view-title">${this.escapeHTML(list.name)}</h1>
                 <div style="display:flex; gap:10px;">
+                    ${isAdmin ? `<button class="btn btn-outline btn-sm" onclick="App.currentListId = null; App.setView('pricelist')">⬅️ К спискам</button>` : ''}
                     <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Печать / PDF</button>
-                    <a href="api/pricelist.php?action=export_csv" class="btn btn-outline btn-sm">📊 Экспорт CSV</a>
+                    <a href="api/pricelist.php?action=export_csv&list_id=${listId}" class="btn btn-outline btn-sm">📊 Экспорт CSV</a>
                     ${isAdmin ? `
-                        <button class="btn btn-outline btn-sm" onclick="App.showPriceConfigModal()">Настройка колонок</button>
+                        <button class="btn btn-outline btn-sm" onclick="App.showPriceListEditModal('${listId}')">Настройка прайса</button>
                         <button class="btn btn-primary btn-sm" onclick="App.showPriceItemModal()">Добавить товар</button>
                     ` : ''}
                 </div>
             </div>
-            <div class="card">
-                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-                    <input type="text" placeholder="Поиск по прайсу..." id="price-search" style="flex: 1; padding: 10px;">
+
+            <div class="card glass" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div style="flex: 1; position: relative;">
+                        <input type="text" placeholder="Поиск по наименованию или коду..." id="price-search"
+                               style="width:100%; padding: 12px 15px; background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.05);">
+                    </div>
                 </div>
+            </div>
+
+            <div class="card glass">
                 <table class="data-table" id="price-table">
                     <thead>
                         <tr>
-                            ${config.columns.includes('code') ? '<th>Код</th>' : ''}
-                            ${config.columns.includes('name') ? '<th>Наименование</th>' : ''}
-                            ${config.columns.includes('unit') ? '<th>Ед.изм.</th>' : ''}
-                            ${config.columns.includes('price') ? '<th>Цена</th>' : ''}
+                            ${columns.map(c => `<th>${this.escapeHTML(c.label)}</th>`).join('')}
                             ${!isAdmin ? '<th>Заказ (кол-во)</th>' : '<th>Действия</th>'}
                         </tr>
                     </thead>
                     <tbody>
                         ${items.map(item => `
-                            <tr>
-                                ${config.columns.includes('code') ? `<td data-label="Код">${this.escapeHTML(item.code || '-')}</td>` : ''}
-                                ${config.columns.includes('name') ? `<td data-label="Наименование"><strong>${this.escapeHTML(item.name || '-')}</strong></td>` : ''}
-                                ${config.columns.includes('unit') ? `<td data-label="Ед.изм.">${this.escapeHTML(item.unit || '-')}</td>` : ''}
-                                ${config.columns.includes('price') ? `<td data-label="Цена">${this.escapeHTML(item.price || '0')}</td>` : ''}
+                            <tr class="price-row" data-id="${item.id}" data-price="${item.price || 0}">
+                                ${columns.map(c => `<td data-label="${this.escapeHTML(c.label)}">${this.escapeHTML(item[c.id] || '-')}</td>`).join('')}
                                 <td data-label="${!isAdmin ? 'Заказ' : 'Действия'}">
                                     ${!isAdmin ? `
-                                        <input type="number" class="order-qty" data-id="${item.id}" placeholder="0" style="width: 80px; padding: 5px;" min="0">
+                                        <input type="number" class="order-qty" data-id="${item.id}" placeholder="0"
+                                               style="width: 80px; padding: 8px; border-radius: 6px; border: 1px solid #ddd;" min="0"
+                                               oninput="App.updateOrderSummary()">
                                     ` : `
                                         <div style="display:flex; gap:5px;">
                                             <button class="btn btn-outline btn-sm" onclick="App.showPriceItemModal('${item.id}')">✏️</button>
@@ -1101,93 +1115,154 @@ const App = {
                         `).join('')}
                     </tbody>
                 </table>
-                ${!isAdmin && items.length > 0 ? `
-                    <div style="margin-top: 20px; text-align: right;">
-                        <button class="btn btn-primary" onclick="App.submitOrder()">Оформить заказ</button>
-                    </div>
-                ` : ''}
             </div>
+
+            ${!isAdmin ? `
+                <div id="order-summary-bar" class="summary-bar glass hidden">
+                    <div class="container" style="display:flex; justify-content: space-between; align-items: center; padding: 15px 0;">
+                        <div>
+                            <span style="font-size: 14px; opacity: 0.8;">Выбрано позиций: </span>
+                            <strong id="summary-count">0</strong>
+                            <span style="margin: 0 15px; opacity: 0.3;">|</span>
+                            <span style="font-size: 14px; opacity: 0.8;">Общая сумма: </span>
+                            <strong id="summary-total" style="font-size: 20px; color: var(--primary);">0.00</strong>
+                        </div>
+                        <button class="btn btn-primary" onclick="App.showSubmitOrderModal()">Оформить заказ</button>
+                    </div>
+                </div>
+            ` : ''}
         `;
         container.innerHTML = html;
         document.getElementById('price-search').oninput = (e) => this.filterTable('price-table', e.target.value);
     },
 
-    showPriceConfigModal() {
-        this.apiFetch('api/pricelist.php?action=get').then(res => res.json()).then(data => {
-            const current = data.data.config.columns;
-            this.showModal('Настройка колонок', `
-                <form id="price-config-form">
-                    <p style="margin-bottom: 15px;">Выберите колонки для отображения:</p>
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="cols" value="code" ${current.includes('code') ? 'checked' : ''} style="width: auto;"> Код товара
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="cols" value="name" ${current.includes('name') ? 'checked' : ''} style="width: auto;"> Наименование
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="cols" value="unit" ${current.includes('unit') ? 'checked' : ''} style="width: auto;"> Единица измерения
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="cols" value="price" ${current.includes('price') ? 'checked' : ''} style="width: auto;"> Цена
-                        </label>
+    async renderPriceListsManager(container) {
+        const res = await this.apiFetch('api/pricelist.php?action=list');
+        const data = await res.json();
+        const lists = data.lists;
+
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">Управление прайс-листами</h1>
+                <button class="btn btn-primary btn-sm" onclick="App.showPriceListEditModal()">Создать новый прайс</button>
+            </div>
+            <div class="grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                ${lists.map(l => `
+                    <div class="card glass" style="cursor:pointer; position:relative;" onclick="App.currentListId = '${l.id}'; App.setView('pricelist')">
+                        <h3 style="margin-bottom: 10px;">${this.escapeHTML(l.name)}</h3>
+                        <p style="font-size: 12px; color: var(--text-muted);">ID: ${l.id}</p>
+                        <div style="margin-top: 20px; display: flex; gap: 10px;" onclick="event.stopPropagation()">
+                             <button class="btn btn-outline btn-sm" onclick="App.showPriceListEditModal('${l.id}')">⚙️ Настройка</button>
+                             <button class="btn btn-outline btn-sm" style="color:red" onclick="App.deletePriceList('${l.id}')">🗑️ Удалить</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить колонки</button>
-                </form>
-            `);
-            document.getElementById('price-config-form').onsubmit = async (e) => {
-                e.preventDefault();
-                const cols = Array.from(document.querySelectorAll('input[name="cols"]:checked')).map(el => el.value);
-                await this.apiFetch('api/pricelist.php?action=update_config', {
-                    method: 'POST',
-                    body: JSON.stringify({ columns: cols })
-                });
-                this.closeModal();
-                this.setView('pricelist');
-            };
-        });
+                `).join('')}
+            </div>
+        `;
+    },
+
+    async showPriceListEditModal(id = null) {
+        let list = { name: '', columns: [{ id: 'code', label: 'Код', type: 'text' }, { id: 'name', label: 'Наименование', type: 'text' }, { id: 'price', label: 'Цена', type: 'number' }] };
+        if (id) {
+            const res = await this.apiFetch(`api/pricelist.php?action=get&list_id=${id}`);
+            const data = await res.json();
+            list = data.data;
+        }
+
+        this.showModal(id ? 'Настройка прайс-листа' : 'Создать прайс-лист', `
+            <form id="price-list-form">
+                <div class="form-group">
+                    <label>Название прайс-листа</label>
+                    <input type="text" id="pl-name" value="${this.escapeHTML(list.name)}" required>
+                </div>
+                <div id="columns-editor">
+                    <label>Колонки прайса</label>
+                    ${list.columns.map((c, i) => `
+                        <div class="column-row" style="display:flex; gap:10px; margin-bottom: 10px;">
+                            <input type="text" class="col-id" value="${this.escapeHTML(c.id)}" placeholder="ID (lat)" style="width: 80px;" ${i < 2 ? 'readonly' : ''}>
+                            <input type="text" class="col-label" value="${this.escapeHTML(c.label)}" placeholder="Заголовок">
+                            <select class="col-type" style="width: 100px;">
+                                <option value="text" ${c.type === 'text' ? 'selected' : ''}>Текст</option>
+                                <option value="number" ${c.type === 'number' ? 'selected' : ''}>Число</option>
+                            </select>
+                            ${i >= 2 ? `<button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; color:red; cursor:pointer;">&times;</button>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                <button type="button" class="btn btn-outline btn-sm" style="margin-bottom: 20px;" onclick="App.addPriceListColumn()">+ Добавить колонку</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить</button>
+            </form>
+        `);
+
+        document.getElementById('price-list-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const cols = Array.from(document.querySelectorAll('.column-row')).map(row => ({
+                id: row.querySelector('.col-id').value,
+                label: row.querySelector('.col-label').value,
+                type: row.querySelector('.col-type').value
+            }));
+            await this.apiFetch('api/pricelist.php?action=save_list', {
+                method: 'POST',
+                body: JSON.stringify({ id, name: document.getElementById('pl-name').value, columns: cols })
+            });
+            this.closeModal();
+            this.setView('pricelist');
+        };
+    },
+
+    addPriceListColumn() {
+        const div = document.createElement('div');
+        div.className = 'column-row';
+        div.style.cssText = 'display:flex; gap:10px; margin-bottom: 10px;';
+        div.innerHTML = `
+            <input type="text" class="col-id" placeholder="ID (lat)" style="width: 80px;">
+            <input type="text" class="col-label" placeholder="Заголовок">
+            <select class="col-type" style="width: 100px;">
+                <option value="text">Текст</option>
+                <option value="number">Число</option>
+            </select>
+            <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; color:red; cursor:pointer;">&times;</button>
+        `;
+        document.getElementById('columns-editor').appendChild(div);
+    },
+
+    async deletePriceList(id) {
+        if (confirm('Внимание! Это удалит весь прайс-лист со всеми товарами. Продолжить?')) {
+            await this.apiFetch(`api/pricelist.php?action=delete_list&id=${id}`);
+            this.setView('pricelist');
+        }
     },
 
     async showPriceItemModal(id = null) {
-        let item = { code: '', name: '', unit: '', price: '' };
+        const listId = this.currentListId || this.user.assigned_pricelist_id || 'default';
+        const res = await this.apiFetch(`api/pricelist.php?action=get&list_id=${listId}`);
+        const data = await res.json();
+        const list = data.data;
+
+        let item = {};
         if (id) {
-            const res = await this.apiFetch('api/pricelist.php?action=get');
-            const data = await res.json();
-            item = data.data.items.find(i => i.id === id);
+            item = list.items.find(i => i.id === id);
         }
 
         this.showModal(id ? 'Редактировать товар' : 'Добавить товар', `
             <form id="price-item-form">
-                <div class="form-group">
-                    <label>Код товара</label>
-                    <input type="text" id="p-code" value="${this.escapeHTML(item.code)}">
-                </div>
-                <div class="form-group">
-                    <label>Наименование *</label>
-                    <input type="text" id="p-name" value="${this.escapeHTML(item.name)}" required>
-                </div>
-                <div class="form-group">
-                    <label>Ед. изм.</label>
-                    <input type="text" id="p-unit" value="${this.escapeHTML(item.unit)}">
-                </div>
-                <div class="form-group">
-                    <label>Цена</label>
-                    <input type="text" id="p-price" value="${this.escapeHTML(item.price)}">
-                </div>
+                ${list.columns.map(c => `
+                    <div class="form-group">
+                        <label>${this.escapeHTML(c.label)}</label>
+                        <input type="${c.type === 'number' ? 'number' : 'text'}" id="p-${c.id}" value="${this.escapeHTML(item[c.id] || '')}" ${c.id === 'name' ? 'required' : ''} step="any">
+                    </div>
+                `).join('')}
                 <button type="submit" class="btn btn-primary" style="width: 100%;">${id ? 'Сохранить' : 'Добавить'}</button>
             </form>
         `);
 
         document.getElementById('price-item-form').onsubmit = async (e) => {
             e.preventDefault();
-            const newItem = {
-                id: id,
-                code: document.getElementById('p-code').value,
-                name: document.getElementById('p-name').value,
-                unit: document.getElementById('p-unit').value,
-                price: document.getElementById('p-price').value
-            };
-            await this.apiFetch('api/pricelist.php?action=save_item', {
+            const newItem = { id: id };
+            list.columns.forEach(c => {
+                newItem[c.id] = document.getElementById(`p-${c.id}`).value;
+            });
+            await this.apiFetch(`api/pricelist.php?action=save_item&list_id=${listId}`, {
                 method: 'POST',
                 body: JSON.stringify(newItem)
             });
@@ -1197,13 +1272,67 @@ const App = {
     },
 
     async deletePriceItem(id) {
+        const listId = this.currentListId || this.user.assigned_pricelist_id || 'default';
         if (confirm('Удалить этот товар из прайса?')) {
-            await this.apiFetch(`api/pricelist.php?action=delete_item&id=${id}`);
+            await this.apiFetch(`api/pricelist.php?action=delete_item&id=${id}&list_id=${listId}`);
             this.setView('pricelist');
         }
     },
 
-    async submitOrder() {
+    updateOrderSummary() {
+        const inputs = document.querySelectorAll('.order-qty');
+        let total = 0;
+        let count = 0;
+        inputs.forEach(input => {
+            const qty = parseFloat(input.value) || 0;
+            if (qty > 0) {
+                const row = input.closest('tr');
+                const price = parseFloat(row.dataset.price) || 0;
+                total += qty * price;
+                count++;
+            }
+        });
+
+        const summaryBar = document.getElementById('order-summary-bar');
+        if (summaryBar) {
+            if (count > 0) {
+                summaryBar.classList.remove('hidden');
+                document.getElementById('summary-count').textContent = count;
+                document.getElementById('summary-total').textContent = total.toFixed(2);
+            } else {
+                summaryBar.classList.add('hidden');
+            }
+        }
+    },
+
+    showSubmitOrderModal() {
+        this.showModal('Оформление заказа', `
+            <form id="submit-order-form">
+                <div class="form-group">
+                    <label>Ваш комментарий к заказу</label>
+                    <textarea id="order-comment" placeholder="Напишите пожелания по доставке или другие детали..." style="height: 100px;"></textarea>
+                </div>
+                <div class="card" style="background: #f8f9ff; border: 1px dashed var(--primary);">
+                    <p style="display:flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Позиций в заказе:</span>
+                        <strong id="final-count">${document.getElementById('summary-count').textContent}</strong>
+                    </p>
+                    <p style="display:flex; justify-content: space-between; font-size: 18px;">
+                        <span>Итого к оплате:</span>
+                        <strong style="color: var(--primary)">${document.getElementById('summary-total').textContent}</strong>
+                    </p>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Подтвердить заказ</button>
+            </form>
+        `);
+
+        document.getElementById('submit-order-form').onsubmit = (e) => {
+            e.preventDefault();
+            this.submitOrder(document.getElementById('order-comment').value);
+        };
+    },
+
+    async submitOrder(comment = '') {
         const inputs = document.querySelectorAll('.order-qty');
         const items = [];
         inputs.forEach(input => {
@@ -1221,20 +1350,19 @@ const App = {
             return;
         }
 
-        if (confirm(`Оформить заказ на ${items.length} позиций?`)) {
-            try {
-                const res = await this.apiFetch('api/orders.php?action=submit', {
-                    method: 'POST',
-                    body: JSON.stringify({ items })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert('Заказ успешно оформлен! Администратор свяжется с вами.');
-                    this.setView('pricelist');
-                }
-            } catch (e) {
-                this.showToast('Ошибка при оформлении заказа', 'error');
+        try {
+            const res = await this.apiFetch('api/orders.php?action=submit', {
+                method: 'POST',
+                body: JSON.stringify({ items, comment })
+            });
+            const data = await res.json();
+            if (data.success) {
+                this.closeModal();
+                alert('Заказ успешно оформлен! Администратор свяжется с вами.');
+                this.setView('pricelist');
             }
+        } catch (e) {
+            this.showToast('Ошибка при оформлении заказа', 'error');
         }
     },
 
@@ -1244,10 +1372,6 @@ const App = {
         const order = data.orders.find(o => o.id === id);
         if (!order) return;
 
-        const priceRes = await this.apiFetch('api/pricelist.php?action=get');
-        const priceData = await priceRes.json();
-        const priceItems = priceData.data.items;
-
         const isAdmin = ['superadmin', 'admin_content'].includes(this.user.role);
 
         let html = `
@@ -1255,25 +1379,35 @@ const App = {
                 <p><strong>Дата:</strong> ${order.created_at}</p>
                 <p><strong>Клиент:</strong> ${this.escapeHTML(order.company_name || order.username)}</p>
                 <p><strong>Статус:</strong> ${order.status}</p>
+                ${order.comment ? `<p><strong>Комментарий:</strong><br><span style="font-size: 13px; color: var(--text-muted);">${this.escapeHTML(order.comment)}</span></p>` : ''}
             </div>
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>Товар</th>
-                        <th>Количество</th>
+                        <th>Кол-во</th>
+                        <th>Цена</th>
+                        <th>Сумма</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${order.items.map(oi => {
-                        const product = priceItems.find(p => p.id === oi.id) || { name: 'Удаленный товар' };
                         return `
                             <tr>
-                                <td>${this.escapeHTML(product.name)}</td>
+                                <td>${this.escapeHTML(oi.name_snapshot || 'Удаленный товар')}</td>
                                 <td>${oi.qty}</td>
+                                <td>${(oi.price_snapshot || 0).toFixed(2)}</td>
+                                <td>${(oi.subtotal || 0).toFixed(2)}</td>
                             </tr>
                         `;
                     }).join('')}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" style="text-align:right">ИТОГО:</th>
+                        <th>${(order.total_sum || 0).toFixed(2)}</th>
+                    </tr>
+                </tfoot>
             </table>
             ${isAdmin ? `
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
@@ -1541,7 +1675,11 @@ const App = {
         };
     },
 
-    showCreateUserModal() {
+    async showCreateUserModal() {
+        const plRes = await this.apiFetch('api/pricelist.php?action=list');
+        const plData = await plRes.json();
+        const priceLists = plData.lists || [];
+
         this.showModal('Новый клиент / Пользователь', `
             <form id="user-form">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
@@ -1581,6 +1719,12 @@ const App = {
                             <label>Адрес</label>
                             <input type="text" id="user-address">
                         </div>
+                        <div class="form-group">
+                            <label>Назначенный Прайс-лист</label>
+                            <select id="user-pricelist">
+                                ${priceLists.map(l => `<option value="${l.id}">${this.escapeHTML(l.name)}</option>`).join('')}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
@@ -1609,7 +1753,8 @@ const App = {
                     tax_id: document.getElementById('user-tax-id').value,
                     address: document.getElementById('user-address').value,
                     contact_person: document.getElementById('user-contact').value,
-                    phone: document.getElementById('user-phone').value
+                    phone: document.getElementById('user-phone').value,
+                    assigned_pricelist_id: document.getElementById('user-pricelist').value
                 })
             });
             await this.fetchClients();
@@ -1695,6 +1840,10 @@ const App = {
         const user = this.clients.find(u => u.id === id);
         if (!user) return;
 
+        const plRes = await this.apiFetch('api/pricelist.php?action=list');
+        const plData = await plRes.json();
+        const priceLists = plData.lists || [];
+
         this.showModal('Редактировать клиента', `
             <form id="edit-user-form">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
@@ -1721,6 +1870,12 @@ const App = {
                             <label>ИНН / УНП</label>
                             <input type="text" id="user-tax-id" value="${this.escapeHTML(user.tax_id || '')}">
                         </div>
+                        <div class="form-group">
+                            <label>Назначенный Прайс-лист</label>
+                            <select id="user-pricelist">
+                                ${priceLists.map(l => `<option value="${l.id}" ${user.assigned_pricelist_id === l.id ? 'selected' : ''}>${this.escapeHTML(l.name)}</option>`).join('')}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Сохранить</button>
@@ -1736,7 +1891,8 @@ const App = {
                     password: document.getElementById('user-password').value,
                     company_name: document.getElementById('user-company').value,
                     email: document.getElementById('user-email').value,
-                    tax_id: document.getElementById('user-tax-id').value
+                    tax_id: document.getElementById('user-tax-id').value,
+                    assigned_pricelist_id: document.getElementById('user-pricelist').value
                 })
             });
             await this.fetchClients();

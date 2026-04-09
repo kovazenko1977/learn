@@ -53,6 +53,7 @@ class Auth {
             'id' => $user['id'],
             'username' => $user['username'],
             'role' => $user['role'],
+            'assigned_pricelist_id' => $user['assigned_pricelist_id'] ?? 'default',
             'details' => $user['details'] ?? [],
             'csrf_token' => $_SESSION['csrf_token']
         ]];
@@ -105,10 +106,13 @@ class Auth {
 
     public static function getCurrentUser() {
         if (!self::check()) return null;
+        $user = Storage::findOne('users', ['id' => $_SESSION['user_id']]);
         return [
             'id' => $_SESSION['user_id'],
             'role' => $_SESSION['role'],
             'username' => $_SESSION['username'],
+            'company_name' => $user['company_name'] ?? '',
+            'assigned_pricelist_id' => $user['assigned_pricelist_id'] ?? 'default',
             'csrf_token' => $_SESSION['csrf_token'] ?? null
         ];
     }

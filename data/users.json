@@ -197,6 +197,7 @@
         "role": "client",
         "status": "active",
         "created_at": "2026-04-09 15:35:46",
-        "id": "69d7c752a5032"
+        "id": "69d7c752a5032",
+        "assigned_pricelist_id": "list_69d7e4a379ed7"
     }
 ]
