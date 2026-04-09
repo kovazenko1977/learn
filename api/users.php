@@ -31,7 +31,7 @@ switch ($action) {
             break;
         }
         $data['password'] = password_hash($raw_password, PASSWORD_BCRYPT);
-        $data['status'] = $data['status'] ?? 'active';
+        $data['status'] = $data['status'] ?? 'Активен';
         $data['created_at'] = date('Y-m-d H:i:s');
         // New fields
         $data['company_name'] = $data['company_name'] ?? '';
@@ -76,14 +76,14 @@ switch ($action) {
 
     case 'block':
         $id = $_GET['id'] ?? '';
-        Storage::update('users', $id, ['status' => 'blocked']);
+        Storage::update('users', $id, ['status' => 'Заблокирован']);
         Security::log('block_user', $_SESSION['user_id'], 'users', ['id' => $id]);
         echo json_encode(['success' => true]);
         break;
 
     case 'unblock':
         $id = $_GET['id'] ?? '';
-        Storage::update('users', $id, ['status' => 'active']);
+        Storage::update('users', $id, ['status' => 'Активен']);
         Security::log('unblock_user', $_SESSION['user_id'], 'users', ['id' => $id]);
         echo json_encode(['success' => true]);
         break;
@@ -105,14 +105,14 @@ switch ($action) {
 
     case 'approve':
         $id = $_GET['id'] ?? '';
-        Storage::update('users', $id, ['status' => 'active']);
+        Storage::update('users', $id, ['status' => 'Активен']);
         Security::log('approve_user', $_SESSION['user_id'], 'users', ['id' => $id]);
         echo json_encode(['success' => true]);
         break;
 
     case 'reject':
         $id = $_GET['id'] ?? '';
-        Storage::update('users', $id, ['status' => 'rejected']);
+        Storage::update('users', $id, ['status' => 'Отклонен']);
         Security::log('reject_user', $_SESSION['user_id'], 'users', ['id' => $id]);
         echo json_encode(['success' => true]);
         break;

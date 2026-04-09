@@ -23,11 +23,11 @@ class Auth {
             return ['success' => false, 'error' => 'Invalid credentials'];
         }
 
-        if ($user['status'] === 'blocked') {
-            return ['success' => false, 'error' => 'Account blocked'];
+        if ($user['status'] === 'Заблокирован') {
+            return ['success' => false, 'error' => 'Аккаунт заблокирован.'];
         }
 
-        if ($user['status'] === 'pending') {
+        if ($user['status'] === 'Ожидает') {
             return ['success' => false, 'error' => 'Ваш аккаунт ожидает подтверждения администратором.'];
         }
 

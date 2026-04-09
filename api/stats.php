@@ -16,7 +16,7 @@ switch ($action) {
 
         $clients_count = count(array_filter($users, fn($u) => isset($u['role']) && $u['role'] === 'client'));
         $admins_count = count($users) - $clients_count;
-        $active_clients = count(array_filter($users, fn($u) => isset($u['role']) && $u['role'] === 'client' && ($u['status'] ?? '') === 'active'));
+        $active_clients = count(array_filter($users, fn($u) => isset($u['role']) && $u['role'] === 'client' && ($u['status'] ?? '') === 'Активен'));
 
         // Storage calculation
         $storage_bytes = 0;

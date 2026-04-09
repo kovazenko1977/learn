@@ -47,7 +47,7 @@ switch ($action) {
             'tax_id' => $data['tax_id'] ?? '',
             'email' => $data['email'] ?? '',
             'role' => 'client',
-            'status' => 'pending',
+            'status' => 'Ожидает',
             'created_at' => date('Y-m-d H:i:s')
         ];
 

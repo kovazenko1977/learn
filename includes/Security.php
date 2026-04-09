@@ -60,7 +60,9 @@ class Security {
                 $data[$key] = self::sanitize($value);
             }
         } else if (is_string($data)) {
-            $data = htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+            // We only trim here. Escaping is handled by the frontend (SPA)
+            // to avoid double-escaping issues while keeping data raw in storage.
+            $data = trim($data);
         }
         return $data;
     }

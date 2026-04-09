@@ -511,7 +511,7 @@ const App = {
                                     ${isAdmin ? `<td>${this.escapeHTML(o.company_name || o.username)}</td>` : ''}
                                     <td>${o.total_items}</td>
                                     <td>${o.created_at}</td>
-                                    <td><span class="badge ${o.status === 'new' ? 'badge-warning' : 'badge-success'}">${o.status}</span></td>
+                                    <td><span class="badge ${o.status === 'Новый' ? 'badge-warning' : 'badge-success'}">${o.status}</span></td>
                                     <td><button class="btn btn-outline btn-sm" onclick="App.showOrderDetails('${o.id}')">Детали</button></td>
                                 </tr>
                             `).join('')}
@@ -815,8 +815,8 @@ const App = {
         const res = await this.apiFetch('api/users.php?action=list');
         const data = await res.json();
 
-        const pendingUsers = data.users.filter(u => u.status === 'pending');
-        const otherUsers = data.users.filter(u => u.status !== 'pending');
+        const pendingUsers = data.users.filter(u => u.status === 'Ожидает');
+        const otherUsers = data.users.filter(u => u.status !== 'Ожидает');
 
         let html = `
             <div class="view-header">
@@ -890,14 +890,14 @@ const App = {
                                     <small>${this.escapeHTML(u.phone || '-')}</small>
                                 </td>
                                 <td data-label="Статус">
-                                    <span class="badge ${u.status === 'active' ? 'badge-success' : (u.status === 'rejected' ? 'badge-error' : 'badge-warning')}">
+                                    <span class="badge ${u.status === 'Активен' ? 'badge-success' : (u.status === 'Отклонен' ? 'badge-error' : 'badge-warning')}">
                                         ${this.escapeHTML(u.status)}
                                     </span>
                                 </td>
                                 <td data-label="Действия">
                                     <div style="display:flex; gap:5px; flex-wrap:wrap">
                                         <button class="btn btn-outline btn-sm" onclick="App.showEditUserModal('${u.id}')">✏️</button>
-                                        ${u.status === 'active' ?
+                                        ${u.status === 'Активен' ?
                                             `<button class="btn btn-outline btn-sm" onclick="App.blockUser('${u.id}')" title="Блокировать">🚫</button>` :
                                             `<button class="btn btn-outline btn-sm" onclick="App.unblockUser('${u.id}')" title="Разблокировать">✅</button>`
                                         }
@@ -1016,6 +1016,30 @@ const App = {
                     <button class="btn btn-outline" style="width:100%" onclick="App.toggleMaintenance()">Переключить режим</button>
                 </div>
             </div>
+
+            <div class="card" style="margin-top:30px">
+                <h3>Резервное копирование и Восстановление</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-top:15px;">
+                    <div>
+                        <h4 style="margin-bottom:10px">Экспорт данных</h4>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                            <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;"><input type="checkbox" class="backup-entity" value="users" checked style="width:auto; margin:0;"> Пользователи</label>
+                            <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;"><input type="checkbox" class="backup-entity" value="pricelist" checked style="width:auto; margin:0;"> Прайс-листы</label>
+                            <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;"><input type="checkbox" class="backup-entity" value="orders" checked style="width:auto; margin:0;"> Заказы</label>
+                            <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;"><input type="checkbox" class="backup-entity" value="messages" checked style="width:auto; margin:0;"> Сообщения</label>
+                            <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;"><input type="checkbox" class="backup-entity" value="logs" checked style="width:auto; margin:0;"> Логи</label>
+                            <label style="display:flex; align-items:center; gap:8px; margin-bottom:0; cursor:pointer;"><input type="checkbox" class="backup-entity" value="settings" checked style="width:auto; margin:0;"> Настройки</label>
+                        </div>
+                        <button class="btn btn-primary" onclick="App.handleBackup()">Создать и скачать бэкап (.zip)</button>
+                    </div>
+                    <div style="border-left: 1px solid var(--border-color); padding-left:30px;">
+                        <h4 style="margin-bottom:10px">Импорт данных</h4>
+                        <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">Выберите ZIP-архив с данными для восстановления. <b>Внимание:</b> текущие файлы будут перезаписаны.</p>
+                        <input type="file" id="restore-file-input" style="display:none" accept=".zip" onchange="App.handleRestore(this)">
+                        <button class="btn btn-outline" onclick="document.getElementById('restore-file-input').click()">Загрузить и восстановить</button>
+                    </div>
+                </div>
+            </div>
         `;
 
         document.getElementById('notification-settings-form').onsubmit = async (e) => {
@@ -1047,6 +1071,59 @@ const App = {
         const res = await this.apiFetch('api/settings.php?action=toggle_maintenance');
         const data = await res.json();
         alert(`Режим техобслуживания: ${data.maintenance ? 'ВКЛ' : 'ВЫКЛ'}`);
+    },
+
+    async handleBackup() {
+        const checkboxes = document.querySelectorAll('.backup-entity:checked');
+        const entities = Array.from(checkboxes).map(cb => cb.value);
+        if (entities.length === 0) {
+            alert('Выберите сущности для резервного копирования');
+            return;
+        }
+
+        const res = await this.apiFetch('api/backup.php?action=export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entities })
+        });
+
+        if (res.ok) {
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } else {
+            const err = await res.json();
+            alert('Ошибка экспорта: ' + (err.error || 'Unknown error'));
+        }
+    },
+
+    async handleRestore(input) {
+        if (!input.files || !input.files[0]) return;
+        if (!confirm('Вы уверены? Это перезапишет текущие данные выбранными из архива.')) {
+            input.value = '';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('backup_file', input.files[0]);
+
+        const res = await this.apiFetch('api/backup.php?action=import', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('Данные успешно восстановлены');
+            location.reload();
+        } else {
+            alert('Ошибка восстановления: ' + (data.error || 'Unknown error'));
+            input.value = '';
+        }
     },
 
     async renderPriceList(container) {
@@ -1411,8 +1488,9 @@ const App = {
             </table>
             ${isAdmin ? `
                 <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button class="btn btn-primary btn-sm" onclick="App.updateOrderStatus('${order.id}', 'processing')">В работу</button>
-                    <button class="btn btn-primary btn-sm" style="background: #27ae60" onclick="App.updateOrderStatus('${order.id}', 'completed')">Завершен</button>
+                    <button class="btn btn-primary btn-sm" onclick="App.updateOrderStatus('${order.id}', 'В обработке')">В работу</button>
+                    <button class="btn btn-primary btn-sm" style="background: #27ae60" onclick="App.updateOrderStatus('${order.id}', 'Выполнен')">Завершен</button>
+                    <button class="btn btn-outline btn-sm" style="color:red" onclick="App.updateOrderStatus('${order.id}', 'Отменен')">Отменить</button>
                 </div>
             ` : ''}
         `;
@@ -1463,12 +1541,15 @@ const App = {
                                 <td data-label="Позиций">${o.total_items}</td>
                                 <td data-label="Дата">${o.created_at}</td>
                                 <td data-label="Статус">
-                                    <span class="badge ${o.status === 'new' ? 'badge-warning' : (o.status === 'completed' ? 'badge-success' : 'badge-primary')}">
+                                    <span class="badge ${o.status === 'Новый' ? 'badge-warning' : (o.status === 'Выполнен' ? 'badge-success' : 'badge-primary')}">
                                         ${this.escapeHTML(o.status)}
                                     </span>
                                 </td>
                                 <td data-label="Действия">
-                                    <button class="btn btn-outline btn-sm" onclick="App.showOrderDetails('${o.id}')">🔍 Детали</button>
+                                    <div style="display:flex; gap:5px;">
+                                        <button class="btn btn-outline btn-sm" onclick="App.showOrderDetails('${o.id}')">🔍 Детали</button>
+                                        ${isAdmin ? `<button class="btn btn-outline btn-sm" style="color:red" onclick="App.deleteOrder('${o.id}')">🗑️</button>` : ''}
+                                    </div>
                                 </td>
                             </tr>
                         `).join('')}

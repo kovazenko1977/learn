@@ -58,7 +58,7 @@ switch ($action) {
             'total_sum' => $total_sum,
             'comment' => $orderData['comment'] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
-            'status' => 'new'
+            'status' => 'Новый'
         ];
 
         Storage::insert('orders', $order);
@@ -97,6 +97,14 @@ switch ($action) {
         $data = json_decode(file_get_contents('php://input'), true);
         Storage::update('orders', $data['id'], ['status' => $data['status']]);
         Security::log('order_status_update', $_SESSION['user_id'], 'orders', ['id' => $data['id'], 'status' => $data['status']]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'delete':
+        Auth::requireRole(['superadmin', 'admin_content']);
+        $id = $_GET['id'] ?? '';
+        Storage::delete('orders', $id);
+        Security::log('order_delete', $_SESSION['user_id'], 'orders', ['id' => $id]);
         echo json_encode(['success' => true]);
         break;
 
