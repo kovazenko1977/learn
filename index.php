@@ -87,6 +87,8 @@
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .badge-success { background: #e6fffa; color: #319795; }
         .badge-warning { background: #fffaf0; color: #dd6b20; }
+        .badge-error { background: #fff5f5; color: #e53e3e; }
+        .badge-primary { background: #eff2fe; color: var(--primary); }
 
         /* Messenger Styles */
         .chat-layout { display: flex; flex-direction: column; height: 650px; background: #f4f4f9; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
@@ -145,7 +147,7 @@
 </head>
 <body>
     <div id="auth-view" class="hidden">
-        <div class="auth-card">
+        <div class="auth-card" id="login-card">
             <h1>Личный кабинет</h1>
             <form id="login-form">
                 <div class="form-group">
@@ -156,11 +158,40 @@
                     <label>Пароль</label>
                     <input type="password" id="password" required placeholder="Введите пароль">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px; height: 50px;">Войти</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px; height: 50px;">Войти</button>
             </form>
+            <button class="btn btn-outline" style="width: 100%; margin-bottom: 20px;" onclick="App.showRegistration()">Регистрация нового клиента</button>
             <div style="text-align: center; border-top: 1px solid var(--border); padding-top: 20px;">
-                <a href="https://alco.by/instal/" class="btn btn-outline" style="width: 100%; text-decoration: none;">На главную alco.by</a>
+                <a href="https://alco.by/instal/" class="btn btn-outline" style="width: 100%; text-decoration: none; border: none; color: var(--text-muted);">На главную alco.by</a>
             </div>
+        </div>
+
+        <div class="auth-card hidden" id="register-card">
+            <h1>Регистрация</h1>
+            <form id="register-form">
+                <div class="form-group">
+                    <label>Логин (желаемый) *</label>
+                    <input type="text" id="reg-username" required placeholder="Например: ivan_ivanov">
+                </div>
+                <div class="form-group">
+                    <label>Пароль *</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <div class="form-group">
+                    <label>Название компании *</label>
+                    <input type="text" id="reg-company" required placeholder="ООО 'Пример'">
+                </div>
+                <div class="form-group">
+                    <label>ИНН / УНП *</label>
+                    <input type="text" id="reg-taxid" required>
+                </div>
+                <div class="form-group">
+                    <label>Контактный Email *</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 15px; height: 50px;">Отправить заявку</button>
+            </form>
+            <button class="btn btn-outline" style="width: 100%;" onclick="App.showLogin()">Назад к входу</button>
         </div>
     </div>
 
@@ -172,6 +203,8 @@
                     <a class="nav-item active" data-view="dashboard"><span>🏠</span>Дашборд</a>
                     <a class="nav-item" data-view="documents"><span>📁</span>Файлы</a>
                     <a class="nav-item" data-view="messages"><span>💬</span>Чаты</a>
+                    <a class="nav-item" data-view="pricelist"><span>🛒</span>Прайс</a>
+                    <a class="nav-item" data-view="orders"><span>📦</span>Заказы</a>
                     <a class="nav-item admin-only hidden" data-view="users"><span>👥</span>Клиенты</a>
                     <a class="nav-item admin-only hidden" data-view="logs"><span>📋</span>Логи</a>
                     <a class="nav-item admin-only hidden" data-view="maintenance"><span>⚙️</span>Сервис</a>

@@ -24,12 +24,13 @@ switch ($action) {
 
     case 'create':
         $data = json_decode(file_get_contents('php://input'), true);
+        $raw_password = $data['password'] ?? '';
         $data = Security::sanitize($data);
         if (Storage::findOne('users', ['username' => $data['username']])) {
             echo json_encode(['success' => false, 'error' => 'Username already exists']);
             break;
         }
-        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+        $data['password'] = password_hash($raw_password, PASSWORD_BCRYPT);
         $data['status'] = $data['status'] ?? 'active';
         $data['created_at'] = date('Y-m-d H:i:s');
         // New fields
@@ -47,6 +48,7 @@ switch ($action) {
 
     case 'update':
         $data = json_decode(file_get_contents('php://input'), true);
+        $raw_password = $data['password'] ?? '';
         $data = Security::sanitize($data);
         $id = $_GET['id'] ?? $data['id'] ?? '';
         if (!$id) {
@@ -61,8 +63,8 @@ switch ($action) {
             exit;
         }
         unset($data['id']);
-        if (!empty($data['password'])) {
-            $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+        if (!empty($raw_password)) {
+            $data['password'] = password_hash($raw_password, PASSWORD_BCRYPT);
         } else {
             unset($data['password']);
         }
@@ -97,6 +99,20 @@ switch ($action) {
         $id = $_GET['id'] ?? '';
         Storage::delete('users', $id);
         Security::log('delete_user', $_SESSION['user_id'], 'users', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'approve':
+        $id = $_GET['id'] ?? '';
+        Storage::update('users', $id, ['status' => 'active']);
+        Security::log('approve_user', $_SESSION['user_id'], 'users', ['id' => $id]);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'reject':
+        $id = $_GET['id'] ?? '';
+        Storage::update('users', $id, ['status' => 'rejected']);
+        Security::log('reject_user', $_SESSION['user_id'], 'users', ['id' => $id]);
         echo json_encode(['success' => true]);
         break;
 

@@ -64,4 +64,65 @@ class Mailer {
 
         return self::send($user['email'], $subject, $body);
     }
+
+    public static function notifyNewRegistration($username, $company_name) {
+        $settings = Storage::read('settings');
+        $admin_email = $settings['admin_notification_email'] ?? '';
+        if (!$admin_email) {
+            // Try to find any admin with email
+            $admins = Storage::read('users');
+            foreach ($admins as $adm) {
+                if ($adm['role'] === 'superadmin' && !empty($adm['email'])) {
+                    $admin_email = $adm['email'];
+                    break;
+                }
+            }
+        }
+        if (!$admin_email) return;
+
+        $subject = "Новая регистрация в личном кабинете";
+        $body = "
+            <p>В системе зарегистрировался новый пользователь:</p>
+            <ul>
+                <li>Логин: <b>$username</b></li>
+                <li>Компания: <b>$company_name</b></li>
+            </ul>
+            <p>Пожалуйста, войдите в панель управления, чтобы одобрить или отклонить заявку.</p>
+        ";
+        return self::send($admin_email, $subject, $body);
+    }
+
+    public static function notifyNewOrder($client_name, $order_id, $items_html) {
+        $settings = Storage::read('settings');
+        $admin_email = $settings['admin_notification_email'] ?? '';
+        if (!$admin_email) {
+            $admins = Storage::read('users');
+            foreach ($admins as $adm) {
+                if ($adm['role'] === 'superadmin' && !empty($adm['email'])) {
+                    $admin_email = $adm['email'];
+                    break;
+                }
+            }
+        }
+        if (!$admin_email) return;
+
+        $subject = "Новый заказ №" . $order_id;
+        $body = "
+            <p>Клиент <b>$client_name</b> оформил новый заказ <b>№$order_id</b>.</p>
+            <h3>Состав заказа:</h3>
+            <table border='1' cellpadding='5' style='border-collapse: collapse; width: 100%;'>
+                <thead>
+                    <tr style='background: #f4f4f9;'>
+                        <th>Наименование</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    $items_html
+                </tbody>
+            </table>
+            <p>Просмотреть детали заказа можно в личном кабинете.</p>
+        ";
+        return self::send($admin_email, $subject, $body);
+    }
 }

@@ -11,19 +11,25 @@ switch ($action) {
         $messages = Storage::read('messages');
         $user = Auth::getCurrentUser();
 
+        $allUsers = Storage::read('users');
+        $usersById = [];
+        foreach ($allUsers as $u) {
+            $usersById[$u['id']] = $u;
+        }
+
         if ($user['role'] === 'client') {
             $messages = array_filter($messages, function($msg) use ($user) {
                 return $msg['to'] === 'all' || $msg['to'] === $user['id'] || $msg['from'] === $user['id'];
             });
         } else {
             // Admins see all messages addressed to 'admin', all broadcasts, and all messages they sent
-            $messages = array_filter($messages, function($msg) use ($user) {
+            $messages = array_filter($messages, function($msg) use ($user, $usersById) {
                 $isRelevant = ($msg['to'] ?? '') === 'admin' || ($msg['to'] ?? '') === 'all' || $msg['from'] === $user['id'] || ($msg['to'] ?? '') === 'superadmin';
 
-                $sender = Storage::findOne('users', ['id' => $msg['from']]);
+                $sender = $usersById[$msg['from']] ?? null;
                 $isFromClient = $sender && ($sender['role'] ?? '') === 'client';
 
-                $recipient = Storage::findOne('users', ['id' => ($msg['to'] ?? '')]);
+                $recipient = $usersById[$msg['to'] ?? ''] ?? null;
                 $isToClient = $recipient && ($recipient['role'] ?? '') === 'client';
 
                 return $isRelevant || $isFromClient || $isToClient;
@@ -37,8 +43,8 @@ switch ($action) {
             if ($user['role'] === 'client') {
                 // If I am client, partner is admin. Check if any admin read it.
                 foreach ($msg['read_by'] ?? [] as $reader_id) {
-                    $reader = Storage::findOne('users', ['id' => $reader_id]);
-                    if ($reader && strpos($reader['role'], 'admin') !== false) {
+                    $reader = $usersById[$reader_id] ?? null;
+                    if ($reader && strpos($reader['role'] ?? '', 'admin') !== false) {
                         $msg['read_by_partner'] = true;
                         break;
                     }

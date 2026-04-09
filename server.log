@@ -1,1 +1,1078 @@
-[Sat Apr  4 14:05:21 2026] Failed to listen on localhost:8000 (reason: Address already in use)
+[Thu Apr  9 08:29:37 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Thu Apr  9 08:29:41 2026] [::1]:59676 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59676 [200]: GET /
+[Thu Apr  9 08:29:41 2026] [::1]:59676 Closing
+[Thu Apr  9 08:29:41 2026] [::1]:59680 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59680 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:29:41 2026] [::1]:59680 Closing
+[Thu Apr  9 08:29:41 2026] [::1]:59682 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59682 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:29:41 2026] [::1]:59682 Closing
+[Thu Apr  9 08:29:41 2026] [::1]:59690 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59690 [200]: GET /sw.js
+[Thu Apr  9 08:29:41 2026] [::1]:59690 Closing
+[Thu Apr  9 08:29:41 2026] [::1]:59702 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59712 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59728 Accepted
+[Thu Apr  9 08:29:41 2026] [::1]:59702 [200]: GET /
+[Thu Apr  9 08:29:41 2026] [::1]:59702 Closing
+[Thu Apr  9 08:29:41 2026] [::1]:59712 [200]: GET /index.php
+[Thu Apr  9 08:29:41 2026] [::1]:59712 Closing
+[Thu Apr  9 08:29:41 2026] [::1]:59728 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:29:41 2026] [::1]:59728 Closing
+[Thu Apr  9 08:31:57 2026] [::1]:55482 Accepted
+[Thu Apr  9 08:31:57 2026] [::1]:55482 [200]: GET /
+[Thu Apr  9 08:31:57 2026] [::1]:55482 Closing
+[Thu Apr  9 08:31:57 2026] [::1]:55496 Accepted
+[Thu Apr  9 08:31:57 2026] [::1]:55496 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:31:57 2026] [::1]:55496 Closing
+[Thu Apr  9 08:31:57 2026] [::1]:55498 Accepted
+[Thu Apr  9 08:31:57 2026] [::1]:55498 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:31:57 2026] [::1]:55498 Closing
+[Thu Apr  9 08:31:57 2026] [::1]:55514 Accepted
+[Thu Apr  9 08:31:57 2026] [::1]:55514 [200]: GET /sw.js
+[Thu Apr  9 08:31:57 2026] [::1]:55514 Closing
+[Thu Apr  9 08:31:58 2026] [::1]:55524 Accepted
+[Thu Apr  9 08:31:58 2026] [::1]:55538 Accepted
+[Thu Apr  9 08:31:58 2026] [::1]:55548 Accepted
+[Thu Apr  9 08:31:58 2026] [::1]:55524 [200]: GET /
+[Thu Apr  9 08:31:58 2026] [::1]:55524 Closing
+[Thu Apr  9 08:31:58 2026] [::1]:55538 [200]: GET /index.php
+[Thu Apr  9 08:31:58 2026] [::1]:55538 Closing
+[Thu Apr  9 08:31:58 2026] [::1]:55548 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:31:58 2026] [::1]:55548 Closing
+[Thu Apr  9 08:32:00 2026] [::1]:55552 Accepted
+[Thu Apr  9 08:32:00 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 08:32:00 2026] [::1]:55552 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 08:32:00 2026] [::1]:55552 Closing
+[Thu Apr  9 08:32:01 2026] [::1]:48492 Accepted
+[Thu Apr  9 08:32:01 2026] [::1]:48492 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 08:32:01 2026] [::1]:48492 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59552 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59552 [200]: GET /
+[Thu Apr  9 08:34:52 2026] [::1]:59552 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59554 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59554 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:34:52 2026] [::1]:59554 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59570 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59570 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:34:52 2026] [::1]:59570 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59572 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59572 [200]: GET /sw.js
+[Thu Apr  9 08:34:52 2026] [::1]:59572 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59582 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59582 [200]: GET /
+[Thu Apr  9 08:34:52 2026] [::1]:59582 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59592 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59600 Accepted
+[Thu Apr  9 08:34:52 2026] [::1]:59592 [200]: GET /index.php
+[Thu Apr  9 08:34:52 2026] [::1]:59592 Closing
+[Thu Apr  9 08:34:52 2026] [::1]:59600 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:34:52 2026] [::1]:59600 Closing
+[Thu Apr  9 08:34:55 2026] [::1]:59616 Accepted
+[Thu Apr  9 08:34:55 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 08:34:55 2026] [::1]:59616 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 08:34:55 2026] [::1]:59616 Closing
+[Thu Apr  9 08:34:56 2026] [::1]:59630 Accepted
+[Thu Apr  9 08:34:56 2026] [::1]:59630 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 08:34:56 2026] [::1]:59630 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50546 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50546 [200]: GET /
+[Thu Apr  9 08:41:08 2026] [::1]:50546 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50560 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50560 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:41:08 2026] [::1]:50560 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50576 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50576 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:41:08 2026] [::1]:50576 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50580 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50580 [200]: GET /sw.js
+[Thu Apr  9 08:41:08 2026] [::1]:50580 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50590 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50596 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50598 Accepted
+[Thu Apr  9 08:41:08 2026] [::1]:50590 [200]: GET /
+[Thu Apr  9 08:41:08 2026] [::1]:50590 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50596 [200]: GET /index.php
+[Thu Apr  9 08:41:08 2026] [::1]:50596 Closing
+[Thu Apr  9 08:41:08 2026] [::1]:50598 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:41:08 2026] [::1]:50598 Closing
+[Thu Apr  9 08:41:11 2026] [::1]:49970 Accepted
+[Thu Apr  9 08:41:11 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 08:41:11 2026] [::1]:49970 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 08:41:11 2026] [::1]:49970 Closing
+[Thu Apr  9 08:41:12 2026] [::1]:49972 Accepted
+[Thu Apr  9 08:41:12 2026] [::1]:49972 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 08:41:12 2026] [::1]:49972 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:55942 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:55942 [200]: GET /
+[Thu Apr  9 08:47:56 2026] [::1]:55942 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:55948 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:55948 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:47:56 2026] [::1]:55948 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:55960 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:55960 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:47:56 2026] [::1]:55960 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:55974 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:55974 [200]: GET /sw.js
+[Thu Apr  9 08:47:56 2026] [::1]:55974 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:55990 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:56002 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:55990 [200]: GET /
+[Thu Apr  9 08:47:56 2026] [::1]:55990 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:56014 Accepted
+[Thu Apr  9 08:47:56 2026] [::1]:56002 [200]: GET /index.php
+[Thu Apr  9 08:47:56 2026] [::1]:56002 Closing
+[Thu Apr  9 08:47:56 2026] [::1]:56014 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:47:56 2026] [::1]:56014 Closing
+[Thu Apr  9 08:48:00 2026] [::1]:56026 Accepted
+[Thu Apr  9 08:48:00 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 08:48:00 2026] [::1]:56026 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 08:48:00 2026] [::1]:56026 Closing
+[Thu Apr  9 08:48:01 2026] [::1]:45484 Accepted
+[Thu Apr  9 08:48:01 2026] [::1]:45484 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 08:48:01 2026] [::1]:45484 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45110 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45110 [200]: GET /
+[Thu Apr  9 08:54:47 2026] [::1]:45110 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45126 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45126 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:54:47 2026] [::1]:45126 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45130 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45130 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:54:47 2026] [::1]:45130 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45138 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45138 [200]: GET /sw.js
+[Thu Apr  9 08:54:47 2026] [::1]:45138 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45142 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45152 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45162 Accepted
+[Thu Apr  9 08:54:47 2026] [::1]:45142 [200]: GET /
+[Thu Apr  9 08:54:47 2026] [::1]:45142 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45152 [200]: GET /index.php
+[Thu Apr  9 08:54:47 2026] [::1]:45152 Closing
+[Thu Apr  9 08:54:47 2026] [::1]:45162 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:54:47 2026] [::1]:45162 Closing
+[Thu Apr  9 08:54:51 2026] [::1]:44762 Accepted
+[Thu Apr  9 08:54:51 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 08:54:51 2026] [::1]:44762 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 08:54:51 2026] [::1]:44762 Closing
+[Thu Apr  9 08:54:52 2026] [::1]:44778 Accepted
+[Thu Apr  9 08:54:52 2026] [::1]:44778 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 08:54:52 2026] [::1]:44778 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55088 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55088 [200]: GET /
+[Thu Apr  9 08:58:43 2026] [::1]:55088 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55094 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55094 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:58:43 2026] [::1]:55094 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55104 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55104 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 08:58:43 2026] [::1]:55104 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55108 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55108 [200]: GET /sw.js
+[Thu Apr  9 08:58:43 2026] [::1]:55108 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55118 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55128 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55142 Accepted
+[Thu Apr  9 08:58:43 2026] [::1]:55118 [200]: GET /
+[Thu Apr  9 08:58:43 2026] [::1]:55118 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55128 [200]: GET /index.php
+[Thu Apr  9 08:58:43 2026] [::1]:55128 Closing
+[Thu Apr  9 08:58:43 2026] [::1]:55142 [200]: GET /assets/js/app.js
+[Thu Apr  9 08:58:43 2026] [::1]:55142 Closing
+[Thu Apr  9 08:58:47 2026] [::1]:55152 Accepted
+[Thu Apr  9 08:58:47 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 08:58:47 2026] [::1]:55152 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 08:58:47 2026] [::1]:55152 Closing
+[Thu Apr  9 08:58:48 2026] [::1]:55158 Accepted
+[Thu Apr  9 08:58:48 2026] [::1]:55158 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 08:58:48 2026] [::1]:55158 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48530 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48530 [200]: GET /
+[Thu Apr  9 09:01:39 2026] [::1]:48530 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48534 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48534 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:01:39 2026] [::1]:48534 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48538 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48538 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:01:39 2026] [::1]:48538 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48554 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48554 [200]: GET /sw.js
+[Thu Apr  9 09:01:39 2026] [::1]:48554 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48570 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48576 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48584 Accepted
+[Thu Apr  9 09:01:39 2026] [::1]:48570 [200]: GET /
+[Thu Apr  9 09:01:39 2026] [::1]:48570 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48576 [200]: GET /index.php
+[Thu Apr  9 09:01:39 2026] [::1]:48576 Closing
+[Thu Apr  9 09:01:39 2026] [::1]:48584 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:01:39 2026] [::1]:48584 Closing
+[Thu Apr  9 09:01:42 2026] [::1]:55828 Accepted
+[Thu Apr  9 09:01:42 2026] [::1]:55828 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:01:42 2026] [::1]:55828 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:38986 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:38986 [200]: GET /
+[Thu Apr  9 09:04:42 2026] [::1]:38986 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:39002 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:39002 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:04:42 2026] [::1]:39002 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:39016 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:39016 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:04:42 2026] [::1]:39016 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:39030 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:39030 [200]: GET /sw.js
+[Thu Apr  9 09:04:42 2026] [::1]:39030 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:39040 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:39054 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:39066 Accepted
+[Thu Apr  9 09:04:42 2026] [::1]:39040 [200]: GET /
+[Thu Apr  9 09:04:42 2026] [::1]:39040 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:39054 [200]: GET /index.php
+[Thu Apr  9 09:04:42 2026] [::1]:39054 Closing
+[Thu Apr  9 09:04:42 2026] [::1]:39066 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:04:42 2026] [::1]:39066 Closing
+[Thu Apr  9 09:04:45 2026] [::1]:39082 Accepted
+[Thu Apr  9 09:04:45 2026] [::1]:39082 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:04:45 2026] [::1]:39082 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41114 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41114 [200]: GET /
+[Thu Apr  9 09:07:06 2026] [::1]:41114 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41128 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41128 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:07:06 2026] [::1]:41128 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41130 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41130 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:07:06 2026] [::1]:41130 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41136 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41136 [200]: GET /sw.js
+[Thu Apr  9 09:07:06 2026] [::1]:41136 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41138 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41148 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41154 Accepted
+[Thu Apr  9 09:07:06 2026] [::1]:41138 [200]: GET /
+[Thu Apr  9 09:07:06 2026] [::1]:41138 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41148 [200]: GET /index.php
+[Thu Apr  9 09:07:06 2026] [::1]:41148 Closing
+[Thu Apr  9 09:07:06 2026] [::1]:41154 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:07:06 2026] [::1]:41154 Closing
+[Thu Apr  9 09:07:11 2026] [::1]:43912 Accepted
+[Thu Apr  9 09:07:11 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:07:11 2026] [::1]:43912 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:07:11 2026] [::1]:43912 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43924 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43924 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:07:12 2026] [::1]:43924 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43940 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43940 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:07:12 2026] [::1]:43940 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43950 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43950 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:07:12 2026] [::1]:43950 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43962 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43962 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:07:12 2026] [::1]:43962 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43974 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43974 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:07:12 2026] [::1]:43974 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43978 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43978 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:07:12 2026] [::1]:43978 Closing
+[Thu Apr  9 09:07:12 2026] [::1]:43982 Accepted
+[Thu Apr  9 09:07:12 2026] [::1]:43982 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:07:12 2026] [::1]:43982 Closing
+[Thu Apr  9 09:07:13 2026] [::1]:43994 Accepted
+[Thu Apr  9 09:07:13 2026] [::1]:43994 [200]: GET /api/users.php?action=approve&id=69d76c3f58d1d
+[Thu Apr  9 09:07:13 2026] [::1]:43994 Closing
+[Thu Apr  9 09:07:13 2026] [::1]:44000 Accepted
+[Thu Apr  9 09:07:13 2026] [::1]:44000 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:07:13 2026] [::1]:44000 Closing
+[Thu Apr  9 09:07:13 2026] [::1]:44008 Accepted
+[Thu Apr  9 09:07:13 2026] [::1]:44008 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:07:13 2026] [::1]:44008 Closing
+[Thu Apr  9 09:07:13 2026] [::1]:44010 Accepted
+[Thu Apr  9 09:07:13 2026] [::1]:44010 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:07:13 2026] [::1]:44010 Closing
+[Thu Apr  9 09:07:13 2026] [::1]:44026 Accepted
+[Thu Apr  9 09:07:13 2026] [::1]:44026 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:07:13 2026] [::1]:44026 Closing
+[Thu Apr  9 09:07:13 2026] [::1]:44030 Accepted
+[Thu Apr  9 09:07:13 2026] [::1]:44030 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:07:13 2026] [::1]:44030 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38624 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38624 [200]: GET /
+[Thu Apr  9 09:09:59 2026] [::1]:38624 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38626 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38626 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:09:59 2026] [::1]:38626 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38642 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38642 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:09:59 2026] [::1]:38642 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38654 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38654 [200]: GET /sw.js
+[Thu Apr  9 09:09:59 2026] [::1]:38654 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38664 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38678 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38664 [200]: GET /
+[Thu Apr  9 09:09:59 2026] [::1]:38664 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38682 Accepted
+[Thu Apr  9 09:09:59 2026] [::1]:38678 [200]: GET /index.php
+[Thu Apr  9 09:09:59 2026] [::1]:38678 Closing
+[Thu Apr  9 09:09:59 2026] [::1]:38682 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:09:59 2026] [::1]:38682 Closing
+[Thu Apr  9 09:10:03 2026] [::1]:55054 Accepted
+[Thu Apr  9 09:10:03 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:10:03 2026] [::1]:55054 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:10:03 2026] [::1]:55054 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55064 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55064 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:10:04 2026] [::1]:55064 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55068 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55068 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:10:04 2026] [::1]:55068 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55076 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55076 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:10:04 2026] [::1]:55076 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55084 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55084 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:10:04 2026] [::1]:55084 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55088 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55088 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:10:04 2026] [::1]:55088 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55104 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55104 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:10:04 2026] [::1]:55104 Closing
+[Thu Apr  9 09:10:04 2026] [::1]:55108 Accepted
+[Thu Apr  9 09:10:04 2026] [::1]:55108 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:10:04 2026] [::1]:55108 Closing
+[Thu Apr  9 09:10:05 2026] [::1]:55120 Accepted
+[Thu Apr  9 09:10:05 2026] [::1]:55120 [200]: GET /api/users.php?action=approve&id=69d76ceba9a1f
+[Thu Apr  9 09:10:05 2026] [::1]:55120 Closing
+[Thu Apr  9 09:10:05 2026] [::1]:55126 Accepted
+[Thu Apr  9 09:10:05 2026] [::1]:55126 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:10:05 2026] [::1]:55126 Closing
+[Thu Apr  9 09:10:05 2026] [::1]:55142 Accepted
+[Thu Apr  9 09:10:05 2026] [::1]:55142 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:10:05 2026] [::1]:55142 Closing
+[Thu Apr  9 09:10:05 2026] [::1]:55146 Accepted
+[Thu Apr  9 09:10:05 2026] [::1]:55146 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:10:05 2026] [::1]:55146 Closing
+[Thu Apr  9 09:10:05 2026] [::1]:55158 Accepted
+[Thu Apr  9 09:10:05 2026] [::1]:55158 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:10:05 2026] [::1]:55158 Closing
+[Thu Apr  9 09:10:05 2026] [::1]:55174 Accepted
+[Thu Apr  9 09:10:05 2026] [::1]:55174 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:10:05 2026] [::1]:55174 Closing
+[Thu Apr  9 09:10:06 2026] [::1]:55190 Accepted
+[Thu Apr  9 09:10:06 2026] [::1]:55190 [200]: POST /api/pricelist.php?action=save_item
+[Thu Apr  9 09:10:06 2026] [::1]:55190 Closing
+[Thu Apr  9 09:10:06 2026] [::1]:55196 Accepted
+[Thu Apr  9 09:10:06 2026] [::1]:55196 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:10:06 2026] [::1]:55196 Closing
+[Thu Apr  9 09:10:06 2026] [::1]:55212 Accepted
+[Thu Apr  9 09:10:06 2026] [::1]:55212 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:10:06 2026] [::1]:55212 Closing
+[Thu Apr  9 09:10:08 2026] [::1]:55224 Accepted
+[Thu Apr  9 09:10:08 2026] [::1]:55224 [200]: GET /api/auth.php?action=logout
+[Thu Apr  9 09:10:08 2026] [::1]:55224 Closing
+[Thu Apr  9 09:10:08 2026] [::1]:55228 Accepted
+[Thu Apr  9 09:10:09 2026] [::1]:55228 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:10:09 2026] [::1]:55228 Closing
+[Thu Apr  9 09:10:09 2026] [::1]:55230 Accepted
+[Thu Apr  9 09:10:09 2026] [::1]:55230 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:10:09 2026] [::1]:55230 Closing
+[Thu Apr  9 09:10:09 2026] [::1]:55234 Accepted
+[Thu Apr  9 09:10:09 2026] [::1]:55234 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:10:09 2026] [::1]:55234 Closing
+[Thu Apr  9 09:10:09 2026] [::1]:55242 Accepted
+[Thu Apr  9 09:10:09 2026] [::1]:55242 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:10:09 2026] [::1]:55242 Closing
+[Thu Apr  9 09:10:19 2026] [::1]:43292 Accepted
+[Thu Apr  9 09:10:19 2026] [::1]:43292 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:10:19 2026] [::1]:43292 Closing
+[Thu Apr  9 09:10:29 2026] [::1]:46822 Accepted
+[Thu Apr  9 09:10:29 2026] [::1]:46822 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:10:29 2026] [::1]:46822 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:42936 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:42936 [200]: GET /
+[Thu Apr  9 09:13:30 2026] [::1]:42936 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:42950 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:42950 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:13:30 2026] [::1]:42950 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:42964 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:42964 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:13:30 2026] [::1]:42964 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:42972 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:42972 [200]: GET /sw.js
+[Thu Apr  9 09:13:30 2026] [::1]:42972 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:42974 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:42990 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:43006 Accepted
+[Thu Apr  9 09:13:30 2026] [::1]:42974 [200]: GET /
+[Thu Apr  9 09:13:30 2026] [::1]:42974 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:42990 [200]: GET /index.php
+[Thu Apr  9 09:13:30 2026] [::1]:42990 Closing
+[Thu Apr  9 09:13:30 2026] [::1]:43006 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:13:30 2026] [::1]:43006 Closing
+[Thu Apr  9 09:13:31 2026] [::1]:34126 Accepted
+[Thu Apr  9 09:13:31 2026] [::1]:34126 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:13:31 2026] [::1]:34126 Closing
+[Thu Apr  9 09:13:31 2026] [::1]:34130 Accepted
+[Thu Apr  9 09:13:31 2026] [::1]:34130 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:13:31 2026] [::1]:34130 Closing
+[Thu Apr  9 09:13:31 2026] [::1]:34146 Accepted
+[Thu Apr  9 09:13:31 2026] [::1]:34146 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:13:31 2026] [::1]:34146 Closing
+[Thu Apr  9 09:13:31 2026] [::1]:34158 Accepted
+[Thu Apr  9 09:13:31 2026] [::1]:34158 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:13:31 2026] [::1]:34158 Closing
+[Thu Apr  9 09:13:31 2026] [::1]:34162 Accepted
+[Thu Apr  9 09:13:31 2026] [::1]:34162 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:13:31 2026] [::1]:34162 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56018 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56018 [200]: GET /
+[Thu Apr  9 09:15:03 2026] [::1]:56018 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56024 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56024 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:15:03 2026] [::1]:56024 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56034 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56034 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:03 2026] [::1]:56034 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56040 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56040 [200]: GET /sw.js
+[Thu Apr  9 09:15:03 2026] [::1]:56040 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56048 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56056 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56058 Accepted
+[Thu Apr  9 09:15:03 2026] [::1]:56048 [200]: GET /
+[Thu Apr  9 09:15:03 2026] [::1]:56048 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56056 [200]: GET /index.php
+[Thu Apr  9 09:15:03 2026] [::1]:56056 Closing
+[Thu Apr  9 09:15:03 2026] [::1]:56058 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:15:03 2026] [::1]:56058 Closing
+[Thu Apr  9 09:15:05 2026] [::1]:56064 Accepted
+[Thu Apr  9 09:15:05 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:15:05 2026] [::1]:56064 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:15:05 2026] [::1]:56064 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56072 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56072 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:15:06 2026] [::1]:56072 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56086 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56086 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:15:06 2026] [::1]:56086 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56094 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56094 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:15:06 2026] [::1]:56094 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56106 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56106 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:06 2026] [::1]:56106 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56118 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56118 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:15:06 2026] [::1]:56118 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56120 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56120 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:06 2026] [::1]:56120 Closing
+[Thu Apr  9 09:15:06 2026] [::1]:56130 Accepted
+[Thu Apr  9 09:15:06 2026] [::1]:56130 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:15:06 2026] [::1]:56130 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56132 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56132 [200]: GET /api/users.php?action=approve&id=69d76e199c8e8
+[Thu Apr  9 09:15:07 2026] [::1]:56132 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56134 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56134 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:15:07 2026] [::1]:56134 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56140 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56140 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:07 2026] [::1]:56140 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56154 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56154 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:15:07 2026] [::1]:56154 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56158 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56158 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:07 2026] [::1]:56158 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56168 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56168 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:15:07 2026] [::1]:56168 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56178 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56178 [200]: POST /api/pricelist.php?action=save_item
+[Thu Apr  9 09:15:07 2026] [::1]:56178 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56194 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56194 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:07 2026] [::1]:56194 Closing
+[Thu Apr  9 09:15:07 2026] [::1]:56206 Accepted
+[Thu Apr  9 09:15:07 2026] [::1]:56206 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:15:07 2026] [::1]:56206 Closing
+[Thu Apr  9 09:15:08 2026] [::1]:56212 Accepted
+[Thu Apr  9 09:15:08 2026] [::1]:56212 [200]: GET /api/auth.php?action=logout
+[Thu Apr  9 09:15:08 2026] [::1]:56212 Closing
+[Thu Apr  9 09:15:09 2026] [::1]:56216 Accepted
+[Thu Apr  9 09:15:09 2026] [::1]:56216 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:15:09 2026] [::1]:56216 Closing
+[Thu Apr  9 09:15:09 2026] [::1]:56224 Accepted
+[Thu Apr  9 09:15:09 2026] [::1]:56224 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:15:09 2026] [::1]:56224 Closing
+[Thu Apr  9 09:15:09 2026] [::1]:56232 Accepted
+[Thu Apr  9 09:15:09 2026] [::1]:56232 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:15:09 2026] [::1]:56232 Closing
+[Thu Apr  9 09:15:09 2026] [::1]:56246 Accepted
+[Thu Apr  9 09:15:09 2026] [::1]:56246 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:15:09 2026] [::1]:56246 Closing
+[Thu Apr  9 09:15:19 2026] [::1]:41300 Accepted
+[Thu Apr  9 09:15:19 2026] [::1]:41300 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:15:19 2026] [::1]:41300 Closing
+[Thu Apr  9 09:15:29 2026] [::1]:53552 Accepted
+[Thu Apr  9 09:15:29 2026] [::1]:53552 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:15:29 2026] [::1]:53552 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42836 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42836 [200]: GET /
+[Thu Apr  9 09:17:33 2026] [::1]:42836 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42844 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42844 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:17:33 2026] [::1]:42844 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42850 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42850 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:17:33 2026] [::1]:42850 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42862 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42862 [200]: GET /sw.js
+[Thu Apr  9 09:17:33 2026] [::1]:42862 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42878 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42878 [200]: GET /
+[Thu Apr  9 09:17:33 2026] [::1]:42878 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42880 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42892 Accepted
+[Thu Apr  9 09:17:33 2026] [::1]:42880 [200]: GET /index.php
+[Thu Apr  9 09:17:33 2026] [::1]:42880 Closing
+[Thu Apr  9 09:17:33 2026] [::1]:42892 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:17:33 2026] [::1]:42892 Closing
+[Thu Apr  9 09:17:36 2026] [::1]:42904 Accepted
+[Thu Apr  9 09:17:37 2026] [::1]:42904 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:17:37 2026] [::1]:42904 Closing
+[Thu Apr  9 09:17:37 2026] [::1]:42916 Accepted
+[Thu Apr  9 09:17:37 2026] [::1]:42916 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:17:37 2026] [::1]:42916 Closing
+[Thu Apr  9 09:17:37 2026] [::1]:42924 Accepted
+[Thu Apr  9 09:17:37 2026] [::1]:42924 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:17:37 2026] [::1]:42924 Closing
+[Thu Apr  9 09:17:37 2026] [::1]:42932 Accepted
+[Thu Apr  9 09:17:37 2026] [::1]:42932 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:17:37 2026] [::1]:42932 Closing
+[Thu Apr  9 09:17:37 2026] [::1]:42934 Accepted
+[Thu Apr  9 09:17:37 2026] [::1]:42934 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:17:37 2026] [::1]:42934 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45016 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45016 [200]: GET /
+[Thu Apr  9 09:20:30 2026] [::1]:45016 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45026 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45026 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:20:30 2026] [::1]:45026 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45028 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45028 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:20:30 2026] [::1]:45028 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45040 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45040 [200]: GET /sw.js
+[Thu Apr  9 09:20:30 2026] [::1]:45040 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45050 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45060 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45066 Accepted
+[Thu Apr  9 09:20:30 2026] [::1]:45050 [200]: GET /
+[Thu Apr  9 09:20:30 2026] [::1]:45050 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45060 [200]: GET /index.php
+[Thu Apr  9 09:20:30 2026] [::1]:45060 Closing
+[Thu Apr  9 09:20:30 2026] [::1]:45066 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:20:30 2026] [::1]:45066 Closing
+[Thu Apr  9 09:20:34 2026] [::1]:49546 Accepted
+[Thu Apr  9 09:20:34 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:20:34 2026] [::1]:49546 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:20:34 2026] [::1]:49546 Closing
+[Thu Apr  9 09:20:35 2026] [::1]:49558 Accepted
+[Thu Apr  9 09:20:35 2026] [::1]:49558 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:20:35 2026] [::1]:49558 Closing
+[Thu Apr  9 09:20:35 2026] [::1]:49562 Accepted
+[Thu Apr  9 09:20:35 2026] [::1]:49562 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:20:35 2026] [::1]:49562 Closing
+[Thu Apr  9 09:20:35 2026] [::1]:49576 Accepted
+[Thu Apr  9 09:20:35 2026] [::1]:49576 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:20:35 2026] [::1]:49576 Closing
+[Thu Apr  9 09:20:35 2026] [::1]:49586 Accepted
+[Thu Apr  9 09:20:35 2026] [::1]:49586 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:20:35 2026] [::1]:49586 Closing
+[Thu Apr  9 09:20:35 2026] [::1]:49602 Accepted
+[Thu Apr  9 09:20:35 2026] [::1]:49602 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:20:35 2026] [::1]:49602 Closing
+[Thu Apr  9 09:20:45 2026] [::1]:44818 Accepted
+[Thu Apr  9 09:20:45 2026] [::1]:44818 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:20:45 2026] [::1]:44818 Closing
+[Thu Apr  9 09:20:55 2026] [::1]:56494 Accepted
+[Thu Apr  9 09:20:55 2026] [::1]:56494 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:20:55 2026] [::1]:56494 Closing
+[Thu Apr  9 09:21:05 2026] [::1]:56468 Accepted
+[Thu Apr  9 09:21:05 2026] [::1]:56468 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:21:05 2026] [::1]:56468 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:53992 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:53992 [200]: GET /
+[Thu Apr  9 09:28:19 2026] [::1]:53992 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:53994 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:53994 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:28:19 2026] [::1]:53994 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:54000 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:54000 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:28:19 2026] [::1]:54000 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:54008 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:54008 [200]: GET /sw.js
+[Thu Apr  9 09:28:19 2026] [::1]:54008 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:54016 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:54028 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:54016 [200]: GET /
+[Thu Apr  9 09:28:19 2026] [::1]:54016 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:54042 Accepted
+[Thu Apr  9 09:28:19 2026] [::1]:54028 [200]: GET /index.php
+[Thu Apr  9 09:28:19 2026] [::1]:54028 Closing
+[Thu Apr  9 09:28:19 2026] [::1]:54042 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:28:19 2026] [::1]:54042 Closing
+[Thu Apr  9 09:28:23 2026] [::1]:57226 Accepted
+[Thu Apr  9 09:28:23 2026] [::1]:57226 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:28:23 2026] [::1]:57226 Closing
+[Thu Apr  9 09:28:23 2026] [::1]:57240 Accepted
+[Thu Apr  9 09:28:23 2026] [::1]:57240 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:28:23 2026] [::1]:57240 Closing
+[Thu Apr  9 09:28:23 2026] [::1]:57252 Accepted
+[Thu Apr  9 09:28:23 2026] [::1]:57252 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:28:23 2026] [::1]:57252 Closing
+[Thu Apr  9 09:28:23 2026] [::1]:57266 Accepted
+[Thu Apr  9 09:28:23 2026] [::1]:57266 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:28:23 2026] [::1]:57266 Closing
+[Thu Apr  9 09:28:23 2026] [::1]:57274 Accepted
+[Thu Apr  9 09:28:23 2026] [::1]:57274 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:28:23 2026] [::1]:57274 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38660 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38660 [200]: GET /
+[Thu Apr  9 09:31:18 2026] [::1]:38660 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38676 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38676 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:31:18 2026] [::1]:38676 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38690 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38690 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:31:18 2026] [::1]:38690 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38694 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38694 [200]: GET /sw.js
+[Thu Apr  9 09:31:18 2026] [::1]:38694 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38702 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38704 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38714 Accepted
+[Thu Apr  9 09:31:18 2026] [::1]:38702 [200]: GET /index.php
+[Thu Apr  9 09:31:18 2026] [::1]:38702 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38704 [200]: GET /
+[Thu Apr  9 09:31:18 2026] [::1]:38704 Closing
+[Thu Apr  9 09:31:18 2026] [::1]:38714 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:31:18 2026] [::1]:38714 Closing
+[Thu Apr  9 09:31:23 2026] [::1]:36820 Accepted
+[Thu Apr  9 09:31:23 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:31:23 2026] [::1]:36820 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:31:23 2026] [::1]:36820 Closing
+[Thu Apr  9 09:31:24 2026] [::1]:36836 Accepted
+[Thu Apr  9 09:31:24 2026] [::1]:36836 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:31:24 2026] [::1]:36836 Closing
+[Thu Apr  9 09:31:24 2026] [::1]:36848 Accepted
+[Thu Apr  9 09:31:24 2026] [::1]:36848 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:31:24 2026] [::1]:36848 Closing
+[Thu Apr  9 09:31:24 2026] [::1]:36856 Accepted
+[Thu Apr  9 09:31:24 2026] [::1]:36856 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:31:24 2026] [::1]:36856 Closing
+[Thu Apr  9 09:31:24 2026] [::1]:36872 Accepted
+[Thu Apr  9 09:31:24 2026] [::1]:36872 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:31:24 2026] [::1]:36872 Closing
+[Thu Apr  9 09:31:24 2026] [::1]:36886 Accepted
+[Thu Apr  9 09:31:24 2026] [::1]:36886 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:31:24 2026] [::1]:36886 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52038 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52038 [200]: GET /
+[Thu Apr  9 09:33:01 2026] [::1]:52038 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52042 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52042 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:33:01 2026] [::1]:52042 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52044 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52044 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:33:01 2026] [::1]:52044 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52060 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52060 [200]: GET /sw.js
+[Thu Apr  9 09:33:01 2026] [::1]:52060 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52062 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52070 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52062 [200]: GET /
+[Thu Apr  9 09:33:01 2026] [::1]:52062 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52074 Accepted
+[Thu Apr  9 09:33:01 2026] [::1]:52070 [200]: GET /index.php
+[Thu Apr  9 09:33:01 2026] [::1]:52070 Closing
+[Thu Apr  9 09:33:01 2026] [::1]:52074 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:33:01 2026] [::1]:52074 Closing
+[Thu Apr  9 09:33:05 2026] [::1]:52078 Accepted
+[Thu Apr  9 09:33:05 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:33:05 2026] [::1]:52078 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:33:05 2026] [::1]:52078 Closing
+[Thu Apr  9 09:33:06 2026] [::1]:52086 Accepted
+[Thu Apr  9 09:33:06 2026] [::1]:52086 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:33:06 2026] [::1]:52086 Closing
+[Thu Apr  9 09:33:06 2026] [::1]:52102 Accepted
+[Thu Apr  9 09:33:06 2026] [::1]:52102 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:33:06 2026] [::1]:52102 Closing
+[Thu Apr  9 09:33:06 2026] [::1]:52110 Accepted
+[Thu Apr  9 09:33:06 2026] [::1]:52110 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:33:06 2026] [::1]:52110 Closing
+[Thu Apr  9 09:33:06 2026] [::1]:52122 Accepted
+[Thu Apr  9 09:33:06 2026] [::1]:52122 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:33:06 2026] [::1]:52122 Closing
+[Thu Apr  9 09:33:06 2026] [::1]:52136 Accepted
+[Thu Apr  9 09:33:06 2026] [::1]:52136 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:33:06 2026] [::1]:52136 Closing
+[Thu Apr  9 09:33:07 2026] [::1]:52138 Accepted
+[Thu Apr  9 09:33:07 2026] [::1]:52138 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:33:07 2026] [::1]:52138 Closing
+[Thu Apr  9 09:33:07 2026] [::1]:52146 Accepted
+[Thu Apr  9 09:33:07 2026] [::1]:52146 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:33:07 2026] [::1]:52146 Closing
+[Thu Apr  9 09:33:07 2026] [::1]:52156 Accepted
+[Thu Apr  9 09:33:07 2026] [::1]:52156 [200]: GET /api/users.php?action=approve&id=69d77251db60e
+[Thu Apr  9 09:33:07 2026] [::1]:52156 Closing
+[Thu Apr  9 09:33:07 2026] [::1]:52166 Accepted
+[Thu Apr  9 09:33:07 2026] [::1]:52166 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:33:07 2026] [::1]:52166 Closing
+[Thu Apr  9 09:33:07 2026] [::1]:52174 Accepted
+[Thu Apr  9 09:33:07 2026] [::1]:52174 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:33:07 2026] [::1]:52174 Closing
+[Thu Apr  9 09:33:07 2026] [::1]:52188 Accepted
+[Thu Apr  9 09:33:07 2026] [::1]:52188 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:33:07 2026] [::1]:52188 Closing
+[Thu Apr  9 09:33:08 2026] [::1]:52204 Accepted
+[Thu Apr  9 09:33:08 2026] [::1]:52204 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:33:08 2026] [::1]:52204 Closing
+[Thu Apr  9 09:33:08 2026] [::1]:52206 Accepted
+[Thu Apr  9 09:33:08 2026] [::1]:52206 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:33:08 2026] [::1]:52206 Closing
+[Thu Apr  9 09:33:09 2026] [::1]:52214 Accepted
+[Thu Apr  9 09:33:09 2026] [::1]:52214 [200]: POST /api/pricelist.php?action=save_item
+[Thu Apr  9 09:33:09 2026] [::1]:52214 Closing
+[Thu Apr  9 09:33:09 2026] [::1]:52218 Accepted
+[Thu Apr  9 09:33:09 2026] [::1]:52218 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:33:09 2026] [::1]:52218 Closing
+[Thu Apr  9 09:33:09 2026] [::1]:52234 Accepted
+[Thu Apr  9 09:33:09 2026] [::1]:52234 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:33:09 2026] [::1]:52234 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58046 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58046 [200]: GET /
+[Thu Apr  9 09:34:39 2026] [::1]:58046 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58056 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58056 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:34:39 2026] [::1]:58056 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58064 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58064 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:39 2026] [::1]:58064 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58076 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58076 [200]: GET /sw.js
+[Thu Apr  9 09:34:39 2026] [::1]:58076 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58082 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58098 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58100 Accepted
+[Thu Apr  9 09:34:39 2026] [::1]:58082 [200]: GET /
+[Thu Apr  9 09:34:39 2026] [::1]:58082 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58098 [200]: GET /index.php
+[Thu Apr  9 09:34:39 2026] [::1]:58098 Closing
+[Thu Apr  9 09:34:39 2026] [::1]:58100 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:34:39 2026] [::1]:58100 Closing
+[Thu Apr  9 09:34:43 2026] [::1]:55080 Accepted
+[Thu Apr  9 09:34:43 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 09:34:43 2026] [::1]:55080 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 09:34:43 2026] [::1]:55080 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55086 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55086 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:34:44 2026] [::1]:55086 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55094 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55094 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:34:44 2026] [::1]:55094 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55100 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55100 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:34:44 2026] [::1]:55100 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55102 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55102 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:44 2026] [::1]:55102 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55116 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55116 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 09:34:44 2026] [::1]:55116 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55126 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55126 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:44 2026] [::1]:55126 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55130 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55130 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:34:44 2026] [::1]:55130 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55142 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55142 [200]: GET /api/users.php?action=approve&id=69d772b358d8c
+[Thu Apr  9 09:34:44 2026] [::1]:55142 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55148 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55148 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:34:44 2026] [::1]:55148 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55162 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55162 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:44 2026] [::1]:55162 Closing
+[Thu Apr  9 09:34:44 2026] [::1]:55164 Accepted
+[Thu Apr  9 09:34:44 2026] [::1]:55164 [200]: GET /api/users.php?action=list
+[Thu Apr  9 09:34:44 2026] [::1]:55164 Closing
+[Thu Apr  9 09:34:46 2026] [::1]:55174 Accepted
+[Thu Apr  9 09:34:46 2026] [::1]:55174 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:46 2026] [::1]:55174 Closing
+[Thu Apr  9 09:34:46 2026] [::1]:55184 Accepted
+[Thu Apr  9 09:34:46 2026] [::1]:55184 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:34:46 2026] [::1]:55184 Closing
+[Thu Apr  9 09:34:47 2026] [::1]:55194 Accepted
+[Thu Apr  9 09:34:47 2026] [::1]:55194 [200]: POST /api/pricelist.php?action=save_item
+[Thu Apr  9 09:34:47 2026] [::1]:55194 Closing
+[Thu Apr  9 09:34:47 2026] [::1]:55210 Accepted
+[Thu Apr  9 09:34:47 2026] [::1]:55210 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:47 2026] [::1]:55210 Closing
+[Thu Apr  9 09:34:47 2026] [::1]:55224 Accepted
+[Thu Apr  9 09:34:47 2026] [::1]:55224 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:34:47 2026] [::1]:55224 Closing
+[Thu Apr  9 09:34:48 2026] [::1]:55234 Accepted
+[Thu Apr  9 09:34:48 2026] [::1]:55234 [200]: GET /api/auth.php?action=logout
+[Thu Apr  9 09:34:48 2026] [::1]:55234 Closing
+[Thu Apr  9 09:34:49 2026] [::1]:55236 Accepted
+[Thu Apr  9 09:34:49 2026] [::1]:55236 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:34:49 2026] [::1]:55236 Closing
+[Thu Apr  9 09:34:49 2026] [::1]:55248 Accepted
+[Thu Apr  9 09:34:49 2026] [::1]:55248 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 09:34:49 2026] [::1]:55248 Closing
+[Thu Apr  9 09:34:49 2026] [::1]:55254 Accepted
+[Thu Apr  9 09:34:49 2026] [::1]:55254 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:34:49 2026] [::1]:55254 Closing
+[Thu Apr  9 09:34:49 2026] [::1]:55266 Accepted
+[Thu Apr  9 09:34:49 2026] [::1]:55266 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 09:34:49 2026] [::1]:55266 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47104 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47104 [200]: GET /
+[Thu Apr  9 09:36:22 2026] [::1]:47104 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47116 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47116 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:36:22 2026] [::1]:47116 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47122 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47122 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 09:36:22 2026] [::1]:47122 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47134 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47134 [200]: GET /sw.js
+[Thu Apr  9 09:36:22 2026] [::1]:47134 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47138 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47146 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47138 [200]: GET /
+[Thu Apr  9 09:36:22 2026] [::1]:47138 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47150 Accepted
+[Thu Apr  9 09:36:22 2026] [::1]:47146 [200]: GET /index.php
+[Thu Apr  9 09:36:22 2026] [::1]:47146 Closing
+[Thu Apr  9 09:36:22 2026] [::1]:47150 [200]: GET /assets/js/app.js
+[Thu Apr  9 09:36:22 2026] [::1]:47150 Closing
+[Thu Apr  9 09:36:26 2026] [::1]:47162 Accepted
+[Thu Apr  9 09:36:26 2026] [::1]:47162 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 09:36:26 2026] [::1]:47162 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60658 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60658 [200]: GET /
+[Thu Apr  9 14:49:26 2026] [::1]:60658 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60670 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60670 [200]: GET /assets/js/app.js
+[Thu Apr  9 14:49:26 2026] [::1]:60670 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60680 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60680 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:26 2026] [::1]:60680 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60682 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60682 [200]: GET /sw.js
+[Thu Apr  9 14:49:26 2026] [::1]:60682 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60684 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60698 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60712 Accepted
+[Thu Apr  9 14:49:26 2026] [::1]:60684 [200]: GET /
+[Thu Apr  9 14:49:26 2026] [::1]:60684 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60698 [200]: GET /index.php
+[Thu Apr  9 14:49:26 2026] [::1]:60698 Closing
+[Thu Apr  9 14:49:26 2026] [::1]:60712 [200]: GET /assets/js/app.js
+[Thu Apr  9 14:49:26 2026] [::1]:60712 Closing
+[Thu Apr  9 14:49:31 2026] [::1]:60716 Accepted
+[Thu Apr  9 14:49:31 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 14:49:31 2026] [::1]:60716 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 14:49:31 2026] [::1]:60716 Closing
+[Thu Apr  9 14:49:32 2026] [::1]:42820 Accepted
+[Thu Apr  9 14:49:32 2026] [::1]:42820 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 14:49:32 2026] [::1]:42820 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42828 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42828 [200]: GET /api/users.php?action=list
+[Thu Apr  9 14:49:33 2026] [::1]:42828 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42836 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42836 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 14:49:33 2026] [::1]:42836 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42840 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42840 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:33 2026] [::1]:42840 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42848 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42848 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 14:49:33 2026] [::1]:42848 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42856 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42856 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:33 2026] [::1]:42856 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42868 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42868 [200]: GET /api/users.php?action=list
+[Thu Apr  9 14:49:33 2026] [::1]:42868 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42870 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42870 [200]: GET /api/users.php?action=approve&id=69d7bc7be09cc
+[Thu Apr  9 14:49:33 2026] [::1]:42870 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42884 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42884 [200]: GET /api/users.php?action=list
+[Thu Apr  9 14:49:33 2026] [::1]:42884 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42896 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42896 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:33 2026] [::1]:42896 Closing
+[Thu Apr  9 14:49:33 2026] [::1]:42908 Accepted
+[Thu Apr  9 14:49:33 2026] [::1]:42908 [200]: GET /api/users.php?action=list
+[Thu Apr  9 14:49:33 2026] [::1]:42908 Closing
+[Thu Apr  9 14:49:35 2026] [::1]:42912 Accepted
+[Thu Apr  9 14:49:35 2026] [::1]:42912 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:35 2026] [::1]:42912 Closing
+[Thu Apr  9 14:49:35 2026] [::1]:42918 Accepted
+[Thu Apr  9 14:49:35 2026] [::1]:42918 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 14:49:35 2026] [::1]:42918 Closing
+[Thu Apr  9 14:49:36 2026] [::1]:42928 Accepted
+[Thu Apr  9 14:49:36 2026] [::1]:42928 [200]: POST /api/pricelist.php?action=save_item
+[Thu Apr  9 14:49:36 2026] [::1]:42928 Closing
+[Thu Apr  9 14:49:36 2026] [::1]:42934 Accepted
+[Thu Apr  9 14:49:36 2026] [::1]:42934 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:36 2026] [::1]:42934 Closing
+[Thu Apr  9 14:49:36 2026] [::1]:42944 Accepted
+[Thu Apr  9 14:49:36 2026] [::1]:42944 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 14:49:36 2026] [::1]:42944 Closing
+[Thu Apr  9 14:49:37 2026] [::1]:42950 Accepted
+[Thu Apr  9 14:49:37 2026] [::1]:42950 [200]: GET /api/auth.php?action=logout
+[Thu Apr  9 14:49:37 2026] [::1]:42950 Closing
+[Thu Apr  9 14:49:38 2026] [::1]:42958 Accepted
+[Thu Apr  9 14:49:38 2026] [::1]:42958 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 14:49:38 2026] [::1]:42958 Closing
+[Thu Apr  9 14:49:38 2026] [::1]:42968 Accepted
+[Thu Apr  9 14:49:38 2026] [::1]:42968 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 14:49:38 2026] [::1]:42968 Closing
+[Thu Apr  9 14:49:38 2026] [::1]:42978 Accepted
+[Thu Apr  9 14:49:38 2026] [::1]:42978 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:49:38 2026] [::1]:42978 Closing
+[Thu Apr  9 14:49:38 2026] [::1]:42988 Accepted
+[Thu Apr  9 14:49:38 2026] [::1]:42988 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 14:49:38 2026] [::1]:42988 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48748 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48748 [200]: GET /
+[Thu Apr  9 14:55:20 2026] [::1]:48748 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48750 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48750 [200]: GET /assets/js/app.js
+[Thu Apr  9 14:55:20 2026] [::1]:48750 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48756 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48756 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:55:20 2026] [::1]:48756 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48764 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48764 [200]: GET /sw.js
+[Thu Apr  9 14:55:20 2026] [::1]:48764 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48778 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48792 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48802 Accepted
+[Thu Apr  9 14:55:20 2026] [::1]:48778 [200]: GET /
+[Thu Apr  9 14:55:20 2026] [::1]:48778 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48792 [200]: GET /index.php
+[Thu Apr  9 14:55:20 2026] [::1]:48792 Closing
+[Thu Apr  9 14:55:20 2026] [::1]:48802 [200]: GET /assets/js/app.js
+[Thu Apr  9 14:55:20 2026] [::1]:48802 Closing
+[Thu Apr  9 14:55:24 2026] [::1]:49792 Accepted
+[Thu Apr  9 14:55:24 2026] [::1]:49792 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 14:55:24 2026] [::1]:49792 Closing
+[Thu Apr  9 14:55:24 2026] [::1]:49796 Accepted
+[Thu Apr  9 14:55:24 2026] [::1]:49796 [200]: GET /api/users.php?action=list
+[Thu Apr  9 14:55:24 2026] [::1]:49796 Closing
+[Thu Apr  9 14:55:24 2026] [::1]:49810 Accepted
+[Thu Apr  9 14:55:24 2026] [::1]:49810 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 14:55:24 2026] [::1]:49810 Closing
+[Thu Apr  9 14:55:24 2026] [::1]:49824 Accepted
+[Thu Apr  9 14:55:24 2026] [::1]:49824 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:55:24 2026] [::1]:49824 Closing
+[Thu Apr  9 14:55:24 2026] [::1]:49834 Accepted
+[Thu Apr  9 14:55:24 2026] [::1]:49834 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 14:55:24 2026] [::1]:49834 Closing
+[Thu Apr  9 14:55:27 2026] [::1]:49842 Accepted
+[Thu Apr  9 14:55:27 2026] [::1]:49842 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 14:55:27 2026] [::1]:49842 Closing
+[Thu Apr  9 14:55:27 2026] [::1]:49854 Accepted
+[Thu Apr  9 14:55:27 2026] [::1]:49854 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 14:55:27 2026] [::1]:49854 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33158 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33158 [200]: GET /
+[Thu Apr  9 15:11:55 2026] [::1]:33158 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33172 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33172 [200]: GET /assets/js/app.js
+[Thu Apr  9 15:11:55 2026] [::1]:33172 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33186 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33186 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 15:11:55 2026] [::1]:33186 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33200 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33200 [200]: GET /sw.js
+[Thu Apr  9 15:11:55 2026] [::1]:33200 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33204 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33204 [200]: GET /
+[Thu Apr  9 15:11:55 2026] [::1]:33204 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33208 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33220 Accepted
+[Thu Apr  9 15:11:55 2026] [::1]:33208 [200]: GET /index.php
+[Thu Apr  9 15:11:55 2026] [::1]:33208 Closing
+[Thu Apr  9 15:11:55 2026] [::1]:33220 [200]: GET /assets/js/app.js
+[Thu Apr  9 15:11:55 2026] [::1]:33220 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37076 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37076 [200]: GET /
+[Thu Apr  9 15:17:58 2026] [::1]:37076 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37092 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37092 [200]: GET /assets/js/app.js
+[Thu Apr  9 15:17:58 2026] [::1]:37092 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37106 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37106 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 15:17:58 2026] [::1]:37106 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37110 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37110 [200]: GET /sw.js
+[Thu Apr  9 15:17:58 2026] [::1]:37110 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37122 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37130 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37140 Accepted
+[Thu Apr  9 15:17:58 2026] [::1]:37122 [200]: GET /
+[Thu Apr  9 15:17:58 2026] [::1]:37122 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37130 [200]: GET /index.php
+[Thu Apr  9 15:17:58 2026] [::1]:37130 Closing
+[Thu Apr  9 15:17:58 2026] [::1]:37140 [200]: GET /assets/js/app.js
+[Thu Apr  9 15:17:58 2026] [::1]:37140 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42124 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42124 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 15:18:02 2026] [::1]:42124 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42134 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42134 [200]: GET /api/users.php?action=list
+[Thu Apr  9 15:18:02 2026] [::1]:42134 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42146 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42146 [200]: GET /api/stats.php?action=summary
+[Thu Apr  9 15:18:02 2026] [::1]:42146 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42158 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42158 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 15:18:02 2026] [::1]:42158 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42162 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42162 [200]: GET /api/orders.php?action=list
+[Thu Apr  9 15:18:02 2026] [::1]:42162 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42164 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42164 [200]: GET /api/auth.php?action=check
+[Thu Apr  9 15:18:02 2026] [::1]:42164 Closing
+[Thu Apr  9 15:18:02 2026] [::1]:42176 Accepted
+[Thu Apr  9 15:18:02 2026] [::1]:42176 [200]: GET /api/pricelist.php?action=get
+[Thu Apr  9 15:18:02 2026] [::1]:42176 Closing
+[Thu Apr  9 15:20:52 2026] [::1]:51600 Accepted
+[Thu Apr  9 15:20:52 2026] [::1]:51600 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 15:20:52 2026] [::1]:51600 Closing
+[Thu Apr  9 15:20:52 2026] [::1]:51616 Accepted
+[Thu Apr  9 15:20:52 2026] [::1]:51616 [401]: GET /api/pricelist.php?action=export_csv
+[Thu Apr  9 15:20:52 2026] [::1]:51616 Closing
+[Thu Apr  9 15:35:46 2026] [::1]:46136 Accepted
+[Thu Apr  9 15:35:46 2026] PHP Warning:  Undefined array key "role" in /app/includes/Mailer.php on line 75
+[Thu Apr  9 15:35:46 2026] [::1]:46136 [200]: POST /api/auth.php?action=register
+[Thu Apr  9 15:35:46 2026] [::1]:46136 Closing
+[Thu Apr  9 15:35:46 2026] [::1]:46148 Accepted
+[Thu Apr  9 15:35:46 2026] [::1]:46148 [200]: POST /api/auth.php?action=login
+[Thu Apr  9 15:35:46 2026] [::1]:46148 Closing

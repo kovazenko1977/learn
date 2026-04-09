@@ -50,7 +50,17 @@ const App = {
             this.login();
         });
 
+        document.getElementById('register-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.register();
+        });
+
         document.getElementById('logout-btn').addEventListener('click', () => this.logout());
+    },
+
+    showRegistration() {
+        document.getElementById('login-card').classList.add('hidden');
+        document.getElementById('register-card').classList.remove('hidden');
     },
 
     escapeHTML(str) {
@@ -149,8 +159,34 @@ const App = {
 
     showLogin() {
         document.getElementById('auth-view').classList.remove('hidden');
+        document.getElementById('login-card').classList.remove('hidden');
+        document.getElementById('register-card').classList.add('hidden');
         document.getElementById('app-view').classList.add('hidden');
         document.getElementById('app-view').style.opacity = '0';
+    },
+
+    async register() {
+        const username = document.getElementById('reg-username').value;
+        const password = document.getElementById('reg-password').value;
+        const company_name = document.getElementById('reg-company').value;
+        const tax_id = document.getElementById('reg-taxid').value;
+        const email = document.getElementById('reg-email').value;
+
+        try {
+            const res = await fetch('api/auth.php?action=register', {
+                method: 'POST',
+                body: JSON.stringify({ username, password, company_name, tax_id, email })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Заявка отправлена. Ожидайте подтверждения администратором.');
+                this.showLogin();
+            } else {
+                alert(data.error);
+            }
+        } catch (e) {
+            alert('Ошибка при регистрации');
+        }
     },
 
     async showApp() {
@@ -340,6 +376,12 @@ const App = {
             case 'maintenance':
                 await this.renderMaintenance(container);
                 break;
+            case 'pricelist':
+                await this.renderPriceList(container);
+                break;
+            case 'orders':
+                await this.renderOrders(container);
+                break;
             case 'profile':
                 await this.renderProfile(container);
                 break;
@@ -405,8 +447,8 @@ const App = {
                         <h3 style="font-size:24px">${this.stats.total_messages}</h3>
                     </div>
                     <div class="card" style="text-align:center; padding:15px">
-                        <small style="color:var(--text-muted)">Логи</small>
-                        <h3 style="font-size:24px">${this.stats.total_logs}</h3>
+                        <small style="color:var(--text-muted)">Заказы</small>
+                        <h3 style="font-size:24px" id="stats-total-orders">-</h3>
                     </div>
                 </div>
             `;
@@ -424,9 +466,59 @@ const App = {
                     <p style="font-size:32px; color:var(--primary)">✉️</p>
                     ${this.stats.unread_messages > 0 ? `<span class="badge-nav" style="position:static; display:inline-block">${this.stats.unread_messages}</span>` : ''}
                 </div>
+                <div class="card" style="text-align:center; cursor:pointer" onclick="App.setView('pricelist')">
+                    <h3 style="margin-bottom:10px">Прайс / Заказ</h3>
+                    <p style="font-size:32px; color:var(--primary)">🛒</p>
+                </div>
             </div>
         `;
+
+        html += `
+            <div class="card" style="margin-top: 30px;">
+                <h2 style="margin-bottom: 20px;">${isAdmin ? 'Последние заказы' : 'Мои заказы'}</h2>
+                <div id="dashboard-orders">Загрузка заказов...</div>
+            </div>
+        `;
+
         container.innerHTML = html;
+
+        this.apiFetch('api/orders.php?action=list').then(res => res.json()).then(data => {
+            const orders = data.orders.reverse().slice(0, 5);
+            const el = document.getElementById('dashboard-orders');
+            const statsEl = document.getElementById('stats-total-orders');
+            if (statsEl) statsEl.textContent = data.orders.length;
+
+            if (orders.length === 0) {
+                el.innerHTML = '<p style="text-align:center; color:var(--text-muted)">Заказов пока нет</p>';
+            } else {
+                el.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                ${isAdmin ? '<th>Клиент</th>' : ''}
+                                <th>Позиций</th>
+                                <th>Дата</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.map(o => `
+                                <tr>
+                                    <td>#${o.id.substring(0,6)}</td>
+                                    ${isAdmin ? `<td>${this.escapeHTML(o.company_name || o.username)}</td>` : ''}
+                                    <td>${o.total_items}</td>
+                                    <td>${o.created_at}</td>
+                                    <td><span class="badge ${o.status === 'new' ? 'badge-warning' : 'badge-success'}">${o.status}</span></td>
+                                    <td><button class="btn btn-outline btn-sm" onclick="App.showOrderDetails('${o.id}')">Детали</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        });
     },
 
     async renderDocuments(container) {
@@ -722,7 +814,10 @@ const App = {
         const res = await this.apiFetch('api/users.php?action=list');
         const data = await res.json();
 
-        container.innerHTML = `
+        const pendingUsers = data.users.filter(u => u.status === 'pending');
+        const otherUsers = data.users.filter(u => u.status !== 'pending');
+
+        let html = `
             <div class="view-header">
                 <h1 class="view-title">Управление клиентами</h1>
                 <div style="display:flex; gap:10px;">
@@ -730,6 +825,47 @@ const App = {
                     <button class="btn btn-primary btn-sm" onclick="App.showCreateUserModal()">Новый клиент</button>
                 </div>
             </div>
+        `;
+
+        if (pendingUsers.length > 0) {
+            html += `
+                <div class="card" style="border: 2px solid var(--primary); margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px; color: var(--primary)">Заявки на регистрацию (${pendingUsers.length})</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Клиент / Компания</th>
+                                <th>Email / Телефон</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${pendingUsers.map(u => `
+                                <tr>
+                                    <td>
+                                        <strong>${this.escapeHTML(u.username)}</strong><br>
+                                        <small>${this.escapeHTML(u.company_name || '-')}</small><br>
+                                        <small>ИНН: ${this.escapeHTML(u.tax_id || '-')}</small>
+                                    </td>
+                                    <td>
+                                        ${this.escapeHTML(u.email || '-')}<br>
+                                        ${this.escapeHTML(u.phone || '-')}
+                                    </td>
+                                    <td>
+                                        <div style="display:flex; gap:10px;">
+                                            <button class="btn btn-primary btn-sm" onclick="App.approveUser('${u.id}')">Одобрить</button>
+                                            <button class="btn btn-outline btn-sm" style="color:red; border-color:red" onclick="App.rejectUser('${u.id}')">Отклонить</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        html += `
             <div class="card">
                 <table class="data-table" id="user-table">
                     <thead>
@@ -741,7 +877,7 @@ const App = {
                         </tr>
                     </thead>
                     <tbody>
-                        ${data.users.map(u => `
+                        ${otherUsers.map(u => `
                             <tr>
                                 <td data-label="Клиент">
                                     <strong>${this.escapeHTML(u.username)}</strong><br>
@@ -752,7 +888,11 @@ const App = {
                                     <small>${this.escapeHTML(u.contact_person || '-')}</small><br>
                                     <small>${this.escapeHTML(u.phone || '-')}</small>
                                 </td>
-                                <td data-label="Статус"><span class="badge ${u.status === 'active' ? 'badge-success' : 'badge-warning'}">${this.escapeHTML(u.status)}</span></td>
+                                <td data-label="Статус">
+                                    <span class="badge ${u.status === 'active' ? 'badge-success' : (u.status === 'rejected' ? 'badge-error' : 'badge-warning')}">
+                                        ${this.escapeHTML(u.status)}
+                                    </span>
+                                </td>
                                 <td data-label="Действия">
                                     <div style="display:flex; gap:5px; flex-wrap:wrap">
                                         <button class="btn btn-outline btn-sm" onclick="App.showEditUserModal('${u.id}')">✏️</button>
@@ -770,6 +910,7 @@ const App = {
                 </table>
             </div>
         `;
+        container.innerHTML = html;
         document.getElementById('user-search').oninput = (e) => this.filterTable('user-table', e.target.value);
     },
 
@@ -905,6 +1046,304 @@ const App = {
         const res = await this.apiFetch('api/settings.php?action=toggle_maintenance');
         const data = await res.json();
         alert(`Режим техобслуживания: ${data.maintenance ? 'ВКЛ' : 'ВЫКЛ'}`);
+    },
+
+    async renderPriceList(container) {
+        const res = await this.apiFetch('api/pricelist.php?action=get');
+        const data = await res.json();
+        const isAdmin = ['superadmin', 'admin_content'].includes(this.user.role);
+        const { items, config } = data.data;
+
+        let html = `
+            <div class="view-header">
+                <h1 class="view-title">Прайс-лист и Заказ</h1>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Печать / PDF</button>
+                    <a href="api/pricelist.php?action=export_csv" class="btn btn-outline btn-sm">📊 Экспорт CSV</a>
+                    ${isAdmin ? `
+                        <button class="btn btn-outline btn-sm" onclick="App.showPriceConfigModal()">Настройка колонок</button>
+                        <button class="btn btn-primary btn-sm" onclick="App.showPriceItemModal()">Добавить товар</button>
+                    ` : ''}
+                </div>
+            </div>
+            <div class="card">
+                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <input type="text" placeholder="Поиск по прайсу..." id="price-search" style="flex: 1; padding: 10px;">
+                </div>
+                <table class="data-table" id="price-table">
+                    <thead>
+                        <tr>
+                            ${config.columns.includes('code') ? '<th>Код</th>' : ''}
+                            ${config.columns.includes('name') ? '<th>Наименование</th>' : ''}
+                            ${config.columns.includes('unit') ? '<th>Ед.изм.</th>' : ''}
+                            ${config.columns.includes('price') ? '<th>Цена</th>' : ''}
+                            ${!isAdmin ? '<th>Заказ (кол-во)</th>' : '<th>Действия</th>'}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(item => `
+                            <tr>
+                                ${config.columns.includes('code') ? `<td data-label="Код">${this.escapeHTML(item.code || '-')}</td>` : ''}
+                                ${config.columns.includes('name') ? `<td data-label="Наименование"><strong>${this.escapeHTML(item.name || '-')}</strong></td>` : ''}
+                                ${config.columns.includes('unit') ? `<td data-label="Ед.изм.">${this.escapeHTML(item.unit || '-')}</td>` : ''}
+                                ${config.columns.includes('price') ? `<td data-label="Цена">${this.escapeHTML(item.price || '0')}</td>` : ''}
+                                <td data-label="${!isAdmin ? 'Заказ' : 'Действия'}">
+                                    ${!isAdmin ? `
+                                        <input type="number" class="order-qty" data-id="${item.id}" placeholder="0" style="width: 80px; padding: 5px;" min="0">
+                                    ` : `
+                                        <div style="display:flex; gap:5px;">
+                                            <button class="btn btn-outline btn-sm" onclick="App.showPriceItemModal('${item.id}')">✏️</button>
+                                            <button class="btn btn-outline btn-sm" style="color:red" onclick="App.deletePriceItem('${item.id}')">🗑️</button>
+                                        </div>
+                                    `}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                ${!isAdmin && items.length > 0 ? `
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="btn btn-primary" onclick="App.submitOrder()">Оформить заказ</button>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        container.innerHTML = html;
+        document.getElementById('price-search').oninput = (e) => this.filterTable('price-table', e.target.value);
+    },
+
+    showPriceConfigModal() {
+        this.apiFetch('api/pricelist.php?action=get').then(res => res.json()).then(data => {
+            const current = data.data.config.columns;
+            this.showModal('Настройка колонок', `
+                <form id="price-config-form">
+                    <p style="margin-bottom: 15px;">Выберите колонки для отображения:</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="cols" value="code" ${current.includes('code') ? 'checked' : ''} style="width: auto;"> Код товара
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="cols" value="name" ${current.includes('name') ? 'checked' : ''} style="width: auto;"> Наименование
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="cols" value="unit" ${current.includes('unit') ? 'checked' : ''} style="width: auto;"> Единица измерения
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="cols" value="price" ${current.includes('price') ? 'checked' : ''} style="width: auto;"> Цена
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить колонки</button>
+                </form>
+            `);
+            document.getElementById('price-config-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const cols = Array.from(document.querySelectorAll('input[name="cols"]:checked')).map(el => el.value);
+                await this.apiFetch('api/pricelist.php?action=update_config', {
+                    method: 'POST',
+                    body: JSON.stringify({ columns: cols })
+                });
+                this.closeModal();
+                this.setView('pricelist');
+            };
+        });
+    },
+
+    async showPriceItemModal(id = null) {
+        let item = { code: '', name: '', unit: '', price: '' };
+        if (id) {
+            const res = await this.apiFetch('api/pricelist.php?action=get');
+            const data = await res.json();
+            item = data.data.items.find(i => i.id === id);
+        }
+
+        this.showModal(id ? 'Редактировать товар' : 'Добавить товар', `
+            <form id="price-item-form">
+                <div class="form-group">
+                    <label>Код товара</label>
+                    <input type="text" id="p-code" value="${this.escapeHTML(item.code)}">
+                </div>
+                <div class="form-group">
+                    <label>Наименование *</label>
+                    <input type="text" id="p-name" value="${this.escapeHTML(item.name)}" required>
+                </div>
+                <div class="form-group">
+                    <label>Ед. изм.</label>
+                    <input type="text" id="p-unit" value="${this.escapeHTML(item.unit)}">
+                </div>
+                <div class="form-group">
+                    <label>Цена</label>
+                    <input type="text" id="p-price" value="${this.escapeHTML(item.price)}">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">${id ? 'Сохранить' : 'Добавить'}</button>
+            </form>
+        `);
+
+        document.getElementById('price-item-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const newItem = {
+                id: id,
+                code: document.getElementById('p-code').value,
+                name: document.getElementById('p-name').value,
+                unit: document.getElementById('p-unit').value,
+                price: document.getElementById('p-price').value
+            };
+            await this.apiFetch('api/pricelist.php?action=save_item', {
+                method: 'POST',
+                body: JSON.stringify(newItem)
+            });
+            this.closeModal();
+            this.setView('pricelist');
+        };
+    },
+
+    async deletePriceItem(id) {
+        if (confirm('Удалить этот товар из прайса?')) {
+            await this.apiFetch(`api/pricelist.php?action=delete_item&id=${id}`);
+            this.setView('pricelist');
+        }
+    },
+
+    async submitOrder() {
+        const inputs = document.querySelectorAll('.order-qty');
+        const items = [];
+        inputs.forEach(input => {
+            const qty = parseFloat(input.value);
+            if (qty > 0) {
+                items.push({
+                    id: input.dataset.id,
+                    qty: qty
+                });
+            }
+        });
+
+        if (items.length === 0) {
+            alert('Выберите хотя бы один товар, указав количество');
+            return;
+        }
+
+        if (confirm(`Оформить заказ на ${items.length} позиций?`)) {
+            try {
+                const res = await this.apiFetch('api/orders.php?action=submit', {
+                    method: 'POST',
+                    body: JSON.stringify({ items })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Заказ успешно оформлен! Администратор свяжется с вами.');
+                    this.setView('pricelist');
+                }
+            } catch (e) {
+                this.showToast('Ошибка при оформлении заказа', 'error');
+            }
+        }
+    },
+
+    async showOrderDetails(id) {
+        const res = await this.apiFetch('api/orders.php?action=list');
+        const data = await res.json();
+        const order = data.orders.find(o => o.id === id);
+        if (!order) return;
+
+        const priceRes = await this.apiFetch('api/pricelist.php?action=get');
+        const priceData = await priceRes.json();
+        const priceItems = priceData.data.items;
+
+        const isAdmin = ['superadmin', 'admin_content'].includes(this.user.role);
+
+        let html = `
+            <div style="margin-bottom: 20px;">
+                <p><strong>Дата:</strong> ${order.created_at}</p>
+                <p><strong>Клиент:</strong> ${this.escapeHTML(order.company_name || order.username)}</p>
+                <p><strong>Статус:</strong> ${order.status}</p>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${order.items.map(oi => {
+                        const product = priceItems.find(p => p.id === oi.id) || { name: 'Удаленный товар' };
+                        return `
+                            <tr>
+                                <td>${this.escapeHTML(product.name)}</td>
+                                <td>${oi.qty}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+            ${isAdmin ? `
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary btn-sm" onclick="App.updateOrderStatus('${order.id}', 'processing')">В работу</button>
+                    <button class="btn btn-primary btn-sm" style="background: #27ae60" onclick="App.updateOrderStatus('${order.id}', 'completed')">Завершен</button>
+                </div>
+            ` : ''}
+        `;
+
+        this.showModal(`Заказ #${id.substring(0,8)}`, html);
+    },
+
+    async updateOrderStatus(id, status) {
+        await this.apiFetch('api/orders.php?action=update_status', {
+            method: 'POST',
+            body: JSON.stringify({ id, status })
+        });
+        this.closeModal();
+        this.setView(this.currentView);
+        this.showToast('Статус заказа обновлен');
+    },
+
+    async renderOrders(container) {
+        const res = await this.apiFetch('api/orders.php?action=list');
+        const data = await res.json();
+        const isAdmin = ['superadmin', 'admin_content'].includes(this.user.role);
+        const orders = data.orders.reverse();
+
+        container.innerHTML = `
+            <div class="view-header">
+                <h1 class="view-title">Управление заказами</h1>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" placeholder="Поиск по заказам..." id="order-search" style="padding:6px 12px; width:200px;">
+                </div>
+            </div>
+            <div class="card">
+                <table class="data-table" id="order-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            ${isAdmin ? '<th>Клиент</th>' : ''}
+                            <th>Позиций</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(o => `
+                            <tr>
+                                <td data-label="ID">#${o.id.substring(0,8)}</td>
+                                ${isAdmin ? `<td data-label="Клиент">${this.escapeHTML(o.company_name || o.username)}</td>` : ''}
+                                <td data-label="Позиций">${o.total_items}</td>
+                                <td data-label="Дата">${o.created_at}</td>
+                                <td data-label="Статус">
+                                    <span class="badge ${o.status === 'new' ? 'badge-warning' : (o.status === 'completed' ? 'badge-success' : 'badge-primary')}">
+                                        ${this.escapeHTML(o.status)}
+                                    </span>
+                                </td>
+                                <td data-label="Действия">
+                                    <button class="btn btn-outline btn-sm" onclick="App.showOrderDetails('${o.id}')">🔍 Детали</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                        ${orders.length === 0 ? '<tr><td colspan="6" style="text-align:center">Заказов пока нет</td></tr>' : ''}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        document.getElementById('order-search').oninput = (e) => this.filterTable('order-table', e.target.value);
     },
 
     async renderProfile(container) {
@@ -1231,6 +1670,24 @@ const App = {
             const res = await this.apiFetch(`api/users.php?action=reset_password&id=${id}`);
             const data = await res.json();
             alert(`Новый пароль: ${data.new_password}`);
+        }
+    },
+
+    async approveUser(id) {
+        if (confirm('Одобрить регистрацию этого клиента?')) {
+            await this.apiFetch(`api/users.php?action=approve&id=${id}`);
+            await this.fetchClients();
+            this.setView('users');
+            this.showToast('Клиент одобрен');
+        }
+    },
+
+    async rejectUser(id) {
+        if (confirm('Отклонить заявку на регистрацию?')) {
+            await this.apiFetch(`api/users.php?action=reject&id=${id}`);
+            await this.fetchClients();
+            this.setView('users');
+            this.showToast('Заявка отклонена');
         }
     },
 

@@ -1,0 +1,47 @@
+{
+    "items": [
+        {
+            "id": "69d76cee035be",
+            "code": "SKU-999",
+            "name": "Premium Gadget",
+            "unit": "unit",
+            "price": "499.99"
+        },
+        {
+            "id": "69d76e1bc1539",
+            "code": "SKU-999",
+            "name": "Premium Gadget",
+            "unit": "unit",
+            "price": "499.99"
+        },
+        {
+            "id": "69d77255df910",
+            "code": "SKU-999",
+            "name": "Premium Gadget",
+            "unit": "unit",
+            "price": "499.99"
+        },
+        {
+            "id": "69d772b790638",
+            "code": "SKU-999",
+            "name": "Premium Gadget",
+            "unit": "unit",
+            "price": "499.99"
+        },
+        {
+            "id": "69d7bc80bd945",
+            "code": "SKU-999",
+            "name": "Premium Gadget",
+            "unit": "unit",
+            "price": "499.99"
+        }
+    ],
+    "config": {
+        "columns": [
+            "code",
+            "name",
+            "unit",
+            "price"
+        ]
+    }
+}

@@ -832,5 +832,555 @@
         "device": "Desktop",
         "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
         "data": []
+    },
+    {
+        "id": "69d76400a3c5d",
+        "type": "registration_request",
+        "user_id": "69d76400a2b3b",
+        "object": "users",
+        "date": "2026-04-09 08:32:00",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d764af701b1",
+        "type": "registration_request",
+        "user_id": "69d764af70073",
+        "object": "users",
+        "date": "2026-04-09 08:34:55",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d7662716099",
+        "type": "registration_request",
+        "user_id": "69d7662715f84",
+        "object": "users",
+        "date": "2026-04-09 08:41:11",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d767c031abf",
+        "type": "registration_request",
+        "user_id": "69d767c03198f",
+        "object": "users",
+        "date": "2026-04-09 08:48:00",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d7695b8dfa7",
+        "type": "registration_request",
+        "user_id": "69d7695b8de70",
+        "object": "users",
+        "date": "2026-04-09 08:54:51",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76a47c49d0",
+        "type": "registration_request",
+        "user_id": "69d76a47c4735",
+        "object": "users",
+        "date": "2026-04-09 08:58:47",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76c3f58eba",
+        "type": "registration_request",
+        "user_id": "69d76c3f58d1d",
+        "object": "users",
+        "date": "2026-04-09 09:07:11",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76c4060531",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:07:12",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76c4120b54",
+        "type": "approve_user",
+        "user_id": "69cb75ada24e9",
+        "object": "users",
+        "date": "2026-04-09 09:07:13",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": {
+            "id": "69d76c3f58d1d"
+        }
+    },
+    {
+        "id": "69d76ceba9b81",
+        "type": "registration_request",
+        "user_id": "69d76ceba9a1f",
+        "object": "users",
+        "date": "2026-04-09 09:10:03",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76cecb59d8",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:10:04",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76ced57ea3",
+        "type": "approve_user",
+        "user_id": "69cb75ada24e9",
+        "object": "users",
+        "date": "2026-04-09 09:10:05",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": {
+            "id": "69d76ceba9a1f"
+        }
+    },
+    {
+        "id": "69d76cee035c8",
+        "type": "pricelist_add",
+        "user_id": "69cb75ada24e9",
+        "object": "pricelist",
+        "date": "2026-04-09 09:10:06",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": {
+            "id": "69d76cee035be"
+        }
+    },
+    {
+        "id": "69d76cf008ff2",
+        "type": "logout",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:10:08",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76cf10a2a2",
+        "type": "login",
+        "user_id": "69d76ceba9a1f",
+        "object": "auth",
+        "date": "2026-04-09 09:10:09",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76dbb953b5",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:13:31",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d76e199c9fd",
+        "type": "registration_request",
+        "user_id": "69d76e199c8e8",
+        "object": "users",
+        "date": "2026-04-09 09:15:05",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76e1aa41e1",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:15:06",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76e1b2fb52",
+        "type": "approve_user",
+        "user_id": "69cb75ada24e9",
+        "object": "users",
+        "date": "2026-04-09 09:15:07",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": {
+            "id": "69d76e199c8e8"
+        }
+    },
+    {
+        "id": "69d76e1bc1543",
+        "type": "pricelist_add",
+        "user_id": "69cb75ada24e9",
+        "object": "pricelist",
+        "date": "2026-04-09 09:15:07",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": {
+            "id": "69d76e1bc1539"
+        }
+    },
+    {
+        "id": "69d76e1cb8c99",
+        "type": "logout",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:15:08",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76e1dbcee2",
+        "type": "login",
+        "user_id": "69d76e199c8e8",
+        "object": "auth",
+        "date": "2026-04-09 09:15:09",
+        "ip": "::1",
+        "device": "Mobile",
+        "user_agent": "Mozilla\/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit\/605.1.15 (KHTML, like Gecko) Version\/26.0 Mobile\/15E148 Safari\/604.1",
+        "data": []
+    },
+    {
+        "id": "69d76eb1050f3",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:17:37",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d76f6260206",
+        "type": "registration_request",
+        "user_id": "69d76f62600c7",
+        "object": "users",
+        "date": "2026-04-09 09:20:34",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d76f636fb88",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:20:35",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7713754003",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:28:23",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d771eb4a28e",
+        "type": "registration_request",
+        "user_id": "69d771eb4a148",
+        "object": "users",
+        "date": "2026-04-09 09:31:23",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d771ec51673",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:31:24",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d77251db7cc",
+        "type": "registration_request",
+        "user_id": "69d77251db60e",
+        "object": "users",
+        "date": "2026-04-09 09:33:05",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d77252e3c1e",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:33:06",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d772535064a",
+        "type": "approve_user",
+        "user_id": "69cb75ada24e9",
+        "object": "users",
+        "date": "2026-04-09 09:33:07",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": {
+            "id": "69d77251db60e"
+        }
+    },
+    {
+        "id": "69d77255df91b",
+        "type": "pricelist_add",
+        "user_id": "69cb75ada24e9",
+        "object": "pricelist",
+        "date": "2026-04-09 09:33:09",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": {
+            "id": "69d77255df910"
+        }
+    },
+    {
+        "id": "69d772b358ec5",
+        "type": "registration_request",
+        "user_id": "69d772b358d8c",
+        "object": "users",
+        "date": "2026-04-09 09:34:43",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d772b464f3a",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:34:44",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d772b4ecf81",
+        "type": "approve_user",
+        "user_id": "69cb75ada24e9",
+        "object": "users",
+        "date": "2026-04-09 09:34:44",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": {
+            "id": "69d772b358d8c"
+        }
+    },
+    {
+        "id": "69d772b790645",
+        "type": "pricelist_add",
+        "user_id": "69cb75ada24e9",
+        "object": "pricelist",
+        "date": "2026-04-09 09:34:47",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": {
+            "id": "69d772b790638"
+        }
+    },
+    {
+        "id": "69d772b899067",
+        "type": "logout",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 09:34:48",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d772b9996c1",
+        "type": "login",
+        "user_id": "69d772b358d8c",
+        "object": "auth",
+        "date": "2026-04-09 09:34:49",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7bc7be2694",
+        "type": "registration_request",
+        "user_id": "69d7bc7be09cc",
+        "object": "users",
+        "date": "2026-04-09 14:49:31",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7bc7cf231c",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 14:49:32",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7bc7dd7596",
+        "type": "approve_user",
+        "user_id": "69cb75ada24e9",
+        "object": "users",
+        "date": "2026-04-09 14:49:33",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": {
+            "id": "69d7bc7be09cc"
+        }
+    },
+    {
+        "id": "69d7bc80bd984",
+        "type": "pricelist_add",
+        "user_id": "69cb75ada24e9",
+        "object": "pricelist",
+        "date": "2026-04-09 14:49:36",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": {
+            "id": "69d7bc80bd945"
+        }
+    },
+    {
+        "id": "69d7bc81c95ab",
+        "type": "logout",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 14:49:37",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7bc82cb345",
+        "type": "login",
+        "user_id": "69d7bc7be09cc",
+        "object": "auth",
+        "date": "2026-04-09 14:49:38",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7bddc363b7",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 14:55:24",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7c32a5ded4",
+        "type": "login",
+        "user_id": "69cb75ada24e9",
+        "object": "auth",
+        "date": "2026-04-09 15:18:02",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "data": []
+    },
+    {
+        "id": "69d7c752a51b2",
+        "type": "registration_request",
+        "user_id": "69d7c752a5032",
+        "object": "users",
+        "date": "2026-04-09 15:35:46",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "curl\/8.5.0",
+        "data": []
+    },
+    {
+        "id": "69d7c752c652d",
+        "type": "login",
+        "user_id": "69d7c752a5032",
+        "object": "auth",
+        "date": "2026-04-09 15:35:46",
+        "ip": "::1",
+        "device": "Desktop",
+        "user_agent": "curl\/8.5.0",
+        "data": []
     }
 ]

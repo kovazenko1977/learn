@@ -27,6 +27,10 @@ class Auth {
             return ['success' => false, 'error' => 'Account blocked'];
         }
 
+        if ($user['status'] === 'pending') {
+            return ['success' => false, 'error' => 'Ваш аккаунт ожидает подтверждения администратором.'];
+        }
+
         // Maintenance Mode Check
         $settings = Storage::read('settings');
         if (($settings['maintenance_mode'] ?? false) && $user['role'] === 'client') {
