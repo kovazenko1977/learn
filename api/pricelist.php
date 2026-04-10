@@ -112,6 +112,7 @@ switch ($action) {
         $id = $_GET['id'] ?? '';
         $lists = get_all_lists();
         $lists = array_filter($lists, fn($l) => $l['id'] !== $id);
+        $input['updated_at'] = date('Y-m-d H:i:s');
         Storage::write('pricelist', array_values($lists));
         Security::log('pricelist_delete_list', $_SESSION['user_id'], 'pricelist', ['id' => $id]);
         echo json_encode(['success' => true]);
@@ -192,6 +193,8 @@ switch ($action) {
             break;
         }
 
+        $clear_existing = ($_POST['clear'] ?? 'false') === 'true';
+
         $handle = fopen($_FILES['file']['tmp_name'], "r");
 
         // Skip BOM if present
@@ -258,7 +261,12 @@ switch ($action) {
         }
         fclose($handle);
 
-        $lists[$idx]['items'] = $items;
+        if ($clear_existing) {
+            $lists[$idx]['items'] = $items;
+        } else {
+            $lists[$idx]['items'] = array_merge($lists[$idx]['items'], $items);
+        }
+        $lists[$idx]['updated_at'] = date('Y-m-d H:i:s');
         Storage::write('pricelist', $lists);
         Security::log('pricelist_import', $_SESSION['user_id'], 'pricelist', ['id' => $target_list_id, 'count' => count($items)]);
 

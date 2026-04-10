@@ -1229,8 +1229,9 @@ const App = {
                     <div class="card glass" style="cursor:pointer; position:relative;" onclick="App.currentListId = '${l.id}'; App.setView('pricelist')">
                         <h3 style="margin-bottom: 10px;">${this.escapeHTML(l.name)}</h3>
                         <p style="font-size: 12px; color: var(--text-muted);">ID: ${l.id}</p>
-                        <div style="margin-top: 20px; display: flex; gap: 10px;" onclick="event.stopPropagation()">
-                             <button class="btn btn-outline btn-sm" onclick="App.showPriceListEditModal('${l.id}')">⚙️ Настройка</button>
+                        <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;" onclick="event.stopPropagation()">
+                             <button class="btn btn-primary btn-sm" onclick="App.showImportModal('${l.id}')">📥 Импорт товаров</button>
+                             <button class="btn btn-outline btn-sm" onclick="App.showPriceListEditModal('${l.id}')">⚙️ Схема колонок</button>
                              <button class="btn btn-outline btn-sm" style="color:red" onclick="App.deletePriceList('${l.id}')">🗑️ Удалить</button>
                         </div>
                     </div>
@@ -1331,15 +1332,33 @@ const App = {
                 <div style="margin-top:15px; text-align:center;">
                     <a href="api/pricelist.php?action=export_csv&list_id=${listId}" class="btn btn-outline btn-sm" style="background:#fff; border: 1px dashed var(--primary);">📥 Скачать готовый образец для этого прайса</a>
                 </div>
-                <div style="margin-top:15px; font-size: 13px;">
-                    <strong>Текущие колонки для этого прайса:</strong>
-                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">
-                        ${list.columns.map(c => `<span class="badge badge-primary">${this.escapeHTML(c.label)}</span>`).join('')}
+
+                <div style="margin-top:20px;">
+                    <strong style="font-size: 13px; display:block; margin-bottom:10px;">Пример структуры файла (таблица):</strong>
+                    <div style="overflow-x:auto; border:1px solid #eef; border-radius:8px;">
+                        <table style="width:100%; font-size:11px; border-collapse:collapse; background:white;">
+                            <thead style="background:#f4f4ff">
+                                <tr>
+                                    ${list.columns.map(c => `<th style="padding:6px; border:1px solid #eef; text-align:left;">${this.escapeHTML(c.label)}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    ${list.columns.map(c => `<td style="padding:6px; border:1px solid #eef; color:#99a;">${c.type === 'number' ? '123.50' : (c.id === 'code' ? 'A001' : 'Пример')}</td>`).join('')}
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
             <form id="import-form">
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="import-clear" style="width:auto; margin:0;">
+                        <span style="font-size:13px; font-weight:600; color:var(--text-muted);">Очистить текущий список перед импортом</span>
+                    </label>
+                </div>
                 <div class="form-group">
                     <label>Выберите файл (.csv)</label>
                     <input type="file" id="import-file" accept=".csv" required>
@@ -1371,6 +1390,7 @@ const App = {
 
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
+            formData.append('clear', document.getElementById('import-clear').checked);
 
             try {
                 const res = await this.apiFetch(`api/pricelist.php?action=import_csv&list_id=${listId}`, {
