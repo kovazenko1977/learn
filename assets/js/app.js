@@ -1380,7 +1380,7 @@ const App = {
                 const result = await res.json();
 
                 if (result.success) {
-                    this.showToast(\`Импорт завершен! Загружено позиций: \${result.count}\`);
+                    this.showToast(`Импорт завершен! Загружено позиций: ${result.count}`);
                     this.closeModal();
                     this.setView('pricelist');
                 } else {
