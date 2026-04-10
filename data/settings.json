@@ -1,0 +1,5 @@
+{
+    "maintenance_mode": false,
+    "smtp_enabled": false,
+    "smtp_from": "noreply@example.com"
+}

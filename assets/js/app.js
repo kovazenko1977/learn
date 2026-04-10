@@ -1149,6 +1149,7 @@ const App = {
                     <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ Печать / PDF</button>
                     <a href="api/pricelist.php?action=export_csv&list_id=${listId}" class="btn btn-outline btn-sm">📊 Экспорт CSV</a>
                     ${isAdmin ? `
+                        <button class="btn btn-outline btn-sm" onclick="App.showImportModal('${listId}')">📥 Импорт Excel</button>
                         <button class="btn btn-outline btn-sm" onclick="App.showPriceListEditModal('${listId}')">Настройка прайса</button>
                         <button class="btn btn-primary btn-sm" onclick="App.showPriceItemModal()">Добавить товар</button>
                     ` : ''}
@@ -1308,6 +1309,91 @@ const App = {
             await this.apiFetch(`api/pricelist.php?action=delete_list&id=${id}`);
             this.setView('pricelist');
         }
+    },
+
+    async showImportModal(listId) {
+        const res = await this.apiFetch(`api/pricelist.php?action=get&list_id=${listId}`);
+        const data = await res.json();
+        const list = data.data;
+
+        this.showModal('Импорт данных из Excel (CSV)', `
+            <div class="card" style="background: #f8faff; border-left: 4px solid var(--primary); margin-bottom: 20px;">
+                <h4 style="margin-bottom:10px">Инструкция для администратора</h4>
+                <ul style="font-size: 13px; line-height: 1.6; padding-left: 20px;">
+                    <li>Файл должен быть в формате <b>CSV</b> (можно сохранить из Excel через "Сохранить как").</li>
+                    <li>Кодировка файла: <b>UTF-8</b>.</li>
+                    <li>Разделитель: <b>точка с запятой (;)</b> или запятая.</li>
+                    <li>Первая строка должна содержать заголовки колонок (например: <b>Наименование</b>, <b>Цена</b>, <b>Код</b>).</li>
+                    <li>Система автоматически сопоставит колонки по их названиям.</li>
+                    <li>Если названия не совпадают, данные будут импортированы в порядке следования колонок.</li>
+                    <li>Числовые значения (цены) могут содержать как точку, так и запятую.</li>
+                </ul>
+                <div style="margin-top:15px; text-align:center;">
+                    <a href="api/pricelist.php?action=export_csv&list_id=${listId}" class="btn btn-outline btn-sm" style="background:#fff; border: 1px dashed var(--primary);">📥 Скачать готовый образец для этого прайса</a>
+                </div>
+                <div style="margin-top:15px; font-size: 13px;">
+                    <strong>Текущие колонки для этого прайса:</strong>
+                    <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">
+                        ${list.columns.map(c => `<span class="badge badge-primary">${this.escapeHTML(c.label)}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <form id="import-form">
+                <div class="form-group">
+                    <label>Выберите файл (.csv)</label>
+                    <input type="file" id="import-file" accept=".csv" required>
+                </div>
+                <div id="import-progress" class="hidden" style="margin-bottom:15px; text-align:center;">
+                    <div style="font-size:14px; margin-bottom:5px;">Обработка данных...</div>
+                    <div style="height:4px; background:#eee; border-radius:2px; overflow:hidden;">
+                        <div style="width:100%; height:100%; background:var(--primary); animation: progress-indet 2s infinite linear;"></div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 50px;">Запустить импорт</button>
+            </form>
+
+            <style>
+                @keyframes progress-indet {
+                    0% { transform: translateX(-100%); }
+                    100% { transform: translateX(100%); }
+                }
+            </style>
+        `);
+
+        document.getElementById('import-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('import-file');
+            if (!fileInput.files.length) return;
+
+            document.getElementById('import-progress').classList.remove('hidden');
+            e.target.querySelector('button').disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const res = await this.apiFetch(`api/pricelist.php?action=import_csv&list_id=${listId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    this.showToast(\`Импорт завершен! Загружено позиций: \${result.count}\`);
+                    this.closeModal();
+                    this.setView('pricelist');
+                } else {
+                    alert('Ошибка импорта: ' + result.error);
+                    document.getElementById('import-progress').classList.add('hidden');
+                    e.target.querySelector('button').disabled = false;
+                }
+            } catch (err) {
+                alert('Произошла системная ошибка при импорте');
+                document.getElementById('import-progress').classList.add('hidden');
+                e.target.querySelector('button').disabled = false;
+            }
+        };
     },
 
     async showPriceItemModal(id = null) {

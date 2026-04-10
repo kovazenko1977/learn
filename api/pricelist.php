@@ -168,6 +168,103 @@ switch ($action) {
         echo json_encode(['success' => true]);
         break;
 
+    case 'import_csv':
+        Auth::requireRole(['superadmin', 'admin_content']);
+        if (!isset($_FILES['file'])) {
+            echo json_encode(['success' => false, 'error' => 'No file uploaded']);
+            break;
+        }
+
+        $target_list_id = $_GET['list_id'] ?? '';
+        $lists = get_all_lists();
+        $target_list = null;
+        $idx = -1;
+        foreach ($lists as $i => $l) {
+            if ($l['id'] === $target_list_id) {
+                $target_list = $l;
+                $idx = $i;
+                break;
+            }
+        }
+
+        if (!$target_list) {
+            echo json_encode(['success' => false, 'error' => 'Target list not found']);
+            break;
+        }
+
+        $handle = fopen($_FILES['file']['tmp_name'], "r");
+
+        // Skip BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== chr(0xEF).chr(0xBB).chr(0xBF)) {
+            rewind($handle);
+        }
+
+        // Auto-detect delimiter
+        $firstLine = fgets($handle);
+        rewind($handle);
+        if ($bom === chr(0xEF).chr(0xBB).chr(0xBF)) fread($handle, 3);
+
+        $delimiter = strpos($firstLine, ';') !== false ? ';' : ',';
+
+        $header = fgetcsv($handle, 0, $delimiter);
+        if (!$header) {
+            echo json_encode(['success' => false, 'error' => 'Invalid CSV format']);
+            break;
+        }
+
+        $items = [];
+        $cols = $target_list['columns'];
+
+        // Map header labels to column IDs
+        $col_map = [];
+        foreach ($header as $i => $label) {
+            $label = trim($label);
+            foreach ($cols as $c) {
+                if ($c['label'] === $label) {
+                    $col_map[$i] = $c['id'];
+                    break;
+                }
+            }
+        }
+
+        // If mapping by label failed, map by order
+        if (empty($col_map)) {
+            foreach ($cols as $i => $c) {
+                if (isset($header[$i])) {
+                    $col_map[$i] = $c['id'];
+                }
+            }
+        }
+
+        while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
+            $item = ['id' => uniqid('item_')];
+            foreach ($row as $i => $val) {
+                if (isset($col_map[$i])) {
+                    $val = Security::sanitize($val);
+                    if ($cols[array_search($col_map[$i], array_column($cols, 'id'))]['type'] === 'number') {
+                        $val = (float)str_replace(',', '.', preg_replace('/[^0-9,.]/', '', $val));
+                    }
+                    $item[$col_map[$i]] = $val;
+                }
+            }
+            // Fill missing columns with empty strings
+            foreach ($cols as $c) {
+                if (!isset($item[$c['id']])) {
+                    $item[$c['id']] = $c['type'] === 'number' ? 0 : '';
+                }
+            }
+            $items[] = $item;
+        }
+        fclose($handle);
+
+        $lists[$idx]['items'] = $items;
+        Storage::write('pricelist', $lists);
+        Security::log('pricelist_import', $_SESSION['user_id'], 'pricelist', ['id' => $target_list_id, 'count' => count($items)]);
+
+        echo json_encode(['success' => true, 'count' => count($items)]);
+        break;
+
     case 'export_csv':
         $lists = get_all_lists();
         $list = null;
