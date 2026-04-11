@@ -1,0 +1,12 @@
+[2026-04-07 05:11:14] IP: ::1 | Action: Login successful | UA: curl/8.5.0
+[2026-04-07 05:11:15] IP: ::1 | Action: File uploaded: legal.txt | UA: curl/8.5.0
+[2026-04-07 05:13:18] IP: ::1 | Action: Login failed: invalid PIN attempt | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:25:27] IP: ::1 | Action: Login successful | UA: curl/8.5.0
+[2026-04-07 05:25:27] IP: ::1 | Action: File uploaded: test_upload.txt | UA: curl/8.5.0
+[2026-04-07 05:37:45] IP: ::1 | Action: Login successful | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:37:46] IP: ::1 | Action: File uploaded: v2_test.txt | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:50:05] IP: ::1 | Action: Login successful | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:50:05] IP: ::1 | Action: Group added: ТестоваяГруппа | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:50:31] IP: ::1 | Action: Login successful | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:50:31] IP: ::1 | Action: File uploaded: group_test.txt | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
+[2026-04-07 05:50:31] IP: ::1 | Action: Group deleted: ТестоваяГруппа. Files reassigned to Общее. | UA: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.7632.6 Safari/537.36
