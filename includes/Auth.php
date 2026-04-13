@@ -1,0 +1,119 @@
+<?php
+session_start();
+require_once __DIR__ . '/Storage.php';
+require_once __DIR__ . '/Security.php';
+
+class Auth {
+    public static function login($username, $password) {
+        // IP-based rate limiting
+        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+        $limits = Storage::read('rate_limits');
+        $ip_limit = isset($limits[$ip]) ? $limits[$ip] : ['attempts' => 0, 'time' => 0];
+
+        if ($ip_limit['attempts'] > 10 && time() - $ip_limit['time'] < 300) {
+            return ['success' => false, 'error' => 'Too many attempts. Blocked for 5 mins.'];
+        }
+
+        $user = Storage::findOne('users', ['username' => $username]);
+        if (!$user || !password_verify($password, $user['password'])) {
+            $ip_limit['attempts']++;
+            $ip_limit['time'] = time();
+            $limits[$ip] = $ip_limit;
+            Storage::write('rate_limits', $limits);
+            return ['success' => false, 'error' => 'Invalid credentials'];
+        }
+
+        if ($user['status'] === 'Заблокирован') {
+            return ['success' => false, 'error' => 'Аккаунт заблокирован.'];
+        }
+
+        if ($user['status'] === 'Ожидает') {
+            return ['success' => false, 'error' => 'Ваш аккаунт ожидает подтверждения администратором.'];
+        }
+
+        // Maintenance Mode Check
+        $settings = Storage::read('settings');
+        if (($settings['maintenance_mode'] ?? false) && $user['role'] === 'client') {
+            return ['success' => false, 'error' => 'Maintenance mode active. Please try again later.'];
+        }
+
+
+
+        unset($limits[$ip]);
+        Storage::write('rate_limits', $limits);
+
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['last_activity'] = time();
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+        Security::log('login', $user['id'], 'auth');
+        return ['success' => true, 'user' => [
+            'id' => $user['id'],
+            'username' => $user['username'],
+            'role' => $user['role'],
+            'assigned_pricelist_id' => $user['assigned_pricelist_id'] ?? 'default',
+            'details' => $user['details'] ?? [],
+            'csrf_token' => $_SESSION['csrf_token']
+        ]];
+    }
+
+    public static function logout() {
+        if (isset($_SESSION['user_id'])) {
+            Security::log('logout', $_SESSION['user_id'], 'auth');
+        }
+        session_destroy();
+        return ['success' => true];
+    }
+
+    public static function check() {
+        if (!isset($_SESSION['user_id'])) {
+            return false;
+        }
+
+        if (time() - $_SESSION['last_activity'] > 1800) {
+            self::logout();
+            return false;
+        }
+
+        $_SESSION['last_activity'] = time();
+        return true;
+    }
+
+    public static function requireRole($roles) {
+        if (!self::check()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            exit;
+        }
+
+        if (!in_array($_SESSION['role'], (array)$roles)) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+            if ($token !== $_SESSION['csrf_token']) {
+                http_response_code(403);
+                echo json_encode(['error' => 'CSRF validation failed']);
+                exit;
+            }
+        }
+    }
+
+    public static function getCurrentUser() {
+        if (!self::check()) return null;
+        $user = Storage::findOne('users', ['id' => $_SESSION['user_id']]);
+        return [
+            'id' => $_SESSION['user_id'],
+            'role' => $_SESSION['role'],
+            'username' => $_SESSION['username'],
+            'company_name' => $user['company_name'] ?? '',
+            'assigned_pricelist_id' => $user['assigned_pricelist_id'] ?? 'default',
+            'csrf_token' => $_SESSION['csrf_token'] ?? null
+        ];
+    }
+}
