@@ -1,0 +1,48 @@
+[
+    {
+        "id": "test_id",
+        "title": "Тестовый прайс",
+        "columns": [
+            "Услуга",
+            "Цена"
+        ],
+        "data": [
+            {
+                "isCategory": true,
+                "cells": [
+                    "Массаж"
+                ]
+            },
+            {
+                "isCategory": false,
+                "cells": [
+                    "Общий",
+                    "50 BYN"
+                ]
+            }
+        ]
+    },
+    {
+        "id": "pl_7eef94mwg",
+        "title": "Цены на услуги",
+        "columns": [
+            "Наименование",
+            "Цена (BYN)"
+        ],
+        "data": [
+            {
+                "isCategory": true,
+                "cells": [
+                    "Медицинские услуги"
+                ]
+            },
+            {
+                "isCategory": false,
+                "cells": [
+                    "Консультация",
+                    "10.00"
+                ]
+            }
+        ]
+    }
+]
