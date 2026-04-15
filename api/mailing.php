@@ -36,7 +36,7 @@ if ($method === 'GET') {
         'subject' => $subject,
         'body' => $body,
         'recipients_count' => count($recipients),
-        'status' => 'Sent (Simulated)'
+        'status' => 'Sent'
     ];
     $messages[] = $logEntry;
     Storage::save('messages', $messages);

@@ -148,8 +148,31 @@
                                 </div>
                             </div>
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-bold">Рейтинг команды</h4>
+                                    <a href="api/reports.php?type=performance" class="text-purple-600 text-xs font-bold hover:underline">Экспорт CSV</a>
+                                </div>
+                                <div class="space-y-4">
+                                    <div v-for="(u, index) in users.slice(0, 5)" :key="u.id" class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-xs font-black text-gray-300 w-4">{{ index + 1 }}</span>
+                                            <div class="w-8 h-8 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold">{{ u.name[0] }}</div>
+                                            <span class="text-sm font-medium">{{ u.name }}</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm font-black text-purple-600">{{ u.points || 0 }}</span>
+                                            <span class="text-[10px] text-gray-400 uppercase">PTS</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <h4 class="text-lg font-bold mb-4">Источники лидов</h4>
+                                <canvas id="sourcesChart" class="max-h-48"></canvas>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                                 <h4 class="text-lg font-bold mb-4">Эффективность</h4>
-                                <canvas id="performanceChart" class="max-h-64"></canvas>
+                                <canvas id="performanceChart" class="max-h-48"></canvas>
                             </div>
                         </div>
                     </div>
@@ -158,9 +181,14 @@
                     <div v-if="currentTab === 'clients'" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                             <h4 class="text-lg font-bold">Список клиентов</h4>
-                            <button @click="showClientModal = true; editingClient = null" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center">
-                                <i class="fas fa-plus mr-2"></i> Добавить клиента
-                            </button>
+                            <div class="flex space-x-3">
+                                <a href="api/reports.php?type=clients" class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center">
+                                    <i class="fas fa-file-export mr-2"></i> CSV
+                                </a>
+                                <button @click="showClientModal = true; editingClient = null" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center">
+                                    <i class="fas fa-plus mr-2"></i> Добавить клиента
+                                </button>
+                            </div>
                         </div>
                         <table class="w-full text-left">
                             <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
@@ -201,6 +229,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ client.created_at }}</td>
                                     <td class="px-6 py-4 text-right space-x-2">
+                                        <button @click="viewTimeline(client)" class="text-purple-500 hover:text-purple-700"><i class="fas fa-history"></i></button>
                                         <button @click="editClient(client)" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
                                         <button @click="deleteClient(client.id)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                                     </td>
@@ -425,6 +454,21 @@
                             <input v-model="clientForm.phone" type="text" placeholder="+375..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Источник</label>
+                            <select v-model="clientForm.source" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                                <option value="direct">Прямой заход</option>
+                                <option value="ad">Реклама</option>
+                                <option value="social">Соцсети</option>
+                                <option value="referral">Рекомендация</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Теги (через запятую)</label>
+                            <input v-model="clientForm.tags" type="text" placeholder="VIP, Новый, Срочно" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                    </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Статус клиента</label>
                         <select v-model="clientForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none appearance-none">
@@ -514,6 +558,47 @@
                 <div class="mt-8 flex space-x-4">
                     <button @click="saveTask" class="flex-1 bg-purple-600 text-white py-4 rounded-2xl font-bold">Добавить</button>
                     <button @click="showTaskModal = false" class="flex-1 bg-gray-100 py-4 rounded-2xl font-bold">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Modal -->
+        <div v-if="showTimelineModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-3xl w-full max-w-2xl h-[80vh] flex flex-col overflow-hidden shadow-2xl">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <div>
+                        <h4 class="text-xl font-black text-gray-800">История: {{ selectedClient?.name }}</h4>
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-tighter">Взаимодействия с клиентом</p>
+                    </div>
+                    <button @click="showTimelineModal = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-8 space-y-6 bg-gray-50">
+                    <!-- New Interaction Form -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex space-x-4">
+                        <select v-model="newInteraction.type" class="bg-gray-100 border-none rounded-xl px-3 py-2 text-xs font-bold outline-none">
+                            <option value="note">Заметка</option>
+                            <option value="call">Звонок</option>
+                            <option value="meeting">Встреча</option>
+                        </select>
+                        <input v-model="newInteraction.text" @keydown.enter="addInteraction" type="text" placeholder="Опишите результат контакта..." class="flex-1 bg-gray-100 border-none rounded-xl px-4 py-2 text-sm outline-none">
+                        <button @click="addInteraction" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-bold"><i class="fas fa-plus"></i></button>
+                    </div>
+
+                    <div v-for="i in interactions" :key="i.id" class="relative pl-8 pb-6 border-l-2 border-purple-100 last:border-0">
+                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-purple-600"></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[10px] font-black uppercase text-purple-600 bg-purple-50 px-2 py-0.5 rounded">{{ i.type }}</span>
+                                <span class="text-[10px] text-gray-400 font-bold">{{ i.date }}</span>
+                            </div>
+                            <p class="text-sm text-gray-700 leading-relaxed">{{ i.text }}</p>
+                            <p class="text-[9px] text-gray-400 mt-2 font-bold uppercase">Автор: {{ i.user_name }}</p>
+                        </div>
+                    </div>
+                    <div v-if="interactions.length === 0" class="text-center py-12">
+                        <i class="fas fa-comment-slash text-4xl text-gray-200 mb-4"></i>
+                        <p class="text-gray-400 font-medium">Нет записей</p>
+                    </div>
                 </div>
             </div>
         </div>

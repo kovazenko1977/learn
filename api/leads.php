@@ -5,6 +5,7 @@ require_once __DIR__ . '/../includes/Storage.php';
 require_once __DIR__ . '/../includes/Security.php';
 
 Auth::requireAuth();
+$currentUser = Auth::getUser();
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -17,7 +18,12 @@ if ($method === 'GET') {
     if (isset($data['id'])) {
         foreach ($leads as &$lead) {
             if ($lead['id'] === $data['id']) {
+                $oldStatus = $lead['status'] ?? 'new';
                 $lead = array_merge($lead, $data);
+                if ($oldStatus !== 'closed' && $data['status'] === 'closed') {
+                    Storage::addPoints($currentUser['id'], 50);
+                    Storage::log("Closed deal: " . ($lead['title'] ?? $lead['id']), $currentUser['id']);
+                }
                 break;
             }
         }

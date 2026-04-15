@@ -12,6 +12,8 @@ if ($method === 'GET') {
     $users = Storage::read('users');
     // Don't send hashes to frontend
     foreach ($users as &$user) unset($user['pin_hash']);
+    // Sort by points for leaderboard
+    usort($users, function($a, $b) { return ($b['points'] ?? 0) <=> ($a['points'] ?? 0); });
     echo json_encode($users);
 } elseif ($method === 'POST') {
     Auth::requireAdmin();
@@ -37,6 +39,7 @@ if ($method === 'GET') {
             'name' => $data['name'] ?? 'New Manager',
             'role' => $data['role'] ?? 'manager',
             'pin_hash' => password_hash($data['pin'] ?? '123456', PASSWORD_DEFAULT),
+            'points' => 0,
             'created_at' => date('Y-m-d H:i:s')
         ];
         $users[] = $newUser;

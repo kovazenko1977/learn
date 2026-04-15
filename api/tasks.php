@@ -26,8 +26,13 @@ if ($method === 'GET') {
     if (isset($data['id'])) {
         foreach ($tasks as &$task) {
             if ($task['id'] === $data['id']) {
+                $oldStatus = $task['status'] ?? 'pending';
                 $task = array_merge($task, $data);
                 $task['updated_at'] = date('Y-m-d H:i:s');
+                if ($oldStatus !== 'completed' && $data['status'] === 'completed') {
+                    Storage::addPoints($currentUser['id'], 10);
+                    Storage::log("Completed task: " . ($task['title'] ?? $task['id']), $currentUser['id']);
+                }
                 break;
             }
         }

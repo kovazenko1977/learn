@@ -3,13 +3,15 @@
         "id": "admin",
         "name": "Администратор",
         "role": "admin",
-        "pin_hash": "$2y$10$Rr5rCJooLGytghpa5uO1I.m\/ZORHzSP1hjrogm\/w6T.Y5ShSB1Zga"
+        "pin_hash": "$2y$10$Rr5rCJooLGytghpa5uO1I.m\/ZORHzSP1hjrogm\/w6T.Y5ShSB1Zga",
+        "points": 7
     },
     {
         "id": "u_69dfd42c6c849",
         "name": "Иван Менеджер",
         "role": "manager",
         "pin_hash": "$2y$10$3jne2VjGPfvQ54qytIxgJebbIuKQzR2N3.IQmS4drYJQ8.o61yjpG",
-        "created_at": "2026-04-15 18:08:44"
+        "created_at": "2026-04-15 18:08:44",
+        "points": 0
     }
 ]

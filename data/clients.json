@@ -6,5 +6,15 @@
         "status": "active",
         "id": "69dfca109e50e",
         "created_at": "2026-04-15 17:25:36"
+    },
+    {
+        "name": "Action Client",
+        "email": "",
+        "phone": "",
+        "status": "lead",
+        "source": "direct",
+        "tags": "",
+        "id": "69dff13b3f5a5",
+        "created_at": "2026-04-15 20:12:43"
     }
 ]

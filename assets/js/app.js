@@ -16,13 +16,17 @@ createApp({
         const docs = ref([]);
         const users = ref([]);
         const searchQuery = ref('');
+        const showTimelineModal = ref(false);
+        const selectedClient = ref(null);
+        const interactions = ref([]);
+        const newInteraction = reactive({ type: 'note', text: '' });
 
         const showClientModal = ref(false);
         const editingClient = ref(null);
-        const clientForm = reactive({ name: '', email: '', phone: '', status: 'lead' });
+        const clientForm = reactive({ name: '', email: '', phone: '', status: 'lead', source: 'direct', tags: '' });
 
         const showLeadModal = ref(false);
-        const leadForm = reactive({ title: '', value: 0, status: 'new' });
+        const leadForm = reactive({ title: '', value: 0, status: 'new', source: 'direct', tags: '' });
 
         const showTaskModal = ref(false);
         const taskForm = reactive({ title: '', priority: 'Medium', due_date: '', status: 'pending', assigned_to: '' });
@@ -113,25 +117,47 @@ createApp({
 
         const initChart = () => {
             const ctx = document.getElementById('performanceChart');
-            if (!ctx) return;
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
-                    datasets: [{
-                        label: 'Сделки',
-                        data: [12, 19, 3, 5, 2, 3, 9],
-                        borderColor: '#7360f2',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(115, 96, 242, 0.1)'
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } }
-                }
-            });
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                        datasets: [{
+                            label: 'Сделки',
+                            data: [12, 19, 3, 5, 2, 3, 9],
+                            borderColor: '#7360f2',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(115, 96, 242, 0.1)'
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } }
+                    }
+                });
+            }
+
+            const ctxS = document.getElementById('sourcesChart');
+            if (ctxS) {
+                const sourceCounts = { direct: 0, ad: 0, social: 0, referral: 0 };
+                clients.value.forEach(c => { if (sourceCounts[c.source] !== undefined) sourceCounts[c.source]++; });
+
+                new Chart(ctxS, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Прямой', 'Реклама', 'Соцсети', 'Реф'],
+                        datasets: [{
+                            data: [sourceCounts.direct, sourceCounts.ad, sourceCounts.social, sourceCounts.referral],
+                            backgroundColor: ['#7360f2', '#ffbc42', '#3fb1ce', '#d72638']
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+                        cutout: '70%'
+                    }
+                });
+            }
         };
 
         // Auth
@@ -197,6 +223,28 @@ createApp({
         };
 
         const deleteTask = async (id) => { await fetch(`api/tasks.php?id=${id}`, { method: 'DELETE' }); fetchData(); };
+
+        // Interaction History
+        const viewTimeline = async (client) => {
+            selectedClient.value = client;
+            showTimelineModal.value = true;
+            fetchInteractions();
+        };
+
+        const fetchInteractions = async () => {
+            if (!selectedClient.value) return;
+            const res = await fetch(`api/interactions.php?client_id=${selectedClient.value.id}`);
+            interactions.value = await res.json();
+        };
+
+        const addInteraction = async () => {
+            if (!newInteraction.text.trim() || !selectedClient.value) return;
+            const payload = { ...newInteraction, client_id: selectedClient.value.id };
+            await fetch('api/interactions.php', { method: 'POST', body: JSON.stringify(payload) });
+            newInteraction.text = '';
+            fetchInteractions();
+            fetchUsers(); // Update points
+        };
 
         // Marketing
         const addRecipient = (e) => {
@@ -272,12 +320,13 @@ createApp({
 
         return {
             authenticated, user, loading, error, currentTab, pinParts, stats, clients, leads, tasks, docs, users, searchQuery,
+            showTimelineModal, selectedClient, interactions, newInteraction,
             showClientModal, editingClient, clientForm, showLeadModal, leadForm, showTaskModal, taskForm, taskFilter,
             showUserModal, userForm, activeChat, messages, newMessage, unreadCount,
             mailing, menu, filteredMenu, salesStages, activeMenuName, filteredTasks, filteredClients, otherUsers, activeChatName,
             focusNext, focusPrev, login, logout, saveClient, editClient, deleteClient, openLeadModal, saveLead,
             fetchUsers, openUserModal, saveUser, deleteUser, getStagePercentage, getLeadScore,
-            fetchMessages, sendMessage,
+            fetchMessages, sendMessage, viewTimeline, fetchInteractions, addInteraction,
             saveTask, toggleTask, deleteTask, addRecipient, removeRecipient, sendMailing, uploadFile, downloadDoc, deleteDoc, getFileIcon, clientStatusClass,
             leadsByStage: (s) => leads.value.filter(l => l.status === s)
         };

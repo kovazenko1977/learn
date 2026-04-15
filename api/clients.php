@@ -5,6 +5,7 @@ require_once __DIR__ . '/../includes/Storage.php';
 require_once __DIR__ . '/../includes/Security.php';
 
 Auth::requireAuth();
+$currentUser = Auth::getUser();
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
@@ -32,7 +33,8 @@ if ($method === 'GET') {
         $data['id'] = uniqid();
         $data['created_at'] = date('Y-m-d H:i:s');
         $clients[] = $data;
-        Storage::log("Created client: " . ($data['name'] ?? $data['id']));
+        Storage::log("Created client: " . ($data['name'] ?? $data['id']), $currentUser['id']);
+        Storage::addPoints($currentUser['id'], 5);
     }
 
     Storage::save('clients', $clients);

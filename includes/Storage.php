@@ -33,4 +33,15 @@ class Storage {
         }
         self::save('logs', $logs);
     }
+
+    public static function addPoints($userId, $points) {
+        $users = self::read('users');
+        foreach ($users as &$user) {
+            if ($user['id'] === $userId) {
+                $user['points'] = ($user['points'] ?? 0) + $points;
+                break;
+            }
+        }
+        return self::save('users', $users);
+    }
 }
