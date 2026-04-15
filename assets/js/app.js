@@ -3,22 +3,19 @@ const { createApp, ref, reactive, computed, onMounted } = Vue;
 createApp({
     setup() {
         const authenticated = ref(false);
+        const user = ref(null);
         const loading = ref(false);
         const error = ref('');
         const currentTab = ref('dashboard');
         const pinParts = reactive(['', '', '', '', '', '']);
 
-        const stats = ref({
-            total_clients: 0,
-            total_leads: 0,
-            pending_tasks: 0,
-            recent_logs: []
-        });
-
+        const stats = ref({ total_clients: 0, total_leads: 0, pending_tasks: 0, recent_logs: [] });
         const clients = ref([]);
         const leads = ref([]);
         const tasks = ref([]);
         const docs = ref([]);
+        const users = ref([]);
+        const searchQuery = ref('');
 
         const showClientModal = ref(false);
         const editingClient = ref(null);
@@ -28,18 +25,25 @@ createApp({
         const leadForm = reactive({ title: '', value: 0, status: 'new' });
 
         const showTaskModal = ref(false);
-        const taskForm = reactive({ title: '', priority: 'Medium', due_date: '', status: 'pending' });
+        const taskForm = reactive({ title: '', priority: 'Medium', due_date: '', status: 'pending', assigned_to: '' });
         const taskFilter = ref('');
 
         const mailing = reactive({ subject: '', body: '', recipients: [] });
 
+        const activeChat = ref('all');
+        const messages = ref([]);
+        const newMessage = ref('');
+        const unreadCount = ref(0);
+
         const menu = [
             { id: 'dashboard', name: 'Обзор', icon: 'fas fa-chart-pie' },
-            { id: 'clients', name: 'Клиенты', icon: 'fas fa-users' },
+            { id: 'clients', name: 'Клиенты', icon: 'fas fa-address-book' },
             { id: 'sales', name: 'Продажи', icon: 'fas fa-funnel-dollar' },
             { id: 'marketing', name: 'Маркетинг', icon: 'fas fa-bullhorn' },
             { id: 'tasks', name: 'Задачи', icon: 'fas fa-check-circle' },
-            { id: 'docs', name: 'Документы', icon: 'fas fa-file-alt' }
+            { id: 'docs', name: 'Документы', icon: 'fas fa-file-alt' },
+            { id: 'chat', name: 'Чат', icon: 'fas fa-comments' },
+            { id: 'team', name: 'Команда', icon: 'fas fa-users-cog', adminOnly: true }
         ];
 
         const salesStages = [
@@ -51,12 +55,84 @@ createApp({
         ];
 
         const activeMenuName = computed(() => menu.find(m => m.id === currentTab.value)?.name || '');
+        const filteredMenu = computed(() => menu.filter(m => !m.adminOnly || (user.value && user.value.role === 'admin')));
+        const otherUsers = computed(() => users.value.filter(u => u.id !== user.value?.id));
+        const activeChatName = computed(() => {
+            if (activeChat.value === 'all') return 'Общий чат';
+            return users.value.find(u => u.id === activeChat.value)?.name || 'Чат';
+        });
 
         const filteredTasks = computed(() => {
             let t = tasks.value;
             if (taskFilter.value) t = t.filter(x => x.priority === taskFilter.value);
             return t.sort((a,b) => (a.status === 'completed' ? 1 : -1));
         });
+
+        const filteredClients = computed(() => {
+            if (!searchQuery.value) return clients.value;
+            const q = searchQuery.value.toLowerCase();
+            return clients.value.filter(c =>
+                c.name.toLowerCase().includes(q) ||
+                c.email.toLowerCase().includes(q) ||
+                c.phone.toLowerCase().includes(q)
+            );
+        });
+
+        // Multi-user & Team
+        const showUserModal = ref(false);
+        const userForm = reactive({ id: 'new', name: '', role: 'manager', pin: '' });
+
+        const fetchUsers = async () => { if (user.value?.role === 'admin') users.value = await (await fetch('api/users.php')).json(); };
+        const openUserModal = (u = null) => {
+            if (u) { userForm.id = u.id; userForm.name = u.name; userForm.role = u.role; userForm.pin = ''; }
+            else { userForm.id = 'new'; userForm.name = ''; userForm.role = 'manager'; userForm.pin = ''; }
+            showUserModal.value = true;
+        };
+        const saveUser = async () => {
+            await fetch('api/users.php', { method: 'POST', body: JSON.stringify(userForm) });
+            showUserModal.value = false; fetchUsers();
+        };
+        const deleteUser = async (id) => { if (confirm('Удалить сотрудника?')) { await fetch(`api/users.php?id=${id}`, { method: 'DELETE' }); fetchUsers(); } };
+
+        // Funnel
+        const getStagePercentage = (stageId) => {
+            const stageLeads = leads.value.filter(l => l.status === stageId);
+            const count = stageLeads.length;
+            if (count === 0) return 5;
+            const max = Math.max(...salesStages.map(s => leads.value.filter(l => l.status === s.id).length));
+            return (count / (max || 1)) * 100;
+        };
+
+        const getLeadScore = (client) => {
+            let score = 1;
+            if (client.status === 'active') score += 2;
+            if (client.email && client.phone) score += 1;
+            if (client.created_at && (new Date() - new Date(client.created_at)) < 86400000 * 7) score += 1;
+            return Math.min(score, 5);
+        };
+
+        const initChart = () => {
+            const ctx = document.getElementById('performanceChart');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    datasets: [{
+                        label: 'Сделки',
+                        data: [12, 19, 3, 5, 2, 3, 9],
+                        borderColor: '#7360f2',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(115, 96, 242, 0.1)'
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, display: false }, x: { grid: { display: false } } }
+                }
+            });
+        };
 
         // Auth
         const focusNext = (e, i) => { if (e.target.value.length === 1 && i < 5) document.getElementById(`pin-${i + 1}`).focus(); };
@@ -69,21 +145,21 @@ createApp({
             try {
                 const res = await fetch('api/auth.php?action=login', { method: 'POST', body: JSON.stringify({ pin }) });
                 const data = await res.json();
-                if (data.success) { authenticated.value = true; fetchData(); }
+                if (data.success) { authenticated.value = true; user.value = data.user; fetchData(); }
                 else error.value = data.error;
             } catch (e) { error.value = 'Server error'; }
             finally { loading.value = false; }
         };
 
-        const logout = async () => { await fetch('api/auth.php?action=logout'); authenticated.value = false; };
+        const logout = async () => { await fetch('api/auth.php?action=logout'); authenticated.value = false; user.value = null; };
         const checkAuth = async () => {
             const res = await fetch('api/auth.php?action=check');
             const data = await res.json();
-            if (data.authenticated) { authenticated.value = true; fetchData(); }
+            if (data.authenticated) { authenticated.value = true; user.value = data.user; fetchData(); }
         };
 
         const fetchData = async () => {
-            await Promise.all([fetchStats(), fetchClients(), fetchLeads(), fetchTasks(), fetchDocs()]);
+            await Promise.all([fetchStats(), fetchClients(), fetchLeads(), fetchTasks(), fetchDocs(), fetchUsers()]);
         };
 
         const fetchStats = async () => { stats.value = await (await fetch('api/stats.php')).json(); };
@@ -143,6 +219,37 @@ createApp({
         };
         const downloadDoc = (id) => { window.location.href = `api/uploads.php?action=download&id=${id}`; };
         const deleteDoc = async (id) => { if (confirm('Удалить документ?')) { await fetch(`api/uploads.php?action=delete&id=${id}`); fetchDocs(); } };
+
+        // Chat Logic
+        const fetchMessages = async () => {
+            if (!authenticated.value) return;
+            const res = await fetch(`api/chat.php?recipient=${activeChat.value}`);
+            messages.value = await res.json();
+            // Scroll to bottom
+            setTimeout(() => {
+                const box = document.getElementById('chat-box');
+                if (box) box.scrollTop = box.scrollHeight;
+            }, 100);
+        };
+
+        const sendMessage = async () => {
+            if (!newMessage.value.trim()) return;
+            const payload = { recipient: activeChat.value, text: newMessage.value };
+            await fetch('api/chat.php', { method: 'POST', body: JSON.stringify(payload) });
+            newMessage.value = '';
+            fetchMessages();
+        };
+
+        // Polling
+        let pollInterval = null;
+        const startPolling = () => {
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(() => {
+                if (authenticated.value) {
+                    if (currentTab.value === 'chat') fetchMessages();
+                }
+            }, 3000);
+        };
         const getFileIcon = (n) => {
             const e = n.split('.').pop().toLowerCase();
             if (['jpg','png','jpeg'].includes(e)) return 'fas fa-file-image';
@@ -157,13 +264,20 @@ createApp({
             return 'bg-red-100 text-red-700';
         };
 
-        onMounted(() => checkAuth());
+        onMounted(() => {
+            checkAuth();
+            startPolling();
+            setTimeout(initChart, 500);
+        });
 
         return {
-            authenticated, loading, error, currentTab, pinParts, stats, clients, leads, tasks, docs,
+            authenticated, user, loading, error, currentTab, pinParts, stats, clients, leads, tasks, docs, users, searchQuery,
             showClientModal, editingClient, clientForm, showLeadModal, leadForm, showTaskModal, taskForm, taskFilter,
-            mailing, menu, salesStages, activeMenuName, filteredTasks,
+            showUserModal, userForm, activeChat, messages, newMessage, unreadCount,
+            mailing, menu, filteredMenu, salesStages, activeMenuName, filteredTasks, filteredClients, otherUsers, activeChatName,
             focusNext, focusPrev, login, logout, saveClient, editClient, deleteClient, openLeadModal, saveLead,
+            fetchUsers, openUserModal, saveUser, deleteUser, getStagePercentage, getLeadScore,
+            fetchMessages, sendMessage,
             saveTask, toggleTask, deleteTask, addRecipient, removeRecipient, sendMailing, uploadFile, downloadDoc, deleteDoc, getFileIcon, clientStatusClass,
             leadsByStage: (s) => leads.value.filter(l => l.status === s)
         };

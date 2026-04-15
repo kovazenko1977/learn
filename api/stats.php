@@ -8,11 +8,13 @@ Auth::requireAuth();
 $clients = Storage::read('clients');
 $leads = Storage::read('leads');
 $tasks = Storage::read('tasks');
+$messages = Storage::read('messages');
 
 $stats = [
     'total_clients' => count($clients),
     'total_leads' => count($leads),
     'pending_tasks' => count(array_filter($tasks, function($t) { return ($t['status'] ?? '') !== 'completed'; })),
+    'messages_count' => count($messages),
     'leads_by_status' => [],
     'recent_logs' => array_reverse(array_slice(Storage::read('logs'), -10))
 ];

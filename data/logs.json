@@ -34,5 +34,29 @@
         "user": "system",
         "action": "Uploaded document: dummy.txt",
         "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:08:43",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:08:45",
+        "user": "u_69dfd42c6c849",
+        "action": "Login successful: Иван Менеджер",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:09:40",
+        "user": "u_69dfd42c6c849",
+        "action": "Login successful: Иван Менеджер",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:14:35",
+        "user": "u_69dfd42c6c849",
+        "action": "Login successful: Иван Менеджер",
+        "ip": "::1"
     }
 ]
