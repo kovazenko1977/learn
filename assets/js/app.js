@@ -7,12 +7,13 @@ createApp({
         const saving = ref(false);
         const error = ref('');
         const pinDigits = ref(['', '', '', '', '', '']);
+        const newPinDigits = ref(['', '', '', '', '', '']);
         const priceLists = ref([]);
         const currentIdx = ref(null);
         const toasts = ref([]);
 
         const currentList = computed(() => {
-            if (currentIdx.value === null) return null;
+            if (currentIdx.value === null || currentIdx.value === 'settings') return null;
             return priceLists.value[currentIdx.value];
         });
 
@@ -62,6 +63,35 @@ createApp({
             authenticated.value = false;
             priceLists.value = [];
             currentIdx.value = null;
+            pinDigits.value = ['', '', '', '', '', ''];
+        };
+
+        const changePin = async () => {
+            const newPin = newPinDigits.value.join('');
+            if (newPin.length !== 6) {
+                showToast('Введите 6 цифр', 'error');
+                return;
+            }
+
+            loading.value = true;
+            try {
+                const res = await fetch('api/settings.php?action=change_pin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ new_pin: newPin })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Пароль успешно изменен');
+                    newPinDigits.value = ['', '', '', '', '', ''];
+                } else {
+                    showToast(data.error || 'Ошибка при смене пароля', 'error');
+                }
+            } catch (e) {
+                showToast('Ошибка сервера', 'error');
+            } finally {
+                loading.value = false;
+            }
         };
 
         const fetchPrices = async () => {
@@ -163,6 +193,18 @@ createApp({
             }
         };
 
+        const focusNextNewPin = (e, i) => {
+            if (e.target.value.length === 1 && i < 5) {
+                document.getElementById(`new-pin-${i+1}`).focus();
+            }
+        };
+
+        const focusPrevNewPin = (e, i) => {
+            if (e.target.value.length === 0 && i > 0) {
+                document.getElementById(`new-pin-${i-1}`).focus();
+            }
+        };
+
         const showToast = (message, type = 'success') => {
             const id = Date.now();
             toasts.value.push({ id, message, type });
@@ -181,11 +223,11 @@ createApp({
         onMounted(checkAuth);
 
         return {
-            authenticated, loading, saving, error, pinDigits,
+            authenticated, loading, saving, error, pinDigits, newPinDigits,
             priceLists, currentIdx, currentList, toasts,
             login, logout, saveAll, addNewPriceList, deletePriceList,
             addColumn, removeColumn, addCategory, addRow, removeRow,
-            focusNext, focusPrev, copyShortcode
+            focusNext, focusPrev, focusNextNewPin, focusPrevNewPin, copyShortcode, changePin
         };
     }
 }).mount('#app');

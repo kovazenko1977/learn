@@ -72,7 +72,10 @@
                         <h2 class="text-xl font-bold text-gray-800">Панель управления ценами</h2>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="text-sm text-gray-500 hidden md:inline">Администратор</span>
+                        <button @click="currentIdx = 'settings'" :class="['text-sm font-medium transition-colors', currentIdx === 'settings' ? 'text-primary' : 'text-gray-500 hover:text-primary']">
+                            Настройки
+                        </button>
+                        <span class="text-gray-300">|</span>
                         <button @click="logout" class="text-gray-400 hover:text-red-500 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -119,7 +122,42 @@
 
                     <!-- Main Content: Editor -->
                     <div class="lg:col-span-3">
-                        <div v-if="currentList" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <!-- Settings View -->
+                        <div v-if="currentIdx === 'settings'" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+                            <div class="flex items-center gap-4 mb-8">
+                                <div class="bg-gray-100 p-3 rounded-xl text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">Безопасность</h3>
+                                    <p class="text-sm text-gray-500">Смена пароля доступа к панели</p>
+                                </div>
+                            </div>
+
+                            <form @submit.prevent="changePin" class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Новый 6-значный пароль</label>
+                                    <div class="flex gap-2">
+                                        <input v-for="(n, i) in 6" :key="i" :id="'new-pin-'+i"
+                                               v-model="newPinDigits[i]"
+                                               @input="focusNextNewPin($event, i)"
+                                               @keydown.delete="focusPrevNewPin($event, i)"
+                                               type="password" maxlength="1"
+                                               class="w-full h-14 text-center text-2xl font-bold border-2 rounded-xl focus:border-primary focus:outline-none bg-gray-50 transition-all"
+                                               required autocomplete="off">
+                                    </div>
+                                </div>
+
+                                <button type="submit" :disabled="loading"
+                                        class="w-full bg-gray-800 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg transition-all disabled:opacity-50">
+                                    {{ loading ? 'Сохранение...' : 'Обновить пароль' }}
+                                </button>
+                            </form>
+                        </div>
+
+                        <div v-else-if="currentList" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                             <!-- Meta Editor -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div>
