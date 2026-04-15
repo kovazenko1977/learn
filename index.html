@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM System - WES.BY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div id="app" v-cloak>
+        <!-- Login Screen -->
+        <div v-if="!authenticated" class="min-h-screen flex items-center justify-center bg-purple-700">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 hover:scale-105">
+                <div class="text-center mb-8">
+                    <div class="inline-block p-4 bg-purple-100 rounded-full mb-4">
+                        <i class="fas fa-lock text-purple-600 text-3xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-800">CRM Вход</h1>
+                    <p class="text-gray-500">Введите 6-значный код доступа</p>
+                </div>
+                <div class="flex justify-center space-x-2 mb-6">
+                    <input v-for="(n, i) in 6" :key="i" :id="'pin-' + i"
+                           v-model="pinParts[i]"
+                           type="password" maxlength="1"
+                           class="w-12 h-16 text-center text-2xl font-bold border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                           @input="focusNext($event, i)" @keydown.backspace="focusPrev($event, i)">
+                </div>
+                <button @click="login" :disabled="loading" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg flex items-center justify-center">
+                    <span v-if="loading"><i class="fas fa-spinner fa-spin mr-2"></i></span>
+                    Войти в систему
+                </button>
+                <p v-if="error" class="mt-4 text-red-500 text-center font-medium">{{ error }}</p>
+            </div>
+        </div>
+
+        <!-- Main App Layout -->
+        <div v-else class="flex min-h-screen">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-purple-900 text-white flex-shrink-0 shadow-2xl z-20">
+                <div class="p-6">
+                    <h2 class="text-2xl font-black tracking-tighter text-white">WES <span class="text-purple-400">CRM</span></h2>
+                </div>
+                <nav class="mt-4 px-4 space-y-1">
+                    <a v-for="item in menu" :key="item.id" @click="currentTab = item.id"
+                       :class="['flex items-center space-x-3 p-3 rounded-xl transition-all cursor-pointer', currentTab === item.id ? 'bg-purple-700 text-white shadow-lg' : 'hover:bg-purple-800 text-purple-200']">
+                        <i :class="item.icon"></i>
+                        <span class="font-medium">{{ item.name }}</span>
+                    </a>
+                </nav>
+                <div class="absolute bottom-0 w-64 p-6 border-t border-purple-800">
+                    <button @click="logout" class="flex items-center space-x-3 text-purple-300 hover:text-white transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Выйти</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto">
+                <header class="bg-white shadow-sm border-b border-gray-200 p-4 sticky top-0 z-10 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800">{{ activeMenuName }}</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" placeholder="Поиск..." class="pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 w-64">
+                        </div>
+                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold border border-purple-200">
+                            A
+                        </div>
+                    </div>
+                </header>
+
+                <div class="p-8">
+                    <!-- Dashboard -->
+                    <div v-if="currentTab === 'dashboard'" class="space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                                <div class="p-4 bg-blue-100 text-blue-600 rounded-xl"><i class="fas fa-users text-2xl"></i></div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Клиенты</p>
+                                    <p class="text-2xl font-bold">{{ stats.total_clients }}</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                                <div class="p-4 bg-orange-100 text-orange-600 rounded-xl"><i class="fas fa-funnel-dollar text-2xl"></i></div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Лиды</p>
+                                    <p class="text-2xl font-bold">{{ stats.total_leads }}</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                                <div class="p-4 bg-green-100 text-green-600 rounded-xl"><i class="fas fa-tasks text-2xl"></i></div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Задачи</p>
+                                    <p class="text-2xl font-bold">{{ stats.pending_tasks }}</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
+                                <div class="p-4 bg-purple-100 text-purple-600 rounded-xl"><i class="fas fa-paper-plane text-2xl"></i></div>
+                                <div>
+                                    <p class="text-gray-500 text-sm">Рассылки</p>
+                                    <p class="text-2xl font-bold">{{ stats.messages_count || 0 }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <h4 class="text-lg font-bold mb-4">Активность</h4>
+                                <div class="space-y-4">
+                                    <div v-for="log in stats.recent_logs" :key="log.timestamp" class="flex items-start space-x-3 text-sm">
+                                        <div class="w-2 h-2 mt-1.5 rounded-full bg-purple-500"></div>
+                                        <div>
+                                            <p class="font-medium">{{ log.action }}</p>
+                                            <p class="text-gray-400">{{ log.timestamp }} • {{ log.user }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <h4 class="text-lg font-bold mb-4">Конверсия</h4>
+                                <div class="flex items-center justify-center h-64 border-2 border-dashed border-gray-100 rounded-xl">
+                                    <p class="text-gray-400">График статистики</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clients -->
+                    <div v-if="currentTab === 'clients'" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h4 class="text-lg font-bold">Список клиентов</h4>
+                            <button @click="showClientModal = true; editingClient = null" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center">
+                                <i class="fas fa-plus mr-2"></i> Добавить клиента
+                            </button>
+                        </div>
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">Клиент</th>
+                                    <th class="px-6 py-4">Контакты</th>
+                                    <th class="px-6 py-4">Статус</th>
+                                    <th class="px-6 py-4">Дата</th>
+                                    <th class="px-6 py-4 text-right">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr v-for="client in clients" :key="client.id" class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+                                                {{ client.name[0] }}
+                                            </div>
+                                            <span class="font-bold">{{ client.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <p class="text-sm font-medium">{{ client.email }}</p>
+                                        <p class="text-xs text-gray-400">{{ client.phone }}</p>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span :class="['px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider', clientStatusClass(client.status)]">
+                                            {{ client.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">{{ client.created_at }}</td>
+                                    <td class="px-6 py-4 text-right space-x-2">
+                                        <button @click="editClient(client)" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button>
+                                        <button @click="deleteClient(client.id)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Leads / Kanban -->
+                    <div v-if="currentTab === 'sales'">
+                        <div class="flex space-x-4 overflow-x-auto pb-4">
+                            <div v-for="stage in salesStages" :key="stage.id" class="w-80 flex-shrink-0">
+                                <div class="bg-gray-200 p-3 rounded-t-xl flex justify-between items-center mb-4">
+                                    <span class="font-bold uppercase text-xs text-gray-600">{{ stage.name }}</span>
+                                    <span class="bg-white text-gray-600 px-2 py-0.5 rounded text-xs font-bold">{{ leadsByStage(stage.id).length }}</span>
+                                </div>
+                                <div class="space-y-4">
+                                    <div v-for="lead in leadsByStage(stage.id)" :key="lead.id" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-grab">
+                                        <p class="font-bold text-sm mb-2">{{ lead.title }}</p>
+                                        <div class="flex justify-between items-center mt-4">
+                                            <span class="text-purple-600 font-bold text-xs">{{ lead.value }} $</span>
+                                            <span class="text-gray-400 text-[10px]">{{ lead.created_at }}</span>
+                                        </div>
+                                    </div>
+                                    <button @click="openLeadModal(stage.id)" class="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:border-purple-300 hover:text-purple-500 transition-all text-sm font-medium">
+                                        + Добавить лид
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marketing / Mailing -->
+                    <div v-if="currentTab === 'marketing'" class="max-w-4xl">
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <h4 class="text-xl font-bold mb-6">Создать рассылку</h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Тема сообщения</label>
+                                    <input v-model="mailing.subject" type="text" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Текст сообщения</label>
+                                    <textarea v-model="mailing.body" rows="6" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Получатели</label>
+                                    <div class="flex flex-wrap gap-2 p-3 border border-gray-200 rounded-lg min-h-[44px]">
+                                        <span v-for="email in mailing.recipients" :key="email" class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-bold flex items-center">
+                                            {{ email }} <i @click="removeRecipient(email)" class="fas fa-times ml-2 cursor-pointer"></i>
+                                        </span>
+                                        <input type="text" @keydown.enter="addRecipient" placeholder="Email + Enter..." class="flex-1 outline-none text-sm min-w-[120px]">
+                                    </div>
+                                </div>
+                                <button @click="sendMailing" :disabled="loading" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition-colors shadow-lg">
+                                    <i v-if="loading" class="fas fa-spinner fa-spin mr-2"></i>
+                                    Запустить рассылку
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tasks -->
+                    <div v-if="currentTab === 'tasks'" class="space-y-4 max-w-3xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-lg font-bold">Мои задачи</h4>
+                            <div class="flex space-x-2">
+                                <button v-for="p in ['High', 'Medium', 'Low']" @click="taskFilter = p" :class="['px-3 py-1 rounded-lg text-xs font-bold transition-colors', taskFilter === p ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-600']">{{ p }}</button>
+                                <button @click="taskFilter = ''" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-100">Все</button>
+                            </div>
+                        </div>
+                        <div v-for="task in filteredTasks" :key="task.id" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between group">
+                            <div class="flex items-center space-x-4">
+                                <button @click="toggleTask(task)" :class="['w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors', task.status === 'completed' ? 'bg-green-500 border-green-500 text-white' : 'border-gray-200 hover:border-purple-500']">
+                                    <i v-if="task.status === 'completed'" class="fas fa-check text-xs"></i>
+                                </button>
+                                <div>
+                                    <p :class="['font-medium', task.status === 'completed' ? 'line-through text-gray-400' : '']">{{ task.title }}</p>
+                                    <div class="flex items-center space-x-3 text-xs mt-1">
+                                        <span :class="['font-bold', task.priority === 'High' ? 'text-red-500' : task.priority === 'Medium' ? 'text-orange-500' : 'text-blue-500']">{{ task.priority }}</span>
+                                        <span class="text-gray-400"><i class="far fa-calendar-alt mr-1"></i> {{ task.due_date }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button @click="deleteTask(task.id)" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <button @click="showTaskModal = true" class="w-full py-4 bg-white border-2 border-dashed border-gray-200 rounded-xl text-gray-400 font-bold hover:bg-gray-50 transition-all">
+                            + Добавить задачу
+                        </button>
+                    </div>
+
+                    <!-- Documents -->
+                    <div v-if="currentTab === 'docs'" class="space-y-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h4 class="text-lg font-bold">Библиотека документов</h4>
+                                <label class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors">
+                                    <i class="fas fa-upload mr-2"></i> Загрузить файл
+                                    <input type="file" @change="uploadFile" class="hidden">
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div v-for="doc in docs" :key="doc.id" class="p-4 border border-gray-100 rounded-xl hover:shadow-md transition-shadow relative group">
+                                    <div class="text-3xl text-purple-600 mb-3"><i :class="getFileIcon(doc.name)"></i></div>
+                                    <p class="font-bold text-sm truncate pr-6">{{ doc.name }}</p>
+                                    <p class="text-[10px] text-gray-400 uppercase mt-1">{{ doc.date }}</p>
+                                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col space-y-2">
+                                        <button @click="downloadDoc(doc.id)" class="text-blue-400 hover:text-blue-600"><i class="fas fa-download"></i></button>
+                                        <button @click="deleteDoc(doc.id)" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modals -->
+        <!-- Client Modal -->
+        <div v-if="showClientModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl">
+                <h4 class="text-2xl font-black mb-6 text-gray-800">{{ editingClient ? 'Редактировать клиента' : 'Новый клиент' }}</h4>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Имя / Организация</label>
+                        <input v-model="clientForm.name" type="text" placeholder="Введите имя..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Email</label>
+                            <input v-model="clientForm.email" type="email" placeholder="example@mail.com" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Телефон</label>
+                            <input v-model="clientForm.phone" type="text" placeholder="+375..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Статус клиента</label>
+                        <select v-model="clientForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none appearance-none">
+                            <option value="lead">Лид</option>
+                            <option value="active">Активен</option>
+                            <option value="lost">Потерян</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-8 flex space-x-4">
+                    <button @click="saveClient" :disabled="loading" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95">
+                        <i v-if="loading" class="fas fa-spinner fa-spin mr-2"></i> Сохранить
+                    </button>
+                    <button @click="showClientModal = false" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 py-4 rounded-2xl font-bold transition-all">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lead Modal -->
+        <div v-if="showLeadModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl">
+                <h4 class="text-2xl font-black mb-6 text-gray-800">Новый лид</h4>
+                <div class="space-y-5">
+                    <input v-model="leadForm.title" type="text" placeholder="Название сделки" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    <input v-model="leadForm.value" type="number" placeholder="Сумма ($)" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    <select v-model="leadForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        <option v-for="stage in salesStages" :key="stage.id" :value="stage.id">{{ stage.name }}</option>
+                    </select>
+                </div>
+                <div class="mt-8 flex space-x-4">
+                    <button @click="saveLead" class="flex-1 bg-purple-600 text-white py-4 rounded-2xl font-bold">Создать</button>
+                    <button @click="showLeadModal = false" class="flex-1 bg-gray-100 py-4 rounded-2xl font-bold">Отмена</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Modal -->
+        <div v-if="showTaskModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl">
+                <h4 class="text-2xl font-black mb-6 text-gray-800">Новая задача</h4>
+                <div class="space-y-5">
+                    <input v-model="taskForm.title" type="text" placeholder="Что нужно сделать?" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    <div class="grid grid-cols-2 gap-4">
+                        <select v-model="taskForm.priority" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                            <option value="High">Высокий</option>
+                            <option value="Medium">Средний</option>
+                            <option value="Low">Низкий</option>
+                        </select>
+                        <input v-model="taskForm.due_date" type="date" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    </div>
+                </div>
+                <div class="mt-8 flex space-x-4">
+                    <button @click="saveTask" class="flex-1 bg-purple-600 text-white py-4 rounded-2xl font-bold">Добавить</button>
+                    <button @click="showTaskModal = false" class="flex-1 bg-gray-100 py-4 rounded-2xl font-bold">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
