@@ -335,6 +335,63 @@
                         </button>
                     </div>
 
+                    <!-- Maintenance / Service -->
+                    <div v-if="currentTab === 'service'" class="space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div class="flex items-center space-x-3 mb-6">
+                                    <div class="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center"><i class="fas fa-terminal"></i></div>
+                                    <h4 class="font-bold">Логи системы</h4>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-6">Удаление всей истории активности для оптимизации хранилища.</p>
+                                <button @click="runServiceAction('clear_logs')" class="w-full py-3 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-600 hover:text-white transition-all">Очистить логи</button>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div class="flex items-center space-x-3 mb-6">
+                                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center"><i class="fas fa-broom"></i></div>
+                                    <h4 class="font-bold">Очистка файлов</h4>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-6">Удаление загруженных файлов, которые не привязаны к документам.</p>
+                                <button @click="runServiceAction('cleanup_uploads')" class="w-full py-3 bg-blue-50 text-blue-600 font-bold rounded-xl hover:bg-blue-600 hover:text-white transition-all">Начать очистку</button>
+                            </div>
+                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                                <div class="flex items-center space-x-3 mb-6">
+                                    <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center"><i class="fas fa-comment-slash"></i></div>
+                                    <h4 class="font-bold">Сброс чата</h4>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-6">Полное удаление всех сообщений из всех диалогов.</p>
+                                <button @click="runServiceAction('clear_chat')" class="w-full py-3 bg-purple-50 text-purple-600 font-bold rounded-xl hover:bg-purple-600 hover:text-white transition-all">Очистить чат</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <div class="flex justify-between items-center mb-6">
+                                <h4 class="text-xl font-bold">Проверка состояния базы (JSON)</h4>
+                                <button @click="runServiceCheck" class="text-purple-600 text-sm font-bold hover:underline"><i class="fas fa-sync-alt mr-2"></i> Обновить</button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div v-for="res in serviceResults" :key="res.entity" class="p-4 border border-gray-100 rounded-xl">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="font-bold text-sm uppercase text-gray-400 tracking-widest">{{ res.entity }}</span>
+                                        <i v-if="res.writable" class="fas fa-check-circle text-green-500"></i>
+                                        <i v-else class="fas fa-exclamation-triangle text-red-500"></i>
+                                    </div>
+                                    <p class="text-xl font-black text-gray-800">{{ res.size }}</p>
+                                    <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold">
+                                        {{ res.exists ? 'Файл найден' : 'Отсутствует' }} • {{ res.writable ? 'Доступен для записи' : 'Только чтение' }}
+                                    </p>
+                                </div>
+                            </div>
+                        <div class="mt-6 flex justify-end">
+                            <button @click="createBackup" :disabled="loading" class="bg-purple-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-purple-700 transition-all flex items-center">
+                                <i v-if="loading" class="fas fa-spinner fa-spin mr-2"></i>
+                                <i v-else class="fas fa-archive mr-2"></i>
+                                Создать полную резервную копию (ZIP)
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+
                     <!-- Team -->
                     <div v-if="currentTab === 'team'" class="space-y-6">
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

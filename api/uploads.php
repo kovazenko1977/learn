@@ -84,4 +84,25 @@ if ($action === 'upload') {
     }
     http_response_code(404);
     echo "File not found";
+} elseif ($action === 'download_backup') {
+    Auth::requireAdmin();
+    $file = $_GET['file'] ?? '';
+    if (empty($file) || !preg_match('/^backup_.*\.zip$/', $file)) {
+        http_response_code(400);
+        exit("Invalid backup file");
+    }
+
+    $filePath = __DIR__ . '/../data/uploads/' . $file;
+    if (file_exists($filePath)) {
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Length: ' . filesize($filePath));
+        readfile($filePath);
+        // Optional: delete after download
+        // unlink($filePath);
+        exit;
+    }
+    http_response_code(404);
+    echo "Backup not found";
 }

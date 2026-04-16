@@ -7,6 +7,9 @@ createApp({
         const loading = ref(false);
         const error = ref('');
         const currentTab = ref('dashboard');
+        Vue.watch(currentTab, (newTab) => {
+            if (newTab === 'service') runServiceCheck();
+        });
         const pinParts = reactive(['', '', '', '', '', '']);
 
         const stats = ref({ total_clients: 0, total_leads: 0, pending_tasks: 0, recent_logs: [] });
@@ -37,7 +40,14 @@ createApp({
         const activeChat = ref('all');
         const messages = ref([]);
         const newMessage = ref('');
-        const unreadCount = ref(0);
+        const unreadCount = computed(() => {
+            if (currentTab.value === 'chat') return 0;
+            // Simplified unread logic: any message not read by current user in recent fetch
+            // In a real app we'd track per-dialog, here we just check if any relevant msg is unread
+            return messages.value.filter(m =>
+                m.recipient === user.value?.id && (!m.read_by || !m.read_by.includes(user.value?.id))
+            ).length;
+        });
         const chatSearchQuery = ref('');
         const replyingTo = ref(null);
 
@@ -49,7 +59,8 @@ createApp({
             { id: 'tasks', name: 'Задачи', icon: 'fas fa-check-circle' },
             { id: 'docs', name: 'Документы', icon: 'fas fa-file-alt' },
             { id: 'chat', name: 'Чат', icon: 'fas fa-comments' },
-            { id: 'team', name: 'Команда', icon: 'fas fa-users-cog', adminOnly: true }
+            { id: 'team', name: 'Команда', icon: 'fas fa-users-cog', adminOnly: true },
+            { id: 'service', name: 'Сервис', icon: 'fas fa-tools', adminOnly: true }
         ];
 
         const salesStages = [
@@ -176,6 +187,41 @@ createApp({
                 if (data.success) { authenticated.value = true; user.value = data.user; fetchData(); }
                 else error.value = data.error;
             } catch (e) { error.value = 'Server error'; }
+            finally { loading.value = false; }
+        };
+
+        const serviceResults = ref([]);
+        const runServiceCheck = async () => {
+            const res = await fetch('api/service.php?action=system_check');
+            const data = await res.json();
+            serviceResults.value = data.results;
+        };
+
+        const createBackup = async () => {
+            loading.value = true;
+            try {
+                const res = await fetch('api/backup.php?action=create');
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = data.download_url;
+                } else {
+                    alert('Ошибка при создании бэкапа');
+                }
+            } catch (e) { alert('Ошибка сети'); }
+            finally { loading.value = false; }
+        };
+
+        const runServiceAction = async (action) => {
+            if (!confirm('Вы уверены? Это действие необратимо.')) return;
+            loading.value = true;
+            try {
+                const res = await fetch(`api/service.php?action=${action}`);
+                const data = await res.json();
+                alert(data.message || 'Действие выполнено');
+                if (action === 'system_check') runServiceCheck();
+                else fetchData();
+                runServiceCheck();
+            } catch (e) { alert('Ошибка сервиса'); }
             finally { loading.value = false; }
         };
 
@@ -352,12 +398,13 @@ createApp({
             authenticated, user, loading, error, currentTab, pinParts, stats, clients, leads, tasks, docs, users, searchQuery,
             showTimelineModal, selectedClient, interactions, newInteraction,
             showClientModal, editingClient, clientForm, showLeadModal, leadForm, showTaskModal, taskForm, taskFilter,
-            showUserModal, userForm, activeChat, messages, newMessage, unreadCount, chatSearchQuery, replyingTo,
-            editingLead, forecastRevenue,
+            showUserModal, userForm, activeChat, messages, newMessage, chatSearchQuery, replyingTo,
+            editingLead, forecastRevenue, serviceResults,
             mailing, menu, filteredMenu, salesStages, activeMenuName, filteredTasks, filteredClients, otherUsers, activeChatName,
             focusNext, focusPrev, login, logout, saveClient, editClient, deleteClient, openLeadModal, saveLead, editLead, convertLead,
             fetchUsers, openUserModal, saveUser, deleteUser, getStagePercentage, getLeadScore,
             fetchMessages, sendMessage, setReply, viewTimeline, fetchInteractions, addInteraction,
+            runServiceAction, runServiceCheck, createBackup,
             saveTask, toggleTask, deleteTask, addRecipient, removeRecipient, sendMailing, uploadFile, downloadDoc, deleteDoc, getFileIcon, clientStatusClass,
             leadsByStage: (s) => leads.value.filter(l => l.status === s)
         };

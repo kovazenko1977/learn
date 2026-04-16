@@ -94,5 +94,11 @@
         "user": "admin",
         "action": "Login successful: Администратор",
         "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-16 13:46:41",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
     }
 ]
