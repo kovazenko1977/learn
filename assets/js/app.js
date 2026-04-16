@@ -20,12 +20,49 @@ createApp({
             toast: null,
             recordingField: null,
             recognition: null,
-            deferredPrompt: null
+            deferredPrompt: null,
+            currentDate: new Date(),
+            selectedDate: null
         };
     },
     computed: {
         sortedEntries() {
-            return [...this.entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+            let filtered = this.entries;
+            if (this.selectedDate) {
+                const selDate = new Date(this.selectedDate).toDateString();
+                filtered = this.entries.filter(e => new Date(e.date).toDateString() === selDate);
+            }
+            return [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
+        },
+        calendarDays() {
+            const year = this.currentDate.getFullYear();
+            const month = this.currentDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const days = [];
+
+            // Previous month days
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            const startDay = firstDay === 0 ? 6 : firstDay - 1; // Adjust for Monday start
+            for (let i = startDay - 1; i >= 0; i--) {
+                days.push({ day: prevMonthDays - i, month: month - 1, year, current: false });
+            }
+
+            // Current month days
+            for (let i = 1; i <= daysInMonth; i++) {
+                days.push({ day: i, month, year, current: true });
+            }
+
+            // Next month days
+            const remaining = 42 - days.length;
+            for (let i = 1; i <= remaining; i++) {
+                days.push({ day: i, month: month + 1, year, current: false });
+            }
+
+            return days;
+        },
+        monthName() {
+            return this.currentDate.toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
         }
     },
     mounted() {
@@ -234,6 +271,37 @@ createApp({
                 day: '2-digit', month: '2-digit', year: 'numeric',
                 hour: '2-digit', minute: '2-digit'
             });
+        },
+        prevMonth() {
+            this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() - 1, 1);
+        },
+        nextMonth() {
+            this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
+        },
+        selectDate(dayObj) {
+            const date = new Date(dayObj.year, dayObj.month, dayObj.day);
+            if (this.selectedDate && new Date(this.selectedDate).toDateString() === date.toDateString()) {
+                this.selectedDate = null;
+            } else {
+                this.selectedDate = date;
+            }
+        },
+        isToday(dayObj) {
+            const today = new Date();
+            return today.getDate() === dayObj.day &&
+                   today.getMonth() === dayObj.month &&
+                   today.getFullYear() === dayObj.year;
+        },
+        isSelected(dayObj) {
+            if (!this.selectedDate) return false;
+            const sel = new Date(this.selectedDate);
+            return sel.getDate() === dayObj.day &&
+                   sel.getMonth() === dayObj.month &&
+                   sel.getFullYear() === dayObj.year;
+        },
+        getEntryCount(dayObj) {
+            const dStr = new Date(dayObj.year, dayObj.month, dayObj.day).toDateString();
+            return this.entries.filter(e => new Date(e.date).toDateString() === dStr).length;
         },
         showToast(message, type = 'success') {
             this.toast = { message, type };

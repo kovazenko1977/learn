@@ -7,6 +7,9 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#7360f2">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
@@ -40,6 +43,30 @@
             </header>
 
             <main>
+                <div class="calendar-widget">
+                    <div class="calendar-header">
+                        <button @click="prevMonth" class="icon-btn">‹</button>
+                        <h2>{{ monthName }}</h2>
+                        <button @click="nextMonth" class="icon-btn">›</button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div v-for="day in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="day" class="calendar-day-name">{{ day }}</div>
+                        <div v-for="dayObj in calendarDays" :key="dayObj.day + '-' + dayObj.month"
+                             class="calendar-day"
+                             :class="{ 'other-month': !dayObj.current, 'today': isToday(dayObj), 'selected': isSelected(dayObj) }"
+                             @click="selectDate(dayObj)">
+                            {{ dayObj.day }}
+                            <div v-if="getEntryCount(dayObj) > 0" class="entry-count-badge">{{ getEntryCount(dayObj) }}</div>
+                            <div v-if="getEntryCount(dayObj) > 0" class="entry-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <span>{{ selectedDate ? 'Записи на ' + selectedDate.toLocaleDateString('ru-RU') : 'Все записи' }}</span>
+                    <button v-if="selectedDate" @click="selectedDate = null" class="btn-cancel" style="padding: 4px 12px; font-size: 0.8rem;">Сбросить</button>
+                </div>
+
                 <div class="entries-list">
                     <div v-if="entries.length === 0" class="empty-state">
                         <p>У вас пока нет записей</p>
@@ -86,9 +113,9 @@
                         <label for="reminder">Напомнить</label>
                     </div>
                     <div class="modal-actions">
-                        <button v-if="editingId" @click="deleteEntry(editingId)" class="btn-delete">Удалить</button>
-                        <button @click="closeModal" class="btn-cancel">Отмена</button>
-                        <button @click="saveEntry" class="btn-save">Сохранить</button>
+                        <button v-if="editingId" @click="deleteEntry(editingId)" class="btn btn-danger">Удалить</button>
+                        <button @click="closeModal" class="btn btn-secondary">Отмена</button>
+                        <button @click="saveEntry" class="btn btn-primary">Сохранить</button>
                     </div>
                 </div>
             </div>
@@ -102,8 +129,8 @@
                         <input v-model="newPin" type="password" maxlength="6" pattern="\d*">
                     </div>
                     <div class="modal-actions">
-                        <button @click="showSettings = false" class="btn-cancel">Отмена</button>
-                        <button @click="changePin" class="btn-save">Изменить</button>
+                        <button @click="showSettings = false" class="btn btn-secondary">Отмена</button>
+                        <button @click="changePin" class="btn btn-primary">Изменить</button>
                     </div>
                 </div>
             </div>
