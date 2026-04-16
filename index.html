@@ -106,8 +106,8 @@
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center space-x-4">
                                 <div class="p-4 bg-purple-100 text-purple-600 rounded-xl"><i class="fas fa-paper-plane text-2xl"></i></div>
                                 <div>
-                                    <p class="text-gray-500 text-sm">Рассылки</p>
-                                    <p class="text-2xl font-bold">{{ stats.messages_count || 0 }}</p>
+                                    <p class="text-gray-500 text-sm">Прогноз ($)</p>
+                                    <p class="text-2xl font-bold">{{ forecastRevenue }}</p>
                                 </div>
                             </div>
                         </div>
@@ -247,11 +247,23 @@
                                     <span class="bg-white text-gray-600 px-2 py-0.5 rounded text-xs font-bold">{{ leadsByStage(stage.id).length }}</span>
                                 </div>
                                 <div class="space-y-4">
-                                    <div v-for="lead in leadsByStage(stage.id)" :key="lead.id" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-grab">
-                                        <p class="font-bold text-sm mb-2">{{ lead.title }}</p>
+                                    <div v-for="lead in leadsByStage(stage.id)" :key="lead.id" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <p class="font-bold text-sm">{{ lead.title }}</p>
+                                            <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button @click="editLead(lead)" class="text-blue-400 hover:text-blue-600 text-[10px]"><i class="fas fa-edit"></i></button>
+                                                <button @click="convertLead(lead.id)" class="text-green-400 hover:text-green-600 text-[10px]"><i class="fas fa-check-circle"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2 mb-3">
+                                            <div class="flex-1 bg-gray-100 h-1 rounded-full overflow-hidden">
+                                                <div class="bg-purple-500 h-full" :style="{ width: (lead.probability || 50) + '%' }"></div>
+                                            </div>
+                                            <span class="text-[8px] font-bold text-gray-400">{{ lead.probability || 50 }}%</span>
+                                        </div>
                                         <div class="flex justify-between items-center mt-4">
                                             <span class="text-purple-600 font-bold text-xs">{{ lead.value }} $</span>
-                                            <span class="text-gray-400 text-[10px]">{{ lead.created_at }}</span>
+                                            <span class="text-gray-400 text-[10px]"><i class="far fa-clock mr-1"></i> {{ lead.expected_closing || 'N/A' }}</span>
                                         </div>
                                     </div>
                                     <button @click="openLeadModal(stage.id)" class="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-gray-400 hover:border-purple-300 hover:text-purple-500 transition-all text-sm font-medium">
@@ -387,20 +399,48 @@
                         <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
                             <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                                 <h4 class="font-bold text-gray-700">{{ activeChatName }}</h4>
-                                <span class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Онлайн</span>
+                                <div class="relative">
+                                    <input v-model="chatSearchQuery" @input="fetchMessages" type="text" placeholder="Поиск в чате..." class="pl-8 pr-4 py-1.5 bg-white border border-gray-200 rounded-full text-[10px] focus:outline-none focus:ring-1 focus:ring-purple-400 w-48">
+                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
+                                </div>
                             </div>
-                            <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-50">
-                                <div v-for="m in messages" :key="m.id" :class="['flex', m.sender_id === user.id ? 'justify-end' : 'justify-start']">
-                                    <div :class="['max-w-[70%] p-3 rounded-2xl shadow-sm text-sm', m.sender_id === user.id ? 'bg-purple-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100']">
-                                        <p v-if="activeChat === 'all' && m.sender_id !== user.id" class="text-[9px] font-black uppercase mb-1 opacity-70">{{ m.sender_name }}</p>
-                                        <p>{{ m.text }}</p>
-                                        <p :class="['text-[8px] mt-1 text-right', m.sender_id === user.id ? 'text-purple-200' : 'text-gray-400']">{{ m.timestamp }}</p>
+                            <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-6 bg-[#f0f0f7]">
+                                <div v-for="m in messages" :key="m.id" :class="['flex flex-col', m.sender_id === user.id ? 'items-end' : 'items-start']">
+                                    <div @dblclick="setReply(m)" :class="['max-w-[75%] p-3 rounded-2xl shadow-sm text-sm relative group cursor-pointer transition-transform active:scale-95', m.sender_id === user.id ? 'bg-[#7360f2] text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none']">
+                                        <div v-if="m.reply_to" class="bg-black/10 p-2 rounded-lg mb-2 text-[10px] border-l-4 border-purple-300">
+                                            <p class="opacity-60 italic">{{ m.reply_text }}</p>
+                                        </div>
+                                        <p v-if="activeChat === 'all' && m.sender_id !== user.id" class="text-[9px] font-black uppercase mb-1 text-purple-400">{{ m.sender_name }}</p>
+                                        <p class="leading-relaxed">{{ m.text }}</p>
+                                        <div class="flex items-center justify-end space-x-1 mt-1">
+                                            <span :class="['text-[8px]', m.sender_id === user.id ? 'text-purple-200' : 'text-gray-400']">{{ m.timestamp.split(' ')[1].substring(0,5) }}</span>
+                                            <i v-if="m.sender_id === user.id" :class="['fas text-[8px]', m.read_by && m.read_by.length > 0 ? 'fa-check-double text-purple-200' : 'fa-check opacity-50']"></i>
+                                        </div>
+
+                                        <button @click="setReply(m)" class="absolute -left-10 top-1/2 -translate-y-1/2 text-gray-300 hover:text-purple-500 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                                            <i class="fas fa-reply"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="p-4 border-t border-gray-100 flex space-x-4 bg-white">
-                                <input v-model="newMessage" @keydown.enter="sendMessage" type="text" placeholder="Напишите сообщение..." class="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
-                                <button @click="sendMessage" class="bg-purple-600 text-white w-12 h-12 rounded-xl flex items-center justify-center hover:bg-purple-700 transition-colors shadow-lg">
+
+                            <div v-if="replyingTo" class="px-6 py-2 bg-purple-50 border-t border-purple-100 flex justify-between items-center">
+                                <div class="flex items-center space-x-3 overflow-hidden">
+                                    <i class="fas fa-reply text-purple-400 text-xs"></i>
+                                    <div class="text-[10px] truncate">
+                                        <p class="font-bold text-purple-600">{{ replyingTo.sender_name }}</p>
+                                        <p class="text-gray-500 truncate">{{ replyingTo.text }}</p>
+                                    </div>
+                                </div>
+                                <i @click="replyingTo = null" class="fas fa-times text-gray-400 cursor-pointer hover:text-red-500"></i>
+                            </div>
+
+                            <div class="p-4 border-t border-gray-100 flex items-end space-x-3 bg-white">
+                                <div class="flex-1 bg-gray-100 rounded-2xl px-4 py-2 flex items-center">
+                                    <textarea id="chat-input-field" v-model="newMessage" @keydown.enter.exact.prevent="sendMessage" rows="1" placeholder="Напишите сообщение..." class="flex-1 bg-transparent border-none text-sm focus:ring-0 outline-none resize-none py-1"></textarea>
+                                    <button class="text-gray-400 hover:text-purple-500 ml-2"><i class="far fa-smile"></i></button>
+                                </div>
+                                <button @click="sendMessage" class="bg-[#7360f2] text-white w-12 h-12 rounded-full flex items-center justify-center hover:bg-purple-700 transition-all shadow-lg active:scale-90">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
                             </div>
@@ -469,13 +509,27 @@
                             <input v-model="clientForm.tags" type="text" placeholder="VIP, Новый, Срочно" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">День рождения</label>
+                            <input v-model="clientForm.birthday" type="date" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Статус</label>
+                            <select v-model="clientForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                                <option value="lead">Лид</option>
+                                <option value="active">Активен</option>
+                                <option value="lost">Потерян</option>
+                            </select>
+                        </div>
+                    </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Статус клиента</label>
-                        <select v-model="clientForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none appearance-none">
-                            <option value="lead">Лид</option>
-                            <option value="active">Активен</option>
-                            <option value="lost">Потерян</option>
-                        </select>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Адрес</label>
+                        <input v-model="clientForm.address" type="text" placeholder="Улица, дом, кв..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Соцсети / Сайт</label>
+                        <input v-model="clientForm.social_links" type="text" placeholder="https://..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
                     </div>
                 </div>
                 <div class="mt-8 flex space-x-4">
@@ -490,16 +544,47 @@
         <!-- Lead Modal -->
         <div v-if="showLeadModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl">
-                <h4 class="text-2xl font-black mb-6 text-gray-800">Новый лид</h4>
+                <h4 class="text-2xl font-black mb-6 text-gray-800">{{ editingLead ? 'Редактировать лид' : 'Новый лид' }}</h4>
                 <div class="space-y-5">
-                    <input v-model="leadForm.title" type="text" placeholder="Название сделки" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
-                    <input v-model="leadForm.value" type="number" placeholder="Сумма ($)" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
-                    <select v-model="leadForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
-                        <option v-for="stage in salesStages" :key="stage.id" :value="stage.id">{{ stage.name }}</option>
-                    </select>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Название сделки</label>
+                        <input v-model="leadForm.title" type="text" placeholder="Разработка сайта..." class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Сумма ($)</label>
+                            <input v-model="leadForm.value" type="number" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Вероятность (%)</label>
+                            <input v-model="leadForm.probability" type="range" min="0" max="100" class="w-full accent-purple-600 mt-4">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Ожидаемая дата закрытия</label>
+                            <input v-model="leadForm.expected_closing" type="date" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Этап</label>
+                            <select v-model="leadForm.status" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                                <option v-for="stage in salesStages" :key="stage.id" :value="stage.id">{{ stage.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Email контакта</label>
+                            <input v-model="leadForm.email" type="email" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Телефон контакта</label>
+                            <input v-model="leadForm.phone" type="text" class="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-purple-500 outline-none">
+                        </div>
+                    </div>
                 </div>
                 <div class="mt-8 flex space-x-4">
-                    <button @click="saveLead" class="flex-1 bg-purple-600 text-white py-4 rounded-2xl font-bold">Создать</button>
+                    <button @click="saveLead" class="flex-1 bg-purple-600 text-white py-4 rounded-2xl font-bold shadow-lg">Сохранить</button>
                     <button @click="showLeadModal = false" class="flex-1 bg-gray-100 py-4 rounded-2xl font-bold">Отмена</button>
                 </div>
             </div>

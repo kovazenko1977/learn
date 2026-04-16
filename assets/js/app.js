@@ -23,13 +23,13 @@ createApp({
 
         const showClientModal = ref(false);
         const editingClient = ref(null);
-        const clientForm = reactive({ name: '', email: '', phone: '', status: 'lead', source: 'direct', tags: '' });
+        const clientForm = reactive({ name: '', email: '', phone: '', status: 'lead', source: 'direct', tags: '', address: '', birthday: '', social_links: '' });
 
         const showLeadModal = ref(false);
-        const leadForm = reactive({ title: '', value: 0, status: 'new', source: 'direct', tags: '' });
+        const leadForm = reactive({ title: '', value: 0, status: 'new', source: 'direct', tags: '', expected_closing: '', probability: 50, email: '', phone: '' });
 
         const showTaskModal = ref(false);
-        const taskForm = reactive({ title: '', priority: 'Medium', due_date: '', status: 'pending', assigned_to: '' });
+        const taskForm = reactive({ title: '', priority: 'Medium', due_date: '', status: 'pending', assigned_to: '', client_id: '' });
         const taskFilter = ref('');
 
         const mailing = reactive({ subject: '', body: '', recipients: [] });
@@ -38,6 +38,8 @@ createApp({
         const messages = ref([]);
         const newMessage = ref('');
         const unreadCount = ref(0);
+        const chatSearchQuery = ref('');
+        const replyingTo = ref(null);
 
         const menu = [
             { id: 'dashboard', name: 'Обзор', icon: 'fas fa-chart-pie' },
@@ -86,7 +88,7 @@ createApp({
         const showUserModal = ref(false);
         const userForm = reactive({ id: 'new', name: '', role: 'manager', pin: '' });
 
-        const fetchUsers = async () => { if (user.value?.role === 'admin') users.value = await (await fetch('api/users.php')).json(); };
+        const fetchUsers = async () => { users.value = await (await fetch('api/users.php')).json(); };
         const openUserModal = (u = null) => {
             if (u) { userForm.id = u.id; userForm.name = u.name; userForm.role = u.role; userForm.pin = ''; }
             else { userForm.id = 'new'; userForm.name = ''; userForm.role = 'manager'; userForm.pin = ''; }
@@ -207,8 +209,18 @@ createApp({
 
         const openLeadModal = (stage) => { leadForm.status = stage; showLeadModal.value = true; };
         const saveLead = async () => {
-            await fetch('api/leads.php', { method: 'POST', body: JSON.stringify(leadForm) });
+            const p = { ...leadForm }; if (editingLead.value) p.id = editingLead.value.id;
+            await fetch('api/leads.php', { method: 'POST', body: JSON.stringify(p) });
             showLeadModal.value = false; fetchData();
+        };
+
+        const editingLead = ref(null);
+        const editLead = (l) => { editingLead.value = l; Object.assign(leadForm, l); showLeadModal.value = true; };
+        const convertLead = async (id) => {
+            if (confirm('Конвертировать лид в клиента?')) {
+                await fetch('api/leads.php?action=convert', { method: 'POST', body: JSON.stringify({ id }) });
+                fetchData();
+            }
         };
 
         const saveTask = async () => {
@@ -271,21 +283,35 @@ createApp({
         // Chat Logic
         const fetchMessages = async () => {
             if (!authenticated.value) return;
-            const res = await fetch(`api/chat.php?recipient=${activeChat.value}`);
+            const url = `api/chat.php?recipient=${activeChat.value}${chatSearchQuery.value ? '&search='+encodeURIComponent(chatSearchQuery.value) : ''}`;
+            const res = await fetch(url);
             messages.value = await res.json();
-            // Scroll to bottom
-            setTimeout(() => {
-                const box = document.getElementById('chat-box');
-                if (box) box.scrollTop = box.scrollHeight;
-            }, 100);
+
+            if (!chatSearchQuery.value) {
+                setTimeout(() => {
+                    const box = document.getElementById('chat-box');
+                    if (box) box.scrollTop = box.scrollHeight;
+                }, 100);
+            }
         };
 
         const sendMessage = async () => {
             if (!newMessage.value.trim()) return;
-            const payload = { recipient: activeChat.value, text: newMessage.value };
+            const payload = {
+                recipient: activeChat.value,
+                text: newMessage.value,
+                reply_to: replyingTo.value ? replyingTo.value.id : null,
+                reply_text: replyingTo.value ? replyingTo.value.text : null
+            };
             await fetch('api/chat.php', { method: 'POST', body: JSON.stringify(payload) });
             newMessage.value = '';
+            replyingTo.value = null;
             fetchMessages();
+        };
+
+        const setReply = (msg) => {
+            replyingTo.value = msg;
+            document.getElementById('chat-input-field').focus();
         };
 
         // Polling
@@ -318,15 +344,20 @@ createApp({
             setTimeout(initChart, 500);
         });
 
+        const forecastRevenue = computed(() => {
+            return leads.value.reduce((acc, l) => acc + (Number(l.value) * (Number(l.probability) || 50) / 100), 0).toFixed(0);
+        });
+
         return {
             authenticated, user, loading, error, currentTab, pinParts, stats, clients, leads, tasks, docs, users, searchQuery,
             showTimelineModal, selectedClient, interactions, newInteraction,
             showClientModal, editingClient, clientForm, showLeadModal, leadForm, showTaskModal, taskForm, taskFilter,
-            showUserModal, userForm, activeChat, messages, newMessage, unreadCount,
+            showUserModal, userForm, activeChat, messages, newMessage, unreadCount, chatSearchQuery, replyingTo,
+            editingLead, forecastRevenue,
             mailing, menu, filteredMenu, salesStages, activeMenuName, filteredTasks, filteredClients, otherUsers, activeChatName,
-            focusNext, focusPrev, login, logout, saveClient, editClient, deleteClient, openLeadModal, saveLead,
+            focusNext, focusPrev, login, logout, saveClient, editClient, deleteClient, openLeadModal, saveLead, editLead, convertLead,
             fetchUsers, openUserModal, saveUser, deleteUser, getStagePercentage, getLeadScore,
-            fetchMessages, sendMessage, viewTimeline, fetchInteractions, addInteraction,
+            fetchMessages, sendMessage, setReply, viewTimeline, fetchInteractions, addInteraction,
             saveTask, toggleTask, deleteTask, addRecipient, removeRecipient, sendMailing, uploadFile, downloadDoc, deleteDoc, getFileIcon, clientStatusClass,
             leadsByStage: (s) => leads.value.filter(l => l.status === s)
         };

@@ -10,34 +10,79 @@ $currentUser = Auth::getUser();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    echo json_encode(Storage::read('leads'));
-} elseif ($method === 'POST') {
-    $data = Security::sanitize(json_decode(file_get_contents('php://input'), true));
     $leads = Storage::read('leads');
+    echo json_encode($leads);
+} elseif ($method === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $data = Security::sanitize($data);
+    $leads = Storage::read('leads');
+    $action = $_GET['action'] ?? '';
+
+    if ($action === 'convert') {
+        $id = $data['id'] ?? '';
+        $foundLead = null;
+        $leads = array_filter($leads, function($l) use ($id, &$foundLead) {
+            if ($l['id'] === $id) {
+                $foundLead = $l;
+                return false;
+            }
+            return true;
+        });
+
+        if ($foundLead) {
+            $clients = Storage::read('clients');
+            $newClient = [
+                'id' => uniqid(),
+                'name' => $foundLead['title'],
+                'email' => $foundLead['email'] ?? '',
+                'phone' => $foundLead['phone'] ?? '',
+                'status' => 'active',
+                'source' => $foundLead['source'] ?? 'lead_conversion',
+                'tags' => $foundLead['tags'] ?? '',
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            $clients[] = $newClient;
+            Storage::save('clients', $clients);
+            Storage::log("Converted lead to client: " . $foundLead['title'], $currentUser['id']);
+            Storage::addPoints($currentUser['id'], 50);
+            Storage::save('leads', array_values($leads));
+            echo json_encode(['success' => true, 'client_id' => $newClient['id']]);
+            exit;
+        }
+    }
 
     if (isset($data['id'])) {
         foreach ($leads as &$lead) {
             if ($lead['id'] === $data['id']) {
-                $oldStatus = $lead['status'] ?? 'new';
+                $oldStatus = $lead['status'];
                 $lead = array_merge($lead, $data);
-                if ($oldStatus !== 'closed' && $data['status'] === 'closed') {
-                    Storage::addPoints($currentUser['id'], 50);
-                    Storage::log("Closed deal: " . ($lead['title'] ?? $lead['id']), $currentUser['id']);
+                if ($oldStatus !== $lead['status']) {
+                    $lead['status_updated_at'] = date('Y-m-d H:i:s');
+                    if ($lead['status'] === 'closed') {
+                        Storage::addPoints($currentUser['id'], 20);
+                        Storage::log("Closed deal: " . $lead['title'], $currentUser['id']);
+                    }
                 }
                 break;
             }
         }
     } else {
-        $data['id'] = uniqid();
+        $data['id'] = uniqid('lead_');
         $data['created_at'] = date('Y-m-d H:i:s');
+        $data['status_updated_at'] = date('Y-m-d H:i:s');
         $leads[] = $data;
+        Storage::log("Created lead: " . $data['title'], $currentUser['id']);
+        Storage::addPoints($currentUser['id'], 10);
     }
 
     Storage::save('leads', $leads);
     echo json_encode(['success' => true]);
 } elseif ($method === 'DELETE') {
     $id = $_GET['id'] ?? '';
-    $leads = array_filter(Storage::read('leads'), function($l) use ($id) { return $l['id'] !== $id; });
+    $leads = Storage::read('leads');
+    $leads = array_filter($leads, function($l) use ($id) {
+        return $l['id'] !== $id;
+    });
     Storage::save('leads', array_values($leads));
     echo json_encode(['success' => true]);
 }

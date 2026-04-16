@@ -33,6 +33,7 @@ if ($action === 'upload') {
             'name' => $file['name'],
             'filename' => $filename,
             'client_id' => $_POST['client_id'] ?? null,
+            'category' => $_POST['category'] ?? 'General',
             'date' => date('Y-m-d H:i:s')
         ];
         $docs[] = $docEntry;

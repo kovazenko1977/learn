@@ -11,11 +11,10 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
     $tasks = Storage::read('tasks');
-    // For admins: all tasks, for managers: assigned to them or created by them
+    // Manager only sees their own or unassigned
     if ($currentUser['role'] !== 'admin') {
         $tasks = array_filter($tasks, function($t) use ($currentUser) {
-            return ($t['assigned_to'] ?? '') === $currentUser['id'] ||
-                   ($t['assigned_by'] ?? '') === $currentUser['id'];
+            return $t['assigned_to'] === $currentUser['id'] || $t['assigned_by'] === $currentUser['id'];
         });
     }
     echo json_encode(array_values($tasks));
@@ -26,30 +25,30 @@ if ($method === 'GET') {
     if (isset($data['id'])) {
         foreach ($tasks as &$task) {
             if ($task['id'] === $data['id']) {
-                $oldStatus = $task['status'] ?? 'pending';
+                $oldStatus = $task['status'];
                 $task = array_merge($task, $data);
-                $task['updated_at'] = date('Y-m-d H:i:s');
-                if ($oldStatus !== 'completed' && $data['status'] === 'completed') {
-                    Storage::addPoints($currentUser['id'], 10);
-                    Storage::log("Completed task: " . ($task['title'] ?? $task['id']), $currentUser['id']);
+                if ($oldStatus !== 'completed' && $task['status'] === 'completed') {
+                    Storage::addPoints($currentUser['id'], 15);
+                    Storage::log("Completed task: " . $task['title'], $currentUser['id']);
                 }
                 break;
             }
         }
     } else {
-        $data['id'] = uniqid('t_');
-        $data['assigned_by'] = $currentUser['id'];
-        $data['assigned_by_name'] = $currentUser['name'];
+        $data['id'] = uniqid('task_');
         $data['created_at'] = date('Y-m-d H:i:s');
-        $data['status'] = $data['status'] ?? 'pending';
+        $data['assigned_by'] = $currentUser['id'];
+        if (empty($data['assigned_to'])) $data['assigned_to'] = $currentUser['id'];
         $tasks[] = $data;
+        Storage::log("Created task: " . $data['title'], $currentUser['id']);
     }
 
     Storage::save('tasks', $tasks);
     echo json_encode(['success' => true]);
 } elseif ($method === 'DELETE') {
     $id = $_GET['id'] ?? '';
-    $tasks = array_filter(Storage::read('tasks'), function($t) use ($id) { return $t['id'] !== $id; });
+    $tasks = Storage::read('tasks');
+    $tasks = array_filter($tasks, function($t) use ($id) { return $t['id'] !== $id; });
     Storage::save('tasks', array_values($tasks));
     echo json_encode(['success' => true]);
 }
