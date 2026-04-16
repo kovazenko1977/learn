@@ -1,0 +1,34 @@
+[
+    {
+        "id": "69e0e58689149",
+        "title": "Test Entry",
+        "description": "Test Description",
+        "date": "2026-04-16 13:35",
+        "reminder": null,
+        "created_at": "2026-04-16T13:35:02+00:00"
+    },
+    {
+        "id": "69e0e5f678960",
+        "title": "Купить хлеб",
+        "description": "Черный и белый",
+        "date": "2026-04-16T13:36",
+        "reminder": false,
+        "created_at": "2026-04-16T13:36:54+00:00"
+    },
+    {
+        "id": "69e0ec3139ead",
+        "title": "Купить хлеб",
+        "description": "Черный и белый",
+        "date": "2026-04-16T14:03",
+        "reminder": false,
+        "created_at": "2026-04-16T14:03:29+00:00"
+    },
+    {
+        "id": "69e0ecbd0e8fc",
+        "title": "Купить хлеб",
+        "description": "Черный и белый",
+        "date": "2026-04-16T14:05",
+        "reminder": false,
+        "created_at": "2026-04-16T14:05:49+00:00"
+    }
+]

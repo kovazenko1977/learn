@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ежедневник</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7360f2">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div v-if="!authenticated" class="login-container">
+            <div class="login-box">
+                <h1>Вход</h1>
+                <p>Введите 6-значный ПИН-код</p>
+                <div class="pin-display">
+                    <span v-for="i in 6" :key="i" :class="{ filled: pin.length >= i }"></span>
+                </div>
+                <div class="numpad">
+                    <button v-for="n in 9" :key="n" @click="appendPin(n)">{{ n }}</button>
+                    <button @click="clearPin">C</button>
+                    <button @click="appendPin(0)">0</button>
+                    <button @click="deletePin">←</button>
+                </div>
+                <p v-if="error" class="error">{{ error }}</p>
+            </div>
+        </div>
+
+        <div v-else class="app-container">
+            <header>
+                <h1>Мой День</h1>
+                <div class="header-actions">
+                    <button v-if="deferredPrompt" @click="installApp" class="icon-btn" title="Установить">📲</button>
+                    <button @click="requestNotificationPermission" class="icon-btn" title="Включить уведомления">🔔</button>
+                    <button @click="showSettings = true" class="icon-btn">⚙️</button>
+                    <button @click="logout" class="icon-btn">🚪</button>
+                </div>
+            </header>
+
+            <main>
+                <div class="entries-list">
+                    <div v-if="entries.length === 0" class="empty-state">
+                        <p>У вас пока нет записей</p>
+                    </div>
+                    <div v-for="entry in sortedEntries" :key="entry.id" class="entry-card" @click="editEntry(entry)">
+                        <div class="entry-content">
+                            <h3>{{ entry.title }}</h3>
+                            <p>{{ entry.description }}</p>
+                        </div>
+                        <div class="entry-footer">
+                            <span class="entry-date">{{ formatDate(entry.date) }}</span>
+                            <span v-if="entry.reminder" class="reminder-icon">🔔</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <button @click="openAddModal" class="fab">+</button>
+
+            <!-- Modal for Add/Edit Entry -->
+            <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+                <div class="modal">
+                    <h2>{{ editingId ? 'Редактировать' : 'Новая запись' }}</h2>
+                    <div class="form-group">
+                        <label>Заголовок</label>
+                        <div class="input-with-voice">
+                            <input v-model="entryForm.title" type="text" placeholder="Что нужно сделать?">
+                            <button @click="startVoiceRecognition('title')" :class="{ recording: recordingField === 'title' }">🎤</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <div class="input-with-voice">
+                            <textarea v-model="entryForm.description" placeholder="Детали..."></textarea>
+                            <button @click="startVoiceRecognition('description')" :class="{ recording: recordingField === 'description' }">🎤</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Дата и время</label>
+                        <input v-model="entryForm.date" type="datetime-local">
+                    </div>
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="reminder" v-model="entryForm.reminder">
+                        <label for="reminder">Напомнить</label>
+                    </div>
+                    <div class="modal-actions">
+                        <button v-if="editingId" @click="deleteEntry(editingId)" class="btn-delete">Удалить</button>
+                        <button @click="closeModal" class="btn-cancel">Отмена</button>
+                        <button @click="saveEntry" class="btn-save">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Settings -->
+            <div v-if="showSettings" class="modal-overlay" @click.self="showSettings = false">
+                <div class="modal">
+                    <h2>Настройки</h2>
+                    <div class="form-group">
+                        <label>Новый 6-значный ПИН-код</label>
+                        <input v-model="newPin" type="password" maxlength="6" pattern="\d*">
+                    </div>
+                    <div class="modal-actions">
+                        <button @click="showSettings = false" class="btn-cancel">Отмена</button>
+                        <button @click="changePin" class="btn-save">Изменить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="toast" class="toast" :class="toast.type">
+            {{ toast.message }}
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
