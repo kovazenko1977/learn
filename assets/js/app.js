@@ -22,6 +22,8 @@ createApp({
             documents: [],
             templates: [],
             chat: [],
+            activeShift: null,
+            shifts: [],
             newMessage: '',
             versions: [],
             notifications: [],
@@ -85,6 +87,15 @@ createApp({
                 this.loadData();
             }
         },
+        toggleTag(tagId) {
+            if (!this.form.tags) this.form.tags = [];
+            const index = this.form.tags.indexOf(tagId);
+            if (index > -1) {
+                this.form.tags.splice(index, 1);
+            } else {
+                this.form.tags.push(tagId);
+            }
+        },
         async logout() {
             await this.api('auth', { action: 'logout' });
             this.isLoggedIn = false;
@@ -100,6 +111,8 @@ createApp({
         },
         async loadData() {
             const loaders = [
+                this.api('finance', { action: 'get_active_shift' }).then(res => this.activeShift = res),
+                this.api('finance', { action: 'shifts_history' }).then(res => this.shifts = res || []),
                 this.api('patients').then(res => this.patients = res || []),
                 this.api('doctors').then(res => this.doctors = res || []),
                 this.api('services').then(res => this.services = res || []),
@@ -150,6 +163,18 @@ createApp({
             await this.api('settings', { type }, 'POST', data);
             alert('Настройки сохранены');
         },
+        async openShift() {
+            if (confirm('Открыть кассовую смену?')) {
+                await this.api('finance', { action: 'open_shift' }, 'POST');
+                this.loadData();
+            }
+        },
+        async closeShift() {
+            if (confirm('Закрыть кассовую смену?')) {
+                await this.api('finance', { action: 'close_shift' }, 'POST');
+                this.loadData();
+            }
+        },
         async sendMessage() {
             if (!this.newMessage.trim()) return;
             await this.api('chat', {}, 'POST', { text: this.newMessage, dialog_id: 'general' });
@@ -184,6 +209,49 @@ createApp({
                 this.modal = null;
                 this.loadData();
             }
+        },
+        applyTemplate(template) {
+            let content = template.content;
+            const patient = this.patients.find(p => p.id === this.form.patient_id);
+            if (patient) {
+                content = content.replace(/{{patient_name}}/g, patient.full_name);
+                content = content.replace(/{{date}}/g, new Date().toLocaleDateString());
+            }
+            this.form.content = content;
+        },
+        printDocument(doc) {
+            const patient = this.patients.find(p => p.id === doc.patient_id);
+            const win = window.open('', '_blank');
+            win.document.write(`
+                <html>
+                    <head>
+                        <title>${doc.title || doc.type}</title>
+                        <style>
+                            body { font-family: serif; padding: 40px; line-height: 1.6; }
+                            .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+                            .meta { margin-bottom: 30px; }
+                            .content { white-space: pre-wrap; }
+                            @media print { .no-print { display: none; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+                            <button onclick="window.print()">Распечатать / Сохранить в PDF</button>
+                        </div>
+                        <div class="header">
+                            <h1>${this.settings.clinic_name}</h1>
+                            <p>${this.settings.clinic_address} | ${this.settings.clinic_phone}</p>
+                        </div>
+                        <div class="meta">
+                            <p><strong>Документ:</strong> ${doc.title || doc.type}</p>
+                            <p><strong>Пациент:</strong> ${patient ? patient.full_name : 'N/A'}</p>
+                            <p><strong>Дата:</strong> ${new Date(doc.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div class="content">${doc.content}</div>
+                    </body>
+                </html>
+            `);
+            win.document.close();
         },
         statusColor(status) {
             return `status-${status}`;

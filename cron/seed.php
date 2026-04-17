@@ -3,6 +3,24 @@ require_once __DIR__ . '/../includes/Storage.php';
 require_once __DIR__ . '/../includes/Security.php';
 
 function seed() {
+    // Sources
+    $sources = [
+        ['id' => 'src1', 'name' => 'Сайт'],
+        ['id' => 'src2', 'name' => 'Инстаграм'],
+        ['id' => 'src3', 'name' => 'Рекомендация'],
+        ['id' => 'src4', 'name' => '2ГИС']
+    ];
+    foreach($sources as $s) Storage::write('sources', $s['id'], $s);
+
+    // Tags
+    $tags = [
+        ['id' => 't1', 'name' => 'VIP', 'color' => '#fbbf24'],
+        ['id' => 't2', 'name' => 'Сложный случай', 'color' => '#ef4444'],
+        ['id' => 't3', 'name' => 'Боится врачей', 'color' => '#3b82f6'],
+        ['id' => 't4', 'name' => 'Постоянный', 'color' => '#10b981']
+    ];
+    foreach($tags as $t) Storage::write('tags', $t['id'], $t);
+
     // Rooms
     $rooms = [
         ['id' => 'r1', 'name' => 'Кабинет 1', 'location' => '1 этаж', 'equipment' => 'Sirona Intego', 'status' => 'active'],
@@ -29,16 +47,18 @@ function seed() {
 
     // Patients
     $patients = [];
-    $names = ['Иванов Иван', 'Смирнова Анна', 'Кузнецов Олег', 'Попова Елена', 'Васильев Игорь'];
-    for ($i=1; $i<=5; $i++) {
+    $names = ['Иванов Иван', 'Смирнова Анна', 'Кузнецов Олег', 'Попова Елена', 'Васильев Игорь', 'Соколов Дмитрий'];
+    for ($i=1; $i<=count($names); $i++) {
         $p = [
             'id' => 'p'.$i,
             'full_name' => $names[$i-1],
             'phone' => '+7999000000'.$i,
             'email' => 'patient'.$i.'@example.com',
             'birth_date' => '198'.($i+2).'-05-15',
-            'allergies' => 'Нет',
+            'allergies' => ($i % 2 === 0) ? 'Аспирин' : 'Нет',
             'chronic_diseases' => 'Нет',
+            'source_id' => 'src' . (rand(1, 4)),
+            'tags' => ['t' . (rand(1, 4))],
             'created_at' => date('c'),
             'created_by' => 'admin'
         ];
@@ -47,14 +67,15 @@ function seed() {
     }
 
     // Appointments
-    for ($i=0; $i<10; $i++) {
+    for ($i=0; $i<15; $i++) {
         $id = uniqid();
         $date = date('Y-m-d', strtotime("+$i days"));
-        $start = "10:00";
-        $end = "11:00";
+        $start_hour = 10 + ($i % 8);
+        $start = "$start_hour:00";
+        $end = ($start_hour + 1) . ":00";
         $a = [
             'id' => $id,
-            'patient_id' => 'p'.(rand(1, 5)),
+            'patient_id' => 'p'.(rand(1, count($names))),
             'doctor_id' => 'd'.(rand(1, 2)),
             'service_id' => 's'.(rand(1, 4)),
             'room_id' => 'r'.(rand(1, 3)),
@@ -65,6 +86,34 @@ function seed() {
             'created_at' => date('c')
         ];
         Storage::write('appointments', $id, $a);
+    }
+
+    // Finance Operations
+    for ($i=0; $i<10; $i++) {
+        $id = uniqid();
+        $f = [
+            'id' => $id,
+            'type' => (rand(1, 5) > 1) ? 'income' : 'expense',
+            'amount' => rand(500, 15000),
+            'comment' => 'Плановая операция #' . ($i+1),
+            'created_at' => date('c'),
+            'created_by' => 'admin'
+        ];
+        Storage::write('finance', $id, $f);
+    }
+
+    // Tasks
+    for ($i=1; $i<=5; $i++) {
+        $id = uniqid();
+        $t = [
+            'id' => $id,
+            'name' => 'Задача #' . $i,
+            'description' => 'Необходимо выполнить проверку оборудования в кабинете ' . (rand(1,3)),
+            'status' => (rand(0, 1)) ? 'done' : 'new',
+            'created_at' => date('c'),
+            'created_by' => 'admin'
+        ];
+        Storage::write('tasks', $id, $t);
     }
 
     // Settings
@@ -88,11 +137,12 @@ function seed() {
         'sources' => true,
         'tags' => true,
         'chat' => true,
-        'internal_notifications' => true
+        'internal_notifications' => true,
+        'templates' => true
     ];
     Storage::write('settings', 'modules', $modules);
 
-    echo "Demo data seeded successfully.\n";
+    echo "Enhanced demo data seeded successfully.\n";
 }
 
 seed();

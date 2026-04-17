@@ -7,6 +7,12 @@ if ($method === 'GET') {
     $entity = isset($_GET['entity']) ? $_GET['entity'] : null;
     $id = isset($_GET['id']) ? $_GET['id'] : null;
 
+    $allowedEntities = ['patients', 'appointments', 'doctors', 'services', 'rooms', 'tasks', 'users', 'templates', 'documents', 'finance'];
+    if (!in_array($entity, $allowedEntities)) {
+        echo json_encode(['error' => 'Invalid entity type']);
+        exit;
+    }
+
     if (!$entity || !$id) {
         echo json_encode(['error' => 'Missing entity or ID']);
         exit;

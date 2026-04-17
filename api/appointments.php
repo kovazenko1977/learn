@@ -1,5 +1,5 @@
 <?php
-Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor']);
+Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor', 'patient']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -40,6 +40,7 @@ if ($method === 'GET') {
         echo json_encode(array_values($all));
     }
 } elseif ($method === 'POST') {
+    Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor']);
     $input = json_decode(file_get_contents('php://input'), true);
     $input = Security::sanitize($input);
 

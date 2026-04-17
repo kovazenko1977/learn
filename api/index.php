@@ -6,6 +6,19 @@ require_once __DIR__ . '/../includes/Logger.php';
 
 Auth::init();
 
+// Global error handling to prevent non-JSON output
+set_exception_handler(function($e) {
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode(['error' => 'Server Error: ' . $e->getMessage()]);
+    exit;
+});
+
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    if (!(error_reporting() & $errno)) return;
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+});
+
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 $module = isset($_GET['module']) ? $_GET['module'] : '';
 
