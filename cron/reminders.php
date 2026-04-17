@@ -16,5 +16,10 @@ foreach ($appointments as $a) {
         // Send 24h reminder
         Logger::log("Sending 24h reminder for appointment " . $a['id'], "info", "notifications.log");
     }
+
+    if ($diff > 0 && $diff <= 7200 && $diff > 3600) {
+        // Send 2h reminder
+        Logger::log("Sending 2h reminder for appointment " . $a['id'], "info", "notifications.log");
+    }
 }
 echo "Reminders processed\n";

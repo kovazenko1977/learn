@@ -44,6 +44,7 @@ if ($method === 'GET') {
         'patient_id' => $patientId,
         'doctor_id' => $input['doctor_id'],
         'service_id' => $input['service_id'],
+        'room_id' => isset($input['room_id']) ? $input['room_id'] : 'default',
         'date' => $input['date'],
         'time_start' => $input['time_start'],
         'status' => 'planned',

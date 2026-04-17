@@ -85,7 +85,7 @@ if ($module === 'auth') {
 $allowedModules = [
     'patients', 'doctors', 'services', 'rooms',
     'appointments', 'settings', 'tasks', 'finance',
-    'analytics', 'documents', 'online_booking', 'tags', 'sources', 'users'
+    'analytics', 'documents', 'online_booking', 'tags', 'sources', 'users', 'chat', 'versions'
 ];
 
 if ($module) {
