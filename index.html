@@ -115,6 +115,7 @@
                         <div class="entry-footer">
                             <span class="entry-date">{{ formatDate(entry.date) }}</span>
                             <div class="entry-actions">
+                                <button @click.stop="speak(entry.title + '. ' + entry.description)" class="action-btn">🔊</button>
                                 <button @click.stop="copyEntry(entry)" class="action-btn">📋</button>
                                 <button @click.stop="duplicateEntry(entry)" class="action-btn">👯</button>
                                 <button @click.stop="toggleComplete(entry)" class="action-btn-check">
@@ -153,15 +154,16 @@
                     </div>
 
                     <div class="chat-messages">
-                        <div v-for="comment in currentIdea.comments" :key="comment.id" class="message-bubble">
+                        <div v-for="comment in currentIdea.comments" :key="comment.id" class="message-bubble" @click="speak(comment.text)">
                             <p>{{ comment.text }}</p>
                             <span class="message-time">{{ formatDate(comment.created_at) }}</span>
                         </div>
                     </div>
 
                     <div class="chat-input">
+                        <button @click="startVoiceRecognition('newIdeaComment')" :class="{ recording: recordingField === 'newIdeaComment' }" class="icon-btn-chat">🎤</button>
                         <input v-model="newIdeaComment" type="text" placeholder="Обсудить идею..." @keyup.enter="addComment(currentIdea.id)">
-                        <button @click="addComment(currentIdea.id)">↗️</button>
+                        <button @click="addComment(currentIdea.id)" class="btn-send">↗️</button>
                     </div>
                 </div>
 
@@ -171,11 +173,17 @@
                         <h2>Новая идея</h2>
                         <div class="form-group">
                             <label>Название</label>
-                            <input v-model="ideaForm.title" type="text">
+                            <div class="input-with-voice">
+                                <input v-model="ideaForm.title" type="text">
+                                <button @click="startVoiceRecognition('ideaTitle')" :class="{ recording: recordingField === 'ideaTitle' }">🎤</button>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Описание</label>
-                            <textarea v-model="ideaForm.description"></textarea>
+                            <div class="input-with-voice">
+                                <textarea v-model="ideaForm.description"></textarea>
+                                <button @click="startVoiceRecognition('ideaDescription')" :class="{ recording: recordingField === 'ideaDescription' }">🎤</button>
+                            </div>
                         </div>
                         <div class="modal-actions">
                             <button @click="showIdeaModal = false" class="btn btn-secondary">Отмена</button>

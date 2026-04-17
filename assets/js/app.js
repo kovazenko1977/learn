@@ -138,6 +138,12 @@ createApp({
             } catch (e) { this.error = 'Ошибка входа'; this.pin = ''; }
         },
         async logout() { await fetch('api/auth.php?action=logout'); this.authenticated = false; this.entries = []; },
+        async installApp() {
+            if (!this.deferredPrompt) return;
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            if (outcome === 'accepted') this.deferredPrompt = null;
+        },
         async fetchEntries() {
             try {
                 const res = await fetch('api/entries.php');
@@ -235,7 +241,17 @@ createApp({
                 this.recognition.lang = 'ru-RU';
                 this.recognition.onresult = (event) => {
                     const text = event.results[0][0].transcript;
-                    if (this.recordingField) this.entryForm[this.recordingField] += (this.entryForm[this.recordingField] ? ' ' : '') + text;
+                    if (!this.recordingField) return;
+
+                    if (this.recordingField === 'newIdeaComment') {
+                        this.newIdeaComment += (this.newIdeaComment ? ' ' : '') + text;
+                    } else if (this.recordingField === 'ideaTitle') {
+                        this.ideaForm.title += (this.ideaForm.title ? ' ' : '') + text;
+                    } else if (this.recordingField === 'ideaDescription') {
+                        this.ideaForm.description += (this.ideaForm.description ? ' ' : '') + text;
+                    } else {
+                        this.entryForm[this.recordingField] += (this.entryForm[this.recordingField] ? ' ' : '') + text;
+                    }
                 };
                 this.recognition.onerror = () => { this.recordingField = null; };
                 this.recognition.onend = () => { this.recordingField = null; };
@@ -246,6 +262,13 @@ createApp({
             if (this.recordingField === field) this.stopVoice(); else { this.recordingField = field; this.recognition.start(); }
         },
         stopVoice() { if (this.recognition && this.recordingField) { this.recognition.stop(); this.recordingField = null; } },
+        speak(text) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel(); // Stop any current speech
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ru-RU';
+            window.speechSynthesis.speak(utterance);
+        },
         formatDate(dateStr) {
             if (!dateStr) return '';
             const d = new Date(dateStr);
@@ -301,13 +324,11 @@ createApp({
                 }
             });
             if (changed) {
-                this.entries.forEach(async (e) => {
-                    if (e.notified && this.entries.find(orig => orig.id === e.id && !orig.notified)) {
-                         await fetch('api/entries.php', {
-                            method: 'PUT',
-                            body: JSON.stringify(e)
-                        });
-                    }
+                this.entries.filter(e => e.notified).forEach(async (e) => {
+                    await fetch('api/entries.php', {
+                        method: 'PUT',
+                        body: JSON.stringify(e)
+                    });
                 });
             }
         },
