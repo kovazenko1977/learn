@@ -46,10 +46,11 @@ class Auth {
         if (!is_array($roles)) {
             $roles = [$roles];
         }
-        if (!in_array(self::getRole(), $roles) && self::getRole() !== 'admin') {
+        $userRole = self::getRole();
+        if (!in_array($userRole, $roles) && $userRole !== 'admin') {
             http_response_code(403);
             header('Content-Type: application/json');
-            echo json_encode(['error' => 'Forbidden']);
+            echo json_encode(['error' => "Forbidden: Role $userRole does not have permission"]);
             exit;
         }
     }

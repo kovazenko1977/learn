@@ -49,47 +49,129 @@
             </nav>
 
             <!-- Desktop Sidebar -->
-            <nav class="hidden lg:flex flex-col w-64 bg-gray-900 text-white p-6 sticky top-0 h-screen">
-                <div class="font-bold text-2xl mb-10 tracking-tight">Dental<span class="text-blue-500">CRM</span></div>
-                <ul class="space-y-2 flex-1">
-                    <li v-for="item in menu" :key="item.id">
-                        <button @click="view = item.id" :class="['w-full text-left px-4 py-3 rounded-xl transition-all', view === item.id ? 'bg-blue-600 shadow-lg shadow-blue-900/50 text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800']">
-                            {{ item.label }}
-                        </button>
-                    </li>
-                </ul>
-                <div class="mt-auto pt-6 border-t border-gray-800">
-                    <div class="text-sm font-medium mb-1">{{ user.name }}</div>
-                    <div class="text-xs text-gray-500 mb-4">{{ user.role }}</div>
-                    <button @click="logout" class="text-sm text-red-400 hover:text-red-300 transition">Выйти из системы</button>
+            <nav class="hidden lg:flex flex-col w-72 bg-slate-900 text-white p-6 sticky top-0 h-screen overflow-y-auto">
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div class="font-bold text-2xl tracking-tight">Dental<span class="text-blue-500">CRM</span></div>
+                </div>
+
+                <div class="flex-1 space-y-8">
+                    <!-- Main Navigation -->
+                    <div>
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-4">Основное</div>
+                        <ul class="space-y-1">
+                            <li v-for="item in menu.filter(x => ['appointments', 'patients', 'doctors', 'users'].includes(x.id))" :key="item.id">
+                                <button @click="view = item.id" :class="['w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3', view === item.id ? 'bg-blue-600 shadow-lg shadow-blue-600/30 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800']">
+                                    <span class="font-medium">{{ item.label }}</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Clinical & Marketing -->
+                    <div>
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-4">Клиника и Маркетинг</div>
+                        <ul class="space-y-1">
+                            <li v-for="item in menu.filter(x => ['services', 'rooms', 'documents', 'chat', 'tags', 'sources'].includes(item.id))" :key="item.id">
+                                <button @click="view = item.id" :class="['w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3', view === item.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800']">
+                                    <span class="font-medium">{{ item.label }}</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Administration -->
+                    <div>
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-4">Администрирование</div>
+                        <ul class="space-y-1">
+                            <li v-for="item in menu.filter(x => ['finance', 'analytics', 'settings'].includes(item.id))" :key="item.id">
+                                <button @click="view = item.id" :class="['w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3', view === item.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800']">
+                                    <span class="font-medium">{{ item.label }}</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-6 border-t border-slate-800">
+                    <div class="flex items-center gap-3 px-2 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-blue-400">
+                            {{ user.name.substring(0,1) }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-bold truncate">{{ user.name }}</div>
+                            <div class="text-[10px] text-slate-500 uppercase font-bold">{{ user.role }}</div>
+                        </div>
+                    </div>
+                    <button @click="logout" class="w-full py-3 px-4 bg-slate-800 hover:bg-red-900/30 text-red-400 rounded-xl text-sm font-bold transition-colors">Выйти</button>
                 </div>
             </nav>
 
-            <!-- Mobile Menu Drawer -->
+            <!-- Mobile Menu Drawer (Improved) -->
             <div v-if="mobileMenu" class="fixed inset-0 z-50 lg:hidden">
-                <div @click="mobileMenu = false" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"></div>
-                <nav class="absolute inset-y-0 right-0 w-80 bg-white shadow-2xl flex flex-col p-6 animate-slide-in">
-                    <div class="flex justify-between items-center mb-8">
-                        <div class="font-bold text-xl text-gray-900">Меню</div>
-                        <button @click="mobileMenu = false" class="p-2 text-gray-400 hover:text-gray-900">
+                <div @click="mobileMenu = false" class="absolute inset-0 bg-slate-900/80 backdrop-blur-md"></div>
+                <nav class="absolute inset-y-0 right-0 w-[85%] bg-white shadow-2xl flex flex-col p-8 animate-slide-in rounded-l-[2rem]">
+                    <div class="flex justify-between items-center mb-10">
+                        <div class="font-bold text-2xl text-slate-900 tracking-tight">Меню</div>
+                        <button @click="mobileMenu = false" class="w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-400">
                              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
                     </div>
-                    <ul class="space-y-1">
+                    <ul class="space-y-2 overflow-y-auto flex-1 pr-2 custom-scrollbar">
                         <li v-for="item in menu" :key="item.id">
-                            <button @click="view = item.id; mobileMenu = false" :class="['w-full text-left px-4 py-4 rounded-xl text-lg font-medium transition-colors', view === item.id ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50']">
+                            <button @click="view = item.id; mobileMenu = false" :class="['w-full text-left px-5 py-4 rounded-2xl text-lg font-bold transition-all', view === item.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-600 hover:bg-slate-50']">
                                 {{ item.label }}
                             </button>
                         </li>
                     </ul>
-                    <div class="mt-auto pt-8 border-t border-gray-100">
-                        <button @click="logout" class="w-full py-4 text-center text-red-500 font-bold border-2 border-red-50 text-red-500 rounded-2xl">Выйти</button>
+                    <div class="mt-8 pt-8 border-t border-slate-100">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl">{{ user.name.substring(0,1) }}</div>
+                            <div>
+                                <div class="font-bold text-slate-900">{{ user.name }}</div>
+                                <div class="text-xs text-slate-400 font-bold uppercase tracking-widest">{{ user.role }}</div>
+                            </div>
+                        </div>
+                        <button @click="logout" class="w-full py-5 text-center text-red-500 font-bold bg-red-50 rounded-3xl active:scale-95 transition-transform">Выйти из системы</button>
                     </div>
                 </nav>
             </div>
 
             <!-- Content Area -->
-            <main class="flex-1 p-4 lg:p-8 overflow-auto bg-gray-50">
+            <main class="flex-1 p-4 lg:p-8 overflow-auto bg-slate-50/50">
+                <!-- Topbar (Desktop) -->
+                <div class="hidden lg:flex items-center justify-between mb-10">
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight">{{ menu.find(x => x.id === view)?.label }}</h1>
+                        <div class="text-sm text-slate-400 font-medium">Добро пожаловать в панель управления</div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <!-- Notifications -->
+                        <button class="relative w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm text-slate-400 hover:text-blue-600 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard / Overview (Role specific) -->
+                <div v-if="view === 'appointments' && ['admin', 'director', 'senior_admin'].includes(user.role)" class="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-600 p-6 rounded-3xl text-white shadow-xl shadow-blue-200">
+                        <div class="text-blue-100 text-xs font-bold uppercase tracking-wider mb-2">Всего пациентов</div>
+                        <div class="text-4xl font-black">{{ patients.length }}</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                        <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Записей сегодня</div>
+                        <div class="text-4xl font-black text-slate-900">{{ appointments.filter(a => a.date === new Date().toISOString().split('T')[0]).length }}</div>
+                    </div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                        <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Выручка (за все время)</div>
+                        <div class="text-4xl font-black text-slate-900">{{ stats.revenue || 0 }} ₽</div>
+                    </div>
+                </div>
+
                 <!-- Patients View -->
                 <div v-if="view === 'patients'">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -365,15 +447,48 @@
 
                 <!-- Settings View -->
                 <div v-if="view === 'settings'">
-                    <h2 class="text-2xl lg:text-3xl font-bold mb-6">Настройки</h2>
-                    <div class="bg-white rounded-2xl shadow p-6 max-w-2xl">
-                         <div class="space-y-6">
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Название клиники</label>
-                                <input v-model="settings.clinic_name" class="w-full border p-3 rounded-xl">
+                        <h2 class="text-2xl lg:text-3xl font-bold mb-6">Настройки системы</h2>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Clinic Info -->
+                            <div class="bg-white rounded-2xl shadow p-6">
+                                <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                    Данные клиники
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Название</label>
+                                        <input v-model="settings.clinic_name" class="w-full border border-gray-100 p-3 rounded-xl bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Адрес</label>
+                                        <input v-model="settings.clinic_address" class="w-full border border-gray-100 p-3 rounded-xl bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Телефон</label>
+                                        <input v-model="settings.clinic_phone" class="w-full border border-gray-100 p-3 rounded-xl bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <button @click="saveSettings('system')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">Сохранить изменения</button>
+                                </div>
                             </div>
-                            <button @click="saveSettings" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg">Сохранить настройки</button>
-                         </div>
+
+                            <!-- Modules Management -->
+                            <div class="bg-white rounded-2xl shadow p-6">
+                                <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+                                    Управление модулями
+                                </h3>
+                                <div class="space-y-3">
+                                    <div v-for="(enabled, key) in modules" :key="key" class="flex items-center justify-between p-3 border border-gray-50 rounded-xl hover:bg-gray-50 transition">
+                                        <span class="font-medium text-gray-700 capitalize">{{ key }}</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" v-model="modules[key]" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                    <button @click="saveSettings('modules')" class="w-full mt-4 bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-black transition">Обновить модули</button>
+                            </div>
+                            </div>
                     </div>
                 </div>
 
@@ -395,6 +510,24 @@
                         </div>
                     </div>
                 </div>
+
+                    <!-- Templates View -->
+                    <div v-if="view === 'templates'">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <h2 class="text-2xl lg:text-3xl font-bold">Шаблоны</h2>
+                            <button @click="openModal('templates')" class="w-full sm:w-auto bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 transition">Добавить шаблон</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div v-for="t in templates" :key="t.id" class="bg-white p-6 rounded-2xl shadow">
+                                <h3 class="font-bold text-lg mb-2">{{ t.title }}</h3>
+                                <div class="text-xs text-gray-400 uppercase mb-4">{{ t.type }}</div>
+                                <div class="flex gap-2">
+                                    <button @click="editItem('templates', t)" class="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg font-bold text-sm">Редактировать</button>
+                                    <button @click="deleteItem('templates', t.id)" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg font-bold text-sm">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 <!-- Doctors View -->
                 <div v-if="view === 'doctors'">
@@ -519,6 +652,18 @@
                         </div>
                     </div>
 
+                <!-- Template Form -->
+                <div v-if="modal === 'templates'" class="space-y-4">
+                    <input v-model="form.title" placeholder="Название шаблона" class="w-full border rounded-xl p-3">
+                    <select v-model="form.type" class="w-full border rounded-xl p-3">
+                        <option value="recommendation">Рекомендация</option>
+                        <option value="conclusion">Заключение</option>
+                        <option value="contract">Договор</option>
+                        <option value="email">Email</option>
+                    </select>
+                    <textarea v-model="form.content" rows="10" placeholder="Текст шаблона с {{плейсхолдерами}}" class="w-full border rounded-xl p-3 font-mono text-sm"></textarea>
+                </div>
+
                     <!-- User Form -->
                     <div v-if="modal === 'users'" class="space-y-4">
                         <input v-model="form.login" placeholder="Логин" class="w-full border rounded-xl p-3">
@@ -536,9 +681,40 @@
                     <!-- Generic Form -->
                     <div v-if="['rooms', 'services', 'tags', 'sources'].includes(modal)" class="space-y-4">
                         <input v-model="form.name" placeholder="Название" class="w-full border rounded-xl p-3">
-                        <textarea v-if="modal === 'services'" v-model="form.description" placeholder="Описание" class="w-full border rounded-xl p-3"></textarea>
-                        <input v-if="modal === 'services'" v-model.number="form.duration_minutes" type="number" placeholder="Длительность (мин)" class="w-full border rounded-xl p-3">
+                    <div v-if="modal === 'rooms'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input v-model="form.location" placeholder="Местоположение (этаж и т.п.)" class="w-full border rounded-xl p-3">
+                        <input v-model="form.equipment" placeholder="Оборудование" class="w-full border rounded-xl p-3">
                     </div>
+                    <textarea v-if="modal === 'services'" v-model="form.description" placeholder="Описание услуги" class="w-full border rounded-xl p-3"></textarea>
+                    <div v-if="modal === 'services'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input v-model.number="form.duration_minutes" type="number" placeholder="Длительность (мин)" class="w-full border rounded-xl p-3">
+                        <input v-model.number="form.base_price" type="number" placeholder="Базовая цена (₽)" class="w-full border rounded-xl p-3">
+                    </div>
+                    <input v-if="modal === 'services'" v-model="form.category" placeholder="Категория" class="w-full border rounded-xl p-3">
+                    </div>
+
+                <!-- Doctor Form -->
+                <div v-if="modal === 'doctor'" class="space-y-4">
+                    <input v-model="form.full_name" placeholder="ФИО врача" class="w-full border rounded-xl p-3">
+                    <input v-model="form.specialization" placeholder="Специализация" class="w-full border rounded-xl p-3">
+                    <input v-model="form.phone" placeholder="Телефон" class="w-full border rounded-xl p-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Доступные кабинеты</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label v-for="r in rooms" :key="r.id" class="px-3 py-2 bg-gray-50 rounded-lg cursor-pointer flex items-center gap-2 border border-gray-100">
+                                <input type="checkbox" :value="r.id" v-model="form.room_ids"> {{ r.name }}
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Оказываемые услуги</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label v-for="s in services" :key="s.id" class="px-3 py-2 bg-gray-50 rounded-lg cursor-pointer flex items-center gap-2 border border-gray-100">
+                                <input type="checkbox" :value="s.id" v-model="form.services_ids"> {{ s.name }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
                     <!-- Versions View -->
                     <div v-if="modal === 'versions'" class="space-y-4">

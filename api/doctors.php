@@ -9,7 +9,8 @@ if ($method === 'GET') {
         $doctor = Storage::read('doctors', $id);
         echo json_encode($doctor ?: ['error' => 'Doctor not found']);
     } else {
-        echo json_encode(Storage::list('doctors'));
+        $doctors = Storage::list('doctors');
+        echo json_encode(array_values($doctors));
     }
 } elseif ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);

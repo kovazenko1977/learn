@@ -1,11 +1,18 @@
 <?php
-Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor']);
+Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor', 'patient']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 
 if ($method === 'GET') {
     $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+    // Patient can only see their own record
+    if ($_SESSION['role'] === 'patient' && $id !== $_SESSION['user_id']) {
+        echo json_encode(['error' => 'Forbidden']);
+        exit;
+    }
+
     if ($id) {
         $patient = Storage::read('patients', $id);
         if ($patient) {
@@ -14,10 +21,18 @@ if ($method === 'GET') {
             echo json_encode(['error' => 'Patient not found']);
         }
     } else {
+        if ($_SESSION['role'] === 'patient') {
+            echo json_encode([]);
+            exit;
+        }
         $patients = Storage::list('patients');
-        echo json_encode($patients);
+        echo json_encode(array_values($patients));
     }
 } elseif ($method === 'POST') {
+    if ($_SESSION['role'] === 'patient') {
+        echo json_encode(['error' => 'Forbidden']);
+        exit;
+    }
     $input = json_decode(file_get_contents('php://input'), true);
     $input = Security::sanitize($input);
 

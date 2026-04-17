@@ -33,7 +33,11 @@ if ($method === 'GET') {
         $app = Storage::read('appointments', $id);
         echo json_encode($app ?: ['error' => 'Appointment not found']);
     } else {
-        echo json_encode(Storage::list('appointments'));
+        $all = Storage::list('appointments');
+        if ($_SESSION['role'] === 'patient') {
+            $all = array_filter($all, fn($a) => $a['patient_id'] === $_SESSION['user_id']);
+        }
+        echo json_encode(array_values($all));
     }
 } elseif ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);

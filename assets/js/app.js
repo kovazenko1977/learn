@@ -20,10 +20,14 @@ createApp({
             tags: [],
             sources: [],
             documents: [],
+            templates: [],
             chat: [],
             newMessage: '',
             versions: [],
+            notifications: [],
+            stats: {},
             settings: { clinic_name: 'Dental CRM' },
+            modules: {},
             modal: null,
             modalTitle: '',
             form: {},
@@ -40,6 +44,7 @@ createApp({
                 { id: 'chat', label: 'Чат', roles: ['admin', 'senior_admin', 'manager', 'doctor', 'patient'] },
                 { id: 'tags', label: 'Теги', roles: ['admin', 'marketing'] },
                 { id: 'sources', label: 'Источники', roles: ['admin', 'marketing'] },
+                { id: 'templates', label: 'Шаблоны', roles: ['admin', 'senior_admin'] },
                 { id: 'users', label: 'Пользователи', roles: ['admin'] },
                 { id: 'settings', label: 'Настройки', roles: ['admin'] }
             ]
@@ -105,12 +110,15 @@ createApp({
                 this.api('tags').then(res => this.tags = res || []),
                 this.api('sources').then(res => this.sources = res || []),
                 this.api('documents').then(res => this.documents = res || []),
-                this.api('chat', { dialog_id: 'general' }).then(res => this.chat = res || [])
+                this.api('templates').then(res => this.templates = res || []),
+                this.api('chat', { dialog_id: 'general' }).then(res => this.chat = res || []),
+                this.api('analytics').then(res => this.stats = res || {})
             ];
 
             if (this.user.role === 'admin') {
                 loaders.push(this.api('users').then(res => this.users = res || []));
-                loaders.push(this.api('settings').then(res => this.settings = res || { clinic_name: 'Dental CRM' }));
+                loaders.push(this.api('settings', { type: 'system' }).then(res => this.settings = res || { clinic_name: 'Dental CRM' }));
+                loaders.push(this.api('settings', { type: 'modules' }).then(res => this.modules = res || {}));
             }
 
             await Promise.allSettled(loaders);
@@ -137,8 +145,9 @@ createApp({
                 this.loadData();
             }
         },
-        async saveSettings() {
-            await this.api('settings', {}, 'POST', this.settings);
+        async saveSettings(type) {
+            const data = type === 'modules' ? this.modules : this.settings;
+            await this.api('settings', { type }, 'POST', data);
             alert('Настройки сохранены');
         },
         async sendMessage() {
