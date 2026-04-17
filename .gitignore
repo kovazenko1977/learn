@@ -1,0 +1,12 @@
+storage/data/*/*.json
+storage/logs/*.log
+storage/cache/*.json
+storage/versions/*
+storage/files/*
+!storage/data/.htaccess
+!storage/logs/.htaccess
+!storage/cache/.htaccess
+!storage/versions/.htaccess
+!storage/files/.htaccess
+*.log
+/verification/

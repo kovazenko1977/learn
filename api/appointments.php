@@ -3,6 +3,20 @@ Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+function saveVersion($entity, $id, $data) {
+    $versionPath = __DIR__ . '/../storage/versions/' . $entity . '/' . $id . '/';
+    if (!is_dir($versionPath)) {
+        mkdir($versionPath, 0755, true);
+    }
+    $vNum = count(glob($versionPath . 'v*.json')) + 1;
+    file_put_contents($versionPath . 'v' . $vNum . '.json', json_encode([
+        'version' => $vNum,
+        'timestamp' => date('c'),
+        'user_id' => $_SESSION['user_id'],
+        'data' => $data
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+}
+
 function checkConflicts($newAppointment, $existingAppointments) {
     foreach ($existingAppointments as $app) {
         if ($app['id'] === $newAppointment['id']) continue;
@@ -38,10 +52,16 @@ if ($method === 'GET') {
     $input = json_decode(file_get_contents('php://input'), true);
     $input = Security::sanitize($input);
     $id = isset($input['id']) ? $input['id'] : uniqid();
+
+    $existingRecord = Storage::read('appointments', $id);
+    if ($existingRecord) {
+        saveVersion('appointments', $id, $existingRecord);
+    }
+
     $input['id'] = $id;
 
-    $existing = Storage::list('appointments');
-    $conflict = checkConflicts($input, $existing);
+    $all = Storage::list('appointments');
+    $conflict = checkConflicts($input, $all);
 
     if ($conflict) {
         echo json_encode(['error' => $conflict]);

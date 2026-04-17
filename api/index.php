@@ -16,7 +16,7 @@ if (empty($users)) {
     $adminUser = [
         'id' => $adminId,
         'login' => 'admin',
-        'password_hash' => Security::hashPassword('admin123'),
+        'password_hash' => Security::hashPassword('admin123456'),
         'role' => 'admin',
         'name' => 'Administrator',
         'status' => 'active',
@@ -89,6 +89,13 @@ $allowedModules = [
 ];
 
 if ($module) {
+    // Check if module is disabled in settings
+    $modulesSettings = Storage::read('settings', 'modules');
+    if ($modulesSettings && isset($modulesSettings[$module]) && $modulesSettings[$module] === false) {
+        echo json_encode(['error' => 'Module is disabled']);
+        exit;
+    }
+
     if (in_array($module, $allowedModules) && file_exists(__DIR__ . '/' . $module . '.php')) {
         require_once __DIR__ . '/' . $module . '.php';
     } else {

@@ -4,3 +4,21 @@
 .status-completed { border-color: #10b981; }
 .status-cancelled { border-color: #ef4444; }
 .status-no_show { border-color: #f59e0b; }
+
+@keyframes slide-in {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out forwards;
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 1023px) {
+    main {
+        padding-bottom: 5rem;
+    }
+}

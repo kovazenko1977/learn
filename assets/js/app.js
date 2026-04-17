@@ -6,6 +6,7 @@ createApp({
             isLoggedIn: false,
             user: null,
             view: 'appointments',
+            mobileMenu: false,
             loginForm: { login: '', password: '' },
             error: '',
             patients: [],

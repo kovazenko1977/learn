@@ -37,6 +37,17 @@ if ($method === 'GET') {
     $id = isset($input['id']) ? $input['id'] : uniqid();
     $existing = Storage::read('patients', $id);
 
+    // Duplicate check (by phone or email)
+    $all = Storage::list('patients');
+    foreach ($all as $p) {
+        if ($p['id'] === $id) continue;
+        if ((!empty($input['phone']) && $p['phone'] === $input['phone']) ||
+            (!empty($input['email']) && $p['email'] === $input['email'])) {
+            echo json_encode(['error' => 'Patient with this phone or email already exists']);
+            exit;
+        }
+    }
+
     if ($existing) {
         saveVersion('patients', $id, $existing);
     }
