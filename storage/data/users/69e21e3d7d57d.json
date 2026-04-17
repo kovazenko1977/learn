@@ -1,0 +1,9 @@
+{
+    "id": "69e21e3d7d57d",
+    "login": "admin",
+    "password_hash": "$2y$10$hiblKsTdia2a5XEYPwWzmO\/vtzemjciMIAENgw24WIxysB0G.p0Xy",
+    "role": "admin",
+    "name": "Administrator",
+    "status": "active",
+    "created_at": "2026-04-17T11:49:17+00:00"
+}

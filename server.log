@@ -1,0 +1,31 @@
+[Fri Apr 17 11:54:00 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Fri Apr 17 11:54:20 2026] [::1]:37896 Accepted
+[Fri Apr 17 11:54:20 2026] [::1]:37896 [200]: GET /index.html
+[Fri Apr 17 11:54:20 2026] [::1]:37896 Closing
+[Fri Apr 17 11:54:20 2026] [::1]:37904 Accepted
+[Fri Apr 17 11:54:20 2026] [::1]:37906 Accepted
+[Fri Apr 17 11:54:20 2026] [::1]:37904 [200]: GET /assets/css/style.css
+[Fri Apr 17 11:54:20 2026] [::1]:37904 Closing
+[Fri Apr 17 11:54:20 2026] [::1]:37906 [200]: GET /assets/js/app.js
+[Fri Apr 17 11:54:20 2026] [::1]:37906 Closing
+[Fri Apr 17 11:54:21 2026] [::1]:37910 Accepted
+[Fri Apr 17 11:54:21 2026] [::1]:37910 [200]: GET /api/index.php?module=auth&action=check
+[Fri Apr 17 11:54:21 2026] [::1]:37910 Closing
+[Fri Apr 17 11:54:22 2026] [::1]:37924 Accepted
+[Fri Apr 17 11:54:22 2026] [::1]:37924 [200]: POST /api/index.php?module=auth&action=login
+[Fri Apr 17 11:54:22 2026] [::1]:37924 Closing
+[Fri Apr 17 11:54:22 2026] [::1]:37932 Accepted
+[Fri Apr 17 11:54:22 2026] [::1]:37932 [200]: GET /api/index.php?module=patients&action=
+[Fri Apr 17 11:54:22 2026] [::1]:37932 Closing
+[Fri Apr 17 11:54:22 2026] [::1]:37936 Accepted
+[Fri Apr 17 11:54:22 2026] [::1]:37936 [200]: GET /api/index.php?module=doctors&action=
+[Fri Apr 17 11:54:22 2026] [::1]:37936 Closing
+[Fri Apr 17 11:54:22 2026] [::1]:37938 Accepted
+[Fri Apr 17 11:54:22 2026] [::1]:37938 [200]: GET /api/index.php?module=services&action=
+[Fri Apr 17 11:54:22 2026] [::1]:37938 Closing
+[Fri Apr 17 11:54:22 2026] [::1]:37944 Accepted
+[Fri Apr 17 11:54:22 2026] [::1]:37944 [200]: GET /api/index.php?module=rooms&action=
+[Fri Apr 17 11:54:22 2026] [::1]:37944 Closing
+[Fri Apr 17 11:54:22 2026] [::1]:37952 Accepted
+[Fri Apr 17 11:54:22 2026] [::1]:37952 [200]: GET /api/index.php?module=appointments&action=
+[Fri Apr 17 11:54:22 2026] [::1]:37952 Closing

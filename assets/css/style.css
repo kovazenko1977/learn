@@ -1,0 +1,6 @@
+[v-cloak] { display: none; }
+
+.status-planned { border-color: #3b82f6; }
+.status-completed { border-color: #10b981; }
+.status-cancelled { border-color: #ef4444; }
+.status-no_show { border-color: #f59e0b; }

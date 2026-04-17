@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental CRM</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <div id="app" v-cloak>
+        <!-- Login Screen -->
+        <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center">
+            <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+                <h1 class="text-2xl font-bold mb-6 text-center">Вход в систему</h1>
+                <form @submit.prevent="login">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Логин</label>
+                        <input v-model="loginForm.login" type="text" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-1">Пароль</label>
+                        <input v-model="loginForm.password" type="password" class="w-full border rounded p-2" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Войти</button>
+                    <p v-if="error" class="text-red-500 mt-4 text-center">{{ error }}</p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Interface -->
+        <div v-else class="min-h-screen flex flex-col">
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="font-bold text-xl">Dental CRM</div>
+                <div class="flex items-center gap-4">
+                    <span>{{ user.name }} ({{ user.role }})</span>
+                    <button @click="logout" class="text-sm text-red-600">Выход</button>
+                </div>
+            </header>
+
+            <div class="flex flex-1">
+                <!-- Sidebar -->
+                <nav class="w-64 bg-gray-800 text-white p-4">
+                    <ul>
+                        <li v-for="item in menu" :key="item.id" class="mb-2">
+                            <button @click="view = item.id" :class="['w-full text-left p-2 rounded', view === item.id ? 'bg-gray-700' : 'hover:bg-gray-700']">
+                                {{ item.label }}
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Content -->
+                <main class="flex-1 p-6 overflow-auto">
+                    <!-- Patients View -->
+                    <div v-if="view === 'patients'">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Пациенты</h2>
+                            <button @click="openModal('patient')" class="bg-green-600 text-white px-4 py-2 rounded">Добавить пациента</button>
+                        </div>
+                        <div class="bg-white rounded shadow overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-100 border-b">
+                                    <tr>
+                                        <th class="p-4 text-left">ФИО</th>
+                                        <th class="p-4 text-left">Телефон</th>
+                                        <th class="p-4 text-left">Email</th>
+                                        <th class="p-4 text-right">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="p in patients" :key="p.id" class="border-b hover:bg-gray-50">
+                                        <td class="p-4">{{ p.full_name }}</td>
+                                        <td class="p-4">{{ p.phone }}</td>
+                                        <td class="p-4">{{ p.email }}</td>
+                                        <td class="p-4 text-right">
+                                            <button @click="editItem('patient', p)" class="text-blue-600 mr-2">Редактировать</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Appointments View -->
+                    <div v-if="view === 'appointments'">
+                         <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Расписание</h2>
+                            <button @click="openModal('appointment')" class="bg-green-600 text-white px-4 py-2 rounded">Записать на прием</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div v-for="a in appointments" :key="a.id" class="bg-white p-4 rounded shadow border-l-4" :class="statusColor(a.status)">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-bold">{{ a.date }} | {{ a.time_start }} - {{ a.time_end }}</span>
+                                    <span class="text-xs uppercase px-2 py-1 bg-gray-100 rounded">{{ a.status }}</span>
+                                </div>
+                                <div class="mb-1 text-sm">Пациент: {{ getPatientName(a.patient_id) }}</div>
+                                <div class="mb-1 text-sm">Врач: {{ getDoctorName(a.doctor_id) }}</div>
+                                <div class="mb-1 text-sm text-gray-500">{{ getServiceName(a.service_id) }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Views -->
+                    <div v-if="view === 'doctors'">
+                         <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold">Врачи</h2>
+                            <button @click="openModal('doctor')" class="bg-green-600 text-white px-4 py-2 rounded">Добавить врача</button>
+                        </div>
+                        <div class="bg-white rounded shadow overflow-hidden">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="p-4">ФИО</th>
+                                        <th class="p-4">Специализация</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="d in doctors" class="border-b">
+                                        <td class="p-4">{{ d.full_name }}</td>
+                                        <td class="p-4">{{ d.specialization }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Modals (Simple) -->
+        <div v-if="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div class="bg-white p-6 rounded shadow-lg w-full max-w-lg">
+                <h3 class="text-xl font-bold mb-4">{{ modalTitle }}</h3>
+
+                <!-- Patient Form -->
+                <div v-if="modal === 'patient'">
+                    <input v-model="form.full_name" placeholder="ФИО" class="w-full border p-2 mb-2">
+                    <input v-model="form.phone" placeholder="Телефон" class="w-full border p-2 mb-2">
+                    <input v-model="form.email" placeholder="Email" class="w-full border p-2 mb-4">
+                </div>
+
+                <!-- Appointment Form -->
+                <div v-if="modal === 'appointment'">
+                    <select v-model="form.patient_id" class="w-full border p-2 mb-2">
+                        <option value="">Выберите пациента</option>
+                        <option v-for="p in patients" :value="p.id">{{ p.full_name }}</option>
+                    </select>
+                    <select v-model="form.doctor_id" class="w-full border p-2 mb-2">
+                        <option value="">Выберите врача</option>
+                        <option v-for="d in doctors" :value="d.id">{{ d.full_name }}</option>
+                    </select>
+                     <select v-model="form.service_id" class="w-full border p-2 mb-2">
+                        <option value="">Выберите услугу</option>
+                        <option v-for="s in services" :value="s.id">{{ s.name }}</option>
+                    </select>
+                    <select v-model="form.room_id" class="w-full border p-2 mb-2">
+                        <option value="">Выберите кабинет</option>
+                        <option v-for="r in rooms" :value="r.id">{{ r.name }}</option>
+                    </select>
+                    <div class="flex gap-2 mb-2">
+                        <input type="date" v-model="form.date" class="flex-1 border p-2">
+                    </div>
+                    <div class="flex gap-2 mb-4">
+                        <input type="time" v-model="form.time_start" class="flex-1 border p-2">
+                        <input type="time" v-model="form.time_end" class="flex-1 border p-2">
+                    </div>
+                </div>
+
+                <!-- Common Modal Footer -->
+                <div class="flex justify-end gap-2">
+                    <button @click="modal = null" class="px-4 py-2 text-gray-600">Отмена</button>
+                    <button @click="saveForm" class="px-4 py-2 bg-blue-600 text-white rounded">Сохранить</button>
+                </div>
+                <p v-if="error" class="text-red-500 mt-2">{{ error }}</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
