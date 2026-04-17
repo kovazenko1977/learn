@@ -194,6 +194,15 @@
                         <label>Новый ПИН-код (6 цифр)</label>
                         <input v-model="newPin" type="password" maxlength="6">
                     </div>
+                    <div class="form-group">
+                        <label>Интерфейс</label>
+                        <select v-model="uiTheme">
+                            <option value="standard">Стандартный</option>
+                            <option value="minimal">Минималистичный</option>
+                            <option value="glass">Стеклянный</option>
+                            <option value="neo">Неоморфизм</option>
+                        </select>
+                    </div>
                     <div class="settings-btns">
                         <button @click="changePin" class="btn btn-primary">Сменить ПИН</button>
                         <button @click="exportData" class="btn btn-secondary">Экспорт (JSON)</button>

@@ -22,7 +22,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s; height: 100vh; }
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s; min-height: 100vh; }
 [v-cloak] { display: none; }
 
 .app-container { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
@@ -106,3 +106,54 @@ header { display: flex; justify-content: space-between; align-items: center; mar
 .numpad button { height: 65px; border-radius: 15px; border: none; background: var(--bg-color); font-size: 1.5rem; font-weight: 700; color: var(--text-color); cursor: pointer; }
 
 @media (max-width: 600px) { .form-row { flex-direction: column; gap: 0; } }
+
+/* Theme Variations */
+
+/* Minimal */
+.theme-minimal {
+    --bg-color: #ffffff;
+    --card-bg: #f8f9fa;
+    --primary-color: #000000;
+    --primary-light: #e9ecef;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --border-color: #dee2e6;
+}
+.theme-minimal .entry-card { border-radius: 0; border: none; border-bottom: 1px solid var(--border-color); box-shadow: none; }
+.theme-minimal .calendar-widget { border-radius: 0; border: 1px solid var(--border-color); box-shadow: none; }
+
+/* Glassmorphism */
+.theme-glass {
+    --bg-color: #7360f2;
+    background-image: linear-gradient(135deg, #7360f2 0%, #a095ee 100%);
+    background-attachment: fixed;
+}
+.theme-glass .app-container { color: white; }
+.theme-glass .logo h1 { color: white; }
+.theme-glass .card-bg, .theme-glass .entry-card, .theme-glass .calendar-widget, .theme-glass .modal, .theme-glass .tabs button.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+.theme-glass .text-muted, .theme-glass .entry-date, .theme-glass .calendar-day-name { color: rgba(255, 255, 255, 0.7); }
+.theme-glass .icon-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; }
+.theme-glass .search-bar input, .theme-glass .search-bar select { background: rgba(255, 255, 255, 0.2); color: white; border: none; }
+.theme-glass .tabs { background: rgba(255, 255, 255, 0.1); }
+.theme-glass .tabs button { color: rgba(255, 255, 255, 0.6); }
+
+/* Neumorphism */
+.theme-neo {
+    --bg-color: #e0e5ec;
+    --card-bg: #e0e5ec;
+    --text-color: #44474a;
+}
+.theme-neo .entry-card, .theme-neo .calendar-widget, .theme-neo .icon-btn, .theme-neo .search-bar input, .theme-neo .search-bar select, .theme-neo .numpad button, .theme-neo .modal {
+    box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5) !important;
+    border: none;
+    background: var(--bg-color);
+}
+.theme-neo .fab {
+    box-shadow: 4px 4px 8px rgb(163,177,198,0.6), -4px -4px 8px rgba(255,255,255, 0.5) !important;
+}

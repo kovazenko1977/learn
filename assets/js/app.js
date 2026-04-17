@@ -25,6 +25,7 @@ createApp({
             filterCategory: 'All',
             filterStatus: 'Active', // Active, Completed, All
             darkMode: localStorage.getItem('darkMode') === 'true',
+            uiTheme: localStorage.getItem('uiTheme') || 'standard',
             categories: ['General', 'Work', 'Personal', 'Health', 'Finance', 'Ideas'],
             moods: ['😊', '😐', '😔', '🚀', '🔥', '😴']
         };
@@ -32,6 +33,10 @@ createApp({
     watch: {
         darkMode(val) {
             localStorage.setItem('darkMode', val);
+            this.applyTheme();
+        },
+        uiTheme(val) {
+            localStorage.setItem('uiTheme', val);
             this.applyTheme();
         }
     },
@@ -103,7 +108,7 @@ createApp({
     },
     methods: {
         applyTheme() {
-            document.body.className = this.darkMode ? 'dark-mode' : '';
+            document.body.className = (this.darkMode ? 'dark-mode ' : '') + 'theme-' + this.uiTheme;
         },
         async checkAuth() {
             try {
