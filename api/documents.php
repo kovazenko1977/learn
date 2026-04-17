@@ -14,13 +14,24 @@ if ($method === 'GET') {
 } elseif ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $input = Security::sanitize($input);
-    $id = uniqid();
+
+    $id = isset($input['id']) ? $input['id'] : uniqid();
+    $existing = Storage::read('documents', $id);
+
+    if ($existing) {
+        Storage::saveVersion('documents', $id, $existing);
+    }
+
     $input['id'] = $id;
-    $input['created_at'] = date('c');
-    $input['created_by'] = $_SESSION['user_id'];
+    if (!$existing) {
+        $input['created_at'] = date('c');
+        $input['created_by'] = $_SESSION['user_id'];
+    }
 
     // Placeholder for PDF generation
-    $input['file_path'] = "/storage/files/patients/{$input['patient_id']}/{$id}.pdf";
+    if (isset($input['patient_id'])) {
+        $input['file_path'] = "/storage/files/patients/{$input['patient_id']}/{$id}.pdf";
+    }
 
     Storage::write('documents', $id, $input);
     echo json_encode(['success' => true, 'id' => $id]);

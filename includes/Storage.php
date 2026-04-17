@@ -19,7 +19,13 @@ class Storage {
         $files = glob($dir . '/*.json');
         $items = [];
         foreach ($files as $file) {
-            $items[] = json_decode(file_get_contents($file), true);
+            $content = file_get_contents($file);
+            $data = json_decode($content, true);
+            if (json_last_error() === JSON_ERROR_NONE && $data !== null) {
+                $items[] = $data;
+            } else {
+                Logger::log("Corrupted JSON in $file", "error", "system.log");
+            }
         }
         return $items;
     }
@@ -56,5 +62,21 @@ class Storage {
             return unlink($file);
         }
         return false;
+    }
+
+    public static function saveVersion($entity, $id, $data) {
+        $versionPath = __DIR__ . '/../storage/versions/' . $entity . '/' . $id . '/';
+        if (!is_dir($versionPath)) {
+            mkdir($versionPath, 0755, true);
+        }
+        $vNum = count(glob($versionPath . 'v*.json')) + 1;
+        $file = $versionPath . 'v' . $vNum . '.json';
+        $entry = [
+            'version' => $vNum,
+            'timestamp' => date('c'),
+            'user_id' => isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'system',
+            'data' => $data
+        ];
+        file_put_contents($file, json_encode($entry, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 }

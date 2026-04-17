@@ -14,21 +14,31 @@ createApp({
             services: [],
             rooms: [],
             appointments: [],
+            users: [],
             modal: null,
             modalTitle: '',
             form: {},
-            menu: [
-                { id: 'appointments', label: 'Расписание' },
-                { id: 'patients', label: 'Пациенты' },
-                { id: 'doctors', label: 'Врачи' },
-                { id: 'services', label: 'Услуги' },
-                { id: 'rooms', label: 'Кабинеты' },
-                { id: 'tasks', label: 'Задачи' },
-                { id: 'finance', label: 'Финансы' },
-                { id: 'analytics', label: 'Аналитика' },
-                { id: 'documents', label: 'Документы' },
-                { id: 'settings', label: 'Настройки' }
+            rawMenu: [
+                { id: 'appointments', label: 'Расписание', roles: ['admin', 'senior_admin', 'manager', 'doctor', 'patient'] },
+                { id: 'patients', label: 'Пациенты', roles: ['admin', 'senior_admin', 'manager', 'doctor'] },
+                { id: 'doctors', label: 'Врачи', roles: ['admin', 'senior_admin'] },
+                { id: 'services', label: 'Услуги', roles: ['admin', 'senior_admin'] },
+                { id: 'rooms', label: 'Кабинеты', roles: ['admin', 'senior_admin'] },
+                { id: 'tasks', label: 'Задачи', roles: ['admin', 'senior_admin', 'manager', 'doctor'] },
+                { id: 'finance', label: 'Финансы', roles: ['admin', 'director'] },
+                { id: 'analytics', label: 'Аналитика', roles: ['admin', 'director', 'marketing'] },
+                { id: 'documents', label: 'Документы', roles: ['admin', 'doctor', 'patient'] },
+                { id: 'tags', label: 'Теги', roles: ['admin', 'marketing'] },
+                { id: 'sources', label: 'Источники', roles: ['admin', 'marketing'] },
+                { id: 'users', label: 'Пользователи', roles: ['admin'] },
+                { id: 'settings', label: 'Настройки', roles: ['admin'] }
             ]
+        }
+    },
+    computed: {
+        menu() {
+            if (!this.user) return [];
+            return this.rawMenu.filter(m => m.roles.includes(this.user.role));
         }
     },
     methods: {
@@ -78,6 +88,9 @@ createApp({
             this.services = await this.api('services') || [];
             this.rooms = await this.api('rooms') || [];
             this.appointments = await this.api('appointments') || [];
+            if (this.user.role === 'admin') {
+                this.users = await this.api('users') || [];
+            }
         },
         openModal(type, item = null) {
             this.modal = type;

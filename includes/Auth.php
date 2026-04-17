@@ -34,6 +34,7 @@ class Auth {
 
     public static function requireAuth() {
         if (!self::isLoggedIn()) {
+            http_response_code(401);
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Unauthorized']);
             exit;
@@ -46,6 +47,7 @@ class Auth {
             $roles = [$roles];
         }
         if (!in_array(self::getRole(), $roles) && self::getRole() !== 'admin') {
+            http_response_code(403);
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Forbidden']);
             exit;

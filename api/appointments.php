@@ -3,19 +3,6 @@ Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-function saveVersion($entity, $id, $data) {
-    $versionPath = __DIR__ . '/../storage/versions/' . $entity . '/' . $id . '/';
-    if (!is_dir($versionPath)) {
-        mkdir($versionPath, 0755, true);
-    }
-    $vNum = count(glob($versionPath . 'v*.json')) + 1;
-    file_put_contents($versionPath . 'v' . $vNum . '.json', json_encode([
-        'version' => $vNum,
-        'timestamp' => date('c'),
-        'user_id' => $_SESSION['user_id'],
-        'data' => $data
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
 
 function checkConflicts($newAppointment, $existingAppointments) {
     foreach ($existingAppointments as $app) {
@@ -51,11 +38,22 @@ if ($method === 'GET') {
 } elseif ($method === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
     $input = Security::sanitize($input);
+
+    // Auto-calculate time_end if missing but service_id present
+    if (empty($input['time_end']) && !empty($input['service_id']) && !empty($input['time_start'])) {
+        $service = Storage::read('services', $input['service_id']);
+        if ($service && !empty($service['duration_minutes'])) {
+            $start = strtotime($input['date'] . ' ' . $input['time_start']);
+            $end = $start + ($service['duration_minutes'] * 60);
+            $input['time_end'] = date('H:i', $end);
+        }
+    }
+
     $id = isset($input['id']) ? $input['id'] : uniqid();
 
     $existingRecord = Storage::read('appointments', $id);
     if ($existingRecord) {
-        saveVersion('appointments', $id, $existingRecord);
+        Storage::saveVersion('appointments', $id, $existingRecord);
     }
 
     $input['id'] = $id;

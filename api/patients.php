@@ -3,19 +3,6 @@ Auth::requireRole(['admin', 'senior_admin', 'manager', 'doctor']);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-function saveVersion($entity, $id, $data) {
-    $versionPath = __DIR__ . '/../storage/versions/' . $entity . '/' . $id . '/';
-    if (!is_dir($versionPath)) {
-        mkdir($versionPath, 0755, true);
-    }
-    $vNum = count(glob($versionPath . 'v*.json')) + 1;
-    file_put_contents($versionPath . 'v' . $vNum . '.json', json_encode([
-        'version' => $vNum,
-        'timestamp' => date('c'),
-        'user_id' => $_SESSION['user_id'],
-        'data' => $data
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
 
 if ($method === 'GET') {
     $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -49,7 +36,7 @@ if ($method === 'GET') {
     }
 
     if ($existing) {
-        saveVersion('patients', $id, $existing);
+        Storage::saveVersion('patients', $id, $existing);
     }
 
     $input['id'] = $id;
