@@ -48,7 +48,12 @@
                 </div>
             </header>
 
-            <main>
+            <nav class="main-nav">
+                <button @click="activeTab = 'diary'" :class="{ active: activeTab === 'diary' }">🗓 Ежедневник</button>
+                <button @click="activeTab = 'ideas'" :class="{ active: activeTab === 'ideas' }">💡 Идеи</button>
+            </nav>
+
+            <main v-if="activeTab === 'diary'">
                 <div class="search-bar">
                     <input v-model="searchQuery" type="text" placeholder="Поиск записей...">
                     <select v-model="filterCategory">
@@ -119,9 +124,66 @@
                         </div>
                     </div>
                 </div>
+                <button @click="openAddModal" class="fab">+</button>
             </main>
 
-            <button @click="openAddModal" class="fab">+</button>
+            <main v-if="activeTab === 'ideas'">
+                <div v-if="!currentIdea" class="ideas-list">
+                    <div class="section-title">
+                        <span>Ваши идеи</span>
+                        <button @click="showIdeaModal = true" class="btn btn-primary" style="padding: 8px 16px;">+ Новая идея</button>
+                    </div>
+                    <div v-for="idea in ideas" :key="idea.id" class="entry-card" @click="currentIdea = idea">
+                        <h3>{{ idea.title }}</h3>
+                        <p>{{ idea.description }}</p>
+                        <div class="entry-footer">
+                            <span>💬 {{ idea.comments.length }} обсуждений</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else class="idea-chat">
+                    <button @click="currentIdea = null" class="btn-cancel" style="margin-bottom: 20px;">← К списку идей</button>
+                    <div class="idea-header entry-card">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <h2>{{ currentIdea.title }}</h2>
+                            <button @click="deleteIdea(currentIdea.id)" class="icon-btn">🗑️</button>
+                        </div>
+                        <p>{{ currentIdea.description }}</p>
+                    </div>
+
+                    <div class="chat-messages">
+                        <div v-for="comment in currentIdea.comments" :key="comment.id" class="message-bubble">
+                            <p>{{ comment.text }}</p>
+                            <span class="message-time">{{ formatDate(comment.created_at) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-input">
+                        <input v-model="newIdeaComment" type="text" placeholder="Обсудить идею..." @keyup.enter="addComment(currentIdea.id)">
+                        <button @click="addComment(currentIdea.id)">↗️</button>
+                    </div>
+                </div>
+
+                <!-- Modal for New Idea -->
+                <div v-if="showIdeaModal" class="modal-overlay" @click.self="showIdeaModal = false">
+                    <div class="modal">
+                        <h2>Новая идея</h2>
+                        <div class="form-group">
+                            <label>Название</label>
+                            <input v-model="ideaForm.title" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <textarea v-model="ideaForm.description"></textarea>
+                        </div>
+                        <div class="modal-actions">
+                            <button @click="showIdeaModal = false" class="btn btn-secondary">Отмена</button>
+                            <button @click="saveIdea" class="btn btn-primary">Создать</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
 
             <!-- Modal for Add/Edit Entry -->
             <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
@@ -205,6 +267,7 @@
                     </div>
                     <div class="settings-btns">
                         <button @click="changePin" class="btn btn-primary">Сменить ПИН</button>
+                        <button v-if="deferredPrompt" @click="installApp" class="btn btn-success">Установить как приложение</button>
                         <button @click="exportData" class="btn btn-secondary">Экспорт (JSON)</button>
                     </div>
                     <div class="modal-actions">

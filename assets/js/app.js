@@ -26,7 +26,13 @@ createApp({
             filterStatus: 'Active', // Active, Completed, All
             darkMode: localStorage.getItem('darkMode') === 'true',
             uiTheme: localStorage.getItem('uiTheme') || 'standard',
-            categories: ['General', 'Work', 'Personal', 'Health', 'Finance', 'Ideas'],
+            activeTab: 'diary', // diary, ideas
+            ideas: [],
+            showIdeaModal: false,
+            currentIdea: null,
+            newIdeaComment: '',
+            ideaForm: { title: '', description: '' },
+            categories: ['Общее', 'Работа', 'Личное', 'Здоровье', 'Финансы', 'Планы'],
             moods: ['😊', '😐', '😔', '🚀', '🔥', '😴']
         };
     },
@@ -115,7 +121,10 @@ createApp({
                 const res = await fetch('api/auth.php?action=check');
                 const data = await res.json();
                 this.authenticated = data.authenticated;
-                if (this.authenticated) this.fetchEntries();
+                if (this.authenticated) {
+                    this.fetchEntries();
+                    this.fetchIdeas();
+                }
             } catch (e) {}
         },
         appendPin(n) { if (this.pin.length < 6) { this.pin += n; if (this.pin.length === 6) this.login(); } },
@@ -134,6 +143,37 @@ createApp({
                 const res = await fetch('api/entries.php');
                 this.entries = await res.json();
             } catch (e) { this.showToast('Не удалось загрузить записи', 'error'); }
+        },
+        async fetchIdeas() {
+            try {
+                const res = await fetch('api/ideas.php');
+                this.ideas = await res.json();
+            } catch (e) {}
+        },
+        async saveIdea() {
+            if (!this.ideaForm.title) return;
+            try {
+                await fetch('api/ideas.php', { method: 'POST', body: JSON.stringify(this.ideaForm) });
+                this.showIdeaModal = false;
+                this.ideaForm = { title: '', description: '' };
+                this.fetchIdeas();
+            } catch (e) {}
+        },
+        async addComment(ideaId) {
+            if (!this.newIdeaComment) return;
+            try {
+                await fetch('api/ideas.php', { method: 'POST', body: JSON.stringify({ idea_id: ideaId, message: this.newIdeaComment }) });
+                this.newIdeaComment = '';
+                this.fetchIdeas().then(() => {
+                    this.currentIdea = this.ideas.find(i => i.id === ideaId);
+                });
+            } catch (e) {}
+        },
+        async deleteIdea(id) {
+            if (!confirm('Удалить идею?')) return;
+            await fetch(`api/ideas.php?id=${id}`, { method: 'DELETE' });
+            this.currentIdea = null;
+            this.fetchIdeas();
         },
         openAddModal() {
             this.editingId = null;
