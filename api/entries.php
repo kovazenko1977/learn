@@ -25,8 +25,15 @@ switch ($method) {
             'title' => $data['title'],
             'description' => $data['description'] ?? '',
             'date' => $data['date'] ?? date('Y-m-d H:i'),
-            'reminder' => $data['reminder'] ?? null,
-            'created_at' => date('c')
+            'reminder' => $data['reminder'] ?? false,
+            'completed' => $data['completed'] ?? false,
+            'priority' => $data['priority'] ?? 'medium',
+            'category' => $data['category'] ?? 'General',
+            'mood' => $data['mood'] ?? '😐',
+            'pinned' => $data['pinned'] ?? false,
+            'notified' => false,
+            'created_at' => date('c'),
+            'updated_at' => date('c')
         ];
         $entries[] = $newEntry;
         Storage::write('entries.json', $entries);
@@ -47,6 +54,13 @@ switch ($method) {
                 $entry['description'] = $data['description'] ?? $entry['description'];
                 $entry['date'] = $data['date'] ?? $entry['date'];
                 $entry['reminder'] = $data['reminder'] ?? $entry['reminder'];
+                $entry['completed'] = isset($data['completed']) ? $data['completed'] : $entry['completed'];
+                $entry['priority'] = $data['priority'] ?? $entry['priority'];
+                $entry['category'] = $data['category'] ?? $entry['category'];
+                $entry['mood'] = $data['mood'] ?? $entry['mood'];
+                $entry['pinned'] = isset($data['pinned']) ? $data['pinned'] : $entry['pinned'];
+                $entry['notified'] = isset($data['notified']) ? $data['notified'] : $entry['notified'];
+                $entry['updated_at'] = date('c');
                 $updated = true;
                 break;
             }
