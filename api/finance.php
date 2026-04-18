@@ -5,6 +5,21 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($method === 'GET') {
+    if ($action === 'export_csv') {
+        Auth::requireRole(['admin', 'director']);
+        $ops = Storage::list('finance');
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=finance.csv');
+        $output = fopen('php://output', 'w');
+        fputs($output, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+        fputcsv($output, ['ID', 'Дата', 'Тип', 'Сумма', 'Пациент ID', 'Комментарий'], ';');
+        foreach ($ops as $f) {
+            fputcsv($output, [$f['id'], $f['created_at'] ?? ($f['date'] ?? ''), $f['type'], $f['amount'], $f['patient_id'] ?? '-', $f['comment'] ?? ''], ';');
+        }
+        fclose($output);
+        exit;
+    }
+
     if ($action === 'get_active_shift') {
         $shifts = Storage::list('shifts');
         foreach ($shifts as $s) {

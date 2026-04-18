@@ -22,6 +22,8 @@ createApp({
             documents: [],
             templates: [],
             chat: [],
+            logs: [],
+            toasts: [],
             activeShift: null,
             shifts: [],
             newMessage: '',
@@ -30,6 +32,8 @@ createApp({
             stats: {},
             settings: { clinic_name: 'Dental CRM' },
             modules: {},
+            widgetSnippet: '',
+            activeLog: 'system.log',
             modal: null,
             modalTitle: '',
             form: {},
@@ -48,6 +52,7 @@ createApp({
                 { id: 'sources', label: 'Источники', roles: ['admin', 'marketing'] },
                 { id: 'templates', label: 'Шаблоны', roles: ['admin', 'senior_admin'] },
                 { id: 'users', label: 'Пользователи', roles: ['admin'] },
+                { id: 'logs', label: 'Логи и статус', roles: ['admin', 'director', 'support'] },
                 { id: 'settings', label: 'Настройки', roles: ['admin'] }
             ],
             help: {
@@ -65,6 +70,7 @@ createApp({
                 sources: 'Аналитика каналов привлечения пациентов (реклама, сайт и др.).',
                 templates: 'Настройка шаблонов для быстрой подготовки документов.',
                 users: 'Управление доступом сотрудников и их ролями в системе.',
+                logs: 'Просмотр системных логов и состояния здоровья системы.',
                 settings: 'Системные настройки клиники и управление модулями.'
             }
         }
@@ -76,6 +82,13 @@ createApp({
         }
     },
     methods: {
+        toast(msg, type = 'success') {
+            const id = Date.now();
+            this.toasts.push({ id, msg, type });
+            setTimeout(() => {
+                this.toasts = this.toasts.filter(t => t.id !== id);
+            }, 3000);
+        },
         async api(module, params = {}, method = 'GET', data = null) {
             this.error = '';
             const query = new URLSearchParams({ module, ...params }).toString();
@@ -88,11 +101,13 @@ createApp({
                 const result = await response.json();
                 if (result.error) {
                     this.error = result.error;
+                    this.toast(this.error, 'error');
                     return null;
                 }
                 return result;
             } catch (e) {
                 this.error = 'Ошибка соединения с сервером';
+                this.toast(this.error, 'error');
                 return null;
             }
         },
@@ -118,6 +133,12 @@ createApp({
             this.isLoggedIn = false;
             this.user = null;
         },
+        async openPatientCard(patient) {
+            const fullPatient = await this.api('patients', { id: patient.id });
+            if (fullPatient) {
+                this.openModal('patient', fullPatient);
+            }
+        },
         async checkAuth() {
             const result = await this.api('auth', { action: 'check' });
             if (result && result.isLoggedIn) {
@@ -125,6 +146,15 @@ createApp({
                 this.user = result.user;
                 this.loadData();
             }
+        },
+        async loadWidgetSnippet() {
+            const res = await this.api('widget');
+            if (res) this.widgetSnippet = res.snippet;
+        },
+        async loadLogs(type = 'system.log') {
+            this.activeLog = type;
+            const res = await this.api('logs', { type });
+            if (res) this.logs = res.content;
         },
         async loadData() {
             const loaders = [
@@ -149,6 +179,8 @@ createApp({
                 loaders.push(this.api('users').then(res => this.users = res || []));
                 loaders.push(this.api('settings', { type: 'system' }).then(res => this.settings = res || { clinic_name: 'Dental CRM' }));
                 loaders.push(this.api('settings', { type: 'modules' }).then(res => this.modules = res || {}));
+                this.loadWidgetSnippet();
+                this.loadLogs();
             }
 
             await Promise.allSettled(loaders);
@@ -156,23 +188,33 @@ createApp({
         openModal(type, item = null) {
             this.modal = type;
             this.form = item ? JSON.parse(JSON.stringify(item)) : { status: 'planned' };
+            if (type === 'patient' && this.form.files) {
+                this.form.files_raw = this.form.files.join('\n');
+            }
             this.modalTitle = item ? 'Редактировать' : 'Добавить';
         },
         async saveForm() {
             const result = await this.api(this.modal, {}, 'POST', this.form);
             if (result && (result.success || result.id)) {
+                this.toast('Сохранено успешно');
                 this.modal = null;
                 this.loadData();
             }
         },
         async saveItem(module, item) {
-            await this.api(module, {}, 'POST', item);
-            this.loadData();
+            const result = await this.api(module, {}, 'POST', item);
+            if (result) {
+                this.toast('Обновлено');
+                this.loadData();
+            }
         },
         async deleteItem(module, id) {
             if (confirm('Вы уверены?')) {
-                await this.api(module, { id }, 'DELETE');
-                this.loadData();
+                const result = await this.api(module, { id }, 'DELETE');
+                if (result) {
+                    this.toast('Удалено');
+                    this.loadData();
+                }
             }
         },
         async saveSettings(type) {
@@ -188,6 +230,15 @@ createApp({
                     location.reload();
                 }
             }
+        },
+        async createBackup() {
+            const res = await this.api('settings', { action: 'create_backup' }, 'POST');
+            if (res && res.success) {
+                alert('Бэкап создан в папке storage/backups/');
+            }
+        },
+        exportCSV(module) {
+            window.location.href = `api/index.php?module=${module}&action=export_csv`;
         },
         async seedData() {
             if (confirm('Загрузить демонстрационные данные? Текущие данные останутся.')) {

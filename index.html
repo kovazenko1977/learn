@@ -11,6 +11,17 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
     <div id="app" v-cloak>
+        <!-- Toasts -->
+        <div class="fixed top-6 right-6 z-[100] space-y-3">
+            <transition-group name="toast">
+                <div v-for="t in toasts" :key="t.id" :class="['px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 text-white font-bold animate-slide-in', t.type === 'error' ? 'bg-red-500' : 'bg-green-500']">
+                    <svg v-if="t.type === 'error'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    {{ t.msg }}
+                </div>
+            </transition-group>
+        </div>
+
         <!-- Login Screen -->
         <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center">
             <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
@@ -86,7 +97,7 @@
                     <div>
                         <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4 px-4">Администрирование</div>
                         <ul class="space-y-1">
-                            <li v-for="item in menu.filter(x => ['finance', 'analytics', 'settings'].includes(x.id))" :key="item.id">
+                            <li v-for="item in menu.filter(x => ['finance', 'analytics', 'logs', 'settings'].includes(x.id))" :key="item.id">
                                 <button @click="view = item.id" :data-view="item.id" :class="['w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3 desktop-nav-btn', view === item.id ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800']">
                                     <span class="font-medium">{{ item.label }}</span>
                                 </button>
@@ -176,9 +187,12 @@
                 <div v-if="view === 'patients'">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                         <h2 class="text-2xl lg:text-3xl font-bold">Пациенты</h2>
-                        <button @click="openModal('patient')" class="w-full sm:w-auto bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 transition">
-                            Добавить пациента
-                        </button>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button @click="exportCSV('patients')" class="flex-1 sm:flex-none bg-blue-100 text-blue-700 px-4 py-2.5 rounded-lg font-bold hover:bg-blue-200 transition">CSV</button>
+                            <button @click="openModal('patient')" class="flex-1 sm:flex-none bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 transition">
+                                Добавить пациента
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Desktop Table -->
@@ -198,8 +212,9 @@
                                     <td class="p-4">{{ p.phone }}</td>
                                     <td class="p-4 text-gray-500">{{ p.email }}</td>
                                     <td class="p-4 text-right">
+                                        <button @click="openPatientCard(p)" class="text-blue-600 hover:underline mr-4">Карточка</button>
                                         <button @click="showHistory('patients', p.id)" class="text-gray-500 mr-2 hover:underline">История</button>
-                                        <button @click="editItem('patient', p)" class="text-blue-600 hover:underline">Редактировать</button>
+                                        <button @click="editItem('patient', p)" class="text-gray-500 hover:underline">Изм.</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -208,12 +223,12 @@
 
                     <!-- Mobile List -->
                     <div class="md:hidden space-y-4">
-                        <div v-for="p in patients" :key="p.id" class="bg-white p-4 rounded-xl shadow">
+                        <div v-for="p in patients" :key="p.id" class="bg-white p-4 rounded-xl shadow" @click="openPatientCard(p)">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="font-bold text-lg text-gray-800">{{ p.full_name }}</div>
                                 <div class="flex gap-3">
-                                    <button @click="showHistory('patients', p.id)" class="text-gray-400 text-sm">История</button>
-                                    <button @click="editItem('patient', p)" class="text-blue-600 text-sm">Изм.</button>
+                                    <button @click.stop="showHistory('patients', p.id)" class="text-gray-400 text-sm">История</button>
+                                    <button @click.stop="editItem('patient', p)" class="text-blue-600 text-sm">Изм.</button>
                                 </div>
                             </div>
                             <div class="text-gray-600 text-sm mb-1 flex items-center gap-2">
@@ -350,9 +365,12 @@
                 <div v-if="view === 'finance'">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                         <h2 class="text-2xl lg:text-3xl font-bold">Финансы</h2>
-                        <button @click="openModal('finance')" class="w-full sm:w-auto bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 transition">
-                            Добавить операцию
-                        </button>
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button @click="exportCSV('finance')" class="flex-1 sm:flex-none bg-blue-100 text-blue-700 px-4 py-2.5 rounded-lg font-bold hover:bg-blue-200 transition">CSV</button>
+                            <button @click="openModal('finance')" class="flex-1 sm:flex-none bg-green-600 text-white px-6 py-2.5 rounded-lg shadow hover:bg-green-700 transition">
+                                Добавить операцию
+                            </button>
+                        </div>
                     </div>
                     <div class="bg-white rounded-xl shadow overflow-hidden">
                         <table class="w-full text-left">
@@ -421,6 +439,40 @@
                             <div class="text-3xl font-bold">{{ doctors.length }}</div>
                         </div>
                     </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+                        <!-- Salary Report -->
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                            <h3 class="text-lg font-bold mb-6">Отчет по зарплате (Комиссия 30%)</h3>
+                            <div class="space-y-4">
+                                <div v-for="s in stats.salary" :key="s.doctor_name" class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                                    <div class="font-bold">{{ s.doctor_name }}</div>
+                                    <div class="text-blue-600 font-black">{{ s.earned }} ₽</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Marketing Conversion -->
+                        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                            <h3 class="text-lg font-bold mb-6">Конверсия по источникам</h3>
+                            <table class="w-full text-left">
+                                <thead class="text-slate-400 text-xs uppercase font-bold tracking-widest">
+                                    <tr>
+                                        <th class="pb-4">Источник</th>
+                                        <th class="pb-4">Пациенты</th>
+                                        <th class="pb-4 text-right">Записи</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm">
+                                    <tr v-for="m in stats.marketing" :key="m.name" class="border-t border-slate-50">
+                                        <td class="py-4 font-medium">{{ m.name }}</td>
+                                        <td class="py-4">{{ m.count }}</td>
+                                        <td class="py-4 text-right font-bold text-blue-600">{{ m.appointments }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tags View -->
@@ -448,6 +500,20 @@
                         <div v-for="s in sources" :key="s.id" class="bg-white p-6 rounded-xl shadow">
                             <div class="font-bold mb-1">{{ s.name }}</div>
                             <div class="text-xs text-gray-400 uppercase tracking-widest">Источник</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs View -->
+                <div v-if="view === 'logs'">
+                    <h2 class="text-2xl lg:text-3xl font-bold mb-6">Системные логи</h2>
+                    <div class="bg-slate-900 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[600px]">
+                        <div class="p-4 bg-slate-800 flex gap-4">
+                            <button @click="loadLogs('system.log')" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider" :class="activeLog === 'system.log' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'">System</button>
+                            <button @click="loadLogs('auth.log')" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider" :class="activeLog === 'auth.log' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'">Auth</button>
+                        </div>
+                        <div class="flex-1 overflow-auto p-6 font-mono text-xs text-blue-300 space-y-1">
+                            <div v-for="(line, i) in logs" :key="i" class="border-b border-slate-800 pb-1">{{ line }}</div>
                         </div>
                     </div>
                 </div>
@@ -497,15 +563,29 @@
                             </div>
                             </div>
 
+                            <!-- Widget Constructor -->
+                            <div v-if="user.role === 'admin'" class="bg-white rounded-2xl shadow p-6 lg:col-span-2">
+                                <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    Код для сайта (Виджет записи)
+                                </h3>
+                                <p class="text-sm text-gray-500 mb-4">Скопируйте этот код и вставьте его на свой сайт для размещения формы онлайн-записи.</p>
+                                <textarea readonly v-model="widgetSnippet" rows="6" class="w-full border border-gray-100 p-4 rounded-xl bg-gray-50 font-mono text-xs outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                <button @click="loadWidgetSnippet" class="mt-4 px-6 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold text-sm hover:bg-blue-200 transition">Сгенерировать заново</button>
+                            </div>
+
                             <!-- Data Management -->
                             <div class="bg-white rounded-2xl shadow p-6 lg:col-span-2">
                                 <h3 class="text-lg font-bold mb-6 flex items-center gap-2 text-red-600">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                     Управление данными
                                 </h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <button @click="seedData" class="py-4 bg-green-50 text-green-700 rounded-xl font-bold hover:bg-green-100 transition border border-green-200">
                                         Загрузить демо-данные
+                                    </button>
+                                    <button @click="createBackup" class="py-4 bg-blue-50 text-blue-700 rounded-xl font-bold hover:bg-blue-100 transition border border-blue-200">
+                                        Создать бэкап
                                     </button>
                                     <button @click="resetData" class="py-4 bg-red-50 text-red-700 rounded-xl font-bold hover:bg-red-100 transition border border-red-200">
                                         Удалить все данные
@@ -678,63 +758,140 @@
                                 <textarea v-model="form.contraindications" rows="2" class="w-full border-gray-200 border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                             </div>
                         </div>
+
+                        <div v-if="form.id" class="mt-4">
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Файлы/Ссылки (по одной на строку)</label>
+                            <textarea v-model="form.files_raw" @blur="form.files = form.files_raw.split('\n').filter(x => x.trim())" rows="2" class="w-full border-gray-200 border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none font-mono text-xs" placeholder="https://..."></textarea>
+                        </div>
+
+                        <!-- Balance & Timeline -->
+                        <div v-if="form.id" class="mt-8 pt-8 border-t">
+                            <div class="flex items-center justify-between mb-6">
+                                <h4 class="font-bold text-lg">Финансы и История</h4>
+                                <div :class="['px-4 py-2 rounded-xl font-bold', form.balance >= 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700']">
+                                    Баланс: {{ form.balance }} ₽
+                                </div>
+                            </div>
+                            <div class="space-y-3 max-h-60 overflow-auto pr-2 custom-scrollbar">
+                                <div v-for="evt in form.timeline" :key="evt.date" class="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-start gap-3">
+                                    <div :class="['w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
+                                        evt.type === 'appointment' ? 'bg-blue-100 text-blue-600' :
+                                        evt.type === 'finance' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600']">
+                                        <svg v-if="evt.type === 'appointment'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <svg v-if="evt.type === 'finance'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <svg v-if="evt.type === 'document'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="font-bold text-sm truncate">{{ evt.title }}</div>
+                                        <div class="text-[10px] text-gray-400 uppercase font-bold">{{ evt.date }} <span v-if="evt.status">• {{ evt.status }}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Appointment Form -->
                     <div v-if="modal === 'appointment'" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <select v-model="form.patient_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
-                                <option value="">Выберите пациента</option>
-                                <option v-for="p in patients" :value="p.id">{{ p.full_name }}</option>
-                            </select>
-                            <select v-model="form.doctor_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
-                                <option value="">Выберите врача</option>
-                                <option v-for="d in doctors" :value="d.id">{{ d.full_name }}</option>
-                            </select>
-                             <select v-model="form.service_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
-                                <option value="">Выберите услугу</option>
-                                <option v-for="s in services" :value="s.id">{{ s.name }}</option>
-                            </select>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Пациент</label>
+                                <select v-model="form.patient_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                                    <option value="">Выберите пациента</option>
+                                    <option v-for="p in patients" :value="p.id">{{ p.full_name }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Врач</label>
+                                <select v-model="form.doctor_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                                    <option value="">Выберите врача</option>
+                                    <option v-for="d in doctors" :value="d.id">{{ d.full_name }}</option>
+                                </select>
+                            </div>
                         </div>
-                        <select v-model="form.room_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
-                            <option value="">Выберите кабинет</option>
-                            <option v-for="r in rooms" :value="r.id">{{ r.name }}</option>
-                        </select>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Услуга</label>
+                                <select v-model="form.service_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                                    <option value="">Выберите услугу</option>
+                                    <option v-for="s in services" :value="s.id">{{ s.name }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Кабинет</label>
+                                <select v-model="form.room_id" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                                    <option value="">Выберите кабинет</option>
+                                    <option v-for="r in rooms" :value="r.id">{{ r.name }}</option>
+                                </select>
+                            </div>
+                        </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Заметки</label>
                             <textarea v-model="form.notes" rows="2" class="w-full border-gray-200 border rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <input type="date" v-model="form.date" class="border-gray-200 border rounded-xl p-3 outline-none">
-                            <input type="time" v-model="form.time_start" class="border-gray-200 border rounded-xl p-3 outline-none">
-                            <input type="time" v-model="form.time_end" class="border-gray-200 border rounded-xl p-3 outline-none">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Дата</label>
+                                <input type="date" v-model="form.date" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Начало</label>
+                                <input type="time" v-model="form.time_start" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Конец</label>
+                                <input type="time" v-model="form.time_end" class="w-full border-gray-200 border rounded-xl p-3 outline-none">
+                            </div>
                         </div>
                     </div>
 
                 <!-- Template Form -->
                 <div v-if="modal === 'templates'" class="space-y-4">
-                    <input v-model="form.title" placeholder="Название шаблона" class="w-full border rounded-xl p-3">
-                    <select v-model="form.type" class="w-full border rounded-xl p-3">
-                        <option value="recommendation">Рекомендация</option>
-                        <option value="conclusion">Заключение</option>
-                        <option value="contract">Договор</option>
-                        <option value="email">Email</option>
-                    </select>
-                    <textarea v-model="form.content" rows="10" placeholder="Текст шаблона с {{плейсхолдерами}}" class="w-full border rounded-xl p-3 font-mono text-sm"></textarea>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Название шаблона</label>
+                        <input v-model="form.title" placeholder="Название шаблона" class="w-full border rounded-xl p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Тип</label>
+                        <select v-model="form.type" class="w-full border rounded-xl p-3 outline-none">
+                            <option value="recommendation">Рекомендация</option>
+                            <option value="conclusion">Заключение</option>
+                            <option value="contract">Договор</option>
+                            <option value="email">Email</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Содержание</label>
+                        <textarea v-model="form.content" rows="10" placeholder="Текст шаблона с {{плейсхолдерами}}" class="w-full border rounded-xl p-3 font-mono text-sm outline-none"></textarea>
+                    </div>
                 </div>
 
                     <!-- User Form -->
                     <div v-if="modal === 'users'" class="space-y-4">
-                        <input v-model="form.login" placeholder="Логин" class="w-full border rounded-xl p-3">
-                        <input v-model="form.name" placeholder="ФИО" class="w-full border rounded-xl p-3">
-                        <input v-model="form.password" type="password" placeholder="Пароль" class="w-full border rounded-xl p-3">
-                        <select v-model="form.role" class="w-full border rounded-xl p-3">
-                            <option v-for="r in ['admin', 'director', 'senior_admin', 'manager', 'doctor', 'marketing', 'support', 'patient']" :value="r">{{ r }}</option>
-                        </select>
-                        <select v-model="form.status" class="w-full border rounded-xl p-3">
-                            <option value="active">Активен</option>
-                            <option value="blocked">Заблокирован</option>
-                        </select>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Логин</label>
+                            <input v-model="form.login" placeholder="Логин" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ФИО</label>
+                            <input v-model="form.name" placeholder="ФИО" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Пароль</label>
+                            <input v-model="form.password" type="password" placeholder="Пароль" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Роль</label>
+                            <select v-model="form.role" class="w-full border rounded-xl p-3 outline-none">
+                                <option v-for="r in ['admin', 'director', 'senior_admin', 'manager', 'doctor', 'marketing', 'support', 'patient']" :value="r">{{ r }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Статус</label>
+                            <select v-model="form.status" class="w-full border rounded-xl p-3 outline-none">
+                                <option value="active">Активен</option>
+                                <option value="blocked">Заблокирован</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Documents Form -->
@@ -759,24 +916,54 @@
 
                     <!-- Generic Form -->
                     <div v-if="['rooms', 'services', 'tags', 'sources'].includes(modal)" class="space-y-4">
-                        <input v-model="form.name" placeholder="Название" class="w-full border rounded-xl p-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Название</label>
+                            <input v-model="form.name" placeholder="Название" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
                     <div v-if="modal === 'rooms'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input v-model="form.location" placeholder="Местоположение (этаж и т.п.)" class="w-full border rounded-xl p-3">
-                        <input v-model="form.equipment" placeholder="Оборудование" class="w-full border rounded-xl p-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Местоположение</label>
+                            <input v-model="form.location" placeholder="Этаж, корпус и т.п." class="w-full border rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Оборудование</label>
+                            <input v-model="form.equipment" placeholder="Оборудование" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
                     </div>
-                    <textarea v-if="modal === 'services'" v-model="form.description" placeholder="Описание услуги" class="w-full border rounded-xl p-3"></textarea>
+                    <div v-if="modal === 'services'">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Описание услуги</label>
+                        <textarea v-model="form.description" placeholder="Описание услуги" class="w-full border rounded-xl p-3 outline-none"></textarea>
+                    </div>
                     <div v-if="modal === 'services'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <input v-model.number="form.duration_minutes" type="number" placeholder="Длительность (мин)" class="w-full border rounded-xl p-3">
-                        <input v-model.number="form.base_price" type="number" placeholder="Базовая цена (₽)" class="w-full border rounded-xl p-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Длительность (мин)</label>
+                            <input v-model.number="form.duration_minutes" type="number" placeholder="60" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Базовая цена (₽)</label>
+                            <input v-model.number="form.base_price" type="number" placeholder="5000" class="w-full border rounded-xl p-3 outline-none">
+                        </div>
                     </div>
-                    <input v-if="modal === 'services'" v-model="form.category" placeholder="Категория" class="w-full border rounded-xl p-3">
+                    <div v-if="modal === 'services'">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Категория</label>
+                        <input v-model="form.category" placeholder="Терапия, Хирургия и т.п." class="w-full border rounded-xl p-3 outline-none">
+                    </div>
                     </div>
 
                 <!-- Doctor Form -->
                 <div v-if="modal === 'doctor'" class="space-y-4">
-                    <input v-model="form.full_name" placeholder="ФИО врача" class="w-full border rounded-xl p-3">
-                    <input v-model="form.specialization" placeholder="Специализация" class="w-full border rounded-xl p-3">
-                    <input v-model="form.phone" placeholder="Телефон" class="w-full border rounded-xl p-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ФИО врача</label>
+                        <input v-model="form.full_name" placeholder="Петров Петр Петрович" class="w-full border rounded-xl p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Специализация</label>
+                        <input v-model="form.specialization" placeholder="Стоматолог-терапевт" class="w-full border rounded-xl p-3 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Телефон</label>
+                        <input v-model="form.phone" placeholder="+7..." class="w-full border rounded-xl p-3 outline-none">
+                    </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Доступные кабинеты</label>
                         <div class="flex flex-wrap gap-2">

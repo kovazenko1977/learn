@@ -48,6 +48,12 @@ if ($method === 'GET') {
         exit;
     }
 
+    if ($action === 'create_backup') {
+        require_once __DIR__ . '/../cron/backups.php';
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
     $type = isset($_GET['type']) ? $_GET['type'] : 'system';
     $input = json_decode(file_get_contents('php://input'), true);
     $input = Security::sanitize($input);

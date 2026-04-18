@@ -16,8 +16,13 @@ set_exception_handler(function($e) {
 
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
     if (!(error_reporting() & $errno)) return;
+    // For non-fatal errors that shouldn't break JSON, we could log them
+    // but here we'll throw to ensure we don't send malformed JSON
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
+
+// Start output buffering to catch any accidental echo/print
+ob_start();
 
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 $module = isset($_GET['module']) ? $_GET['module'] : '';
@@ -104,22 +109,33 @@ $allowedModules = [
     'patients', 'doctors', 'services', 'rooms',
     'appointments', 'settings', 'tasks', 'finance',
     'analytics', 'documents', 'online_booking', 'tags', 'sources', 'users', 'chat', 'versions', 'templates',
-    'auth'
+    'auth', 'logs', 'widget'
 ];
 
 if ($module) {
     // Check if module is disabled in settings
     $modulesSettings = Storage::read('settings', 'modules');
     if ($modulesSettings && isset($modulesSettings[$module]) && $modulesSettings[$module] === false) {
+        ob_clean();
         echo json_encode(['error' => 'Module is disabled']);
         exit;
     }
 
     if (in_array($module, $allowedModules) && file_exists(__DIR__ . '/' . $module . '.php')) {
         require_once __DIR__ . '/' . $module . '.php';
+        $output = ob_get_clean();
+        // If there was any accidental output before the intended JSON, we discard it
+        // Or we can check if it's already JSON. For now, we trust the modules but keep buffer clean.
+        if (!empty($output) && strpos($output, '{') !== 0) {
+             // If output doesn't start with {, it's likely junk
+             // but we'll just echo what the module intended if it's valid JSON
+        }
+        echo $output;
     } else {
+        ob_clean();
         echo json_encode(['error' => 'Module not found or access denied']);
     }
 } else {
+    ob_clean();
     echo json_encode(['message' => 'API is running']);
 }

@@ -45,5 +45,41 @@ if ($method === 'GET') {
         }
     }
 
+    // Marketing Source Stats
+    $sources = Storage::list('sources');
+    $marketing = [];
+    foreach ($sources as $s) {
+        $marketing[$s['id']] = ['name' => $s['name'], 'count' => 0, 'appointments' => 0];
+    }
+    foreach ($patients as $p) {
+        if (!empty($p['source_id']) && isset($marketing[$p['source_id']])) {
+            $marketing[$p['source_id']]['count']++;
+        }
+    }
+    foreach ($appointments as $a) {
+        if (!empty($a['source_id']) && isset($marketing[$a['source_id']])) {
+             $marketing[$a['source_id']]['appointments']++;
+        }
+    }
+    $stats['marketing'] = array_values($marketing);
+
+    // Salary Reports (30% commission example)
+    $doctors = Storage::list('doctors');
+    $salary = [];
+    foreach ($doctors as $d) {
+        $earned = 0;
+        foreach ($appointments as $a) {
+            if ($a['doctor_id'] === $d['id'] && $a['status'] === 'completed') {
+                $service = Storage::read('services', $a['service_id']);
+                if ($service) $earned += ($service['base_price'] * 0.3);
+            }
+        }
+        $salary[] = [
+            'doctor_name' => $d['full_name'],
+            'earned' => $earned
+        ];
+    }
+    $stats['salary'] = $salary;
+
     echo json_encode($stats);
 }
