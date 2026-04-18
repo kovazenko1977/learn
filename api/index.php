@@ -43,6 +43,11 @@ header('Content-Type: application/json');
 
 // Global Auth Actions
 if ($module === 'auth') {
+    $allowedAuthActions = ['login', 'logout', 'check'];
+    if (!in_array($action, $allowedAuthActions)) {
+        echo json_encode(['error' => 'Invalid auth action']);
+        exit;
+    }
     if ($action === 'login') {
         $input = json_decode(file_get_contents('php://input'), true);
         $login = isset($input['login']) ? $input['login'] : '';
@@ -98,7 +103,8 @@ if ($module === 'auth') {
 $allowedModules = [
     'patients', 'doctors', 'services', 'rooms',
     'appointments', 'settings', 'tasks', 'finance',
-    'analytics', 'documents', 'online_booking', 'tags', 'sources', 'users', 'chat', 'versions', 'templates'
+    'analytics', 'documents', 'online_booking', 'tags', 'sources', 'users', 'chat', 'versions', 'templates',
+    'auth'
 ];
 
 if ($module) {

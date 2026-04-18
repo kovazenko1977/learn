@@ -25,6 +25,7 @@ if ($method === 'GET') {
     $id = uniqid();
     $input['id'] = $id;
     $input['from_user_id'] = $_SESSION['user_id'];
+    $input['from_user_name'] = $_SESSION['name'];
     $input['created_at'] = date('c');
     $input['read_by'] = [$_SESSION['user_id']];
 
