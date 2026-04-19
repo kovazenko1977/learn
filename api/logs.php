@@ -9,7 +9,7 @@ if ($method === 'GET') {
     $filePath = $logDir . $type;
 
     if (!file_exists($filePath)) {
-        echo json_encode(['error' => 'Log file not found']);
+        echo json_encode(['content' => [], 'size' => 0]);
         exit;
     }
 

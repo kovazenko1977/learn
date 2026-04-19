@@ -54,8 +54,31 @@ if ($method === 'GET') {
         exit;
     }
 
+    if ($action === 'cleanup') {
+        // Clear versions and logs (simulating cleanup)
+        $logs = ['system.log', 'auth.log', 'notifications.log', 'chat.log'];
+        foreach($logs as $l) {
+            file_put_contents(__DIR__ . '/../storage/logs/' . $l, "");
+        }
+        Logger::log("System cleanup performed", "info", "system.log");
+        echo json_encode(['success' => true, 'message' => 'Логи очищены']);
+        exit;
+    }
+
+    if ($action === 'health_check') {
+        $entities = ['users', 'patients', 'doctors', 'services', 'appointments', 'tasks', 'finance'];
+        $report = [];
+        foreach($entities as $e) {
+            $path = __DIR__ . "/../storage/data/$e";
+            $count = is_dir($path) ? count(scandir($path)) - 2 : 0;
+            $report[$e] = ['count' => max(0, $count), 'status' => 'OK'];
+        }
+        echo json_encode(['success' => true, 'report' => $report]);
+        exit;
+    }
+
     $type = isset($_GET['type']) ? $_GET['type'] : 'system';
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $input = Security::sanitize($input);
     Storage::write('settings', $type, $input);
     Logger::log("Settings updated: $type", "info", "system.log");

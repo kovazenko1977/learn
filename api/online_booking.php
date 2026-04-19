@@ -8,6 +8,77 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($method === 'GET') {
+    if ($action === 'get_free_slots') {
+        $doctor_id = $_GET['doctor_id'] ?? null;
+        $date = $_GET['date'] ?? null;
+        $service_id = $_GET['service_id'] ?? null;
+
+        if (!$doctor_id || !$date || !$service_id) {
+            echo json_encode(['error' => 'Missing parameters']);
+            exit;
+        }
+
+        $service = Storage::read('services', $service_id);
+        $duration = $service ? (int)$service['duration_minutes'] : 30;
+
+        $settings = Storage::read('settings', 'system');
+        $work_start = $settings['work_hours']['start'] ?? '09:00';
+        $work_end = $settings['work_hours']['end'] ?? '20:00';
+
+        // Check for doctor-specific schedule template
+        if ($doctor_id !== 'any') {
+            $doctor = Storage::read('doctors', $doctor_id);
+            if ($doctor && !empty($doctor['schedule_template'])) {
+                $dayOfWeek = strtolower(date('l', strtotime($date)));
+                if (isset($doctor['schedule_template'][$dayOfWeek])) {
+                    $template = $doctor['schedule_template'][$dayOfWeek];
+                    if (!$template['active']) {
+                        echo json_encode([]);
+                        exit;
+                    }
+                    $work_start = $template['start'] ?? $work_start;
+                    $work_end = $template['end'] ?? $work_end;
+                }
+            }
+        }
+
+        $appointments = Storage::list('appointments');
+        $busy_slots = [];
+        foreach ($appointments as $app) {
+            if ($app['date'] === $date && ($app['doctor_id'] === $doctor_id || $doctor_id === 'any') && $app['status'] !== 'cancelled') {
+                $busy_slots[] = [
+                    'start' => strtotime($date . ' ' . $app['time_start']),
+                    'end' => strtotime($date . ' ' . $app['time_end'])
+                ];
+            }
+        }
+
+        $free_slots = [];
+        $current = strtotime($date . ' ' . $work_start);
+        $end_limit = strtotime($date . ' ' . $work_end);
+
+        while ($current + ($duration * 60) <= $end_limit) {
+            $slot_start = $current;
+            $slot_end = $current + ($duration * 60);
+            $is_free = true;
+
+            foreach ($busy_slots as $busy) {
+                if ($slot_start < $busy['end'] && $slot_end > $busy['start']) {
+                    $is_free = false;
+                    break;
+                }
+            }
+
+            if ($is_free) {
+                $free_slots[] = date('H:i', $slot_start);
+            }
+            $current += 30 * 60; // 30 min step
+        }
+
+        echo json_encode($free_slots);
+        exit;
+    }
+
     if ($action === 'get_services') {
         echo json_encode(array_values(Storage::list('services')));
     } elseif ($action === 'get_doctors') {
@@ -19,7 +90,7 @@ if ($method === 'GET') {
         ]);
     }
 } elseif ($method === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $input = Security::sanitize($input);
 
     // Simple logic to create a patient if doesn't exist, or find by phone

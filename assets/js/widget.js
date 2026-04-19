@@ -13,7 +13,9 @@ window.DentalWidget = {
                         <option value="">Выберите услугу</option>
                     </select>
                     <input type="date" id="dw-date" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px;">
-                    <input type="time" id="dw-time" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                    <div id="dw-time-container">
+                        <input type="time" id="dw-time" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                    </div>
                     <button id="dw-submit" style="width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Записаться</button>
                     <p id="dw-msg" style="margin-top: 10px; font-size: 14px; display: none;"></p>
                 </div>
@@ -31,6 +33,33 @@ window.DentalWidget = {
                     select.appendChild(opt);
                 });
             });
+
+        const loadSlots = () => {
+            const date = document.getElementById('dw-date').value;
+            const service = document.getElementById('dw-service').value;
+            if (date && service) {
+                fetch(config.apiUrl + \`&action=get_free_slots&doctor_id=any&date=\${date}&service_id=\${service}\`)
+                    .then(res => res.json())
+                    .then(slots => {
+                        const container = document.getElementById('dw-time-container');
+                        if (slots.length > 0) {
+                            container.innerHTML = \`<select id="dw-time" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px;"></select>\`;
+                            const select = document.getElementById('dw-time');
+                            slots.forEach(slot => {
+                                const opt = document.createElement('option');
+                                opt.value = slot;
+                                opt.textContent = slot;
+                                select.appendChild(opt);
+                            });
+                        } else {
+                            container.innerHTML = \`<input type="time" id="dw-time" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px;">\`;
+                        }
+                    });
+            }
+        };
+
+        document.getElementById('dw-date').addEventListener('change', loadSlots);
+        document.getElementById('dw-service').addEventListener('change', loadSlots);
 
         document.getElementById('dw-submit').addEventListener('click', () => {
             const data = {

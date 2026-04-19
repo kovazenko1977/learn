@@ -8,6 +8,7 @@ Auth::init();
 
 // Global error handling to prevent non-JSON output
 set_exception_handler(function($e) {
+    while (ob_get_level()) ob_end_clean();
     header('Content-Type: application/json');
     http_response_code(500);
     echo json_encode(['error' => 'Server Error: ' . $e->getMessage()]);
@@ -54,7 +55,7 @@ if ($module === 'auth') {
         exit;
     }
     if ($action === 'login') {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $login = isset($input['login']) ? $input['login'] : '';
         $password = isset($input['password']) ? $input['password'] : '';
 
@@ -116,7 +117,7 @@ if ($module) {
     // Check if module is disabled in settings
     $modulesSettings = Storage::read('settings', 'modules');
     if ($modulesSettings && isset($modulesSettings[$module]) && $modulesSettings[$module] === false) {
-        ob_clean();
+
         echo json_encode(['error' => 'Module is disabled']);
         exit;
     }
@@ -124,18 +125,16 @@ if ($module) {
     if (in_array($module, $allowedModules) && file_exists(__DIR__ . '/' . $module . '.php')) {
         require_once __DIR__ . '/' . $module . '.php';
         $output = ob_get_clean();
-        // If there was any accidental output before the intended JSON, we discard it
-        // Or we can check if it's already JSON. For now, we trust the modules but keep buffer clean.
-        if (!empty($output) && strpos($output, '{') !== 0) {
-             // If output doesn't start with {, it's likely junk
-             // but we'll just echo what the module intended if it's valid JSON
+        if (empty($output)) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo $output;
         }
-        echo $output;
     } else {
-        ob_clean();
+
         echo json_encode(['error' => 'Module not found or access denied']);
     }
 } else {
-    ob_clean();
+
     echo json_encode(['message' => 'API is running']);
 }

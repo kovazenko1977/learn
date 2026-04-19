@@ -35,7 +35,30 @@ if ($method === 'GET') {
         echo json_encode($shifts);
     } else {
         $transactions = Storage::list('finance');
-        echo json_encode($transactions);
+
+        $today = date('Y-m-d');
+        $month = date('Y-m');
+        $summary = ['today_income' => 0, 'month_income' => 0, 'today_expense' => 0, 'month_expense' => 0];
+
+        foreach($transactions as $t) {
+            $tDate = substr($t['created_at'] ?? $t['date'], 0, 10);
+            $tMonth = substr($tDate, 0, 7);
+            $amount = (float)$t['amount'];
+
+            if ($tDate === $today) {
+                if ($t['type'] === 'income') $summary['today_income'] += $amount;
+                else $summary['today_expense'] += $amount;
+            }
+            if ($tMonth === $month) {
+                if ($t['type'] === 'income') $summary['month_income'] += $amount;
+                else $summary['month_expense'] += $amount;
+            }
+        }
+
+        echo json_encode([
+            'transactions' => array_values($transactions),
+            'summary' => $summary
+        ]);
     }
 } elseif ($method === 'POST') {
     if ($action === 'open_shift') {
@@ -90,7 +113,7 @@ if ($method === 'GET') {
         Storage::write('shifts', $activeShift['id'], $activeShift);
         echo json_encode(['success' => true]);
     } else {
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $input = Security::sanitize($input);
         $id = uniqid();
         $input['id'] = $id;

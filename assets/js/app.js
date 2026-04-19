@@ -22,6 +22,7 @@ createApp({
             documents: [],
             templates: [],
             chat: [],
+            financeSummary: {},
             logs: [],
             toasts: [],
             activeShift: null,
@@ -30,13 +31,19 @@ createApp({
             versions: [],
             notifications: [],
             stats: {},
+            appointmentFilter: 'all',
+            appointmentDate: '',
+            patientSearch: '',
+            patientTagFilter: '',
             settings: { clinic_name: 'Dental CRM' },
             modules: {},
             widgetSnippet: '',
             activeLog: 'system.log',
+            healthReport: null,
             modal: null,
             modalTitle: '',
             form: {},
+            freeSlots: [],
             rawMenu: [
                 { id: 'appointments', label: 'Расписание', roles: ['admin', 'senior_admin', 'manager', 'doctor', 'patient'] },
                 { id: 'patients', label: 'Пациенты', roles: ['admin', 'senior_admin', 'manager', 'doctor'] },
@@ -79,6 +86,39 @@ createApp({
         menu() {
             if (!this.user) return [];
             return this.rawMenu.filter(m => m.roles.includes(this.user.role));
+        },
+        filteredAppointments() {
+            let list = [...this.appointments];
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const tomorrowDate = new Date(now);
+            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+            const tomorrow = tomorrowDate.toISOString().split('T')[0];
+
+            if (this.appointmentDate) {
+                list = list.filter(a => a.date === this.appointmentDate);
+            } else if (this.appointmentFilter === 'today') {
+                list = list.filter(a => a.date === today);
+            } else if (this.appointmentFilter === 'tomorrow') {
+                list = list.filter(a => a.date === tomorrow);
+            } else if (this.appointmentFilter === 'week') {
+                const weekEnd = new Date(now);
+                weekEnd.setDate(weekEnd.getDate() + 7);
+                list = list.filter(a => a.date >= today && a.date <= weekEnd.toISOString().split('T')[0]);
+            }
+
+            return list.sort((a,b) => (a.date + a.time_start).localeCompare(b.date + b.time_start));
+        },
+        filteredPatients() {
+            let list = [...this.patients];
+            if (this.patientSearch) {
+                const s = this.patientSearch.toLowerCase();
+                list = list.filter(p => p.full_name.toLowerCase().includes(s) || p.phone.includes(s));
+            }
+            if (this.patientTagFilter) {
+                list = list.filter(p => p.tags && p.tags.includes(this.patientTagFilter));
+            }
+            return list;
         }
     },
     methods: {
@@ -99,7 +139,7 @@ createApp({
             try {
                 const response = await fetch(url, options);
                 const result = await response.json();
-                if (result.error) {
+                if (result && result.error) {
                     this.error = result.error;
                     this.toast(this.error, 'error');
                     return null;
@@ -136,7 +176,7 @@ createApp({
         async openPatientCard(patient) {
             const fullPatient = await this.api('patients', { id: patient.id });
             if (fullPatient) {
-                this.openModal('patient', fullPatient);
+                this.openModal('patients', fullPatient);
             }
         },
         async checkAuth() {
@@ -156,6 +196,17 @@ createApp({
             const res = await this.api('logs', { type });
             if (res) this.logs = res.content;
         },
+        async loadFreeSlots() {
+            if (this.modal === 'appointments' && this.form.date && this.form.doctor_id && this.form.service_id) {
+                const res = await this.api('appointments', {
+                    action: 'get_free_slots',
+                    date: this.form.date,
+                    doctor_id: this.form.doctor_id,
+                    service_id: this.form.service_id
+                });
+                this.freeSlots = res || [];
+            }
+        },
         async loadData() {
             const loaders = [
                 this.api('finance', { action: 'get_active_shift' }).then(res => this.activeShift = res),
@@ -166,7 +217,10 @@ createApp({
                 this.api('rooms').then(res => this.rooms = res || []),
                 this.api('appointments').then(res => this.appointments = res || []),
                 this.api('tasks').then(res => this.tasks = res || []),
-                this.api('finance').then(res => this.finance = res || []),
+                this.api('finance').then(res => {
+                    this.finance = (res && res.transactions) ? res.transactions : (res || []);
+                    this.financeSummary = (res && res.summary) ? res.summary : {};
+                }),
                 this.api('tags').then(res => this.tags = res || []),
                 this.api('sources').then(res => this.sources = res || []),
                 this.api('documents').then(res => this.documents = res || []),
@@ -188,7 +242,7 @@ createApp({
         openModal(type, item = null) {
             this.modal = type;
             this.form = item ? JSON.parse(JSON.stringify(item)) : { status: 'planned' };
-            if (type === 'patient' && this.form.files) {
+            if (type === 'patients' && this.form.files) {
                 this.form.files_raw = this.form.files.join('\n');
             }
             this.modalTitle = item ? 'Редактировать' : 'Добавить';
@@ -236,6 +290,17 @@ createApp({
             if (res && res.success) {
                 alert('Бэкап создан в папке storage/backups/');
             }
+        },
+        async runCleanup() {
+            if (confirm('Очистить системные логи?')) {
+                const res = await this.api('settings', { action: 'cleanup' }, 'POST');
+                if (res) this.toast(res.message);
+                this.loadLogs();
+            }
+        },
+        async runHealthCheck() {
+            const res = await this.api('settings', { action: 'health_check' }, 'POST');
+            if (res) this.healthReport = res.report;
         },
         exportCSV(module) {
             window.location.href = `api/index.php?module=${module}&action=export_csv`;
@@ -343,6 +408,12 @@ createApp({
             return `status-${status}`;
         }
     },
+        watch: {
+            'view': function() { this.loadData(); },
+            'form.date': function() { this.loadFreeSlots(); },
+            'form.doctor_id': function() { this.loadFreeSlots(); },
+            'form.service_id': function() { this.loadFreeSlots(); }
+        },
     mounted() {
         this.checkAuth();
     }

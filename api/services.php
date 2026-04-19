@@ -13,7 +13,7 @@ if ($method === 'GET') {
         echo json_encode(array_values($items));
     }
 } elseif ($method === 'POST') {
-    $input = json_decode(file_get_contents('php://input'), true);
+    $input = json_decode(file_get_contents('php://input'), true) ?: [];
     $input = Security::sanitize($input);
     $id = isset($input['id']) ? $input['id'] : uniqid();
     $input['id'] = $id;
