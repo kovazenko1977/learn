@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кактус Шериф - Разыскивается</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rye&family=Special+Elite&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="poster-container">
+        <div class="poster">
+            <header>
+                <h1>РАЗЫСКИВАЕТСЯ</h1>
+                <h2 class="sub-header">ЖИВЫМ ИЛИ МЕРТВЫМ</h2>
+            </header>
+
+            <div class="character-frame">
+                <img src="assets/character.png" alt="Кактус Шериф" id="character-img">
+                <div class="badge-overlay">ШЕРИФ</div>
+            </div>
+
+            <div class="character-info">
+                <h2 class="name">КАКТУС ШЕРИФ</h2>
+                <p class="reward">ВОЗНАГРАЖДЕНИЕ: <span id="reward-amount">5,000</span> ЗОЛОТОМ</p>
+            </div>
+
+            <div class="description">
+                <p>Известен как самый колючий законник на Диком Западе. Не приближайтесь без перчаток.</p>
+            </div>
+
+            <div class="status-panel">
+                <p id="status">Статус: <span class="highlight">Охраняет город</span></p>
+                <div id="event-log" class="event-log"></div>
+            </div>
+
+            <div class="controls">
+                <button id="patrol-btn">ОТПРАВИТЬ В ПАТРУЛЬ</button>
+                <button id="bounty-btn">ЗАБРАТЬ НАГРАДУ</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
