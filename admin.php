@@ -71,6 +71,8 @@ if (isset($_GET['action'])) {
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename=knowledge_base.csv');
         $output = fopen('php://output', 'w');
+        // Add UTF-8 BOM for Excel compatibility
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
         fputcsv($output, ['Keywords', 'Answer']);
         $knowledge = Storage::read('knowledge.json');
         foreach ($knowledge as $item) {
