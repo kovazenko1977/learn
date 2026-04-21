@@ -1,11 +1,22 @@
 const { createApp, ref, onMounted } = Vue;
 createApp({
     setup() {
-        const activeTab = ref('settings');
+        const activeTab = ref('knowledge');
+        const dayNames = {
+            "1": "Понедельник",
+            "2": "Вторник",
+            "3": "Среда",
+            "4": "Четверг",
+            "5": "Пятница",
+            "6": "Суббота",
+            "0": "Воскресенье"
+        };
         const settings = ref({
             working_hours: {},
             contacts: {},
             fallback: {},
+            visuals: {},
+            schedule: {},
             directions: []
         });
         const knowledge = ref([]);
@@ -69,6 +80,6 @@ createApp({
 
         onMounted(fetchData);
 
-        return { activeTab, settings, knowledge, history, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem };
+        return { activeTab, dayNames, settings, knowledge, history, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem };
     }
 }).mount('#admin-app');

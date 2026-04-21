@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../includes/Storage.php';
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
 $settings = Storage::read('settings.json');
 
@@ -10,7 +13,9 @@ $publicSettings = [
     'bot_name' => $settings['bot_name'],
     'welcome_message' => $settings['welcome_message'],
     'contacts' => $settings['contacts'],
-    'directions' => $settings['directions']
+    'directions' => $settings['directions'],
+    'visuals' => $settings['visuals'] ?? [],
+    'fallback' => $settings['fallback'] ?? []
 ];
 
 echo json_encode($publicSettings);

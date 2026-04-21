@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../includes/Storage.php';
 
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
 $settings = Storage::read('settings.json');
 $knowledge = Storage::read('knowledge.json');
@@ -14,17 +17,26 @@ if (empty($message)) {
     exit;
 }
 
-// 1. Check working hours
-if ($settings['working_hours']['enabled']) {
-    date_default_timezone_set($settings['working_hours']['timezone']);
-    $now = date('H:i');
-    $start = $settings['working_hours']['start'];
-    $end = $settings['working_hours']['end'];
+// 1. Check working hours (Flexible Schedule)
+date_default_timezone_set($settings['working_hours']['timezone'] ?? 'Europe/Moscow');
+$dayOfWeek = date('w'); // 0 (Sun) to 6 (Sat)
+$now = date('H:i');
 
-    if ($now < $start || $now > $end) {
+$daySchedule = $settings['schedule'][$dayOfWeek] ?? null;
+
+if ($daySchedule) {
+    $isOpen = $daySchedule['enabled'];
+    if ($isOpen) {
+        if ($now < $daySchedule['start'] || $now > $daySchedule['end']) {
+            $isOpen = false;
+        }
+    }
+
+    if (!$isOpen) {
         echo json_encode([
             'answer' => $settings['working_hours']['out_of_hours_message'],
-            'is_fallback' => false
+            'is_fallback' => false,
+            'show_lead_form' => true
         ]);
         exit;
     }

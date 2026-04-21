@@ -138,42 +138,69 @@ if (isset($_GET['action'])) {
             <h1 class="text-3xl font-bold text-gray-800">Настройки Чат-бота</h1>
             <div class="flex items-center">
                 <nav class="flex space-x-4 mr-8">
-                    <button @click="activeTab = 'settings'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'settings'}" class="pb-2 font-medium">Настройки</button>
-                    <button @click="activeTab = 'history'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'history'}" class="pb-2 font-medium">История</button>
+                    <button type="button" @click="activeTab = 'knowledge'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'knowledge'}" class="pb-2 font-medium">База знаний</button>
+                    <button type="button" @click="activeTab = 'settings'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'settings'}" class="pb-2 font-medium">Настройки</button>
+                    <button type="button" @click="activeTab = 'history'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'history'}" class="pb-2 font-medium">История</button>
                 </nav>
-                <a href="index.php" class="text-blue-600 hover:underline mr-4">На сайт</a>
+                <a href="example.html" class="text-blue-600 hover:underline mr-4">На сайт</a>
                 <a href="admin.php?logout=1" class="text-red-600 hover:underline mr-4">Выход</a>
-                <button v-if="activeTab === 'settings'" @click="save" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Сохранить всё</button>
+                <button @click="save" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Сохранить всё</button>
+            </div>
+        </div>
+
+        <div v-if="activeTab === 'knowledge'" class="bg-white p-6 rounded-xl shadow-sm">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h2 class="text-xl font-semibold">База знаний</h2>
+                <div class="flex gap-2">
+                    <a href="admin.php?action=export_csv" class="text-green-600 text-xs font-bold">Экспорт CSV</a>
+                    <button @click="triggerImport" class="text-orange-600 text-xs font-bold">Импорт CSV</button>
+                    <button @click="addQnA" class="text-blue-600 text-sm font-bold">+ Добавить</button>
+                </div>
+                <form ref="importForm" action="admin.php?action=import_csv" method="POST" enctype="multipart/form-data" class="hidden">
+                    <input type="file" name="csv_file" @change="$refs.importForm.submit()">
+                </form>
+            </div>
+
+            <div class="space-y-6 max-h-[700px] overflow-y-auto pr-2">
+                <div v-for="(item, index) in knowledge" :key="index" class="p-4 bg-gray-50 rounded-lg relative">
+                    <button @click="removeQnA(index)" class="absolute top-2 right-2 text-red-500 text-sm">Удалить</button>
+
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Ключевые слова (через запятую)</label>
+                    <input :value="item.keywords.join(', ')"
+                            @input="updateKeywords(index, $event.target.value)"
+                            class="w-full border p-2 mb-2 rounded text-sm">
+
+                    <label class="block text-xs font-bold text-gray-500 uppercase">Ответ</label>
+                    <textarea v-model="item.answer" class="w-full border p-2 rounded text-sm"></textarea>
+                </div>
             </div>
         </div>
 
         <div v-if="activeTab === 'settings'" class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Basic Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm">
-                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Основные настройки</h2>
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Настройки виджета</h2>
 
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Имя бота</label>
-                        <input v-model="settings.bot_name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Приветствие</label>
-                        <textarea v-model="settings.welcome_message" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2"></textarea>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Имя бота</label>
+                            <input v-model="settings.bot_name" class="w-full border p-2 rounded">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Цвет темы</label>
+                            <input type="color" v-model="settings.visuals.theme_color" class="w-full h-10 p-1 border rounded">
+                        </div>
                     </div>
 
-                    <div class="pt-4 border-t">
-                        <h3 class="font-medium mb-2">Рабочее время</h3>
-                        <div class="flex items-center mb-2">
-                            <input type="checkbox" v-model="settings.working_hours.enabled" class="mr-2">
-                            <span>Включить проверку</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <input type="time" v-model="settings.working_hours.start" class="border p-1 rounded">
-                            <input type="time" v-model="settings.working_hours.end" class="border p-1 rounded">
-                        </div>
-                        <input v-model="settings.working_hours.timezone" placeholder="Timezone (Europe/Moscow)" class="w-full border p-1 rounded mb-2 text-sm">
-                        <textarea v-model="settings.working_hours.out_of_hours_message" placeholder="Сообщение в нерабочее время" class="w-full border p-1 rounded text-sm"></textarea>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Иконка чата (URL)</label>
+                        <input v-model="settings.visuals.chat_icon_url" placeholder="https://example.com/icon.png" class="w-full border p-2 rounded">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Приветствие</label>
+                        <textarea v-model="settings.welcome_message" class="w-full border p-2 rounded"></textarea>
                     </div>
 
                     <div class="pt-4 border-t">
@@ -182,7 +209,7 @@ if (isset($_GET['action'])) {
                             <input v-model="settings.directions[i]" class="flex-1 border p-1 rounded text-sm mr-2">
                             <button @click="settings.directions.splice(i, 1)" class="text-red-500">×</button>
                         </div>
-                        <button @click="settings.directions.push('')" class="text-blue-500 text-xs mt-1">+ Добавить направление</button>
+                        <button @click="settings.directions.push('')" class="text-blue-500 text-xs mt-1">+ Добавить</button>
                     </div>
 
                     <div class="pt-4 border-t">
@@ -193,41 +220,51 @@ if (isset($_GET['action'])) {
                     </div>
 
                     <div class="pt-4 border-t">
-                        <h3 class="font-medium mb-2">Порог уверенности и пароль</h3>
-                        <div class="flex items-center mb-2">
-                            <span class="text-xs mr-2">Порог: {{ settings.fallback.threshold }}%</span>
-                            <input type="range" v-model="settings.fallback.threshold" min="0" max="100" class="flex-1">
+                        <h3 class="font-medium mb-2">Установка на сайт</h3>
+                        <div class="bg-gray-800 text-green-400 p-3 rounded text-xs overflow-x-auto">
+                            &lt;script src="{{ window.location.origin + window.location.pathname.replace('admin.php', '') }}assets/js/loader.js"&gt;&lt;/script&gt;
                         </div>
-                        <input type="password" v-model="settings.admin_password" placeholder="Новый пароль админа" class="w-full border p-2 rounded text-sm">
                     </div>
                 </div>
             </div>
 
-            <!-- Knowledge Base -->
+            <!-- Schedule & Advanced -->
             <div class="bg-white p-6 rounded-xl shadow-sm">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h2 class="text-xl font-semibold">База знаний</h2>
-                    <div class="flex gap-2">
-                        <a href="admin.php?action=export_csv" class="text-green-600 text-xs font-bold">Экспорт CSV</a>
-                        <button @click="triggerImport" class="text-orange-600 text-xs font-bold">Импорт CSV</button>
-                        <button @click="addQnA" class="text-blue-600 text-sm font-bold">+ Добавить</button>
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Расписание и Дополнительно</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Временная зона</label>
+                        <input v-model="settings.working_hours.timezone" class="w-full border p-2 rounded">
                     </div>
-                    <form ref="importForm" action="admin.php?action=import_csv" method="POST" enctype="multipart/form-data" class="hidden">
-                        <input type="file" name="csv_file" @change="$refs.importForm.submit()">
-                    </form>
-                </div>
 
-                <div class="space-y-6 max-h-[600px] overflow-y-auto pr-2">
-                    <div v-for="(item, index) in knowledge" :key="index" class="p-4 bg-gray-50 rounded-lg relative">
-                        <button @click="removeQnA(index)" class="absolute top-2 right-2 text-red-500 text-sm">Удалить</button>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Часы работы</label>
+                        <div v-for="(day, code) in dayNames" :key="code" class="flex items-center text-sm">
+                            <span class="w-24 font-medium">{{ day }}</span>
+                            <input type="checkbox" v-model="settings.schedule[code].enabled" class="mr-4">
+                            <template v-if="settings.schedule[code].enabled">
+                                <input type="time" v-model="settings.schedule[code].start" class="border p-1 rounded mr-2">
+                                <span class="mr-2">-</span>
+                                <input type="time" v-model="settings.schedule[code].end" class="border p-1 rounded">
+                            </template>
+                            <span v-else class="text-red-400 text-xs italic">Выходной</span>
+                        </div>
+                    </div>
 
-                        <label class="block text-xs font-bold text-gray-500 uppercase">Ключевые слова (через запятую)</label>
-                        <input :value="item.keywords.join(', ')"
-                               @input="updateKeywords(index, $event.target.value)"
-                               class="w-full border p-2 mb-2 rounded text-sm">
+                    <div class="pt-4 border-t">
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Сообщение в нерабочее время</label>
+                        <textarea v-model="settings.working_hours.out_of_hours_message" class="w-full border p-2 rounded"></textarea>
+                    </div>
 
-                        <label class="block text-xs font-bold text-gray-500 uppercase">Ответ</label>
-                        <textarea v-model="item.answer" class="w-full border p-2 rounded text-sm"></textarea>
+                    <div class="pt-4 border-t">
+                        <h3 class="font-medium mb-2">Безопасность</h3>
+                        <div class="flex items-center mb-4">
+                            <span class="text-xs mr-2">Порог уверенности: {{ settings.fallback.threshold }}%</span>
+                            <input type="range" v-model="settings.fallback.threshold" min="0" max="100" class="flex-1">
+                        </div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Пароль администратора</label>
+                        <input type="password" v-model="settings.admin_password" class="w-full border p-2 rounded">
                     </div>
                 </div>
             </div>
