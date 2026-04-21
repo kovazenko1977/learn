@@ -363,7 +363,7 @@
         <!-- Game Screen -->
         <div id="game-screen">
             <div id="score-board">
-            <div>ВРЕМЯ: <span id="timer">30</span></div>
+            <div>ВРЕМЯ: <span id="timer">25</span></div>
                 <div>СЧЕТ: <span id="current-score">0</span></div>
                 <div>РЕКОРД: <span id="high-score">0</span></div>
             </div>
@@ -426,9 +426,9 @@
         let isGrabbing = false;
         let clawPos = { x: 50, y: 0 }; // x in %, y in pixels
         let clawDirection = 1; // 1 for right, -1 for left
-        let carriageSpeed = 0.8;
+        let carriageSpeed = 1.2;
         let gameActive = false;
-        let timeLeft = 30;
+        let timeLeft = 25;
         let gameTimer;
 
         highScoreEl.textContent = highScore;
@@ -454,7 +454,7 @@
         function initGame() {
             score = 0;
             collectedCount = 0;
-            timeLeft = 30;
+            timeLeft = 25;
             isGameOver = false;
             isGrabbing = false;
             clawPos = { x: 50, y: 0 };
@@ -644,14 +644,22 @@
 
         function collectBottle(bottle) {
             const points = parseInt(bottle.dataset.points);
+            const type = bottle.dataset.type;
             score += points;
             collectedCount++;
             currentScoreEl.textContent = score;
 
+            const flavorNames = {
+                'lemon': 'ЛИМОН',
+                'pear': 'ГРУША',
+                'cherry': 'ВИШНЯ',
+                'empty': 'ПУСТО'
+            };
+
             // Show point popup
             const popup = document.createElement('div');
             popup.className = 'point-popup';
-            popup.textContent = `+${points}`;
+            popup.innerHTML = `<div style="font-size: 0.8rem">${flavorNames[type] || ''}</div>+${points}`;
             popup.style.left = `${clawPos.x}%`;
             popup.style.top = '100px';
             gameScreen.appendChild(popup);
