@@ -12,24 +12,45 @@ createApp({
             "0": "Воскресенье"
         };
         const settings = ref({
-            working_hours: {},
-            contacts: {},
-            fallback: {},
-            visuals: {},
-            schedule: {},
+            working_hours: { timezone: 'Europe/Moscow', out_of_hours_message: '' },
+            contacts: { phone: '', email: '', address: '' },
+            fallback: { threshold: 40, message: '', button_text: '' },
+            visuals: { theme_color: '#2563eb', chat_icon_url: '', bot_avatar_url: '' },
+            schedule: {
+                "1": { enabled: true, start: "09:00", end: "18:00" },
+                "2": { enabled: true, start: "09:00", end: "18:00" },
+                "3": { enabled: true, start: "09:00", end: "18:00" },
+                "4": { enabled: true, start: "09:00", end: "18:00" },
+                "5": { enabled: true, start: "09:00", end: "18:00" },
+                "6": { enabled: false, start: "00:00", end: "00:00" },
+                "0": { enabled: false, start: "00:00", end: "00:00" }
+            },
             directions: []
         });
         const knowledge = ref([]);
         const history = ref([]);
+        const isLoaded = ref(false);
+        const scriptUrl = ref('');
 
         const fetchData = async () => {
-            const res = await fetch('admin.php?action=get_data');
-            const data = await res.json();
-            settings.value = data.settings;
-            knowledge.value = data.knowledge;
+            scriptUrl.value = window.location.origin + window.location.pathname.replace('admin.php', '') + 'assets/js/loader.js';
+            try {
+                const res = await fetch('admin.php?action=get_data');
+                const data = await res.json();
 
-            const hRes = await fetch('admin.php?action=get_history');
-            history.value = await hRes.json();
+                // Deep merge or specific assignment to avoid losing keys
+                if (data.settings) {
+                    settings.value = { ...settings.value, ...data.settings };
+                }
+                knowledge.value = data.knowledge || [];
+
+                const hRes = await fetch('admin.php?action=get_history');
+                history.value = await hRes.json();
+            } catch (e) {
+                console.error("Fetch error:", e);
+            } finally {
+                isLoaded.value = true;
+            }
         };
 
         const save = async () => {
@@ -80,6 +101,6 @@ createApp({
 
         onMounted(fetchData);
 
-        return { activeTab, dayNames, settings, knowledge, history, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem };
+        return { activeTab, dayNames, settings, knowledge, history, isLoaded, scriptUrl, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem };
     }
 }).mount('#admin-app');

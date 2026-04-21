@@ -133,8 +133,11 @@ if (isset($_GET['action'])) {
     <style>[v-cloak] { display: none !important; }</style>
 </head>
 <body class="bg-gray-100 min-h-screen p-8">
-    <div id="admin-app" v-cloak class="max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
+    <div id="admin-app" v-cloak class="max-w-4xl mx-auto py-10">
+        <div v-if="!isLoaded" class="flex items-center justify-center h-64 bg-white rounded-xl shadow-sm">
+            <div class="text-xl font-bold text-blue-600 animate-pulse">Загрузка данных...</div>
+        </div>
+        <div v-else class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">Настройки Чат-бота</h1>
             <div class="flex items-center">
                 <nav class="flex space-x-4 mr-8">
@@ -148,7 +151,7 @@ if (isset($_GET['action'])) {
             </div>
         </div>
 
-        <div v-if="activeTab === 'knowledge'" class="bg-white p-6 rounded-xl shadow-sm">
+        <div v-if="isLoaded && activeTab === 'knowledge'" class="bg-white p-6 rounded-xl shadow-sm">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
                 <h2 class="text-xl font-semibold">База знаний</h2>
                 <div class="flex gap-2">
@@ -176,7 +179,7 @@ if (isset($_GET['action'])) {
             </div>
         </div>
 
-        <div v-if="activeTab === 'settings'" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div v-if="isLoaded && activeTab === 'settings'" class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Basic Settings -->
             <div class="bg-white p-6 rounded-xl shadow-sm">
                 <h2 class="text-xl font-semibold mb-4 border-b pb-2">Настройки виджета</h2>
@@ -222,7 +225,7 @@ if (isset($_GET['action'])) {
                     <div class="pt-4 border-t">
                         <h3 class="font-medium mb-2">Установка на сайт</h3>
                         <div class="bg-gray-800 text-green-400 p-3 rounded text-xs overflow-x-auto">
-                            &lt;script src="{{ window.location.origin + window.location.pathname.replace('admin.php', '') }}assets/js/loader.js"&gt;&lt;/script&gt;
+                            &lt;script src="{{ scriptUrl }}"&gt;&lt;/script&gt;
                         </div>
                     </div>
                 </div>
@@ -270,7 +273,7 @@ if (isset($_GET['action'])) {
             </div>
         </div>
 
-        <div v-if="activeTab === 'history'" class="bg-white p-6 rounded-xl shadow-sm">
+        <div v-if="isLoaded && activeTab === 'history'" class="bg-white p-6 rounded-xl shadow-sm">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
                 <h2 class="text-xl font-semibold">История диалогов</h2>
                 <button @click="clearHistory" class="text-red-600 text-sm font-bold">Очистить всю историю</button>
