@@ -1,105 +1,82 @@
 {
+    "enabled": true,
+    "bot_name": "ULTRA BOT",
+    "welcome_message": "Здравствуйте! Я ваш интеллектуальный помощник. Чем могу помочь?",
+    "admin_password": "admin",
     "working_hours": {
         "timezone": "Europe\/Moscow",
-        "out_of_hours_message": "К сожалению, сейчас мы закрыты. Оставьте ваш номер, и мы свяжемся с вами в рабочее время."
+        "out_of_hours_message": "Сейчас мы не в сети, но вы можете оставить заявку!"
     },
     "contacts": {
         "phone": "+7 (999) 000-00-00",
         "email": "info@example.com",
-        "address": "г. Москва, ул. Примерная, д. 1"
+        "address": "г. Москва",
+        "whatsapp": "79990000000",
+        "telegram": "ultra_bot"
     },
     "fallback": {
-        "threshold": 60,
-        "message": "Извините, я не совсем понял ваш вопрос. Возможно, вам стоит связаться с нашим оператором?",
-        "button_text": "Позвонить нам"
+        "threshold": 40,
+        "message": "Извините, я не совсем понял. Соединить с оператором?",
+        "button_text": "Позвонить"
     },
     "notifications": {
-        "email": {
-            "enabled": false,
-            "address": ""
-        },
-        "telegram": {
-            "enabled": false,
-            "token": "",
-            "chat_id": ""
-        }
+        "email": { "enabled": false, "address": "" },
+        "telegram": { "enabled": false, "token": "", "chat_id": "" }
+    },
+    "features": {
+        "proactive_greeting": 0,
+        "sound_enabled": true,
+        "voice_input": true,
+        "persistence": true,
+        "rating_system": true,
+        "dark_mode": "auto",
+        "typing_indicator": true,
+        "rich_text": true,
+        "show_branding": true,
+        "quick_start": true,
+        "departments": true,
+        "file_upload": true,
+        "chat_export": true,
+        "idle_reminder": 60,
+        "dynamic_greeting": true,
+        "keyboard_shortcuts": true,
+        "user_id_form": true,
+        "smart_scroll": true,
+        "custom_css_enabled": true
     },
     "visuals": {
         "theme_color": "#2563eb",
         "chat_icon_url": "",
-        "bot_avatar_url": "",
+        "bot_avatar_url": "https://cdn-icons-png.flaticon.com/512/4712/4712035.png",
         "floating_text": "Есть вопросы? Пишите!",
-        "floating_bg": "#ffffff",
-        "floating_color": "#1e293b",
-        "floating_animation": "none",
+        "floating_bg": "#2563eb",
+        "floating_color": "#ffffff",
+        "floating_animation": "pulse",
         "typing_speed": 30,
-        "position": "bottom-left",
+        "position": "bottom-right",
         "offset_x": 20,
-        "offset_y": 20
+        "offset_y": 20,
+        "custom_css": ".message-bot { border-left: 4px solid var(--chat-primary); }"
     },
     "schedule": [
-        {
-            "enabled": false,
-            "start": "00:00",
-            "end": "00:00"
-        },
-        {
-            "enabled": true,
-            "start": "09:00",
-            "end": "21:00"
-        },
-        {
-            "enabled": true,
-            "start": "09:00",
-            "end": "21:00"
-        },
-        {
-            "enabled": true,
-            "start": "09:00",
-            "end": "21:00"
-        },
-        {
-            "enabled": true,
-            "start": "09:00",
-            "end": "21:00"
-        },
-        {
-            "enabled": true,
-            "start": "09:00",
-            "end": "21:00"
-        },
-        {
-            "enabled": true,
-            "start": "10:00",
-            "end": "18:00"
-        }
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"}
     ],
-    "directions": [
-        "Терапия",
-        "Хирургия",
-        "Диагностика",
-        "Профилактика"
+    "directions": ["Поддержка", "Продажи", "Сотрудничество"],
+    "forms": [],
+    "webhooks": [],
+    "departments": [
+        {"id": "sales", "name": "Отдел продаж"},
+        {"id": "support", "name": "Техподдержка"}
     ],
-    "forms": [
-        {
-            "id": "testform",
-            "title": "Записаться на тест",
-            "fields": [
-                {
-                    "label": "Имя",
-                    "type": "text",
-                    "required": true
-                },
-                {
-                    "label": "Телефон",
-                    "type": "tel",
-                    "required": true
-                }
-            ]
-        }
-    ],
-    "bot_name": "Помощник",
-    "admin_password": "admin",
-    "business_name": "Наша Клиника",
-    "welcome_message": "Здравствуйте! Я ваш автоматический помощник. Чем могу помочь?"
+    "quick_start_menu": [
+        {"text": "🚀 Услуги", "message": "Какие услуги вы оказываете?"},
+        {"text": "💰 Цены", "message": "Сколько это стоит?"},
+        {"text": "📞 Контакты", "message": "Как с вами связаться?"}
+    ]
 }

@@ -1,149 +1,117 @@
-const { createApp, ref, onMounted } = Vue;
+const { createApp, ref, computed, onMounted } = Vue;
 createApp({
     setup() {
         const activeTab = ref('knowledge');
-        const dayNames = {
-            "1": "Понедельник",
-            "2": "Вторник",
-            "3": "Среда",
-            "4": "Четверг",
-            "5": "Пятница",
-            "6": "Суббота",
-            "0": "Воскресенье"
-        };
+        const dayNames = { "1": "Пн", "2": "Вт", "3": "Ср", "4": "Чт", "5": "Пт", "6": "Сб", "0": "Вс" };
         const settings = ref({
+            enabled: true, bot_name: 'Помощник PRO', welcome_message: '', admin_password: '',
             working_hours: { timezone: 'Europe/Moscow', out_of_hours_message: '' },
-            contacts: { phone: '', email: '', address: '' },
+            contacts: { phone: '', email: '', address: '', whatsapp: '', telegram: '' },
             fallback: { threshold: 40, message: '', button_text: '' },
-            notifications: {
-                email: { enabled: false, address: '' },
-                telegram: { enabled: false, token: '', chat_id: '' }
+            notifications: { email: { enabled: false, address: '' }, telegram: { enabled: false, token: '', chat_id: '' } },
+            features: {
+                proactive_greeting: 0, sound_enabled: true, voice_input: true, persistence: true,
+                rating_system: true, dark_mode: 'auto', typing_indicator: true, rich_text: true,
+                show_branding: true, quick_start: true, departments: false, file_upload: true,
+                chat_export: true, idle_reminder: 60, dynamic_greeting: true, keyboard_shortcuts: true,
+                user_id_form: false, smart_scroll: true, custom_css_enabled: false
             },
             visuals: {
-                theme_color: '#2563eb',
-                chat_icon_url: '',
-                bot_avatar_url: '',
-                floating_text: 'Есть вопросы? Пишите!',
-                floating_bg: '#ffffff',
-                floating_color: '#1e293b',
-                floating_animation: 'none',
-                typing_speed: 30,
-                position: 'bottom-right',
-                offset_x: 20,
-                offset_y: 20
+                theme_color: '#2563eb', chat_icon_url: '', bot_avatar_url: '',
+                floating_text: '', floating_bg: '#2563eb', floating_color: '#ffffff',
+                floating_animation: 'none', typing_speed: 30, position: 'bottom-right',
+                offset_x: 20, offset_y: 20, custom_css: ''
             },
-            schedule: {
-                "1": { enabled: true, start: "09:00", end: "18:00" },
-                "2": { enabled: true, start: "09:00", end: "18:00" },
-                "3": { enabled: true, start: "09:00", end: "18:00" },
-                "4": { enabled: true, start: "09:00", end: "18:00" },
-                "5": { enabled: true, start: "09:00", end: "18:00" },
-                "6": { enabled: false, start: "00:00", end: "00:00" },
-                "0": { enabled: false, start: "00:00", end: "00:00" }
-            },
-            directions: [],
-            forms: []
+            schedule: {}, directions: [], forms: [], webhooks: [], departments: [], quick_start_menu: []
         });
         const knowledge = ref([]);
         const history = ref([]);
+        const uploads = ref([]);
         const isLoaded = ref(false);
         const scriptUrl = ref('');
+        const searchQuery = ref('');
+
+        const stats = computed(() => {
+            const total = history.value.length;
+            const leads = history.value.filter(h => h.user_message.includes('LEAD_PHONE') || h.user_message.includes('FORM_SUBMISSION')).length;
+            const fallbacks = history.value.filter(h => h.is_fallback).length;
+            const avgScore = total ? history.value.reduce((acc, h) => acc + h.score, 0) / total : 0;
+            return { total, leads, fallbacks, avgScore: Math.round(avgScore) };
+        });
+
+        const filteredKnowledge = computed(() => {
+            if (!searchQuery.value) return knowledge.value;
+            const q = searchQuery.value.toLowerCase();
+            return knowledge.value.filter(item =>
+                item.keywords.some(k => k.toLowerCase().includes(q)) ||
+                item.answer.toLowerCase().includes(q)
+            );
+        });
 
         const fetchData = async () => {
             scriptUrl.value = window.location.origin + window.location.pathname.replace('admin.php', '') + 'assets/js/loader.js';
             try {
                 const res = await fetch('admin.php?action=get_data');
                 const data = await res.json();
-
-                // Deep merge or specific assignment to avoid losing keys
                 if (data.settings) {
-                    // Deep merge for visuals
-                    const visuals = { ...settings.value.visuals, ...(data.settings.visuals || {}) };
-                    const schedule = { ...settings.value.schedule, ...(data.settings.schedule || {}) };
-                    const notifications = {
-                        email: { ...settings.value.notifications.email, ...(data.settings.notifications?.email || {}) },
-                        telegram: { ...settings.value.notifications.telegram, ...(data.settings.notifications?.telegram || {}) }
+                    const merge = (target, source) => {
+                        for (const key in source) {
+                            if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                                if (!target[key]) target[key] = {};
+                                merge(target[key], source[key]);
+                            } else target[key] = source[key];
+                        }
                     };
-
-                    settings.value = {
-                        ...settings.value,
-                        ...data.settings,
-                        visuals,
-                        schedule,
-                        notifications
-                    };
+                    merge(settings.value, data.settings);
                 }
                 knowledge.value = data.knowledge || [];
-
                 const hRes = await fetch('admin.php?action=get_history');
                 history.value = await hRes.json();
-            } catch (e) {
-                console.error("Fetch error:", e);
-            } finally {
-                isLoaded.value = true;
+                fetchUploads();
+            } catch (e) {} finally { isLoaded.value = true; }
+        };
+
+        const fetchUploads = async () => {
+            const res = await fetch('api/uploads.php?action=list');
+            uploads.value = await res.json();
+        };
+
+        const deleteUpload = async (name) => {
+            if (confirm('Удалить файл?')) {
+                await fetch(`api/uploads.php?name=${name}`, { method: 'DELETE' });
+                fetchUploads();
             }
         };
 
         const save = async () => {
-            try {
-                const response = await fetch('admin.php?action=save_data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        settings: settings.value,
-                        knowledge: knowledge.value
-                    })
-                });
-                if (response.ok) {
-                    alert('Настройки сохранены!');
-                }
-            } catch (e) {
-                alert('Ошибка сохранения');
-            }
+            await fetch('admin.php?action=save_data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ settings: settings.value, knowledge: knowledge.value })
+            });
+            alert('Сохранено!');
         };
 
-        const addQnA = () => {
-            knowledge.value.unshift({ keywords: [], answer: '' });
-        };
-
-        const removeQnA = (index) => {
-            knowledge.value.splice(index, 1);
-        };
-
+        const addQnA = () => knowledge.value.unshift({ keywords: [], answer: '' });
+        const removeQnA = (index) => knowledge.value.splice(index, 1);
         const updateKeywords = (index, val) => {
             knowledge.value[index].keywords = val.split(',').map(s => s.trim()).filter(s => s);
         };
-
-        const triggerImport = () => {
-            document.querySelector('input[type="file"]').click();
-        };
-
-        const clearHistory = async () => {
-            if (confirm('Очистить всю историю?')) {
-                await fetch('admin.php?action=clear_history');
-                history.value = [];
-            }
-        };
-
-        const deleteHistoryItem = async (id) => {
-            await fetch(`admin.php?action=delete_history_item&id=${id}`);
-            history.value = history.value.filter(i => i.id !== id);
-        };
-
-        const addForm = () => {
-            if (!settings.value.forms) settings.value.forms = [];
-            settings.value.forms.push({
-                id: 'form_' + Date.now(),
-                title: 'Новая форма',
-                fields: [
-                    { label: 'Имя', type: 'text', required: true },
-                    { label: 'Телефон', type: 'tel', required: true }
-                ]
-            });
-        };
+        const triggerImport = () => document.querySelector('input[type="file"]').click();
+        const clearHistory = async () => { if (confirm('Очистить историю?')) { await fetch('admin.php?action=clear_history'); history.value = []; } };
+        const deleteHistoryItem = async (id) => { await fetch(`admin.php?action=delete_history_item&id=${id}`); history.value = history.value.filter(i => i.id !== id); };
+        const addForm = () => settings.value.forms.push({ id: 'form_' + Date.now(), title: 'Новая форма', fields: [{ label: 'Имя', type: 'text', required: true }] });
+        const addWebhook = () => settings.value.webhooks.push({ url: '', method: 'POST', enabled: true });
+        const addDepartment = () => settings.value.departments.push({ id: 'dep_' + Date.now(), name: 'Новый отдел' });
+        const addQuickStart = () => settings.value.quick_start_menu.push({ text: 'Вопрос?', message: 'Ответ' });
 
         onMounted(fetchData);
 
-        return { activeTab, dayNames, settings, knowledge, history, isLoaded, scriptUrl, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem, addForm };
+        return {
+            activeTab, dayNames, settings, knowledge, history, uploads, isLoaded, scriptUrl,
+            searchQuery, filteredKnowledge, stats,
+            save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory,
+            deleteHistoryItem, addForm, addWebhook, addDepartment, addQuickStart, deleteUpload
+        };
     }
 }).mount('#admin-app');

@@ -10,13 +10,17 @@ $settings = Storage::read('settings.json');
 
 // Return only public settings
 $publicSettings = [
-    'bot_name' => $settings['bot_name'],
-    'welcome_message' => $settings['welcome_message'],
-    'contacts' => $settings['contacts'],
-    'directions' => $settings['directions'],
+    'bot_name' => $settings['bot_name'] ?? 'Bot',
+    'welcome_message' => $settings['welcome_message'] ?? '',
+    'contacts' => $settings['contacts'] ?? [],
+    'directions' => $settings['directions'] ?? [],
     'visuals' => $settings['visuals'] ?? [],
     'fallback' => $settings['fallback'] ?? [],
-    'forms' => $settings['forms'] ?? []
+    'forms' => $settings['forms'] ?? [],
+    'features' => $settings['features'] ?? [],
+    'departments' => $settings['departments'] ?? [],
+    'quick_start_menu' => $settings['quick_start_menu'] ?? [],
+    'enabled' => $settings['enabled'] ?? true
 ];
 
 echo json_encode($publicSettings);
