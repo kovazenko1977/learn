@@ -135,21 +135,19 @@ if (strpos($rawMessage, 'FORM_SUBMISSION') === 0 || strpos($rawMessage, 'LEAD_PH
         $token = $notif['telegram']['token'];
         $chat_id = $notif['telegram']['chat_id'];
         $url = "https://api.telegram.org/bot{$token}/sendMessage";
-        $data = [
-            'chat_id' => $chat_id,
-            'text' => "🔔 *{$subject}*\n\n" . str_replace(['FORM_SUBMISSION', 'LEAD_PHONE'], '', $body),
-            'parse_mode' => 'Markdown'
-        ];
+        $text = "🔔 {$subject}\n\n" . str_replace(['FORM_SUBMISSION', 'LEAD_PHONE'], '', $body);
 
-        $options = [
-            'http' => [
-                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method'  => 'POST',
-                'content' => http_build_query($data),
-            ],
-        ];
-        $context  = stream_context_create($options);
-        @file_get_contents($url, false, $context);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'chat_id' => $chat_id,
+            'text' => $text
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_exec($ch);
+        curl_close($ch);
     }
 }
 
