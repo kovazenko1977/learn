@@ -548,7 +548,8 @@
             lever.classList.add('lever-pulled');
             setTimeout(() => lever.classList.remove('lever-pulled'), 500);
 
-            const maxDepth = gameScreen.offsetHeight - 180; // Distance to bottom
+            const machineArea = document.getElementById('machine-area');
+            const maxDepth = machineArea.offsetHeight - 75; // Precisely reach the bottom
             let currentDepth = 0;
             let descending = true;
             let paused = false;
@@ -560,7 +561,19 @@
                 if (paused) return;
 
                 if (descending) {
-                    currentDepth += 7;
+                    currentDepth += 6; // Slightly slower for better control
+
+                    // Check collision during descent too for better feel
+                    if (currentDepth > maxDepth - 50) {
+                        if (checkCollision()) {
+                             // Caught something! Stop descending
+                             descending = false;
+                             paused = true;
+                             retractSpeed = (claw.querySelector('.bottle').dataset.type === 'empty') ? 2 : 5;
+                             setTimeout(() => { paused = false; }, 400);
+                        }
+                    }
+
                     if (currentDepth >= maxDepth) {
                         currentDepth = maxDepth;
                         paused = true;
@@ -568,8 +581,8 @@
 
                         // If empty bottle, it's heavy!
                         const attached = claw.querySelector('.bottle');
-                        if (attached && attached.dataset.type === 'empty') {
-                            retractSpeed = 2;
+                        if (attached) {
+                            retractSpeed = (attached.dataset.type === 'empty') ? 2 : 5;
                         } else {
                             retractSpeed = 5;
                         }
@@ -600,28 +613,33 @@
         }
 
         function checkCollision() {
+            if (claw.querySelector('.bottle')) return true; // Already holding something
+
             const clawRect = claw.getBoundingClientRect();
             const bottles = bottlesContainer.querySelectorAll('.bottle');
 
-            // Expand hit area slightly for better UX
-            const hitPadding = 15;
+            // Expand hit area for better UX
+            const hitPadding = 25;
 
             for (let bottle of bottles) {
                 const bottleRect = bottle.getBoundingClientRect();
 
-                if (!(clawRect.right + hitPadding < bottleRect.left ||
-                      clawRect.left - hitPadding > bottleRect.right ||
-                      clawRect.bottom < bottleRect.top ||
-                      clawRect.top > bottleRect.bottom)) {
+                // Horizontal overlap + Vertical proximity
+                const horizontalMatch = (clawRect.left < bottleRect.right + hitPadding) &&
+                                       (clawRect.right > bottleRect.left - hitPadding);
+                const verticalMatch = (clawRect.bottom > bottleRect.top) &&
+                                     (clawRect.top < bottleRect.bottom + 20);
 
+                if (horizontalMatch && verticalMatch) {
                     // Attach to claw
                     bottle.style.left = '50%';
                     bottle.style.bottom = '-40px';
                     bottle.style.transform = 'translateX(-50%)';
                     claw.appendChild(bottle);
-                    break;
+                    return true;
                 }
             }
+            return false;
         }
 
         function collectBottle(bottle) {
