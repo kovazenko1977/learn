@@ -145,6 +145,7 @@ if (isset($_GET['action'])) {
                     <button type="button" @click="activeTab = 'constructor'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'constructor'}" class="pb-2 font-medium">Конструктор</button>
                     <button type="button" @click="activeTab = 'settings'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'settings'}" class="pb-2 font-medium">Настройки</button>
                     <button type="button" @click="activeTab = 'history'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'history'}" class="pb-2 font-medium">История</button>
+                    <button type="button" @click="activeTab = 'about'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'about'}" class="pb-2 font-medium">О программе</button>
                 </nav>
                 <a href="example.html" class="text-blue-600 hover:underline mr-4">На сайт</a>
                 <a href="admin.php?logout=1" class="text-red-600 hover:underline mr-4">Выход</a>
@@ -314,6 +315,38 @@ if (isset($_GET['action'])) {
                     </div>
 
                     <div class="pt-4 border-t">
+                        <h3 class="font-medium mb-2 text-blue-600">Уведомления о формах</h3>
+
+                        <div class="space-y-4 bg-blue-50 p-4 rounded-lg">
+                            <div>
+                                <label class="flex items-center gap-2 font-bold text-xs uppercase text-gray-600 mb-2">
+                                    <input type="checkbox" v-model="settings.notifications.email.enabled">
+                                    На Email
+                                </label>
+                                <input v-if="settings.notifications.email.enabled"
+                                       v-model="settings.notifications.email.address"
+                                       placeholder="admin@example.com"
+                                       class="w-full border p-2 rounded text-sm bg-white">
+                            </div>
+
+                            <div>
+                                <label class="flex items-center gap-2 font-bold text-xs uppercase text-gray-600 mb-2">
+                                    <input type="checkbox" v-model="settings.notifications.telegram.enabled">
+                                    В Telegram
+                                </label>
+                                <div v-if="settings.notifications.telegram.enabled" class="space-y-2">
+                                    <input v-model="settings.notifications.telegram.token"
+                                           placeholder="Bot Token"
+                                           class="w-full border p-2 rounded text-sm bg-white">
+                                    <input v-model="settings.notifications.telegram.chat_id"
+                                           placeholder="Chat ID"
+                                           class="w-full border p-2 rounded text-sm bg-white">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t">
                         <h3 class="font-medium mb-2">Безопасность</h3>
                         <div class="flex items-center mb-4">
                             <span class="text-xs mr-2">Порог уверенности: {{ settings.fallback.threshold }}%</span>
@@ -323,6 +356,27 @@ if (isset($_GET['action'])) {
                         <input type="password" v-model="settings.admin_password" class="w-full border p-2 rounded">
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div v-if="isLoaded && activeTab === 'about'" class="bg-white p-8 rounded-xl shadow-sm text-center">
+            <div class="mb-6">
+                <img src="https://wes.by/logo.png" alt="WES.BY" class="h-20 mx-auto mb-4 opacity-80" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2111/2111615.png'">
+                <h2 class="text-2xl font-bold text-gray-800">О программе</h2>
+                <p class="text-gray-500 mt-2 italic">Интеллектуальный чат-бот для вашего бизнеса</p>
+            </div>
+
+            <div class="max-w-md mx-auto bg-gray-50 p-6 rounded-xl border border-gray-100">
+                <div class="text-lg font-semibold text-blue-600 mb-2">Разработчик: WES.BY</div>
+                <div class="text-gray-700 space-y-1">
+                    <p>Телефон: <a href="tel:+375333533971" class="font-bold hover:underline">+375 33 353 39 71</a></p>
+                    <p>Сайт: <a href="https://wes.by" target="_blank" class="text-blue-500 hover:underline">wes.by</a></p>
+                    <p class="mt-4 font-medium text-sm text-gray-600 uppercase tracking-wider">Программы, Сайты под заказ</p>
+                </div>
+            </div>
+
+            <div class="mt-8 text-xs text-gray-400">
+                Версия 2.0.0 &bull; 2024 &copy; Все права защищены
             </div>
         </div>
 

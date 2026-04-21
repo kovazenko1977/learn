@@ -15,6 +15,10 @@ createApp({
             working_hours: { timezone: 'Europe/Moscow', out_of_hours_message: '' },
             contacts: { phone: '', email: '', address: '' },
             fallback: { threshold: 40, message: '', button_text: '' },
+            notifications: {
+                email: { enabled: false, address: '' },
+                telegram: { enabled: false, token: '', chat_id: '' }
+            },
             visuals: { theme_color: '#2563eb', chat_icon_url: '', bot_avatar_url: '' },
             schedule: {
                 "1": { enabled: true, start: "09:00", end: "18:00" },

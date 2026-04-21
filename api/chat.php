@@ -10,9 +10,10 @@ $settings = Storage::read('settings.json');
 $knowledge = Storage::read('knowledge.json');
 
 $input = json_decode(file_get_contents('php://input'), true);
-$message = isset($input['message']) ? mb_strtolower(trim($input['message'])) : '';
+$rawMessage = isset($input['message']) ? trim($input['message']) : '';
+$message = mb_strtolower($rawMessage);
 
-if (empty($message)) {
+if (empty($rawMessage)) {
     echo json_encode(['error' => 'No message provided']);
     exit;
 }
@@ -116,6 +117,40 @@ if ($highestScore >= $threshold && $bestMatch) {
         'phone' => $settings['contacts']['phone'],
         'show_lead_form' => true
     ];
+}
+
+// 4. Handle notifications for form submissions
+if (strpos($rawMessage, 'FORM_SUBMISSION') === 0 || strpos($rawMessage, 'LEAD_PHONE') === 0) {
+    $notif = $settings['notifications'] ?? [];
+    $subject = "Новая заявка из чат-бота";
+    $body = $rawMessage;
+
+    // Email
+    if (($notif['email']['enabled'] ?? false) && !empty($notif['email']['address'])) {
+        @mail($notif['email']['address'], $subject, $body);
+    }
+
+    // Telegram
+    if (($notif['telegram']['enabled'] ?? false) && !empty($notif['telegram']['token']) && !empty($notif['telegram']['chat_id'])) {
+        $token = $notif['telegram']['token'];
+        $chat_id = $notif['telegram']['chat_id'];
+        $url = "https://api.telegram.org/bot{$token}/sendMessage";
+        $data = [
+            'chat_id' => $chat_id,
+            'text' => "🔔 *{$subject}*\n\n" . str_replace(['FORM_SUBMISSION', 'LEAD_PHONE'], '', $body),
+            'parse_mode' => 'Markdown'
+        ];
+
+        $options = [
+            'http' => [
+                'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method'  => 'POST',
+                'content' => http_build_query($data),
+            ],
+        ];
+        $context  = stream_context_create($options);
+        @file_get_contents($url, false, $context);
+    }
 }
 
 // Log history
