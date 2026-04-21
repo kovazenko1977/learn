@@ -6,11 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreText = document.getElementById('score');
     const bottlesText = document.getElementById('bottles');
     const highscoreText = document.getElementById('highscore');
+    const startScreen = document.getElementById('start-screen');
+    const startBtn = document.getElementById('start-btn');
     const gameOverOverlay = document.getElementById('game-over');
     const finalScoreText = document.getElementById('final-score');
     const restartBtn = document.getElementById('restart-btn');
     const jumpBtn = document.getElementById('jump-btn');
 
+    let isGameStarted = false;
     let score = 0;
     let bottlesCount = 0;
     let highscore = localStorage.getItem('dinoHighscore') || 0;
@@ -90,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function gameLoop(time) {
-        if (isGameOver) return;
+        if (isGameOver || !isGameStarted) return;
 
         if (!lastTime) lastTime = time;
         const deltaTime = time - lastTime;
@@ -223,7 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(gameLoop);
     }
 
+    function startGame() {
+        isGameStarted = true;
+        startScreen.style.display = 'none';
+        player.classList.add('running');
+        requestAnimationFrame(gameLoop);
+    }
+
     // Input Handling
+    startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', resetGame);
 
     // Jump Button
@@ -246,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Start
-    requestAnimationFrame(gameLoop);
+    // Initial UI state
+    player.classList.remove('running');
+    updateUI();
 });

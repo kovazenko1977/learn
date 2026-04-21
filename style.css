@@ -174,10 +174,42 @@ body {
     text-align: center;
 }
 
+.overlay h1 {
+    font-size: 2rem;
+    color: #ffff00;
+    margin-bottom: 20px;
+    text-shadow: 4px 4px 0 #000;
+}
+
 .overlay h2 {
     margin-bottom: 10px;
     font-size: 1.8rem;
     color: #ff4444;
+}
+
+.rules {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border: 4px solid #fff;
+    margin-bottom: 30px;
+    max-width: 80%;
+}
+
+.rules p {
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+    color: #44ff44;
+}
+
+.rules ul {
+    list-style: none;
+    text-align: left;
+}
+
+.rules li {
+    font-size: 0.6rem;
+    line-height: 1.8;
+    margin-bottom: 5px;
 }
 
 .restart-btn {
