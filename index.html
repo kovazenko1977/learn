@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Чиназес Хватайка</title>
+    <style>
+        :root {
+            --machine-border: #444;
+            --machine-bg: #222;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --lemon: #ffff00;
+            --pear: #32cd32;
+            --cherry: #ff0000;
+            --empty: #808080;
+            --sheriff-body: #4CAF50;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #111;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+            touch-action: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #87CEEB;
+            overflow: hidden;
+            border-left: 10px solid var(--machine-border);
+            border-right: 10px solid var(--machine-border);
+            box-sizing: border-box;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 { color: #f1c40f; text-shadow: 2px 2px #d35400; font-size: 2.5rem; margin-bottom: 1rem; }
+        p { font-size: 1.2rem; margin-bottom: 2rem; }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px #a04000;
+            transition: all 0.1s;
+        }
+
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px #a04000;
+        }
+
+        #game-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: linear-gradient(to bottom, #2c3e50, #000);
+            z-index: 1;
+        }
+
+        #score-board {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            color: #fff;
+            font-size: 1.2rem;
+            z-index: 50;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        #machine-area {
+            position: absolute;
+            top: 60px;
+            bottom: 120px;
+            left: 10px;
+            right: 10px;
+            background: var(--glass-bg);
+            border: 4px solid #555;
+            overflow: hidden;
+        }
+
+        /* Claw Logic */
+        #claw-carriage {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 60px;
+            height: 30px;
+            background: #777;
+            transform: translateX(-50%);
+            z-index: 30;
+            border-bottom: 3px solid #444;
+        }
+
+        #claw-rope {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            width: 4px;
+            height: 0;
+            background: #aaa;
+            transform: translateX(-50%);
+        }
+
+        #claw {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            width: 50px;
+            height: 40px;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .claw-arm {
+            width: 10px;
+            height: 30px;
+            background: #999;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .claw-arm.left { transform: rotate(15deg); transform-origin: top right; }
+        .claw-arm.right { transform: rotate(-15deg); transform-origin: top left; }
+
+        .claw-grabbing .claw-arm.left { transform: rotate(-15deg); }
+        .claw-grabbing .claw-arm.right { transform: rotate(15deg); }
+
+        /* Bottles */
+        .bottle {
+            position: absolute;
+            width: 25px;
+            height: 50px;
+            border-radius: 5px 5px 2px 2px;
+            bottom: 0;
+        }
+        .bottle::before { /* Cap */
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20%;
+            width: 60%;
+            height: 8px;
+            background: #333;
+            border-radius: 2px;
+        }
+
+        .lemon { background: var(--lemon); }
+        .pear { background: var(--pear); }
+        .cherry { background: var(--cherry); }
+        .empty { background: var(--empty); }
+
+        /* Cactus Sheriff */
+        #cactus-sheriff {
+            position: absolute;
+            bottom: 0;
+            left: 5px;
+            width: 80px;
+            height: 100px;
+            z-index: 40;
+            pointer-events: none;
+        }
+
+        .sheriff-body {
+            position: absolute;
+            bottom: 0;
+            width: 60px;
+            height: 70px;
+            background: var(--sheriff-body);
+            border-radius: 30px 30px 10px 10px;
+        }
+
+        .sheriff-hat {
+            position: absolute;
+            top: 15px;
+            left: -5px;
+            width: 70px;
+            height: 20px;
+            background: #5d4037;
+            border-radius: 5px;
+            z-index: 45;
+        }
+        .sheriff-hat::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 15px;
+            width: 40px;
+            height: 20px;
+            background: #5d4037;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .sheriff-eyes {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: 40px;
+            height: 15px;
+            background: #000; /* Sunglasses */
+            border-radius: 5px;
+        }
+
+        /* Controls */
+        #controls {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            background: #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 5px solid #222;
+        }
+
+        #grab-btn {
+            width: 200px;
+            height: 80px;
+            border-radius: 40px;
+            background: #c0392b;
+            box-shadow: 0 8px #96281b;
+        }
+        #grab-btn:active {
+            box-shadow: 0 2px #96281b;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Animation for grabbing */
+        @keyframes sway {
+            0% { transform: rotate(-1deg); }
+            100% { transform: rotate(1deg); }
+        }
+        #claw-carriage { animation: sway 1s infinite alternate ease-in-out; }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <h1>ЧИНАЗЕС ХВАТАЙКА</h1>
+            <p>Собери все редкие вкусы!</p>
+            <button id="start-btn">ИГРАТЬ</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen">
+            <div id="score-board">
+            <div>ВРЕМЯ: <span id="timer">30</span></div>
+                <div>СЧЕТ: <span id="current-score">0</span></div>
+                <div>РЕКОРД: <span id="high-score">0</span></div>
+            </div>
+
+            <div id="machine-area">
+                <div id="claw-carriage">
+                    <div id="claw-rope"></div>
+                    <div id="claw">
+                        <div class="claw-arm left"></div>
+                        <div class="claw-arm right"></div>
+                    </div>
+                </div>
+                <div id="bottles-container"></div>
+                <div id="cactus-sheriff">
+                    <div class="sheriff-hat"></div>
+                    <div class="sheriff-body">
+                        <div class="sheriff-eyes"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="controls">
+                <button id="grab-btn">ХВАТАЙ!</button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="screen hidden">
+            <h1>ИГРА ОКОНЧЕНА</h1>
+            <div id="stats">
+                <p>Собрано бутылок: <span id="bottles-collected">0</span></p>
+                <p>Итоговый счет: <span id="final-score">0</span></p>
+            </div>
+            <button id="restart-btn">ПОПРОБОВАТЬ СНОВА</button>
+        </div>
+    </div>
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const grabBtn = document.getElementById('grab-btn');
+
+        const carriage = document.getElementById('claw-carriage');
+        const rope = document.getElementById('claw-rope');
+        const claw = document.getElementById('claw');
+        const bottlesContainer = document.getElementById('bottles-container');
+        const timerEl = document.getElementById('timer');
+        const currentScoreEl = document.getElementById('current-score');
+        const highScoreEl = document.getElementById('high-score');
+        const finalScoreEl = document.getElementById('final-score');
+        const bottlesCollectedEl = document.getElementById('bottles-collected');
+
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('chinazes_highscore')) || 0;
+        let collectedCount = 0;
+        let isGameOver = false;
+        let isGrabbing = false;
+        let clawPos = { x: 50, y: 0 }; // x in %, y in pixels
+        let clawDirection = 1; // 1 for right, -1 for left
+        let carriageSpeed = 0.5;
+        let gameActive = false;
+        let timeLeft = 30;
+        let gameTimer;
+
+        highScoreEl.textContent = highScore;
+
+        const bottleTypes = [
+            { type: 'lemon', points: 10, weight: 1 },
+            { type: 'pear', points: 15, weight: 1 },
+            { type: 'cherry', points: 25, weight: 1 },
+            { type: 'empty', points: 2, weight: 2 }
+        ];
+
+        function initGame() {
+            score = 0;
+            collectedCount = 0;
+            timeLeft = 30;
+            isGameOver = false;
+            isGrabbing = false;
+            clawPos = { x: 50, y: 0 };
+            currentScoreEl.textContent = score;
+            timerEl.textContent = timeLeft;
+            bottlesContainer.innerHTML = '';
+            spawnBottles();
+            gameActive = true;
+
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function endGame() {
+            gameActive = false;
+            isGameOver = true;
+            clearInterval(gameTimer);
+
+            finalScoreEl.textContent = score;
+            bottlesCollectedEl.textContent = collectedCount;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        function spawnBottles() {
+            const count = 10;
+            for (let i = 0; i < count; i++) {
+                createBottle();
+            }
+        }
+
+        function createBottle() {
+            const bottle = document.createElement('div');
+            const typeInfo = bottleTypes[Math.floor(Math.random() * bottleTypes.length)];
+            bottle.className = `bottle ${typeInfo.type}`;
+            bottle.dataset.points = typeInfo.points;
+            bottle.dataset.type = typeInfo.type;
+
+            let x;
+            let overlapping = true;
+            let attempts = 0;
+            while(overlapping && attempts < 10) {
+                x = Math.random() * 80 + 10;
+                overlapping = Array.from(bottlesContainer.children).some(b => {
+                    return Math.abs(parseFloat(b.style.left) - x) < 6;
+                });
+                attempts++;
+            }
+
+            bottle.style.left = `${x}%`;
+            bottle.style.bottom = `${Math.random() * 5}px`;
+
+            bottlesContainer.appendChild(bottle);
+        }
+
+        function gameLoop() {
+            if (!gameActive || isGameOver) return;
+
+            if (!isGrabbing) {
+                // Horizontal movement
+                clawPos.x += clawDirection * carriageSpeed;
+                if (clawPos.x >= 95 || clawPos.x <= 5) {
+                    clawDirection *= -1;
+                }
+                carriage.style.left = `${clawPos.x}%`;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function grab() {
+            if (isGrabbing || !gameActive || isGameOver) return;
+            isGrabbing = true;
+
+            const maxDepth = gameScreen.offsetHeight - 180; // Distance to bottom
+            let currentDepth = 0;
+            let descending = true;
+
+            claw.classList.add('claw-grabbing');
+
+            const grabInterval = setInterval(() => {
+                if (descending) {
+                    currentDepth += 5;
+                    if (currentDepth >= maxDepth) {
+                        descending = false;
+                        checkCollision();
+                    }
+                } else {
+                    currentDepth -= 3;
+                    if (currentDepth <= 0) {
+                        currentDepth = 0;
+                        clearInterval(grabInterval);
+                        isGrabbing = false;
+                        claw.classList.remove('claw-grabbing');
+
+                        // Drop any attached bottle
+                        const attachedBottle = claw.querySelector('.bottle');
+                        if (attachedBottle) {
+                            collectBottle(attachedBottle);
+                        }
+                    }
+                }
+
+                rope.style.height = `${currentDepth}px`;
+                claw.style.bottom = `${-30 - currentDepth}px`;
+            }, 20);
+        }
+
+        function checkCollision() {
+            const clawRect = claw.getBoundingClientRect();
+            const bottles = bottlesContainer.querySelectorAll('.bottle');
+
+            for (let bottle of bottles) {
+                const bottleRect = bottle.getBoundingClientRect();
+
+                if (!(clawRect.right < bottleRect.left ||
+                      clawRect.left > bottleRect.right ||
+                      clawRect.bottom < bottleRect.top ||
+                      clawRect.top > bottleRect.bottom)) {
+
+                    // Attach to claw
+                    bottle.style.left = '50%';
+                    bottle.style.bottom = '-40px';
+                    bottle.style.transform = 'translateX(-50%)';
+                    claw.appendChild(bottle);
+                    break;
+                }
+            }
+        }
+
+        function collectBottle(bottle) {
+            const points = parseInt(bottle.dataset.points);
+            score += points;
+            collectedCount++;
+            currentScoreEl.textContent = score;
+
+            bottle.remove();
+            createBottle(); // Respawn a new one
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('chinazes_highscore', highScore);
+                highScoreEl.textContent = highScore;
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            initGame();
+        });
+
+        restartBtn.addEventListener('click', () => {
+            gameOverScreen.classList.add('hidden');
+            initGame();
+        });
+
+        grabBtn.addEventListener('click', grab);
+
+        // Touch events for mobile
+        grabBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            grab();
+        });
+
+    </script>
+</body>
+</html>
