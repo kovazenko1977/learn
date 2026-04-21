@@ -94,10 +94,18 @@ $threshold = $settings['fallback']['threshold'] ?? 40;
 $response = [];
 
 if ($highestScore >= $threshold && $bestMatch) {
+    // Check for form triggers: [form:ID]
+    $formId = null;
+    if (preg_match('/\[form:([a-zA-Z0-9_-]+)\]/', $bestMatch, $matches)) {
+        $formId = $matches[1];
+        $bestMatch = str_replace($matches[0], '', $bestMatch);
+    }
+
     $response = [
-        'answer' => $bestMatch,
+        'answer' => trim($bestMatch),
         'score' => $highestScore,
-        'is_fallback' => false
+        'is_fallback' => false,
+        'form_id' => $formId
     ];
 } else {
     $response = [

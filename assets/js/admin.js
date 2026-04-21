@@ -25,7 +25,8 @@ createApp({
                 "6": { enabled: false, start: "00:00", end: "00:00" },
                 "0": { enabled: false, start: "00:00", end: "00:00" }
             },
-            directions: []
+            directions: [],
+            forms: []
         });
         const knowledge = ref([]);
         const history = ref([]);
@@ -99,8 +100,20 @@ createApp({
             history.value = history.value.filter(i => i.id !== id);
         };
 
+        const addForm = () => {
+            if (!settings.value.forms) settings.value.forms = [];
+            settings.value.forms.push({
+                id: 'form_' + Date.now(),
+                title: 'Новая форма',
+                fields: [
+                    { label: 'Имя', type: 'text', required: true },
+                    { label: 'Телефон', type: 'tel', required: true }
+                ]
+            });
+        };
+
         onMounted(fetchData);
 
-        return { activeTab, dayNames, settings, knowledge, history, isLoaded, scriptUrl, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem };
+        return { activeTab, dayNames, settings, knowledge, history, isLoaded, scriptUrl, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem, addForm };
     }
 }).mount('#admin-app');

@@ -142,12 +142,65 @@ if (isset($_GET['action'])) {
             <div class="flex items-center">
                 <nav class="flex space-x-4 mr-8">
                     <button type="button" @click="activeTab = 'knowledge'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'knowledge'}" class="pb-2 font-medium">База знаний</button>
+                    <button type="button" @click="activeTab = 'constructor'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'constructor'}" class="pb-2 font-medium">Конструктор</button>
                     <button type="button" @click="activeTab = 'settings'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'settings'}" class="pb-2 font-medium">Настройки</button>
                     <button type="button" @click="activeTab = 'history'" :class="{'text-blue-600 border-b-2 border-blue-600': activeTab === 'history'}" class="pb-2 font-medium">История</button>
                 </nav>
                 <a href="example.html" class="text-blue-600 hover:underline mr-4">На сайт</a>
                 <a href="admin.php?logout=1" class="text-red-600 hover:underline mr-4">Выход</a>
                 <button @click="save" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Сохранить всё</button>
+            </div>
+        </div>
+
+        <div v-if="isLoaded && activeTab === 'constructor'" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm">
+                <div class="flex justify-between items-center mb-6 border-b pb-2">
+                    <h2 class="text-xl font-semibold">Конструктор форм</h2>
+                    <button @click="addForm" class="bg-blue-600 text-white px-4 py-1 rounded text-sm">+ Создать форму</button>
+                </div>
+
+                <div class="space-y-8">
+                    <div v-for="(form, fIdx) in settings.forms" :key="fIdx" class="p-6 border rounded-xl bg-gray-50 relative">
+                        <button @click="settings.forms.splice(fIdx, 1)" class="absolute top-4 right-4 text-red-500 hover:text-red-700">Удалить форму</button>
+
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Название формы (ID)</label>
+                                <input v-model="form.id" class="w-full border p-2 rounded" placeholder="booking">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase">Заголовок формы</label>
+                                <input v-model="form.title" class="w-full border p-2 rounded" placeholder="Запись на прием">
+                            </div>
+                        </div>
+
+                        <div class="mb-2 font-medium text-sm">Поля формы:</div>
+                        <div class="space-y-2">
+                            <div v-for="(field, fldIdx) in form.fields" :key="fldIdx" class="flex items-center gap-2 bg-white p-2 border rounded shadow-sm">
+                                <input v-model="field.label" class="flex-1 border p-1 rounded text-sm" placeholder="Название поля (напр. Дата)">
+                                <select v-model="field.type" class="border p-1 rounded text-sm">
+                                    <option value="text">Текст</option>
+                                    <option value="tel">Телефон</option>
+                                    <option value="date">Дата</option>
+                                    <option value="time">Время</option>
+                                    <option value="textarea">Многострочный текст</option>
+                                </select>
+                                <label class="flex items-center gap-1 text-xs">
+                                    <input type="checkbox" v-model="field.required"> Обяз.
+                                </label>
+                                <button @click="form.fields.splice(fldIdx, 1)" class="text-red-500 px-2">×</button>
+                            </div>
+                            <button @click="form.fields.push({label: '', type: 'text', required: true})" class="text-blue-600 text-xs font-bold">+ Добавить поле</button>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-blue-50 rounded text-xs text-blue-700">
+                            Используйте <strong>[form:{{ form.id }}]</strong> в ответах базы знаний, чтобы вывести эту форму.
+                        </div>
+                    </div>
+                </div>
+                <div v-if="!settings.forms?.length" class="text-center py-10 text-gray-400">
+                    Формы не созданы. Нажмите "+ Создать форму", чтобы начать.
+                </div>
             </div>
         </div>
 

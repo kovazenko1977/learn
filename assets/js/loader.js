@@ -32,13 +32,14 @@
         container.innerHTML = `
             <div id="chat-widget-container" v-cloak :style="'--chat-primary:' + (settings.visuals?.theme_color || '#2563eb') + '; --chat-user-bg:' + (settings.visuals?.theme_color || '#2563eb')">
                 <style>
-                    .lead-form { margin-top: 10px; padding: 10px; background: #f1f5f9; border-radius: 8px; font-size: 12px; }
-                    .lead-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; margin-top: 5px; }
-                    .lead-btn { background: var(--chat-primary); color: white; border: none; width: 100%; border-radius: 4px; padding: 4px; margin-top: 5px; cursor: pointer; }
+                    .lead-form, .custom-form { margin-top: 10px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #1e293b; }
+                    .lead-input, .custom-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 8px; margin-top: 4px; margin-bottom: 8px; box-sizing: border-box; }
+                    .lead-btn, .custom-btn { background: var(--chat-primary); color: white; border: none; width: 100%; border-radius: 4px; padding: 8px; margin-top: 5px; cursor: pointer; font-weight: bold; }
                     .chat-footer { padding: 8px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; background: #f8fafc; }
                     .chat-footer a { color: inherit; text-decoration: none; font-weight: bold; }
                     .quick-replies { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
                     .quick-reply-btn { font-size: 11px; padding: 4px 8px; border: 1px solid var(--chat-primary); border-radius: 12px; color: var(--chat-primary); background: white; cursor: pointer; }
+                    .form-title { font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; pb: 4px; }
                 </style>
                 <div v-if="isOpen" class="chat-window">
                     <div class="chat-header" :style="'background:' + (settings.visuals?.theme_color || '#2563eb')">
@@ -62,6 +63,26 @@
                             <div v-if="msg.showLeadForm && leadSubmitted" class="lead-form" style="color: green;">
                                 Спасибо! Мы скоро свяжемся с вами.
                             </div>
+
+                            <div v-if="msg.form && !msg.formSubmitted" class="custom-form">
+                                <div class="form-title">{{ msg.form.title }}</div>
+                                <div v-for="(field, fIdx) in msg.form.fields" :key="fIdx">
+                                    <label>{{ field.label }}</label>
+                                    <input v-if="field.type !== 'textarea'"
+                                           :type="field.type"
+                                           v-model="msg.formData[field.label]"
+                                           class="custom-input"
+                                           :required="field.required">
+                                    <textarea v-else
+                                              v-model="msg.formData[field.label]"
+                                              class="custom-input"
+                                              :required="field.required"></textarea>
+                                </div>
+                                <button @click="submitCustomForm(msg)" class="custom-btn">Отправить</button>
+                            </div>
+                            <div v-if="msg.formSubmitted" class="custom-form" style="color: green;">
+                                Данные успешно отправлены!
+                            </div>
                         </div>
                         <div v-if="isLoading" class="message message-bot">...</div>
                     </div>
@@ -76,7 +97,7 @@
                     </form>
 
                     <div class="chat-footer">
-                        Разработано <a href="https://wes.by" target="_blank">wes.by</a> +375333533971
+                        Разработанно <a href="https://wes.by" target="_blank">WES.BY</a> +375333533971 (Разработка сайтов и приложений)
                     </div>
                 </div>
 
@@ -129,10 +150,19 @@
                             body: JSON.stringify({ message: text })
                         });
                         const data = await response.json();
+
+                        let form = null;
+                        if (data.form_id && settings.value.forms) {
+                            form = settings.value.forms.find(f => f.id === data.form_id);
+                        }
+
                         messages.value.push({
                             text: data.answer,
                             isBot: true,
                             showLeadForm: data.show_lead_form || false,
+                            form: form,
+                            formData: {},
+                            formSubmitted: false,
                             fallback: data.is_fallback ? {
                                 text: data.button_text,
                                 phone: data.phone
@@ -172,9 +202,19 @@
                     sendMessage();
                 };
 
+                const submitCustomForm = async (msg) => {
+                    const dataString = Object.entries(msg.formData).map(([k,v]) => `${k}: ${v}`).join(', ');
+                    await fetch(rootPath + 'api/chat.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `FORM_SUBMISSION [${msg.form.title}]: ` + dataString })
+                    });
+                    msg.formSubmitted = true;
+                };
+
                 onMounted(fetchSettings);
 
-                return { isOpen, settings, messages, userInput, isLoading, messagesContainer, sendMessage, toggleChat, leadPhone, leadSubmitted, submitLead, sendQuickReply };
+                return { isOpen, settings, messages, userInput, isLoading, messagesContainer, sendMessage, toggleChat, leadPhone, leadSubmitted, submitLead, sendQuickReply, submitCustomForm };
             }
         }).mount('#chat-widget-loader');
     }

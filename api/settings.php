@@ -15,7 +15,8 @@ $publicSettings = [
     'contacts' => $settings['contacts'],
     'directions' => $settings['directions'],
     'visuals' => $settings['visuals'] ?? [],
-    'fallback' => $settings['fallback'] ?? []
+    'fallback' => $settings['fallback'] ?? [],
+    'forms' => $settings['forms'] ?? []
 ];
 
 echo json_encode($publicSettings);
