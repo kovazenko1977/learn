@@ -3,47 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Супер Кактус Шериф</title>
+    <title>Чиназес Марио Дино</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="game-container">
+    <div class="game-container" id="game-container">
         <header class="game-header">
             <div class="stat-box">
                 <span class="label">ОЧКИ</span>
                 <span id="score">000000</span>
             </div>
             <div class="stat-box">
-                <span class="label">МОНЕТЫ</span>
-                <span id="coins">x00</span>
+                <span class="label">БУТЫЛКИ</span>
+                <span id="bottles">x00</span>
             </div>
             <div class="stat-box">
-                <span class="label">МИР</span>
-                <span>1-1</span>
+                <span class="label">РЕКОРД</span>
+                <span id="highscore">000000</span>
             </div>
         </header>
 
-        <main class="game-world">
-            <div class="clouds"></div>
-            <div class="character-container" id="character-container">
-                <img src="assets/character.png" alt="Кактус Шериф" id="character-img">
+        <main class="game-world" id="game-world">
+            <div class="scrolling-background" id="background"></div>
+            <div class="ground-container" id="ground">
+                <div class="ground-part"></div>
+                <div class="ground-part"></div>
             </div>
-            <div class="interaction-block" id="block">
-                <img src="assets/bottle_lemon.png" alt="Bottle" id="bottle-img" class="bottle-img">
+            <div class="character running" id="player">
+                <img src="assets/character.png" alt="Дино">
             </div>
         </main>
 
-        <footer class="game-footer">
-            <div class="ground"></div>
-            <div class="controls">
-                <button id="action-btn">ПРЫЖОК</button>
-                <button id="auto-btn">АВТО-ИГРА</button>
-            </div>
-            <div id="event-log" class="event-message">ГОТОВ К ПРИКЛЮЧЕНИЯМ!</div>
-        </footer>
+        <div class="controls">
+            <button class="jump-btn" id="jump-btn">ПРЫЖОК</button>
+        </div>
+
+        <div class="overlay" id="game-over">
+            <h2>ИГРА ОКОНЧЕНА</h2>
+            <p id="final-score">СЧЕТ: 0</p>
+            <button class="restart-btn" id="restart-btn">ИГРАТЬ СНОВА</button>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
