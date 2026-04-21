@@ -31,12 +31,18 @@
         // Fetch template or inject HTML
         container.innerHTML = `
             <div id="chat-widget-container" v-cloak
-                 :style="{
+                 :class="{'mobile-open': isOpen}"
+                 :style="!isOpen ? {
                     '--chat-primary': settings.visuals?.theme_color || '#2563eb',
                     '--chat-user-bg': settings.visuals?.theme_color || '#2563eb',
-                    'bottom': (settings.visuals?.offset_y || 20) + 'px',
-                    'left': settings.visuals?.position === 'bottom-left' ? (settings.visuals?.offset_x || 20) + 'px' : 'auto',
-                    'right': settings.visuals?.position !== 'bottom-left' ? (settings.visuals?.offset_x || 20) + 'px' : 'auto'
+                    'bottom': (settings.visuals?.position?.startsWith('top') ? 'auto' : (settings.visuals?.offset_y || 20) + 'px'),
+                    'top': (settings.visuals?.position?.startsWith('top') ? (settings.visuals?.offset_y || 20) + 'px' : 'auto'),
+                    'left': (settings.visuals?.position?.endsWith('left') ? (settings.visuals?.offset_x || 20) + 'px' : (settings.visuals?.position === 'bottom-center' ? '50%' : 'auto')),
+                    'right': (settings.visuals?.position?.endsWith('right') ? (settings.visuals?.offset_x || 20) + 'px' : 'auto'),
+                    'transform': (settings.visuals?.position === 'bottom-center' ? 'translateX(-50%)' : 'none')
+                 } : {
+                    '--chat-primary': settings.visuals?.theme_color || '#2563eb',
+                    '--chat-user-bg': settings.visuals?.theme_color || '#2563eb'
                  }">
                 <style>
                     .lead-form, .custom-form { margin-top: 10px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #1e293b; }
@@ -50,13 +56,13 @@
                     .floating-text-bubble {
                         position: absolute;
                         bottom: 70px;
-                        background: white;
+                        background: var(--bubble-bg, white);
+                        color: var(--bubble-color, #1e293b);
                         padding: 8px 12px;
                         border-radius: 10px;
                         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                         font-size: 13px;
                         white-space: nowrap;
-                        color: #1e293b;
                         border: 1px solid #e2e8f0;
                         z-index: 999;
                     }
@@ -66,7 +72,7 @@
                         bottom: -6px;
                         width: 10px;
                         height: 10px;
-                        background: white;
+                        background: inherit;
                         transform: rotate(45deg);
                         border-right: 1px solid #e2e8f0;
                         border-bottom: 1px solid #e2e8f0;
@@ -75,6 +81,21 @@
                     .bubble-right::after { right: 25px; }
                     .bubble-left { left: 0; }
                     .bubble-left::after { left: 25px; }
+                    .bubble-center { left: 50%; transform: translateX(-50%); }
+                    .bubble-center::after { left: 50%; transform: translateX(-50%) rotate(45deg); }
+
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.05); }
+                        100% { transform: scale(1); }
+                    }
+                    @keyframes float {
+                        0% { transform: translateY(0); }
+                        50% { transform: translateY(-5px); }
+                        100% { transform: translateY(0); }
+                    }
+                    .anim-pulse { animation: pulse 2s infinite ease-in-out; }
+                    .anim-float { animation: float 3s infinite ease-in-out; }
                 </style>
                 <div v-if="isOpen" class="chat-window">
                     <div class="chat-header" :style="'background:' + (settings.visuals?.theme_color || '#2563eb')">
@@ -138,7 +159,15 @@
 
                 <div v-if="!isOpen && settings.visuals?.floating_text"
                      class="floating-text-bubble"
-                     :class="settings.visuals?.position === 'bottom-left' ? 'bubble-left' : 'bubble-right'">
+                     :class="[
+                        settings.visuals?.position === 'bottom-left' ? 'bubble-left' :
+                        (settings.visuals?.position === 'bottom-center' ? 'bubble-center' : 'bubble-right'),
+                        'anim-' + (settings.visuals?.floating_animation || 'none')
+                     ]"
+                     :style="{
+                        '--bubble-bg': settings.visuals?.floating_bg || 'white',
+                        '--bubble-color': settings.visuals?.floating_color || '#1e293b'
+                     }">
                     {{ settings.visuals.floating_text }}
                 </div>
 
@@ -167,12 +196,25 @@
                     try {
                         const response = await fetch(rootPath + 'api/settings.php');
                         settings.value = await response.json();
-                        messages.value.push({
-                            text: settings.value.welcome_message,
+                        const welcomeMsg = {
+                            text: '',
+                            fullText: settings.value.welcome_message,
                             isBot: true
-                        });
+                        };
+                        messages.value.push(welcomeMsg);
+                        await typeText(welcomeMsg);
                     } catch (error) {
                         console.error('Error fetching settings:', error);
+                    }
+                };
+
+                const typeText = async (msgObj) => {
+                    const speed = settings.value.visuals?.typing_speed || 30;
+                    const fullText = msgObj.fullText;
+                    for (let i = 0; i <= fullText.length; i++) {
+                        msgObj.text = fullText.substring(0, i);
+                        await new Promise(res => setTimeout(res, speed));
+                        scrollToBottom();
                     }
                 };
 
@@ -197,8 +239,9 @@
                             form = settings.value.forms.find(f => f.id === data.form_id);
                         }
 
-                        messages.value.push({
-                            text: data.answer,
+                        const botMsg = {
+                            text: '',
+                            fullText: data.answer,
                             isBot: true,
                             showLeadForm: data.show_lead_form || false,
                             form: form,
@@ -208,7 +251,9 @@
                                 text: data.button_text,
                                 phone: data.phone
                             } : null
-                        });
+                        };
+                        messages.value.push(botMsg);
+                        await typeText(botMsg);
                     } catch (error) {
                         messages.value.push({ text: 'Ошибка связи с сервером.', isBot: true });
                     } finally {

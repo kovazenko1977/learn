@@ -250,6 +250,10 @@ if (isset($_GET['action'])) {
                             <label class="block text-xs font-bold text-gray-500 uppercase">Цвет темы</label>
                             <input type="color" v-model="settings.visuals.theme_color" class="w-full h-10 p-1 border rounded">
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Скор. набора (мс)</label>
+                            <input type="number" v-model="settings.visuals.typing_speed" class="w-full border p-2 rounded">
+                        </div>
                     </div>
 
                     <div>
@@ -257,9 +261,29 @@ if (isset($_GET['action'])) {
                         <input v-model="settings.visuals.chat_icon_url" placeholder="https://example.com/icon.png" class="w-full border p-2 rounded">
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase">Всплывающий текст (рядом со значком)</label>
-                        <input v-model="settings.visuals.floating_text" class="w-full border p-2 rounded">
+                    <div class="p-4 bg-gray-50 rounded-lg border space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Всплывающий текст (над значком)</label>
+                            <input v-model="settings.visuals.floating_text" class="w-full border p-2 rounded">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Фон</label>
+                                <input type="color" v-model="settings.visuals.floating_bg" class="w-full h-8 p-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Текст</label>
+                                <input type="color" v-model="settings.visuals.floating_color" class="w-full h-8 p-1 border rounded">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Анимация</label>
+                                <select v-model="settings.visuals.floating_animation" class="w-full h-8 text-[10px] border rounded bg-white">
+                                    <option value="none">Нет</option>
+                                    <option value="pulse">Пульс</option>
+                                    <option value="float">Плавная</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
@@ -268,6 +292,9 @@ if (isset($_GET['action'])) {
                             <select v-model="settings.visuals.position" class="w-full border p-2 rounded bg-white text-sm">
                                 <option value="bottom-right">Справа внизу</option>
                                 <option value="bottom-left">Слева внизу</option>
+                                <option value="bottom-center">Снизу по центру</option>
+                                <option value="top-right">Справа вверху</option>
+                                <option value="top-left">Слева вверху</option>
                             </select>
                         </div>
                         <div>

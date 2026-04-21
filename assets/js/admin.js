@@ -24,6 +24,10 @@ createApp({
                 chat_icon_url: '',
                 bot_avatar_url: '',
                 floating_text: 'Есть вопросы? Пишите!',
+                floating_bg: '#ffffff',
+                floating_color: '#1e293b',
+                floating_animation: 'none',
+                typing_speed: 30,
                 position: 'bottom-right',
                 offset_x: 20,
                 offset_y: 20
