@@ -13,19 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartBtn = document.getElementById('restart-btn');
     const jumpBtn = document.getElementById('jump-btn');
 
-    let isGameStarted = false;
     let score = 0;
     let bottlesCount = 0;
     let highscore = localStorage.getItem('dinoHighscore') || 0;
 
-    // Physics constants
     const groundLevel = 30;
     const gravity = 0.8;
     const jumpInitialVelocity = 12;
     const jumpHoldBoost = 0.4;
     const maxJumpHoldFrames = 15;
 
-    let isJumping = false;
+    let isGameStarted = false;
     let isGameOver = false;
     let gameSpeed = 6;
     let jumpVelocity = 0;
@@ -48,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function startJump() {
-        if (isGameOver) return;
+        if (!isGameStarted || isGameOver) return;
         if (!isJumping) {
             isJumping = true;
             jumpVelocity = jumpInitialVelocity;
@@ -58,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         isJumpButtonPressed = true;
     }
+
+    let isJumping = false; // Moved here for scope but it was already used
 
     function endJump() {
         isJumpButtonPressed = false;
@@ -93,29 +93,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function gameLoop(time) {
-        if (isGameOver || !isGameStarted) return;
+        if (!isGameStarted || isGameOver) {
+            lastTime = 0; // Reset lastTime so deltaTime doesn't jump
+            return;
+        }
 
         if (!lastTime) lastTime = time;
         const deltaTime = time - lastTime;
         lastTime = time;
 
-        const timeStep = deltaTime / 16; // Normalized to 60fps
+        const timeStep = deltaTime / 16;
 
-        // Increase distance and speed
         distance += gameSpeed * timeStep;
         gameSpeed = 6 + (distance / 5000);
 
-        // Background & Ground Scrolling
         const bgX = (distance * 0.2) % 800;
         background.style.backgroundPosition = `-${bgX}px 0`;
 
         const grX = (distance) % 30;
         ground.style.transform = `translateX(-${grX}px)`;
 
-        // Player Physics (Variable Jump Height)
         let bottom = parseFloat(player.style.bottom || groundLevel);
         if (isJumping) {
-            // Apply hold boost
             if (isJumpButtonPressed && jumpHoldCounter < maxJumpHoldFrames) {
                 jumpVelocity += jumpHoldBoost;
                 jumpHoldCounter++;
@@ -133,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         player.style.bottom = `${bottom}px`;
 
-        // Spawning
         spawnTimer += deltaTime;
         if (spawnTimer > spawnInterval) {
             spawnObject();
@@ -141,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
             spawnInterval = Math.max(700, 1500 - (distance / 100));
         }
 
-        // Object Movement & Collision
         for (let i = gameObjects.length - 1; i >= 0; i--) {
             const obj = gameObjects[i];
             obj.x -= gameSpeed * timeStep;
@@ -198,8 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function endGame() {
         isGameOver = true;
         gameOverOverlay.style.display = 'flex';
+        jumpBtn.style.display = 'none';
         finalScoreText.textContent = `СЧЕТ: ${Math.floor(score)}`;
         player.classList.remove('running');
+        player.classList.remove('jumping');
         if (score > highscore) {
             highscore = Math.floor(score);
             localStorage.setItem('dinoHighscore', highscore);
@@ -209,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetGame() {
         isGameOver = false;
+        isGameStarted = true;
         score = 0;
         bottlesCount = 0;
         gameSpeed = 6;
@@ -220,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameObjects.forEach(obj => obj.el.remove());
         gameObjects = [];
         gameOverOverlay.style.display = 'none';
+        jumpBtn.style.display = 'block';
         player.classList.add('running');
         player.style.bottom = `${groundLevel}px`;
         updateUI();
@@ -229,22 +230,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         isGameStarted = true;
         startScreen.style.display = 'none';
+        jumpBtn.style.display = 'block';
         player.classList.add('running');
         requestAnimationFrame(gameLoop);
     }
 
-    // Input Handling
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', resetGame);
 
-    // Jump Button
     jumpBtn.addEventListener('mousedown', startJump);
     jumpBtn.addEventListener('mouseup', endJump);
     jumpBtn.addEventListener('mouseleave', endJump);
     jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startJump(); });
     jumpBtn.addEventListener('touchend', (e) => { e.preventDefault(); endJump(); });
 
-    // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' || e.code === 'ArrowUp') {
             e.preventDefault();
@@ -257,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initial UI state
     player.classList.remove('running');
     updateUI();
 });

@@ -82,7 +82,7 @@ body {
     position: absolute;
     bottom: 30px;
     left: 80px;
-    width: 100px; /* Slightly smaller for better gameplay */
+    width: 100px;
     height: 100px;
     z-index: 50;
 }
@@ -172,32 +172,34 @@ body {
     align-items: center;
     z-index: 200;
     text-align: center;
+    padding: 20px;
 }
 
 .overlay h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: #ffff00;
-    margin-bottom: 20px;
-    text-shadow: 4px 4px 0 #000;
+    margin-bottom: 15px;
+    text-shadow: 3px 3px 0 #000;
 }
 
 .overlay h2 {
     margin-bottom: 10px;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: #ff4444;
 }
 
 .rules {
     background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border: 4px solid #fff;
-    margin-bottom: 30px;
-    max-width: 80%;
+    padding: 15px;
+    border: 3px solid #fff;
+    margin-bottom: 20px;
+    width: 90%;
+    max-width: 400px;
 }
 
 .rules p {
-    font-size: 0.8rem;
-    margin-bottom: 15px;
+    font-size: 0.7rem;
+    margin-bottom: 10px;
     color: #44ff44;
 }
 
@@ -207,25 +209,25 @@ body {
 }
 
 .rules li {
-    font-size: 0.6rem;
-    line-height: 1.8;
-    margin-bottom: 5px;
+    font-size: 0.5rem;
+    line-height: 1.6;
+    margin-bottom: 4px;
 }
 
 .restart-btn {
-    padding: 20px 40px;
+    padding: 15px 30px;
     background: #44ff44;
     color: #000;
-    border: 6px solid #000;
+    border: 4px solid #000;
     font-family: 'Press Start 2P', cursive;
-    font-size: 1rem;
+    font-size: 0.8rem;
     cursor: pointer;
 }
 
 /* UI Controls */
 .controls {
     position: absolute;
-    bottom: 40px;
+    bottom: 30px;
     left: 0;
     width: 100%;
     display: flex;
@@ -235,22 +237,23 @@ body {
 }
 
 .jump-btn {
-    width: 180px;
-    height: 80px;
+    width: 140px;
+    height: 60px;
     background: rgba(255, 255, 255, 0.2);
-    border: 4px solid #fff;
+    border: 3px solid #fff;
     color: #fff;
     font-family: 'Press Start 2P', cursive;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     pointer-events: auto;
     border-radius: 10px;
+    display: none; /* Hidden by default, script will show it during game */
 }
 
 .flavor-popup {
     position: absolute;
     color: #ffff00;
-    font-size: 0.8rem;
-    text-shadow: 3px 3px #000;
+    font-size: 0.7rem;
+    text-shadow: 2px 2px #000;
     animation: popup-anim 0.7s ease-out forwards;
     pointer-events: none;
     z-index: 60;
@@ -263,7 +266,13 @@ body {
 }
 
 @media (max-width: 480px) {
-    .character { width: 80px; height: 80px; left: 30px; }
-    .bottle { width: 40px; height: 80px; }
-    .obstacle { width: 40px; height: 40px; }
+    .character { width: 70px; height: 70px; left: 40px; bottom: 30px; }
+    .bottle { width: 35px; height: 70px; }
+    .obstacle { width: 35px; height: 35px; }
+    .overlay h1 { font-size: 1.2rem; }
+    .overlay h2 { font-size: 1.2rem; }
+    .rules { padding: 10px; }
+    .rules li { font-size: 0.45rem; }
+    .restart-btn { font-size: 0.7rem; padding: 12px 24px; }
+    .jump-btn { width: 120px; height: 50px; font-size: 0.7rem; }
 }
