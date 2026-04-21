@@ -79,19 +79,35 @@ foreach ($knowledge as $item) {
 }
 
 $threshold = $settings['fallback']['threshold'] ?? 40;
+$response = [];
 
 if ($highestScore >= $threshold && $bestMatch) {
-    echo json_encode([
+    $response = [
         'answer' => $bestMatch,
         'score' => $highestScore,
         'is_fallback' => false
-    ]);
+    ];
 } else {
-    echo json_encode([
+    $response = [
         'answer' => $settings['fallback']['message'],
         'score' => $highestScore,
         'is_fallback' => true,
         'button_text' => $settings['fallback']['button_text'],
-        'phone' => $settings['contacts']['phone']
-    ]);
+        'phone' => $settings['contacts']['phone'],
+        'show_lead_form' => true
+    ];
 }
+
+// Log history
+$history = Storage::read('history.json') ?: [];
+$history[] = [
+    'id' => uniqid(),
+    'timestamp' => date('Y-m-d H:i:s'),
+    'user_message' => $message,
+    'bot_answer' => $response['answer'],
+    'score' => $highestScore,
+    'is_fallback' => $response['is_fallback']
+];
+Storage::write('history.json', array_slice($history, -1000)); // Keep last 1000 messages
+
+echo json_encode($response);

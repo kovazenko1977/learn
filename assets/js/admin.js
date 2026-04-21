@@ -1,6 +1,7 @@
 const { createApp, ref, onMounted } = Vue;
 createApp({
     setup() {
+        const activeTab = ref('settings');
         const settings = ref({
             working_hours: {},
             contacts: {},
@@ -8,12 +9,16 @@ createApp({
             directions: []
         });
         const knowledge = ref([]);
+        const history = ref([]);
 
         const fetchData = async () => {
             const res = await fetch('admin.php?action=get_data');
             const data = await res.json();
             settings.value = data.settings;
             knowledge.value = data.knowledge;
+
+            const hRes = await fetch('admin.php?action=get_history');
+            history.value = await hRes.json();
         };
 
         const save = async () => {
@@ -46,8 +51,24 @@ createApp({
             knowledge.value[index].keywords = val.split(',').map(s => s.trim()).filter(s => s);
         };
 
+        const triggerImport = () => {
+            document.querySelector('input[type="file"]').click();
+        };
+
+        const clearHistory = async () => {
+            if (confirm('Очистить всю историю?')) {
+                await fetch('admin.php?action=clear_history');
+                history.value = [];
+            }
+        };
+
+        const deleteHistoryItem = async (id) => {
+            await fetch(`admin.php?action=delete_history_item&id=${id}`);
+            history.value = history.value.filter(i => i.id !== id);
+        };
+
         onMounted(fetchData);
 
-        return { settings, knowledge, save, addQnA, removeQnA, updateKeywords };
+        return { activeTab, settings, knowledge, history, save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory, deleteHistoryItem };
     }
 }).mount('#admin-app');
