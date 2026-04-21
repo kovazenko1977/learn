@@ -258,6 +258,28 @@ if (isset($_GET['action'])) {
                     </div>
 
                     <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase">Всплывающий текст (рядом со значком)</label>
+                        <input v-model="settings.visuals.floating_text" class="w-full border p-2 rounded">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Положение</label>
+                            <select v-model="settings.visuals.position" class="w-full border p-2 rounded bg-white text-sm">
+                                <option value="bottom-right">Справа внизу</option>
+                                <option value="bottom-left">Слева внизу</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase">Отступы (X / Y), px</label>
+                            <div class="flex gap-2">
+                                <input type="number" v-model="settings.visuals.offset_x" class="w-1/2 border p-2 rounded text-sm">
+                                <input type="number" v-model="settings.visuals.offset_y" class="w-1/2 border p-2 rounded text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase">Приветствие</label>
                         <textarea v-model="settings.welcome_message" class="w-full border p-2 rounded"></textarea>
                     </div>

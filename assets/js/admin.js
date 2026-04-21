@@ -19,7 +19,15 @@ createApp({
                 email: { enabled: false, address: '' },
                 telegram: { enabled: false, token: '', chat_id: '' }
             },
-            visuals: { theme_color: '#2563eb', chat_icon_url: '', bot_avatar_url: '' },
+            visuals: {
+                theme_color: '#2563eb',
+                chat_icon_url: '',
+                bot_avatar_url: '',
+                floating_text: 'Есть вопросы? Пишите!',
+                position: 'bottom-right',
+                offset_x: 20,
+                offset_y: 20
+            },
             schedule: {
                 "1": { enabled: true, start: "09:00", end: "18:00" },
                 "2": { enabled: true, start: "09:00", end: "18:00" },

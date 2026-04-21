@@ -30,7 +30,14 @@
 
         // Fetch template or inject HTML
         container.innerHTML = `
-            <div id="chat-widget-container" v-cloak :style="'--chat-primary:' + (settings.visuals?.theme_color || '#2563eb') + '; --chat-user-bg:' + (settings.visuals?.theme_color || '#2563eb')">
+            <div id="chat-widget-container" v-cloak
+                 :style="{
+                    '--chat-primary': settings.visuals?.theme_color || '#2563eb',
+                    '--chat-user-bg': settings.visuals?.theme_color || '#2563eb',
+                    'bottom': (settings.visuals?.offset_y || 20) + 'px',
+                    'left': settings.visuals?.position === 'bottom-left' ? (settings.visuals?.offset_x || 20) + 'px' : 'auto',
+                    'right': settings.visuals?.position !== 'bottom-left' ? (settings.visuals?.offset_x || 20) + 'px' : 'auto'
+                 }">
                 <style>
                     .lead-form, .custom-form { margin-top: 10px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #1e293b; }
                     .lead-input, .custom-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 8px; margin-top: 4px; margin-bottom: 8px; box-sizing: border-box; }
@@ -40,6 +47,34 @@
                     .quick-replies { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; }
                     .quick-reply-btn { font-size: 11px; padding: 4px 8px; border: 1px solid var(--chat-primary); border-radius: 12px; color: var(--chat-primary); background: white; cursor: pointer; }
                     .form-title { font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; pb: 4px; }
+                    .floating-text-bubble {
+                        position: absolute;
+                        bottom: 70px;
+                        background: white;
+                        padding: 8px 12px;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                        font-size: 13px;
+                        white-space: nowrap;
+                        color: #1e293b;
+                        border: 1px solid #e2e8f0;
+                        z-index: 999;
+                    }
+                    .floating-text-bubble::after {
+                        content: "";
+                        position: absolute;
+                        bottom: -6px;
+                        width: 10px;
+                        height: 10px;
+                        background: white;
+                        transform: rotate(45deg);
+                        border-right: 1px solid #e2e8f0;
+                        border-bottom: 1px solid #e2e8f0;
+                    }
+                    .bubble-right { right: 0; }
+                    .bubble-right::after { right: 25px; }
+                    .bubble-left { left: 0; }
+                    .bubble-left::after { left: 25px; }
                 </style>
                 <div v-if="isOpen" class="chat-window">
                     <div class="chat-header" :style="'background:' + (settings.visuals?.theme_color || '#2563eb')">
@@ -99,6 +134,12 @@
                     <div class="chat-footer">
                         Разработанно <a href="https://wes.by" target="_blank">WES.BY</a> +375333533971 (Разработка сайтов и приложений)
                     </div>
+                </div>
+
+                <div v-if="!isOpen && settings.visuals?.floating_text"
+                     class="floating-text-bubble"
+                     :class="settings.visuals?.position === 'bottom-left' ? 'bubble-left' : 'bubble-right'">
+                    {{ settings.visuals.floating_text }}
                 </div>
 
                 <button @click="toggleChat" class="chat-button" :style="'background:' + (settings.visuals?.theme_color || '#2563eb')">
