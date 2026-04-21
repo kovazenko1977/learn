@@ -81,26 +81,31 @@ body {
 .character {
     position: absolute;
     bottom: 30px;
-    left: 80px; /* Moved slightly right for visibility */
-    width: 120px;
-    height: 120px;
+    left: 80px;
+    width: 100px; /* Slightly smaller for better gameplay */
+    height: 100px;
     z-index: 50;
-    filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.2));
 }
 
 .character img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    display: block;
+    transition: transform 0.1s;
 }
 
-.running {
+.running img {
     animation: run-action 0.3s infinite ease-in-out;
 }
 
+.jumping img {
+    transform: scale(1.1) rotate(5deg);
+}
+
 @keyframes run-action {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-8px) rotate(2deg); }
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
 }
 
 .ground-container {
@@ -132,8 +137,8 @@ body {
 }
 
 .bottle {
-    width: 60px;
-    height: 120px;
+    width: 50px;
+    height: 100px;
 }
 
 .bottle img {
@@ -147,11 +152,10 @@ body {
 }
 
 .obstacle {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background-color: #444;
     border: 5px solid #000;
-    box-shadow: inset -5px -5px 0 rgba(0,0,0,0.4);
 }
 
 /* Overlay */
@@ -176,11 +180,6 @@ body {
     color: #ff4444;
 }
 
-.overlay p {
-    margin-bottom: 30px;
-    font-size: 1rem;
-}
-
 .restart-btn {
     padding: 20px 40px;
     background: #44ff44;
@@ -189,12 +188,6 @@ body {
     font-family: 'Press Start 2P', cursive;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
-}
-
-.restart-btn:active {
-    box-shadow: none;
-    transform: translate(4px, 4px);
 }
 
 /* UI Controls */
@@ -229,7 +222,6 @@ body {
     animation: popup-anim 0.7s ease-out forwards;
     pointer-events: none;
     z-index: 60;
-    font-weight: bold;
 }
 
 @keyframes popup-anim {
@@ -238,10 +230,8 @@ body {
     100% { transform: translateY(-100px) scale(1); opacity: 0; }
 }
 
-/* Mobile adjustments */
 @media (max-width: 480px) {
     .character { width: 80px; height: 80px; left: 30px; }
     .bottle { width: 40px; height: 80px; }
     .obstacle { width: 40px; height: 40px; }
-    .jump-btn { width: 140px; height: 60px; font-size: 0.8rem; }
 }

@@ -14,12 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let bottlesCount = 0;
     let highscore = localStorage.getItem('dinoHighscore') || 0;
+
+    // Physics constants
+    const groundLevel = 30;
+    const gravity = 0.8;
+    const jumpInitialVelocity = 12;
+    const jumpHoldBoost = 0.4;
+    const maxJumpHoldFrames = 15;
+
     let isJumping = false;
     let isGameOver = false;
     let gameSpeed = 6;
     let jumpVelocity = 0;
-    const gravity = 0.8;
-    const groundLevel = 30;
+    let jumpHoldCounter = 0;
+    let isJumpButtonPressed = false;
 
     let gameObjects = [];
     let lastTime = 0;
@@ -36,23 +44,30 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: "ПУСТАЯ", img: "assets/bottle_lemon.png", type: 'bad' }
     ];
 
-    function jump() {
-        if (isJumping || isGameOver) return;
-        isJumping = true;
-        jumpVelocity = 18;
-        player.classList.remove('running');
+    function startJump() {
+        if (isGameOver) return;
+        if (!isJumping) {
+            isJumping = true;
+            jumpVelocity = jumpInitialVelocity;
+            jumpHoldCounter = 0;
+            player.classList.remove('running');
+            player.classList.add('jumping');
+        }
+        isJumpButtonPressed = true;
+    }
+
+    function endJump() {
+        isJumpButtonPressed = false;
     }
 
     function spawnObject() {
         const rand = Math.random();
         let obj;
         if (rand < 0.3) {
-            // Obstacle (cactus-like box)
             obj = document.createElement('div');
             obj.className = 'game-object obstacle';
             obj.type = 'obstacle';
         } else {
-            // Bottle
             const flavor = flavors[Math.floor(Math.random() * flavors.length)];
             obj = document.createElement('div');
             obj.className = 'game-object bottle' + (flavor.type === 'bad' ? ' empty-bottle' : '');
@@ -81,26 +96,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const deltaTime = time - lastTime;
         lastTime = time;
 
+        const timeStep = deltaTime / 16; // Normalized to 60fps
+
         // Increase distance and speed
-        distance += gameSpeed * (deltaTime / 16);
+        distance += gameSpeed * timeStep;
         gameSpeed = 6 + (distance / 5000);
 
         // Background & Ground Scrolling
-        const bgX = (distance * 0.2) % 300;
+        const bgX = (distance * 0.2) % 800;
         background.style.backgroundPosition = `-${bgX}px 0`;
 
-        const grX = (distance) % 40;
+        const grX = (distance) % 30;
         ground.style.transform = `translateX(-${grX}px)`;
 
-        // Player Physics
+        // Player Physics (Variable Jump Height)
         let bottom = parseFloat(player.style.bottom || groundLevel);
         if (isJumping) {
-            bottom += jumpVelocity;
-            jumpVelocity -= gravity;
+            // Apply hold boost
+            if (isJumpButtonPressed && jumpHoldCounter < maxJumpHoldFrames) {
+                jumpVelocity += jumpHoldBoost;
+                jumpHoldCounter++;
+            }
+
+            bottom += jumpVelocity * timeStep;
+            jumpVelocity -= gravity * timeStep;
 
             if (bottom <= groundLevel) {
                 bottom = groundLevel;
                 isJumping = false;
+                player.classList.remove('jumping');
                 player.classList.add('running');
             }
         }
@@ -117,15 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Object Movement & Collision
         for (let i = gameObjects.length - 1; i >= 0; i--) {
             const obj = gameObjects[i];
-            obj.x -= gameSpeed * (deltaTime / 16);
+            obj.x -= gameSpeed * timeStep;
             obj.el.style.left = `${obj.x}px`;
 
-            // Collision check (tightened boxes)
             const pRect = player.getBoundingClientRect();
             const oRect = obj.el.getBoundingClientRect();
 
-            // Padding for collision to feel more fair
-            const padding = 10;
+            const padding = 15;
             if (
                 pRect.left + padding < oRect.right - padding &&
                 pRect.right - padding > oRect.left + padding &&
@@ -138,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     endGame();
                 }
-            } else if (obj.x < -100) {
+            } else if (obj.x < -150) {
                 obj.el.remove();
                 gameObjects.splice(i, 1);
                 score += 10;
@@ -157,10 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const popup = document.createElement('div');
         popup.className = 'flavor-popup';
         popup.textContent = obj.flavorName;
-        popup.style.left = `${player.offsetLeft + 20}px`;
-        popup.style.bottom = `${parseFloat(player.style.bottom) + 100}px`;
+        popup.style.left = `${player.offsetLeft}px`;
+        popup.style.bottom = `${parseFloat(player.style.bottom) + 120}px`;
         gameWorld.appendChild(popup);
-        setTimeout(() => popup.remove(), 600);
+        setTimeout(() => popup.remove(), 700);
 
         updateUI();
     }
@@ -190,27 +212,37 @@ document.addEventListener('DOMContentLoaded', () => {
         distance = 0;
         spawnTimer = 0;
         lastTime = 0;
+        isJumping = false;
+        jumpVelocity = 0;
         gameObjects.forEach(obj => obj.el.remove());
         gameObjects = [];
         gameOverOverlay.style.display = 'none';
         player.classList.add('running');
+        player.style.bottom = `${groundLevel}px`;
         updateUI();
         requestAnimationFrame(gameLoop);
     }
 
+    // Input Handling
     restartBtn.addEventListener('click', resetGame);
-    jumpBtn.addEventListener('click', jump);
-    // Global touch/click jump
-    gameWorld.addEventListener('touchstart', (e) => {
-        if (e.target !== restartBtn) {
-            e.preventDefault();
-            jump();
-        }
-    });
+
+    // Jump Button
+    jumpBtn.addEventListener('mousedown', startJump);
+    jumpBtn.addEventListener('mouseup', endJump);
+    jumpBtn.addEventListener('mouseleave', endJump);
+    jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startJump(); });
+    jumpBtn.addEventListener('touchend', (e) => { e.preventDefault(); endJump(); });
+
+    // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' || e.code === 'ArrowUp') {
             e.preventDefault();
-            jump();
+            startJump();
+        }
+    });
+    document.addEventListener('keyup', (e) => {
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
+            endJump();
         }
     });
 
