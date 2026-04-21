@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const character = document.getElementById('character-container');
     const actionBtn = document.getElementById('action-btn');
     const autoBtn = document.getElementById('auto-btn');
+    const gameWorld = document.querySelector('.game-world');
     const block = document.getElementById('block');
+    const bottleImg = document.getElementById('bottle-img');
     const scoreText = document.getElementById('score');
     const coinsText = document.getElementById('coins');
     const eventLog = document.getElementById('event-log');
@@ -13,9 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAutoPlaying = false;
     let autoInterval = null;
 
+    const flavors = [
+        { name: "ЧИНАЗЕС ЛИМОН", img: "assets/bottle_lemon.png" },
+        { name: "ЧИНАЗЕС ГРУША", img: "assets/bottle_pear.png" },
+        { name: "ЧИНАЗЕС ВИШНЯ", img: "assets/bottle_cherry.png" }
+    ];
+
+    let currentFlavor = flavors[0];
+
     const gameMessages = [
         "СУПЕР ПРЫЖОК!",
-        "НАШЕЛ СЕКРЕТ!",
+        "КАЙФАНУЛ!",
         "ВПЕРЕД, ШЕРИФ!",
         "ПОЧТИ У ЦЕЛИ!",
         "КОЛЮЧИЙ ГЕРОЙ!",
@@ -27,19 +37,36 @@ document.addEventListener('DOMContentLoaded', () => {
         scoreText.textContent = score.toString().padStart(6, '0');
     }
 
-    function addCoin() {
+    function hitBottle() {
         coins++;
         coinsText.textContent = `x${coins.toString().padStart(2, '0')}`;
-        updateScore(200);
+        updateScore(500);
 
-        // Visual feedback for coin
-        const coinEffect = document.createElement('div');
-        coinEffect.className = 'coin-popup';
-        coinEffect.textContent = '+200';
-        coinEffect.style.left = `${block.offsetLeft}px`;
-        coinEffect.style.top = `${block.offsetTop - 20}px`;
-        document.body.appendChild(coinEffect);
-        setTimeout(() => coinEffect.remove(), 500);
+        // Visual feedback for flavor
+        const popup = document.createElement('div');
+        popup.className = 'coin-popup';
+        popup.textContent = currentFlavor.name;
+        popup.style.left = `${block.offsetLeft + block.offsetWidth / 2}px`;
+        popup.style.top = `${block.offsetTop}px`;
+        gameWorld.appendChild(popup);
+
+        // Trigger bottle animation
+        bottleImg.classList.add('bottle-collect');
+
+        setTimeout(() => {
+            popup.remove();
+        }, 800);
+
+        setTimeout(() => {
+            bottleImg.classList.remove('bottle-collect');
+            spawnNewBottle();
+        }, 400);
+    }
+
+    function spawnNewBottle() {
+        const newFlavor = flavors[Math.floor(Math.random() * flavors.length)];
+        currentFlavor = newFlavor;
+        bottleImg.src = currentFlavor.img;
     }
 
     function showMessage() {
@@ -56,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trigger block bump if timed right
         setTimeout(() => {
             block.classList.add('block-bump');
-            addCoin();
+            hitBottle();
             showMessage();
             setTimeout(() => block.classList.remove('block-bump'), 100);
         }, 200);
