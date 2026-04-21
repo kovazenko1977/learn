@@ -57,7 +57,21 @@ createApp({
 
                 // Deep merge or specific assignment to avoid losing keys
                 if (data.settings) {
-                    settings.value = { ...settings.value, ...data.settings };
+                    // Deep merge for visuals
+                    const visuals = { ...settings.value.visuals, ...(data.settings.visuals || {}) };
+                    const schedule = { ...settings.value.schedule, ...(data.settings.schedule || {}) };
+                    const notifications = {
+                        email: { ...settings.value.notifications.email, ...(data.settings.notifications?.email || {}) },
+                        telegram: { ...settings.value.notifications.telegram, ...(data.settings.notifications?.telegram || {}) }
+                    };
+
+                    settings.value = {
+                        ...settings.value,
+                        ...data.settings,
+                        visuals,
+                        schedule,
+                        notifications
+                    };
                 }
                 knowledge.value = data.knowledge || [];
 

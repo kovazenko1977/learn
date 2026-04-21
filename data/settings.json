@@ -13,10 +13,29 @@
         "message": "Извините, я не совсем понял ваш вопрос. Возможно, вам стоит связаться с нашим оператором?",
         "button_text": "Позвонить нам"
     },
+    "notifications": {
+        "email": {
+            "enabled": false,
+            "address": ""
+        },
+        "telegram": {
+            "enabled": false,
+            "token": "",
+            "chat_id": ""
+        }
+    },
     "visuals": {
         "theme_color": "#2563eb",
         "chat_icon_url": "",
-        "bot_avatar_url": ""
+        "bot_avatar_url": "",
+        "floating_text": "Есть вопросы? Пишите!",
+        "floating_bg": "#ffffff",
+        "floating_color": "#1e293b",
+        "floating_animation": "none",
+        "typing_speed": 30,
+        "position": "bottom-left",
+        "offset_x": 20,
+        "offset_y": 20
     },
     "schedule": [
         {

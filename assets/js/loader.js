@@ -32,18 +32,7 @@
         container.innerHTML = `
             <div id="chat-widget-container" v-cloak
                  :class="{'mobile-open': isOpen}"
-                 :style="!isOpen ? {
-                    '--chat-primary': settings.visuals?.theme_color || '#2563eb',
-                    '--chat-user-bg': settings.visuals?.theme_color || '#2563eb',
-                    'bottom': (settings.visuals?.position?.startsWith('top') ? 'auto' : (settings.visuals?.offset_y || 20) + 'px'),
-                    'top': (settings.visuals?.position?.startsWith('top') ? (settings.visuals?.offset_y || 20) + 'px' : 'auto'),
-                    'left': (settings.visuals?.position?.endsWith('left') ? (settings.visuals?.offset_x || 20) + 'px' : (settings.visuals?.position === 'bottom-center' ? '50%' : 'auto')),
-                    'right': (settings.visuals?.position?.endsWith('right') ? (settings.visuals?.offset_x || 20) + 'px' : 'auto'),
-                    'transform': (settings.visuals?.position === 'bottom-center' ? 'translateX(-50%)' : 'none')
-                 } : {
-                    '--chat-primary': settings.visuals?.theme_color || '#2563eb',
-                    '--chat-user-bg': settings.visuals?.theme_color || '#2563eb'
-                 }">
+                 :style="containerStyle">
                 <style>
                     .lead-form, .custom-form { margin-top: 10px; padding: 12px; background: #f1f5f9; border-radius: 8px; font-size: 12px; color: #1e293b; }
                     .lead-input, .custom-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 8px; margin-top: 4px; margin-bottom: 8px; box-sizing: border-box; }
@@ -180,10 +169,29 @@
         `;
 
         // Load the logic
-        const { createApp, ref, onMounted, nextTick } = Vue;
+        const { createApp, ref, computed, onMounted, nextTick } = Vue;
         createApp({
             setup() {
                 const isOpen = ref(false);
+
+                const containerStyle = computed(() => {
+                    const visuals = settings.value.visuals || {};
+                    const pos = visuals.position || 'bottom-right';
+                    const ox = visuals.offset_x || 20;
+                    const oy = visuals.offset_y || 20;
+
+                    const style = {
+                        '--chat-primary': visuals.theme_color || '#2563eb',
+                        '--chat-user-bg': visuals.theme_color || '#2563eb',
+                        'bottom': pos.startsWith('top') ? 'auto' : oy + 'px',
+                        'top': pos.startsWith('top') ? oy + 'px' : 'auto',
+                        'left': pos.endsWith('left') ? ox + 'px' : (pos === 'bottom-center' ? '50%' : 'auto'),
+                        'right': pos.endsWith('right') ? ox + 'px' : 'auto',
+                        'transform': pos === 'bottom-center' ? 'translateX(-50%)' : 'none'
+                    };
+
+                    return style;
+                });
                 const settings = ref({});
                 const messages = ref([]);
                 const userInput = ref('');
@@ -234,6 +242,9 @@
                         });
                         const data = await response.json();
 
+                        // Hide loader BEFORE typing
+                        isLoading.value = false;
+
                         let form = null;
                         if (data.form_id && settings.value.forms) {
                             form = settings.value.forms.find(f => f.id === data.form_id);
@@ -255,9 +266,9 @@
                         messages.value.push(botMsg);
                         await typeText(botMsg);
                     } catch (error) {
+                        isLoading.value = false;
                         messages.value.push({ text: 'Ошибка связи с сервером.', isBot: true });
                     } finally {
-                        isLoading.value = false;
                         scrollToBottom();
                     }
                 };
@@ -300,7 +311,7 @@
 
                 onMounted(fetchSettings);
 
-                return { isOpen, settings, messages, userInput, isLoading, messagesContainer, sendMessage, toggleChat, leadPhone, leadSubmitted, submitLead, sendQuickReply, submitCustomForm };
+                return { isOpen, settings, messages, userInput, isLoading, messagesContainer, sendMessage, toggleChat, leadPhone, leadSubmitted, submitLead, sendQuickReply, submitCustomForm, containerStyle };
             }
         }).mount('#chat-widget-loader');
     }
