@@ -1,0 +1,140 @@
+[
+    {
+        "timestamp": "2026-04-15 17:25:36",
+        "user": "system",
+        "action": "Login successful",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 17:25:36",
+        "user": "system",
+        "action": "Created client: Test Client",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 17:27:41",
+        "user": "system",
+        "action": "Login successful",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 17:28:08",
+        "user": "system",
+        "action": "Login successful",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 17:32:05",
+        "user": "system",
+        "action": "Login successful",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 17:32:05",
+        "user": "system",
+        "action": "Uploaded document: dummy.txt",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:08:43",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:08:45",
+        "user": "u_69dfd42c6c849",
+        "action": "Login successful: Иван Менеджер",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:09:40",
+        "user": "u_69dfd42c6c849",
+        "action": "Login successful: Иван Менеджер",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 18:14:35",
+        "user": "u_69dfd42c6c849",
+        "action": "Login successful: Иван Менеджер",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 20:12:42",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 20:12:43",
+        "user": "admin",
+        "action": "Created client: Action Client",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 20:22:40",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-15 20:23:46",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-16 13:24:25",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-16 13:25:14",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-16 13:46:41",
+        "user": "admin",
+        "action": "Login successful: Администратор",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 13:34:52",
+        "user": "guest",
+        "action": "Failed login attempt",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 13:36:23",
+        "user": "guest",
+        "action": "Failed login attempt",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 13:38:14",
+        "user": "guest",
+        "action": "Failed login attempt",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 13:39:15",
+        "user": "guest",
+        "action": "Failed login attempt",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 13:40:33",
+        "user": "guest",
+        "action": "Failed login attempt",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 13:41:07",
+        "user": "guest",
+        "action": "Failed login attempt",
+        "ip": "unknown"
+    }
+]
