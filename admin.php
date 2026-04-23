@@ -22,6 +22,7 @@
                     <input v-model="loginPassword" type="password" placeholder="Пароль" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl focus:outline-none focus:border-blue-500 transition-colors">
                     <button @click="login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all">Войти</button>
                     <p v-if="loginError" class="text-red-400 text-sm text-center">{{ loginError }}</p>
+                    <p class="text-xs text-gray-500 text-center mt-4">Пароль по умолчанию: <span class="font-mono text-gray-400">admin123</span></p>
                 </div>
             </div>
         </div>
@@ -66,6 +67,7 @@
                                 <tr>
                                     <th class="px-6 py-4">Дата</th>
                                     <th v-for="field in settings.form_fields" :key="field.id" class="px-6 py-4">{{ field.label }}</th>
+                                    <th class="px-6 py-4">Статус / Скидка</th>
                                     <th class="px-6 py-4 text-right">Действия</th>
                                 </tr>
                             </thead>
@@ -73,6 +75,15 @@
                                 <tr v-for="reg in registrations" :key="reg.id" class="hover:bg-gray-750 transition-colors">
                                     <td class="px-6 py-4 text-sm text-gray-400">{{ reg.created_at }}</td>
                                     <td v-for="field in settings.form_fields" :key="field.id" class="px-6 py-4">{{ reg[field.id] }}</td>
+                                    <td class="px-6 py-4">
+                                        <div v-if="reg.status === 'pending'" class="flex items-center gap-2">
+                                            <input v-model="reg.new_discount" type="number" placeholder="%" class="w-16 bg-gray-600 border-none rounded px-2 py-1 text-sm">
+                                            <button @click="approveRegistration(reg)" class="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 rounded">Одобрить</button>
+                                        </div>
+                                        <div v-else class="text-sm">
+                                            <span class="text-green-400 font-bold">Активен</span> ({{ reg.discount }}%)
+                                        </div>
+                                    </td>
                                     <td class="px-6 py-4 text-right">
                                         <button @click="deleteRegistration(reg.id)" class="text-red-400 hover:text-red-300">
                                             <i class="fas fa-trash"></i>

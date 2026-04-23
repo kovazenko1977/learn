@@ -21,7 +21,17 @@ foreach ($settings['form_fields'] as $field) {
 }
 
 $storage = new Storage('registrations.json');
-$result = $storage->add($input);
+
+// Initialize with pending status and 0 discount
+$input['status'] = 'pending';
+$input['discount'] = 0;
+
+$items = $storage->getAll();
+$id = time() . '_' . uniqid();
+$input['id'] = $id;
+$input['created_at'] = date('Y-m-d H:i:s');
+$items[] = $input;
+$result = $storage->save($items);
 
 if ($result) {
     // Send notifications
@@ -51,7 +61,7 @@ if ($result) {
         curl_close($ch);
     }
 
-    echo json_encode(['success' => true]);
+    echo json_encode(['success' => true, 'id' => $id]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Ошибка сохранения в базу']);
 }

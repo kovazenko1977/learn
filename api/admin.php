@@ -23,6 +23,12 @@ if ($action === 'login') {
     exit;
 }
 
+    if ($action === 'logout') {
+        session_destroy();
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
 if (!($_SESSION['admin_logged_in'] ?? false)) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
@@ -62,6 +68,20 @@ switch ($action) {
         $regs = array_values(array_filter($regs, function($r) use ($id) {
             return $r['id'] !== $id;
         }));
+        $regStorage->save($regs);
+        echo json_encode(['success' => true]);
+        break;
+
+    case 'approve_registration':
+        $id = $_GET['id'] ?? '';
+        $discount = (int)($_GET['discount'] ?? 0);
+        $regs = $regStorage->getAll();
+        foreach ($regs as &$reg) {
+            if ($reg['id'] === $id) {
+                $reg['status'] = 'approved';
+                $reg['discount'] = $discount;
+            }
+        }
         $regStorage->save($regs);
         echo json_encode(['success' => true]);
         break;

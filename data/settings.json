@@ -1,5 +1,5 @@
 {
-    "admin_password_hash": "$2y$10$VSXEsSLqd87kErXvqyi3MubvUXJu2fMH24Hd0140.0UCG1jDu4ofS",
+    "admin_password_hash": "$2y$10$Jft8enfFCi/ODgxxP/.6qeICts.8Gxel1tPouF6vSqXXvBlAkCtka",
     "form_fields": [
         {"id": "name", "label": "Имя", "type": "text", "required": true},
         {"id": "phone", "label": "Телефон", "type": "tel", "required": true},

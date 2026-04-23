@@ -46,7 +46,7 @@ createApp({
                     return;
                 }
                 const data = await res.json();
-                this.registrations = data.registrations;
+                this.registrations = data.registrations.map(r => ({...r, new_discount: 10}));
                 this.settings = data.settings;
                 this.isLoggedIn = true;
             } catch (e) {
@@ -66,6 +66,18 @@ createApp({
                 }
             } catch (e) {
                 alert('Ошибка сохранения');
+            }
+        },
+        async approveRegistration(reg) {
+            try {
+                const res = await fetch(`api/admin.php?action=approve_registration&id=${reg.id}&discount=${reg.new_discount}`);
+                const data = await res.json();
+                if (data.success) {
+                    reg.status = 'approved';
+                    reg.discount = reg.new_discount;
+                }
+            } catch (e) {
+                alert('Ошибка одобрения');
             }
         },
         async deleteRegistration(id) {
@@ -116,10 +128,14 @@ createApp({
             link.download = 'registrations.csv';
             link.click();
         },
-        logout() {
-            // In a real app we'd clear session on server too
-            this.isLoggedIn = false;
-            location.reload();
+        async logout() {
+            try {
+                await fetch('api/admin.php?action=logout');
+                this.isLoggedIn = false;
+                location.reload();
+            } catch (e) {
+                location.reload();
+            }
         }
     }
 }).mount('#app');
