@@ -50,6 +50,9 @@ class TokenProvider {
 
     public static function getBearerToken() {
         $authHeader = null;
+        if (isset($_GET['token'])) {
+            return $_GET['token'];
+        }
         if (isset($_SERVER['Authorization'])) {
             $authHeader = $_SERVER['Authorization'];
         } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {

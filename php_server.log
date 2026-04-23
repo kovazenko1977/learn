@@ -1,0 +1,19 @@
+[Thu Apr 23 18:29:11 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
+[Thu Apr 23 18:29:44 2026] [::1]:54820 Accepted
+[Thu Apr 23 18:29:44 2026] [::1]:54820 [200]: GET /index.html
+[Thu Apr 23 18:29:44 2026] [::1]:54820 Closing
+[Thu Apr 23 18:29:46 2026] [::1]:54828 Accepted
+[Thu Apr 23 18:29:46 2026] [::1]:54828 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 18:29:46 2026] [::1]:54828 Closing
+[Thu Apr 23 18:29:46 2026] [::1]:54838 Accepted
+[Thu Apr 23 18:29:46 2026] [::1]:54838 [200]: GET /api/stats.php
+[Thu Apr 23 18:29:46 2026] [::1]:54838 Closing
+[Thu Apr 23 18:29:46 2026] [::1]:54844 Accepted
+[Thu Apr 23 18:29:46 2026] [::1]:54844 [200]: GET /api/tasks.php
+[Thu Apr 23 18:29:46 2026] [::1]:54844 Closing
+[Thu Apr 23 18:29:46 2026] [::1]:54848 Accepted
+[Thu Apr 23 18:29:46 2026] [::1]:54848 [200]: GET /api/users.php
+[Thu Apr 23 18:29:46 2026] [::1]:54848 Closing
+[Thu Apr 23 18:29:46 2026] [::1]:54856 Accepted
+[Thu Apr 23 18:29:46 2026] [::1]:54856 [200]: GET /api/settings.php
+[Thu Apr 23 18:29:46 2026] [::1]:54856 Closing

@@ -11,12 +11,12 @@ if ($action === 'login') {
     $username = $data['username'] ?? $data['pin'] ?? '';
     $password = $data['password'] ?? $data['pin'] ?? '';
 
-    $token = Auth::login($username, $password);
-    if ($token) {
+    $authResult = Auth::login($username, $password);
+    if ($authResult) {
         echo json_encode([
             'success' => true,
-            'token' => $token,
-            'user' => Auth::getUser()
+            'token' => $authResult['token'],
+            'user' => $authResult['user']
         ]);
     } else {
         echo json_encode(['success' => false, 'error' => 'Неверный логин или пароль']);

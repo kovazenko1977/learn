@@ -27,7 +27,12 @@ class Auth {
                         'name' => $user['name'] ?? $user['username'],
                         'role' => $user['role']
                     ];
-                    return TokenProvider::generate($tokenData);
+                    $token = TokenProvider::generate($tokenData);
+                    self::$currentUser = $tokenData;
+                    return [
+                        'token' => $token,
+                        'user' => $tokenData
+                    ];
                 }
             }
         }
