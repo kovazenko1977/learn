@@ -1,9 +1,24 @@
 {
-    "admin_password_hash": "$2y$10$Jft8enfFCi/ODgxxP/.6qeICts.8Gxel1tPouF6vSqXXvBlAkCtka",
+    "admin_password_hash": "$2y$10$1jUklYMIMKop4iMTLQ4c5.G3Fb4uVCTbTTkIr/FDbsM6Loz5aDWr2",
     "form_fields": [
-        {"id": "name", "label": "Имя", "type": "text", "required": true},
-        {"id": "phone", "label": "Телефон", "type": "tel", "required": true},
-        {"id": "org", "label": "Наименование организации", "type": "text", "required": true}
+        {
+            "id": "name",
+            "label": "Имя",
+            "type": "text",
+            "required": true
+        },
+        {
+            "id": "phone",
+            "label": "Телефон",
+            "type": "tel",
+            "required": true
+        },
+        {
+            "id": "org",
+            "label": "Наименование организации",
+            "type": "text",
+            "required": true
+        }
     ],
     "social": {
         "telegram_token": "",

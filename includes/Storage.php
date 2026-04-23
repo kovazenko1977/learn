@@ -22,13 +22,4 @@ class Storage {
         return file_put_contents($this->file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), LOCK_EX);
     }
 
-    public function add($item) {
-        // Atomic read-modify-write would be better with real locking,
-        // but LOCK_EX on put helps for simple cases.
-        $items = $this->getAll();
-        $item['id'] = time() . '_' . uniqid();
-        $item['created_at'] = date('Y-m-d H:i:s');
-        $items[] = $item;
-        return $this->save($items);
-    }
 }
