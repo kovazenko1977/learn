@@ -1,0 +1,17 @@
+{
+    "admin_password_hash": "$2y$10$VSXEsSLqd87kErXvqyi3MubvUXJu2fMH24Hd0140.0UCG1jDu4ofS",
+    "form_fields": [
+        {"id": "name", "label": "Имя", "type": "text", "required": true},
+        {"id": "phone", "label": "Телефон", "type": "tel", "required": true},
+        {"id": "org", "label": "Наименование организации", "type": "text", "required": true}
+    ],
+    "social": {
+        "telegram_token": "",
+        "telegram_chat_id": "",
+        "email_notifications": ""
+    },
+    "ui": {
+        "title": "Дисконтная программа",
+        "description": "Зарегистрируйтесь в нашей дисконтной программе и получайте бонусы!"
+    }
+}
