@@ -16,31 +16,36 @@
         .dark .bg-gray-100 { background-color: #121212; }
         .dark .border-gray-200 { border-color: #404040; }
         .drag-over { border: 2px dashed #6366f1 !important; background: rgba(99, 102, 241, 0.1) !important; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .dark .glass { background: rgba(45, 45, 45, 0.7); }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 transition-colors duration-300" :class="{ 'dark': isDarkMode }">
     <div id="app" v-cloak>
         <!-- Login Screen -->
         <div v-if="!authenticated" class="min-h-screen flex items-center justify-center bg-indigo-600">
-            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all hover:scale-105">
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-indigo-600 mb-2">Service CRM</h1>
+                    <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-3xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Service CRM</h1>
                     <p class="text-gray-500">Система управления заявками</p>
                 </div>
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-bold mb-1">Логин</label>
-                        <input v-model="loginForm.username" type="text" placeholder="admin" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <input id="login-username" v-model="loginForm.username" type="text" placeholder="admin" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                     </div>
                     <div>
                         <label class="block text-sm font-bold mb-1">Пароль</label>
-                        <input v-model="loginForm.password" type="password" placeholder="admin" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <input id="login-password" v-model="loginForm.password" type="password" placeholder="admin" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                     </div>
-                    <button @click="login" :disabled="loading" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-all flex justify-center">
+                    <button id="login-btn" @click="login" :disabled="loading" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition-all shadow-lg flex justify-center items-center">
                         <span v-if="loading"><i class="fas fa-spinner fa-spin mr-2"></i></span>
-                        Войти
+                        Войти в систему
                     </button>
-                    <p v-if="error" class="text-red-500 text-center text-sm font-bold">{{ error }}</p>
+                    <p v-if="error" class="text-red-500 text-center text-sm font-bold bg-red-50 p-2 rounded-lg border border-red-100">{{ error }}</p>
                 </div>
             </div>
         </div>
@@ -48,22 +53,22 @@
         <!-- App Layout -->
         <div v-else class="flex min-h-screen">
             <!-- Sidebar -->
-            <aside class="w-64 bg-indigo-900 text-white flex-shrink-0 flex flex-col shadow-xl">
+            <aside class="w-64 bg-indigo-900 text-white flex-shrink-0 flex flex-col shadow-2xl z-20">
                 <div class="p-6">
-                    <h2 class="text-xl font-bold">Service <span class="text-indigo-400">CRM</span></h2>
-                    <p v-if="user" class="text-[10px] uppercase font-bold tracking-widest text-indigo-300 mt-1">{{ user.role }}</p>
+                    <h2 class="text-2xl font-black tracking-tighter">WES <span class="text-indigo-400">CRM</span></h2>
+                    <p v-if="user" class="text-[10px] uppercase font-black tracking-widest text-indigo-300 mt-1 opacity-70">{{ user.role === 'admin' ? 'Administrator' : user.role }}</p>
                 </div>
-                <nav class="mt-4 flex-1 px-4 space-y-1 overflow-y-auto">
+                <nav class="mt-4 flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
                     <a v-for="item in menu" :key="item.id" @click="currentTab = item.id"
                        v-show="user && (!item.roles || item.roles.includes(user.role))"
-                       :class="['flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all', currentTab === item.id ? 'bg-indigo-700 shadow-lg' : 'hover:bg-indigo-800 text-indigo-200']">
-                        <i :class="item.icon"></i>
+                       :class="['flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all', currentTab === item.id ? 'bg-indigo-700 shadow-lg text-white' : 'hover:bg-indigo-800/50 text-indigo-200 hover:text-white']">
+                        <i :class="item.icon" class="w-5 text-center"></i>
                         <span class="font-medium">{{ item.name }}</span>
                     </a>
 
                     <!-- Drag-and-drop assign zone -->
                     <div v-if="user && (user.role === 'admin' || user.role === 'head') && currentTab === 'requests'" class="mt-8 border-t border-indigo-800 pt-4">
-                        <p class="text-[10px] uppercase font-bold text-indigo-400 px-3 mb-2">Назначить исполнителя</p>
+                        <p class="text-[10px] uppercase font-bold text-indigo-400 px-3 mb-2 opacity-50">Быстрое назначение</p>
                         <div class="space-y-1 px-2">
                             <div v-for="u in executors" :key="u.id"
                                  @dragover.prevent @dragenter="onDragEnter" @dragleave="onDragLeave" @drop="onDropAssign($event, u)"
@@ -75,307 +80,537 @@
                     </div>
                 </nav>
                 <div class="p-6 border-t border-indigo-800 space-y-4">
-                    <button @click="isDarkMode = !isDarkMode" class="flex items-center space-x-3 text-indigo-300 hover:text-white transition-colors">
+                    <button @click="isDarkMode = !isDarkMode" class="flex items-center space-x-3 text-indigo-300 hover:text-white transition-colors w-full">
                         <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
-                        <span class="text-sm">Тема</span>
+                        <span class="text-sm">Сменить тему</span>
                     </button>
-                    <button @click="logout" class="flex items-center space-x-3 text-indigo-300 hover:text-white transition-colors">
+                    <button @click="logout" class="flex items-center space-x-3 text-indigo-300 hover:text-red-400 transition-colors w-full">
                         <i class="fas fa-sign-out-alt"></i>
                         <span class="text-sm">Выйти</span>
                     </button>
                 </div>
             </aside>
 
-            <!-- Main -->
-            <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900">
-                <header class="bg-white dark:bg-gray-800 p-4 shadow-sm flex justify-between items-center sticky top-0 z-10 border-b dark:border-gray-700">
-                    <h3 class="text-lg font-bold text-gray-800 dark:text-white">{{ activeTabName }}</h3>
-                    <div v-if="user" class="flex items-center space-x-4">
-                        <div class="text-right hidden sm:block">
-                            <p class="text-sm font-bold">{{ user.name }}</p>
-                            <p class="text-[10px] text-gray-400 uppercase">{{ user.role }}</p>
+            <!-- Main Content Area -->
+            <main class="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                <!-- Header -->
+                <header class="bg-white dark:bg-gray-800 px-8 py-4 shadow-sm flex justify-between items-center z-10 border-b dark:border-gray-700">
+                    <div class="flex items-center space-x-4">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">{{ activeTabName }}</h3>
+                        <div v-if="loading" class="text-indigo-500 animate-spin"><i class="fas fa-circle-notch"></i></div>
+                    </div>
+
+                    <div v-if="user" class="flex items-center space-x-6">
+                        <div class="relative hidden md:block">
+                             <i class="fas fa-bell text-gray-400 hover:text-indigo-500 cursor-pointer transition-colors"></i>
+                             <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </div>
-                        <div @click="showProfileModal = true" class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold border border-indigo-200 cursor-pointer hover:bg-indigo-200 transition-colors">
-                            {{ user.name ? user.name[0] : '?' }}
+                        <div class="flex items-center space-x-3 pl-6 border-l dark:border-gray-700">
+                            <div class="text-right hidden sm:block">
+                                <p class="text-sm font-black text-gray-800 dark:text-white leading-none">{{ user.name }}</p>
+                                <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1">{{ user.role }}</p>
+                            </div>
+                            <div @click="showProfileModal = true" class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold border-2 border-white dark:border-gray-700 cursor-pointer hover:scale-110 transition-all shadow-sm">
+                                {{ user.name ? user.name[0] : '?' }}
+                            </div>
                         </div>
                     </div>
                 </header>
 
-                <div class="p-8">
-                    <!-- Global Announcement -->
-                    <div v-if="systemSettings.announcement" class="mb-8 bg-indigo-100 dark:bg-indigo-900/50 border-l-4 border-indigo-500 p-4 rounded-r-xl flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-bullhorn text-indigo-500"></i>
-                            <span class="text-sm font-medium">{{ systemSettings.announcement }}</span>
-                        </div>
-                        <button v-if="user.role === 'admin'" @click="systemSettings.announcement = ''" class="text-indigo-400 hover:text-indigo-600"><i class="fas fa-times"></i></button>
-                    </div>
+                <!-- Dynamic Content Container -->
+                <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
 
-                    <!-- Dashboard -->
-                    <div v-if="currentTab === 'dashboard'" class="space-y-8">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border flex items-center space-x-4">
-                                <div class="p-3 bg-blue-100 text-blue-600 rounded-xl"><i class="fas fa-plus text-xl"></i></div>
-                                <div><p class="text-gray-400 text-xs uppercase font-bold">Новые</p><p class="text-2xl font-bold">{{ stats.status_new || 0 }}</p></div>
+                    <!-- Announcement Banner -->
+                    <transition name="fade">
+                        <div v-if="systemSettings.announcement" class="mb-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-2xl shadow-lg flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i class="fas fa-bullhorn"></i></div>
+                                <span class="font-bold">{{ systemSettings.announcement }}</span>
                             </div>
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border flex items-center space-x-4">
-                                <div class="p-3 bg-orange-100 text-orange-600 rounded-xl"><i class="fas fa-tools text-xl"></i></div>
-                                <div><p class="text-gray-400 text-xs uppercase font-bold">В работе</p><p class="text-2xl font-bold">{{ stats.status_in_work || 0 }}</p></div>
+                            <button v-if="user.role === 'admin'" @click="systemSettings.announcement = ''" class="hover:bg-white/20 p-2 rounded-full transition-all"><i class="fas fa-times"></i></button>
+                        </div>
+                    </transition>
+
+                    <!-- TAB: DASHBOARD -->
+                    <div v-if="currentTab === 'dashboard'" class="space-y-8 animate-fade-in">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 flex items-center space-x-5 transform transition-all hover:shadow-md">
+                                <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-plus"></i></div>
+                                <div><p class="text-gray-400 text-[10px] uppercase font-black tracking-widest">Новые</p><p class="text-3xl font-black text-gray-800 dark:text-white">{{ stats.status_new || 0 }}</p></div>
                             </div>
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border flex items-center space-x-4">
-                                <div class="p-3 bg-green-100 text-green-600 rounded-xl"><i class="fas fa-check text-xl"></i></div>
-                                <div><p class="text-gray-400 text-xs uppercase font-bold">Выполнено</p><p class="text-2xl font-bold">{{ stats.status_completed || 0 }}</p></div>
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 flex items-center space-x-5 transform transition-all hover:shadow-md">
+                                <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-tools"></i></div>
+                                <div><p class="text-gray-400 text-[10px] uppercase font-black tracking-widest">В работе</p><p class="text-3xl font-black text-gray-800 dark:text-white">{{ stats.status_in_work || 0 }}</p></div>
                             </div>
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border flex items-center space-x-4">
-                                <div class="p-3 bg-red-100 text-red-600 rounded-xl"><i class="fas fa-exclamation-circle text-xl"></i></div>
-                                <div><p class="text-gray-400 text-xs uppercase font-bold">Просрочено</p><p class="text-2xl font-bold">{{ stats.sla_overdue || 0 }}</p></div>
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 flex items-center space-x-5 transform transition-all hover:shadow-md">
+                                <div class="w-14 h-14 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-2xl"><i class="fas fa-check-double"></i></div>
+                                <div><p class="text-gray-400 text-[10px] uppercase font-black tracking-widest">Готово</p><p class="text-3xl font-black text-gray-800 dark:text-white">{{ stats.status_completed || 0 }}</p></div>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 flex items-center space-x-5 transform transition-all hover:shadow-md">
+                                <div class="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-2xl animate-pulse"><i class="fas fa-hourglass-end"></i></div>
+                                <div><p class="text-gray-400 text-[10px] uppercase font-black tracking-widest">Просрочено</p><p class="text-3xl font-black text-red-500">{{ stats.sla_overdue || 0 }}</p></div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                                <h4 class="font-bold mb-4">Нагрузка (заявки)</h4>
-                                <div class="space-y-4">
-                                    <div v-for="emp in stats.employee_load" :key="emp.name" class="flex items-center justify-between">
-                                        <span class="text-sm">{{ emp.name }}</span>
-                                        <div class="flex items-center space-x-2 w-2/3">
-                                            <div class="flex-1 bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
-                                                <div class="bg-indigo-500 h-full" :style="{ width: emp.percentage + '%' }"></div>
-                                            </div>
-                                            <span class="text-xs font-bold w-8">{{ emp.count }}</span>
+                            <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border dark:border-gray-700">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h4 class="font-black text-gray-800 dark:text-white flex items-center"><i class="fas fa-chart-bar mr-3 text-indigo-500"></i> Нагрузка на команду</h4>
+                                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-500 px-2 py-1 rounded-full uppercase tracking-tighter">Live Аналитика</span>
+                                </div>
+                                <div class="space-y-6">
+                                    <div v-for="emp in stats.employee_load" :key="emp.name" class="group">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-500 transition-colors">{{ emp.name }}</span>
+                                            <span class="text-xs font-black text-indigo-600">{{ emp.count }} заяв.</span>
+                                        </div>
+                                        <div class="w-full bg-gray-100 dark:bg-gray-700 h-3 rounded-full overflow-hidden shadow-inner">
+                                            <div class="bg-gradient-to-r from-indigo-400 to-indigo-600 h-full transition-all duration-1000 ease-out" :style="{ width: emp.percentage + '%' }"></div>
                                         </div>
                                     </div>
+                                    <div v-if="!stats.employee_load || stats.employee_load.length === 0" class="text-center py-10 opacity-30">Нет данных о нагрузке</div>
                                 </div>
                             </div>
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                                <h4 class="font-bold mb-4">Логи системы</h4>
-                                <div class="space-y-3">
-                                    <div v-for="log in stats.recent_logs" :key="log.timestamp" class="text-xs border-b dark:border-gray-700 pb-2 last:border-0">
-                                        <p class="font-bold text-indigo-500">{{ log.user }}</p>
-                                        <p class="text-gray-600 dark:text-gray-400">{{ log.action }}</p>
-                                        <p class="text-[9px] text-gray-400 text-right">{{ log.timestamp }}</p>
+                            <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border dark:border-gray-700">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h4 class="font-black text-gray-800 dark:text-white flex items-center"><i class="fas fa-history mr-3 text-indigo-500"></i> Журнал активности</h4>
+                                    <button @click="fetchData" class="text-indigo-500 hover:rotate-180 transition-all duration-500"><i class="fas fa-sync-alt"></i></button>
+                                </div>
+                                <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div v-for="log in stats.recent_logs" :key="log.timestamp" class="flex items-start space-x-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-l-2 border-indigo-500">
+                                        <div class="flex-1">
+                                            <p class="text-xs font-black text-indigo-500">{{ log.user }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ log.action }}</p>
+                                            <p class="text-[9px] text-gray-400 mt-1 uppercase font-bold">{{ log.timestamp }}</p>
+                                        </div>
+                                    </div>
+                                    <div v-if="!stats.recent_logs || stats.recent_logs.length === 0" class="text-center py-10 opacity-30">История пуста</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: REQUESTS -->
+                    <div v-if="currentTab === 'requests'" class="space-y-6 animate-fade-in">
+                        <!-- Advanced Controls -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 flex flex-wrap gap-4 items-center">
+                            <div class="relative flex-1 min-w-[280px]">
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input v-model="searchQuery" type="text" placeholder="Поиск по теме, ID или описанию..." class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm">
+                            </div>
+                            <div class="flex gap-2">
+                                <select v-model="filters.status" class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl text-sm outline-none cursor-pointer">
+                                    <option value="">Все статусы</option>
+                                    <option value="new">Новые</option>
+                                    <option value="assigned">Назначены</option>
+                                    <option value="in_work">В работе</option>
+                                    <option value="completed">Выполнено</option>
+                                    <option value="rejected">Отклонено</option>
+                                </select>
+                                <select v-model="filters.priority" class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl text-sm outline-none cursor-pointer">
+                                    <option value="">Приоритет</option>
+                                    <option v-for="p in systemSettings.priorities" :key="p" :value="p">{{ p }}</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-3 ml-auto">
+                                <button v-if="user.role === 'admin' || user.role === 'head'" @click="exportData" class="w-12 h-12 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm" title="Export CSV">
+                                    <i class="fas fa-file-export text-gray-500"></i>
+                                </button>
+                                <button @click="showRequestModal = true; editingRequest = null" id="btn-add-request" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-black flex items-center transition-all shadow-lg hover:shadow-indigo-500/30">
+                                    <i class="fas fa-plus mr-3"></i> Создать заявку
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border dark:border-gray-700 overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left min-w-[900px]">
+                                    <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 text-[10px] uppercase font-black tracking-widest border-b dark:border-gray-700">
+                                        <tr>
+                                            <th class="px-8 py-5">Заявка / Описание</th>
+                                            <th class="px-6 py-5">Категория</th>
+                                            <th class="px-6 py-5">Приоритет</th>
+                                            <th class="px-6 py-5">Статус</th>
+                                            <th class="px-6 py-5">Дедлайн (SLA)</th>
+                                            <th class="px-8 py-5 text-right">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                                        <tr v-for="req in filteredRequests" :key="req.id"
+                                            :draggable="user.role === 'admin' || user.role === 'head'"
+                                            @dragstart="onDragStart($event, req)"
+                                            class="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors cursor-pointer group" @click="viewRequest(req)">
+                                            <td class="px-8 py-6">
+                                                <div class="flex items-center space-x-4">
+                                                    <div :class="['w-2 h-10 rounded-full', statusIndicator(req.status)]"></div>
+                                                    <div>
+                                                        <p class="font-black text-sm text-gray-800 dark:text-white group-hover:text-indigo-600 transition-colors truncate max-w-xs">#{{ req.id ? req.id.substring(4, 8) : '?' }} {{ req.title }}</p>
+                                                        <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tighter">Создано: {{ req.created_at }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-6">
+                                                <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{ req.category }}</span>
+                                            </td>
+                                            <td class="px-6 py-6">
+                                                <span :class="['px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm', priorityClass(req.priority)]">{{ req.priority }}</span>
+                                            </td>
+                                            <td class="px-6 py-6">
+                                                <div class="flex items-center space-x-2">
+                                                    <span :class="['px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter', statusClass(req.status)]">{{ req.status }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-6">
+                                                <div class="flex flex-col">
+                                                    <span :class="['text-[10px] font-black', isOverdue(req.sla_deadline) ? 'text-red-500 animate-pulse' : 'text-gray-500 dark:text-gray-400']">{{ req.sla_deadline }}</span>
+                                                    <span v-if="isOverdue(req.sla_deadline)" class="text-[8px] text-red-400 uppercase font-black mt-0.5">Просрочено</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-8 py-6 text-right">
+                                                <button class="w-10 h-10 rounded-full hover:bg-white dark:hover:bg-gray-700 shadow-sm border border-transparent hover:border-gray-100 flex items-center justify-center transition-all">
+                                                    <i class="fas fa-chevron-right text-indigo-400 group-hover:translate-x-1 transition-transform"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr v-if="filteredRequests.length === 0">
+                                            <td colspan="6" class="px-8 py-20 text-center">
+                                                <div class="flex flex-col items-center opacity-20">
+                                                    <i class="fas fa-clipboard-list text-6xl mb-4"></i>
+                                                    <p class="text-xl font-bold uppercase tracking-widest">Заявок не найдено</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: USERS -->
+                    <div v-if="currentTab === 'users'" class="space-y-6 animate-fade-in">
+                        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700">
+                            <div>
+                                <h4 class="text-2xl font-black text-gray-800 dark:text-white">Команда</h4>
+                                <p class="text-xs text-gray-400 uppercase font-bold tracking-widest mt-1">Управление ролями и доступом</p>
+                            </div>
+                            <button @click="openUserModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-black shadow-lg transition-all">
+                                <i class="fas fa-user-plus mr-3"></i> Добавить сотрудника
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div v-for="u in users" :key="u.id" class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 group hover:border-indigo-500 transition-all">
+                                <div class="flex items-center space-x-4 mb-6">
+                                    <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-black border-2 border-white dark:border-gray-700 shadow-sm group-hover:scale-110 transition-transform">
+                                        {{ u.name ? u.name[0] : '?' }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-black text-gray-800 dark:text-white truncate">{{ u.name }}</p>
+                                        <p class="text-[9px] bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 px-2 py-0.5 rounded-full inline-block mt-1 uppercase font-black tracking-widest">{{ u.role }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between pt-4 border-t dark:border-gray-700">
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Создан: {{ u.created_at || 'Системный' }}</p>
+                                    <div class="flex space-x-2">
+                                        <button @click="openUserModal(u)" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all"><i class="fas fa-edit text-xs"></i></button>
+                                        <button v-if="u.id !== 'admin'" @click="deleteUser(u.id)" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash-alt text-xs"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Requests -->
-                    <div v-if="currentTab === 'requests'" class="space-y-6">
-                        <!-- Advanced Filters -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border dark:border-gray-700 flex flex-wrap gap-4 items-center">
-                            <div class="relative flex-1 min-w-[200px]">
-                                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input v-model="searchQuery" type="text" placeholder="Поиск по теме, ID или описанию..." class="w-full pl-10 pr-4 py-2 border dark:bg-gray-800 dark:border-gray-700 rounded-xl outline-none">
+                    <!-- TAB: SETTINGS -->
+                    <div v-if="currentTab === 'settings'" class="max-w-4xl animate-fade-in">
+                        <div class="bg-white dark:bg-gray-800 p-10 rounded-[3rem] shadow-sm border dark:border-gray-700 space-y-10">
+                            <div>
+                                <h4 class="text-3xl font-black text-gray-800 dark:text-white mb-2">Настройки системы</h4>
+                                <p class="text-gray-400 font-medium">Конфигурация SLA, хранилища и интерфейса</p>
                             </div>
-                            <select v-model="filters.status" class="px-3 py-2 border dark:bg-gray-800 dark:border-gray-700 rounded-xl text-sm outline-none">
-                                <option value="">Все статусы</option>
-                                <option value="new">Новые</option>
-                                <option value="assigned">Назначены</option>
-                                <option value="in_work">В работе</option>
-                                <option value="completed">Выполнено</option>
-                            </select>
-                            <select v-model="filters.priority" class="px-3 py-2 border dark:bg-gray-800 dark:border-gray-700 rounded-xl text-sm outline-none">
-                                <option value="">Все приоритеты</option>
-                                <option v-for="p in systemSettings.priorities" :key="p" :value="p">{{ p }}</option>
-                            </select>
-                            <button @click="showRequestModal = true; editingRequest = null" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-xl font-bold flex items-center transition-colors">
-                                <i class="fas fa-plus mr-2"></i> Новая заявка
-                            </button>
-                            <button v-if="user.role === 'admin'" @click="exportData" class="p-2 border rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700"><i class="fas fa-file-export"></i></button>
-                        </div>
 
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border dark:border-gray-700 overflow-x-auto">
-                            <table class="w-full text-left min-w-[800px]">
-                                <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 text-[10px] uppercase font-black">
-                                    <tr>
-                                        <th class="px-6 py-4">ID / Тема</th>
-                                        <th class="px-6 py-4">Категория</th>
-                                        <th class="px-6 py-4">Приоритет</th>
-                                        <th class="px-6 py-4">Статус</th>
-                                        <th class="px-6 py-4">Дедлайн (SLA)</th>
-                                        <th class="px-6 py-4 text-right">Действия</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    <tr v-for="req in filteredRequests" :key="req.id"
-                                        :draggable="user.role === 'admin' || user.role === 'head'"
-                                        @dragstart="onDragStart($event, req)"
-                                        class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer group" @click="viewRequest(req)">
-                                        <td class="px-6 py-4">
-                                            <p class="font-bold text-sm">#{{ req.id ? req.id.substring(4, 8) : '?' }} {{ req.title }}</p>
-                                            <p class="text-[10px] text-gray-400">Создано: {{ req.created_at }}</p>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm">{{ req.category }}</td>
-                                        <td class="px-6 py-4">
-                                            <span :class="['px-2 py-0.5 rounded text-[10px] font-bold uppercase', priorityClass(req.priority)]">{{ req.priority }}</span>
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span :class="['px-2 py-0.5 rounded text-[10px] font-bold uppercase', statusClass(req.status)]">{{ req.status }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-xs" :class="{'text-red-500 font-bold': isOverdue(req.sla_deadline)}">
-                                            {{ req.sla_deadline }}
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <button class="text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-chevron-right"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <!-- Storage Toggle -->
+                                <div class="space-y-4">
+                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-indigo-500">Хранилище данных</h5>
+                                    <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl border dark:border-gray-700">
+                                        <label class="flex items-center justify-between cursor-pointer">
+                                            <div>
+                                                <p class="font-bold text-gray-700 dark:text-gray-200">Режим MySQL</p>
+                                                <p class="text-[10px] text-gray-400 uppercase mt-1">Требует настройки БД</p>
+                                            </div>
+                                            <input type="checkbox" v-model="systemSettings.mysql_mode" class="w-12 h-6 bg-gray-200 rounded-full appearance-none checked:bg-indigo-600 transition-all relative after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-all checked:after:left-7">
+                                        </label>
+                                        <div v-if="systemSettings.mysql_mode" class="mt-4 space-y-3">
+                                            <input v-model="systemSettings.db_host" placeholder="Host" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
+                                            <input v-model="systemSettings.db_name" placeholder="DB Name" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Announcement -->
+                                <div class="space-y-4">
+                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-indigo-500">Объявление для всех</h5>
+                                    <textarea v-model="systemSettings.announcement" rows="3" placeholder="Текст объявления..." class="w-full p-4 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 pt-6 border-t dark:border-gray-700">
+                                <h5 class="text-xs uppercase font-black tracking-[0.2em] text-indigo-500">SLA Контроль (в часах)</h5>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div v-for="(val, p) in systemSettings.sla" :key="p" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl border dark:border-gray-700">
+                                        <p class="text-[10px] uppercase font-black text-gray-400 mb-1">{{ p }}</p>
+                                        <input v-model.number="systemSettings.sla[p]" type="number" class="w-full bg-transparent font-black text-xl outline-none text-gray-800 dark:text-white">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end pt-6">
+                                <button @click="saveSettings" :disabled="loading" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-indigo-500/20 transition-all flex items-center">
+                                    <i v-if="loading" class="fas fa-spinner fa-spin mr-3"></i>
+                                    Сохранить конфигурацию
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
 
-        <!-- Request Modal -->
-        <div v-if="showRequestModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
-                <div class="flex justify-between items-center mb-6">
-                    <h4 class="text-2xl font-bold">Новая заявка</h4>
-                    <button @click="showRequestModal = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Тема заявки</label>
-                        <input v-model="requestForm.title" type="text" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Описание</label>
-                        <textarea v-model="requestForm.description" rows="4" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Категория</label>
-                            <select v-model="requestForm.category" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none">
-                                <option v-for="cat in systemSettings.categories" :key="cat" :value="cat">{{ cat }}</option>
-                            </select>
+        <!-- MODAL: Request Creation/Editing -->
+        <transition name="modal">
+            <div v-if="showRequestModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] w-full max-w-2xl p-10 shadow-2xl overflow-y-auto max-h-[90vh] relative">
+                    <button @click="showRequestModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-indigo-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+
+                    <h4 class="text-3xl font-black text-gray-800 dark:text-white mb-8">{{ editingRequest ? 'Изменить заявку' : 'Новая заявка' }}</h4>
+                    <div class="space-y-6">
+                        <div class="group">
+                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Тема заявки</label>
+                            <input id="req-title" v-model="requestForm.title" type="text" placeholder="Например: Не работает принтер в 204" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm font-medium">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Приоритет</label>
-                            <select v-model="requestForm.priority" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none">
-                                <option v-for="p in systemSettings.priorities" :key="p" :value="p">{{ p }}</option>
-                            </select>
+                        <div class="group">
+                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Подробное описание</label>
+                            <textarea id="req-desc" v-model="requestForm.description" rows="5" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm leading-relaxed"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Категория</label>
+                                <select v-model="requestForm.category" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm appearance-none cursor-pointer">
+                                    <option v-for="cat in systemSettings.categories" :key="cat" :value="cat">{{ cat }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Приоритет</label>
+                                <select v-model="requestForm.priority" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm appearance-none cursor-pointer">
+                                    <option v-for="p in systemSettings.priorities" :key="p" :value="p">{{ p }}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="mt-8 flex space-x-4">
-                    <button @click="saveRequest" :disabled="loading" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition-all">
-                        <span v-if="loading"><i class="fas fa-spinner fa-spin mr-2"></i></span> Сохранить
-                    </button>
-                    <button @click="showRequestModal = false" class="flex-1 bg-gray-100 dark:bg-gray-700 py-3 rounded-xl font-bold">Отмена</button>
+                    <div class="mt-10 flex space-x-4">
+                        <button id="req-save-btn" @click="saveRequest" :disabled="loading" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-3xl font-black shadow-xl shadow-indigo-500/20 transition-all active:scale-95">
+                            <span v-if="loading"><i class="fas fa-spinner fa-spin mr-3"></i></span> Сохранить и отправить
+                        </button>
+                        <button @click="showRequestModal = false" class="px-8 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-300 py-5 rounded-3xl font-black transition-all hover:bg-gray-200 dark:hover:bg-gray-600">Отмена</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </transition>
 
-        <!-- Profile Modal -->
-        <div v-if="showProfileModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md p-8 shadow-2xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h4 class="text-2xl font-bold">Профиль</h4>
-                    <button @click="showProfileModal = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+        <!-- MODAL: Request Details -->
+        <transition name="modal">
+            <div v-if="showDetailsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+                <div class="bg-white dark:bg-gray-800 rounded-[3rem] w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl overflow-hidden relative">
+                    <div class="p-8 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/30">
+                        <div class="flex items-center space-x-6">
+                            <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-3xl shadow-sm flex items-center justify-center text-2xl text-indigo-500 border dark:border-gray-700">
+                                <i :class="selectedRequest?.category === 'IT' ? 'fas fa-laptop' : 'fas fa-tools'"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-black text-gray-800 dark:text-white leading-tight">Заявка #{{ selectedRequest?.id?.substring(4, 8) }}</h4>
+                                <div class="flex items-center space-x-3 mt-1">
+                                    <span :class="['px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest shadow-sm', statusClass(selectedRequest?.status)]">{{ selectedRequest?.status }}</span>
+                                    <span class="text-[9px] text-gray-400 uppercase font-black">Создано: {{ selectedRequest?.created_at }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div v-if="user.role !== 'responsible'" class="bg-white dark:bg-gray-900 p-2 rounded-2xl border dark:border-gray-700 shadow-sm flex items-center space-x-3">
+                                 <p class="text-[9px] uppercase font-black text-gray-400 pl-2">Сменить статус:</p>
+                                 <select v-model="selectedRequest.status" @change="updateRequestStatus" class="text-xs font-black p-1 bg-transparent border-none outline-none text-indigo-500 cursor-pointer">
+                                     <option value="new">Новая</option>
+                                     <option value="assigned">Назначена</option>
+                                     <option value="in_work">В работе</option>
+                                     <option value="completed">Выполнено</option>
+                                     <option value="rejected">Отклонено</option>
+                                 </select>
+                            </div>
+                            <button @click="showDetailsModal = false" class="w-12 h-12 bg-white dark:bg-gray-900 rounded-2xl flex items-center justify-center text-gray-400 hover:text-red-500 shadow-sm border dark:border-gray-700 transition-all"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex overflow-hidden flex-col lg:flex-row">
+                        <!-- Main Info Scrollable Area -->
+                        <div class="flex-1 p-10 overflow-y-auto space-y-10 custom-scrollbar">
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-start">
+                                    <h5 class="text-3xl font-black text-gray-800 dark:text-white leading-tight max-w-2xl">{{ selectedRequest?.title }}</h5>
+                                    <div class="text-right bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-800">
+                                        <p class="text-[9px] uppercase font-black text-indigo-400 tracking-widest mb-1">Дедлайн (SLA)</p>
+                                        <p :class="['text-2xl font-black leading-none', countdown === 'OVERDUE' ? 'text-red-500 animate-pulse' : 'text-indigo-600 dark:text-indigo-400']">{{ countdown }}</p>
+                                        <p class="text-[9px] text-gray-400 mt-2 font-bold">{{ selectedRequest?.sla_deadline }}</p>
+                                    </div>
+                                </div>
+                                <div class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-900/50 p-8 rounded-[2rem] border-2 border-white dark:border-gray-700 shadow-inner">
+                                    {{ selectedRequest?.description }}
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 pt-6 border-t dark:border-gray-700">
+                                <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Категория</p><p class="text-sm font-black text-gray-800 dark:text-gray-200">{{ selectedRequest?.category }}</p></div>
+                                <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Приоритет</p><p class="text-sm font-black text-gray-800 dark:text-gray-200">{{ selectedRequest?.priority }}</p></div>
+                                <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Автор</p><p class="text-sm font-black text-gray-800 dark:text-gray-200">{{ getUserName(selectedRequest?.creator_id) }}</p></div>
+                                <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Исполнитель</p><p class="text-sm font-black text-indigo-500">{{ getUserName(selectedRequest?.executor_id) || 'Не назначен' }}</p></div>
+                            </div>
+
+                            <!-- Attachments -->
+                            <div class="pt-8 border-t dark:border-gray-700">
+                                <p class="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Вложения / Фото</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-3xl flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition-all group">
+                                        <i class="fas fa-plus text-gray-400 group-hover:text-indigo-500"></i>
+                                    </div>
+                                    <!-- Attachment mock -->
+                                    <div class="w-24 h-24 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-3xl flex flex-col items-center justify-center p-2 shadow-sm">
+                                         <i class="fas fa-file-pdf text-red-400 text-xl mb-1"></i>
+                                         <p class="text-[8px] font-bold text-gray-400 uppercase">Document.pdf</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar: Comments & Timeline -->
+                        <div class="w-full lg:w-[400px] border-t lg:border-t-0 lg:border-l dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex flex-col">
+                            <div class="flex border-b dark:border-gray-700 bg-white dark:bg-gray-800">
+                                <button @click="detailsTab = 'comments'" :class="['flex-1 py-5 text-xs font-black uppercase tracking-[0.2em] transition-all', detailsTab === 'comments' ? 'text-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10 border-b-4 border-indigo-500' : 'text-gray-400']">Обсуждение</button>
+                                <button @click="detailsTab = 'history'" :class="['flex-1 py-5 text-xs font-black uppercase tracking-[0.2em] transition-all', detailsTab === 'history' ? 'text-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10 border-b-4 border-indigo-500' : 'text-gray-400']">События</button>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                                <div v-if="detailsTab === 'comments'" class="space-y-6">
+                                    <div v-for="c in requestComments" :key="c.id" :class="['flex flex-col space-y-1', c.user_id === user.id ? 'items-end' : 'items-start']">
+                                        <div class="flex items-center space-x-2 mb-1 px-2">
+                                            <span v-if="c.user_id !== user.id" class="text-[9px] font-black text-indigo-500 uppercase">{{ getUserName(c.user_id) }}</span>
+                                            <span class="text-[8px] text-gray-400 font-bold uppercase">{{ c.timestamp }}</span>
+                                        </div>
+                                        <div :class="['max-w-[90%] p-4 rounded-2xl shadow-sm text-xs leading-relaxed', c.user_id === user.id ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-tl-none border dark:border-gray-700']">
+                                            {{ c.text }}
+                                        </div>
+                                    </div>
+                                    <div v-if="requestComments.length === 0" class="text-center py-20 opacity-30">
+                                        <i class="fas fa-comments text-5xl mb-4"></i>
+                                        <p class="text-xs font-black uppercase tracking-widest">Нет комментариев</p>
+                                    </div>
+                                </div>
+                                <div v-else class="space-y-8 pl-4">
+                                    <div class="relative pl-8 pb-8 border-l-2 border-indigo-100 dark:border-gray-700 last:border-0">
+                                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-indigo-500"></div>
+                                        <p class="text-[10px] text-gray-400 font-black uppercase mb-1">Инициация</p>
+                                        <p class="text-xs font-bold text-gray-700 dark:text-gray-300">Заявка создана пользователем {{ getUserName(selectedRequest.creator_id) }}</p>
+                                        <p class="text-[9px] text-gray-400 mt-1">{{ selectedRequest.created_at }}</p>
+                                    </div>
+                                    <div v-if="selectedRequest.executor_id" class="relative pl-8 pb-8 border-l-2 border-indigo-100 dark:border-gray-700 last:border-0">
+                                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-blue-500"></div>
+                                        <p class="text-[10px] text-gray-400 font-black uppercase mb-1">Назначение</p>
+                                        <p class="text-xs font-bold text-gray-700 dark:text-gray-300">Исполнитель: {{ getUserName(selectedRequest.executor_id) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="detailsTab === 'comments'" class="p-6 bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-xl">
+                                <div class="flex items-center space-x-2 mb-3 bg-gray-50 dark:bg-gray-900 p-1 rounded-full w-max mx-auto border dark:border-gray-700">
+                                    <button @click="commentType = 'public'" :class="['px-4 py-1.5 rounded-full text-[9px] font-black uppercase transition-all', commentType === 'public' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-400']">Публичный</button>
+                                    <button @click="commentType = 'internal'" :class="['px-4 py-1.5 rounded-full text-[9px] font-black uppercase transition-all', commentType === 'internal' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-400']">Внутренний</button>
+                                </div>
+                                <div class="relative">
+                                    <textarea v-model="newComment" rows="2" placeholder="Ваше сообщение..." class="w-full p-4 text-sm bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all pr-14"></textarea>
+                                    <button @click="addComment" class="absolute right-3 bottom-3 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-90 shadow-lg shadow-indigo-500/30">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="space-y-4">
-                    <div class="flex flex-col items-center mb-6">
-                        <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-4xl font-bold mb-2">
+            </div>
+        </transition>
+
+        <!-- MODAL: User Management -->
+        <transition name="modal">
+            <div v-if="showUserModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl relative">
+                    <button @click="showUserModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-indigo-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+                    <h4 class="text-3xl font-black text-gray-800 dark:text-white mb-8">{{ userForm.id === 'new' ? 'Новый сотрудник' : 'Редактировать' }}</h4>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">ФИО</label>
+                            <input v-model="userForm.name" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Логин</label>
+                            <input v-model="userForm.username" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Роль</label>
+                                <select v-model="userForm.role" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none appearance-none cursor-pointer">
+                                    <option value="admin">Admin</option>
+                                    <option value="head">Head</option>
+                                    <option value="executor">Executor</option>
+                                    <option value="responsible">Responsible</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Пароль</label>
+                                <input v-model="userForm.password" type="password" placeholder="********" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 flex space-x-4">
+                        <button @click="saveUser" class="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg">Сохранить</button>
+                        <button @click="showUserModal = false" class="px-6 bg-gray-100 dark:bg-gray-700 text-gray-400 py-4 rounded-2xl font-black">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- MODAL: Profile -->
+        <transition name="modal">
+            <div v-if="showProfileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl relative">
+                    <button @click="showProfileModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-indigo-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+                    <div class="text-center mb-10">
+                        <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-3xl flex items-center justify-center text-4xl font-black mx-auto mb-4 border-4 border-white dark:border-gray-700 shadow-md">
                             {{ user.name[0] }}
                         </div>
-                        <p class="font-bold">{{ user.name }}</p>
-                        <p class="text-xs text-gray-400 uppercase">{{ user.role }}</p>
+                        <h4 class="text-2xl font-black text-gray-800 dark:text-white">{{ user.name }}</h4>
+                        <p class="text-[10px] uppercase font-black text-gray-400 tracking-[0.2em] mt-2">{{ user.role }}</p>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Имя</label>
-                        <input v-model="user.name" type="text" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Отображаемое имя</label>
+                            <input v-model="user.name" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Новый пароль</label>
+                            <input v-model="user.new_password" type="password" placeholder="Оставьте пустым для сохранения" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Новый пароль (оставьте пустым для сохранения текущего)</label>
-                        <input v-model="user.new_password" type="password" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl outline-none">
-                    </div>
-                    <button @click="saveProfile" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-all">Сохранить изменения</button>
+                    <button @click="saveProfile" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl mt-10 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20">Применить изменения</button>
                 </div>
             </div>
-        </div>
-
-        <!-- View Request Details Modal -->
-        <div v-if="showDetailsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-                <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/50">
-                    <div>
-                        <h4 class="text-xl font-bold">Заявка #{{ selectedRequest?.id?.substring(4, 8) }}</h4>
-                        <span :class="['px-2 py-0.5 rounded text-[10px] font-bold uppercase', statusClass(selectedRequest?.status)]">{{ selectedRequest?.status }}</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div v-if="user.role !== 'responsible'" class="flex items-center space-x-2">
-                             <select v-model="selectedRequest.status" @change="updateRequestStatus" class="text-xs p-1 border rounded bg-white dark:bg-gray-800">
-                                 <option value="new">Новая</option>
-                                 <option value="assigned">Назначена</option>
-                                 <option value="in_work">В работе</option>
-                                 <option value="completed">Выполнено</option>
-                                 <option value="rejected">Отклонено</option>
-                             </select>
-                        </div>
-                        <button @click="showDetailsModal = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                    </div>
-                </div>
-                <div class="flex-1 flex overflow-hidden flex-col lg:row">
-                    <div class="flex-1 p-8 overflow-y-auto space-y-6">
-                    <div class="flex justify-between items-start">
-                        <h5 class="text-2xl font-bold text-gray-800 dark:text-white">{{ selectedRequest?.title }}</h5>
-                        <div class="text-right">
-                            <p class="text-[10px] uppercase font-bold text-gray-400">Осталось времени (SLA)</p>
-                            <p :class="['text-xl font-black', countdown === 'OVERDUE' ? 'text-red-500 animate-pulse' : 'text-indigo-600']">{{ countdown }}</p>
-                            </div>
-                    </div>
-                    <div class="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-900/50 p-6 rounded-2xl border dark:border-gray-700">
-                        {{ selectedRequest?.description }}
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-t dark:border-gray-700">
-                            <div><p class="text-[10px] uppercase font-bold text-gray-400">Категория</p><p class="text-sm font-medium">{{ selectedRequest?.category }}</p></div>
-                            <div><p class="text-[10px] uppercase font-bold text-gray-400">Приоритет</p><p class="text-sm font-medium">{{ selectedRequest?.priority }}</p></div>
-                            <div><p class="text-[10px] uppercase font-bold text-gray-400">Создал</p><p class="text-sm font-medium">{{ getUserName(selectedRequest?.creator_id) }}</p></div>
-                            <div><p class="text-[10px] uppercase font-bold text-gray-400">Исполнитель</p><p class="text-sm font-medium">{{ getUserName(selectedRequest?.executor_id) || 'Не назначен' }}</p></div>
-                        </div>
-                    <!-- Attachments -->
-                    <div class="pt-4">
-                        <p class="text-[10px] uppercase font-bold text-gray-400 mb-2">Вложения</p>
-                        <div class="flex flex-wrap gap-2">
-                            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
-                                <i class="fas fa-plus text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    <!-- Comments & History sidebar -->
-                    <div class="w-full lg:w-96 border-t lg:border-t-0 lg:border-l dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex flex-col">
-                        <div class="flex border-b dark:border-gray-700">
-                            <button @click="detailsTab = 'comments'" :class="['flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all', detailsTab === 'comments' ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-gray-400']">Комментарии</button>
-                            <button @click="detailsTab = 'history'" :class="['flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-all', detailsTab === 'history' ? 'text-indigo-500 border-b-2 border-indigo-500' : 'text-gray-400']">История</button>
-                        </div>
-                        <div class="flex-1 overflow-y-auto p-4 space-y-4">
-                            <div v-if="detailsTab === 'comments'" class="space-y-4">
-                                <div v-for="c in requestComments" :key="c.id" class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border dark:border-gray-700">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-[10px] font-bold text-indigo-500">{{ getUserName(c.user_id) }}</span>
-                                        <span class="text-[9px] text-gray-400">{{ c.timestamp }}</span>
-                                    </div>
-                                    <p class="text-xs text-gray-600 dark:text-gray-300">{{ c.text }}</p>
-                                </div>
-                                <div v-if="requestComments.length === 0" class="text-center py-10 text-gray-400 text-xs">Нет комментариев</div>
-                            </div>
-                            <div v-else class="space-y-4">
-                                <p class="text-[10px] text-center text-gray-400">Журнал событий заявки</p>
-                                <!-- History stub -->
-                                <div class="text-xs text-gray-500 italic text-center py-10">Журнал изменений доступен в системных логах</div>
-                            </div>
-                        </div>
-                        <div v-if="detailsTab === 'comments'" class="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
-                            <textarea v-model="newComment" rows="2" placeholder="Написать..." class="w-full p-3 text-xs border dark:border-gray-700 dark:bg-gray-900 rounded-xl mb-2 outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
-                            <button @click="addComment" class="w-full bg-indigo-600 text-white text-xs py-2 rounded-xl font-bold transition-all hover:bg-indigo-700">Отправить</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </transition>
     </div>
 
     <script>
@@ -401,102 +636,94 @@
                 const systemSettings = reactive({
                     categories: ['IT', 'Repair', 'Cleaning', 'Security'],
                     priorities: ['Low', 'Medium', 'High', 'Critical'],
-                    departments: ['IT', 'Service', 'Management']
+                    sla: { Low: 48, Medium: 24, High: 8, Critical: 2 },
+                    announcement: 'Добро пожаловать в новую CRM систему v2.0!'
                 });
                 const searchQuery = ref('');
                 const filters = reactive({ status: '', priority: '', category: '', executor: '' });
-                const bulkSelection = ref([]);
 
                 const showRequestModal = ref(false);
                 const showDetailsModal = ref(false);
                 const showProfileModal = ref(false);
+                const showUserModal = ref(false);
                 const editingRequest = ref(null);
                 const selectedRequest = ref(null);
-                const requestForm = reactive({ title: '', description: '', category: 'IT', priority: 'Medium', custom_fields: {} });
+                const userForm = reactive({ id: 'new', name: '', username: '', role: 'executor', password: '' });
+                const requestForm = reactive({ title: '', description: '', category: 'IT', priority: 'Medium' });
                 const countdown = ref('');
 
                 const menu = [
                     { id: 'dashboard', name: 'Дашборд', icon: 'fas fa-th-large' },
                     { id: 'requests', name: 'Заявки', icon: 'fas fa-clipboard-list' },
-                    { id: 'users', name: 'Пользователи', icon: 'fas fa-users', roles: ['admin', 'head'] }
+                    { id: 'users', name: 'Пользователи', icon: 'fas fa-users', roles: ['admin', 'head'] },
+                    { id: 'settings', name: 'Настройки', icon: 'fas fa-cog', roles: ['admin'] }
                 ];
 
                 const activeTabName = computed(() => menu.find(m => m.id === currentTab.value)?.name || '');
                 const executors = computed(() => users.value.filter(u => u.role === 'executor' || u.role === 'admin' || u.role === 'head'));
+
                 const filteredRequests = computed(() => {
                     return requests.value.filter(r => {
                         const s = searchQuery.value.toLowerCase();
-                        const matchesSearch = r.title.toLowerCase().includes(s) || r.description.toLowerCase().includes(s) || (r.id && r.id.includes(s));
+                        const matchesSearch = r.title.toLowerCase().includes(s) || r.description.toLowerCase().includes(s);
                         const matchesStatus = !filters.status || r.status === filters.status;
                         const matchesPriority = !filters.priority || r.priority === filters.priority;
-                        const matchesCategory = !filters.category || r.category === filters.category;
-                        const matchesExecutor = !filters.executor || r.executor_id === filters.executor;
-                        return matchesSearch && matchesStatus && matchesPriority && matchesCategory && matchesExecutor;
-                    });
+                        return matchesSearch && matchesStatus && matchesPriority;
+                    }).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                 });
 
                 const apiFetch = async (url, options = {}) => {
+                    loading.value = true;
                     options.headers = { ...options.headers, 'Authorization': `Bearer ${token.value}`, 'Content-Type': 'application/json' };
-                    const res = await fetch(url, options);
-                    if (res.status === 401) { logout(); return; }
-                    return res.json();
+                    try {
+                        const res = await fetch(url, options);
+                        if (res.status === 401) { logout(); return; }
+                        return await res.json();
+                    } catch (e) { console.error(e); }
+                    finally { loading.value = false; }
                 };
 
                 const login = async () => {
-                    loading.value = true;
-                    try {
-                        const data = await apiFetch('api/auth.php?action=login', { method: 'POST', body: JSON.stringify(loginForm) });
-                        if (data && data.success) {
-                            token.value = data.token; user.value = data.user; authenticated.value = true;
-                            localStorage.setItem('crm_token', data.token); fetchData();
-                        } else error.value = data?.error || 'Ошибка';
-                    } finally { loading.value = false; }
+                    error.value = '';
+                    const data = await apiFetch('api/auth.php?action=login', { method: 'POST', body: JSON.stringify(loginForm) });
+                    if (data && data.success) {
+                        token.value = data.token; user.value = data.user; authenticated.value = true;
+                        localStorage.setItem('crm_token', data.token); fetchData();
+                    } else error.value = data?.error || 'Неверные данные';
                 };
 
                 const logout = () => { authenticated.value = false; user.value = null; token.value = null; localStorage.removeItem('crm_token'); };
 
                 const saveProfile = async () => {
-                    await apiFetch('api/users.php', { method: 'POST', body: JSON.stringify({
-                        action: 'update_profile',
-                        name: user.value.name,
-                        password: user.value.new_password
-                    })});
+                    await apiFetch('api/users.php', { method: 'POST', body: JSON.stringify({ action: 'update_profile', name: user.value.name, password: user.value.new_password }) });
                     showProfileModal.value = false;
                 };
 
-                const exportData = () => { window.location.href = `api/stats.php?type=export&token=${token.value}`; };
-
                 const fetchData = async () => {
+                    if (!authenticated.value) return;
                     if (currentTab.value === 'dashboard') stats.value = await apiFetch('api/stats.php');
-                    if (currentTab.value === 'requests') {
-                        requests.value = await apiFetch('api/tasks.php');
-                        users.value = await apiFetch('api/users.php');
-                        const setts = await apiFetch('api/settings.php');
-                        if (setts && setts.categories) Object.assign(systemSettings, setts);
+                    if (currentTab.value === 'requests' || currentTab.value === 'dashboard') {
+                        const r = await apiFetch('api/tasks.php');
+                        requests.value = Array.isArray(r) ? r : [];
+                        const u = await apiFetch('api/users.php');
+                        users.value = Array.isArray(u) ? u : [];
+                        const s = await apiFetch('api/settings.php');
+                        if (s && s.categories) Object.assign(systemSettings, s);
+                    }
+                    if (currentTab.value === 'users') {
+                        const u = await apiFetch('api/users.php');
+                        users.value = Array.isArray(u) ? u : [];
                     }
                 };
 
-                const priorityClass = (p) => {
-                    if (p === 'Critical') return 'bg-red-100 text-red-600';
-                    if (p === 'High') return 'bg-orange-100 text-orange-600';
-                    if (p === 'Medium') return 'bg-blue-100 text-blue-600';
-                    return 'bg-gray-100 text-gray-500';
+                const saveRequest = async () => {
+                    const res = await apiFetch('api/tasks.php', { method: 'POST', body: JSON.stringify(requestForm) });
+                    if (res && res.success) { showRequestModal.value = false; fetchData(); }
                 };
-
-                const statusClass = (s) => {
-                    if (s === 'new') return 'bg-purple-100 text-purple-600';
-                    if (s === 'completed') return 'bg-green-100 text-green-600';
-                    if (s === 'rejected') return 'bg-gray-100 text-gray-500';
-                    return 'bg-blue-100 text-blue-600';
-                };
-
-                const isOverdue = (deadline) => new Date(deadline) < new Date();
-                const getUserName = (id) => users.value.find(u => u.id === id)?.name || id;
 
                 const viewRequest = async (req) => {
                     selectedRequest.value = { ...req };
                     showDetailsModal.value = true;
-                    // Load comments
                     const res = await apiFetch('api/interactions.php?request_id=' + req.id);
                     requestComments.value = Array.isArray(res) ? res : [];
                 };
@@ -508,28 +735,53 @@
 
                 const addComment = async () => {
                     if (!newComment.value.trim()) return;
-                    await apiFetch('api/interactions.php', { method: 'POST', body: JSON.stringify({
-                        request_id: selectedRequest.value.id,
-                        text: newComment.value,
-                        type: 'comment',
-                        comment_type: commentType.value // public or internal
-                    })});
+                    await apiFetch('api/interactions.php', { method: 'POST', body: JSON.stringify({ request_id: selectedRequest.value.id, text: newComment.value, type: 'comment' }) });
                     newComment.value = '';
-                    viewRequest(selectedRequest.value); // refresh
+                    viewRequest(selectedRequest.value);
                 };
 
-                const saveRequest = async () => {
-                    loading.value = true;
-                    try {
-                        const res = await apiFetch('api/tasks.php', { method: 'POST', body: JSON.stringify(requestForm) });
-                        if (res.success) { showRequestModal.value = false; fetchData(); }
-                    } finally { loading.value = false; }
+                const openUserModal = (u = null) => {
+                    if (u) { Object.assign(userForm, u); userForm.password = ''; }
+                    else { userForm.id = 'new'; userForm.name = ''; userForm.username = ''; userForm.role = 'executor'; userForm.password = ''; }
+                    showUserModal.value = true;
                 };
 
-                const onDragStart = (e, req) => {
-                    e.dataTransfer.setData('requestId', req.id);
-                    e.target.classList.add('opacity-50');
+                const saveUser = async () => {
+                    await apiFetch('api/users.php', { method: 'POST', body: JSON.stringify(userForm) });
+                    showUserModal.value = false; fetchData();
                 };
+
+                const deleteUser = async (id) => { if (confirm('Удалить?')) { await apiFetch('api/users.php?id=' + id, { method: 'DELETE' }); fetchData(); } };
+
+                const saveSettings = async () => { await apiFetch('api/settings.php', { method: 'POST', body: JSON.stringify(systemSettings) }); fetchData(); alert('Настройки сохранены'); };
+
+                const exportData = () => { window.location.href = `api/stats.php?type=export&token=${token.value}`; };
+
+                const priorityClass = (p) => {
+                    if (p === 'Critical') return 'bg-red-500 text-white';
+                    if (p === 'High') return 'bg-orange-400 text-white';
+                    if (p === 'Medium') return 'bg-indigo-400 text-white';
+                    return 'bg-gray-400 text-white';
+                };
+
+                const statusClass = (s) => {
+                    if (s === 'new') return 'bg-purple-100 text-purple-600 border border-purple-200';
+                    if (s === 'completed') return 'bg-green-100 text-green-600 border border-green-200';
+                    if (s === 'rejected') return 'bg-gray-100 text-gray-500 border border-gray-200';
+                    return 'bg-blue-100 text-blue-600 border border-blue-200';
+                };
+
+                const statusIndicator = (s) => {
+                    if (s === 'new') return 'bg-purple-500';
+                    if (s === 'completed') return 'bg-green-500';
+                    if (s === 'in_work') return 'bg-orange-500';
+                    return 'bg-gray-400';
+                };
+
+                const isOverdue = (deadline) => deadline && new Date(deadline) < new Date();
+                const getUserName = (id) => users.value.find(u => u.id === id)?.name || id;
+
+                const onDragStart = (e, req) => { e.dataTransfer.setData('requestId', req.id); e.target.classList.add('opacity-50'); };
                 const onDragEnter = (e) => { e.currentTarget.classList.add('drag-over'); };
                 const onDragLeave = (e) => { e.currentTarget.classList.remove('drag-over'); };
                 const onDropAssign = async (e, executor) => {
@@ -544,25 +796,16 @@
 
                 const updateCountdown = () => {
                     if (!selectedRequest.value || !selectedRequest.value.sla_deadline) return;
-                    const end = new Date(selectedRequest.value.sla_deadline).getTime();
-                    const now = new Date().getTime();
-                    const dist = end - now;
-                    if (dist < 0) { countdown.value = 'OVERDUE'; return; }
-                    const h = Math.floor(dist / (1000 * 60 * 60));
-                    const m = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+                    const diff = new Date(selectedRequest.value.sla_deadline) - new Date();
+                    if (diff < 0) { countdown.value = 'OVERDUE'; return; }
+                    const h = Math.floor(diff / 3600000);
+                    const m = Math.floor((diff % 3600000) / 60000);
                     countdown.value = `${h}ч ${m}м`;
                 };
 
-                let countdownTimer;
-                watch(selectedRequest, (val) => {
-                    if (val) {
-                        if (countdownTimer) clearInterval(countdownTimer);
-                        updateCountdown();
-                        countdownTimer = setInterval(updateCountdown, 60000);
-                    }
-                });
-
-                watch(isDarkMode, (val) => localStorage.setItem('crm_dark', val));
+                let timer;
+                watch(selectedRequest, (v) => { if (v) { if (timer) clearInterval(timer); updateCountdown(); timer = setInterval(updateCountdown, 30000); } });
+                watch(isDarkMode, (v) => localStorage.setItem('crm_dark', v));
                 watch(currentTab, () => fetchData());
 
                 onMounted(async () => {
@@ -574,14 +817,28 @@
 
                 return {
                     authenticated, user, loading, error, currentTab, loginForm, menu, activeTabName, isDarkMode, stats,
-                    requests, users, systemSettings, searchQuery, filters, showRequestModal, showDetailsModal, showProfileModal,
-                    requestForm, editingRequest, selectedRequest, executors, filteredRequests, detailsTab, requestComments, newComment,
-                    commentType, bulkSelection, countdown,
-                    login, logout, priorityClass, statusClass, isOverdue, getUserName, viewRequest, saveRequest, onDragStart, onDropAssign, onDragEnter, onDragLeave, updateRequestStatus, addComment,
-                    saveProfile, exportData
+                    requests, users, systemSettings, searchQuery, filters, showRequestModal, showDetailsModal, showProfileModal, showUserModal,
+                    requestForm, userForm, selectedRequest, executors, filteredRequests, detailsTab, requestComments, newComment,
+                    commentType, countdown,
+                    login, logout, priorityClass, statusClass, statusIndicator, isOverdue, getUserName, viewRequest, saveRequest,
+                    onDragStart, onDropAssign, onDragEnter, onDragLeave, updateRequestStatus, addComment, saveProfile, openUserModal, saveUser, deleteUser, saveSettings, exportData
                 };
             }
         }).mount('#app');
     </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #4a5568; }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        .modal-enter-active { animation: modal-in 0.3s ease-out; }
+        .modal-leave-active { animation: modal-in 0.2s reverse ease-in; }
+        @keyframes modal-in {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </body>
 </html>

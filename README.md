@@ -1,29 +1,26 @@
-# WES CRM System
+# Service CRM - Documentation
 
-Полноценная CRM система для отделов продаж и маркетинга, работающая на JSON файлах.
+## Overview
+CRM system for managing service requests and maintenance tasks in organizations.
 
-## Основные возможности
-- **Дашборд**: Статистика и лента активности.
-- **Клиенты**: Полное управление базой клиентов.
-- **Продажи**: Канбан-доска для управления лидами и сделками.
-- **Маркетинг**: Массовая email-рассылка.
-- **Задачи**: Планировщик задач с приоритетами.
-- **Документы**: Хранилище файлов с возможностью загрузки и скачивания.
+## Core Features
+- **Request Lifecycle:** New, Assigned, In Work, Completed, Rejected.
+- **Role-Based Access (RBAC):**
+    - **Administrator:** Full system control, user management, settings.
+    - **Department Head:** Request assignment, monitoring, reporting.
+    - **Responsible:** Request creation, status tracking.
+    - **Executor:** Task execution, status updates, comments.
+- **SLA Tracking:** Deadlines calculated based on business hours (09:00-18:00) and priority.
+- **Analytics:** Dashboard with workload visualization and activity logs.
+- **Telegram Integration:** Notifications for request updates.
+- **Storage:** JSON-based persistent storage.
 
-## Безопасность
-- Вход по 6-значному PIN-коду.
-- Данные защищены через `.htaccess`.
-- Все вводимые данные проходят санитизацию.
+## Installation
+1. Upload files to a PHP-enabled server.
+2. Ensure `data/` directory is writable (`chmod -R 777 data/`).
+3. Default credentials: `admin` / `admin`.
 
-## Установка и вход
-1. Разместите файлы на PHP-хостинге.
-2. Убедитесь, что папка `data/` имеет права на запись.
-3. **PIN-код по умолчанию: `123456`**
-
-## Как изменить PIN-код
-Чтобы изменить код доступа, обновите хеш в файле `data/users.json`. Вы можете сгенерировать новый хеш с помощью PHP:
-```php
-echo password_hash('ВАШ_НОВЫЙ_КОД', PASSWORD_DEFAULT);
-```
-
-Разработано WES.BY
+## Technical Stack
+- **Frontend:** Vue.js 3 (Composition API), Tailwind CSS, FontAwesome.
+- **Backend:** PHP 8.x (Clean API Architecture).
+- **Security:** JWT-based stateless authentication.

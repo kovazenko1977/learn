@@ -1,19 +1,280 @@
-[Thu Apr 23 18:29:11 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
-[Thu Apr 23 18:29:44 2026] [::1]:54820 Accepted
-[Thu Apr 23 18:29:44 2026] [::1]:54820 [200]: GET /index.html
-[Thu Apr 23 18:29:44 2026] [::1]:54820 Closing
-[Thu Apr 23 18:29:46 2026] [::1]:54828 Accepted
-[Thu Apr 23 18:29:46 2026] [::1]:54828 [200]: POST /api/auth.php?action=login
-[Thu Apr 23 18:29:46 2026] [::1]:54828 Closing
-[Thu Apr 23 18:29:46 2026] [::1]:54838 Accepted
-[Thu Apr 23 18:29:46 2026] [::1]:54838 [200]: GET /api/stats.php
-[Thu Apr 23 18:29:46 2026] [::1]:54838 Closing
-[Thu Apr 23 18:29:46 2026] [::1]:54844 Accepted
-[Thu Apr 23 18:29:46 2026] [::1]:54844 [200]: GET /api/tasks.php
-[Thu Apr 23 18:29:46 2026] [::1]:54844 Closing
-[Thu Apr 23 18:29:46 2026] [::1]:54848 Accepted
-[Thu Apr 23 18:29:46 2026] [::1]:54848 [200]: GET /api/users.php
-[Thu Apr 23 18:29:46 2026] [::1]:54848 Closing
-[Thu Apr 23 18:29:46 2026] [::1]:54856 Accepted
-[Thu Apr 23 18:29:46 2026] [::1]:54856 [200]: GET /api/settings.php
-[Thu Apr 23 18:29:46 2026] [::1]:54856 Closing
+[Thu Apr 23 18:57:58 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
+[Thu Apr 23 18:58:03 2026] [::1]:50364 Accepted
+[Thu Apr 23 18:58:03 2026] [::1]:50364 [200]: GET /index.html
+[Thu Apr 23 18:58:03 2026] [::1]:50364 Closing
+[Thu Apr 23 18:58:05 2026] [::1]:50380 Accepted
+[Thu Apr 23 18:58:05 2026] [::1]:50380 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 18:58:05 2026] [::1]:50380 Closing
+[Thu Apr 23 18:58:05 2026] [::1]:50382 Accepted
+[Thu Apr 23 18:58:05 2026] [::1]:50382 [200]: GET /api/stats.php
+[Thu Apr 23 18:58:05 2026] [::1]:50382 Closing
+[Thu Apr 23 18:58:05 2026] [::1]:50392 Accepted
+[Thu Apr 23 18:58:05 2026] [::1]:50392 [200]: GET /api/tasks.php
+[Thu Apr 23 18:58:05 2026] [::1]:50392 Closing
+[Thu Apr 23 18:58:05 2026] [::1]:50402 Accepted
+[Thu Apr 23 18:58:05 2026] [::1]:50402 [200]: GET /api/users.php
+[Thu Apr 23 18:58:05 2026] [::1]:50402 Closing
+[Thu Apr 23 18:58:05 2026] [::1]:50406 Accepted
+[Thu Apr 23 18:58:05 2026] [::1]:50406 [200]: GET /api/settings.php
+[Thu Apr 23 18:58:05 2026] [::1]:50406 Closing
+[Thu Apr 23 18:58:22 2026] [::1]:59884 Accepted
+[Thu Apr 23 18:58:22 2026] [::1]:59884 [200]: GET /index.html
+[Thu Apr 23 18:58:22 2026] [::1]:59884 Closing
+[Thu Apr 23 18:58:23 2026] [::1]:59294 Accepted
+[Thu Apr 23 18:58:23 2026] [::1]:59294 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 18:58:23 2026] [::1]:59294 Closing
+[Thu Apr 23 18:58:23 2026] [::1]:59302 Accepted
+[Thu Apr 23 18:58:23 2026] [::1]:59302 [200]: GET /api/stats.php
+[Thu Apr 23 18:58:23 2026] [::1]:59302 Closing
+[Thu Apr 23 18:58:23 2026] [::1]:59312 Accepted
+[Thu Apr 23 18:58:23 2026] [::1]:59312 [200]: GET /api/tasks.php
+[Thu Apr 23 18:58:23 2026] [::1]:59312 Closing
+[Thu Apr 23 18:58:23 2026] [::1]:59328 Accepted
+[Thu Apr 23 18:58:23 2026] [::1]:59328 [200]: GET /api/users.php
+[Thu Apr 23 18:58:23 2026] [::1]:59328 Closing
+[Thu Apr 23 18:58:23 2026] [::1]:59334 Accepted
+[Thu Apr 23 18:58:23 2026] [::1]:59334 [200]: GET /api/settings.php
+[Thu Apr 23 18:58:23 2026] [::1]:59334 Closing
+[Thu Apr 23 18:59:57 2026] [::1]:35550 Accepted
+[Thu Apr 23 18:59:57 2026] [::1]:35550 [200]: GET /index.html
+[Thu Apr 23 18:59:57 2026] [::1]:35550 Closing
+[Thu Apr 23 18:59:58 2026] [::1]:35566 Accepted
+[Thu Apr 23 18:59:58 2026] [::1]:35566 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 18:59:58 2026] [::1]:35566 Closing
+[Thu Apr 23 18:59:58 2026] [::1]:35578 Accepted
+[Thu Apr 23 18:59:58 2026] [::1]:35578 [200]: GET /api/stats.php
+[Thu Apr 23 18:59:58 2026] [::1]:35578 Closing
+[Thu Apr 23 18:59:59 2026] [::1]:35584 Accepted
+[Thu Apr 23 18:59:59 2026] [::1]:35584 [200]: GET /api/tasks.php
+[Thu Apr 23 18:59:59 2026] [::1]:35584 Closing
+[Thu Apr 23 18:59:59 2026] [::1]:35588 Accepted
+[Thu Apr 23 18:59:59 2026] [::1]:35588 [200]: GET /api/users.php
+[Thu Apr 23 18:59:59 2026] [::1]:35588 Closing
+[Thu Apr 23 18:59:59 2026] [::1]:35598 Accepted
+[Thu Apr 23 18:59:59 2026] [::1]:35598 [200]: GET /api/settings.php
+[Thu Apr 23 18:59:59 2026] [::1]:35598 Closing
+[Thu Apr 23 19:01:53 2026] [::1]:35288 Accepted
+[Thu Apr 23 19:01:53 2026] [::1]:35288 [200]: GET /index.html
+[Thu Apr 23 19:01:53 2026] [::1]:35288 Closing
+[Thu Apr 23 19:01:54 2026] [::1]:35296 Accepted
+[Thu Apr 23 19:01:54 2026] [::1]:35296 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 19:01:54 2026] [::1]:35296 Closing
+[Thu Apr 23 19:01:54 2026] [::1]:35310 Accepted
+[Thu Apr 23 19:01:54 2026] [::1]:35310 [200]: GET /api/stats.php
+[Thu Apr 23 19:01:54 2026] [::1]:35310 Closing
+[Thu Apr 23 19:01:54 2026] [::1]:35320 Accepted
+[Thu Apr 23 19:01:54 2026] [::1]:35320 [200]: GET /api/tasks.php
+[Thu Apr 23 19:01:54 2026] [::1]:35320 Closing
+[Thu Apr 23 19:01:54 2026] [::1]:35322 Accepted
+[Thu Apr 23 19:01:54 2026] [::1]:35322 [200]: GET /api/users.php
+[Thu Apr 23 19:01:54 2026] [::1]:35322 Closing
+[Thu Apr 23 19:01:54 2026] [::1]:35326 Accepted
+[Thu Apr 23 19:01:54 2026] [::1]:35326 [200]: GET /api/settings.php
+[Thu Apr 23 19:01:54 2026] [::1]:35326 Closing
+[Thu Apr 23 19:01:55 2026] [::1]:35340 Accepted
+[Thu Apr 23 19:01:55 2026] [::1]:35340 [200]: GET /api/tasks.php
+[Thu Apr 23 19:01:55 2026] [::1]:35340 Closing
+[Thu Apr 23 19:01:55 2026] [::1]:35356 Accepted
+[Thu Apr 23 19:01:55 2026] [::1]:35356 [200]: GET /api/users.php
+[Thu Apr 23 19:01:55 2026] [::1]:35356 Closing
+[Thu Apr 23 19:01:55 2026] [::1]:35368 Accepted
+[Thu Apr 23 19:01:55 2026] [::1]:35368 [200]: GET /api/settings.php
+[Thu Apr 23 19:01:55 2026] [::1]:35368 Closing
+[Thu Apr 23 19:03:37 2026] [::1]:38432 Accepted
+[Thu Apr 23 19:03:37 2026] [::1]:38432 [200]: GET /index.html
+[Thu Apr 23 19:03:37 2026] [::1]:38432 Closing
+[Thu Apr 23 19:03:39 2026] [::1]:38438 Accepted
+[Thu Apr 23 19:03:39 2026] [::1]:38438 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 19:03:39 2026] [::1]:38438 Closing
+[Thu Apr 23 19:03:39 2026] [::1]:38440 Accepted
+[Thu Apr 23 19:03:39 2026] [::1]:38440 [200]: GET /api/stats.php
+[Thu Apr 23 19:03:39 2026] [::1]:38440 Closing
+[Thu Apr 23 19:03:39 2026] [::1]:38444 Accepted
+[Thu Apr 23 19:03:39 2026] [::1]:38444 [200]: GET /api/tasks.php
+[Thu Apr 23 19:03:39 2026] [::1]:38444 Closing
+[Thu Apr 23 19:03:39 2026] [::1]:38458 Accepted
+[Thu Apr 23 19:03:39 2026] [::1]:38458 [200]: GET /api/users.php
+[Thu Apr 23 19:03:39 2026] [::1]:38458 Closing
+[Thu Apr 23 19:03:39 2026] [::1]:38468 Accepted
+[Thu Apr 23 19:03:39 2026] [::1]:38468 [200]: GET /api/settings.php
+[Thu Apr 23 19:03:39 2026] [::1]:38468 Closing
+[Thu Apr 23 19:03:40 2026] [::1]:38474 Accepted
+[Thu Apr 23 19:03:40 2026] [::1]:38474 [200]: GET /api/tasks.php
+[Thu Apr 23 19:03:40 2026] [::1]:38474 Closing
+[Thu Apr 23 19:03:40 2026] [::1]:38488 Accepted
+[Thu Apr 23 19:03:40 2026] [::1]:38488 [200]: GET /api/users.php
+[Thu Apr 23 19:03:40 2026] [::1]:38488 Closing
+[Thu Apr 23 19:03:40 2026] [::1]:38502 Accepted
+[Thu Apr 23 19:03:40 2026] [::1]:38502 [200]: GET /api/settings.php
+[Thu Apr 23 19:03:40 2026] [::1]:38502 Closing
+[Thu Apr 23 19:03:42 2026] [::1]:35926 Accepted
+[Thu Apr 23 19:03:42 2026] [::1]:35926 [200]: POST /api/tasks.php
+[Thu Apr 23 19:03:42 2026] [::1]:35926 Closing
+[Thu Apr 23 19:03:42 2026] [::1]:35940 Accepted
+[Thu Apr 23 19:03:42 2026] [::1]:35940 [200]: GET /api/tasks.php
+[Thu Apr 23 19:03:42 2026] [::1]:35940 Closing
+[Thu Apr 23 19:03:42 2026] [::1]:35944 Accepted
+[Thu Apr 23 19:03:42 2026] [::1]:35944 [200]: GET /api/users.php
+[Thu Apr 23 19:03:42 2026] [::1]:35944 Closing
+[Thu Apr 23 19:03:42 2026] [::1]:35956 Accepted
+[Thu Apr 23 19:03:42 2026] [::1]:35956 [200]: GET /api/settings.php
+[Thu Apr 23 19:03:42 2026] [::1]:35956 Closing
+[Thu Apr 23 19:06:06 2026] [::1]:44700 Accepted
+[Thu Apr 23 19:06:06 2026] [::1]:44700 [200]: GET /index.html
+[Thu Apr 23 19:06:06 2026] [::1]:44700 Closing
+[Thu Apr 23 19:09:19 2026] [::1]:46582 Accepted
+[Thu Apr 23 19:09:19 2026] [::1]:46582 [200]: GET /index.html
+[Thu Apr 23 19:09:19 2026] [::1]:46582 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46598 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46598 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 19:09:20 2026] [::1]:46598 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46600 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46600 [200]: GET /api/stats.php
+[Thu Apr 23 19:09:20 2026] [::1]:46600 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46616 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46616 [200]: GET /api/tasks.php
+[Thu Apr 23 19:09:20 2026] [::1]:46616 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46622 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46622 [200]: GET /api/users.php
+[Thu Apr 23 19:09:20 2026] [::1]:46622 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46630 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46630 [200]: GET /api/settings.php
+[Thu Apr 23 19:09:20 2026] [::1]:46630 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46640 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46640 [200]: GET /api/tasks.php
+[Thu Apr 23 19:09:20 2026] [::1]:46640 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46642 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46642 [200]: GET /api/users.php
+[Thu Apr 23 19:09:20 2026] [::1]:46642 Closing
+[Thu Apr 23 19:09:20 2026] [::1]:46658 Accepted
+[Thu Apr 23 19:09:20 2026] [::1]:46658 [200]: GET /api/settings.php
+[Thu Apr 23 19:09:20 2026] [::1]:46658 Closing
+[Thu Apr 23 19:11:20 2026] [::1]:39958 Accepted
+[Thu Apr 23 19:11:20 2026] [::1]:39958 [200]: GET /index.html
+[Thu Apr 23 19:11:20 2026] [::1]:39958 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:39972 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:39972 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 19:11:21 2026] [::1]:39972 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:39978 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:39978 [200]: GET /api/stats.php
+[Thu Apr 23 19:11:21 2026] [::1]:39978 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:39990 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:39990 [200]: GET /api/tasks.php
+[Thu Apr 23 19:11:21 2026] [::1]:39990 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:40002 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:40002 [200]: GET /api/users.php
+[Thu Apr 23 19:11:21 2026] [::1]:40002 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:40016 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:40016 [200]: GET /api/settings.php
+[Thu Apr 23 19:11:21 2026] [::1]:40016 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:40018 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:40018 [200]: GET /api/tasks.php
+[Thu Apr 23 19:11:21 2026] [::1]:40018 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:40022 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:40022 [200]: GET /api/users.php
+[Thu Apr 23 19:11:21 2026] [::1]:40022 Closing
+[Thu Apr 23 19:11:21 2026] [::1]:40030 Accepted
+[Thu Apr 23 19:11:21 2026] [::1]:40030 [200]: GET /api/settings.php
+[Thu Apr 23 19:11:21 2026] [::1]:40030 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:40034 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:40034 [200]: POST /api/tasks.php
+[Thu Apr 23 19:11:22 2026] [::1]:40034 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:40050 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:40050 [200]: GET /api/tasks.php
+[Thu Apr 23 19:11:22 2026] [::1]:40050 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:38788 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:38788 [200]: GET /api/users.php
+[Thu Apr 23 19:11:22 2026] [::1]:38788 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:38792 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:38792 [200]: GET /api/settings.php
+[Thu Apr 23 19:11:22 2026] [::1]:38792 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:38802 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:38802 [200]: GET /api/stats.php
+[Thu Apr 23 19:11:22 2026] [::1]:38802 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:38806 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:38806 [200]: GET /api/tasks.php
+[Thu Apr 23 19:11:22 2026] [::1]:38806 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:38816 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:38816 [200]: GET /api/users.php
+[Thu Apr 23 19:11:22 2026] [::1]:38816 Closing
+[Thu Apr 23 19:11:22 2026] [::1]:38832 Accepted
+[Thu Apr 23 19:11:22 2026] [::1]:38832 [200]: GET /api/settings.php
+[Thu Apr 23 19:11:22 2026] [::1]:38832 Closing
+[Thu Apr 23 19:13:38 2026] [::1]:33906 Accepted
+[Thu Apr 23 19:13:38 2026] [::1]:33906 [200]: GET /index.html
+[Thu Apr 23 19:13:38 2026] [::1]:33906 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33920 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33920 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 19:13:39 2026] [::1]:33920 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33922 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33922 [200]: GET /api/stats.php
+[Thu Apr 23 19:13:39 2026] [::1]:33922 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33930 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33930 [200]: GET /api/tasks.php
+[Thu Apr 23 19:13:39 2026] [::1]:33930 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33944 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33944 [200]: GET /api/users.php
+[Thu Apr 23 19:13:39 2026] [::1]:33944 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33948 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33948 [200]: GET /api/settings.php
+[Thu Apr 23 19:13:39 2026] [::1]:33948 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33954 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33954 [200]: GET /api/tasks.php
+[Thu Apr 23 19:13:39 2026] [::1]:33954 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33958 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33958 [200]: GET /api/users.php
+[Thu Apr 23 19:13:39 2026] [::1]:33958 Closing
+[Thu Apr 23 19:13:39 2026] [::1]:33970 Accepted
+[Thu Apr 23 19:13:39 2026] [::1]:33970 [200]: GET /api/settings.php
+[Thu Apr 23 19:13:39 2026] [::1]:33970 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:33978 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:33978 [200]: POST /api/tasks.php
+[Thu Apr 23 19:13:40 2026] [::1]:33978 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:33982 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:33982 [200]: GET /api/tasks.php
+[Thu Apr 23 19:13:40 2026] [::1]:33982 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:33998 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:33998 [200]: GET /api/users.php
+[Thu Apr 23 19:13:40 2026] [::1]:33998 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:34004 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:34004 [200]: GET /api/settings.php
+[Thu Apr 23 19:13:40 2026] [::1]:34004 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:34020 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:34020 [200]: GET /api/stats.php
+[Thu Apr 23 19:13:40 2026] [::1]:34020 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:34036 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:34036 [200]: GET /api/tasks.php
+[Thu Apr 23 19:13:40 2026] [::1]:34036 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:34044 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:34044 [200]: GET /api/users.php
+[Thu Apr 23 19:13:40 2026] [::1]:34044 Closing
+[Thu Apr 23 19:13:40 2026] [::1]:34054 Accepted
+[Thu Apr 23 19:13:40 2026] [::1]:34054 [200]: GET /api/settings.php
+[Thu Apr 23 19:13:40 2026] [::1]:34054 Closing
+[Thu Apr 23 19:18:03 2026] [::1]:48548 Accepted
+[Thu Apr 23 19:18:03 2026] [::1]:48548 [200]: GET /index.html
+[Thu Apr 23 19:18:03 2026] [::1]:48548 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48554 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48554 [200]: POST /api/auth.php?action=login
+[Thu Apr 23 19:18:04 2026] [::1]:48554 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48570 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48570 [200]: GET /api/stats.php
+[Thu Apr 23 19:18:04 2026] [::1]:48570 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48572 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48572 [200]: GET /api/tasks.php
+[Thu Apr 23 19:18:04 2026] [::1]:48572 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48574 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48574 [200]: GET /api/users.php
+[Thu Apr 23 19:18:04 2026] [::1]:48574 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48580 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48580 [200]: GET /api/settings.php
+[Thu Apr 23 19:18:04 2026] [::1]:48580 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48584 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48584 [200]: GET /api/tasks.php
+[Thu Apr 23 19:18:04 2026] [::1]:48584 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48594 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48594 [200]: GET /api/users.php
+[Thu Apr 23 19:18:04 2026] [::1]:48594 Closing
+[Thu Apr 23 19:18:04 2026] [::1]:48602 Accepted
+[Thu Apr 23 19:18:04 2026] [::1]:48602 [200]: GET /api/settings.php
+[Thu Apr 23 19:18:04 2026] [::1]:48602 Closing

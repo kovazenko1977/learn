@@ -1,0 +1,44 @@
+[
+    {
+        "id": "req_69ea6d0e58d81",
+        "title": "Тестовая заявка",
+        "description": "Описание тестовой заявки",
+        "category": "IT",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": "admin",
+        "executor_id": "",
+        "created_at": "2026-04-23 19:03:42",
+        "completed_at": null,
+        "sla_deadline": "2026-04-28 14:59:42",
+        "custom_fields": []
+    },
+    {
+        "id": "req_69ea6eda41ae9",
+        "title": "Test Request 1776971481",
+        "description": "This is a test description for verification.",
+        "category": "IT",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": "admin",
+        "executor_id": "",
+        "created_at": "2026-04-23 19:11:22",
+        "completed_at": null,
+        "sla_deadline": "2026-04-28 14:59:22",
+        "custom_fields": []
+    },
+    {
+        "id": "req_69ea6f6441234",
+        "title": "Test Request 1776971619",
+        "description": "This is a test description for verification.",
+        "category": "IT",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": "admin",
+        "executor_id": "",
+        "created_at": "2026-04-23 19:13:40",
+        "completed_at": null,
+        "sla_deadline": "2026-04-28 14:59:40",
+        "custom_fields": []
+    }
+]

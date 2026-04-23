@@ -136,5 +136,23 @@
         "user": "guest",
         "action": "Failed login attempt",
         "ip": "unknown"
+    },
+    {
+        "timestamp": "2026-04-23 19:03:42",
+        "user": "admin",
+        "action": "Created request: Тестовая заявка",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 19:11:22",
+        "user": "admin",
+        "action": "Created request: Test Request 1776971481",
+        "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-23 19:13:40",
+        "user": "admin",
+        "action": "Created request: Test Request 1776971619",
+        "ip": "::1"
     }
 ]

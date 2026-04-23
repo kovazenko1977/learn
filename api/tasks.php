@@ -11,45 +11,70 @@ $currentUser = Auth::getUser();
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    $tasks = Storage::read('tasks');
-    // Manager only sees their own or unassigned
-    if ($currentUser['role'] !== 'admin') {
-        $tasks = array_filter($tasks, function($t) use ($currentUser) {
-            return $t['assigned_to'] === $currentUser['id'] || $t['assigned_by'] === $currentUser['id'];
+    $requests = Storage::read('requests');
+
+    // Filtering based on roles
+    if ($currentUser['role'] === 'executor') {
+        $requests = array_filter($requests, function($r) use ($currentUser) {
+            return ($r['executor_id'] ?? '') === $currentUser['id'];
+        });
+    } elseif ($currentUser['role'] === 'responsible') {
+        $requests = array_filter($requests, function($r) use ($currentUser) {
+            return ($r['creator_id'] ?? '') === $currentUser['id'];
         });
     }
-    echo json_encode(array_values($tasks));
+
+    echo json_encode(array_values($requests));
+
 } elseif ($method === 'POST') {
     $data = Security::sanitize(json_decode(file_get_contents('php://input'), true));
-    $tasks = Storage::read('tasks');
+    $requests = Storage::read('requests');
 
-    if (isset($data['id'])) {
-        foreach ($tasks as &$task) {
-            if ($task['id'] === $data['id']) {
-                $oldStatus = $task['status'];
-                $task = array_merge($task, $data);
-                if ($oldStatus !== 'completed' && $task['status'] === 'completed') {
-                    Storage::addPoints($currentUser['id'], 15);
-                    Storage::log("Completed task: " . $task['title'], $currentUser['id']);
+    if (isset($data['id']) && $data['id'] !== 'new') {
+        foreach ($requests as &$r) {
+            if ($r['id'] === $data['id']) {
+                $oldStatus = $r['status'] ?? 'new';
+
+                foreach($data as $key => $value) {
+                    if ($key !== 'id') $r[$key] = $value;
+                }
+
+                if ($oldStatus !== ($r['status'] ?? '')) {
+                    Storage::log("Status changed for request #{$r['id']} to {$r['status']}", $currentUser['id']);
                 }
                 break;
             }
         }
     } else {
-        $data['id'] = uniqid('task_');
-        $data['created_at'] = date('Y-m-d H:i:s');
-        $data['assigned_by'] = $currentUser['id'];
-        if (empty($data['assigned_to'])) $data['assigned_to'] = $currentUser['id'];
-        $tasks[] = $data;
-        Storage::log("Created task: " . $data['title'], $currentUser['id']);
+        Auth::requireRole(['admin', 'responsible']);
+
+        $newRequest = [
+            'id' => uniqid('req_'),
+            'title' => $data['title'] ?? 'Без темы',
+            'description' => $data['description'] ?? '',
+            'category' => $data['category'] ?? 'IT',
+            'priority' => $data['priority'] ?? 'Medium',
+            'status' => 'new',
+            'creator_id' => $currentUser['id'],
+            'executor_id' => $data['executor_id'] ?? '',
+            'created_at' => date('Y-m-d H:i:s'),
+            'completed_at' => null,
+            'sla_deadline' => SLAProvider::calculateDeadline($data['priority'] ?? 'Medium', $data['category'] ?? 'IT'),
+            'custom_fields' => $data['custom_fields'] ?? []
+        ];
+
+        $requests[] = $newRequest;
+        Storage::log("Created request: " . $newRequest['title'], $currentUser['id']);
     }
 
-    Storage::save('tasks', $tasks);
+    Storage::save('requests', $requests);
     echo json_encode(['success' => true]);
+
 } elseif ($method === 'DELETE') {
+    Auth::requireAdmin();
     $id = $_GET['id'] ?? '';
-    $tasks = Storage::read('tasks');
-    $tasks = array_filter($tasks, function($t) use ($id) { return $t['id'] !== $id; });
-    Storage::save('tasks', array_values($tasks));
+    $requests = Storage::read('requests');
+    $requests = array_filter($requests, function($r) use ($id) { return $r['id'] !== $id; });
+    Storage::save('requests', array_values($requests));
     echo json_encode(['success' => true]);
 }
