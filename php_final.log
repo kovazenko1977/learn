@@ -1,0 +1,40 @@
+[Fri Apr 24 18:29:53 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8080) started
+[Fri Apr 24 18:29:56 2026] 127.0.0.1:51018 Accepted
+[Fri Apr 24 18:29:56 2026] 127.0.0.1:51018 [200]: GET /index.html
+[Fri Apr 24 18:29:56 2026] 127.0.0.1:51018 Closing
+[Fri Apr 24 18:29:57 2026] 127.0.0.1:51022 Accepted
+[Fri Apr 24 18:29:57 2026] 127.0.0.1:51022 [200]: POST /api/auth.php?action=login
+[Fri Apr 24 18:29:57 2026] 127.0.0.1:51022 Closing
+[Fri Apr 24 18:29:57 2026] 127.0.0.1:51036 Accepted
+[Fri Apr 24 18:29:57 2026] 127.0.0.1:51036 [200]: GET /api/stats.php
+[Fri Apr 24 18:29:57 2026] 127.0.0.1:51036 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51048 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51048 [200]: GET /api/tasks.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51048 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51050 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51050 [200]: GET /api/users.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51050 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51054 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51054 [200]: GET /api/settings.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51054 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51068 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51068 [200]: GET /api/tasks.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51068 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51084 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51084 [200]: GET /api/users.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51084 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51088 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51088 [200]: GET /api/settings.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51088 Closing
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51092 Accepted
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51092 [200]: POST /api/tasks.php
+[Fri Apr 24 18:29:58 2026] 127.0.0.1:51092 Closing
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51102 Accepted
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51102 [200]: GET /api/tasks.php
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51102 Closing
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51108 Accepted
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51108 [200]: GET /api/users.php
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51108 Closing
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51122 Accepted
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51122 [200]: GET /api/settings.php
+[Fri Apr 24 18:29:59 2026] 127.0.0.1:51122 Closing

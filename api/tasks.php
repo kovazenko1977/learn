@@ -4,6 +4,7 @@ require_once __DIR__ . '/../includes/Auth.php';
 require_once __DIR__ . '/../includes/Storage.php';
 require_once __DIR__ . '/../includes/SLAProvider.php';
 require_once __DIR__ . '/../includes/Security.php';
+require_once __DIR__ . '/../includes/Notifier.php';
 
 Auth::requireAuth();
 $currentUser = Auth::getUser();
@@ -35,12 +36,44 @@ if ($method === 'GET') {
             if ($r['id'] === $data['id']) {
                 $oldStatus = $r['status'] ?? 'new';
 
-                foreach($data as $key => $value) {
-                    if ($key !== 'id') $r[$key] = $value;
+                // RBAC and Mass Assignment Protection
+                if ($currentUser['role'] === 'executor') {
+                    // Executor can only update status and add comments (via interactions.php)
+                    if (($r['executor_id'] ?? '') !== $currentUser['id']) {
+                        http_response_code(403);
+                        echo json_encode(['error' => 'Forbidden']);
+                        exit;
+                    }
+                    $r['status'] = $data['status'] ?? $r['status'];
+                } elseif ($currentUser['role'] === 'responsible') {
+                    // Responsible can only update their own requests and only before it's in work
+                    if ($r['creator_id'] !== $currentUser['id']) {
+                        http_response_code(403);
+                        echo json_encode(['error' => 'Forbidden']);
+                        exit;
+                    }
+                    if (!in_array($r['status'], ['new', 'assigned'])) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Cannot edit request in progress']);
+                        exit;
+                    }
+                    $r['title'] = $data['title'] ?? $r['title'];
+                    $r['description'] = $data['description'] ?? $r['description'];
+                    $r['category'] = $data['category'] ?? $r['category'];
+                    $r['priority'] = $data['priority'] ?? $r['priority'];
+                } else {
+                    // Admin or Head
+                    foreach($data as $key => $value) {
+                        // Protect immutable fields
+                        if (!in_array($key, ['id', 'creator_id', 'created_at'])) {
+                            $r[$key] = $value;
+                        }
+                    }
                 }
 
                 if ($oldStatus !== ($r['status'] ?? '')) {
                     Storage::log("Status changed for request #{$r['id']} to {$r['status']}", $currentUser['id']);
+                    Notifier::notify("📌 Статус заявки #{$r['id']} изменен на: {$r['status']}");
                 }
                 break;
             }
@@ -53,18 +86,19 @@ if ($method === 'GET') {
             'title' => $data['title'] ?? 'Без темы',
             'description' => $data['description'] ?? '',
             'category' => $data['category'] ?? 'IT',
-            'priority' => $data['priority'] ?? 'Medium',
+            'priority' => $data['priority'] ?? 'Средний',
             'status' => 'new',
             'creator_id' => $currentUser['id'],
             'executor_id' => $data['executor_id'] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
             'completed_at' => null,
-            'sla_deadline' => SLAProvider::calculateDeadline($data['priority'] ?? 'Medium', $data['category'] ?? 'IT'),
+            'sla_deadline' => SLAProvider::calculateDeadline($data['priority'] ?? 'Средний', $data['category'] ?? 'IT'),
             'custom_fields' => $data['custom_fields'] ?? []
         ];
 
         $requests[] = $newRequest;
         Storage::log("Created request: " . $newRequest['title'], $currentUser['id']);
+        Notifier::notify("🆕 Новая заявка: {$newRequest['title']}\nПриоритет: {$newRequest['priority']}\nДедлайн: {$newRequest['sla_deadline']}");
     }
 
     Storage::save('requests', $requests);

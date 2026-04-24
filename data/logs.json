@@ -154,5 +154,11 @@
         "user": "admin",
         "action": "Created request: Test Request 1776971619",
         "ip": "::1"
+    },
+    {
+        "timestamp": "2026-04-24 18:29:58",
+        "user": "admin",
+        "action": "Created request: Test with custom fields",
+        "ip": "127.0.0.1"
     }
 ]

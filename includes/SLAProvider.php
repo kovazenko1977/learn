@@ -2,51 +2,52 @@
 require_once __DIR__ . '/Storage.php';
 
 class SLAProvider {
-    /**
-     * Calculates the deadline based on priority and category base hours.
-     * Considers business hours (9:00 - 18:00) and weekends.
-     */
     public static function calculateDeadline($priority, $categoryName = 'General') {
         $settings = Storage::read('settings');
-        $baseHours = 24; // Default
+        $baseHours = 24;
 
-        // Priority multipliers
         $multipliers = [
-            'Low' => 1.5,
-            'Medium' => 1.0,
-            'High' => 0.5,
-            'Critical' => 0.25
+            'Низкий' => 1.5,
+            'Средний' => 1.0,
+            'Высокий' => 0.5,
+            'Критический' => 0.25
         ];
 
-        // Try to get base hours from settings or category-specific SLA if implemented
         $slaSettings = $settings['sla'] ?? [];
         if (isset($slaSettings[$priority])) {
-            // If settings provide direct hours per priority, use them as base
-            $baseHours = $slaSettings[$priority];
-            $hoursToAdd = $baseHours; // already scaled in settings usually
+            $hoursToAdd = $slaSettings[$priority];
         } else {
             $factor = $multipliers[$priority] ?? 1.0;
             $hoursToAdd = $baseHours * $factor;
         }
 
         $currentTimestamp = time();
-        return self::addBusinessHours($currentTimestamp, $hoursToAdd);
+        $workStart = $settings['work_start'] ?? '09:00';
+        $workEnd = $settings['work_end'] ?? '18:00';
+
+        return self::addBusinessHours($currentTimestamp, $hoursToAdd, $workStart, $workEnd);
     }
 
-    private static function addBusinessHours($startTS, $hoursToAdd) {
+    private static function addBusinessHours($startTS, $hoursToAdd, $workStart, $workEnd) {
         $currentTS = $startTS;
         $secondsToAdd = $hoursToAdd * 3600;
 
+        list($startH, $startM) = explode(':', $workStart);
+        list($endH, $endM) = explode(':', $workEnd);
+        $startMin = $startH * 60 + $startM;
+        $endMin = $endH * 60 + $endM;
+
         while ($secondsToAdd > 0) {
-            $currentTS += 60; // Advance minute by minute for precision
+            $currentTS += 60;
 
             $hour = (int)date('G', $currentTS);
-            $dayOfWeek = (int)date('w', $currentTS); // 0 (Sun) to 6 (Sat)
+            $min = (int)date('i', $currentTS);
+            $totalMin = $hour * 60 + $min;
 
-            // Business hours: 9:00 - 18:00 (9 to 17 inclusive)
-            // Working days: 1 (Mon) to 5 (Fri)
+            $dayOfWeek = (int)date('w', $currentTS);
+
             $isWorkingDay = ($dayOfWeek >= 1 && $dayOfWeek <= 5);
-            $isWorkingHour = ($hour >= 9 && $hour < 18);
+            $isWorkingHour = ($totalMin > $startMin && $totalMin <= $endMin);
 
             if ($isWorkingDay && $isWorkingHour) {
                 $secondsToAdd -= 60;

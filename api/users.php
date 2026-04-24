@@ -13,7 +13,7 @@ if ($method === 'GET') {
     $users = Storage::read('users');
     // Hide PINs for safety
     foreach ($users as &$u) {
-        unset($u['pin_hash']);
+        unset($u['password_hash']);
         // Check "Last Active" - if within 5 mins
         $u['online'] = false;
         if (isset($u['last_seen'])) {
@@ -30,9 +30,10 @@ if ($method === 'GET') {
         foreach ($users as &$u) {
             if ($u['id'] === $data['id']) {
                 $u['name'] = $data['name'];
+                $u['username'] = $data['username'];
                 $u['role'] = $data['role'];
-                if (!empty($data['pin'])) {
-                    $u['pin_hash'] = password_hash($data['pin'], PASSWORD_DEFAULT);
+                if (!empty($data['password'])) {
+                    $u['password_hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
                 }
                 break;
             }
@@ -41,8 +42,9 @@ if ($method === 'GET') {
         $users[] = [
             'id' => uniqid('u_'),
             'name' => $data['name'],
+            'username' => $data['username'],
             'role' => $data['role'],
-            'pin_hash' => password_hash($data['pin'], PASSWORD_DEFAULT),
+            'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
             'points' => 0,
             'created_at' => date('Y-m-d H:i:s')
         ];

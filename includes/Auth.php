@@ -21,7 +21,7 @@ class Auth {
         $users = Storage::read('users');
         foreach ($users as $user) {
             if (($user['username'] ?? '') === $username) {
-                if (password_verify($password, $user['password'] ?? '')) {
+                if (password_verify($password, $user['password_hash'] ?? '')) {
                     $tokenData = [
                         'id' => $user['id'],
                         'name' => $user['name'] ?? $user['username'],

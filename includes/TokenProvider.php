@@ -2,6 +2,8 @@
 
 class TokenProvider {
     private static function getSecret() {
+        $settings = Storage::read('settings');
+        if (!empty($settings['jwt_secret'])) return $settings['jwt_secret'];
         return getenv('JWT_SECRET') ?: 'default_wes_crm_secret_2024';
     }
 

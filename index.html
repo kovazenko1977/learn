@@ -9,39 +9,51 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         [v-cloak] { display: none; }
-        .dark { background-color: #1a1a1a; color: #f5f5f5; }
-        .dark .bg-white { background-color: #2d2d2d; border-color: #404040; }
-        .dark .text-gray-800 { color: #f5f5f5; }
-        .dark .text-gray-600 { color: #a3a3a3; }
-        .dark .bg-gray-100 { background-color: #121212; }
-        .dark .border-gray-200 { border-color: #404040; }
-        .drag-over { border: 2px dashed #6366f1 !important; background: rgba(99, 102, 241, 0.1) !important; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-        .dark .glass { background: rgba(45, 45, 45, 0.7); }
+        .dark { background-color: #0f172a; color: #f1f5f9; }
+        .dark .bg-white { background-color: #1e293b; border-color: #334155; }
+        .dark .text-gray-800 { color: #f1f5f9; }
+        .dark .text-gray-600 { color: #94a3b8; }
+        .dark .bg-gray-50 { background-color: #0f172a; }
+        .dark .bg-gray-100 { background-color: #0f172a; }
+        .dark .border-gray-200 { border-color: #334155; }
+        .drag-over { border: 2px dashed #3b82f6 !important; background: rgba(59, 130, 246, 0.1) !important; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); }
+        .dark .glass { background: rgba(30, 41, 59, 0.9); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+        .rounded-3xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 0.5rem; }
+        .rounded-[2.5rem] { border-radius: 1rem; }
+        .rounded-[3rem] { border-radius: 1rem; }
+        .tooltip { visibility: hidden; position: absolute; z-index: 100; bottom: 125%; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.65rem; width: 12rem; text-align: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #334155; opacity: 0; transition: opacity 0.2s; }
+        .tooltip-container:hover .tooltip { visibility: visible; opacity: 1; }
+        .tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 transition-colors duration-300" :class="{ 'dark': isDarkMode }">
+<body class="bg-slate-50 text-slate-900 transition-colors duration-300" :class="{ 'dark': isDarkMode }">
     <div id="app" v-cloak>
         <!-- Login Screen -->
-        <div v-if="!authenticated" class="min-h-screen flex items-center justify-center bg-indigo-600">
-            <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all hover:scale-105">
+        <div v-if="!authenticated" class="min-h-screen flex items-center justify-center bg-slate-900">
+            <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
                 <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center mx-auto mb-4 border border-slate-200">
                         <i class="fas fa-shield-alt text-3xl"></i>
                     </div>
-                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Service CRM</h1>
-                    <p class="text-gray-500">Система управления заявками</p>
+                    <h1 class="text-2xl font-bold text-slate-800 mb-2">Service CRM</h1>
+                    <p class="text-slate-500 text-sm">Авторизация в системе</p>
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold mb-1">Логин</label>
-                        <input id="login-username" v-model="loginForm.username" type="text" placeholder="admin" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Логин</label>
+                        <input id="login-username" v-model="loginForm.username" type="text" placeholder="admin" class="w-full p-3 border border-slate-200 rounded focus:ring-2 focus:ring-slate-500 outline-none transition-all">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold mb-1">Пароль</label>
-                        <input id="login-password" v-model="loginForm.password" type="password" placeholder="admin" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Пароль</label>
+                        <input id="login-password" v-model="loginForm.password" type="password" placeholder="admin" class="w-full p-3 border border-slate-200 rounded focus:ring-2 focus:ring-slate-500 outline-none transition-all">
                     </div>
-                    <button id="login-btn" @click="login" :disabled="loading" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 transition-all shadow-lg flex justify-center items-center">
+                    <button id="login-btn" @click="login" :disabled="loading" class="w-full bg-slate-800 text-white font-bold py-3 rounded hover:bg-slate-700 transition-all shadow-lg flex justify-center items-center">
                         <span v-if="loading"><i class="fas fa-spinner fa-spin mr-2"></i></span>
                         Войти в систему
                     </button>
@@ -53,38 +65,38 @@
         <!-- App Layout -->
         <div v-else class="flex min-h-screen">
             <!-- Sidebar -->
-            <aside class="w-64 bg-indigo-900 text-white flex-shrink-0 flex flex-col shadow-2xl z-20">
+            <aside class="w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col shadow-2xl z-20">
                 <div class="p-6">
-                    <h2 class="text-2xl font-black tracking-tighter">WES <span class="text-indigo-400">CRM</span></h2>
-                    <p v-if="user" class="text-[10px] uppercase font-black tracking-widest text-indigo-300 mt-1 opacity-70">{{ user.role === 'admin' ? 'Administrator' : user.role }}</p>
+                    <h2 class="text-2xl font-black tracking-tighter">WES <span class="text-slate-400">CRM</span></h2>
+                    <p v-if="user" class="text-[10px] uppercase font-black tracking-widest text-slate-300 mt-1 opacity-70">{{ user.role === 'admin' ? 'Администратор' : (user.role === 'head' ? 'Начальник отдела' : (user.role === 'responsible' ? 'Ответственный' : 'Исполнитель')) }}</p>
                 </div>
                 <nav class="mt-4 flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
                     <a v-for="item in menu" :key="item.id" @click="currentTab = item.id"
                        v-show="user && (!item.roles || item.roles.includes(user.role))"
-                       :class="['flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all', currentTab === item.id ? 'bg-indigo-700 shadow-lg text-white' : 'hover:bg-indigo-800/50 text-indigo-200 hover:text-white']">
+                       :class="['flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all', currentTab === item.id ? 'bg-slate-800 shadow-lg text-white' : 'hover:bg-slate-800/50 text-slate-200 hover:text-white']">
                         <i :class="item.icon" class="w-5 text-center"></i>
                         <span class="font-medium">{{ item.name }}</span>
                     </a>
 
                     <!-- Drag-and-drop assign zone -->
-                    <div v-if="user && (user.role === 'admin' || user.role === 'head') && currentTab === 'requests'" class="mt-8 border-t border-indigo-800 pt-4">
-                        <p class="text-[10px] uppercase font-bold text-indigo-400 px-3 mb-2 opacity-50">Быстрое назначение</p>
+                    <div v-if="user && (user.role === 'admin' || user.role === 'head') && currentTab === 'requests'" class="mt-8 border-t border-slate-800 pt-4">
+                        <p class="text-[10px] uppercase font-bold text-slate-400 px-3 mb-2 opacity-50">Быстрое назначение</p>
                         <div class="space-y-1 px-2">
                             <div v-for="u in executors" :key="u.id"
                                  @dragover.prevent @dragenter="onDragEnter" @dragleave="onDragLeave" @drop="onDropAssign($event, u)"
-                                 class="p-2 rounded-lg bg-indigo-800/30 hover:bg-indigo-700 text-xs flex items-center space-x-2 transition-all border border-transparent">
-                                <div class="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] font-bold">{{ u.name ? u.name[0] : '?' }}</div>
+                                 class="p-2 rounded-lg bg-slate-800/30 hover:bg-slate-800 text-xs flex items-center space-x-2 transition-all border border-transparent">
+                                <div class="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center text-[10px] font-bold">{{ u.name ? u.name[0] : '?' }}</div>
                                 <span class="truncate">{{ u.name }}</span>
                             </div>
                         </div>
                     </div>
                 </nav>
-                <div class="p-6 border-t border-indigo-800 space-y-4">
-                    <button @click="isDarkMode = !isDarkMode" class="flex items-center space-x-3 text-indigo-300 hover:text-white transition-colors w-full">
+                <div class="p-6 border-t border-slate-800 space-y-4">
+                    <button @click="isDarkMode = !isDarkMode" class="flex items-center space-x-3 text-slate-300 hover:text-white transition-colors w-full">
                         <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
                         <span class="text-sm">Сменить тему</span>
                     </button>
-                    <button @click="logout" class="flex items-center space-x-3 text-indigo-300 hover:text-red-400 transition-colors w-full">
+                    <button @click="logout" class="flex items-center space-x-3 text-slate-300 hover:text-red-400 transition-colors w-full">
                         <i class="fas fa-sign-out-alt"></i>
                         <span class="text-sm">Выйти</span>
                     </button>
@@ -97,12 +109,12 @@
                 <header class="bg-white dark:bg-gray-800 px-8 py-4 shadow-sm flex justify-between items-center z-10 border-b dark:border-gray-700">
                     <div class="flex items-center space-x-4">
                         <h3 class="text-xl font-bold text-gray-800 dark:text-white">{{ activeTabName }}</h3>
-                        <div v-if="loading" class="text-indigo-500 animate-spin"><i class="fas fa-circle-notch"></i></div>
+                        <div v-if="loading" class="text-slate-500 animate-spin"><i class="fas fa-circle-notch"></i></div>
                     </div>
 
                     <div v-if="user" class="flex items-center space-x-6">
                         <div class="relative hidden md:block">
-                             <i class="fas fa-bell text-gray-400 hover:text-indigo-500 cursor-pointer transition-colors"></i>
+                             <i class="fas fa-bell text-gray-400 hover:text-slate-500 cursor-pointer transition-colors"></i>
                              <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                         </div>
                         <div class="flex items-center space-x-3 pl-6 border-l dark:border-gray-700">
@@ -110,7 +122,7 @@
                                 <p class="text-sm font-black text-gray-800 dark:text-white leading-none">{{ user.name }}</p>
                                 <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1">{{ user.role }}</p>
                             </div>
-                            <div @click="showProfileModal = true" class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-bold border-2 border-white dark:border-gray-700 cursor-pointer hover:scale-110 transition-all shadow-sm">
+                            <div @click="showProfileModal = true" class="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold border-2 border-white dark:border-gray-700 cursor-pointer hover:scale-110 transition-all shadow-sm">
                                 {{ user.name ? user.name[0] : '?' }}
                             </div>
                         </div>
@@ -122,7 +134,7 @@
 
                     <!-- Announcement Banner -->
                     <transition name="fade">
-                        <div v-if="systemSettings.announcement" class="mb-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-2xl shadow-lg flex items-center justify-between">
+                        <div v-if="systemSettings.announcement" class="mb-8 bg-gradient-to-r from-slate-700 to-slate-900 text-white p-4 rounded-2xl shadow-lg flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i class="fas fa-bullhorn"></i></div>
                                 <span class="font-bold">{{ systemSettings.announcement }}</span>
@@ -155,17 +167,17 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border dark:border-gray-700">
                                 <div class="flex justify-between items-center mb-6">
-                                    <h4 class="font-black text-gray-800 dark:text-white flex items-center"><i class="fas fa-chart-bar mr-3 text-indigo-500"></i> Нагрузка на команду</h4>
-                                    <span class="text-[9px] font-bold bg-indigo-50 text-indigo-500 px-2 py-1 rounded-full uppercase tracking-tighter">Live Аналитика</span>
+                                    <h4 class="font-black text-gray-800 dark:text-white flex items-center"><i class="fas fa-chart-bar mr-3 text-slate-500"></i> Нагрузка на команду</h4>
+                                    <span class="text-[9px] font-bold bg-slate-50 text-slate-500 px-2 py-1 rounded-full uppercase tracking-tighter">Live Аналитика</span>
                                 </div>
                                 <div class="space-y-6">
                                     <div v-for="emp in stats.employee_load" :key="emp.name" class="group">
                                         <div class="flex justify-between items-center mb-2">
-                                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-indigo-500 transition-colors">{{ emp.name }}</span>
-                                            <span class="text-xs font-black text-indigo-600">{{ emp.count }} заяв.</span>
+                                            <span class="text-sm font-bold text-gray-700 dark:text-gray-300 group-hover:text-slate-500 transition-colors">{{ emp.name }}</span>
+                                            <span class="text-xs font-black text-slate-600">{{ emp.count }} заяв.</span>
                                         </div>
                                         <div class="w-full bg-gray-100 dark:bg-gray-700 h-3 rounded-full overflow-hidden shadow-inner">
-                                            <div class="bg-gradient-to-r from-indigo-400 to-indigo-600 h-full transition-all duration-1000 ease-out" :style="{ width: emp.percentage + '%' }"></div>
+                                            <div class="bg-gradient-to-r from-slate-500 to-slate-700 h-full transition-all duration-1000 ease-out" :style="{ width: emp.percentage + '%' }"></div>
                                         </div>
                                     </div>
                                     <div v-if="!stats.employee_load || stats.employee_load.length === 0" class="text-center py-10 opacity-30">Нет данных о нагрузке</div>
@@ -173,13 +185,13 @@
                             </div>
                             <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border dark:border-gray-700">
                                 <div class="flex justify-between items-center mb-6">
-                                    <h4 class="font-black text-gray-800 dark:text-white flex items-center"><i class="fas fa-history mr-3 text-indigo-500"></i> Журнал активности</h4>
-                                    <button @click="fetchData" class="text-indigo-500 hover:rotate-180 transition-all duration-500"><i class="fas fa-sync-alt"></i></button>
+                                    <h4 class="font-black text-gray-800 dark:text-white flex items-center"><i class="fas fa-history mr-3 text-slate-500"></i> Журнал активности</h4>
+                                    <button @click="fetchData" class="text-slate-500 hover:rotate-180 transition-all duration-500"><i class="fas fa-sync-alt"></i></button>
                                 </div>
                                 <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                                    <div v-for="log in stats.recent_logs" :key="log.timestamp" class="flex items-start space-x-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-l-2 border-indigo-500">
+                                    <div v-for="log in stats.recent_logs" :key="log.timestamp" class="flex items-start space-x-4 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-l-2 border-slate-500">
                                         <div class="flex-1">
-                                            <p class="text-xs font-black text-indigo-500">{{ log.user }}</p>
+                                            <p class="text-xs font-black text-slate-500">{{ log.user }}</p>
                                             <p class="text-sm text-gray-600 dark:text-gray-400">{{ log.action }}</p>
                                             <p class="text-[9px] text-gray-400 mt-1 uppercase font-bold">{{ log.timestamp }}</p>
                                         </div>
@@ -190,22 +202,46 @@
                         </div>
                     </div>
 
+                    <!-- TAB: FORMS -->
+                    <div v-if="currentTab === 'forms'" class="space-y-8 animate-fade-in">
+                        <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border dark:border-gray-700">
+                            <h4 class="text-2xl font-black text-gray-800 dark:text-white mb-6">Конструктор полей заявки</h4>
+                            <div class="space-y-4">
+                                <div v-for="(field, index) in systemSettings.form_fields" :key="index" class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-2xl border dark:border-gray-700 group">
+                                    <div class="cursor-move text-gray-300"><i class="fas fa-grip-lines"></i></div>
+                                    <input v-model="field.label" placeholder="Название поля" class="flex-1 bg-transparent border-none outline-none font-bold text-sm">
+                                    <select v-model="field.type" class="bg-white dark:bg-gray-800 p-2 rounded-xl text-xs">
+                                        <option value="text">Текст</option>
+                                        <option value="number">Число</option>
+                                        <option value="date">Дата</option>
+                                    </select>
+                                    <label class="flex items-center space-x-2 text-[10px] font-black uppercase">
+                                        <input type="checkbox" v-model="field.required"> <span>Обязат.</span>
+                                    </label>
+                                    <button @click="systemSettings.form_fields.splice(index, 1)" class="text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <button @click="systemSettings.form_fields.push({ id: 'f'+Date.now(), label: 'Новое поле', type: 'text', required: false })" class="w-full p-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl text-gray-400 hover:text-slate-500 hover:border-slate-500 transition-all font-black uppercase text-xs">
+                                    + Добавить поле
+                                </button>
+                            </div>
+                            <div class="mt-8 flex justify-end">
+                                <button @click="saveSettings" class="bg-slate-700 text-white px-8 py-3 rounded-2xl font-black shadow-lg">Сохранить форму</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- TAB: REQUESTS -->
                     <div v-if="currentTab === 'requests'" class="space-y-6 animate-fade-in">
                         <!-- Advanced Controls -->
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 flex flex-wrap gap-4 items-center">
                             <div class="relative flex-1 min-w-[280px]">
                                 <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input v-model="searchQuery" type="text" placeholder="Поиск по теме, ID или описанию..." class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm">
+                                <input v-model="searchQuery" type="text" placeholder="Поиск по теме, ID или описанию..." class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-500 transition-all text-sm">
                             </div>
                             <div class="flex gap-2">
                                 <select v-model="filters.status" class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl text-sm outline-none cursor-pointer">
                                     <option value="">Все статусы</option>
-                                    <option value="new">Новые</option>
-                                    <option value="assigned">Назначены</option>
-                                    <option value="in_work">В работе</option>
-                                    <option value="completed">Выполнено</option>
-                                    <option value="rejected">Отклонено</option>
+                                    <option v-for="(label, key) in systemSettings.status_labels" :key="key" :value="key">{{ label }}</option>
                                 </select>
                                 <select v-model="filters.priority" class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl text-sm outline-none cursor-pointer">
                                     <option value="">Приоритет</option>
@@ -216,7 +252,7 @@
                                 <button v-if="user.role === 'admin' || user.role === 'head'" @click="exportData" class="w-12 h-12 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm" title="Export CSV">
                                     <i class="fas fa-file-export text-gray-500"></i>
                                 </button>
-                                <button @click="showRequestModal = true; editingRequest = null" id="btn-add-request" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-black flex items-center transition-all shadow-lg hover:shadow-indigo-500/30">
+                                <button @click="showRequestModal = true; editingRequest = null" id="btn-add-request" class="bg-slate-700 hover:bg-slate-800 text-white px-8 py-3 rounded-2xl font-black flex items-center transition-all shadow-lg hover:shadow-slate-500/30">
                                     <i class="fas fa-plus mr-3"></i> Создать заявку
                                 </button>
                             </div>
@@ -240,12 +276,12 @@
                                         <tr v-for="req in filteredRequests" :key="req.id"
                                             :draggable="user.role === 'admin' || user.role === 'head'"
                                             @dragstart="onDragStart($event, req)"
-                                            class="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-colors cursor-pointer group" @click="viewRequest(req)">
+                                            class="hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition-colors cursor-pointer group" @click="viewRequest(req)">
                                             <td class="px-8 py-6">
                                                 <div class="flex items-center space-x-4">
                                                     <div :class="['w-2 h-10 rounded-full', statusIndicator(req.status)]"></div>
                                                     <div>
-                                                        <p class="font-black text-sm text-gray-800 dark:text-white group-hover:text-indigo-600 transition-colors truncate max-w-xs">#{{ req.id ? req.id.substring(4, 8) : '?' }} {{ req.title }}</p>
+                                                        <p class="font-black text-sm text-gray-800 dark:text-white group-hover:text-slate-600 transition-colors truncate max-w-xs">#{{ req.id ? req.id.substring(4, 8) : '?' }} {{ req.title }}</p>
                                                         <p class="text-[10px] text-gray-400 mt-1 uppercase font-bold tracking-tighter">Создано: {{ req.created_at }}</p>
                                                     </div>
                                                 </div>
@@ -258,7 +294,7 @@
                                             </td>
                                             <td class="px-6 py-6">
                                                 <div class="flex items-center space-x-2">
-                                                    <span :class="['px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter', statusClass(req.status)]">{{ req.status }}</span>
+                                                    <span :class="['px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter', statusClass(req.status)]">{{ systemSettings.status_labels[req.status] || req.status }}</span>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-6">
@@ -269,7 +305,7 @@
                                             </td>
                                             <td class="px-8 py-6 text-right">
                                                 <button class="w-10 h-10 rounded-full hover:bg-white dark:hover:bg-gray-700 shadow-sm border border-transparent hover:border-gray-100 flex items-center justify-center transition-all">
-                                                    <i class="fas fa-chevron-right text-indigo-400 group-hover:translate-x-1 transition-transform"></i>
+                                                    <i class="fas fa-chevron-right text-slate-400 group-hover:translate-x-1 transition-transform"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -294,15 +330,15 @@
                                 <h4 class="text-2xl font-black text-gray-800 dark:text-white">Команда</h4>
                                 <p class="text-xs text-gray-400 uppercase font-bold tracking-widest mt-1">Управление ролями и доступом</p>
                             </div>
-                            <button @click="openUserModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-black shadow-lg transition-all">
+                            <button @click="openUserModal()" class="bg-slate-700 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl font-black shadow-lg transition-all">
                                 <i class="fas fa-user-plus mr-3"></i> Добавить сотрудника
                             </button>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div v-for="u in users" :key="u.id" class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 group hover:border-indigo-500 transition-all">
+                            <div v-for="u in users" :key="u.id" class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border dark:border-gray-700 group hover:border-slate-500 transition-all">
                                 <div class="flex items-center space-x-4 mb-6">
-                                    <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-black border-2 border-white dark:border-gray-700 shadow-sm group-hover:scale-110 transition-transform">
+                                    <div class="w-16 h-16 bg-slate-50 dark:bg-slate-900/30 text-slate-600 rounded-2xl flex items-center justify-center text-2xl font-black border-2 border-white dark:border-gray-700 shadow-sm group-hover:scale-110 transition-transform">
                                         {{ u.name ? u.name[0] : '?' }}
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -332,31 +368,91 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <!-- Storage Toggle -->
                                 <div class="space-y-4">
-                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-indigo-500">Хранилище данных</h5>
+                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                        Хранилище данных
+                                        <div class="ml-2 tooltip-container relative">
+                                            <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                            <div class="tooltip">Переключение между JSON (файлы) и MySQL (база данных). Для MySQL необходимо указать доступы.</div>
+                                        </div>
+                                    </h5>
                                     <div class="p-6 bg-gray-50 dark:bg-gray-900 rounded-3xl border dark:border-gray-700">
                                         <label class="flex items-center justify-between cursor-pointer">
                                             <div>
                                                 <p class="font-bold text-gray-700 dark:text-gray-200">Режим MySQL</p>
                                                 <p class="text-[10px] text-gray-400 uppercase mt-1">Требует настройки БД</p>
                                             </div>
-                                            <input type="checkbox" v-model="systemSettings.mysql_mode" class="w-12 h-6 bg-gray-200 rounded-full appearance-none checked:bg-indigo-600 transition-all relative after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-all checked:after:left-7">
+                                            <input type="checkbox" v-model="systemSettings.mysql_mode" class="w-12 h-6 bg-gray-200 rounded-full appearance-none checked:bg-slate-700 transition-all relative after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-all checked:after:left-7">
                                         </label>
                                         <div v-if="systemSettings.mysql_mode" class="mt-4 space-y-3">
-                                            <input v-model="systemSettings.db_host" placeholder="Host" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
-                                            <input v-model="systemSettings.db_name" placeholder="DB Name" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
+                                            <input v-model="systemSettings.db_host" placeholder="Хост (напр. localhost)" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
+                                            <input v-model="systemSettings.db_name" placeholder="Имя базы данных" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
+                                            <input v-model="systemSettings.db_user" placeholder="Пользователь" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
+                                            <input v-model="systemSettings.db_pass" type="password" placeholder="Пароль" class="w-full p-2 bg-white dark:bg-gray-800 border rounded-xl text-xs">
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Announcement -->
                                 <div class="space-y-4">
-                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-indigo-500">Объявление для всех</h5>
-                                    <textarea v-model="systemSettings.announcement" rows="3" placeholder="Текст объявления..." class="w-full p-4 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></textarea>
+                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                        Объявление для всех
+                                        <div class="ml-2 tooltip-container relative">
+                                            <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                            <div class="tooltip">Этот текст увидят все пользователи на главной странице дашборда.</div>
+                                        </div>
+                                    </h5>
+                                    <textarea v-model="systemSettings.announcement" rows="3" placeholder="Текст объявления..." class="w-full p-4 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 text-sm"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pt-6 border-t dark:border-gray-700">
+                                <!-- Working Hours -->
+                                <div class="space-y-4">
+                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                        Рабочее время
+                                        <div class="ml-2 tooltip-container relative">
+                                            <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                            <div class="tooltip">Используется для точного расчета SLA. Выходные и нерабочее время исключаются из срока.</div>
+                                        </div>
+                                    </h5>
+                                    <div class="flex space-x-4">
+                                        <div class="flex-1">
+                                            <p class="text-[9px] uppercase font-bold text-gray-400 mb-1">Начало</p>
+                                            <input v-model="systemSettings.work_start" type="time" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-2xl outline-none focus:ring-2 focus:ring-slate-500 text-sm">
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-[9px] uppercase font-bold text-gray-400 mb-1">Конец</p>
+                                            <input v-model="systemSettings.work_end" type="time" class="w-full p-3 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-2xl outline-none focus:ring-2 focus:ring-slate-500 text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Custom Status Labels -->
+                                <div class="space-y-4">
+                                    <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                        Названия статусов
+                                        <div class="ml-2 tooltip-container relative">
+                                            <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                            <div class="tooltip">Вы можете переименовать стандартные статусы под бизнес-процессы вашей компании.</div>
+                                        </div>
+                                    </h5>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input v-model="systemSettings.status_labels.new" placeholder="Новая" class="p-2 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl text-[10px]">
+                                        <input v-model="systemSettings.status_labels.assigned" placeholder="Назначена" class="p-2 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl text-[10px]">
+                                        <input v-model="systemSettings.status_labels.in_work" placeholder="В работе" class="p-2 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl text-[10px]">
+                                        <input v-model="systemSettings.status_labels.completed" placeholder="Выполнено" class="p-2 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-xl text-[10px]">
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="space-y-4 pt-6 border-t dark:border-gray-700">
-                                <h5 class="text-xs uppercase font-black tracking-[0.2em] text-indigo-500">SLA Контроль (в часах)</h5>
+                                <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                    SLA Контроль (в часах)
+                                    <div class="ml-2 tooltip-container relative">
+                                        <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                        <div class="tooltip">Максимальное время на выполнение заявки в зависимости от её приоритета.</div>
+                                    </div>
+                                </h5>
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div v-for="(val, p) in systemSettings.sla" :key="p" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-2xl border dark:border-gray-700">
                                         <p class="text-[10px] uppercase font-black text-gray-400 mb-1">{{ p }}</p>
@@ -365,8 +461,33 @@
                                 </div>
                             </div>
 
+                            <div class="space-y-4 pt-6 border-t dark:border-gray-700">
+                                <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                    Секретный ключ JWT
+                                    <div class="ml-2 tooltip-container relative">
+                                        <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                        <div class="tooltip">Используется для подписи токенов. При смене ключа все пользователи будут разлогинены.</div>
+                                    </div>
+                                </h5>
+                                <input v-model="systemSettings.jwt_secret" type="password" placeholder="Сверхсекретный ключ" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 text-sm">
+                            </div>
+
+                            <div class="space-y-4 pt-6 border-t dark:border-gray-700">
+                                <h5 class="text-xs uppercase font-black tracking-[0.2em] text-slate-500 flex items-center">
+                                    Telegram Уведомления
+                                    <div class="ml-2 tooltip-container relative">
+                                        <i class="fas fa-question-circle text-[10px] text-slate-400 cursor-help"></i>
+                                        <div class="tooltip">Настройте бота для получения уведомлений о новых заявках.</div>
+                                    </div>
+                                </h5>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input v-model="systemSettings.telegram_bot_token" type="password" placeholder="Bot Token" class="p-4 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl text-sm outline-none">
+                                    <input v-model="systemSettings.telegram_chat_id" placeholder="Chat ID" class="p-4 bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl text-sm outline-none">
+                                </div>
+                            </div>
+
                             <div class="flex justify-end pt-6">
-                                <button @click="saveSettings" :disabled="loading" class="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-indigo-500/20 transition-all flex items-center">
+                                <button @click="saveSettings" :disabled="loading" class="bg-slate-700 hover:bg-slate-800 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-slate-500/20 transition-all flex items-center">
                                     <i v-if="loading" class="fas fa-spinner fa-spin mr-3"></i>
                                     Сохранить конфигурацию
                                 </button>
@@ -381,35 +502,41 @@
         <transition name="modal">
             <div v-if="showRequestModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] w-full max-w-2xl p-10 shadow-2xl overflow-y-auto max-h-[90vh] relative">
-                    <button @click="showRequestModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-indigo-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+                    <button @click="showRequestModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-slate-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
 
                     <h4 class="text-3xl font-black text-gray-800 dark:text-white mb-8">{{ editingRequest ? 'Изменить заявку' : 'Новая заявка' }}</h4>
                     <div class="space-y-6">
                         <div class="group">
-                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Тема заявки</label>
-                            <input id="req-title" v-model="requestForm.title" type="text" placeholder="Например: Не работает принтер в 204" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm font-medium">
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Тема заявки</label>
+                            <input id="req-title" v-model="requestForm.title" type="text" placeholder="Например: Не работает принтер в 204" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 transition-all text-sm font-medium">
                         </div>
                         <div class="group">
-                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Подробное описание</label>
-                            <textarea id="req-desc" v-model="requestForm.description" rows="5" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm leading-relaxed"></textarea>
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Подробное описание</label>
+                            <textarea id="req-desc" v-model="requestForm.description" rows="5" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 transition-all text-sm leading-relaxed"></textarea>
                         </div>
                         <div class="grid grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Категория</label>
-                                <select v-model="requestForm.category" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm appearance-none cursor-pointer">
+                                <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Категория</label>
+                                <select v-model="requestForm.category" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 transition-all text-sm appearance-none cursor-pointer">
                                     <option v-for="cat in systemSettings.categories" :key="cat" :value="cat">{{ cat }}</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Приоритет</label>
-                                <select v-model="requestForm.priority" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm appearance-none cursor-pointer">
+                                <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Приоритет</label>
+                                <select v-model="requestForm.priority" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 transition-all text-sm appearance-none cursor-pointer">
                                     <option v-for="p in systemSettings.priorities" :key="p" :value="p">{{ p }}</option>
                                 </select>
                             </div>
                         </div>
+
+                        <!-- Dynamic Form Fields -->
+                        <div v-for="field in systemSettings.form_fields" :key="field.id">
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">{{ field.label }}</label>
+                            <input v-model="requestForm.custom_fields[field.id]" :type="field.type" :required="field.required" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 transition-all text-sm">
+                        </div>
                     </div>
                     <div class="mt-10 flex space-x-4">
-                        <button id="req-save-btn" @click="saveRequest" :disabled="loading" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-3xl font-black shadow-xl shadow-indigo-500/20 transition-all active:scale-95">
+                        <button id="req-save-btn" @click="saveRequest" :disabled="loading" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white py-5 rounded-3xl font-black shadow-xl shadow-slate-500/20 transition-all active:scale-95">
                             <span v-if="loading"><i class="fas fa-spinner fa-spin mr-3"></i></span> Сохранить и отправить
                         </button>
                         <button @click="showRequestModal = false" class="px-8 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-300 py-5 rounded-3xl font-black transition-all hover:bg-gray-200 dark:hover:bg-gray-600">Отмена</button>
@@ -424,13 +551,13 @@
                 <div class="bg-white dark:bg-gray-800 rounded-[3rem] w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl overflow-hidden relative">
                     <div class="p-8 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/30">
                         <div class="flex items-center space-x-6">
-                            <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-3xl shadow-sm flex items-center justify-center text-2xl text-indigo-500 border dark:border-gray-700">
+                            <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-3xl shadow-sm flex items-center justify-center text-2xl text-slate-500 border dark:border-gray-700">
                                 <i :class="selectedRequest?.category === 'IT' ? 'fas fa-laptop' : 'fas fa-tools'"></i>
                             </div>
                             <div>
                                 <h4 class="text-xl font-black text-gray-800 dark:text-white leading-tight">Заявка #{{ selectedRequest?.id?.substring(4, 8) }}</h4>
                                 <div class="flex items-center space-x-3 mt-1">
-                                    <span :class="['px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest shadow-sm', statusClass(selectedRequest?.status)]">{{ selectedRequest?.status }}</span>
+                                    <span :class="['px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest shadow-sm', statusClass(selectedRequest?.status)]">{{ systemSettings.status_labels[selectedRequest?.status] || selectedRequest?.status }}</span>
                                     <span class="text-[9px] text-gray-400 uppercase font-black">Создано: {{ selectedRequest?.created_at }}</span>
                                 </div>
                             </div>
@@ -438,12 +565,8 @@
                         <div class="flex items-center space-x-4">
                             <div v-if="user.role !== 'responsible'" class="bg-white dark:bg-gray-900 p-2 rounded-2xl border dark:border-gray-700 shadow-sm flex items-center space-x-3">
                                  <p class="text-[9px] uppercase font-black text-gray-400 pl-2">Сменить статус:</p>
-                                 <select v-model="selectedRequest.status" @change="updateRequestStatus" class="text-xs font-black p-1 bg-transparent border-none outline-none text-indigo-500 cursor-pointer">
-                                     <option value="new">Новая</option>
-                                     <option value="assigned">Назначена</option>
-                                     <option value="in_work">В работе</option>
-                                     <option value="completed">Выполнено</option>
-                                     <option value="rejected">Отклонено</option>
+                                 <select v-model="selectedRequest.status" @change="updateRequestStatus" class="text-xs font-black p-1 bg-transparent border-none outline-none text-slate-500 cursor-pointer">
+                                     <option v-for="(label, key) in systemSettings.status_labels" :key="key" :value="key">{{ label }}</option>
                                  </select>
                             </div>
                             <button @click="showDetailsModal = false" class="w-12 h-12 bg-white dark:bg-gray-900 rounded-2xl flex items-center justify-center text-gray-400 hover:text-red-500 shadow-sm border dark:border-gray-700 transition-all"><i class="fas fa-times text-xl"></i></button>
@@ -456,9 +579,9 @@
                             <div class="space-y-6">
                                 <div class="flex justify-between items-start">
                                     <h5 class="text-3xl font-black text-gray-800 dark:text-white leading-tight max-w-2xl">{{ selectedRequest?.title }}</h5>
-                                    <div class="text-right bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-800">
-                                        <p class="text-[9px] uppercase font-black text-indigo-400 tracking-widest mb-1">Дедлайн (SLA)</p>
-                                        <p :class="['text-2xl font-black leading-none', countdown === 'OVERDUE' ? 'text-red-500 animate-pulse' : 'text-indigo-600 dark:text-indigo-400']">{{ countdown }}</p>
+                                    <div class="text-right bg-slate-50 dark:bg-slate-900/30 p-4 rounded-3xl border border-indigo-100 dark:border-slate-800">
+                                        <p class="text-[9px] uppercase font-black text-slate-400 tracking-widest mb-1">Дедлайн (SLA)</p>
+                                        <p :class="['text-2xl font-black leading-none', countdown === 'OVERDUE' ? 'text-red-500 animate-pulse' : 'text-slate-600 dark:text-slate-400']">{{ countdown }}</p>
                                         <p class="text-[9px] text-gray-400 mt-2 font-bold">{{ selectedRequest?.sla_deadline }}</p>
                                     </div>
                                 </div>
@@ -471,15 +594,15 @@
                                 <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Категория</p><p class="text-sm font-black text-gray-800 dark:text-gray-200">{{ selectedRequest?.category }}</p></div>
                                 <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Приоритет</p><p class="text-sm font-black text-gray-800 dark:text-gray-200">{{ selectedRequest?.priority }}</p></div>
                                 <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Автор</p><p class="text-sm font-black text-gray-800 dark:text-gray-200">{{ getUserName(selectedRequest?.creator_id) }}</p></div>
-                                <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Исполнитель</p><p class="text-sm font-black text-indigo-500">{{ getUserName(selectedRequest?.executor_id) || 'Не назначен' }}</p></div>
+                                <div class="space-y-1"><p class="text-[10px] uppercase font-black text-gray-400 tracking-widest">Исполнитель</p><p class="text-sm font-black text-slate-500">{{ getUserName(selectedRequest?.executor_id) || 'Не назначен' }}</p></div>
                             </div>
 
                             <!-- Attachments -->
                             <div class="pt-8 border-t dark:border-gray-700">
                                 <p class="text-[10px] uppercase font-black text-gray-400 mb-4 tracking-widest">Вложения / Фото</p>
                                 <div class="flex flex-wrap gap-4">
-                                    <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-3xl flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 transition-all group">
-                                        <i class="fas fa-plus text-gray-400 group-hover:text-indigo-500"></i>
+                                    <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-3xl flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer hover:border-slate-500 hover:bg-slate-50/50 transition-all group">
+                                        <i class="fas fa-plus text-gray-400 group-hover:text-slate-500"></i>
                                     </div>
                                     <!-- Attachment mock -->
                                     <div class="w-24 h-24 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-3xl flex flex-col items-center justify-center p-2 shadow-sm">
@@ -493,18 +616,18 @@
                         <!-- Sidebar: Comments & Timeline -->
                         <div class="w-full lg:w-[400px] border-t lg:border-t-0 lg:border-l dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 flex flex-col">
                             <div class="flex border-b dark:border-gray-700 bg-white dark:bg-gray-800">
-                                <button @click="detailsTab = 'comments'" :class="['flex-1 py-5 text-xs font-black uppercase tracking-[0.2em] transition-all', detailsTab === 'comments' ? 'text-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10 border-b-4 border-indigo-500' : 'text-gray-400']">Обсуждение</button>
-                                <button @click="detailsTab = 'history'" :class="['flex-1 py-5 text-xs font-black uppercase tracking-[0.2em] transition-all', detailsTab === 'history' ? 'text-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10 border-b-4 border-indigo-500' : 'text-gray-400']">События</button>
+                                <button @click="detailsTab = 'comments'" :class="['flex-1 py-5 text-xs font-black uppercase tracking-[0.2em] transition-all', detailsTab === 'comments' ? 'text-slate-500 bg-slate-50/30 dark:bg-slate-900/10 border-b-4 border-slate-500' : 'text-gray-400']">Обсуждение</button>
+                                <button @click="detailsTab = 'history'" :class="['flex-1 py-5 text-xs font-black uppercase tracking-[0.2em] transition-all', detailsTab === 'history' ? 'text-slate-500 bg-slate-50/30 dark:bg-slate-900/10 border-b-4 border-slate-500' : 'text-gray-400']">События</button>
                             </div>
 
                             <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
                                 <div v-if="detailsTab === 'comments'" class="space-y-6">
                                     <div v-for="c in requestComments" :key="c.id" :class="['flex flex-col space-y-1', c.user_id === user.id ? 'items-end' : 'items-start']">
                                         <div class="flex items-center space-x-2 mb-1 px-2">
-                                            <span v-if="c.user_id !== user.id" class="text-[9px] font-black text-indigo-500 uppercase">{{ getUserName(c.user_id) }}</span>
+                                            <span v-if="c.user_id !== user.id" class="text-[9px] font-black text-slate-500 uppercase">{{ getUserName(c.user_id) }}</span>
                                             <span class="text-[8px] text-gray-400 font-bold uppercase">{{ c.timestamp }}</span>
                                         </div>
-                                        <div :class="['max-w-[90%] p-4 rounded-2xl shadow-sm text-xs leading-relaxed', c.user_id === user.id ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-tl-none border dark:border-gray-700']">
+                                        <div :class="['max-w-[90%] p-4 rounded-2xl shadow-sm text-xs leading-relaxed', c.user_id === user.id ? 'bg-slate-700 text-white rounded-tr-none' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-tl-none border dark:border-gray-700']">
                                             {{ c.text }}
                                         </div>
                                     </div>
@@ -515,7 +638,7 @@
                                 </div>
                                 <div v-else class="space-y-8 pl-4">
                                     <div class="relative pl-8 pb-8 border-l-2 border-indigo-100 dark:border-gray-700 last:border-0">
-                                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-indigo-500"></div>
+                                        <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-gray-800 border-2 border-slate-500"></div>
                                         <p class="text-[10px] text-gray-400 font-black uppercase mb-1">Инициация</p>
                                         <p class="text-xs font-bold text-gray-700 dark:text-gray-300">Заявка создана пользователем {{ getUserName(selectedRequest.creator_id) }}</p>
                                         <p class="text-[9px] text-gray-400 mt-1">{{ selectedRequest.created_at }}</p>
@@ -530,12 +653,12 @@
 
                             <div v-if="detailsTab === 'comments'" class="p-6 bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-xl">
                                 <div class="flex items-center space-x-2 mb-3 bg-gray-50 dark:bg-gray-900 p-1 rounded-full w-max mx-auto border dark:border-gray-700">
-                                    <button @click="commentType = 'public'" :class="['px-4 py-1.5 rounded-full text-[9px] font-black uppercase transition-all', commentType === 'public' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-400']">Публичный</button>
+                                    <button @click="commentType = 'public'" :class="['px-4 py-1.5 rounded-full text-[9px] font-black uppercase transition-all', commentType === 'public' ? 'bg-slate-700 text-white shadow-md' : 'text-gray-400']">Публичный</button>
                                     <button @click="commentType = 'internal'" :class="['px-4 py-1.5 rounded-full text-[9px] font-black uppercase transition-all', commentType === 'internal' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-400']">Внутренний</button>
                                 </div>
                                 <div class="relative">
-                                    <textarea v-model="newComment" rows="2" placeholder="Ваше сообщение..." class="w-full p-4 text-sm bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all pr-14"></textarea>
-                                    <button @click="addComment" class="absolute right-3 bottom-3 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-90 shadow-lg shadow-indigo-500/30">
+                                    <textarea v-model="newComment" rows="2" placeholder="Ваше сообщение..." class="w-full p-4 text-sm bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 rounded-3xl outline-none focus:ring-2 focus:ring-slate-500 transition-all pr-14"></textarea>
+                                    <button @click="addComment" class="absolute right-3 bottom-3 w-10 h-10 bg-slate-700 text-white rounded-full flex items-center justify-center hover:scale-110 transition-all active:scale-90 shadow-lg shadow-slate-500/30">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -550,35 +673,35 @@
         <transition name="modal">
             <div v-if="showUserModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl relative">
-                    <button @click="showUserModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-indigo-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+                    <button @click="showUserModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-slate-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
                     <h4 class="text-3xl font-black text-gray-800 dark:text-white mb-8">{{ userForm.id === 'new' ? 'Новый сотрудник' : 'Редактировать' }}</h4>
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">ФИО</label>
-                            <input v-model="userForm.name" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">ФИО</label>
+                            <input v-model="userForm.name" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Логин</label>
-                            <input v-model="userForm.username" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Логин</label>
+                            <input v-model="userForm.username" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Роль</label>
+                                <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Роль</label>
                                 <select v-model="userForm.role" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none appearance-none cursor-pointer">
-                                    <option value="admin">Admin</option>
+                                    <option value="admin">Администратор</option>
                                     <option value="head">Head</option>
                                     <option value="executor">Executor</option>
                                     <option value="responsible">Responsible</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Пароль</label>
-                                <input v-model="userForm.password" type="password" placeholder="********" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                                <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Пароль</label>
+                                <input v-model="userForm.password" type="password" placeholder="********" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-500">
                             </div>
                         </div>
                     </div>
                     <div class="mt-10 flex space-x-4">
-                        <button @click="saveUser" class="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-black shadow-lg">Сохранить</button>
+                        <button @click="saveUser" class="flex-1 bg-slate-700 text-white py-4 rounded-2xl font-black shadow-lg">Сохранить</button>
                         <button @click="showUserModal = false" class="px-6 bg-gray-100 dark:bg-gray-700 text-gray-400 py-4 rounded-2xl font-black">Отмена</button>
                     </div>
                 </div>
@@ -589,9 +712,9 @@
         <transition name="modal">
             <div v-if="showProfileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                 <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] w-full max-w-md p-10 shadow-2xl relative">
-                    <button @click="showProfileModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-indigo-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
+                    <button @click="showProfileModal = false" class="absolute top-8 right-8 text-gray-300 hover:text-slate-500 transition-colors"><i class="fas fa-times text-2xl"></i></button>
                     <div class="text-center mb-10">
-                        <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-3xl flex items-center justify-center text-4xl font-black mx-auto mb-4 border-4 border-white dark:border-gray-700 shadow-md">
+                        <div class="w-24 h-24 bg-slate-100 text-slate-600 rounded-3xl flex items-center justify-center text-4xl font-black mx-auto mb-4 border-4 border-white dark:border-gray-700 shadow-md">
                             {{ user.name[0] }}
                         </div>
                         <h4 class="text-2xl font-black text-gray-800 dark:text-white">{{ user.name }}</h4>
@@ -599,15 +722,15 @@
                     </div>
                     <div class="space-y-6">
                         <div>
-                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Отображаемое имя</label>
-                            <input v-model="user.name" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Отображаемое имя</label>
+                            <input v-model="user.name" type="text" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase font-black text-indigo-500 mb-2 ml-1 tracking-widest">Новый пароль</label>
-                            <input v-model="user.new_password" type="password" placeholder="Оставьте пустым для сохранения" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500">
+                            <label class="block text-[10px] uppercase font-black text-slate-500 mb-2 ml-1 tracking-widest">Новый пароль</label>
+                            <input v-model="user.new_password" type="password" placeholder="Оставьте пустым для сохранения" class="w-full p-4 bg-gray-50 dark:bg-gray-900 border-none rounded-2xl outline-none focus:ring-2 focus:ring-slate-500">
                         </div>
                     </div>
-                    <button @click="saveProfile" class="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl mt-10 hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20">Применить изменения</button>
+                    <button @click="saveProfile" class="w-full bg-slate-700 text-white font-black py-4 rounded-2xl mt-10 hover:bg-slate-800 transition-all shadow-xl shadow-slate-500/20">Применить изменения</button>
                 </div>
             </div>
         </transition>
@@ -634,10 +757,24 @@
                 const newComment = ref('');
                 const commentType = ref('public');
                 const systemSettings = reactive({
-                    categories: ['IT', 'Repair', 'Cleaning', 'Security'],
-                    priorities: ['Low', 'Medium', 'High', 'Critical'],
-                    sla: { Low: 48, Medium: 24, High: 8, Critical: 2 },
-                    announcement: 'Добро пожаловать в новую CRM систему v2.0!'
+                    categories: ['IT', 'Ремонт', 'Уборка', 'Охрана'],
+                    priorities: ['Низкий', 'Средний', 'Высокий', 'Критический'],
+                    sla: { 'Низкий': 48, 'Средний': 24, 'Высокий': 8, 'Критический': 2 },
+                    announcement: 'Добро пожаловать в новую CRM систему v2.0!',
+                    mysql_mode: false,
+                    db_host: 'localhost',
+                    db_name: 'crm_db',
+                    db_user: 'root',
+                    db_pass: '',
+                    work_start: '09:00',
+                    work_end: '18:00',
+                    status_labels: {
+                        new: 'Новая',
+                        assigned: 'Назначена',
+                        in_work: 'В работе',
+                        completed: 'Выполнено',
+                        rejected: 'Отклонено'
+                    }
                 });
                 const searchQuery = ref('');
                 const filters = reactive({ status: '', priority: '', category: '', executor: '' });
@@ -649,13 +786,14 @@
                 const editingRequest = ref(null);
                 const selectedRequest = ref(null);
                 const userForm = reactive({ id: 'new', name: '', username: '', role: 'executor', password: '' });
-                const requestForm = reactive({ title: '', description: '', category: 'IT', priority: 'Medium' });
+                const requestForm = reactive({ title: '', description: '', category: 'IT', priority: 'Средний', custom_fields: {} });
                 const countdown = ref('');
 
                 const menu = [
                     { id: 'dashboard', name: 'Дашборд', icon: 'fas fa-th-large' },
                     { id: 'requests', name: 'Заявки', icon: 'fas fa-clipboard-list' },
                     { id: 'users', name: 'Пользователи', icon: 'fas fa-users', roles: ['admin', 'head'] },
+                    { id: 'forms', name: 'Конструктор форм', icon: 'fas fa-vial', roles: ['admin'] },
                     { id: 'settings', name: 'Настройки', icon: 'fas fa-cog', roles: ['admin'] }
                 ];
 
@@ -758,9 +896,9 @@
                 const exportData = () => { window.location.href = `api/stats.php?type=export&token=${token.value}`; };
 
                 const priorityClass = (p) => {
-                    if (p === 'Critical') return 'bg-red-500 text-white';
-                    if (p === 'High') return 'bg-orange-400 text-white';
-                    if (p === 'Medium') return 'bg-indigo-400 text-white';
+                    if (p === 'Критический') return 'bg-red-500 text-white';
+                    if (p === 'Высокий') return 'bg-orange-400 text-white';
+                    if (p === 'Средний') return 'bg-slate-400 text-white';
                     return 'bg-gray-400 text-white';
                 };
 
