@@ -39,7 +39,8 @@ class Auth {
     public static function requireAdmin() {
         if (!self::authenticate() || !self::isAdmin()) {
             http_response_code(403);
-            echo json_encode(['error' => 'Forbidden']);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Доступ запрещен: Требуются права администратора']);
             exit;
         }
     }

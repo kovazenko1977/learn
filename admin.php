@@ -44,19 +44,37 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link :href="googleFontUrl" rel="stylesheet">
     <style>
+        :root {
+            --primary: v-bind('themeColors.primary || "#6366f1"');
+            --bg-main: v-bind('themeColors.bgMain || "#0f172a"');
+            --bg-glass: v-bind('themeColors.bgGlass || "rgba(15, 23, 42, 0.9)"');
+            --bg-card: v-bind('themeColors.bgCard || "rgba(30, 41, 59, 0.5)"');
+            --text-main: v-bind('themeColors.textMain || "#e2e8f0"');
+            --border-color: v-bind('themeColors.border || "rgba(255, 255, 255, 0.1)"');
+        }
         [v-cloak] { display: none; }
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .card { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .sidebar-item.active { background: rgba(99, 102, 241, 0.2); border-right: 3px solid #6366f1; color: #818cf8; }
+        body {
+            font-family: v-bind('settings.font_family || "Inter"'), sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+        .glass { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-color); }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); }
+        .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 80%); border-right: 3px solid var(--primary); color: var(--primary); }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+
+        /* Font size variants */
+        .text-base-custom { font-size: v-bind('settings.font_size || "14px"') }
+
+        .theme-preview { width: 24px; height: 24px; border-radius: 50%; display: inline-block; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+        .theme-preview.active { border-color: white; transform: scale(1.2); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen">
+<body class="min-h-screen transition-colors duration-500 text-base-custom">
     <div id="app" v-cloak>
         <!-- Login Overlay -->
         <div v-if="!token" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
@@ -194,6 +212,25 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 </div>
 
                 <div v-if="tab === 'tasks'">
+                    <div class="card p-4 rounded-2xl mb-6 flex flex-wrap gap-4 items-center">
+                        <select v-model="taskFilter.department_id" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+                            <option value="">Все отделы</option>
+                            <option v-for="d in settings.departments" :key="d.id" :value="d.id">{{ d.name }}</option>
+                        </select>
+                        <select v-model="taskFilter.priority" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none">
+                            <option value="">Все приоритеты</option>
+                            <option value="low">Низкий</option>
+                            <option value="medium">Средний</option>
+                            <option value="high">Срочно</option>
+                        </select>
+                        <div class="flex items-center space-x-2">
+                            <input type="date" v-model="taskFilter.date_start" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white outline-none">
+                            <span class="text-slate-600">-</span>
+                            <input type="date" v-model="taskFilter.date_end" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white outline-none">
+                        </div>
+                        <button @click="taskFilter = {department_id:'', priority:'', date_start:'', date_end:''}" class="text-xs text-slate-500 hover:text-white">Сбросить</button>
+                    </div>
+
                     <div class="flex space-x-6 overflow-x-auto pb-6 min-h-[600px]">
                         <div v-for="status in statuses" :key="status.id" class="w-80 flex-shrink-0">
                             <div class="flex items-center justify-between mb-4">
@@ -277,11 +314,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 
                 <div v-if="tab === 'departments'" class="space-y-6">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-white">Управление отделами</h3>
+                        <div class="flex items-center space-x-4">
+                            <h3 class="text-xl font-bold text-white">Управление отделами</h3>
+                            <input v-model="deptSearch" placeholder="Поиск отдела..." class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
                         <button @click="openDeptModal(null)" class="bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold">Новый отдел</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div v-for="d in settings.departments" :key="d.id" class="card p-6 rounded-3xl relative">
+                        <div v-for="d in filteredDepts" :key="d.id" class="card p-6 rounded-3xl relative">
                             <h4 class="font-bold text-white text-lg mb-2">{{ d.name }}</h4>
                             <p class="text-xs text-slate-500 mb-4">{{ d.description || 'Нет описания' }}</p>
                             <div class="flex space-x-2">
@@ -294,11 +334,14 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 
                 <div v-if="tab === 'users'" class="space-y-6">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-white">Управление персоналом</h3>
+                        <div class="flex items-center space-x-4">
+                            <h3 class="text-xl font-bold text-white">Управление персоналом</h3>
+                            <input v-model="userSearch" placeholder="Поиск по имени или логину..." class="bg-slate-900 border border-slate-800 rounded-lg px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
                         <button @click="openUserModal(null)" class="bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold">Добавить сотрудника</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div v-for="u in allUsers" :key="u.id" class="card p-6 rounded-3xl relative">
+                        <div v-for="u in filteredUsers" :key="u.id" class="card p-6 rounded-3xl relative">
                             <div class="flex items-center space-x-4 mb-4">
                                 <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700 uppercase">
                                     {{ u.username[0] }}
@@ -344,6 +387,42 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <div>
                                 <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Telegram Bot Token</label>
                                 <input v-model="settings.telegram_bot_token" type="password" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 text-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Шрифт</label>
+                                    <select v-model="settings.font_family" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
+                                        <option value="Inter">Inter</option>
+                                        <option value="Roboto">Roboto</option>
+                                        <option value="Montserrat">Montserrat</option>
+                                        <option value="Open Sans">Open Sans</option>
+                                        <option value="Ubuntu">Ubuntu</option>
+                                        <option value="Playfair Display">Playfair Display</option>
+                                        <option value="Raleway">Raleway</option>
+                                        <option value="Oswald">Oswald</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Размер текста</label>
+                                    <select v-model="settings.font_size" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
+                                        <option value="12px">Маленький (12px)</option>
+                                        <option value="14px">Стандарт (14px)</option>
+                                        <option value="16px">Крупный (16px)</option>
+                                        <option value="18px">Очень крупный (18px)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-4 block">Визуальная тема (25 вариантов)</label>
+                                <div class="grid grid-cols-5 gap-3">
+                                    <div v-for="t in themes" :key="t.id"
+                                         @click="settings.active_theme = t.id"
+                                         class="flex flex-col items-center space-y-1 cursor-pointer">
+                                        <div :class="['theme-preview', settings.active_theme === t.id ? 'active' : '']"
+                                             :style="{ backgroundColor: t.colors.primary }"></div>
+                                        <span class="text-[8px] text-slate-500 truncate w-full text-center">{{ t.name }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <button @click="saveSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all">
@@ -508,16 +587,35 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                     <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Описание проблемы</h4>
                                     <p class="text-slate-200 leading-relaxed bg-slate-900/50 p-4 rounded-2xl border border-slate-800">{{ selectedTask.description }}</p>
                                 </div>
-                                <div v-if="selectedTask.attachment" class="space-y-3">
-                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Фотоотчет / Документ</h4>
-                                    <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between">
-                                        <div class="flex items-center space-x-3">
-                                            <i data-lucide="file-text" class="text-indigo-400"></i>
-                                            <span class="text-sm font-medium text-slate-300">Вложение</span>
-                                        </div>
+                                <div v-if="selectedTask.attachments?.length || selectedTask.attachment" class="space-y-3">
+                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Прикрепленные файлы</h4>
+
+                                    <!-- Legacy Single Attachment -->
+                                    <div v-if="selectedTask.attachment" class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between">
+                                        <span class="text-xs text-slate-400 truncate flex-1 mr-4">{{ selectedTask.attachment }}</span>
                                         <a :href="'uploads/' + selectedTask.attachment" target="_blank" class="text-xs font-bold text-indigo-400 hover:underline">Открыть</a>
                                     </div>
-                                    <img :src="'uploads/' + selectedTask.attachment" class="rounded-xl border border-slate-800 max-h-48 w-full object-cover">
+
+                                    <!-- New Multi Attachments -->
+                                    <div v-for="file in selectedTask.attachments" :key="file.name" class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between">
+                                        <div class="flex items-center space-x-2 truncate flex-1 mr-4">
+                                            <i data-lucide="file" class="w-3 h-3 text-slate-500"></i>
+                                            <span class="text-xs text-slate-300 truncate">{{ file.original || file.name }}</span>
+                                        </div>
+                                        <a :href="'uploads/' + file.name" target="_blank" class="text-xs font-bold text-indigo-400 hover:underline">Открыть</a>
+                                    </div>
+
+                                    <!-- Preview images -->
+                                    <div class="grid grid-cols-2 gap-2 mt-4">
+                                        <template v-for="file in selectedTask.attachments">
+                                            <img v-if="['jpg','jpeg','png','gif'].includes(file.name.split('.').pop().toLowerCase())"
+                                                 :src="'uploads/' + file.name"
+                                                 class="rounded-lg border border-slate-800 h-24 w-full object-cover cursor-pointer hover:opacity-80 transition-all">
+                                        </template>
+                                        <img v-if="selectedTask.attachment && ['jpg','jpeg','png','gif'].includes(selectedTask.attachment.split('.').pop().toLowerCase())"
+                                             :src="'uploads/' + selectedTask.attachment"
+                                             class="rounded-lg border border-slate-800 h-24 w-full object-cover">
+                                    </div>
                                 </div>
                             </div>
 

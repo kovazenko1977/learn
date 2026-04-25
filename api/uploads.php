@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $file = $_FILES['file'];
     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'zip', 'rar'];
 
     if (!in_array($ext, $allowed)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Extension not allowed']);
+        echo json_encode(['error' => 'Тип файла ' . $ext . ' не разрешен']);
         exit;
     }
 

@@ -23,16 +23,54 @@ createApp({
             deptModal: null,
             menu: [],
             searchQuery: '',
+            userSearch: '',
+            deptSearch: '',
+            taskFilter: { department_id: '', priority: '', date_start: '', date_end: '' },
             templateName: '',
             statuses: [
                 { id: 'new', name: 'Новые', color: 'bg-blue-500' },
                 { id: 'assigned', name: 'В работе', color: 'bg-amber-500' },
                 { id: 'completed', name: 'Выполнено', color: 'bg-green-500' },
                 { id: 'rejected', name: 'Отклонено', color: 'bg-red-500' }
+            ],
+            themes: [
+                { id: 'slate', name: 'Slate Night', colors: { primary: '#6366f1', bgMain: '#0f172a', bgGlass: 'rgba(15, 23, 42, 0.9)', bgCard: 'rgba(30, 41, 59, 0.5)', textMain: '#e2e8f0', border: 'rgba(255, 255, 255, 0.1)' } },
+                { id: 'emerald', name: 'Emerald Forest', colors: { primary: '#10b981', bgMain: '#064e3b', bgGlass: 'rgba(6, 78, 59, 0.9)', bgCard: 'rgba(6, 95, 70, 0.5)', textMain: '#ecfdf5', border: 'rgba(16, 185, 129, 0.2)' } },
+                { id: 'ruby', name: 'Ruby Wine', colors: { primary: '#e11d48', bgMain: '#4c0519', bgGlass: 'rgba(76, 5, 25, 0.9)', bgCard: 'rgba(136, 19, 55, 0.5)', textMain: '#fff1f2', border: 'rgba(225, 29, 72, 0.2)' } },
+                { id: 'ocean', name: 'Deep Ocean', colors: { primary: '#0ea5e9', bgMain: '#0c4a6e', bgGlass: 'rgba(12, 74, 110, 0.9)', bgCard: 'rgba(7, 89, 133, 0.5)', textMain: '#f0f9ff', border: 'rgba(14, 165, 233, 0.2)' } },
+                { id: 'purple', name: 'Royal Purple', colors: { primary: '#a855f7', bgMain: '#3b0764', bgGlass: 'rgba(59, 7, 100, 0.9)', bgCard: 'rgba(88, 28, 135, 0.5)', textMain: '#faf5ff', border: 'rgba(168, 85, 247, 0.2)' } },
+                { id: 'gold', name: 'Cyber Gold', colors: { primary: '#f59e0b', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', border: 'rgba(245, 158, 11, 0.3)' } },
+                { id: 'minimal-light', name: 'Minimal Light', colors: { primary: '#0f172a', bgMain: '#f8fafc', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#0f172a', border: 'rgba(0, 0, 0, 0.1)' } },
+                { id: 'coffee', name: 'Roasted Coffee', colors: { primary: '#a16207', bgMain: '#271b12', bgGlass: 'rgba(39, 27, 18, 0.9)', bgCard: 'rgba(63, 45, 33, 0.5)', textMain: '#fefce8', border: 'rgba(161, 98, 7, 0.2)' } },
+                { id: 'nordic', name: 'Nordic Frost', colors: { primary: '#88c0d0', bgMain: '#2e3440', bgGlass: 'rgba(46, 52, 64, 0.9)', bgCard: 'rgba(59, 66, 82, 0.5)', textMain: '#eceff4', border: 'rgba(136, 192, 208, 0.2)' } },
+                { id: 'dracula', name: 'Dracula', colors: { primary: '#bd93f9', bgMain: '#282a36', bgGlass: 'rgba(40, 42, 54, 0.9)', bgCard: 'rgba(68, 71, 90, 0.5)', textMain: '#f8f8f2', border: 'rgba(189, 147, 249, 0.2)' } },
+                { id: 'synthwave', name: 'Synthwave', colors: { primary: '#ff79c6', bgMain: '#2b213a', bgGlass: 'rgba(43, 33, 58, 0.9)', bgCard: 'rgba(58, 44, 78, 0.5)', textMain: '#f8f8f2', border: 'rgba(255, 121, 198, 0.2)' } },
+                { id: 'midnight', name: 'True Midnight', colors: { primary: '#3b82f6', bgMain: '#000000', bgGlass: 'rgba(0, 0, 0, 0.95)', bgCard: 'rgba(15, 23, 42, 0.5)', textMain: '#ffffff', border: 'rgba(255, 255, 255, 0.05)' } },
+                { id: 'matcha', name: 'Soft Matcha', colors: { primary: '#65a30d', bgMain: '#f7fee7', bgGlass: 'rgba(247, 254, 231, 0.9)', bgCard: '#ffffff', textMain: '#1a2e05', border: 'rgba(101, 163, 13, 0.1)' } },
+                { id: 'rose', name: 'Rose Quartz', colors: { primary: '#db2777', bgMain: '#fff1f2', bgGlass: 'rgba(255, 241, 242, 0.9)', bgCard: '#ffffff', textMain: '#4c0519', border: 'rgba(219, 39, 119, 0.1)' } },
+                { id: 'amber', name: 'Amber Glow', colors: { primary: '#d97706', bgMain: '#451a03', bgGlass: 'rgba(69, 26, 3, 0.9)', bgCard: 'rgba(120, 53, 15, 0.5)', textMain: '#fffbeb', border: 'rgba(217, 119, 6, 0.2)' } },
+                { id: 'indigo', name: 'Indigo Dream', colors: { primary: '#4f46e5', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#e0e7ff', border: 'rgba(79, 70, 229, 0.2)' } },
+                { id: 'gray-modern', name: 'Gray Modern', colors: { primary: '#18181b', bgMain: '#f4f4f5', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#18181b', border: 'rgba(0, 0, 0, 0.05)' } },
+                { id: 'teal', name: 'Teal Lagoon', colors: { primary: '#0d9488', bgMain: '#042f2e', bgGlass: 'rgba(4, 47, 46, 0.9)', bgCard: 'rgba(19, 78, 74, 0.5)', textMain: '#f0fdfa', border: 'rgba(13, 148, 136, 0.2)' } },
+                { id: 'orange', name: 'Vivid Orange', colors: { primary: '#ea580c', bgMain: '#431407', bgGlass: 'rgba(67, 20, 7, 0.9)', bgCard: 'rgba(124, 45, 18, 0.5)', textMain: '#fff7ed', border: 'rgba(234, 88, 12, 0.2)' } },
+                { id: 'sky', name: 'Sky High', colors: { primary: '#0284c7', bgMain: '#f0f9ff', bgGlass: 'rgba(240, 249, 255, 0.9)', bgCard: '#ffffff', textMain: '#082f49', border: 'rgba(2, 132, 199, 0.1)' } },
+                { id: 'pink', name: 'Cyber Pink', colors: { primary: '#f472b6', bgMain: '#1e0714', bgGlass: 'rgba(30, 7, 20, 0.9)', bgCard: 'rgba(62, 11, 40, 0.5)', textMain: '#fdf2f8', border: 'rgba(244, 114, 182, 0.2)' } },
+                { id: 'lime', name: 'Acid Lime', colors: { primary: '#bef264', bgMain: '#1a2e05', bgGlass: 'rgba(26, 46, 5, 0.9)', bgCard: 'rgba(32, 45, 8, 0.5)', textMain: '#f7fee7', border: 'rgba(190, 242, 100, 0.2)' } },
+                { id: 'chocolate', name: 'Dark Chocolate', colors: { primary: '#78350f', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', border: 'rgba(120, 53, 15, 0.2)' } },
+                { id: 'royal', name: 'Royal Blue', colors: { primary: '#2563eb', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#f0f9ff', border: 'rgba(37, 99, 235, 0.2)' } },
+                { id: 'sepia', name: 'Sepia Memory', colors: { primary: '#92400e', bgMain: '#fef3c7', bgGlass: 'rgba(254, 243, 199, 0.9)', bgCard: '#fffbeb', textMain: '#451a03', border: 'rgba(146, 64, 14, 0.1)' } }
             ]
         }
     },
     computed: {
+        googleFontUrl() {
+            const font = this.settings.font_family || 'Inter';
+            return `https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+        },
+        themeColors() {
+            const themeId = this.settings.active_theme || 'slate';
+            return this.themes.find(t => t.id === themeId)?.colors || this.themes[0].colors;
+        },
         currentMenuName() {
             return this.menu.find(m => m.id === this.tab)?.name || 'CRM';
         },
@@ -49,6 +87,17 @@ createApp({
                 acc[t.department_id] = (acc[t.department_id] || 0) + 1;
                 return acc;
             }, {});
+        },
+        filteredUsers() {
+            return this.allUsers.filter(u =>
+                u.full_name.toLowerCase().includes(this.userSearch.toLowerCase()) ||
+                u.username.toLowerCase().includes(this.userSearch.toLowerCase())
+            );
+        },
+        filteredDepts() {
+            return this.settings.departments.filter(d =>
+                d.name.toLowerCase().includes(this.deptSearch.toLowerCase())
+            );
         }
     },
     methods: {
@@ -135,7 +184,14 @@ createApp({
                 const matchSearch = !this.searchQuery ||
                                    t.id.toString().includes(this.searchQuery) ||
                                    t.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-                return matchStatus && matchSearch;
+                const matchDept = !this.taskFilter.department_id || t.department_id == this.taskFilter.department_id;
+                const matchPriority = !this.taskFilter.priority || t.priority == this.taskFilter.priority;
+
+                let matchDate = true;
+                if (this.taskFilter.date_start) matchDate = matchDate && t.created_at >= this.taskFilter.date_start;
+                if (this.taskFilter.date_end) matchDate = matchDate && t.created_at <= this.taskFilter.date_end + ' 23:59:59';
+
+                return matchStatus && matchSearch && matchDept && matchPriority && matchDate;
             });
         },
         priorityClass(p) {
@@ -217,6 +273,14 @@ createApp({
                 method: 'POST',
                 body: JSON.stringify(this.settings)
             });
+            // Update root variables immediately
+            const themeId = this.settings.active_theme || 'slate';
+            const colors = this.themes.find(t => t.id === themeId)?.colors;
+            if (colors) {
+                Object.entries(colors).forEach(([k, v]) => {
+                    document.documentElement.style.setProperty(`--${k}`, v);
+                });
+            }
             alert('Настройки сохранены');
         },
         async saveFormAsTemplate() {

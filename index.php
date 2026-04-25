@@ -5,10 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Служба ХОП - Подача заявки</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+    <link id="google-font" rel="stylesheet">
+    <style id="theme-styles">
+        :root {
+            --primary: #6366f1;
+            --bg-main: #f8fafc;
+            --bg-glass: rgba(255, 255, 255, 0.8);
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+        .glass { background: var(--bg-glass); backdrop-filter: blur(10px); border: 1px solid var(--border-color); }
+        input, select, textarea { background-color: var(--bg-card) !important; color: var(--text-main) !important; border-color: var(--border-color) !important; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -89,8 +103,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Фото (необязательно)</label>
-                        <input type="file" id="fileInput" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Вложения (фото, документы)</label>
+                        <input type="file" id="fileInput" multiple class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <p class="text-[9px] text-slate-400 mt-1">Можно выбрать несколько файлов (картинки, PDF, DOCX и др.)</p>
                     </div>
 
                     <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-xl">
@@ -121,9 +136,12 @@
         let token = localStorage.getItem('crm_token');
 
         function checkAuth() {
+            console.log('Checking auth, token exists:', !!token);
             if (!token) {
                 document.getElementById('auth-container').classList.remove('hidden');
+                document.getElementById('auth-container').classList.add('flex'); // Add flex to make it visible
                 document.getElementById('main-container').classList.add('hidden');
+                console.log('Auth container visible');
             } else {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('main-container').classList.remove('hidden');
@@ -159,18 +177,24 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            // Handle file upload if any
+            // Handle multiple file uploads
             if (fileInput.files.length > 0) {
-                const fData = new FormData();
-                fData.append('file', fileInput.files[0]);
-                try {
-                    const uploadRes = await fetch('api/uploads.php', { method: 'POST', body: fData });
-                    const uploadResult = await uploadRes.json();
-                    if (uploadResult.filename) {
-                        data.attachment = uploadResult.filename;
+                data.attachments = [];
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    const fData = new FormData();
+                    fData.append('file', fileInput.files[i]);
+                    try {
+                        const uploadRes = await fetch('api/uploads.php', { method: 'POST', body: fData });
+                        const uploadResult = await uploadRes.json();
+                        if (uploadResult.filename) {
+                            data.attachments.push({
+                                name: uploadResult.filename,
+                                original: uploadResult.original_name
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Upload failed for file ' + i, err);
                     }
-                } catch (err) {
-                    console.error('Upload failed', err);
                 }
             }
 
@@ -201,6 +225,50 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const settings = await res.json();
+
+                // Apply Theme
+                if (settings.active_theme) {
+                    const themes = [
+                        { id: 'slate', name: 'Slate Night', colors: { primary: '#6366f1', bgMain: '#0f172a', bgGlass: 'rgba(15, 23, 42, 0.9)', bgCard: 'rgba(30, 41, 59, 0.5)', textMain: '#e2e8f0', border: 'rgba(255, 255, 255, 0.1)' } },
+                        { id: 'emerald', name: 'Emerald Forest', colors: { primary: '#10b981', bgMain: '#064e3b', bgGlass: 'rgba(6, 78, 59, 0.9)', bgCard: 'rgba(6, 95, 70, 0.5)', textMain: '#ecfdf5', border: 'rgba(16, 185, 129, 0.2)' } },
+                        { id: 'ruby', name: 'Ruby Wine', colors: { primary: '#e11d48', bgMain: '#4c0519', bgGlass: 'rgba(76, 5, 25, 0.9)', bgCard: 'rgba(136, 19, 55, 0.5)', textMain: '#fff1f2', border: 'rgba(225, 29, 72, 0.2)' } },
+                        { id: 'ocean', name: 'Deep Ocean', colors: { primary: '#0ea5e9', bgMain: '#0c4a6e', bgGlass: 'rgba(12, 74, 110, 0.9)', bgCard: 'rgba(7, 89, 133, 0.5)', textMain: '#f0f9ff', border: 'rgba(14, 165, 233, 0.2)' } },
+                        { id: 'purple', name: 'Royal Purple', colors: { primary: '#a855f7', bgMain: '#3b0764', bgGlass: 'rgba(59, 7, 100, 0.9)', bgCard: 'rgba(88, 28, 135, 0.5)', textMain: '#faf5ff', border: 'rgba(168, 85, 247, 0.2)' } },
+                        { id: 'gold', name: 'Cyber Gold', colors: { primary: '#f59e0b', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', border: 'rgba(245, 158, 11, 0.3)' } },
+                        { id: 'minimal-light', name: 'Minimal Light', colors: { primary: '#0f172a', bgMain: '#f8fafc', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#0f172a', border: 'rgba(0, 0, 0, 0.1)' } },
+                        { id: 'coffee', name: 'Roasted Coffee', colors: { primary: '#a16207', bgMain: '#271b12', bgGlass: 'rgba(39, 27, 18, 0.9)', bgCard: 'rgba(63, 45, 33, 0.5)', textMain: '#fefce8', border: 'rgba(161, 98, 7, 0.2)' } },
+                        { id: 'nordic', name: 'Nordic Frost', colors: { primary: '#88c0d0', bgMain: '#2e3440', bgGlass: 'rgba(46, 52, 64, 0.9)', bgCard: 'rgba(59, 66, 82, 0.5)', textMain: '#eceff4', border: 'rgba(136, 192, 208, 0.2)' } },
+                        { id: 'dracula', name: 'Dracula', colors: { primary: '#bd93f9', bgMain: '#282a36', bgGlass: 'rgba(40, 42, 54, 0.9)', bgCard: 'rgba(68, 71, 90, 0.5)', textMain: '#f8f8f2', border: 'rgba(189, 147, 249, 0.2)' } },
+                        { id: 'synthwave', name: 'Synthwave', colors: { primary: '#ff79c6', bgMain: '#2b213a', bgGlass: 'rgba(43, 33, 58, 0.9)', bgCard: 'rgba(58, 44, 78, 0.5)', textMain: '#f8f8f2', border: 'rgba(255, 121, 198, 0.2)' } },
+                        { id: 'midnight', name: 'True Midnight', colors: { primary: '#3b82f6', bgMain: '#000000', bgGlass: 'rgba(0, 0, 0, 0.95)', bgCard: 'rgba(15, 23, 42, 0.5)', textMain: '#ffffff', border: 'rgba(255, 255, 255, 0.05)' } },
+                        { id: 'matcha', name: 'Soft Matcha', colors: { primary: '#65a30d', bgMain: '#f7fee7', bgGlass: 'rgba(247, 254, 231, 0.9)', bgCard: '#ffffff', textMain: '#1a2e05', border: 'rgba(101, 163, 13, 0.1)' } },
+                        { id: 'rose', name: 'Rose Quartz', colors: { primary: '#db2777', bgMain: '#fff1f2', bgGlass: 'rgba(255, 241, 242, 0.9)', bgCard: '#ffffff', textMain: '#4c0519', border: 'rgba(219, 39, 119, 0.1)' } },
+                        { id: 'amber', name: 'Amber Glow', colors: { primary: '#d97706', bgMain: '#451a03', bgGlass: 'rgba(69, 26, 3, 0.9)', bgCard: 'rgba(120, 53, 15, 0.5)', textMain: '#fffbeb', border: 'rgba(217, 119, 6, 0.2)' } },
+                        { id: 'indigo', name: 'Indigo Dream', colors: { primary: '#4f46e5', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#e0e7ff', border: 'rgba(79, 70, 229, 0.2)' } },
+                        { id: 'gray-modern', name: 'Gray Modern', colors: { primary: '#18181b', bgMain: '#f4f4f5', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#18181b', border: 'rgba(0, 0, 0, 0.05)' } },
+                        { id: 'teal', name: 'Teal Lagoon', colors: { primary: '#0d9488', bgMain: '#042f2e', bgGlass: 'rgba(4, 47, 46, 0.9)', bgCard: 'rgba(19, 78, 74, 0.5)', textMain: '#f0fdfa', border: 'rgba(13, 148, 136, 0.2)' } },
+                        { id: 'orange', name: 'Vivid Orange', colors: { primary: '#ea580c', bgMain: '#431407', bgGlass: 'rgba(67, 20, 7, 0.9)', bgCard: 'rgba(124, 45, 18, 0.5)', textMain: '#fff7ed', border: 'rgba(234, 88, 12, 0.2)' } },
+                        { id: 'sky', name: 'Sky High', colors: { primary: '#0284c7', bgMain: '#f0f9ff', bgGlass: 'rgba(240, 249, 255, 0.9)', bgCard: '#ffffff', textMain: '#082f49', border: 'rgba(2, 132, 199, 0.1)' } },
+                        { id: 'pink', name: 'Cyber Pink', colors: { primary: '#f472b6', bgMain: '#1e0714', bgGlass: 'rgba(30, 7, 20, 0.9)', bgCard: 'rgba(62, 11, 40, 0.5)', textMain: '#fdf2f8', border: 'rgba(244, 114, 182, 0.2)' } },
+                        { id: 'lime', name: 'Acid Lime', colors: { primary: '#bef264', bgMain: '#1a2e05', bgGlass: 'rgba(26, 46, 5, 0.9)', bgCard: 'rgba(32, 45, 8, 0.5)', textMain: '#f7fee7', border: 'rgba(190, 242, 100, 0.2)' } },
+                        { id: 'chocolate', name: 'Dark Chocolate', colors: { primary: '#78350f', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', border: 'rgba(120, 53, 15, 0.2)' } },
+                        { id: 'royal', name: 'Royal Blue', colors: { primary: '#2563eb', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#f0f9ff', border: 'rgba(37, 99, 235, 0.2)' } },
+                        { id: 'sepia', name: 'Sepia Memory', colors: { primary: '#92400e', bgMain: '#fef3c7', bgGlass: 'rgba(254, 243, 199, 0.9)', bgCard: '#fffbeb', textMain: '#451a03', border: 'rgba(146, 64, 14, 0.1)' } }
+                    ];
+                    const t = themes.find(x => x.id === settings.active_theme);
+                    if (t) {
+                        Object.entries(t.colors).forEach(([k, v]) => {
+                            document.documentElement.style.setProperty(`--${k}`, v);
+                        });
+                    }
+                }
+
+                // Apply Font
+                if (settings.font_family) {
+                    document.getElementById('google-font').href = `https://fonts.googleapis.com/css2?family=${settings.font_family.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+                    document.body.style.fontFamily = `'${settings.font_family}', sans-serif`;
+                }
+
                 if (settings.form_fields) {
                     const container = document.getElementById('dynamic-fields');
                     settings.form_fields.forEach(field => {
