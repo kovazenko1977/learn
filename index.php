@@ -7,11 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/app.css">
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-2xl w-full card">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-2xl font-bold text-slate-900">Новая заявка</h1>
-            <a href="admin.php" class="text-sm text-blue-600 hover:underline">Личный кабинет</a>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 overflow-x-hidden">
+    <!-- Background Decor -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/5 blur-[120px] rounded-full"></div>
+    </div>
+
+    <div class="max-w-2xl w-full card relative z-10 !p-10 !rounded-[2.5rem] shadow-2xl border-white/50">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20">C</div>
+                <div>
+                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">Новая заявка</h1>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Сервисный центр</p>
+                </div>
+            </div>
+            <a href="admin.php" class="px-6 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all">Вход в CRM</a>
         </div>
 
         <form id="requestForm" class="space-y-6">
@@ -51,7 +63,10 @@
                 <input type="file" id="fileInput" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-slate-900 file:text-white hover:file:bg-slate-800">
             </div>
 
-            <button type="submit" class="w-full btn-primary py-4 text-lg">Создать заявку</button>
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98] mt-8 flex items-center justify-center gap-3">
+                Создать заявку
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </button>
         </form>
     </div>
 

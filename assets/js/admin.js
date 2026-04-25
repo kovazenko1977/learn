@@ -29,11 +29,21 @@ createApp({
             history: [],
             newComment: '',
             isDarkMode: false,
+            mobileMenu: false,
             profileForm: { currentPassword: '', newPassword: '' },
             selectedTaskIds: []
         }
     },
     computed: {
+        menuItems() {
+            return [
+                { id: 'tasks', label: 'Заявки', show: true },
+                { id: 'users', label: 'Пользователи', show: this.isAdmin },
+                { id: 'settings', label: 'Настройки', show: this.isAdmin },
+                { id: 'analytics', label: 'Аналитика', show: true },
+                { id: 'profile', label: 'Профиль', show: true }
+            ];
+        },
         isAdmin() { return this.user?.role === 'admin'; },
         canAssign() { return ['admin', 'head'].includes(this.user?.role); },
         executors() { return this.usersList.filter(u => u.role === 'executor'); },
@@ -71,6 +81,7 @@ createApp({
             }
         },
         async login() {
+            this.loginError = '';
             const res = await fetch('api/auth.php?action=login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -247,6 +258,14 @@ createApp({
                 });
                 this.newComment = '';
             }
+        },
+        priorityLabel(p) {
+            const labels = { low: 'Низкий', medium: 'Средний', high: 'Высокий', urgent: 'Критический' };
+            return labels[p] || p;
+        },
+        statusLabel(s) {
+            const labels = { new: 'Новая', assigned: 'Назначена', in_work: 'В работе', completed: 'Выполнена', rejected: 'Отклонена' };
+            return labels[s] || s;
         },
         priorityColor(p) {
             const colors = { low: 'text-blue-500', medium: 'text-amber-500', high: 'text-orange-500', urgent: 'text-red-500' };

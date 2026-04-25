@@ -23,6 +23,13 @@ $action = $_GET['action'] ?? '';
 if ($method === 'GET') {
     if ($action === 'history') {
         $taskId = $_GET['task_id'] ?? 0;
+
+        // Authorization check
+        $task = $storage->find('tasks', $taskId);
+        if (!$task) exit;
+        if ($user['role'] === 'responsible' && $task['creator_id'] != $user['id']) exit;
+        if ($user['role'] === 'executor' && $task['executor_id'] != $user['id']) exit;
+
         $allHistory = $storage->get('history');
         $taskHistory = array_filter($allHistory, fn($h) => $h['task_id'] == $taskId);
 
@@ -40,6 +47,13 @@ if ($method === 'GET') {
 
     if ($action === 'comments') {
         $taskId = $_GET['task_id'] ?? 0;
+
+        // Authorization check
+        $task = $storage->find('tasks', $taskId);
+        if (!$task) exit;
+        if ($user['role'] === 'responsible' && $task['creator_id'] != $user['id']) exit;
+        if ($user['role'] === 'executor' && $task['executor_id'] != $user['id']) exit;
+
         $allComments = $storage->get('comments');
         $taskComments = array_filter($allComments, fn($c) => $c['task_id'] == $taskId);
 
