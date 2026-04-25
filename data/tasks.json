@@ -1,0 +1,110 @@
+[
+    {
+        "id": "1777105264721",
+        "status": "In Work",
+        "priority": "High",
+        "created_at": "2026-04-25 08:21:04",
+        "creator": "Test User",
+        "fields": {
+            "f_name": "Test User",
+            "priority": "High"
+        },
+        "assigned_to": null,
+        "comments": [
+            {
+                "at": "2026-04-25 08:28:30",
+                "by": "Администратор",
+                "text": "Test comment from verification"
+            }
+        ],
+        "history": [
+            {
+                "at": "2026-04-25 08:21:04",
+                "by": "System",
+                "msg": "Task created via public form"
+            },
+            {
+                "at": "2026-04-25 08:22:56",
+                "by": "Администратор",
+                "msg": "Status changed from New to In Work"
+            }
+        ],
+        "deadline": "2026-04-27 12:21:04"
+    },
+    {
+        "id": "1777105471553",
+        "status": "In Work",
+        "priority": "High",
+        "created_at": "2026-04-25 08:24:31",
+        "creator": "John Doe",
+        "fields": {
+            "f_name": "John Doe",
+            "f_subject": "Broken AC",
+            "f_description": "The AC is leaking",
+            "priority": "High"
+        },
+        "assigned_to": null,
+        "comments": [],
+        "history": [
+            {
+                "at": "2026-04-25 08:24:31",
+                "by": "System",
+                "msg": "Task created via public form"
+            },
+            {
+                "at": "2026-04-25 08:24:31",
+                "by": "Администратор",
+                "msg": "Status changed from New to In Work"
+            }
+        ],
+        "deadline": "2026-04-27 12:24:31"
+    },
+    {
+        "id": "1777105539152",
+        "status": "New",
+        "priority": "High",
+        "created_at": "2026-04-25 08:25:39",
+        "creator": "Сергей Иванов",
+        "fields": {
+            "f_name": "Сергей Иванов",
+            "f_phone": "+375291234567",
+            "f_subject": "Проблема с сетью",
+            "f_description": "Нет доступа к интернету в офисе 302",
+            "priority": "High"
+        },
+        "assigned_to": null,
+        "comments": [],
+        "history": [
+            {
+                "at": "2026-04-25 08:25:39",
+                "by": "System",
+                "msg": "Task created via public form"
+            }
+        ],
+        "deadline": "2026-04-27 12:25:39"
+    },
+    {
+        "id": "1777105730870",
+        "status": "New",
+        "priority": "High",
+        "created_at": "2026-04-25 08:28:50",
+        "creator": "Сергей Иванов",
+        "fields": {
+            "f_name": "Сергей Иванов",
+            "f_phone": "+375291234567",
+            "f_subject": "Проблема с сетью",
+            "f_description": "Нет доступа к интернету в офисе 302",
+            "priority": "High"
+        },
+        "assigned_to": null,
+        "comments": [],
+        "history": [
+            {
+                "at": "2026-04-25 08:28:50",
+                "by": "System",
+                "msg": "Task created via public form"
+            }
+        ],
+        "deadline": "2026-04-27 12:28:50"
+    }
+]
