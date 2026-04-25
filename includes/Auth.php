@@ -37,7 +37,7 @@ class Auth {
     }
 
     public static function requireAdmin() {
-        if (!self::isAdmin()) {
+        if (!self::authenticate() || !self::isAdmin()) {
             http_response_code(403);
             echo json_encode(['error' => 'Forbidden']);
             exit;

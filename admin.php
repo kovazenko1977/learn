@@ -281,6 +281,42 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             Сохранить конфигурацию
                         </button>
                     </div>
+
+                    <div v-if="user.role === 'admin'" class="card p-8 rounded-3xl mt-8 space-y-8">
+                        <h3 class="text-xl font-bold text-white">Обслуживание системы</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+                                <h4 class="text-sm font-bold text-white mb-4">Резервное копирование</h4>
+                                <div class="space-y-3">
+                                    <button @click="createBackup" class="w-full py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 rounded-lg text-xs font-bold transition-all">Создать бэкап</button>
+                                    <div class="max-h-32 overflow-y-auto space-y-2 mt-4">
+                                        <div v-for="b in backups" :key="b" class="flex items-center justify-between text-[10px] bg-slate-950 p-2 rounded border border-slate-800">
+                                            <span>{{ b }}</span>
+                                            <button @click="restoreBackup(b)" class="text-green-400 hover:underline">Восстановить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
+                                <h4 class="text-sm font-bold text-white mb-4">Очистка данных</h4>
+                                <div class="space-y-3">
+                                    <button @click="clearAllData" class="w-full py-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 rounded-lg text-xs font-bold transition-all">Удалить все заявки</button>
+                                    <button @click="cleanupTemp" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition-all">Очистить вложения</button>
+
+                                    <div class="pt-4 border-t border-slate-800">
+                                        <label class="text-[10px] text-slate-500 uppercase block mb-2">Удалить за период</label>
+                                        <div class="flex space-x-2">
+                                            <input type="date" v-model="clearPeriod.start" class="bg-slate-950 text-[10px] p-1 rounded border border-slate-800 outline-none">
+                                            <input type="date" v-model="clearPeriod.end" class="bg-slate-950 text-[10px] p-1 rounded border border-slate-800 outline-none">
+                                            <button @click="clearDataPeriod" class="bg-red-900/20 text-red-400 p-1 rounded"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

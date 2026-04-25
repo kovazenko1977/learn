@@ -13,6 +13,8 @@ createApp({
             executors: [],
             allUsers: [],
             settings: { form_fields: [] },
+            backups: [],
+            clearPeriod: { start: '', end: '' },
             selectedTask: null,
             userModal: null,
             menu: [
@@ -98,6 +100,9 @@ createApp({
             this.settings = await this.api('api/settings.php');
             this.allUsers = await this.api('api/register.php');
             this.executors = this.allUsers.filter(u => u.role === 'executor' || u.role === 'admin' || u.role === 'head');
+            if (this.user.role === 'admin') {
+                this.backups = await this.api('api/admin_actions.php?action=list_backups');
+            }
             this.$nextTick(() => lucide.createIcons());
         },
         filteredTasks(statusId) {
@@ -150,6 +155,44 @@ createApp({
             });
             this.userModal = null;
             this.loadData();
+        },
+        async createBackup() {
+            const res = await this.api('api/admin_actions.php?action=backup');
+            if (res.success) alert('Бэкап создан: ' + res.backup_file);
+            this.loadData();
+        },
+        async restoreBackup(filename) {
+            if (confirm('ВНИМАНИЕ: Текущие данные будут заменены данными из бэкапа. Продолжить?')) {
+                const res = await this.api('api/admin_actions.php?action=restore', {
+                    method: 'POST',
+                    body: JSON.stringify({ filename })
+                });
+                if (res.success) {
+                    alert('Данные восстановлены. Страница будет перезагружена.');
+                    location.reload();
+                }
+            }
+        },
+        async clearAllData() {
+            if (confirm('Вы уверены, что хотите УДАЛИТЬ ВСЕ ЗАЯВКИ? Это действие необратимо.')) {
+                await this.api('api/admin_actions.php?action=clear_all');
+                this.loadData();
+            }
+        },
+        async clearDataPeriod() {
+            if (confirm(`Удалить данные за период ${this.clearPeriod.start} - ${this.clearPeriod.end}?`)) {
+                await this.api('api/admin_actions.php?action=clear_period', {
+                    method: 'POST',
+                    body: JSON.stringify(this.clearPeriod)
+                });
+                this.loadData();
+            }
+        },
+        async cleanupTemp() {
+            if (confirm('Очистить все загруженные файлы?')) {
+                await this.api('api/admin_actions.php?action=cleanup_temp');
+                alert('Файлы очищены');
+            }
         },
         async deleteUser(id) {
             if (confirm('Удалить сотрудника?')) {
