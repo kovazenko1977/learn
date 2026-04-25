@@ -40,6 +40,13 @@ if ($method === 'DELETE') {
     Auth::requireAdmin();
     $id = $_GET['id'] ?? null;
     if ($id) {
+        $tasks = Storage::read('tasks.json');
+        foreach ($tasks as $t) {
+            if (($t['created_by'] ?? '') == $id || ($t['executor_id'] ?? '') == $id) {
+                echo json_encode(['success' => false, 'error' => 'Нельзя удалить сотрудника с активными заявками']);
+                exit;
+            }
+        }
         Storage::deleteItem('users.json', $id);
         echo json_encode(['success' => true]);
     }

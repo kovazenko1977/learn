@@ -121,15 +121,30 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             <main class="flex-1 ml-64 p-8">
                 <!-- Header -->
                 <header class="flex justify-between items-center mb-10">
-                    <div>
-                        <h2 class="text-3xl font-bold text-white">{{ currentMenuName }}</h2>
-                        <p class="text-slate-500">Добро пожаловать в систему управления задачами</p>
+                    <div class="flex-1 mr-8">
+                        <div class="flex items-center space-x-3">
+                            <h2 class="text-3xl font-bold text-white">{{ currentMenuName }}</h2>
+                            <div class="group relative inline-block">
+                                <i data-lucide="help-circle" class="w-4 h-4 text-slate-600 cursor-help"></i>
+                                <div class="absolute left-full ml-2 top-0 hidden group-hover:block w-48 p-2 bg-slate-800 text-[10px] rounded shadow-xl z-50">
+                                    {{ tab === 'dashboard' ? 'Здесь отображается общая статистика и аналитика по всем заявкам.' : '' }}
+                                    {{ tab === 'tasks' ? 'Используйте Kanban-доску для управления статусами. Нажмите на карточку для деталей.' : '' }}
+                                    {{ tab === 'forms' ? 'Создавайте шаблоны полей, которые будут отображаться при подаче заявки.' : '' }}
+                                    {{ tab === 'users' ? 'Управление доступом сотрудников к системе.' : '' }}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-slate-500">Система ХОП PRO • {{ user.role === 'admin' ? 'Полный доступ' : 'Доступ ограничен' }}</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <button @click="exportCSV" v-if="user.role === 'admin'" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center space-x-2 transition-all">
                             <i data-lucide="download" class="w-4 h-4"></i>
                             <span>Экспорт CSV</span>
                         </button>
+                        <div v-if="tab === 'tasks'" class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-500"></i>
+                            <input v-model="searchQuery" placeholder="Поиск по ID или тексту..." class="bg-slate-900 border border-slate-800 pl-10 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-indigo-500 w-64">
+                        </div>
                         <div class="w-10 h-10 glass rounded-xl flex items-center justify-center text-slate-400 relative cursor-pointer">
                             <i data-lucide="bell" class="w-5 h-5"></i>
                             <span class="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full ring-2 ring-slate-950"></span>
@@ -215,7 +230,8 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 </div>
 
                 <div v-if="tab === 'forms'">
-                    <div class="card p-8 rounded-3xl">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 card p-8 rounded-3xl">
                         <div class="flex justify-between items-center mb-8">
                             <h3 class="text-xl font-bold text-white">Конструктор полей</h3>
                             <button @click="addField" class="bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold">Добавить поле</button>
@@ -238,7 +254,24 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 <button @click="removeField(index)" class="text-red-500 hover:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                         </div>
-                        <button @click="saveSettings" class="mt-8 bg-slate-200 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-white transition-all">Сохранить изменения</button>
+                        <div class="mt-8 pt-8 border-t border-slate-800 flex items-center justify-between">
+                            <button @click="saveSettings" class="bg-slate-200 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-white transition-all">Сохранить изменения</button>
+                            <div class="flex items-center space-x-2">
+                                <input v-model="templateName" placeholder="Имя шаблона" class="bg-slate-900 border border-slate-800 px-3 py-3 rounded-xl text-sm outline-none">
+                                <button @click="saveFormAsTemplate" class="bg-indigo-600/20 text-indigo-400 px-4 py-3 rounded-xl text-sm font-bold">Сохранить как шаблон</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-8 rounded-3xl">
+                        <h3 class="text-lg font-bold text-white mb-6">Готовые шаблоны</h3>
+                        <div class="space-y-3">
+                            <div v-for="tpl in settings.form_templates" :key="tpl.id" class="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center justify-between group">
+                                <span class="text-sm font-medium text-slate-300">{{ tpl.name }}</span>
+                                <button @click="applyTemplate(tpl)" class="text-xs font-bold text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">Применить</button>
+                            </div>
+                            <p v-if="!settings.form_templates?.length" class="text-xs text-slate-600 italic">Шаблонов пока нет</p>
+                        </div>
+                    </div>
                     </div>
                 </div>
 
@@ -280,6 +313,23 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 <button @click="deleteUser(u.id)" class="px-3 bg-red-900/20 hover:bg-red-900/40 text-red-400 py-2 rounded-lg text-xs transition-all"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div v-if="tab === 'profile'" class="max-w-2xl">
+                    <div class="card p-8 rounded-3xl">
+                        <h3 class="text-xl font-bold text-white mb-6">Мой профиль</h3>
+                        <form @submit.prevent="updateProfile" class="space-y-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">ФИО</label>
+                                <input v-model="user.full_name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Новый пароль</label>
+                                <input v-model="user.password" type="password" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none" placeholder="Оставьте пустым, чтобы не менять">
+                            </div>
+                            <button type="submit" class="w-full bg-indigo-600 py-3 rounded-xl font-bold mt-4">Обновить данные</button>
+                        </form>
                     </div>
                 </div>
 
@@ -406,67 +456,112 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 
         <!-- Task Modal -->
         <div v-if="selectedTask" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <div class="max-w-4xl w-full glass rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="max-w-5xl w-full glass rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
                 <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-                    <div class="flex items-center space-x-3">
-                        <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase', priorityClass(selectedTask.priority)]">
-                            {{ selectedTask.priority }}
-                        </span>
-                        <h3 class="text-xl font-bold text-white">Заявка #{{ selectedTask.id }}</h3>
+                    <div class="flex items-center space-x-6">
+                        <div class="flex items-center space-x-3">
+                            <span :class="['px-3 py-1 rounded-full text-[10px] font-black uppercase', priorityClass(selectedTask.priority)]">
+                                {{ selectedTask.priority }}
+                            </span>
+                            <h3 class="text-xl font-bold text-white">Заявка #{{ selectedTask.id }}</h3>
+                        </div>
+                        <nav class="flex space-x-4">
+                            <button @click="taskModalTab = 'details'" :class="['text-xs font-bold pb-2 border-b-2 transition-all', taskModalTab === 'details' ? 'border-indigo-500 text-white' : 'border-transparent text-slate-500']">ДЕТАЛИ</button>
+                            <button @click="taskModalTab = 'chat'" :class="['text-xs font-bold pb-2 border-b-2 transition-all', taskModalTab === 'chat' ? 'border-indigo-500 text-white' : 'border-transparent text-slate-500']">ЧАТ С ЗАКАЗЧИКОМ</button>
+                        </nav>
                     </div>
                     <button @click="selectedTask = null" class="text-slate-500 hover:text-white p-2 transition-all"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
-                <div class="flex-1 overflow-y-auto p-8 grid grid-cols-3 gap-10">
-                    <div class="col-span-2 space-y-8">
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Описание</h4>
-                            <p class="text-slate-200 leading-relaxed">{{ selectedTask.description }}</p>
-                        </div>
-                        <div v-if="selectedTask.attachment" class="p-4 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between">
-                            <div class="flex items-center space-x-3">
-                                <i data-lucide="image" class="text-indigo-400"></i>
-                                <span class="text-sm font-medium text-slate-300">Вложение.jpg</span>
+                <div class="flex-1 overflow-hidden flex">
+                    <!-- Left Sidebar (Status Controls) -->
+                    <div class="w-72 border-r border-slate-800 p-6 bg-slate-900/20 overflow-y-auto">
+                        <h4 class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-6">Статус и Исполнитель</h4>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 block mb-2">Назначить исполнителя</label>
+                                <select v-model="selectedTask.executor_id" @change="assignExecutor" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-indigo-500">
+                                    <option value="">Не назначен</option>
+                                    <option v-for="u in executors" :key="u.id" :value="u.id">{{ u.full_name }}</option>
+                                </select>
                             </div>
-                            <a :href="'uploads/' + selectedTask.attachment" target="_blank" class="text-xs font-bold text-indigo-400 hover:underline">Открыть</a>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">История изменений</h4>
-                            <div class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-800">
-                                <div v-for="h in selectedTask.history" :key="h.at" class="relative pl-8">
-                                    <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
-                                        <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
-                                    </div>
-                                    <div class="flex items-center justify-between mb-1">
-                                        <p class="text-sm font-bold text-slate-300">{{ h.msg }}</p>
-                                        <span class="text-[10px] text-slate-600">{{ h.at }}</span>
-                                    </div>
-                                    <p class="text-xs text-slate-500">{{ h.user }}</p>
+                            <div class="pt-6 border-t border-slate-800">
+                                <label class="text-[10px] font-bold text-slate-500 block mb-2">Сменить статус</label>
+                                <div class="space-y-2">
+                                    <button v-for="s in statuses" :key="s.id" @click="updateTaskStatus(s.id)" :class="['w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all border', selectedTask.status === s.id ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700']">
+                                        {{ s.name }}
+                                    </button>
                                 </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-500 block mb-2">Обязательный комментарий</label>
+                                <textarea v-model="statusComment" placeholder="Опишите причину смены статуса..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-indigo-500 h-24"></textarea>
+                                <p class="text-[9px] text-slate-600 mt-2 italic">* При смене статуса на 'Выполнено' или 'Отклонено' комментарий обязателен.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <div class="card p-6 rounded-2xl border-indigo-500/10">
-                             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Управление</h4>
-                             <div class="space-y-4">
+
+                    <!-- Main Modal Area -->
+                    <div class="flex-1 overflow-y-auto p-8">
+                        <div v-if="taskModalTab === 'details'" class="space-y-8">
+                            <div class="grid grid-cols-2 gap-8">
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-600 block mb-2">Статус</label>
-                                    <select v-model="selectedTask.status" @change="updateTask" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500">
-                                        <option v-for="s in statuses" :key="s.id" :value="s.id">{{ s.name }}</option>
-                                    </select>
+                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Описание проблемы</h4>
+                                    <p class="text-slate-200 leading-relaxed bg-slate-900/50 p-4 rounded-2xl border border-slate-800">{{ selectedTask.description }}</p>
                                 </div>
-                                <div>
-                                    <label class="text-[10px] font-bold text-slate-600 block mb-2">Исполнитель</label>
-                                    <select v-model="selectedTask.executor_id" @change="updateTask" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500">
-                                        <option value="">Не назначен</option>
-                                        <option v-for="u in executors" :key="u.id" :value="u.id">{{ u.full_name }}</option>
-                                    </select>
+                                <div v-if="selectedTask.attachment" class="space-y-3">
+                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Фотоотчет / Документ</h4>
+                                    <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <i data-lucide="file-text" class="text-indigo-400"></i>
+                                            <span class="text-sm font-medium text-slate-300">Вложение</span>
+                                        </div>
+                                        <a :href="'uploads/' + selectedTask.attachment" target="_blank" class="text-xs font-bold text-indigo-400 hover:underline">Открыть</a>
+                                    </div>
+                                    <img :src="'uploads/' + selectedTask.attachment" class="rounded-xl border border-slate-800 max-h-48 w-full object-cover">
                                 </div>
-                             </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Журнал событий (Audit Trail)</h4>
+                                <div class="space-y-6 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-800">
+                                    <div v-for="h in selectedTask.history" :key="h.at" class="relative pl-8">
+                                        <div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center z-10">
+                                            <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                                        </div>
+                                        <div class="bg-slate-900/30 p-4 rounded-xl border border-slate-800/50">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <p class="text-sm font-bold text-slate-200">{{ h.msg }}</p>
+                                                <span class="text-[10px] text-slate-600 font-mono">{{ h.at }}</span>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-4 h-4 rounded-full bg-slate-800 text-[8px] flex items-center justify-center text-slate-400">{{ h.user[0] }}</div>
+                                                <p class="text-[10px] text-slate-500">{{ h.user }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-[10px] text-slate-600 bg-slate-900/50 p-4 rounded-xl">
-                            <p>Создана: {{ selectedTask.created_at }}</p>
-                            <p class="mt-1">Дедлайн: {{ selectedTask.deadline }}</p>
+
+                        <div v-if="taskModalTab === 'chat'" class="h-full flex flex-col">
+                            <div class="flex-1 space-y-4 mb-6">
+                                <div v-for="msg in selectedTask.messages" :key="msg.at" :class="['flex flex-col', msg.user_id == user.id ? 'items-end' : 'items-start']">
+                                    <div :class="['max-w-[80%] p-4 rounded-2xl text-sm shadow-sm', msg.user_id == user.id ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700']">
+                                        {{ msg.text }}
+                                    </div>
+                                    <span class="text-[9px] text-slate-600 mt-1 uppercase font-bold">{{ msg.user }} • {{ msg.at.split(' ')[1] }}</span>
+                                </div>
+                                <div v-if="!selectedTask.messages?.length" class="h-full flex flex-col items-center justify-center text-slate-600">
+                                    <i data-lucide="message-square" class="w-12 h-12 mb-4 opacity-20"></i>
+                                    <p class="text-sm italic">Сообщений пока нет. Начните диалог с заказчиком.</p>
+                                </div>
+                            </div>
+                            <div class="pt-6 border-t border-slate-800 flex space-x-4">
+                                <input v-model="chatMessage" @keyup.enter="sendChatMessage" placeholder="Введите сообщение..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                                <button @click="sendChatMessage" class="bg-indigo-600 hover:bg-indigo-500 p-3 rounded-xl transition-all shadow-lg shadow-indigo-900/20">
+                                    <i data-lucide="send" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

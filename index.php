@@ -17,12 +17,21 @@
         <div id="auth-container" class="p-8 hidden">
              <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-slate-900">Авторизация</h1>
-                <p class="text-slate-500">Войдите, чтобы оставить заявку</p>
+                <p class="text-slate-500 text-sm mt-1">Войдите под своим логином и паролем</p>
             </div>
             <form id="loginForm" class="space-y-4">
-                <input type="text" name="username" placeholder="Логин" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none" required>
-                <input type="password" name="password" placeholder="Пароль" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none" required>
-                <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">Войти</button>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Ваш логин</label>
+                    <input type="text" name="username" placeholder="ivanov_ii" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-indigo-500 transition-all" required>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Пароль</label>
+                    <input type="password" name="password" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:border-indigo-500 transition-all" required>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold shadow-lg shadow-slate-200 mt-4">Войти в систему</button>
+                <div class="bg-blue-50 p-3 rounded-lg text-[10px] text-blue-600 border border-blue-100 mt-4">
+                    <b>Справка:</b> Если у вас нет данных для входа, обратитесь к администратору программы для получения логина и пароля.
+                </div>
             </form>
         </div>
 
@@ -41,8 +50,8 @@
             <div id="form-container">
                 <form id="requestForm" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Объект / Отдел</label>
-                        <select name="department_id" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" required>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Куда направить заявку?</label>
+                        <select name="department_id" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" required title="Выберите отдел, который должен выполнить работу">
                             <option value="">Выберите отдел</option>
                             <option value="1">Сантехника</option>
                             <option value="2">Электрика</option>
@@ -72,6 +81,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Описание проблемы</label>
                         <textarea name="description" rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="Опишите, что именно нужно сделать..." required></textarea>
+                        <p class="text-[9px] text-slate-400 mt-1">Опишите задачу максимально подробно для ускорения выполнения.</p>
                     </div>
 
                     <div id="dynamic-fields" class="space-y-4">

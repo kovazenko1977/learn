@@ -57,22 +57,52 @@ if ($method === 'POST') {
         Auth::requireLogin();
         $existing = Storage::getById('tasks.json', $data['id']);
         if ($existing) {
-            if (isset($data['status']) && $data['status'] !== $existing['status']) {
-                $data['history'][] = [
+            // Check for new message (chat)
+            if (isset($data['new_message'])) {
+                if (!isset($existing['messages'])) $existing['messages'] = [];
+                $existing['messages'][] = [
                     'at' => date('Y-m-d H:i:s'),
-                    'msg' => "Статус изменен на: " . $data['status'],
+                    'user' => $user['full_name'],
+                    'user_id' => $user['id'],
+                    'text' => $data['new_message']
+                ];
+                $data = $existing;
+                unset($data['new_message']);
+            }
+
+            if (isset($data['status']) && $data['status'] !== $existing['status']) {
+                // For Heads and Admin changing status, comment might be required
+                if ($user['role'] !== 'admin' && empty($data['comment'])) {
+                     echo json_encode(['success' => false, 'error' => 'Комментарий обязателен при смене статуса']);
+                     exit;
+                }
+
+                $msg = "Статус изменен на: " . $data['status'];
+                if (!empty($data['comment'])) {
+                    $msg .= ". Комментарий: " . $data['comment'];
+                }
+
+                $existing['history'][] = [
+                    'at' => date('Y-m-d H:i:s'),
+                    'msg' => $msg,
                     'user' => $user['full_name']
                 ];
+                $existing['status'] = $data['status'];
+
                 // Notify creator
                 Notifier::send($existing['created_by'], "Статус вашей заявки #{$existing['id']} изменен на {$data['status']}");
+                $data = $existing;
             }
+
             if (isset($data['executor_id']) && $data['executor_id'] !== $existing['executor_id']) {
-                 $data['history'][] = [
+                 $existing['history'][] = [
                     'at' => date('Y-m-d H:i:s'),
-                    'msg' => "Назначен исполнитель",
+                    'msg' => "Назначен исполнитель: " . ($data['executor_name'] ?? 'ID '.$data['executor_id']),
                     'user' => $user['full_name']
                 ];
+                $existing['executor_id'] = $data['executor_id'];
                 Notifier::send($data['executor_id'], "Вам назначена новая заявка #{$existing['id']}");
+                $data = $existing;
             }
         }
     }

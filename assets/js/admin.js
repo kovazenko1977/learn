@@ -16,9 +16,14 @@ createApp({
             backups: [],
             clearPeriod: { start: '', end: '' },
             selectedTask: null,
+            taskModalTab: 'details', // 'details' or 'chat'
+            statusComment: '',
+            chatMessage: '',
             userModal: null,
             deptModal: null,
             menu: [],
+            searchQuery: '',
+            templateName: '',
             statuses: [
                 { id: 'new', name: 'Новые', color: 'bg-blue-500' },
                 { id: 'assigned', name: 'В работе', color: 'bg-amber-500' },
@@ -104,6 +109,7 @@ createApp({
             } else if (this.user.role === 'head') {
                 m.push({ id: 'users', name: 'Мой отдел', icon: 'users' });
             }
+            m.push({ id: 'profile', name: 'Профиль', icon: 'user' });
             this.menu = m;
         },
         async loadData() {
@@ -124,7 +130,13 @@ createApp({
             this.$nextTick(() => lucide.createIcons());
         },
         filteredTasks(statusId) {
-            return this.tasks.filter(t => t.status === statusId);
+            return this.tasks.filter(t => {
+                const matchStatus = t.status === statusId;
+                const matchSearch = !this.searchQuery ||
+                                   t.id.toString().includes(this.searchQuery) ||
+                                   t.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+                return matchStatus && matchSearch;
+            });
         },
         priorityClass(p) {
             if (p === 'high') return 'bg-red-500/20 text-red-400 border border-red-500/30';
@@ -140,14 +152,58 @@ createApp({
         },
         openTask(task) {
             this.selectedTask = { ...task };
+            this.taskModalTab = 'details';
+            this.statusComment = '';
+            this.chatMessage = '';
             this.$nextTick(() => lucide.createIcons());
         },
-        async updateTask() {
+        async updateTaskStatus(newStatus) {
+            if (this.user.role !== 'admin' && !this.statusComment) {
+                alert('Пожалуйста, оставьте комментарий при смене статуса');
+                return;
+            }
+            const res = await this.api('api/tasks.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    id: this.selectedTask.id,
+                    status: newStatus,
+                    comment: this.statusComment
+                })
+            });
+            if (res.success) {
+                this.statusComment = '';
+                this.loadData();
+                this.selectedTask = this.tasks.find(t => t.id === this.selectedTask.id);
+            } else {
+                alert(res.error || 'Ошибка обновления статуса');
+            }
+        },
+        async assignExecutor() {
+            const exec = this.executors.find(e => e.id == this.selectedTask.executor_id);
             await this.api('api/tasks.php', {
                 method: 'POST',
-                body: JSON.stringify(this.selectedTask)
+                body: JSON.stringify({
+                    id: this.selectedTask.id,
+                    executor_id: this.selectedTask.executor_id,
+                    executor_name: exec ? exec.full_name : ''
+                })
             });
             this.loadData();
+        },
+        async sendChatMessage() {
+            if (!this.chatMessage) return;
+            const res = await this.api('api/tasks.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    id: this.selectedTask.id,
+                    new_message: this.chatMessage
+                })
+            });
+            if (res.success) {
+                this.chatMessage = '';
+                this.loadData();
+                this.selectedTask = this.tasks.find(t => t.id === this.selectedTask.id);
+            }
         },
         addField() {
             if (!this.settings.form_fields) this.settings.form_fields = [];
@@ -162,6 +218,26 @@ createApp({
                 body: JSON.stringify(this.settings)
             });
             alert('Настройки сохранены');
+        },
+        async saveFormAsTemplate() {
+            if (!this.templateName) {
+                alert('Введите название шаблона');
+                return;
+            }
+            await this.api('api/settings.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'save_template',
+                    name: this.templateName,
+                    fields: this.settings.form_fields
+                })
+            });
+            this.templateName = '';
+            this.loadData();
+            alert('Шаблон сохранен');
+        },
+        applyTemplate(tpl) {
+            this.settings.form_fields = [...tpl.fields];
         },
         openUserModal(user) {
             this.userModal = user ? { ...user, password: '' } : { username: '', full_name: '', role: 'employee', password: '', department_id: this.user.role === 'head' ? this.user.department_id : '' };
@@ -213,6 +289,11 @@ createApp({
             }
         },
         async deleteUser(id) {
+            const hasTasks = this.tasks.some(t => t.created_by == id || t.executor_id == id);
+            if (hasTasks) {
+                alert('Нельзя удалить сотрудника, у которого есть связанные заявки. Рекомендуется просто сменить ему пароль или роль.');
+                return;
+            }
             if (confirm('Удалить сотрудника?')) {
                 await this.api(`api/register.php?id=${id}`, { method: 'DELETE' });
                 this.loadData();
@@ -240,6 +321,13 @@ createApp({
                 this.loadData();
                 alert('Демо-данные успешно созданы');
             }
+        },
+        async updateProfile() {
+            const res = await this.api('api/register.php', {
+                method: 'POST',
+                body: JSON.stringify(this.user)
+            });
+            if (res.success) alert('Профиль обновлен');
         },
         exportCSV() {
             window.location.href = 'admin.php?export=csv';

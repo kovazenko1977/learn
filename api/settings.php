@@ -26,6 +26,19 @@ if ($method === 'POST') {
     Auth::requireAdmin();
     $data = json_decode(file_get_contents('php://input'), true);
     $settings = Storage::read('settings.json');
+
+    if (isset($data['action']) && $data['action'] === 'save_template') {
+        if (!isset($settings['form_templates'])) $settings['form_templates'] = [];
+        $settings['form_templates'][] = [
+            'id' => uniqid(),
+            'name' => $data['name'],
+            'fields' => $data['fields']
+        ];
+        Storage::write('settings.json', $settings);
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
     $newSettings = array_merge($settings, $data);
     Storage::write('settings.json', $newSettings);
     echo json_encode(['success' => true]);
