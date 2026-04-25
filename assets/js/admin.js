@@ -189,7 +189,7 @@ createApp({
             selectedTask, newComment,
             availableTabs, statusTranslations,
             login, logout, dragTask, dropTask, priorityClass, statusColor, formatDate, filteredTasks,
-            assignTask, removeField, addField, saveSettings, viewTask, updateTaskStatus, addComment
+            assignTask, removeField, addField, saveSettings, viewTask, updateTaskStatus, addComment, fetchData
         }
     }
 }).mount('#app');

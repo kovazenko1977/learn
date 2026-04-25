@@ -1,10 +1,10 @@
-[Sat Apr 25 08:28:28 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
-[Sat Apr 25 08:28:30 2026] [::1]:52158 Accepted
-[Sat Apr 25 08:28:30 2026] [::1]:52158 [200]: POST /api/auth.php
-[Sat Apr 25 08:28:30 2026] [::1]:52158 Closing
-[Sat Apr 25 08:28:30 2026] [::1]:52160 Accepted
-[Sat Apr 25 08:28:30 2026] [::1]:52160 [200]: POST /api/tasks.php?action=add_comment
-[Sat Apr 25 08:28:30 2026] [::1]:52160 Closing
-[Sat Apr 25 08:28:30 2026] [::1]:52162 Accepted
-[Sat Apr 25 08:28:30 2026] [::1]:52162 [200]: GET /api/dashboard.php
-[Sat Apr 25 08:28:30 2026] [::1]:52162 Closing
+[Sat Apr 25 12:58:42 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
+[Sat Apr 25 12:58:44 2026] [::1]:49364 Accepted
+[Sat Apr 25 12:58:44 2026] [::1]:49364 [401]: POST /api/tasks.php?action=create
+[Sat Apr 25 12:58:44 2026] [::1]:49364 Closing
+[Sat Apr 25 12:58:44 2026] [::1]:49366 Accepted
+[Sat Apr 25 12:58:44 2026] [::1]:49366 [200]: POST /api/auth.php
+[Sat Apr 25 12:58:44 2026] [::1]:49366 Closing
+[Sat Apr 25 12:58:44 2026] [::1]:49382 Accepted
+[Sat Apr 25 12:58:44 2026] [::1]:49382 [200]: POST /api/tasks.php?action=create
+[Sat Apr 25 12:58:44 2026] [::1]:49382 Closing

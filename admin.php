@@ -14,29 +14,10 @@
         .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200">
+<body class="bg-slate-900 text-slate-200">
     <div id="app" v-cloak class="min-h-screen flex flex-col">
-        <!-- Login Overlay -->
-        <div v-if="!token" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
-            <div class="w-full max-w-md glass border border-slate-800 p-8 rounded-2xl shadow-2xl">
-                <h2 class="text-3xl font-bold text-white mb-6 text-center">Вход в CRM</h2>
-                <form @submit.prevent="login" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Логин</label>
-                        <input v-model="loginForm.username" type="text" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Пароль</label>
-                        <input v-model="loginForm.password" type="password" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg transition-all mt-4">Войти</button>
-                    <p v-if="error" class="text-red-400 text-sm text-center mt-4">{{ error }}</p>
-                </form>
-            </div>
-        </div>
-
         <!-- Header -->
-        <header v-if="token" class="h-16 border-b border-slate-800 flex items-center justify-between px-6 glass sticky top-0 z-40">
+        <header v-if="token" class="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-900 sticky top-0 z-40">
             <div class="flex items-center space-x-4">
                 <span class="text-xl font-bold text-white">Service <span class="text-blue-500">CRM PRO</span></span>
             </div>

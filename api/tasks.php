@@ -10,8 +10,10 @@ $settings = $storage->getSettings();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// Public endpoint for creating tasks
-if ($method === 'POST' && $action === 'create_public') {
+// All task endpoints are now protected
+$user = Auth::authenticate();
+
+if ($method === 'POST' && $action === 'create') {
     $data = json_decode(file_get_contents('php://input'), true);
     $tasks = $storage->read('tasks');
 
@@ -20,12 +22,13 @@ if ($method === 'POST' && $action === 'create_public') {
         'status' => 'New',
         'priority' => $data['priority'] ?? 'Medium',
         'created_at' => date('Y-m-d H:i:s'),
-        'creator' => $data['f_name'] ?? 'Guest',
-        'fields' => $data, // Store all form fields
+        'creator' => $user['full_name'],
+        'creator_id' => $user['id'],
+        'fields' => $data,
         'assigned_to' => null,
         'comments' => [],
         'history' => [
-            ['at' => date('Y-m-d H:i:s'), 'by' => 'System', 'msg' => 'Task created via public form']
+            ['at' => date('Y-m-d H:i:s'), 'by' => $user['full_name'], 'msg' => 'Task created']
         ]
     ];
 
@@ -37,9 +40,6 @@ if ($method === 'POST' && $action === 'create_public') {
     echo json_encode(['success' => true, 'id' => $newTask['id']]);
     exit;
 }
-
-// Protected endpoints
-$user = Auth::authenticate();
 
 if ($method === 'GET') {
     $tasks = $storage->read('tasks');
