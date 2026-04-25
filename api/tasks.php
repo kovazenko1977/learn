@@ -21,6 +21,23 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 if ($method === 'GET') {
+    if ($action === 'history') {
+        $taskId = $_GET['task_id'] ?? 0;
+        $allHistory = $storage->get('history');
+        $taskHistory = array_filter($allHistory, fn($h) => $h['task_id'] == $taskId);
+
+        $users = $storage->get('users');
+        $userMap = [];
+        foreach ($users as $u) $userMap[$u['id']] = $u['full_name'];
+
+        foreach ($taskHistory as &$h) {
+            $h['user_name'] = $userMap[$h['user_id']] ?? 'Unknown';
+        }
+
+        echo json_encode(array_values($taskHistory));
+        exit;
+    }
+
     if ($action === 'comments') {
         $taskId = $_GET['task_id'] ?? 0;
         $allComments = $storage->get('comments');
@@ -86,6 +103,20 @@ if ($method === 'GET') {
 
         if (isset($input['status']) && $input['status'] !== $existing['status']) {
             $notifier->notifyStatusChange($existing, $input['status']);
+
+            // Log history
+            $history = [
+                'task_id' => $existing['id'],
+                'user_id' => $user['id'],
+                'old_status' => $existing['status'],
+                'new_status' => $input['status'],
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            $storage->save('history', $history);
+
+            if ($input['status'] === 'completed') {
+                $input['completed_at'] = date('Y-m-d H:i:s');
+            }
         }
     }
 

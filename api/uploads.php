@@ -16,8 +16,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
     $file = $_FILES['file'];
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $newName = uniqid() . '.' . $ext;
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    // Whitelist
+    $allowedExts = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
+    if (!in_array($ext, $allowedExts)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid file extension']);
+        exit;
+    }
+
+    // MIME Check
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    $allowedMimes = [
+        'image/jpeg', 'image/png', 'application/pdf',
+        'text/plain', 'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+
+    if (!in_array($mime, $allowedMimes)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid file content']);
+        exit;
+    }
+
+    $newName = bin2hex(random_bytes(16)) . '.' . $ext;
     $target = $uploadDir . $newName;
 
     if (move_uploaded_file($file['tmp_name'], $target)) {

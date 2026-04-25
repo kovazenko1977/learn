@@ -26,6 +26,7 @@ createApp({
             filterPriority: '',
             selectedTask: null,
             comments: [],
+            history: [],
             newComment: '',
             isDarkMode: false,
             profileForm: { currentPassword: '', newPassword: '' },
@@ -44,6 +45,21 @@ createApp({
             });
             const max = Math.max(...load.map(l => l.count), 1);
             return load.map(l => ({ ...l, percent: (l.count / max) * 100 }));
+        },
+        avgCompletionTime() {
+            const completed = this.tasks.filter(t => t.status === 'completed' && t.completed_at);
+            if (!completed.length) return 0;
+            const total = completed.reduce((acc, t) => {
+                const diff = new Date(t.completed_at) - new Date(t.created_at);
+                return acc + diff;
+            }, 0);
+            return Math.round(total / completed.length / (1000 * 60 * 60)); // hours
+        },
+        slaCompliance() {
+            const completed = this.tasks.filter(t => t.status === 'completed');
+            if (!completed.length) return 0;
+            const inTime = completed.filter(t => new Date(t.completed_at) <= new Date(t.deadline)).length;
+            return Math.round((inTime / completed.length) * 100);
         }
     },
     methods: {
@@ -170,10 +186,16 @@ createApp({
         },
         async openTask(task) {
             this.selectedTask = task;
-            const res = await fetch(`api/tasks.php?action=comments&task_id=${task.id}`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            });
-            this.comments = await res.json();
+            const [commRes, histRes] = await Promise.all([
+                fetch(`api/tasks.php?action=comments&task_id=${task.id}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                }),
+                fetch(`api/tasks.php?action=history&task_id=${task.id}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                })
+            ]);
+            this.comments = await commRes.json();
+            this.history = await histRes.json();
         },
         async updatePassword() {
             const res = await fetch('api/auth.php?action=change_password', {

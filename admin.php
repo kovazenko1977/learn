@@ -240,6 +240,21 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="card bg-slate-900 text-white">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">Ср. время выполнения</p>
+                                    <h3 class="text-3xl font-black">{{ avgCompletionTime }}ч</h3>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-slate-400 text-xs font-bold uppercase mb-1">SLA Compliance</p>
+                                    <h3 class="text-3xl font-black text-green-400">{{ slaCompliance }}%</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="card">
                             <h3 class="text-xl font-bold mb-6">Загрузка исполнителей</h3>
                             <div class="space-y-4">
@@ -270,6 +285,83 @@
                     </div>
                 </div>
             </main>
+
+            <!-- Task Detail Modal -->
+            <div v-if="selectedTask" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+                <div class="max-w-4xl w-full max-h-[90vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+                    <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                        <div>
+                            <span class="badge mb-2 block" :class="'status-' + selectedTask.status">{{ selectedTask.status }}</span>
+                            <h2 class="text-2xl font-bold">#{{ selectedTask.id }} {{ selectedTask.title }}</h2>
+                        </div>
+                        <button @click="selectedTask = null" class="text-slate-400 hover:text-slate-900 text-3xl">✕</button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2 space-y-6">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Описание</h4>
+                                <p class="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{{ selectedTask.description }}</p>
+                            </div>
+                            <div v-if="selectedTask.attachment" class="mt-4">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Вложение</h4>
+                                <a :href="selectedTask.attachment" target="_blank" class="flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                                    <span class="text-sm font-medium">Посмотреть файл</span>
+                                </a>
+                            </div>
+                            <div class="pt-8 border-t border-slate-100 dark:border-slate-800">
+                                <h4 class="text-lg font-bold mb-4">Комментарии</h4>
+                                <div class="space-y-4 mb-6">
+                                    <div v-for="c in comments" :key="c.id" class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-xs font-bold text-blue-600">{{ c.user_name || 'User' }}</span>
+                                            <span class="text-[10px] text-slate-400">{{ formatDate(c.created_at) }}</span>
+                                        </div>
+                                        <p class="text-sm text-slate-700 dark:text-slate-300">{{ c.text }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <textarea v-model="newComment" class="input-field flex-1" placeholder="Ваш комментарий..." rows="2"></textarea>
+                                    <button @click="addComment" class="btn-primary !px-4 self-end">Отправить</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-8 bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-2">Приоритет</h4>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full" :class="'bg-' + (selectedTask.priority === 'urgent' ? 'red' : selectedTask.priority === 'high' ? 'orange' : 'blue') + '-500'"></div>
+                                    <span class="font-bold uppercase text-xs">{{ selectedTask.priority }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-2">Дедлайн (SLA)</h4>
+                                <p class="font-mono text-sm" :class="isLate(selectedTask.deadline) ? 'text-red-500 font-bold' : ''">{{ formatDate(selectedTask.deadline) }}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-2">Исполнитель</h4>
+                                <div v-if="canAssign">
+                                     <select :value="selectedTask.executor_id" @change="assignTask(selectedTask, $event.target.value)" class="input-field !text-xs">
+                                         <option :value="null">Не назначен</option>
+                                         <option v-for="u in executors" :key="u.id" :value="u.id">{{ u.full_name }}</option>
+                                     </select>
+                                </div>
+                                <p v-else class="text-sm font-medium">{{ selectedTask.executor_name || 'Не назначен' }}</p>
+                            </div>
+                            <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-4">История</h4>
+                                <div class="space-y-3">
+                                    <div v-for="h in history" :key="h.id" class="text-[10px] leading-tight">
+                                        <span class="text-slate-400 block">{{ formatDate(h.created_at) }}</span>
+                                        <span class="font-bold text-blue-600">{{ h.user_name }}</span>:
+                                        {{ h.old_status }} ➝ {{ h.new_status }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </template>
     </div>
 

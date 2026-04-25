@@ -30,20 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $auth->requireAuth();
         $user = $auth->getUser();
 
-        $users = $storage->get('users');
-        $found = false;
-        foreach ($users as &$u) {
-            if ($u['id'] == $user['id']) {
-                if (password_verify($input['currentPassword'], $u['password_hash'])) {
-                    $u['password_hash'] = password_hash($input['newPassword'], PASSWORD_DEFAULT);
-                    $found = true;
-                }
-                break;
-            }
-        }
-
-        if ($found) {
-            $storage->atomicWrite('users', $users);
+        $dbUser = $storage->find('users', $user['id']);
+        if ($dbUser && password_verify($input['currentPassword'], $dbUser['password_hash'])) {
+            $dbUser['password_hash'] = password_hash($input['newPassword'], PASSWORD_DEFAULT);
+            $storage->save('users', $dbUser);
             echo json_encode(['success' => true]);
         } else {
             http_response_code(400);

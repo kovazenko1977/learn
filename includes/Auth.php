@@ -31,16 +31,11 @@ class Auth {
 
     public function login($username, $password) {
         $users = $this->storage->get('users');
-        // Admin super password check from memory
-        if ($username === 'admin' && $password === 'DataEntry') {
-             $user = ['id' => 1, 'username' => 'admin', 'role' => 'admin', 'full_name' => 'Super Admin'];
-        } else {
-            $user = null;
-            foreach ($users as $u) {
-                if ($u['username'] === $username && password_verify($password, $u['password_hash'])) {
-                    $user = $u;
-                    break;
-                }
+        $user = null;
+        foreach ($users as $u) {
+            if ($u['username'] === $username && password_verify($password, $u['password_hash'])) {
+                $user = $u;
+                break;
             }
         }
 

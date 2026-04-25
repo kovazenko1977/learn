@@ -63,6 +63,17 @@ class Storage {
             FOREIGN KEY (task_id) REFERENCES tasks(id),
             FOREIGN KEY (user_id) REFERENCES users(id)
         )");
+
+        $this->pdo->exec("CREATE TABLE IF NOT EXISTS history (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            task_id INT,
+            user_id INT,
+            old_status VARCHAR(50),
+            new_status VARCHAR(50),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (task_id) REFERENCES tasks(id),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )");
     }
 
     public function get($collection) {

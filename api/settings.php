@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     unset($publicSettings['admin_password_hash']);
     unset($publicSettings['mysql']);
     unset($publicSettings['JWT_SECRET']);
+    unset($publicSettings['telegram_bot_token']);
+    unset($publicSettings['telegram_chat_id']);
 
     echo json_encode($publicSettings);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
