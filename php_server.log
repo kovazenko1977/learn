@@ -128,3 +128,27 @@
 [Sat Apr 25 19:32:31 2026] 127.0.0.1:56354 Accepted
 [Sat Apr 25 19:32:31 2026] 127.0.0.1:56354 [200]: GET /api/admin_actions.php?action=list_backups
 [Sat Apr 25 19:32:31 2026] 127.0.0.1:56354 Closing
+[Sat Apr 25 19:50:23 2026] 127.0.0.1:40508 Accepted
+[Sat Apr 25 19:50:24 2026] 127.0.0.1:40508 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 19:50:24 2026] 127.0.0.1:40508 Closing
+[Sat Apr 25 19:50:24 2026] 127.0.0.1:40520 Accepted
+[Sat Apr 25 19:50:24 2026] 127.0.0.1:40520 [200]: GET /api/demo_data.php
+[Sat Apr 25 19:50:24 2026] 127.0.0.1:40520 Closing
+[Sat Apr 25 19:50:46 2026] 127.0.0.1:46028 Accepted
+[Sat Apr 25 19:50:46 2026] 127.0.0.1:46028 [200]: GET /admin.php
+[Sat Apr 25 19:50:46 2026] 127.0.0.1:46028 Closing
+[Sat Apr 25 19:50:46 2026] 127.0.0.1:46032 Accepted
+[Sat Apr 25 19:50:46 2026] 127.0.0.1:46032 [200]: GET /assets/js/admin.js
+[Sat Apr 25 19:50:46 2026] 127.0.0.1:46032 Closing
+[Sat Apr 25 19:50:47 2026] 127.0.0.1:46036 Accepted
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46036 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46036 Closing
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46052 Accepted
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46052 [200]: GET /api/tasks.php
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46052 Closing
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46066 Accepted
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46066 [200]: GET /api/settings.php
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46066 Closing
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46068 Accepted
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46068 [200]: GET /api/register.php
+[Sat Apr 25 19:50:48 2026] 127.0.0.1:46068 Closing

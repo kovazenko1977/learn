@@ -1,17 +1,17 @@
 [
     {
         "id": 1001,
-        "department_id": 2,
+        "department_id": 4,
         "priority": "medium",
-        "status": "completed",
-        "description": "Демонстрационная заявка #1 для отдела Электрика",
-        "created_at": "2026-04-12 12:31:52",
+        "status": "new",
+        "description": "Демонстрационная заявка #1 для отдела Мебель",
+        "created_at": "2026-04-02 04:50:24",
         "created_by": 5,
-        "deadline": "2026-04-14 12:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-04 04:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-12 12:31:52",
+                "at": "2026-04-02 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -20,16 +20,16 @@
     {
         "id": 1002,
         "department_id": 4,
-        "priority": "high",
-        "status": "completed",
+        "priority": "low",
+        "status": "assigned",
         "description": "Демонстрационная заявка #2 для отдела Мебель",
-        "created_at": "2026-03-30 12:31:52",
+        "created_at": "2026-03-30 11:50:24",
         "created_by": 5,
-        "deadline": "2026-04-01 12:31:52",
+        "deadline": "2026-04-01 11:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-03-30 12:31:52",
+                "at": "2026-03-30 11:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -37,17 +37,17 @@
     },
     {
         "id": 1003,
-        "department_id": 3,
-        "priority": "high",
-        "status": "new",
-        "description": "Демонстрационная заявка #3 для отдела Оборудование",
-        "created_at": "2026-04-22 02:31:52",
+        "department_id": 4,
+        "priority": "low",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #3 для отдела Мебель",
+        "created_at": "2026-04-25 17:50:24",
         "created_by": 5,
-        "deadline": "2026-04-24 02:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-27 17:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-22 02:31:52",
+                "at": "2026-04-25 17:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -55,17 +55,17 @@
     },
     {
         "id": 1004,
-        "department_id": 1,
-        "priority": "low",
-        "status": "completed",
-        "description": "Демонстрационная заявка #4 для отдела Сантехника",
-        "created_at": "2026-04-11 16:31:52",
+        "department_id": 3,
+        "priority": "medium",
+        "status": "new",
+        "description": "Демонстрационная заявка #4 для отдела Оборудование",
+        "created_at": "2026-04-11 15:50:24",
         "created_by": 5,
-        "deadline": "2026-04-13 16:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-13 15:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-11 16:31:52",
+                "at": "2026-04-11 15:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -73,17 +73,17 @@
     },
     {
         "id": 1005,
-        "department_id": 4,
-        "priority": "medium",
+        "department_id": 3,
+        "priority": "high",
         "status": "assigned",
-        "description": "Демонстрационная заявка #5 для отдела Мебель",
-        "created_at": "2026-04-24 05:31:52",
+        "description": "Демонстрационная заявка #5 для отдела Оборудование",
+        "created_at": "2026-04-05 15:50:24",
         "created_by": 5,
-        "deadline": "2026-04-26 05:31:52",
+        "deadline": "2026-04-07 15:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-24 05:31:52",
+                "at": "2026-04-05 15:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -91,17 +91,17 @@
     },
     {
         "id": 1006,
-        "department_id": 4,
+        "department_id": 2,
         "priority": "high",
-        "status": "completed",
-        "description": "Демонстрационная заявка #6 для отдела Мебель",
-        "created_at": "2026-04-18 21:31:52",
+        "status": "new",
+        "description": "Демонстрационная заявка #6 для отдела Электрика",
+        "created_at": "2026-03-27 21:50:24",
         "created_by": 5,
-        "deadline": "2026-04-20 21:31:52",
-        "executor_id": 4,
+        "deadline": "2026-03-29 21:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-18 21:31:52",
+                "at": "2026-03-27 21:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -109,17 +109,17 @@
     },
     {
         "id": 1007,
-        "department_id": 3,
+        "department_id": 1,
         "priority": "medium",
-        "status": "new",
-        "description": "Демонстрационная заявка #7 для отдела Оборудование",
-        "created_at": "2026-04-20 02:31:52",
+        "status": "completed",
+        "description": "Демонстрационная заявка #7 для отдела Сантехника",
+        "created_at": "2026-04-08 17:50:24",
         "created_by": 5,
-        "deadline": "2026-04-22 02:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-10 17:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-20 02:31:52",
+                "at": "2026-04-08 17:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -127,17 +127,17 @@
     },
     {
         "id": 1008,
-        "department_id": 3,
-        "priority": "medium",
-        "status": "new",
-        "description": "Демонстрационная заявка #8 для отдела Оборудование",
-        "created_at": "2026-04-07 05:31:52",
+        "department_id": 4,
+        "priority": "low",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #8 для отдела Мебель",
+        "created_at": "2026-04-17 19:50:24",
         "created_by": 5,
-        "deadline": "2026-04-09 05:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-19 19:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-07 05:31:52",
+                "at": "2026-04-17 19:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -145,17 +145,17 @@
     },
     {
         "id": 1009,
-        "department_id": 1,
-        "priority": "low",
-        "status": "completed",
-        "description": "Демонстрационная заявка #9 для отдела Сантехника",
-        "created_at": "2026-03-31 20:31:52",
+        "department_id": 3,
+        "priority": "high",
+        "status": "new",
+        "description": "Демонстрационная заявка #9 для отдела Оборудование",
+        "created_at": "2026-04-12 14:50:24",
         "created_by": 5,
-        "deadline": "2026-04-02 20:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-14 14:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-03-31 20:31:52",
+                "at": "2026-04-12 14:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -164,16 +164,16 @@
     {
         "id": 1010,
         "department_id": 4,
-        "priority": "low",
-        "status": "assigned",
+        "priority": "medium",
+        "status": "new",
         "description": "Демонстрационная заявка #10 для отдела Мебель",
-        "created_at": "2026-04-23 19:31:52",
+        "created_at": "2026-04-22 16:50:24",
         "created_by": 5,
-        "deadline": "2026-04-25 19:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-24 16:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-23 19:31:52",
+                "at": "2026-04-22 16:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -182,16 +182,16 @@
     {
         "id": 1011,
         "department_id": 1,
-        "priority": "low",
+        "priority": "high",
         "status": "new",
         "description": "Демонстрационная заявка #11 для отдела Сантехника",
-        "created_at": "2026-04-16 05:31:52",
+        "created_at": "2026-03-26 21:50:24",
         "created_by": 5,
-        "deadline": "2026-04-18 05:31:52",
+        "deadline": "2026-03-28 21:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-16 05:31:52",
+                "at": "2026-03-26 21:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -199,17 +199,17 @@
     },
     {
         "id": 1012,
-        "department_id": 4,
-        "priority": "medium",
-        "status": "assigned",
-        "description": "Демонстрационная заявка #12 для отдела Мебель",
-        "created_at": "2026-03-29 11:31:52",
+        "department_id": 1,
+        "priority": "high",
+        "status": "new",
+        "description": "Демонстрационная заявка #12 для отдела Сантехника",
+        "created_at": "2026-03-30 04:50:24",
         "created_by": 5,
-        "deadline": "2026-03-31 11:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-01 04:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-03-29 11:31:52",
+                "at": "2026-03-30 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -217,17 +217,17 @@
     },
     {
         "id": 1013,
-        "department_id": 1,
+        "department_id": 2,
         "priority": "medium",
         "status": "new",
-        "description": "Демонстрационная заявка #13 для отдела Сантехника",
-        "created_at": "2026-04-03 16:31:52",
+        "description": "Демонстрационная заявка #13 для отдела Электрика",
+        "created_at": "2026-04-18 16:50:24",
         "created_by": 5,
-        "deadline": "2026-04-05 16:31:52",
+        "deadline": "2026-04-20 16:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-03 16:31:52",
+                "at": "2026-04-18 16:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -235,17 +235,17 @@
     },
     {
         "id": 1014,
-        "department_id": 3,
-        "priority": "high",
-        "status": "assigned",
-        "description": "Демонстрационная заявка #14 для отдела Оборудование",
-        "created_at": "2026-04-22 00:31:52",
+        "department_id": 1,
+        "priority": "medium",
+        "status": "new",
+        "description": "Демонстрационная заявка #14 для отдела Сантехника",
+        "created_at": "2026-04-14 07:50:24",
         "created_by": 5,
-        "deadline": "2026-04-24 00:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-16 07:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-22 00:31:52",
+                "at": "2026-04-14 07:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -253,17 +253,17 @@
     },
     {
         "id": 1015,
-        "department_id": 1,
-        "priority": "high",
-        "status": "new",
-        "description": "Демонстрационная заявка #15 для отдела Сантехника",
-        "created_at": "2026-04-11 20:31:52",
+        "department_id": 3,
+        "priority": "medium",
+        "status": "completed",
+        "description": "Демонстрационная заявка #15 для отдела Оборудование",
+        "created_at": "2026-04-12 03:50:24",
         "created_by": 5,
-        "deadline": "2026-04-13 20:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-14 03:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-11 20:31:52",
+                "at": "2026-04-12 03:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -271,17 +271,17 @@
     },
     {
         "id": 1016,
-        "department_id": 1,
+        "department_id": 2,
         "priority": "high",
-        "status": "new",
-        "description": "Демонстрационная заявка #16 для отдела Сантехника",
-        "created_at": "2026-04-07 06:31:52",
+        "status": "completed",
+        "description": "Демонстрационная заявка #16 для отдела Электрика",
+        "created_at": "2026-04-18 06:50:24",
         "created_by": 5,
-        "deadline": "2026-04-09 06:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-20 06:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-07 06:31:52",
+                "at": "2026-04-18 06:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -289,17 +289,17 @@
     },
     {
         "id": 1017,
-        "department_id": 1,
+        "department_id": 2,
         "priority": "high",
-        "status": "assigned",
-        "description": "Демонстрационная заявка #17 для отдела Сантехника",
-        "created_at": "2026-04-25 16:31:52",
+        "status": "completed",
+        "description": "Демонстрационная заявка #17 для отдела Электрика",
+        "created_at": "2026-04-08 09:50:24",
         "created_by": 5,
-        "deadline": "2026-04-27 16:31:52",
+        "deadline": "2026-04-10 09:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-25 16:31:52",
+                "at": "2026-04-08 09:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -307,17 +307,17 @@
     },
     {
         "id": 1018,
-        "department_id": 3,
-        "priority": "medium",
-        "status": "assigned",
-        "description": "Демонстрационная заявка #18 для отдела Оборудование",
-        "created_at": "2026-04-11 04:31:52",
+        "department_id": 2,
+        "priority": "high",
+        "status": "new",
+        "description": "Демонстрационная заявка #18 для отдела Электрика",
+        "created_at": "2026-04-16 21:50:24",
         "created_by": 5,
-        "deadline": "2026-04-13 04:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-18 21:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-11 04:31:52",
+                "at": "2026-04-16 21:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -325,17 +325,17 @@
     },
     {
         "id": 1019,
-        "department_id": 4,
+        "department_id": 3,
         "priority": "medium",
-        "status": "new",
-        "description": "Демонстрационная заявка #19 для отдела Мебель",
-        "created_at": "2026-04-26 01:31:52",
+        "status": "completed",
+        "description": "Демонстрационная заявка #19 для отдела Оборудование",
+        "created_at": "2026-03-28 08:50:24",
         "created_by": 5,
-        "deadline": "2026-04-28 01:31:52",
-        "executor_id": null,
+        "deadline": "2026-03-30 08:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-26 01:31:52",
+                "at": "2026-03-28 08:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -343,17 +343,17 @@
     },
     {
         "id": 1020,
-        "department_id": 2,
+        "department_id": 1,
         "priority": "low",
-        "status": "new",
-        "description": "Демонстрационная заявка #20 для отдела Электрика",
-        "created_at": "2026-04-15 20:31:52",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #20 для отдела Сантехника",
+        "created_at": "2026-04-01 10:50:24",
         "created_by": 5,
-        "deadline": "2026-04-17 20:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-03 10:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-15 20:31:52",
+                "at": "2026-04-01 10:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -362,16 +362,16 @@
     {
         "id": 1021,
         "department_id": 3,
-        "priority": "medium",
+        "priority": "low",
         "status": "new",
         "description": "Демонстрационная заявка #21 для отдела Оборудование",
-        "created_at": "2026-04-24 03:31:52",
+        "created_at": "2026-04-09 04:50:24",
         "created_by": 5,
-        "deadline": "2026-04-26 03:31:52",
+        "deadline": "2026-04-11 04:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-24 03:31:52",
+                "at": "2026-04-09 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -379,17 +379,17 @@
     },
     {
         "id": 1022,
-        "department_id": 4,
-        "priority": "medium",
+        "department_id": 3,
+        "priority": "low",
         "status": "new",
-        "description": "Демонстрационная заявка #22 для отдела Мебель",
-        "created_at": "2026-04-13 10:31:52",
+        "description": "Демонстрационная заявка #22 для отдела Оборудование",
+        "created_at": "2026-04-05 06:50:24",
         "created_by": 5,
-        "deadline": "2026-04-15 10:31:52",
+        "deadline": "2026-04-07 06:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-13 10:31:52",
+                "at": "2026-04-05 06:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -399,15 +399,15 @@
         "id": 1023,
         "department_id": 1,
         "priority": "high",
-        "status": "completed",
+        "status": "assigned",
         "description": "Демонстрационная заявка #23 для отдела Сантехника",
-        "created_at": "2026-04-25 00:31:52",
+        "created_at": "2026-04-09 15:50:24",
         "created_by": 5,
-        "deadline": "2026-04-27 00:31:52",
+        "deadline": "2026-04-11 15:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-25 00:31:52",
+                "at": "2026-04-09 15:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -415,17 +415,17 @@
     },
     {
         "id": 1024,
-        "department_id": 4,
-        "priority": "high",
-        "status": "completed",
-        "description": "Демонстрационная заявка #24 для отдела Мебель",
-        "created_at": "2026-03-30 15:31:52",
+        "department_id": 3,
+        "priority": "medium",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #24 для отдела Оборудование",
+        "created_at": "2026-04-09 06:50:24",
         "created_by": 5,
-        "deadline": "2026-04-01 15:31:52",
+        "deadline": "2026-04-11 06:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-03-30 15:31:52",
+                "at": "2026-04-09 06:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -433,17 +433,17 @@
     },
     {
         "id": 1025,
-        "department_id": 4,
+        "department_id": 2,
         "priority": "medium",
-        "status": "completed",
-        "description": "Демонстрационная заявка #25 для отдела Мебель",
-        "created_at": "2026-04-17 11:31:52",
+        "status": "new",
+        "description": "Демонстрационная заявка #25 для отдела Электрика",
+        "created_at": "2026-04-25 16:50:24",
         "created_by": 5,
-        "deadline": "2026-04-19 11:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-27 16:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-17 11:31:52",
+                "at": "2026-04-25 16:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -451,17 +451,17 @@
     },
     {
         "id": 1026,
-        "department_id": 2,
+        "department_id": 1,
         "priority": "medium",
-        "status": "completed",
-        "description": "Демонстрационная заявка #26 для отдела Электрика",
-        "created_at": "2026-04-08 03:31:52",
+        "status": "new",
+        "description": "Демонстрационная заявка #26 для отдела Сантехника",
+        "created_at": "2026-04-15 03:50:24",
         "created_by": 5,
-        "deadline": "2026-04-10 03:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-17 03:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-08 03:31:52",
+                "at": "2026-04-15 03:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -470,16 +470,16 @@
     {
         "id": 1027,
         "department_id": 1,
-        "priority": "medium",
+        "priority": "high",
         "status": "assigned",
         "description": "Демонстрационная заявка #27 для отдела Сантехника",
-        "created_at": "2026-03-30 16:31:52",
+        "created_at": "2026-04-10 00:50:24",
         "created_by": 5,
-        "deadline": "2026-04-01 16:31:52",
+        "deadline": "2026-04-12 00:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-03-30 16:31:52",
+                "at": "2026-04-10 00:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -487,17 +487,17 @@
     },
     {
         "id": 1028,
-        "department_id": 3,
+        "department_id": 4,
         "priority": "low",
         "status": "completed",
-        "description": "Демонстрационная заявка #28 для отдела Оборудование",
-        "created_at": "2026-04-16 13:31:52",
+        "description": "Демонстрационная заявка #28 для отдела Мебель",
+        "created_at": "2026-04-07 01:50:24",
         "created_by": 5,
-        "deadline": "2026-04-18 13:31:52",
+        "deadline": "2026-04-09 01:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-16 13:31:52",
+                "at": "2026-04-07 01:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -505,17 +505,17 @@
     },
     {
         "id": 1029,
-        "department_id": 2,
+        "department_id": 4,
         "priority": "high",
         "status": "completed",
-        "description": "Демонстрационная заявка #29 для отдела Электрика",
-        "created_at": "2026-03-27 14:31:52",
+        "description": "Демонстрационная заявка #29 для отдела Мебель",
+        "created_at": "2026-03-27 01:50:24",
         "created_by": 5,
-        "deadline": "2026-03-29 14:31:52",
+        "deadline": "2026-03-29 01:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-03-27 14:31:52",
+                "at": "2026-03-27 01:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -523,17 +523,17 @@
     },
     {
         "id": 1030,
-        "department_id": 3,
+        "department_id": 2,
         "priority": "medium",
-        "status": "completed",
-        "description": "Демонстрационная заявка #30 для отдела Оборудование",
-        "created_at": "2026-04-25 02:31:52",
+        "status": "new",
+        "description": "Демонстрационная заявка #30 для отдела Электрика",
+        "created_at": "2026-04-26 18:50:24",
         "created_by": 5,
-        "deadline": "2026-04-27 02:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-28 18:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-25 02:31:52",
+                "at": "2026-04-26 18:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -543,15 +543,15 @@
         "id": 1031,
         "department_id": 4,
         "priority": "high",
-        "status": "new",
+        "status": "completed",
         "description": "Демонстрационная заявка #31 для отдела Мебель",
-        "created_at": "2026-03-30 13:31:52",
+        "created_at": "2026-04-11 04:50:24",
         "created_by": 5,
-        "deadline": "2026-04-01 13:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-13 04:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-03-30 13:31:52",
+                "at": "2026-04-11 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -561,15 +561,15 @@
         "id": 1032,
         "department_id": 1,
         "priority": "high",
-        "status": "assigned",
+        "status": "new",
         "description": "Демонстрационная заявка #32 для отдела Сантехника",
-        "created_at": "2026-04-23 12:31:52",
+        "created_at": "2026-04-06 05:50:24",
         "created_by": 5,
-        "deadline": "2026-04-25 12:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-08 05:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-23 12:31:52",
+                "at": "2026-04-06 05:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -577,17 +577,17 @@
     },
     {
         "id": 1033,
-        "department_id": 3,
+        "department_id": 2,
         "priority": "medium",
         "status": "new",
-        "description": "Демонстрационная заявка #33 для отдела Оборудование",
-        "created_at": "2026-04-21 21:31:52",
+        "description": "Демонстрационная заявка #33 для отдела Электрика",
+        "created_at": "2026-04-11 04:50:24",
         "created_by": 5,
-        "deadline": "2026-04-23 21:31:52",
+        "deadline": "2026-04-13 04:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-21 21:31:52",
+                "at": "2026-04-11 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -595,17 +595,17 @@
     },
     {
         "id": 1034,
-        "department_id": 3,
+        "department_id": 1,
         "priority": "high",
-        "status": "new",
-        "description": "Демонстрационная заявка #34 для отдела Оборудование",
-        "created_at": "2026-04-10 11:31:52",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #34 для отдела Сантехника",
+        "created_at": "2026-04-16 04:50:24",
         "created_by": 5,
-        "deadline": "2026-04-12 11:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-18 04:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-10 11:31:52",
+                "at": "2026-04-16 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -613,17 +613,17 @@
     },
     {
         "id": 1035,
-        "department_id": 4,
-        "priority": "medium",
-        "status": "completed",
-        "description": "Демонстрационная заявка #35 для отдела Мебель",
-        "created_at": "2026-04-24 04:31:52",
+        "department_id": 2,
+        "priority": "high",
+        "status": "new",
+        "description": "Демонстрационная заявка #35 для отдела Электрика",
+        "created_at": "2026-03-28 01:50:24",
         "created_by": 5,
-        "deadline": "2026-04-26 04:31:52",
-        "executor_id": 4,
+        "deadline": "2026-03-30 01:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-24 04:31:52",
+                "at": "2026-03-28 01:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -631,17 +631,17 @@
     },
     {
         "id": 1036,
-        "department_id": 3,
-        "priority": "high",
-        "status": "completed",
-        "description": "Демонстрационная заявка #36 для отдела Оборудование",
-        "created_at": "2026-04-06 07:31:52",
+        "department_id": 2,
+        "priority": "low",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #36 для отдела Электрика",
+        "created_at": "2026-03-31 23:50:24",
         "created_by": 5,
-        "deadline": "2026-04-08 07:31:52",
+        "deadline": "2026-04-02 23:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-06 07:31:52",
+                "at": "2026-03-31 23:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -649,17 +649,17 @@
     },
     {
         "id": 1037,
-        "department_id": 3,
-        "priority": "low",
-        "status": "completed",
-        "description": "Демонстрационная заявка #37 для отдела Оборудование",
-        "created_at": "2026-04-13 07:31:52",
+        "department_id": 2,
+        "priority": "medium",
+        "status": "assigned",
+        "description": "Демонстрационная заявка #37 для отдела Электрика",
+        "created_at": "2026-04-16 19:50:24",
         "created_by": 5,
-        "deadline": "2026-04-15 07:31:52",
+        "deadline": "2026-04-18 19:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-13 07:31:52",
+                "at": "2026-04-16 19:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -667,17 +667,17 @@
     },
     {
         "id": 1038,
-        "department_id": 3,
-        "priority": "high",
-        "status": "completed",
-        "description": "Демонстрационная заявка #38 для отдела Оборудование",
-        "created_at": "2026-03-28 13:31:52",
+        "department_id": 1,
+        "priority": "medium",
+        "status": "new",
+        "description": "Демонстрационная заявка #38 для отдела Сантехника",
+        "created_at": "2026-04-22 06:50:24",
         "created_by": 5,
-        "deadline": "2026-03-30 13:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-24 06:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-03-28 13:31:52",
+                "at": "2026-04-22 06:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -686,16 +686,16 @@
     {
         "id": 1039,
         "department_id": 4,
-        "priority": "low",
+        "priority": "medium",
         "status": "new",
         "description": "Демонстрационная заявка #39 для отдела Мебель",
-        "created_at": "2026-04-25 13:31:52",
+        "created_at": "2026-04-25 11:50:24",
         "created_by": 5,
-        "deadline": "2026-04-27 13:31:52",
+        "deadline": "2026-04-27 11:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-25 13:31:52",
+                "at": "2026-04-25 11:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -703,17 +703,17 @@
     },
     {
         "id": 1040,
-        "department_id": 2,
+        "department_id": 3,
         "priority": "medium",
         "status": "new",
-        "description": "Демонстрационная заявка #40 для отдела Электрика",
-        "created_at": "2026-04-04 17:31:52",
+        "description": "Демонстрационная заявка #40 для отдела Оборудование",
+        "created_at": "2026-04-16 09:50:24",
         "created_by": 5,
-        "deadline": "2026-04-06 17:31:52",
+        "deadline": "2026-04-18 09:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-04-04 17:31:52",
+                "at": "2026-04-16 09:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -722,16 +722,16 @@
     {
         "id": 1041,
         "department_id": 2,
-        "priority": "low",
+        "priority": "medium",
         "status": "new",
         "description": "Демонстрационная заявка #41 для отдела Электрика",
-        "created_at": "2026-03-30 09:31:52",
+        "created_at": "2026-03-26 22:50:24",
         "created_by": 5,
-        "deadline": "2026-04-01 09:31:52",
+        "deadline": "2026-03-28 22:50:24",
         "executor_id": null,
         "history": [
             {
-                "at": "2026-03-30 09:31:52",
+                "at": "2026-03-26 22:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -740,16 +740,16 @@
     {
         "id": 1042,
         "department_id": 2,
-        "priority": "high",
-        "status": "assigned",
+        "priority": "medium",
+        "status": "new",
         "description": "Демонстрационная заявка #42 для отдела Электрика",
-        "created_at": "2026-04-19 03:31:52",
+        "created_at": "2026-04-22 16:50:24",
         "created_by": 5,
-        "deadline": "2026-04-21 03:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-24 16:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-19 03:31:52",
+                "at": "2026-04-22 16:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -757,17 +757,17 @@
     },
     {
         "id": 1043,
-        "department_id": 4,
-        "priority": "medium",
-        "status": "completed",
-        "description": "Демонстрационная заявка #43 для отдела Мебель",
-        "created_at": "2026-04-09 14:31:52",
+        "department_id": 2,
+        "priority": "high",
+        "status": "new",
+        "description": "Демонстрационная заявка #43 для отдела Электрика",
+        "created_at": "2026-04-18 19:50:24",
         "created_by": 5,
-        "deadline": "2026-04-11 14:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-20 19:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-09 14:31:52",
+                "at": "2026-04-18 19:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -775,17 +775,17 @@
     },
     {
         "id": 1044,
-        "department_id": 2,
-        "priority": "high",
-        "status": "assigned",
-        "description": "Демонстрационная заявка #44 для отдела Электрика",
-        "created_at": "2026-04-25 21:31:52",
+        "department_id": 1,
+        "priority": "medium",
+        "status": "new",
+        "description": "Демонстрационная заявка #44 для отдела Сантехника",
+        "created_at": "2026-04-19 01:50:24",
         "created_by": 5,
-        "deadline": "2026-04-27 21:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-21 01:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-25 21:31:52",
+                "at": "2026-04-19 01:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -793,17 +793,17 @@
     },
     {
         "id": 1045,
-        "department_id": 2,
+        "department_id": 4,
         "priority": "high",
-        "status": "completed",
-        "description": "Демонстрационная заявка #45 для отдела Электрика",
-        "created_at": "2026-04-18 13:31:52",
+        "status": "new",
+        "description": "Демонстрационная заявка #45 для отдела Мебель",
+        "created_at": "2026-04-26 08:50:24",
         "created_by": 5,
-        "deadline": "2026-04-20 13:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-28 08:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-04-18 13:31:52",
+                "at": "2026-04-26 08:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -811,17 +811,17 @@
     },
     {
         "id": 1046,
-        "department_id": 4,
-        "priority": "low",
+        "department_id": 2,
+        "priority": "high",
         "status": "completed",
-        "description": "Демонстрационная заявка #46 для отдела Мебель",
-        "created_at": "2026-04-12 01:31:52",
+        "description": "Демонстрационная заявка #46 для отдела Электрика",
+        "created_at": "2026-04-21 05:50:24",
         "created_by": 5,
-        "deadline": "2026-04-14 01:31:52",
+        "deadline": "2026-04-23 05:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-12 01:31:52",
+                "at": "2026-04-21 05:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -829,17 +829,17 @@
     },
     {
         "id": 1047,
-        "department_id": 1,
+        "department_id": 2,
         "priority": "low",
         "status": "completed",
-        "description": "Демонстрационная заявка #47 для отдела Сантехника",
-        "created_at": "2026-04-10 18:31:52",
+        "description": "Демонстрационная заявка #47 для отдела Электрика",
+        "created_at": "2026-03-30 13:50:24",
         "created_by": 5,
-        "deadline": "2026-04-12 18:31:52",
+        "deadline": "2026-04-01 13:50:24",
         "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-10 18:31:52",
+                "at": "2026-03-30 13:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -849,15 +849,15 @@
         "id": 1048,
         "department_id": 2,
         "priority": "low",
-        "status": "completed",
+        "status": "new",
         "description": "Демонстрационная заявка #48 для отдела Электрика",
-        "created_at": "2026-03-27 20:31:52",
+        "created_at": "2026-04-06 06:50:24",
         "created_by": 5,
-        "deadline": "2026-03-29 20:31:52",
-        "executor_id": 4,
+        "deadline": "2026-04-08 06:50:24",
+        "executor_id": null,
         "history": [
             {
-                "at": "2026-03-27 20:31:52",
+                "at": "2026-04-06 06:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -865,17 +865,17 @@
     },
     {
         "id": 1049,
-        "department_id": 3,
+        "department_id": 1,
         "priority": "medium",
-        "status": "new",
-        "description": "Демонстрационная заявка #49 для отдела Оборудование",
-        "created_at": "2026-03-31 10:31:52",
+        "status": "completed",
+        "description": "Демонстрационная заявка #49 для отдела Сантехника",
+        "created_at": "2026-04-14 04:50:24",
         "created_by": 5,
-        "deadline": "2026-04-02 10:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-16 04:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-03-31 10:31:52",
+                "at": "2026-04-14 04:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }
@@ -883,17 +883,17 @@
     },
     {
         "id": 1050,
-        "department_id": 4,
-        "priority": "medium",
-        "status": "new",
-        "description": "Демонстрационная заявка #50 для отдела Мебель",
-        "created_at": "2026-04-07 12:31:52",
+        "department_id": 1,
+        "priority": "low",
+        "status": "completed",
+        "description": "Демонстрационная заявка #50 для отдела Сантехника",
+        "created_at": "2026-04-21 18:50:24",
         "created_by": 5,
-        "deadline": "2026-04-09 12:31:52",
-        "executor_id": null,
+        "deadline": "2026-04-23 18:50:24",
+        "executor_id": 4,
         "history": [
             {
-                "at": "2026-04-07 12:31:52",
+                "at": "2026-04-21 18:50:24",
                 "msg": "Заявка создана",
                 "user": "Алексеев А.А."
             }

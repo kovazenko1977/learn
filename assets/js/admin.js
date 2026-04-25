@@ -18,14 +18,7 @@ createApp({
             selectedTask: null,
             userModal: null,
             deptModal: null,
-            menu: [
-                { id: 'dashboard', name: 'Аналитика', icon: 'bar-chart-3' },
-                { id: 'tasks', name: 'Заявки', icon: 'layout-kanban' },
-                { id: 'forms', name: 'Конструктор', icon: 'form-input' },
-                { id: 'departments', name: 'Отделы', icon: 'building-2' },
-                { id: 'users', name: 'Персонал', icon: 'users' },
-                { id: 'settings', name: 'Настройки', icon: 'settings' }
-            ],
+            menu: [],
             statuses: [
                 { id: 'new', name: 'Новые', color: 'bg-blue-500' },
                 { id: 'assigned', name: 'В работе', color: 'bg-amber-500' },
@@ -81,6 +74,7 @@ createApp({
                     this.user = result.user;
                     localStorage.setItem('crm_token', this.token);
                     localStorage.setItem('crm_user', JSON.stringify(this.user));
+                    this.updateMenu();
                     this.loadData();
                 } else {
                     this.error = result.error || 'Ошибка входа';
@@ -95,13 +89,34 @@ createApp({
             this.token = null;
             localStorage.removeItem('crm_token');
             localStorage.removeItem('crm_user');
+            this.menu = [];
+        },
+        updateMenu() {
+            const m = [
+                { id: 'dashboard', name: 'Аналитика', icon: 'bar-chart-3' },
+                { id: 'tasks', name: 'Заявки', icon: 'layout-kanban' }
+            ];
+            if (this.user.role === 'admin') {
+                m.push({ id: 'forms', name: 'Конструктор', icon: 'form-input' });
+                m.push({ id: 'departments', name: 'Отделы', icon: 'building-2' });
+                m.push({ id: 'users', name: 'Персонал', icon: 'users' });
+                m.push({ id: 'settings', name: 'Настройки', icon: 'settings' });
+            } else if (this.user.role === 'head') {
+                m.push({ id: 'users', name: 'Мой отдел', icon: 'users' });
+            }
+            this.menu = m;
         },
         async loadData() {
             if (!this.token) return;
             this.tasks = await this.api('api/tasks.php');
             this.settings = await this.api('api/settings.php');
             if (!this.settings.departments) this.settings.departments = [];
+
             this.allUsers = await this.api('api/register.php');
+            if (this.user.role === 'head') {
+                this.allUsers = this.allUsers.filter(u => u.department_id == this.user.department_id);
+            }
+
             this.executors = this.allUsers.filter(u => u.role === 'executor' || u.role === 'admin' || u.role === 'head');
             if (this.user.role === 'admin') {
                 this.backups = await this.api('api/admin_actions.php?action=list_backups');
@@ -149,7 +164,7 @@ createApp({
             alert('Настройки сохранены');
         },
         openUserModal(user) {
-            this.userModal = user ? { ...user, password: '' } : { username: '', full_name: '', role: 'employee', password: '', department_id: '' };
+            this.userModal = user ? { ...user, password: '' } : { username: '', full_name: '', role: 'employee', password: '', department_id: this.user.role === 'head' ? this.user.department_id : '' };
         },
         async saveUser() {
             await this.api('api/register.php', {
@@ -231,7 +246,10 @@ createApp({
         }
     },
     mounted() {
-        if (this.token) this.loadData();
+        if (this.token) {
+            this.updateMenu();
+            this.loadData();
+        }
         lucide.createIcons();
     },
     watch: {

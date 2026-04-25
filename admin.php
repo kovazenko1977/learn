@@ -214,6 +214,34 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     </div>
                 </div>
 
+                <div v-if="tab === 'forms'">
+                    <div class="card p-8 rounded-3xl">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xl font-bold text-white">Конструктор полей</h3>
+                            <button @click="addField" class="bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold">Добавить поле</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div v-for="(field, index) in settings.form_fields" :key="index" class="flex items-center space-x-4 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+                                <input v-model="field.label" placeholder="Название поля" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500">
+                                <select v-model="field.type" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm outline-none">
+                                    <option value="text">Текст</option>
+                                    <option value="number">Число</option>
+                                    <option value="date">Дата</option>
+                                    <option value="tel">Телефон</option>
+                                    <option value="textarea">Многострочный текст</option>
+                                    <option value="checkbox">Галочка</option>
+                                </select>
+                                <label class="flex items-center space-x-2 text-xs text-slate-500">
+                                    <input type="checkbox" v-model="field.required">
+                                    <span>Обязательно</span>
+                                </label>
+                                <button @click="removeField(index)" class="text-red-500 hover:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <button @click="saveSettings" class="mt-8 bg-slate-200 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-white transition-all">Сохранить изменения</button>
+                    </div>
+                </div>
+
                 <div v-if="tab === 'departments'" class="space-y-6">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xl font-bold text-white">Управление отделами</h3>
