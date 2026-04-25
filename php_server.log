@@ -1,0 +1,88 @@
+[Sat Apr 25 01:36:48 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8080) started
+[Sat Apr 25 01:37:24 2026] 127.0.0.1:39812 Accepted
+[Sat Apr 25 01:37:24 2026] 127.0.0.1:39812 [200]: GET /index.php
+[Sat Apr 25 01:37:24 2026] 127.0.0.1:39812 Closing
+[Sat Apr 25 01:37:24 2026] 127.0.0.1:39818 Accepted
+[Sat Apr 25 01:37:24 2026] 127.0.0.1:39818 [200]: GET /assets/css/app.css
+[Sat Apr 25 01:37:24 2026] 127.0.0.1:39818 Closing
+[Sat Apr 25 01:37:25 2026] 127.0.0.1:39820 Accepted
+[Sat Apr 25 01:37:25 2026] 127.0.0.1:39820 [200]: GET /api/settings.php
+[Sat Apr 25 01:37:25 2026] 127.0.0.1:39820 Closing
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39822 Accepted
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39822 [200]: GET /admin.php
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39822 Closing
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39832 Accepted
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39842 Accepted
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39842 [200]: GET /assets/css/app.css
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39842 Closing
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39832 [200]: GET /assets/js/admin.js
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39832 Closing
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39858 Accepted
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39858 [401]: GET /api/auth.php?action=me
+[Sat Apr 25 01:37:27 2026] 127.0.0.1:39858 Closing
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59508 Accepted
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59508 [200]: GET /index.php
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59508 Closing
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59510 Accepted
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59510 [200]: GET /assets/css/app.css
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59510 Closing
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59514 Accepted
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59514 [200]: GET /api/settings.php
+[Sat Apr 25 01:38:19 2026] 127.0.0.1:59514 Closing
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43666 Accepted
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43666 [200]: GET /admin.php
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43666 Closing
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43674 Accepted
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43680 Accepted
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43680 [200]: GET /assets/css/app.css
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43680 Closing
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43674 [200]: GET /assets/js/admin.js
+[Sat Apr 25 01:38:20 2026] 127.0.0.1:43674 Closing
+[Sat Apr 25 01:38:21 2026] 127.0.0.1:43694 Accepted
+[Sat Apr 25 01:38:21 2026] 127.0.0.1:43694 [401]: GET /api/auth.php?action=me
+[Sat Apr 25 01:38:21 2026] 127.0.0.1:43694 Closing
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43708 Accepted
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43708 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43708 Closing
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43714 Accepted
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43730 Accepted
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43714 [200]: GET /api/tasks.php
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43714 Closing
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43730 [200]: GET /api/settings.php
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43730 Closing
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43732 Accepted
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43732 [200]: GET /api/register.php
+[Sat Apr 25 01:38:23 2026] 127.0.0.1:43732 Closing
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48328 Accepted
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48328 [200]: GET /index.php
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48328 Closing
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48332 Accepted
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48332 [200]: GET /assets/css/app.css
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48332 Closing
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48340 Accepted
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48340 [200]: GET /api/settings.php
+[Sat Apr 25 06:49:16 2026] 127.0.0.1:48340 Closing
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48344 Accepted
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48344 [200]: GET /admin.php
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48344 Closing
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48358 Accepted
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48372 Accepted
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48372 [200]: GET /assets/css/app.css
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48372 Closing
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48358 [200]: GET /assets/js/admin.js
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48358 Closing
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48384 Accepted
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48384 [401]: GET /api/auth.php?action=me
+[Sat Apr 25 06:49:18 2026] 127.0.0.1:48384 Closing
+[Sat Apr 25 06:49:20 2026] 127.0.0.1:48392 Accepted
+[Sat Apr 25 06:49:20 2026] 127.0.0.1:48392 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 06:49:20 2026] 127.0.0.1:48392 Closing
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48408 Accepted
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48416 Accepted
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48408 [200]: GET /api/tasks.php
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48408 Closing
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48416 [200]: GET /api/settings.php
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48416 Closing
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48418 Accepted
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48418 [200]: GET /api/register.php
+[Sat Apr 25 06:49:21 2026] 127.0.0.1:48418 Closing
