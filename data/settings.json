@@ -1,3 +1,25 @@
 {
-    "JWT_SECRET": "5faa89be012d01ac16b3bd4cd4fe9d2790ec08eef144f57f9c7179ad269894bc"
+    "JWT_SECRET": "5faa89be012d01ac16b3bd4cd4fe9d2790ec08eef144f57f9c7179ad269894bc",
+    "departments": [
+        {
+            "id": 1,
+            "name": "Сантехника",
+            "description": "Обслуживание водопровода и канализации"
+        },
+        {
+            "id": 2,
+            "name": "Электрика",
+            "description": "Электросети и освещение"
+        },
+        {
+            "id": 3,
+            "name": "Оборудование",
+            "description": "Производственное оборудование"
+        },
+        {
+            "id": 4,
+            "name": "Мебель",
+            "description": "Ремонт и сборка мебели"
+        }
+    ]
 }

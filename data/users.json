@@ -5,5 +5,36 @@
         "password": "$2y$10$JnCoHFT2.qG9ENrLx6YPke4UZK4rvhrtz6pEZRHUi8VeLFuNN872y",
         "role": "admin",
         "full_name": "Administrator"
+    },
+    {
+        "id": 2,
+        "username": "plumber_head",
+        "password": "$2y$10$OKGZggqVjLBnGwaliZtPU.cm.sS\/b2Jsxkh2nCquLluLS3QS9NycO",
+        "role": "head",
+        "full_name": "Иванов И.И. (Сантехника)",
+        "department_id": 1
+    },
+    {
+        "id": 3,
+        "username": "electric_head",
+        "password": "$2y$10$4jhf8fGjmlgbFFuaYsccxe8kiMFUEmhjiace0Wr1l89.kjde8AnQ2",
+        "role": "head",
+        "full_name": "Петров П.П. (Электрика)",
+        "department_id": 2
+    },
+    {
+        "id": 4,
+        "username": "executor1",
+        "password": "$2y$10$R.v0rdpfPhetmOcp..SD\/OK\/\/.MiZiIbDCGEeO55ULWbcB9ClSlhi",
+        "role": "executor",
+        "full_name": "Сидоров С.С.",
+        "department_id": 1
+    },
+    {
+        "id": 5,
+        "username": "employee1",
+        "password": "$2y$10$kxSVzVyj\/hU0ASHqoJSU3eWBRFJahYouBJnTcT02.z7A5aJHWeBAy",
+        "role": "employee",
+        "full_name": "Алексеев А.А."
     }
 ]

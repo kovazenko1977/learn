@@ -13,7 +13,20 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
     <div id="app" class="max-w-xl w-full glass rounded-3xl shadow-2xl overflow-hidden">
-        <div class="p-8">
+        <!-- Auth Check -->
+        <div id="auth-container" class="p-8 hidden">
+             <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-slate-900">Авторизация</h1>
+                <p class="text-slate-500">Войдите, чтобы оставить заявку</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <input type="text" name="username" placeholder="Логин" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none" required>
+                <input type="password" name="password" placeholder="Пароль" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none" required>
+                <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">Войти</button>
+            </form>
+        </div>
+
+        <div id="main-container" class="p-8 hidden">
             <div class="flex items-center space-x-4 mb-8">
                 <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-200">
                     🏢
@@ -22,6 +35,7 @@
                     <h1 class="text-2xl font-bold text-slate-900">Служба ХОП</h1>
                     <p class="text-slate-500">Хозяйственное Обеспечение Предприятия</p>
                 </div>
+                <button id="logoutBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500">Выйти</button>
             </div>
 
             <div id="form-container">
@@ -94,6 +108,41 @@
     <script>
         const form = document.getElementById('requestForm');
         const fileInput = document.getElementById('fileInput');
+        let token = localStorage.getItem('crm_token');
+
+        function checkAuth() {
+            if (!token) {
+                document.getElementById('auth-container').classList.remove('hidden');
+                document.getElementById('main-container').classList.add('hidden');
+            } else {
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('main-container').classList.remove('hidden');
+                loadSettings();
+            }
+        }
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target).entries());
+            const res = await fetch('api/auth.php?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (result.token) {
+                token = result.token;
+                localStorage.setItem('crm_token', token);
+                checkAuth();
+            } else {
+                alert('Ошибка входа');
+            }
+        };
+
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('crm_token');
+            location.reload();
+        };
 
         form.onsubmit = async (e) => {
             e.preventDefault();
@@ -118,7 +167,10 @@
             try {
                 const response = await fetch('api/tasks.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify(data)
                 });
                 const result = await response.json();
@@ -135,7 +187,9 @@
         // Load dynamic fields from settings
         async function loadSettings() {
             try {
-                const res = await fetch('api/settings.php');
+                const res = await fetch('api/settings.php', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const settings = await res.json();
                 if (settings.form_fields) {
                     const container = document.getElementById('dynamic-fields');
@@ -148,9 +202,16 @@
                         container.appendChild(div);
                     });
                 }
+                if (settings.departments) {
+                    const sel = document.querySelector('select[name="department_id"]');
+                    sel.innerHTML = '<option value="">Выберите отдел</option>';
+                    settings.departments.forEach(d => {
+                        sel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                    });
+                }
             } catch (e) {}
         }
-        loadSettings();
+        checkAuth();
     </script>
 </body>
 </html>

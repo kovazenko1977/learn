@@ -137,7 +137,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     </div>
                 </header>
 
-                <!-- Dynamic Component / View -->
+                <!-- Views -->
                 <div v-if="tab === 'dashboard'">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                         <div class="card p-6 rounded-3xl" v-for="stat in stats" :key="stat.label">
@@ -214,29 +214,20 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     </div>
                 </div>
 
-                <div v-if="tab === 'forms'">
-                    <div class="card p-8 rounded-3xl">
-                        <div class="flex justify-between items-center mb-8">
-                            <h3 class="text-xl font-bold text-white">Конструктор полей</h3>
-                            <button @click="addField" class="bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold">Добавить поле</button>
-                        </div>
-                        <div class="space-y-4">
-                            <div v-for="(field, index) in settings.form_fields" :key="index" class="flex items-center space-x-4 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
-                                <input v-model="field.label" placeholder="Название поля" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500">
-                                <select v-model="field.type" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm outline-none">
-                                    <option value="text">Текст</option>
-                                    <option value="number">Число</option>
-                                    <option value="date">Дата</option>
-                                    <option value="tel">Телефон</option>
-                                </select>
-                                <label class="flex items-center space-x-2 text-xs text-slate-500">
-                                    <input type="checkbox" v-model="field.required">
-                                    <span>Обязательно</span>
-                                </label>
-                                <button @click="removeField(index)" class="text-red-500 hover:text-red-400 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                <div v-if="tab === 'departments'" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-white">Управление отделами</h3>
+                        <button @click="openDeptModal(null)" class="bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold">Новый отдел</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div v-for="d in settings.departments" :key="d.id" class="card p-6 rounded-3xl relative">
+                            <h4 class="font-bold text-white text-lg mb-2">{{ d.name }}</h4>
+                            <p class="text-xs text-slate-500 mb-4">{{ d.description || 'Нет описания' }}</p>
+                            <div class="flex space-x-2">
+                                <button @click="openDeptModal(d)" class="flex-1 bg-slate-900 hover:bg-slate-800 py-2 rounded-lg text-xs font-bold transition-all">Изменить</button>
+                                <button @click="deleteDept(d.id)" class="px-3 bg-red-900/20 hover:bg-red-900/40 text-red-400 py-2 rounded-lg text-xs transition-all"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                             </div>
                         </div>
-                        <button @click="saveSettings" class="mt-8 bg-slate-200 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-white transition-all">Сохранить изменения</button>
                     </div>
                 </div>
 
@@ -280,6 +271,9 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                         <button @click="saveSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all">
                             Сохранить конфигурацию
                         </button>
+                        <button @click="generateDemo" class="w-full mt-4 bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-all">
+                            Заполнить демо-данными
+                        </button>
                     </div>
 
                     <div v-if="user.role === 'admin'" class="card p-8 rounded-3xl mt-8 space-y-8">
@@ -321,6 +315,27 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             </main>
         </div>
 
+        <!-- Dept Modal -->
+        <div v-if="deptModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div class="max-w-md w-full glass p-8 rounded-3xl shadow-2xl">
+                <h3 class="text-2xl font-bold text-white mb-6">{{ deptModal.id ? 'Редактировать отдел' : 'Новый отдел' }}</h3>
+                <form @submit.prevent="saveDept" class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Название</label>
+                        <input v-model="deptModal.name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Описание</label>
+                        <textarea v-model="deptModal.description" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none" rows="3"></textarea>
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button type="button" @click="deptModal = null" class="flex-1 bg-slate-900 py-3 rounded-xl font-bold">Отмена</button>
+                        <button type="submit" class="flex-1 bg-indigo-600 py-3 rounded-xl font-bold">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- User Modal -->
         <div v-if="userModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
             <div class="max-w-md w-full glass p-8 rounded-3xl shadow-2xl">
@@ -345,6 +360,12 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <option value="executor">Исполнитель</option>
                             <option value="head">Нач. отдела</option>
                             <option value="admin">Администратор</option>
+                        </select>
+                    </div>
+                    <div v-if="userModal.role === 'head' || userModal.role === 'executor'">
+                        <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Отдел</label>
+                        <select v-model="userModal.department_id" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none">
+                            <option v-for="d in settings.departments" :key="d.id" :value="d.id">{{ d.name }}</option>
                         </select>
                     </div>
                     <div class="flex space-x-3 pt-4">

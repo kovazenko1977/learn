@@ -14,13 +14,13 @@ if ($method === 'GET') {
     $tasks = Storage::read('tasks.json');
 
     if (!Auth::isAdmin()) {
-        if (Auth::isHeadOfDepartment()) {
+        if ($user['role'] === 'head') {
             $tasks = array_filter($tasks, function($t) use ($user) {
                 return $t['department_id'] == $user['department_id'];
             });
-        } elseif (Auth::isExecutor()) {
+        } elseif ($user['role'] === 'executor') {
             $tasks = array_filter($tasks, function($t) use ($user) {
-                return $t['executor_id'] == $user['id'];
+                return $t['executor_id'] == $user['id'] || $t['department_id'] == $user['department_id'];
             });
         } else {
             // Employee sees their own
@@ -35,8 +35,8 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    // Can be employee (from index.php) or admin
-    $user = Auth::authenticate(); // Optional for public submissions if allowed, but here we require login
+    Auth::requireLogin();
+    $user = Auth::getCurrentUser();
     $data = json_decode(file_get_contents('php://input'), true);
 
     if (!$data) {

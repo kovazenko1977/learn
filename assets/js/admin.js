@@ -12,15 +12,17 @@ createApp({
             tasks: [],
             executors: [],
             allUsers: [],
-            settings: { form_fields: [] },
+            settings: { form_fields: [], departments: [] },
             backups: [],
             clearPeriod: { start: '', end: '' },
             selectedTask: null,
             userModal: null,
+            deptModal: null,
             menu: [
                 { id: 'dashboard', name: 'Аналитика', icon: 'bar-chart-3' },
                 { id: 'tasks', name: 'Заявки', icon: 'layout-kanban' },
                 { id: 'forms', name: 'Конструктор', icon: 'form-input' },
+                { id: 'departments', name: 'Отделы', icon: 'building-2' },
                 { id: 'users', name: 'Персонал', icon: 'users' },
                 { id: 'settings', name: 'Настройки', icon: 'settings' }
             ],
@@ -98,6 +100,7 @@ createApp({
             if (!this.token) return;
             this.tasks = await this.api('api/tasks.php');
             this.settings = await this.api('api/settings.php');
+            if (!this.settings.departments) this.settings.departments = [];
             this.allUsers = await this.api('api/register.php');
             this.executors = this.allUsers.filter(u => u.role === 'executor' || u.role === 'admin' || u.role === 'head');
             if (this.user.role === 'admin') {
@@ -117,8 +120,8 @@ createApp({
             return this.statuses.find(x => x.id === s)?.color || 'bg-slate-500';
         },
         deptName(id) {
-            const depts = { '1': 'Сантехника', '2': 'Электрика', '3': 'Оборудование', '4': 'Мебель' };
-            return depts[id] || 'Прочее';
+            const d = this.settings.departments?.find(x => x.id == id);
+            return d ? d.name : 'Прочее';
         },
         openTask(task) {
             this.selectedTask = { ...task };
@@ -146,7 +149,7 @@ createApp({
             alert('Настройки сохранены');
         },
         openUserModal(user) {
-            this.userModal = user ? { ...user, password: '' } : { username: '', full_name: '', role: 'employee', password: '' };
+            this.userModal = user ? { ...user, password: '' } : { username: '', full_name: '', role: 'employee', password: '', department_id: '' };
         },
         async saveUser() {
             await this.api('api/register.php', {
@@ -198,6 +201,29 @@ createApp({
             if (confirm('Удалить сотрудника?')) {
                 await this.api(`api/register.php?id=${id}`, { method: 'DELETE' });
                 this.loadData();
+            }
+        },
+        openDeptModal(dept) {
+            this.deptModal = dept ? { ...dept } : { id: Date.now(), name: '', description: '' };
+        },
+        async saveDept() {
+            const index = this.settings.departments.findIndex(d => d.id === this.deptModal.id);
+            if (index > -1) this.settings.departments[index] = this.deptModal;
+            else this.settings.departments.push(this.deptModal);
+            await this.saveSettings();
+            this.deptModal = null;
+        },
+        async deleteDept(id) {
+            if (confirm('Удалить отдел?')) {
+                this.settings.departments = this.settings.departments.filter(d => d.id !== id);
+                await this.saveSettings();
+            }
+        },
+        async generateDemo() {
+            if (confirm('Заполнить систему демо-данными?')) {
+                await fetch('api/demo_data.php');
+                this.loadData();
+                alert('Демо-данные успешно созданы');
             }
         },
         exportCSV() {
