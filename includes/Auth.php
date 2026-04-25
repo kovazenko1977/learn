@@ -5,12 +5,16 @@ require_once __DIR__ . '/TokenProvider.php';
 class Auth {
     private static $currentUser = null;
 
-    public static function authenticate() {
+    public static function authenticate($providedToken = null) {
         $headers = getallheaders();
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+        $token = $providedToken;
 
-        if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        if (!$token && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             $token = $matches[1];
+        }
+
+        if ($token) {
             $payload = TokenProvider::verify($token);
             if ($payload) {
                 self::$currentUser = Storage::getById('users.json', $payload['id']);

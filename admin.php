@@ -4,7 +4,8 @@ require_once __DIR__ . '/includes/Auth.php';
 
 // Handle CSV Export
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-    $user = Auth::authenticate();
+    $token = $_GET['token'] ?? null;
+    $user = Auth::authenticate($token);
     if (!$user || $user['role'] !== 'admin') {
         die('Unauthorized');
     }
@@ -119,7 +120,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 </div>
 
                 <div class="mt-auto p-6 border-t border-slate-800">
-                    <div class="flex items-center space-x-3 mb-6">
+                    <div class="flex items-center space-x-3 mb-6" v-if="user && user.username">
                         <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700 uppercase">
                             {{ user.username[0] }}
                         </div>
@@ -172,7 +173,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 <div class="relative">
                                     <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-500"></i>
                                     <input v-model="searchQuery" placeholder="Поиск по ID или тексту..." class="bg-slate-900 border border-slate-800 pl-10 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-indigo-500 w-64">
-                                    <button @click="startVoice(this, 'searchQuery')" class="absolute right-3 top-2.5 text-slate-500 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                    <button @click="startVoice('searchQuery')" class="absolute right-3 top-2.5 text-slate-500 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
                                 </div>
                         </div>
                         <div class="w-10 h-10 glass rounded-xl flex items-center justify-center text-slate-400 relative cursor-pointer">
@@ -613,7 +614,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <div class="relative">
                                 <label class="text-[10px] font-bold text-slate-500 block mb-2">Обязательный комментарий</label>
                                 <textarea v-model="statusComment" placeholder="Опишите причину смены статуса..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-indigo-500 h-24"></textarea>
-                                <button @click="startVoice(this, 'statusComment')" class="absolute right-3 bottom-10 text-slate-600 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                <button @click="startVoice('statusComment')" class="absolute right-3 bottom-10 text-slate-600 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
                                 <p class="text-[9px] text-slate-600 mt-2 italic">* При смене статуса на 'Выполнено' или 'Отклонено' комментарий обязателен.</p>
                             </div>
                         </div>
@@ -697,7 +698,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <div class="pt-6 border-t border-slate-800 flex space-x-4">
                                 <div class="relative flex-1">
                                     <input v-model="chatMessage" @keyup.enter="sendChatMessage" placeholder="Введите сообщение..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-1 focus:ring-indigo-500">
-                                    <button @click="startVoice(this, 'chatMessage')" class="absolute right-3 top-3 text-slate-500 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                    <button @click="startVoice('chatMessage')" class="absolute right-3 top-3 text-slate-500 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
                                 </div>
                                 <button @click="sendChatMessage" class="bg-indigo-600 hover:bg-indigo-500 p-3 rounded-xl transition-all shadow-lg shadow-indigo-900/20">
                                     <i data-lucide="send" class="w-5 h-5"></i>

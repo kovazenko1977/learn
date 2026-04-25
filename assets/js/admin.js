@@ -394,7 +394,7 @@ createApp({
         },
         async generateDemo() {
             if (confirm('Заполнить систему демо-данными?')) {
-                await fetch('api/demo_data.php');
+                await this.api('api/demo_data.php');
                 this.loadData();
                 alert('Демо-данные успешно созданы');
             }
@@ -407,9 +407,9 @@ createApp({
             if (res.success) alert('Профиль обновлен');
         },
         exportCSV() {
-            window.location.href = 'admin.php?export=csv';
+            window.location.href = 'admin.php?export=csv&token=' + encodeURIComponent(this.token);
             },
-            startVoice(target, field) {
+            startVoice(field) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SpeechRecognition) {
                     alert('Ваш браузер не поддерживает голосовой ввод');
@@ -422,10 +422,10 @@ createApp({
 
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
-                    if (typeof target[field] === 'string') {
-                        target[field] += ' ' + transcript;
+                    if (typeof this[field] === 'string') {
+                        this[field] += ' ' + transcript;
                     } else {
-                        target[field] = transcript;
+                        this[field] = transcript;
                     }
                 };
                 recognition.start();

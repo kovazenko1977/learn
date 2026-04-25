@@ -1,400 +1,88 @@
-[Sat Apr 25 20:06:22 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8080) started
-[Sat Apr 25 20:07:51 2026] 127.0.0.1:44032 Accepted
-[Sat Apr 25 20:07:51 2026] 127.0.0.1:44032 [200]: GET /admin.php
-[Sat Apr 25 20:07:51 2026] 127.0.0.1:44032 Closing
-[Sat Apr 25 20:07:51 2026] 127.0.0.1:44042 Accepted
-[Sat Apr 25 20:07:51 2026] 127.0.0.1:44042 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:07:51 2026] 127.0.0.1:44042 Closing
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44044 Accepted
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44044 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44044 Closing
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44054 Accepted
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44054 [200]: GET /api/tasks.php
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44054 Closing
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44068 Accepted
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44068 [200]: GET /api/settings.php
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44068 Closing
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44084 Accepted
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44084 [200]: GET /api/register.php
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44084 Closing
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44090 Accepted
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44090 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:07:53 2026] 127.0.0.1:44090 Closing
-[Sat Apr 25 20:08:17 2026] 127.0.0.1:42450 Accepted
-[Sat Apr 25 20:08:17 2026] 127.0.0.1:42450 [200]: GET /admin.php
-[Sat Apr 25 20:08:17 2026] 127.0.0.1:42450 Closing
-[Sat Apr 25 20:08:17 2026] 127.0.0.1:42460 Accepted
-[Sat Apr 25 20:08:17 2026] 127.0.0.1:42460 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:08:17 2026] 127.0.0.1:42460 Closing
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53282 Accepted
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53282 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53282 Closing
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53294 Accepted
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53294 [200]: GET /api/tasks.php
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53294 Closing
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53302 Accepted
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53302 [200]: GET /api/settings.php
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53302 Closing
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53310 Accepted
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53310 [200]: GET /api/register.php
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53310 Closing
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53322 Accepted
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53322 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:08:18 2026] 127.0.0.1:53322 Closing
-[Sat Apr 25 20:50:47 2026] 127.0.0.1:43222 Accepted
-[Sat Apr 25 20:50:47 2026] 127.0.0.1:43222 [200]: GET /admin.php
-[Sat Apr 25 20:50:47 2026] 127.0.0.1:43222 Closing
-[Sat Apr 25 20:50:47 2026] 127.0.0.1:43226 Accepted
-[Sat Apr 25 20:50:47 2026] 127.0.0.1:43226 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:50:47 2026] 127.0.0.1:43226 Closing
-[Sat Apr 25 20:50:48 2026] 127.0.0.1:43238 Accepted
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43238 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43238 Closing
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43242 Accepted
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43242 [200]: GET /api/tasks.php
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43242 Closing
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43256 Accepted
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43256 [200]: GET /api/settings.php
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43256 Closing
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43268 Accepted
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43268 [200]: GET /api/register.php
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43268 Closing
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43284 Accepted
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43284 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43284 Closing
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43298 Accepted
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43298 [200]: POST /api/settings.php
-[Sat Apr 25 20:50:49 2026] 127.0.0.1:43298 Closing
-[Sat Apr 25 20:50:50 2026] 127.0.0.1:43306 Accepted
-[Sat Apr 25 20:50:50 2026] 127.0.0.1:43306 [200]: POST /api/settings.php
-[Sat Apr 25 20:50:50 2026] 127.0.0.1:43306 Closing
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40396 Accepted
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40396 [200]: GET /admin.php
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40396 Closing
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40400 Accepted
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40400 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40400 Closing
-[Sat Apr 25 20:52:16 2026] 127.0.0.1:40414 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40414 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40414 Closing
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40418 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40418 [200]: GET /api/tasks.php
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40418 Closing
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40432 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40432 [200]: GET /api/settings.php
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40432 Closing
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40440 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40440 [200]: GET /api/register.php
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40440 Closing
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40444 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40444 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40444 Closing
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40446 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40446 [200]: POST /api/settings.php
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40446 Closing
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40454 Accepted
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40454 [200]: POST /api/settings.php
-[Sat Apr 25 20:52:17 2026] 127.0.0.1:40454 Closing
-[Sat Apr 25 20:52:18 2026] 127.0.0.1:40462 Accepted
-[Sat Apr 25 20:52:18 2026] 127.0.0.1:40462 [200]: GET /index.php
-[Sat Apr 25 20:52:18 2026] 127.0.0.1:40462 Closing
-[Sat Apr 25 20:52:18 2026] 127.0.0.1:40476 Accepted
-[Sat Apr 25 20:52:18 2026] 127.0.0.1:40476 [200]: GET /api/settings.php
-[Sat Apr 25 20:52:18 2026] 127.0.0.1:40476 Closing
-[Sat Apr 25 20:53:27 2026] 127.0.0.1:44298 Accepted
-[Sat Apr 25 20:53:27 2026] 127.0.0.1:44298 [200]: GET /admin.php
-[Sat Apr 25 20:53:27 2026] 127.0.0.1:44298 Closing
-[Sat Apr 25 20:53:27 2026] 127.0.0.1:44304 Accepted
-[Sat Apr 25 20:53:27 2026] 127.0.0.1:44304 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:53:27 2026] 127.0.0.1:44304 Closing
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44320 Accepted
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44320 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44320 Closing
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44330 Accepted
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44330 [200]: GET /api/tasks.php
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44330 Closing
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44334 Accepted
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44334 [200]: GET /api/settings.php
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44334 Closing
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44348 Accepted
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44348 [200]: GET /api/register.php
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44348 Closing
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44354 Accepted
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44354 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:53:28 2026] 127.0.0.1:44354 Closing
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44360 Accepted
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44360 [200]: POST /api/settings.php
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44360 Closing
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44368 Accepted
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44368 [200]: POST /api/settings.php
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44368 Closing
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44374 Accepted
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44374 [200]: GET /index.php
-[Sat Apr 25 20:53:29 2026] 127.0.0.1:44374 Closing
-[Sat Apr 25 20:53:30 2026] 127.0.0.1:44388 Accepted
-[Sat Apr 25 20:53:30 2026] 127.0.0.1:44388 [200]: GET /api/settings.php
-[Sat Apr 25 20:53:30 2026] 127.0.0.1:44388 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52438 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52438 [200]: GET /admin.php
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52438 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52442 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52442 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52442 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52446 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52446 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52446 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52448 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52448 [200]: GET /api/tasks.php
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52448 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52460 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52460 [200]: GET /api/settings.php
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52460 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52476 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52476 [200]: GET /api/register.php
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52476 Closing
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52484 Accepted
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52484 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:54:26 2026] 127.0.0.1:52484 Closing
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52494 Accepted
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52494 [200]: POST /api/settings.php
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52494 Closing
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52508 Accepted
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52508 [200]: POST /api/settings.php
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52508 Closing
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52520 Accepted
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52520 [200]: GET /index.php
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52520 Closing
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52522 Accepted
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52522 [200]: GET /api/settings.php
-[Sat Apr 25 20:54:27 2026] 127.0.0.1:52522 Closing
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42800 Accepted
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42800 [200]: GET /admin.php
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42800 Closing
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42814 Accepted
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42814 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42814 Closing
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42818 Accepted
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42818 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42818 Closing
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42834 Accepted
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42834 [200]: GET /api/tasks.php
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42834 Closing
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42842 Accepted
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42842 [200]: GET /api/settings.php
-[Sat Apr 25 20:55:31 2026] 127.0.0.1:42842 Closing
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42850 Accepted
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42850 [200]: GET /api/register.php
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42850 Closing
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42862 Accepted
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42862 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42862 Closing
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42868 Accepted
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42868 [200]: POST /api/settings.php
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42868 Closing
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42872 Accepted
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42872 [200]: POST /api/settings.php
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42872 Closing
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42884 Accepted
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42884 [200]: GET /index.php
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:42884 Closing
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:59926 Accepted
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:59926 [200]: GET /api/settings.php
-[Sat Apr 25 20:55:32 2026] 127.0.0.1:59926 Closing
-[Sat Apr 25 20:56:31 2026] 127.0.0.1:35144 Accepted
-[Sat Apr 25 20:56:31 2026] 127.0.0.1:35144 [200]: GET /admin.php
-[Sat Apr 25 20:56:31 2026] 127.0.0.1:35144 Closing
-[Sat Apr 25 20:56:31 2026] 127.0.0.1:35160 Accepted
-[Sat Apr 25 20:56:31 2026] 127.0.0.1:35160 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:56:31 2026] 127.0.0.1:35160 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35172 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35172 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35172 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35174 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35174 [200]: GET /api/tasks.php
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35174 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35190 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35190 [200]: GET /api/settings.php
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35190 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35204 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35204 [200]: GET /api/register.php
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35204 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35220 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35220 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35220 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35230 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35230 [200]: POST /api/settings.php
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35230 Closing
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35240 Accepted
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35240 [200]: POST /api/settings.php
-[Sat Apr 25 20:56:32 2026] 127.0.0.1:35240 Closing
-[Sat Apr 25 20:56:33 2026] 127.0.0.1:37194 Accepted
-[Sat Apr 25 20:56:33 2026] 127.0.0.1:37194 [200]: GET /index.php
-[Sat Apr 25 20:56:33 2026] 127.0.0.1:37194 Closing
-[Sat Apr 25 20:56:33 2026] 127.0.0.1:37198 Accepted
-[Sat Apr 25 20:56:33 2026] 127.0.0.1:37198 [200]: GET /api/settings.php
-[Sat Apr 25 20:56:33 2026] 127.0.0.1:37198 Closing
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33398 Accepted
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33398 [200]: GET /admin.php
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33398 Closing
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33402 Accepted
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33402 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33402 Closing
-[Sat Apr 25 20:57:09 2026] 127.0.0.1:33414 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33414 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33414 Closing
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33428 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33428 [200]: GET /api/tasks.php
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33428 Closing
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33434 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33434 [200]: GET /api/settings.php
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33434 Closing
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33438 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33438 [200]: GET /api/register.php
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33438 Closing
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33446 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33446 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33446 Closing
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33450 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33450 [200]: POST /api/settings.php
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33450 Closing
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33466 Accepted
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33466 [200]: POST /api/settings.php
-[Sat Apr 25 20:57:10 2026] 127.0.0.1:33466 Closing
-[Sat Apr 25 20:57:11 2026] 127.0.0.1:33472 Accepted
-[Sat Apr 25 20:57:11 2026] 127.0.0.1:33472 [200]: GET /index.php
-[Sat Apr 25 20:57:11 2026] 127.0.0.1:33472 Closing
-[Sat Apr 25 20:57:11 2026] 127.0.0.1:33480 Accepted
-[Sat Apr 25 20:57:11 2026] 127.0.0.1:33480 [200]: GET /api/settings.php
-[Sat Apr 25 20:57:11 2026] 127.0.0.1:33480 Closing
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40934 Accepted
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40934 [200]: GET /admin.php
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40934 Closing
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40944 Accepted
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40944 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40944 Closing
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40946 Accepted
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40946 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40946 Closing
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40958 Accepted
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40958 [200]: GET /api/tasks.php
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40958 Closing
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40968 Accepted
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40968 [200]: GET /api/settings.php
-[Sat Apr 25 20:57:48 2026] 127.0.0.1:40968 Closing
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40976 Accepted
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40976 [200]: GET /api/register.php
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40976 Closing
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40982 Accepted
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40982 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40982 Closing
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40996 Accepted
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40996 [200]: POST /api/settings.php
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:40996 Closing
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:41008 Accepted
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:41008 [200]: POST /api/settings.php
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:41008 Closing
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:41016 Accepted
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:41016 [200]: GET /index.php
-[Sat Apr 25 20:57:49 2026] 127.0.0.1:41016 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41018 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41018 [200]: GET /api/settings.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41018 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41030 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41030 [401]: POST /api/uploads.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41030 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41040 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41040 [401]: POST /api/uploads.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41040 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41046 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41046 [200]: POST /api/tasks.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41046 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41056 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41056 [200]: GET /admin.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41056 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41064 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41064 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41064 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41072 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41072 [200]: GET /api/tasks.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41072 Closing
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41074 Accepted
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41074 [200]: GET /api/settings.php
-[Sat Apr 25 20:57:50 2026] 127.0.0.1:41074 Closing
-[Sat Apr 25 20:57:51 2026] 127.0.0.1:41084 Accepted
-[Sat Apr 25 20:57:51 2026] 127.0.0.1:41084 [200]: GET /api/register.php
-[Sat Apr 25 20:57:51 2026] 127.0.0.1:41084 Closing
-[Sat Apr 25 20:57:51 2026] 127.0.0.1:41096 Accepted
-[Sat Apr 25 20:57:51 2026] 127.0.0.1:41096 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:57:51 2026] 127.0.0.1:41096 Closing
-[Sat Apr 25 20:58:22 2026] 127.0.0.1:55406 Accepted
-[Sat Apr 25 20:58:22 2026] 127.0.0.1:55406 [200]: GET /admin.php
-[Sat Apr 25 20:58:22 2026] 127.0.0.1:55406 Closing
-[Sat Apr 25 20:58:22 2026] 127.0.0.1:55412 Accepted
-[Sat Apr 25 20:58:22 2026] 127.0.0.1:55412 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:58:22 2026] 127.0.0.1:55412 Closing
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55420 Accepted
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55420 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55420 Closing
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55432 Accepted
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55432 [200]: GET /api/tasks.php
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55432 Closing
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55446 Accepted
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55446 [200]: GET /api/settings.php
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55446 Closing
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55452 Accepted
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55452 [200]: GET /api/register.php
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55452 Closing
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55462 Accepted
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55462 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 20:58:23 2026] 127.0.0.1:55462 Closing
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55470 Accepted
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55470 [200]: POST /api/settings.php
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55470 Closing
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55480 Accepted
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55480 [200]: POST /api/settings.php
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55480 Closing
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55486 Accepted
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55486 [200]: GET /index.php
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55486 Closing
-[Sat Apr 25 20:58:24 2026] 127.0.0.1:55492 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55492 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55492 Closing
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55500 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55500 [200]: GET /api/settings.php
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55500 Closing
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55512 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55512 [401]: POST /api/uploads.php
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55512 Closing
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55520 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55520 [401]: POST /api/uploads.php
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55520 Closing
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55522 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55522 [200]: POST /api/tasks.php
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55522 Closing
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55538 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55538 [200]: GET /admin.php
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55538 Closing
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55548 Accepted
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55548 [200]: GET /assets/js/admin.js
-[Sat Apr 25 20:58:25 2026] 127.0.0.1:55548 Closing
-[Sat Apr 25 21:07:54 2026] 127.0.0.1:45090 Accepted
-[Sat Apr 25 21:07:54 2026] 127.0.0.1:45090 [200]: GET /admin.php
-[Sat Apr 25 21:07:54 2026] 127.0.0.1:45090 Closing
-[Sat Apr 25 21:07:54 2026] 127.0.0.1:45106 Accepted
-[Sat Apr 25 21:07:54 2026] 127.0.0.1:45106 [200]: GET /assets/js/admin.js
-[Sat Apr 25 21:07:54 2026] 127.0.0.1:45106 Closing
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45122 Accepted
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45122 [200]: POST /api/auth.php?action=login
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45122 Closing
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45126 Accepted
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45126 [200]: GET /api/tasks.php
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45126 Closing
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45134 Accepted
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45134 [200]: GET /api/settings.php
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45134 Closing
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45138 Accepted
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45138 [200]: GET /api/register.php
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45138 Closing
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45154 Accepted
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45154 [200]: GET /api/admin_actions.php?action=list_backups
-[Sat Apr 25 21:07:55 2026] 127.0.0.1:45154 Closing
+[Sat Apr 25 21:20:35 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sat Apr 25 21:21:25 2026] 127.0.0.1:41374 Accepted
+[Sat Apr 25 21:21:25 2026] 127.0.0.1:41374 [200]: GET /index.php
+[Sat Apr 25 21:21:25 2026] 127.0.0.1:41374 Closing
+[Sat Apr 25 21:22:25 2026] 127.0.0.1:58418 Accepted
+[Sat Apr 25 21:22:25 2026] 127.0.0.1:58418 [200]: GET /index.php
+[Sat Apr 25 21:22:25 2026] 127.0.0.1:58418 Closing
+[Sat Apr 25 21:22:27 2026] 127.0.0.1:58426 Accepted
+[Sat Apr 25 21:22:27 2026] 127.0.0.1:58426 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 21:22:27 2026] 127.0.0.1:58426 Closing
+[Sat Apr 25 21:22:27 2026] 127.0.0.1:58428 Accepted
+[Sat Apr 25 21:22:27 2026] 127.0.0.1:58428 [200]: GET /api/settings.php
+[Sat Apr 25 21:22:27 2026] 127.0.0.1:58428 Closing
+[Sat Apr 25 21:22:28 2026] 127.0.0.1:58434 Accepted
+[Sat Apr 25 21:22:28 2026] 127.0.0.1:58434 [200]: GET /admin.php
+[Sat Apr 25 21:22:28 2026] 127.0.0.1:58434 Closing
+[Sat Apr 25 21:22:28 2026] 127.0.0.1:58436 Accepted
+[Sat Apr 25 21:22:28 2026] 127.0.0.1:58436 [200]: GET /assets/js/admin.js
+[Sat Apr 25 21:22:28 2026] 127.0.0.1:58436 Closing
+[Sat Apr 25 21:29:33 2026] 127.0.0.1:42936 Accepted
+[Sat Apr 25 21:29:33 2026] 127.0.0.1:42936 [200]: GET /index.php
+[Sat Apr 25 21:29:33 2026] 127.0.0.1:42936 Closing
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37362 Accepted
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37362 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37362 Closing
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37374 Accepted
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37374 [200]: GET /api/settings.php
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37374 Closing
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37380 Accepted
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37380 [200]: GET /admin.php
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37380 Closing
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37388 Accepted
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37388 [200]: GET /assets/js/admin.js
+[Sat Apr 25 21:29:35 2026] 127.0.0.1:37388 Closing
+[Sat Apr 25 21:30:38 2026] 127.0.0.1:35740 Accepted
+[Sat Apr 25 21:30:38 2026] 127.0.0.1:35740 [200]: GET /index.php
+[Sat Apr 25 21:30:38 2026] 127.0.0.1:35740 Closing
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35756 Accepted
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35756 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35756 Closing
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35758 Accepted
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35758 [200]: GET /api/settings.php
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35758 Closing
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35760 Accepted
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35760 [200]: GET /admin.php
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35760 Closing
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35772 Accepted
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35772 [200]: GET /assets/js/admin.js
+[Sat Apr 25 21:30:41 2026] 127.0.0.1:35772 Closing
+[Sat Apr 25 21:31:21 2026] 127.0.0.1:57402 Accepted
+[Sat Apr 25 21:31:21 2026] 127.0.0.1:57402 [200]: GET /index.php
+[Sat Apr 25 21:31:21 2026] 127.0.0.1:57402 Closing
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55040 Accepted
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55040 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55040 Closing
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55054 Accepted
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55054 [200]: GET /api/settings.php
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55054 Closing
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55058 Accepted
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55058 [200]: GET /admin.php
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55058 Closing
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55064 Accepted
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55064 [200]: GET /assets/js/admin.js
+[Sat Apr 25 21:31:24 2026] 127.0.0.1:55064 Closing
+[Sat Apr 25 21:33:03 2026] 127.0.0.1:49312 Accepted
+[Sat Apr 25 21:33:03 2026] 127.0.0.1:49312 [200]: GET /index.php
+[Sat Apr 25 21:33:03 2026] 127.0.0.1:49312 Closing
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58334 Accepted
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58334 [200]: POST /api/auth.php?action=login
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58334 Closing
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58350 Accepted
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58350 [200]: GET /api/settings.php
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58350 Closing
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58364 Accepted
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58364 [200]: GET /admin.php
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58364 Closing
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58370 Accepted
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58370 [200]: GET /assets/js/admin.js
+[Sat Apr 25 21:33:05 2026] 127.0.0.1:58370 Closing
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58384 Accepted
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58384 [200]: GET /api/tasks.php
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58384 Closing
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58398 Accepted
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58398 [200]: GET /api/settings.php
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58398 Closing
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58412 Accepted
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58412 [200]: GET /api/register.php
+[Sat Apr 25 21:33:06 2026] 127.0.0.1:58412 Closing

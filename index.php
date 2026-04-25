@@ -55,8 +55,8 @@
                     🏢
                 </div>
                 <div class="flex-1">
-                    <h1 class="text-2xl font-bold text-slate-900">{{ settings.system_name || 'Служба ХОП' }}</h1>
-                    <p class="text-slate-500 text-sm">{{ settings.welcome_text || 'Хозяйственное Обеспечение Предприятия' }}</p>
+                    <h1 id="system-name" class="text-2xl font-bold text-slate-900">Служба ХОП</h1>
+                    <p id="welcome-text" class="text-slate-500 text-sm">Хозяйственное Обеспечение Предприятия</p>
                 </div>
                 <button id="logoutBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500">Выйти</button>
             </div>
@@ -185,7 +185,11 @@
                     const fData = new FormData();
                     fData.append('file', fileInput.files[i]);
                     try {
-                        const uploadRes = await fetch('api/uploads.php', { method: 'POST', body: fData });
+                        const uploadRes = await fetch('api/uploads.php', {
+                            method: 'POST',
+                            body: fData,
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
                         const uploadResult = await uploadRes.json();
                         if (uploadResult.filename) {
                             data.attachments.push({
@@ -282,8 +286,12 @@
                     document.body.style.fontFamily = `'${settings.font_family}', sans-serif`;
                 }
 
+                if (settings.system_name) document.getElementById('system-name').innerText = settings.system_name;
+                if (settings.welcome_text) document.getElementById('welcome-text').innerText = settings.welcome_text;
+
                 if (settings.form_fields) {
                     const container = document.getElementById('dynamic-fields');
+                    container.innerHTML = '';
                     settings.form_fields.forEach(field => {
                         const div = document.createElement('div');
                         let inputHtml = '';
