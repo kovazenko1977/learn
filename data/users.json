@@ -5,5 +5,12 @@
         "password_hash": "$2y$10$eO1Rcqwo3rPel9knGJMF6OS23TiLUGd258BYh71kX33X7F16exgzy",
         "role": "Administrator",
         "full_name": "Администратор"
+    },
+    {
+        "username": "user2",
+        "role": "Responsible Employee",
+        "full_name": "Иван Иванов",
+        "id": 1777122494,
+        "password_hash": "$2y$10$5tk3Ly84MyAi7oBBv2X3U.SAbDJnNDifuueJOl8R59zdFIJPorqhu"
     }
 ]

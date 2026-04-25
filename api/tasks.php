@@ -48,8 +48,7 @@ if ($method === 'GET') {
     if ($user['role'] === 'Executor') {
         $tasks = array_filter($tasks, fn($t) => $t['assigned_to'] == $user['id']);
     } elseif ($user['role'] === 'Responsible Employee') {
-        // Responsible employee sees tasks they created (this mock needs creator ID)
-        // For now, let's say they see all for simplicity or filter by some field
+        $tasks = array_filter($tasks, fn($t) => ($t['creator_id'] ?? null) == $user['id']);
     }
 
     echo json_encode(array_values($tasks));
@@ -95,6 +94,28 @@ if ($method === 'GET') {
                         'msg' => "Assigned to $executorName"
                     ];
                     break;
+                }
+            }
+            return $tasks;
+        });
+        echo json_encode(['success' => true]);
+    } elseif ($action === 'mass_assign') {
+        Auth::checkRole($user, ['Administrator', 'Head of Department']);
+        $ids = $data['ids'];
+        $executorId = $data['executor_id'];
+        $users = $storage->read('users');
+        $executorName = 'Unknown';
+        foreach($users as $u) if($u['id'] == $executorId) $executorName = $u['full_name'];
+
+        $storage->atomicUpdate('tasks', function($tasks) use ($ids, $executorId, $executorName, $user) {
+            foreach ($tasks as &$t) {
+                if (in_array($t['id'], $ids)) {
+                    $t['assigned_to'] = $executorId;
+                    $t['history'][] = [
+                        'at' => date('Y-m-d H:i:s'),
+                        'by' => $user['full_name'],
+                        'msg' => "Mass assigned to $executorName"
+                    ];
                 }
             }
             return $tasks;
