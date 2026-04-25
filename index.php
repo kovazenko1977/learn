@@ -54,9 +54,9 @@
                 <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-200">
                     🏢
                 </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900">Служба ХОП</h1>
-                    <p class="text-slate-500">Хозяйственное Обеспечение Предприятия</p>
+                <div class="flex-1">
+                    <h1 class="text-2xl font-bold text-slate-900">{{ settings.system_name || 'Служба ХОП' }}</h1>
+                    <p class="text-slate-500 text-sm">{{ settings.welcome_text || 'Хозяйственное Обеспечение Предприятия' }}</p>
                 </div>
                 <button id="logoutBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500">Выйти</button>
             </div>
@@ -92,9 +92,10 @@
                         </div>
                     </div>
 
-                    <div>
+                    <div class="relative">
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Описание проблемы</label>
-                        <textarea name="description" rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="Опишите, что именно нужно сделать..." required></textarea>
+                        <textarea name="description" id="desc-field" rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="Опишите, что именно нужно сделать..." required></textarea>
+                        <button type="button" onclick="startVoice('desc-field')" class="absolute right-3 bottom-10 text-slate-400 hover:text-indigo-600"><i data-lucide="mic" class="w-5 h-5"></i></button>
                         <p class="text-[9px] text-slate-400 mt-1">Опишите задачу максимально подробно для ускорения выполнения.</p>
                     </div>
 
@@ -218,15 +219,27 @@
             }
         };
 
+        let settings = {};
         // Load dynamic fields from settings
         async function loadSettings() {
             try {
                 const res = await fetch('api/settings.php', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const settings = await res.json();
+                settings = await res.json();
 
                 // Apply Theme
+                if (settings.maintenance_mode && !settings.is_admin) {
+                     document.body.innerHTML = `
+                        <div class="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-white p-10 text-center">
+                            <h1 class="text-4xl font-black mb-4">ТЕХОБСЛУЖИВАНИЕ</h1>
+                            <p class="text-slate-400 max-w-md">Система временно недоступна в связи с проведением плановых работ. Пожалуйста, попробуйте позже.</p>
+                            <button onclick="localStorage.removeItem('crm_token'); location.reload()" class="mt-10 text-indigo-400 underline">Вход для администратора</button>
+                        </div>
+                     `;
+                     return;
+                }
+
                 if (settings.active_theme) {
                     const themes = [
                         { id: 'slate', name: 'Slate Night', colors: { primary: '#6366f1', bgMain: '#0f172a', bgGlass: 'rgba(15, 23, 42, 0.9)', bgCard: 'rgba(30, 41, 59, 0.5)', textMain: '#e2e8f0', border: 'rgba(255, 255, 255, 0.1)' } },
@@ -298,7 +311,19 @@
                 }
             } catch (e) {}
         }
+        function startVoice(fieldId) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return alert('Браузер не поддерживает голос');
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ru-RU';
+            recognition.onresult = (event) => {
+                document.getElementById(fieldId).value += ' ' + event.results[0][0].transcript;
+            };
+            recognition.start();
+        }
         checkAuth();
+        lucide.createIcons();
     </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </body>
 </html>

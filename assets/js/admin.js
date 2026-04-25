@@ -22,6 +22,7 @@ createApp({
             userModal: null,
             deptModal: null,
             menu: [],
+            autoRefreshTimer: null,
             searchQuery: '',
             userSearch: '',
             deptSearch: '',
@@ -161,8 +162,9 @@ createApp({
             m.push({ id: 'profile', name: 'Профиль', icon: 'user' });
             this.menu = m;
         },
-        async loadData() {
+        async loadData(isBackground = false) {
             if (!this.token) return;
+            if (!isBackground) this.loading = true;
             this.tasks = await this.api('api/tasks.php');
             this.settings = await this.api('api/settings.php');
             if (!this.settings.departments) this.settings.departments = [];
@@ -177,6 +179,17 @@ createApp({
                 this.backups = await this.api('api/admin_actions.php?action=list_backups');
             }
             this.$nextTick(() => lucide.createIcons());
+            this.loading = false;
+            this.setupAutoRefresh();
+        },
+        setupAutoRefresh() {
+            if (this.autoRefreshTimer) clearInterval(this.autoRefreshTimer);
+            const interval = parseInt(this.settings.refresh_interval || 30) * 1000;
+            this.autoRefreshTimer = setInterval(() => {
+                if (this.token && !document.hidden && this.tab === 'tasks') {
+                    this.loadData(true);
+                }
+            }, interval);
         },
         filteredTasks(statusId) {
             return this.tasks.filter(t => {
@@ -395,6 +408,27 @@ createApp({
         },
         exportCSV() {
             window.location.href = 'admin.php?export=csv';
+            },
+            startVoice(target, field) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    alert('Ваш браузер не поддерживает голосовой ввод');
+                    return;
+                }
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ru-RU';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    if (typeof target[field] === 'string') {
+                        target[field] += ' ' + transcript;
+                    } else {
+                        target[field] = transcript;
+                    }
+                };
+                recognition.start();
         }
     },
     mounted() {

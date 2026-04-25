@@ -10,8 +10,11 @@ if ($method === 'GET') {
     // Some settings might be public (e.g. form fields for index.php)
     $settings = Storage::read('settings.json');
 
+    $isAdmin = Auth::authenticate() && Auth::isAdmin();
+    $settings['is_admin'] = $isAdmin;
+
     // Filter sensitive info if not admin
-    if (!Auth::authenticate() || !Auth::isAdmin()) {
+    if (!$isAdmin) {
         unset($settings['admin_password']);
         unset($settings['admin_password_hash']);
         unset($settings['JWT_SECRET']);

@@ -146,9 +146,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 <i data-lucide="help-circle" class="w-4 h-4 text-slate-600 cursor-help"></i>
                                 <div class="absolute left-full ml-2 top-0 hidden group-hover:block w-48 p-2 bg-slate-800 text-[10px] rounded shadow-xl z-50">
                                     {{ tab === 'dashboard' ? 'Здесь отображается общая статистика и аналитика по всем заявкам.' : '' }}
-                                    {{ tab === 'tasks' ? 'Используйте Kanban-доску для управления статусами. Нажмите на карточку для деталей.' : '' }}
+                                    {{ tab === 'tasks' ? 'Используйте Kanban-доску для управления статусами. Нажмите на карточку для деталей. Иконка микрофона позволяет вводить текст голосом.' : '' }}
                                     {{ tab === 'forms' ? 'Создавайте шаблоны полей, которые будут отображаться при подаче заявки.' : '' }}
                                     {{ tab === 'users' ? 'Управление доступом сотрудников к системе.' : '' }}
+                                    {{ tab === 'settings' ? 'Настройка визуального стиля, шрифтов и системных параметров.' : '' }}
                                 </div>
                             </div>
                         </div>
@@ -159,9 +160,20 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <i data-lucide="download" class="w-4 h-4"></i>
                             <span>Экспорт CSV</span>
                         </button>
-                        <div v-if="tab === 'tasks'" class="relative">
-                            <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-500"></i>
-                            <input v-model="searchQuery" placeholder="Поиск по ID или тексту..." class="bg-slate-900 border border-slate-800 pl-10 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-indigo-500 w-64">
+                            <div v-if="tab === 'tasks'" class="relative flex items-center space-x-3">
+                                <div v-if="settings.maintenance_mode" class="flex items-center space-x-2 bg-red-900/20 px-3 py-1.5 rounded-full border border-red-500/20">
+                                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                    <span class="text-[9px] text-red-400 uppercase font-black">Maintenance</span>
+                                </div>
+                                <div class="flex items-center space-x-2 bg-slate-900 px-3 py-1.5 rounded-full border border-slate-800">
+                                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                    <span class="text-[9px] text-slate-500 uppercase font-black">Auto-Sync</span>
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-500"></i>
+                                    <input v-model="searchQuery" placeholder="Поиск по ID или тексту..." class="bg-slate-900 border border-slate-800 pl-10 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-1 focus:ring-indigo-500 w-64">
+                                    <button @click="startVoice(this, 'searchQuery')" class="absolute right-3 top-2.5 text-slate-500 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                </div>
                         </div>
                         <div class="w-10 h-10 glass rounded-xl flex items-center justify-center text-slate-400 relative cursor-pointer">
                             <i data-lucide="bell" class="w-5 h-5"></i>
@@ -413,6 +425,33 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 </div>
                             </div>
                             <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Текст приветствия (Employee Portal)</label>
+                                <input v-model="settings.welcome_text" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Начало раб. дня</label>
+                                    <input v-model="settings.work_start" type="time" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Конец раб. дня</label>
+                                    <input v-model="settings.work_end" type="time" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Автообновление (сек)</label>
+                                    <input v-model="settings.refresh_interval" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Режим техобслуживания</label>
+                                    <select v-model="settings.maintenance_mode" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
+                                        <option :value="false">Выключен</option>
+                                        <option :value="true">Включен (Вход только админам)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
                                 <label class="text-xs font-bold text-slate-500 uppercase mb-4 block">Визуальная тема (25 вариантов)</label>
                                 <div class="grid grid-cols-5 gap-3">
                                     <div v-for="t in themes" :key="t.id"
@@ -571,9 +610,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                     </button>
                                 </div>
                             </div>
-                            <div>
+                            <div class="relative">
                                 <label class="text-[10px] font-bold text-slate-500 block mb-2">Обязательный комментарий</label>
                                 <textarea v-model="statusComment" placeholder="Опишите причину смены статуса..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-indigo-500 h-24"></textarea>
+                                <button @click="startVoice(this, 'statusComment')" class="absolute right-3 bottom-10 text-slate-600 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
                                 <p class="text-[9px] text-slate-600 mt-2 italic">* При смене статуса на 'Выполнено' или 'Отклонено' комментарий обязателен.</p>
                             </div>
                         </div>
@@ -642,7 +682,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                         </div>
 
                         <div v-if="taskModalTab === 'chat'" class="h-full flex flex-col">
-                            <div class="flex-1 space-y-4 mb-6">
+                            <div class="flex-1 space-y-4 mb-6 overflow-y-auto">
                                 <div v-for="msg in selectedTask.messages" :key="msg.at" :class="['flex flex-col', msg.user_id == user.id ? 'items-end' : 'items-start']">
                                     <div :class="['max-w-[80%] p-4 rounded-2xl text-sm shadow-sm', msg.user_id == user.id ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-slate-800 text-slate-200 rounded-tl-none border border-slate-700']">
                                         {{ msg.text }}
@@ -655,7 +695,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 </div>
                             </div>
                             <div class="pt-6 border-t border-slate-800 flex space-x-4">
-                                <input v-model="chatMessage" @keyup.enter="sendChatMessage" placeholder="Введите сообщение..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                                <div class="relative flex-1">
+                                    <input v-model="chatMessage" @keyup.enter="sendChatMessage" placeholder="Введите сообщение..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                                    <button @click="startVoice(this, 'chatMessage')" class="absolute right-3 top-3 text-slate-500 hover:text-indigo-400"><i data-lucide="mic" class="w-4 h-4"></i></button>
+                                </div>
                                 <button @click="sendChatMessage" class="bg-indigo-600 hover:bg-indigo-500 p-3 rounded-xl transition-all shadow-lg shadow-indigo-900/20">
                                     <i data-lucide="send" class="w-5 h-5"></i>
                                 </button>
