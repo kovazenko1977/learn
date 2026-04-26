@@ -62,9 +62,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             background-color: var(--bg-main);
             color: var(--text-main);
         }
-        .glass { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-color); }
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); }
-        .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 80%); border-right: 3px solid var(--primary); color: var(--primary); }
+        .glass { background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(8px); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1); }
+        .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 85%); border-right: 4px solid var(--primary); color: var(--primary); font-weight: 700; transform: translateX(4px); }
         .text-dim { color: var(--text-dim); }
         .text-main { color: var(--text-main); }
         ::-webkit-scrollbar { width: 6px; }
@@ -482,14 +483,23 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 </div>
                             </div>
                             <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase mb-4 block">Визуальная тема (25 вариантов)</label>
-                                <div class="grid grid-cols-5 gap-3">
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-4 block">Визуальная тема</label>
+                                <div class="grid grid-cols-2 gap-4">
                                     <div v-for="t in themes" :key="t.id"
                                          @click="settings.active_theme = t.id"
-                                         class="flex flex-col items-center space-y-1 cursor-pointer">
-                                        <div :class="['theme-preview', settings.active_theme === t.id ? 'active' : '']"
-                                             :style="{ backgroundColor: t.colors.primary }"></div>
-                                        <span class="text-[8px] text-slate-500 truncate w-full text-center">{{ t.name }}</span>
+                                         class="flex items-center p-3 rounded-2xl border-2 transition-all cursor-pointer group"
+                                         :class="settings.active_theme === t.id ? 'border-indigo-500 bg-indigo-500/10' : 'border-transparent bg-slate-900/50 hover:border-slate-700'">
+                                        <div class="w-10 h-10 rounded-xl mr-3 flex items-center justify-center shadow-lg"
+                                             :style="{ backgroundColor: t.colors.bgMain }">
+                                             <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: t.colors.primary }"></div>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-bold text-main truncate">{{ t.name }}</p>
+                                            <p class="text-[9px] text-dim uppercase tracking-tighter">{{ t.id }}</p>
+                                        </div>
+                                        <div v-if="settings.active_theme === t.id" class="text-indigo-500">
+                                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
