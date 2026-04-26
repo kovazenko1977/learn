@@ -22,6 +22,7 @@
             "description": "Ремонт и сборка мебели"
         }
     ],
-    "active_theme": "minimal-light",
-    "font_family": "Playfair Display"
+    "active_theme": "corporate",
+    "font_family": "Playfair Display",
+    "is_admin": true
 }

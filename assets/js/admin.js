@@ -291,13 +291,7 @@ createApp({
                 body: JSON.stringify(this.settings)
             });
             // Update root variables immediately
-            const themeId = this.settings.active_theme || 'slate';
-            const colors = this.themes.find(t => t.id === themeId)?.colors;
-            if (colors) {
-                Object.entries(colors).forEach(([k, v]) => {
-                    document.documentElement.style.setProperty(`--${k}`, v);
-                });
-            }
+            this.applyGlobalStyles();
             alert('Настройки сохранены');
         },
         async saveFormAsTemplate() {
@@ -334,15 +328,29 @@ createApp({
                 document.body.style.fontFamily = `'${this.settings.font_family}', sans-serif`;
             }
             if (this.settings.font_size) {
-                document.querySelector('.text-base-custom').style.fontSize = this.settings.font_size;
+                const el = document.querySelector('.text-base-custom');
+                if (el) el.style.fontSize = this.settings.font_size;
             }
 
             // Apply Theme
-            const themeId = this.settings.active_theme || 'slate';
-            const colors = this.themes.find(t => t.id === themeId)?.colors;
+            const themeId = this.settings.active_theme || 'ultra-dark';
+            const theme = this.themes.find(t => t.id === themeId) || this.themes[0];
+            const colors = theme.colors;
+
+            const mapping = {
+                primary: '--primary',
+                bgMain: '--bg-main',
+                bgGlass: '--bg-glass',
+                bgCard: '--bg-card',
+                textMain: '--text-main',
+                textDim: '--text-dim',
+                border: '--border-color'
+            };
+
             if (colors) {
                 Object.entries(colors).forEach(([k, v]) => {
-                    document.documentElement.style.setProperty(`--${k}`, v);
+                    const cssVar = mapping[k] || `--${k}`;
+                    document.documentElement.style.setProperty(cssVar, v);
                 });
             }
         },

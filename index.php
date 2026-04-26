@@ -274,8 +274,18 @@
                     ];
                     const t = themes.find(x => x.id === settings.active_theme);
                     if (t) {
+                        const mapping = {
+                            primary: '--primary',
+                            bgMain: '--bg-main',
+                            bgGlass: '--bg-glass',
+                            bgCard: '--bg-card',
+                            textMain: '--text-main',
+                            textDim: '--text-dim',
+                            border: '--border-color'
+                        };
                         Object.entries(t.colors).forEach(([k, v]) => {
-                            document.documentElement.style.setProperty(`--${k}`, v);
+                            const cssVar = mapping[k] || `--${k}`;
+                            document.documentElement.style.setProperty(cssVar, v);
                         });
                     }
                 }
