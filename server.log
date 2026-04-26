@@ -1,0 +1,34 @@
+[Sun Apr 26 01:40:20 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8080) started
+[Sun Apr 26 01:40:23 2026] 127.0.0.1:35896 Accepted
+[Sun Apr 26 01:40:23 2026] 127.0.0.1:35896 [200]: GET /
+[Sun Apr 26 01:40:23 2026] 127.0.0.1:35896 Closing
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35910 Accepted
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35910 [200]: POST /api/auth.php?action=login
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35910 Closing
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35920 Accepted
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35920 [200]: GET /api/tasks.php?action=list&search=&status=&priority=
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35920 Closing
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35928 Accepted
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35928 [200]: GET /api/settings.php
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35928 Closing
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35938 Accepted
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35938 [200]: GET /api/users.php?action=list
+[Sun Apr 26 01:40:25 2026] 127.0.0.1:35938 Closing
+[Sun Apr 26 01:41:19 2026] 127.0.0.1:44060 Accepted
+[Sun Apr 26 01:41:19 2026] 127.0.0.1:44060 [200]: GET /
+[Sun Apr 26 01:41:19 2026] 127.0.0.1:44060 Closing
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:44072 Accepted
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:44072 [200]: POST /api/auth.php?action=login
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:44072 Closing
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57470 Accepted
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57470 [200]: GET /api/tasks.php?action=list&search=&status=&priority=
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57470 Closing
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57484 Accepted
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57484 [200]: GET /api/settings.php
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57484 Closing
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57498 Accepted
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57498 [200]: GET /api/users.php?action=list
+[Sun Apr 26 01:41:21 2026] 127.0.0.1:57498 Closing
+[Sun Apr 26 01:41:24 2026] 127.0.0.1:57506 Accepted
+[Sun Apr 26 01:41:24 2026] 127.0.0.1:57506 [200]: GET /api/tasks.php?action=list&search=%D0%9F%D1%80%D0%BE%D0%B1%D0%BB%D0%B5%D0%BC%D0%B0+%D1%81+%D0%BF%D1%80%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%BE%D0%BC&status=&priority=
+[Sun Apr 26 01:41:24 2026] 127.0.0.1:57506 Closing

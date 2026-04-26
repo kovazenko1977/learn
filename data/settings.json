@@ -1,0 +1,22 @@
+{
+    "company_name": "Service CRM PRO",
+    "categories": ["Ремонт", "Обслуживание", "IT", "Хозяйственные работы"],
+    "priorities": [
+        {"id": "low", "label": "Низкий", "color": "blue"},
+        {"id": "medium", "label": "Средний", "color": "yellow"},
+        {"id": "high", "label": "Высокий", "color": "orange"},
+        {"id": "critical", "label": "Критический", "color": "red"}
+    ],
+    "statuses": [
+        {"id": "new", "label": "Новая", "color": "gray"},
+        {"id": "assigned", "label": "Назначена", "color": "blue"},
+        {"id": "in_work", "label": "В работе", "color": "yellow"},
+        {"id": "completed", "label": "Выполнено", "color": "green"},
+        {"id": "rejected", "label": "Отклонено", "color": "red"}
+    ],
+    "form_fields": [
+        {"name": "description", "type": "textarea", "label": "Описание", "required": true},
+        {"name": "location", "type": "text", "label": "Местоположение", "required": false}
+    ],
+    "jwt_secret": "748596acbd859685747474747474747474747474747474747474747474747474"
+}

@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "password_hash": "$2y$10$0GWIOPttFtiYHkp4oC6oGe7smn3XRhVB2.2RZEPSaprnPNANTI8Ce",
+        "role": "admin",
+        "full_name": "Администратор",
+        "department": "IT"
+    },
+    {
+        "id": 2,
+        "username": "ivanov",
+        "password_hash": "$2y$10$0GWIOPttFtiYHkp4oC6oGe7smn3XRhVB2.2RZEPSaprnPNANTI8Ce",
+        "role": "employee",
+        "full_name": "Иванов Иван",
+        "department": "Бухгалтерия"
+    },
+    {
+        "id": 3,
+        "username": "petrov",
+        "password_hash": "$2y$10$0GWIOPttFtiYHkp4oC6oGe7smn3XRhVB2.2RZEPSaprnPNANTI8Ce",
+        "role": "head",
+        "full_name": "Петров Петр",
+        "department": "IT"
+    },
+    {
+        "id": 4,
+        "username": "sidorov",
+        "password_hash": "$2y$10$0GWIOPttFtiYHkp4oC6oGe7smn3XRhVB2.2RZEPSaprnPNANTI8Ce",
+        "role": "executor",
+        "full_name": "Сидоров Алексей",
+        "department": "IT"
+    }
+]
