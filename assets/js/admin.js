@@ -12,10 +12,15 @@ createApp({
             tasks: [],
             executors: [],
             allUsers: [],
-            settings: { form_fields: [], departments: [] },
+            settings: { form_fields: [], departments: [], active_layout: 'sidebar-modern' },
             backups: [],
             clearPeriod: { start: '', end: '' },
-            selectedTask: null,
+            layouts: [
+                { id: 'sidebar-modern', name: 'Sidebar Classic', icon: 'panel-left' },
+                { id: 'topbar-pro', name: 'Horizontal Pro', icon: 'panel-top' },
+                { id: 'sidebar-compact', name: 'Mini Sidebar', icon: 'columns' }
+            ],
+            selectedTask: false,
             taskModalTab: 'details', // 'details' or 'chat'
             statusComment: '',
             chatMessage: '',

@@ -61,23 +61,31 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             font-family: v-bind('settings.font_family || "Inter"'), sans-serif;
             background-color: var(--bg-main);
             color: var(--text-main);
+            overflow-x: hidden;
         }
         .glass { background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
         .card { background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(12px); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1); transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.2); }
-        .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 85%); border-right: 4px solid var(--primary); color: var(--primary); font-weight: 700; transform: translateX(4px); }
+
+        .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 85%); color: var(--primary); font-weight: 700; }
+        .layout-sidebar-modern .sidebar-item.active { border-right: 4px solid var(--primary); transform: translateX(4px); }
+        .layout-sidebar-compact .sidebar-item.active { background: var(--primary); color: white; border-radius: 12px; }
+
+        .topbar-item { transition: all 0.2s; border-bottom: 2px solid transparent; }
+        .topbar-item.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 700; }
+
         .text-dim { color: var(--text-dim); }
         .text-main { color: var(--text-main); }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-main); }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 
-        /* Font size variants */
         .text-base-custom { font-size: 14px; }
 
-        .theme-preview { width: 24px; height: 24px; border-radius: 50%; display: inline-block; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
-        .theme-preview.active { border-color: white; transform: scale(1.2); }
+        /* Layout Transitions */
+        .layout-enter-active, .layout-leave-active { transition: opacity 0.3s, transform 0.3s; }
+        .layout-enter-from, .layout-leave-to { opacity: 0; transform: translateY(10px); }
     </style>
 </head>
 <body class="min-h-screen transition-colors duration-500 text-base-custom">
@@ -133,42 +141,84 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
         </div>
 
         <!-- Main Layout -->
-        <div v-else class="flex min-h-screen">
-            <!-- Sidebar -->
-            <aside class="w-64 glass border-r border-slate-800 flex flex-col fixed inset-y-0">
+        <div v-else :class="['min-h-screen transition-all duration-300', 'layout-' + (settings.active_layout || 'sidebar-modern')]">
+
+            <!-- 1. Sidebar Modern -->
+            <aside v-if="settings.active_layout === 'sidebar-modern'" class="w-64 glass border-r border-slate-800 flex flex-col fixed inset-y-0 z-40">
                 <div class="p-6">
                     <div class="flex items-center space-x-3 mb-10">
-                        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">C</div>
-                        <span class="text-xl font-bold text-main tracking-tight">CRM PRO</span>
+                        <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20">C</div>
+                        <span class="text-xl font-black text-main tracking-tighter">CRM <span class="text-indigo-500">PRO</span></span>
                     </div>
-
                     <nav class="space-y-1">
-                        <button v-for="item in menu" :key="item.id" @click="tab = item.id" :class="['sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all', tab === item.id ? 'active' : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200']">
+                        <button v-for="item in menu" :key="item.id" @click="tab = item.id" :class="['sidebar-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all', tab === item.id ? 'active' : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200']">
                             <i :data-lucide="item.icon" class="w-5 h-5"></i>
-                            <span class="font-medium">{{ item.name }}</span>
+                            <span class="font-bold text-sm">{{ item.name }}</span>
                         </button>
                     </nav>
                 </div>
-
-                <div class="mt-auto p-6 border-t border-slate-800">
+                <div class="mt-auto p-6 border-t border-slate-800/50 bg-slate-950/20">
                     <div class="flex items-center space-x-3 mb-6" v-if="user && user.username">
-                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700 uppercase">
-                            {{ user.username[0] }}
-                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700 uppercase">{{ user.username[0] }}</div>
                         <div class="overflow-hidden">
                             <p class="text-sm font-bold text-main truncate">{{ user.full_name || user.username }}</p>
-                            <p class="text-xs text-dim capitalize">{{ user.role }}</p>
+                            <p class="text-[10px] text-dim uppercase font-black tracking-widest">{{ user.role }}</p>
                         </div>
                     </div>
                     <button @click="logout" class="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-slate-900 hover:bg-red-900/20 hover:text-red-400 text-dim transition-all border border-slate-800">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
-                        <span class="text-sm font-semibold">Выйти</span>
+                        <span class="text-xs font-black uppercase">Выход</span>
                     </button>
                 </div>
             </aside>
 
+            <!-- 2. Sidebar Compact -->
+            <aside v-if="settings.active_layout === 'sidebar-compact'" class="w-20 glass border-r border-slate-800 flex flex-col fixed inset-y-0 z-40 items-center py-6">
+                <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black mb-10 shadow-lg shadow-indigo-500/20">C</div>
+                <nav class="space-y-4 flex-1">
+                    <button v-for="item in menu" :key="item.id" @click="tab = item.id" :class="['sidebar-item w-12 h-12 flex items-center justify-center transition-all group relative', tab === item.id ? 'active' : 'text-slate-500 hover:text-slate-200']" :title="item.name">
+                        <i :data-lucide="item.icon" class="w-6 h-6"></i>
+                        <div class="absolute left-full ml-4 px-2 py-1 bg-slate-800 text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 shadow-xl border border-slate-700 font-bold uppercase tracking-widest">{{ item.name }}</div>
+                    </button>
+                </nav>
+                <div class="mt-auto space-y-4">
+                    <button @click="logout" class="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-900 hover:bg-red-900/20 hover:text-red-400 text-dim transition-all border border-slate-800" title="Выйти">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- 3. Topbar Pro -->
+            <header v-if="settings.active_layout === 'topbar-pro'" class="h-20 glass border-b border-slate-800 fixed top-0 inset-x-0 z-40 flex items-center px-8">
+                <div class="flex items-center space-x-3 mr-12">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-500/20">C</div>
+                    <span class="text-xl font-black text-main tracking-tighter">CRM <span class="text-indigo-500">PRO</span></span>
+                </div>
+                <nav class="flex space-x-8 h-full">
+                    <button v-for="item in menu" :key="item.id" @click="tab = item.id" :class="['topbar-item px-2 flex items-center space-x-2 h-full transition-all', tab === item.id ? 'active' : 'text-slate-400 hover:text-slate-200']">
+                        <i :data-lucide="item.icon" class="w-4 h-4"></i>
+                        <span class="font-bold text-sm">{{ item.name }}</span>
+                    </button>
+                </nav>
+                <div class="ml-auto flex items-center space-x-6">
+                    <div class="flex items-center space-x-3" v-if="user && user.username">
+                        <div class="text-right hidden md:block">
+                            <p class="text-sm font-bold text-main leading-none">{{ user.full_name || user.username }}</p>
+                            <p class="text-[9px] text-dim uppercase font-black tracking-widest mt-1">{{ user.role }}</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 font-bold border border-slate-700 uppercase">{{ user.username[0] }}</div>
+                    </div>
+                    <button @click="logout" class="p-2.5 rounded-xl bg-slate-900 hover:bg-red-900/20 hover:text-red-400 text-dim transition-all border border-slate-800" title="Выйти">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </header>
+
             <!-- Main Content -->
-            <main class="flex-1 ml-64 p-8">
+            <main :class="['flex-1 p-8 transition-all duration-300',
+                          settings.active_layout === 'sidebar-modern' ? 'ml-64' : '',
+                          settings.active_layout === 'sidebar-compact' ? 'ml-20' : '',
+                          settings.active_layout === 'topbar-pro' ? 'mt-20' : '']">
                 <!-- Header -->
                 <header class="flex justify-between items-center mb-10">
                     <div class="flex-1 mr-8">
@@ -488,98 +538,178 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     </div>
                 </div>
 
-                <div v-if="tab === 'settings'" class="max-w-2xl">
-                    <div class="card p-8 rounded-3xl space-y-8">
-                        <h3 class="text-xl font-bold text-white">Общие настройки</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Название системы</label>
-                                <input v-model="settings.system_name" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 text-white">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Telegram Bot Token</label>
-                                <input v-model="settings.telegram_bot_token" type="password" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 text-white">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Шрифт</label>
-                                    <select v-model="settings.font_family" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
-                                        <option value="Inter">Inter</option>
-                                        <option value="Roboto">Roboto</option>
-                                        <option value="Montserrat">Montserrat</option>
-                                        <option value="Open Sans">Open Sans</option>
-                                        <option value="Ubuntu">Ubuntu</option>
-                                        <option value="Playfair Display">Playfair Display</option>
-                                        <option value="Raleway">Raleway</option>
-                                        <option value="Oswald">Oswald</option>
-                                    </select>
+                <div v-if="tab === 'settings'" class="space-y-8 pb-20">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                        <!-- Left Column: UI Customization -->
+                        <div class="lg:col-span-8 space-y-8">
+                            <!-- 1. Layout Selection -->
+                            <div class="card p-8 rounded-[2.5rem]">
+                                <div class="flex items-center space-x-3 mb-8">
+                                    <div class="w-10 h-10 bg-indigo-600/10 text-indigo-500 rounded-2xl flex items-center justify-center">
+                                        <i data-lucide="layout" class="w-5 h-5"></i>
+                                    </div>
+                                    <h3 class="text-xl font-black text-white">Шаблон интерфейса</h3>
                                 </div>
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Размер текста</label>
-                                    <select v-model="settings.font_size" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
-                                        <option value="12px">Маленький (12px)</option>
-                                        <option value="14px">Стандарт (14px)</option>
-                                        <option value="16px">Крупный (16px)</option>
-                                        <option value="18px">Очень крупный (18px)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Текст приветствия (Employee Portal)</label>
-                                <input v-model="settings.welcome_text" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Начало раб. дня</label>
-                                    <input v-model="settings.work_start" type="time" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Конец раб. дня</label>
-                                    <input v-model="settings.work_end" type="time" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div v-for="l in layouts" :key="l.id"
+                                         @click="settings.active_layout = l.id"
+                                         class="group cursor-pointer relative">
+                                        <div :class="['aspect-[4/3] rounded-2xl border-2 transition-all overflow-hidden bg-slate-900 flex flex-col', settings.active_layout === l.id ? 'border-indigo-500 ring-4 ring-indigo-500/10' : 'border-slate-800 hover:border-slate-600']">
+                                            <!-- Mini Preview Graphic -->
+                                            <div class="flex-1 p-2 flex flex-col">
+                                                <div v-if="l.id === 'sidebar-modern'" class="flex flex-1 gap-2">
+                                                    <div class="w-4 bg-slate-800 rounded"></div>
+                                                    <div class="flex-1 bg-slate-800/30 rounded"></div>
+                                                </div>
+                                                <div v-if="l.id === 'sidebar-compact'" class="flex flex-1 gap-2">
+                                                    <div class="w-2 bg-slate-800 rounded"></div>
+                                                    <div class="flex-1 bg-slate-800/30 rounded"></div>
+                                                </div>
+                                                <div v-if="l.id === 'topbar-pro'" class="flex flex-col flex-1 gap-2">
+                                                    <div class="h-3 bg-slate-800 rounded w-full"></div>
+                                                    <div class="flex-1 bg-slate-800/30 rounded w-full"></div>
+                                                </div>
+                                            </div>
+                                            <div class="bg-slate-950 p-3 flex items-center justify-between">
+                                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-white transition-colors">{{ l.name }}</span>
+                                                <div v-if="settings.active_layout === l.id" class="w-4 h-4 bg-indigo-500 rounded-full flex items-center justify-center">
+                                                    <i data-lucide="check" class="w-2.5 h-2.5 text-white"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Автообновление (сек)</label>
-                                    <input v-model="settings.refresh_interval" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none focus:ring-2 focus:ring-indigo-500">
+
+                            <!-- 2. Themes Selection -->
+                            <div class="card p-8 rounded-[2.5rem]">
+                                <div class="flex items-center space-x-3 mb-8">
+                                    <div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center">
+                                        <i data-lucide="palette" class="w-5 h-5"></i>
+                                    </div>
+                                    <h3 class="text-xl font-black text-white">Цветовая палитра</h3>
                                 </div>
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Режим техобслуживания</label>
-                                    <select v-model="settings.maintenance_mode" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white outline-none">
-                                        <option :value="false">Выключен</option>
-                                        <option :value="true">Включен (Вход только админам)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase mb-4 block">Визуальная тема</label>
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div v-for="t in themes" :key="t.id"
                                          @click="settings.active_theme = t.id"
-                                         class="flex items-center p-3 rounded-2xl border-2 transition-all cursor-pointer group"
-                                         :class="settings.active_theme === t.id ? 'border-indigo-500 bg-indigo-500/10' : 'border-transparent bg-slate-900/50 hover:border-slate-700'">
-                                        <div class="w-10 h-10 rounded-xl mr-3 flex items-center justify-center shadow-lg"
-                                             :style="{ backgroundColor: t.colors.bgMain }">
-                                             <div class="w-4 h-4 rounded-full" :style="{ backgroundColor: t.colors.primary }"></div>
+                                         class="p-4 rounded-3xl border-2 cursor-pointer transition-all flex flex-col items-center space-y-3 group"
+                                         :class="settings.active_theme === t.id ? 'border-indigo-500 bg-indigo-500/5' : 'border-slate-800 hover:border-slate-700 bg-slate-900/20'">
+                                        <div class="w-12 h-12 rounded-2xl shadow-2xl flex items-center justify-center transition-transform group-hover:scale-110"
+                                             :style="{ backgroundColor: t.colors.bgMain, border: '1px solid ' + t.colors.border }">
+                                             <div class="w-5 h-5 rounded-lg shadow-inner" :style="{ backgroundColor: t.colors.primary }"></div>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-bold text-main truncate">{{ t.name }}</p>
-                                            <p class="text-[9px] text-dim uppercase tracking-tighter">{{ t.id }}</p>
+                                        <span class="text-[9px] font-black uppercase tracking-tighter text-center text-slate-500 group-hover:text-white">{{ t.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. System Preferences -->
+                            <div class="card p-8 rounded-[2.5rem]">
+                                <div class="flex items-center space-x-3 mb-8">
+                                    <div class="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center">
+                                        <i data-lucide="sliders" class="w-5 h-5"></i>
+                                    </div>
+                                    <h3 class="text-xl font-black text-white">Системные параметры</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div class="space-y-6">
+                                        <div>
+                                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 block">Название CRM</label>
+                                            <input v-model="settings.system_name" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:border-indigo-500 outline-none transition-all">
                                         </div>
-                                        <div v-if="settings.active_theme === t.id" class="text-indigo-500">
-                                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                        <div>
+                                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 block">Telegram Bot API Key</label>
+                                            <div class="relative">
+                                                <input v-model="settings.telegram_bot_token" type="password" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:border-indigo-500 outline-none transition-all">
+                                                <i data-lucide="lock" class="absolute right-5 top-4.5 w-4 h-4 text-slate-600"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 block">Рабочее время</label>
+                                            <div class="flex items-center space-x-4">
+                                                <input v-model="settings.work_start" type="time" class="flex-1 bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-sm font-bold text-white outline-none">
+                                                <span class="text-slate-700 font-black">—</span>
+                                                <input v-model="settings.work_end" type="time" class="flex-1 bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-sm font-bold text-white outline-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-6">
+                                        <div>
+                                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 block">Типографика</label>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <select v-model="settings.font_family" class="bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xs font-bold text-white outline-none">
+                                                    <option v-for="f in ['Inter', 'Roboto', 'Montserrat', 'Ubuntu', 'Raleway']" :key="f" :value="f">{{ f }}</option>
+                                                </select>
+                                                <select v-model="settings.font_size" class="bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-xs font-bold text-white outline-none">
+                                                    <option value="12px">XS (12)</option>
+                                                    <option value="14px">MD (14)</option>
+                                                    <option value="16px">LG (16)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 block">Приветствие (Портал)</label>
+                                            <input v-model="settings.welcome_text" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:border-indigo-500 outline-none transition-all">
+                                        </div>
+                                        <div>
+                                            <label class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 block">Интервал синхронизации</label>
+                                            <div class="relative">
+                                                <input v-model="settings.refresh_interval" type="number" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-sm font-bold text-white outline-none">
+                                                <span class="absolute right-5 top-4.5 text-[10px] font-black text-slate-600 uppercase">СЕК.</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button @click="saveSettings" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all">
-                            Сохранить конфигурацию
-                        </button>
-                        <button @click="generateDemo" class="w-full mt-4 bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-xl transition-all">
-                            Заполнить демо-данными
-                        </button>
+
+                        <!-- Right Column: Quick Actions & Status -->
+                        <div class="lg:col-span-4 space-y-8">
+                            <div class="card p-8 rounded-[2.5rem] bg-indigo-600 shadow-2xl shadow-indigo-500/20 text-white">
+                                <h4 class="text-lg font-black mb-6">Применить изменения</h4>
+                                <p class="text-indigo-100 text-xs leading-relaxed mb-8 opacity-80">Все визуальные и системные настройки будут применены мгновенно для всех пользователей системы ХОП.</p>
+                                <button @click="saveSettings" class="w-full bg-white text-indigo-600 hover:bg-indigo-50 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-xl">
+                                    Сохранить всё
+                                </button>
+                                <button @click="generateDemo" class="w-full bg-indigo-500/50 hover:bg-indigo-400/50 text-white py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest mt-4 transition-all">
+                                    Заполнить ДЕМО
+                                </button>
+                            </div>
+
+                            <div class="card p-8 rounded-[2.5rem] border-red-500/20">
+                                <h4 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Безопасность</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 bg-slate-950 rounded-2xl border border-slate-800">
+                                        <div>
+                                            <p class="text-xs font-black text-white uppercase">Maintenance Mode</p>
+                                            <p class="text-[9px] text-slate-600">Вход только для админов</p>
+                                        </div>
+                                        <div @click="settings.maintenance_mode = !settings.maintenance_mode" :class="['w-12 h-6 rounded-full p-1 cursor-pointer transition-all', settings.maintenance_mode ? 'bg-red-500' : 'bg-slate-800']">
+                                            <div :class="['w-4 h-4 bg-white rounded-full transition-all', settings.maintenance_mode ? 'translate-x-6' : '']"></div>
+                                        </div>
+                                    </div>
+                                    <button @click="cleanupTemp" class="w-full py-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 text-[10px] font-black uppercase hover:bg-slate-800 transition-all">
+                                        Очистить вложения
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card p-8 rounded-[2.5rem] bg-slate-900/50">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Backups</h4>
+                                    <button @click="createBackup" class="text-indigo-400 hover:text-indigo-300 text-[10px] font-black uppercase tracking-tighter">Создать +</button>
+                                </div>
+                                <div class="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                    <div v-for="b in backups" :key="b" class="flex items-center justify-between p-3 bg-slate-950/50 rounded-xl border border-slate-800/50 group">
+                                        <span class="text-[9px] font-bold text-slate-500 truncate w-24">{{ b }}</span>
+                                        <button @click="restoreBackup(b)" class="text-[9px] font-black text-indigo-500 uppercase opacity-0 group-hover:opacity-100 transition-all">Restore</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
                     <div v-if="user.role === 'admin'" class="card p-8 rounded-3xl mt-8 space-y-8">
                         <h3 class="text-xl font-bold text-white">Обслуживание системы</h3>
@@ -699,7 +829,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     </div>
                     <div class="flex items-center space-x-2">
                         <button @click="printTask(selectedTask.id)" class="text-slate-500 hover:text-indigo-400 p-2 transition-all" title="Печать отчета"><i data-lucide="printer" class="w-5 h-5"></i></button>
-                        <button @click="selectedTask = null" class="text-slate-500 hover:text-white p-2 transition-all"><i data-lucide="x" class="w-6 h-6"></i></button>
+                        <button @click="selectedTask = false" class="text-slate-500 hover:text-white p-2 transition-all"><i data-lucide="x" class="w-6 h-6"></i></button>
                     </div>
                 </div>
                 <div class="flex-1 overflow-hidden flex">
