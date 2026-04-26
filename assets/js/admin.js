@@ -35,31 +35,31 @@ createApp({
                 { id: 'rejected', name: 'Отклонено', color: 'bg-red-500' }
             ],
             themes: [
-                { id: 'slate', name: 'Slate Night', colors: { primary: '#6366f1', bgMain: '#0f172a', bgGlass: 'rgba(15, 23, 42, 0.9)', bgCard: 'rgba(30, 41, 59, 0.5)', textMain: '#e2e8f0', border: 'rgba(255, 255, 255, 0.1)' } },
-                { id: 'emerald', name: 'Emerald Forest', colors: { primary: '#10b981', bgMain: '#064e3b', bgGlass: 'rgba(6, 78, 59, 0.9)', bgCard: 'rgba(6, 95, 70, 0.5)', textMain: '#ecfdf5', border: 'rgba(16, 185, 129, 0.2)' } },
-                { id: 'ruby', name: 'Ruby Wine', colors: { primary: '#e11d48', bgMain: '#4c0519', bgGlass: 'rgba(76, 5, 25, 0.9)', bgCard: 'rgba(136, 19, 55, 0.5)', textMain: '#fff1f2', border: 'rgba(225, 29, 72, 0.2)' } },
-                { id: 'ocean', name: 'Deep Ocean', colors: { primary: '#0ea5e9', bgMain: '#0c4a6e', bgGlass: 'rgba(12, 74, 110, 0.9)', bgCard: 'rgba(7, 89, 133, 0.5)', textMain: '#f0f9ff', border: 'rgba(14, 165, 233, 0.2)' } },
-                { id: 'purple', name: 'Royal Purple', colors: { primary: '#a855f7', bgMain: '#3b0764', bgGlass: 'rgba(59, 7, 100, 0.9)', bgCard: 'rgba(88, 28, 135, 0.5)', textMain: '#faf5ff', border: 'rgba(168, 85, 247, 0.2)' } },
-                { id: 'gold', name: 'Cyber Gold', colors: { primary: '#f59e0b', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', border: 'rgba(245, 158, 11, 0.3)' } },
-                { id: 'minimal-light', name: 'Minimal Light', colors: { primary: '#0f172a', bgMain: '#f8fafc', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#0f172a', border: 'rgba(0, 0, 0, 0.1)' } },
-                { id: 'coffee', name: 'Roasted Coffee', colors: { primary: '#a16207', bgMain: '#271b12', bgGlass: 'rgba(39, 27, 18, 0.9)', bgCard: 'rgba(63, 45, 33, 0.5)', textMain: '#fefce8', border: 'rgba(161, 98, 7, 0.2)' } },
-                { id: 'nordic', name: 'Nordic Frost', colors: { primary: '#88c0d0', bgMain: '#2e3440', bgGlass: 'rgba(46, 52, 64, 0.9)', bgCard: 'rgba(59, 66, 82, 0.5)', textMain: '#eceff4', border: 'rgba(136, 192, 208, 0.2)' } },
-                { id: 'dracula', name: 'Dracula', colors: { primary: '#bd93f9', bgMain: '#282a36', bgGlass: 'rgba(40, 42, 54, 0.9)', bgCard: 'rgba(68, 71, 90, 0.5)', textMain: '#f8f8f2', border: 'rgba(189, 147, 249, 0.2)' } },
-                { id: 'synthwave', name: 'Synthwave', colors: { primary: '#ff79c6', bgMain: '#2b213a', bgGlass: 'rgba(43, 33, 58, 0.9)', bgCard: 'rgba(58, 44, 78, 0.5)', textMain: '#f8f8f2', border: 'rgba(255, 121, 198, 0.2)' } },
-                { id: 'midnight', name: 'True Midnight', colors: { primary: '#3b82f6', bgMain: '#000000', bgGlass: 'rgba(0, 0, 0, 0.95)', bgCard: 'rgba(15, 23, 42, 0.5)', textMain: '#ffffff', border: 'rgba(255, 255, 255, 0.05)' } },
-                { id: 'matcha', name: 'Soft Matcha', colors: { primary: '#65a30d', bgMain: '#f7fee7', bgGlass: 'rgba(247, 254, 231, 0.9)', bgCard: '#ffffff', textMain: '#1a2e05', border: 'rgba(101, 163, 13, 0.1)' } },
-                { id: 'rose', name: 'Rose Quartz', colors: { primary: '#db2777', bgMain: '#fff1f2', bgGlass: 'rgba(255, 241, 242, 0.9)', bgCard: '#ffffff', textMain: '#4c0519', border: 'rgba(219, 39, 119, 0.1)' } },
-                { id: 'amber', name: 'Amber Glow', colors: { primary: '#d97706', bgMain: '#451a03', bgGlass: 'rgba(69, 26, 3, 0.9)', bgCard: 'rgba(120, 53, 15, 0.5)', textMain: '#fffbeb', border: 'rgba(217, 119, 6, 0.2)' } },
-                { id: 'indigo', name: 'Indigo Dream', colors: { primary: '#4f46e5', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#e0e7ff', border: 'rgba(79, 70, 229, 0.2)' } },
-                { id: 'gray-modern', name: 'Gray Modern', colors: { primary: '#18181b', bgMain: '#f4f4f5', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#18181b', border: 'rgba(0, 0, 0, 0.05)' } },
-                { id: 'teal', name: 'Teal Lagoon', colors: { primary: '#0d9488', bgMain: '#042f2e', bgGlass: 'rgba(4, 47, 46, 0.9)', bgCard: 'rgba(19, 78, 74, 0.5)', textMain: '#f0fdfa', border: 'rgba(13, 148, 136, 0.2)' } },
-                { id: 'orange', name: 'Vivid Orange', colors: { primary: '#ea580c', bgMain: '#431407', bgGlass: 'rgba(67, 20, 7, 0.9)', bgCard: 'rgba(124, 45, 18, 0.5)', textMain: '#fff7ed', border: 'rgba(234, 88, 12, 0.2)' } },
-                { id: 'sky', name: 'Sky High', colors: { primary: '#0284c7', bgMain: '#f0f9ff', bgGlass: 'rgba(240, 249, 255, 0.9)', bgCard: '#ffffff', textMain: '#082f49', border: 'rgba(2, 132, 199, 0.1)' } },
-                { id: 'pink', name: 'Cyber Pink', colors: { primary: '#f472b6', bgMain: '#1e0714', bgGlass: 'rgba(30, 7, 20, 0.9)', bgCard: 'rgba(62, 11, 40, 0.5)', textMain: '#fdf2f8', border: 'rgba(244, 114, 182, 0.2)' } },
-                { id: 'lime', name: 'Acid Lime', colors: { primary: '#bef264', bgMain: '#1a2e05', bgGlass: 'rgba(26, 46, 5, 0.9)', bgCard: 'rgba(32, 45, 8, 0.5)', textMain: '#f7fee7', border: 'rgba(190, 242, 100, 0.2)' } },
-                { id: 'chocolate', name: 'Dark Chocolate', colors: { primary: '#78350f', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', border: 'rgba(120, 53, 15, 0.2)' } },
-                { id: 'royal', name: 'Royal Blue', colors: { primary: '#2563eb', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#f0f9ff', border: 'rgba(37, 99, 235, 0.2)' } },
-                { id: 'sepia', name: 'Sepia Memory', colors: { primary: '#92400e', bgMain: '#fef3c7', bgGlass: 'rgba(254, 243, 199, 0.9)', bgCard: '#fffbeb', textMain: '#451a03', border: 'rgba(146, 64, 14, 0.1)' } }
+                { id: 'slate', name: 'Slate Night', colors: { primary: '#6366f1', bgMain: '#0f172a', bgGlass: 'rgba(15, 23, 42, 0.9)', bgCard: 'rgba(30, 41, 59, 0.5)', textMain: '#e2e8f0', textDim: 'rgba(226, 232, 240, 0.6)', border: 'rgba(255, 255, 255, 0.1)' } },
+                { id: 'emerald', name: 'Emerald Forest', colors: { primary: '#10b981', bgMain: '#064e3b', bgGlass: 'rgba(6, 78, 59, 0.9)', bgCard: 'rgba(6, 95, 70, 0.5)', textMain: '#ecfdf5', textDim: 'rgba(236, 253, 245, 0.6)', border: 'rgba(16, 185, 129, 0.2)' } },
+                { id: 'ruby', name: 'Ruby Wine', colors: { primary: '#e11d48', bgMain: '#4c0519', bgGlass: 'rgba(76, 5, 25, 0.9)', bgCard: 'rgba(136, 19, 55, 0.5)', textMain: '#fff1f2', textDim: 'rgba(255, 241, 242, 0.6)', border: 'rgba(225, 29, 72, 0.2)' } },
+                { id: 'ocean', name: 'Deep Ocean', colors: { primary: '#0ea5e9', bgMain: '#0c4a6e', bgGlass: 'rgba(12, 74, 110, 0.9)', bgCard: 'rgba(7, 89, 133, 0.5)', textMain: '#f0f9ff', textDim: 'rgba(240, 249, 255, 0.6)', border: 'rgba(14, 165, 233, 0.2)' } },
+                { id: 'purple', name: 'Royal Purple', colors: { primary: '#a855f7', bgMain: '#3b0764', bgGlass: 'rgba(59, 7, 100, 0.9)', bgCard: 'rgba(88, 28, 135, 0.5)', textMain: '#faf5ff', textDim: 'rgba(250, 245, 255, 0.6)', border: 'rgba(168, 85, 247, 0.2)' } },
+                { id: 'gold', name: 'Cyber Gold', colors: { primary: '#f59e0b', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', textDim: 'rgba(254, 243, 199, 0.6)', border: 'rgba(245, 158, 11, 0.3)' } },
+                { id: 'minimal-light', name: 'Minimal Light', colors: { primary: '#0f172a', bgMain: '#f8fafc', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#0f172a', textDim: 'rgba(15, 23, 42, 0.6)', border: 'rgba(0, 0, 0, 0.1)' } },
+                { id: 'coffee', name: 'Roasted Coffee', colors: { primary: '#a16207', bgMain: '#271b12', bgGlass: 'rgba(39, 27, 18, 0.9)', bgCard: 'rgba(63, 45, 33, 0.5)', textMain: '#fefce8', textDim: 'rgba(254, 252, 232, 0.6)', border: 'rgba(161, 98, 7, 0.2)' } },
+                { id: 'nordic', name: 'Nordic Frost', colors: { primary: '#88c0d0', bgMain: '#2e3440', bgGlass: 'rgba(46, 52, 64, 0.9)', bgCard: 'rgba(59, 66, 82, 0.5)', textMain: '#eceff4', textDim: 'rgba(236, 239, 244, 0.6)', border: 'rgba(136, 192, 208, 0.2)' } },
+                { id: 'dracula', name: 'Dracula', colors: { primary: '#bd93f9', bgMain: '#282a36', bgGlass: 'rgba(40, 42, 54, 0.9)', bgCard: 'rgba(68, 71, 90, 0.5)', textMain: '#f8f8f2', textDim: 'rgba(248, 248, 242, 0.6)', border: 'rgba(189, 147, 249, 0.2)' } },
+                { id: 'synthwave', name: 'Synthwave', colors: { primary: '#ff79c6', bgMain: '#2b213a', bgGlass: 'rgba(43, 33, 58, 0.9)', bgCard: 'rgba(58, 44, 78, 0.5)', textMain: '#f8f8f2', textDim: 'rgba(248, 248, 242, 0.6)', border: 'rgba(255, 121, 198, 0.2)' } },
+                { id: 'midnight', name: 'True Midnight', colors: { primary: '#3b82f6', bgMain: '#000000', bgGlass: 'rgba(0, 0, 0, 0.95)', bgCard: 'rgba(15, 23, 42, 0.5)', textMain: '#ffffff', textDim: 'rgba(255, 255, 255, 0.6)', border: 'rgba(255, 255, 255, 0.05)' } },
+                { id: 'matcha', name: 'Soft Matcha', colors: { primary: '#65a30d', bgMain: '#f7fee7', bgGlass: 'rgba(247, 254, 231, 0.9)', bgCard: '#ffffff', textMain: '#1a2e05', textDim: 'rgba(26, 46, 5, 0.6)', border: 'rgba(101, 163, 13, 0.1)' } },
+                { id: 'rose', name: 'Rose Quartz', colors: { primary: '#db2777', bgMain: '#fff1f2', bgGlass: 'rgba(255, 241, 242, 0.9)', bgCard: '#ffffff', textMain: '#4c0519', textDim: 'rgba(76, 5, 25, 0.6)', border: 'rgba(219, 39, 119, 0.1)' } },
+                { id: 'amber', name: 'Amber Glow', colors: { primary: '#d97706', bgMain: '#451a03', bgGlass: 'rgba(69, 26, 3, 0.9)', bgCard: 'rgba(120, 53, 15, 0.5)', textMain: '#fffbeb', textDim: 'rgba(255, 251, 235, 0.6)', border: 'rgba(217, 119, 6, 0.2)' } },
+                { id: 'indigo', name: 'Indigo Dream', colors: { primary: '#4f46e5', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#e0e7ff', textDim: 'rgba(224, 231, 255, 0.6)', border: 'rgba(79, 70, 229, 0.2)' } },
+                { id: 'gray-modern', name: 'Gray Modern', colors: { primary: '#18181b', bgMain: '#f4f4f5', bgGlass: 'rgba(255, 255, 255, 0.9)', bgCard: '#ffffff', textMain: '#18181b', textDim: 'rgba(24, 24, 27, 0.6)', border: 'rgba(0, 0, 0, 0.05)' } },
+                { id: 'teal', name: 'Teal Lagoon', colors: { primary: '#0d9488', bgMain: '#042f2e', bgGlass: 'rgba(4, 47, 46, 0.9)', bgCard: 'rgba(19, 78, 74, 0.5)', textMain: '#f0fdfa', textDim: 'rgba(240, 253, 250, 0.6)', border: 'rgba(13, 148, 136, 0.2)' } },
+                { id: 'orange', name: 'Vivid Orange', colors: { primary: '#ea580c', bgMain: '#431407', bgGlass: 'rgba(67, 20, 7, 0.9)', bgCard: 'rgba(124, 45, 18, 0.5)', textMain: '#fff7ed', textDim: 'rgba(255, 247, 237, 0.6)', border: 'rgba(234, 88, 12, 0.2)' } },
+                { id: 'sky', name: 'Sky High', colors: { primary: '#0284c7', bgMain: '#f0f9ff', bgGlass: 'rgba(240, 249, 255, 0.9)', bgCard: '#ffffff', textMain: '#082f49', textDim: 'rgba(8, 47, 73, 0.6)', border: 'rgba(2, 132, 199, 0.1)' } },
+                { id: 'pink', name: 'Cyber Pink', colors: { primary: '#f472b6', bgMain: '#1e0714', bgGlass: 'rgba(30, 7, 20, 0.9)', bgCard: 'rgba(62, 11, 40, 0.5)', textMain: '#fdf2f8', textDim: 'rgba(253, 242, 248, 0.6)', border: 'rgba(244, 114, 182, 0.2)' } },
+                { id: 'lime', name: 'Acid Lime', colors: { primary: '#bef264', bgMain: '#1a2e05', bgGlass: 'rgba(26, 46, 5, 0.9)', bgCard: 'rgba(32, 45, 8, 0.5)', textMain: '#f7fee7', textDim: 'rgba(247, 254, 231, 0.6)', border: 'rgba(190, 242, 100, 0.2)' } },
+                { id: 'chocolate', name: 'Dark Chocolate', colors: { primary: '#78350f', bgMain: '#1c1917', bgGlass: 'rgba(28, 25, 23, 0.9)', bgCard: 'rgba(41, 37, 36, 0.5)', textMain: '#fef3c7', textDim: 'rgba(254, 243, 199, 0.6)', border: 'rgba(120, 53, 15, 0.2)' } },
+                { id: 'royal', name: 'Royal Blue', colors: { primary: '#2563eb', bgMain: '#1e1b4b', bgGlass: 'rgba(30, 27, 75, 0.9)', bgCard: 'rgba(49, 46, 129, 0.5)', textMain: '#f0f9ff', textDim: 'rgba(240, 249, 255, 0.6)', border: 'rgba(37, 99, 235, 0.2)' } },
+                { id: 'sepia', name: 'Sepia Memory', colors: { primary: '#92400e', bgMain: '#fef3c7', bgGlass: 'rgba(254, 243, 199, 0.9)', bgCard: '#fffbeb', textMain: '#451a03', textDim: 'rgba(69, 26, 3, 0.6)', border: 'rgba(146, 64, 14, 0.1)' } }
             ]
         }
     },
@@ -148,12 +148,12 @@ createApp({
         },
         updateMenu() {
             const m = [
-                { id: 'dashboard', name: 'Аналитика', icon: 'bar-chart-3' },
-                { id: 'tasks', name: 'Заявки', icon: 'layout-kanban' }
+                { id: 'dashboard', name: 'Аналитика', icon: 'layout-dashboard' },
+                { id: 'tasks', name: 'Заявки', icon: 'kanban' }
             ];
             if (this.user.role === 'admin') {
-                m.push({ id: 'forms', name: 'Конструктор', icon: 'form-input' });
-                m.push({ id: 'departments', name: 'Отделы', icon: 'building-2' });
+                m.push({ id: 'forms', name: 'Конструктор', icon: 'file-text' });
+                m.push({ id: 'departments', name: 'Отделы', icon: 'building' });
                 m.push({ id: 'users', name: 'Персонал', icon: 'users' });
                 m.push({ id: 'settings', name: 'Настройки', icon: 'settings' });
             } else if (this.user.role === 'head') {
@@ -161,6 +161,7 @@ createApp({
             }
             m.push({ id: 'profile', name: 'Профиль', icon: 'user' });
             this.menu = m;
+            this.$nextTick(() => lucide.createIcons());
         },
         async loadData(isBackground = false) {
             if (!this.token) return;
@@ -168,6 +169,8 @@ createApp({
             this.tasks = await this.api('api/tasks.php');
             this.settings = await this.api('api/settings.php');
             if (!this.settings.departments) this.settings.departments = [];
+
+            this.applyGlobalStyles();
 
             this.allUsers = await this.api('api/register.php');
             if (this.user.role === 'head') {
@@ -316,6 +319,26 @@ createApp({
         applyTemplate(tpl) {
             this.settings.form_fields = [...tpl.fields];
         },
+        applyGlobalStyles() {
+            // Apply Font
+            if (this.settings.font_family) {
+                const fontUrl = `https://fonts.googleapis.com/css2?family=${this.settings.font_family.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+                document.getElementById('google-font').href = fontUrl;
+                document.body.style.fontFamily = `'${this.settings.font_family}', sans-serif`;
+            }
+            if (this.settings.font_size) {
+                document.querySelector('.text-base-custom').style.fontSize = this.settings.font_size;
+            }
+
+            // Apply Theme
+            const themeId = this.settings.active_theme || 'slate';
+            const colors = this.themes.find(t => t.id === themeId)?.colors;
+            if (colors) {
+                Object.entries(colors).forEach(([k, v]) => {
+                    document.documentElement.style.setProperty(`--${k}`, v);
+                });
+            }
+        },
         openUserModal(user) {
             this.userModal = user ? { ...user, password: '' } : { username: '', full_name: '', role: 'employee', password: '', department_id: this.user.role === 'head' ? this.user.department_id : '' };
         },
@@ -431,12 +454,31 @@ createApp({
                 recognition.start();
         }
     },
-    mounted() {
+    async mounted() {
         if (this.token) {
+            try {
+                const userData = await this.api('api/auth.php?action=me');
+                if (userData && userData.id) {
+                    this.user = userData;
+                    localStorage.setItem('crm_user', JSON.stringify(this.user));
+                    this.updateMenu();
+                }
+            } catch (e) {
+                this.logout();
+            }
             this.updateMenu();
             this.loadData();
         }
         lucide.createIcons();
+
+        // Boot loader handling
+        setTimeout(() => {
+            const loader = document.getElementById('boot-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        }, 3000);
     },
     watch: {
         tab() {

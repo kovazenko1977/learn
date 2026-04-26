@@ -86,3 +86,69 @@
 [Sat Apr 25 21:33:06 2026] 127.0.0.1:58412 Accepted
 [Sat Apr 25 21:33:06 2026] 127.0.0.1:58412 [200]: GET /api/register.php
 [Sat Apr 25 21:33:06 2026] 127.0.0.1:58412 Closing
+[Sun Apr 26 06:03:11 2026] 127.0.0.1:54354 Accepted
+[Sun Apr 26 06:03:11 2026] 127.0.0.1:54354 [200]: GET /index.php
+[Sun Apr 26 06:03:11 2026] 127.0.0.1:54354 Closing
+[Sun Apr 26 06:04:17 2026] 127.0.0.1:48408 Accepted
+[Sun Apr 26 06:04:17 2026] 127.0.0.1:48408 [200]: GET /index.php
+[Sun Apr 26 06:04:17 2026] 127.0.0.1:48408 Closing
+[Sun Apr 26 06:05:05 2026] 127.0.0.1:53612 Accepted
+[Sun Apr 26 06:05:05 2026] 127.0.0.1:53612 [200]: GET /index.php
+[Sun Apr 26 06:05:05 2026] 127.0.0.1:53612 Closing
+[Sun Apr 26 06:05:09 2026] 127.0.0.1:53626 Accepted
+[Sun Apr 26 06:05:09 2026] 127.0.0.1:53626 [200]: POST /api/auth.php?action=login
+[Sun Apr 26 06:05:09 2026] 127.0.0.1:53626 Closing
+[Sun Apr 26 06:05:09 2026] 127.0.0.1:53638 Accepted
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53638 [200]: GET /api/settings.php
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53638 Closing
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53648 Accepted
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53648 [200]: GET /admin.php
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53648 Closing
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53664 Accepted
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53664 [200]: GET /assets/js/admin.js
+[Sun Apr 26 06:05:10 2026] 127.0.0.1:53664 Closing
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53680 Accepted
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53680 [200]: GET /api/auth.php?action=me
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53680 Closing
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53684 Accepted
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53684 [200]: GET /api/tasks.php
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53684 Closing
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53700 Accepted
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53700 [200]: GET /api/settings.php
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53700 Closing
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53702 Accepted
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53702 [200]: GET /api/register.php
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53702 Closing
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53718 Accepted
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53718 [200]: GET /api/admin_actions.php?action=list_backups
+[Sun Apr 26 06:05:11 2026] 127.0.0.1:53718 Closing
+[Sun Apr 26 06:07:23 2026] 127.0.0.1:41708 Accepted
+[Sun Apr 26 06:07:23 2026] 127.0.0.1:41708 [200]: GET /index.php
+[Sun Apr 26 06:07:23 2026] 127.0.0.1:41708 Closing
+[Sun Apr 26 06:07:27 2026] 127.0.0.1:41712 Accepted
+[Sun Apr 26 06:07:27 2026] 127.0.0.1:41712 [200]: POST /api/auth.php?action=login
+[Sun Apr 26 06:07:27 2026] 127.0.0.1:41712 Closing
+[Sun Apr 26 06:07:27 2026] 127.0.0.1:41722 Accepted
+[Sun Apr 26 06:07:27 2026] 127.0.0.1:41722 [200]: GET /api/settings.php
+[Sun Apr 26 06:07:27 2026] 127.0.0.1:41722 Closing
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41724 Accepted
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41724 [200]: GET /admin.php
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41724 Closing
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41732 Accepted
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41732 [200]: GET /assets/js/admin.js
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41732 Closing
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41740 Accepted
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41740 [200]: GET /api/auth.php?action=me
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41740 Closing
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41746 Accepted
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41746 [200]: GET /api/tasks.php
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41746 Closing
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41754 Accepted
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41754 [200]: GET /api/settings.php
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41754 Closing
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41764 Accepted
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41764 [200]: GET /api/register.php
+[Sun Apr 26 06:07:28 2026] 127.0.0.1:41764 Closing
+[Sun Apr 26 06:07:29 2026] 127.0.0.1:41774 Accepted
+[Sun Apr 26 06:07:29 2026] 127.0.0.1:41774 [200]: GET /api/admin_actions.php?action=list_backups
+[Sun Apr 26 06:07:29 2026] 127.0.0.1:41774 Closing

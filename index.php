@@ -21,17 +21,32 @@
             color: var(--text-main);
             transition: all 0.3s ease;
         }
+        .text-main { color: var(--text-main) !important; }
+        .text-dim { color: var(--text-main); opacity: 0.6; }
         .glass { background: var(--bg-glass); backdrop-filter: blur(10px); border: 1px solid var(--border-color); }
         input, select, textarea { background-color: var(--bg-card) !important; color: var(--text-main) !important; border-color: var(--border-color) !important; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
+    <!-- Boot Loader -->
+    <div id="boot-loader" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center text-4xl mb-6 shadow-2xl shadow-indigo-500/20 animate-pulse">🏢</div>
+        <h2 class="text-white font-bold tracking-widest uppercase text-sm mb-4">Служба ХОП PRO</h2>
+        <div class="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-indigo-500 w-0 animate-[load_3s_linear_forwards]"></div>
+        </div>
+        <p class="text-slate-500 text-[10px] mt-4 uppercase font-bold tracking-[0.3em]">Загрузка системы</p>
+        <style>
+            @keyframes load { from { width: 0%; } to { width: 100%; } }
+        </style>
+    </div>
+
     <div id="app" class="max-w-xl w-full glass rounded-3xl shadow-2xl overflow-hidden">
         <!-- Auth Check -->
         <div id="auth-container" class="p-8 hidden">
              <div class="text-center mb-8">
-                <h1 class="text-2xl font-bold text-slate-900">Авторизация</h1>
-                <p class="text-slate-500 text-sm mt-1">Войдите под своим логином и паролем</p>
+                <h1 class="text-2xl font-bold text-main">Авторизация</h1>
+                <p class="text-dim text-sm mt-1">Войдите под своим логином и паролем</p>
             </div>
             <form id="loginForm" class="space-y-4">
                 <div class="space-y-1">
@@ -55,10 +70,10 @@
                     🏢
                 </div>
                 <div class="flex-1">
-                    <h1 id="system-name" class="text-2xl font-bold text-slate-900">Служба ХОП</h1>
-                    <p id="welcome-text" class="text-slate-500 text-sm">Хозяйственное Обеспечение Предприятия</p>
+                    <h1 id="system-name" class="text-2xl font-bold text-main">Служба ХОП</h1>
+                    <p id="welcome-text" class="text-dim text-sm">Хозяйственное Обеспечение Предприятия</p>
                 </div>
-                <button id="logoutBtn" class="ml-auto text-xs text-slate-400 hover:text-red-500">Выйти</button>
+                <button id="logoutBtn" class="ml-auto text-xs text-dim hover:text-red-500">Выйти</button>
             </div>
 
             <div id="form-container">
@@ -330,8 +345,25 @@
             recognition.start();
         }
         checkAuth();
-        lucide.createIcons();
+        setTimeout(() => {
+            const loader = document.getElementById('boot-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        }, 3000);
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+        // Boot Loader
+        setTimeout(() => {
+            const loader = document.getElementById('boot-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.remove(), 500);
+            }
+        }, 3000);
+    </script>
 </body>
 </html>

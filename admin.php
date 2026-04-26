@@ -45,15 +45,16 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link :href="googleFontUrl" rel="stylesheet">
-    <style>
+    <link id="google-font" rel="stylesheet">
+    <style id="theme-style">
         :root {
-            --primary: v-bind('themeColors.primary || "#6366f1"');
-            --bg-main: v-bind('themeColors.bgMain || "#0f172a"');
-            --bg-glass: v-bind('themeColors.bgGlass || "rgba(15, 23, 42, 0.9)"');
-            --bg-card: v-bind('themeColors.bgCard || "rgba(30, 41, 59, 0.5)"');
-            --text-main: v-bind('themeColors.textMain || "#e2e8f0"');
-            --border-color: v-bind('themeColors.border || "rgba(255, 255, 255, 0.1)"');
+            --primary: #6366f1;
+            --bg-main: #0f172a;
+            --bg-glass: rgba(15, 23, 42, 0.9);
+            --bg-card: rgba(30, 41, 59, 0.5);
+            --text-main: #e2e8f0;
+            --text-dim: rgba(226, 232, 240, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
         }
         [v-cloak] { display: none; }
         body {
@@ -64,34 +65,62 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
         .glass { background: var(--bg-glass); backdrop-filter: blur(12px); border: 1px solid var(--border-color); }
         .card { background: var(--bg-card); border: 1px solid var(--border-color); }
         .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 80%); border-right: 3px solid var(--primary); color: var(--primary); }
+        .text-dim { color: var(--text-dim); }
+        .text-main { color: var(--text-main); }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-main); }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
 
         /* Font size variants */
-        .text-base-custom { font-size: v-bind('settings.font_size || "14px"') }
+        .text-base-custom { font-size: 14px; }
 
         .theme-preview { width: 24px; height: 24px; border-radius: 50%; display: inline-block; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
         .theme-preview.active { border-color: white; transform: scale(1.2); }
     </style>
 </head>
 <body class="min-h-screen transition-colors duration-500 text-base-custom">
+    <!-- Boot Loader -->
+    <div id="boot-loader" class="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-24 h-24 relative mb-8">
+            <div class="absolute inset-0 border-4 border-indigo-500/20 rounded-2xl"></div>
+            <div class="absolute inset-0 border-4 border-indigo-500 rounded-2xl animate-spin [animation-duration:3s]"></div>
+            <div class="absolute inset-0 flex items-center justify-center text-indigo-500 font-black text-2xl">C</div>
+        </div>
+        <div class="text-center">
+            <h2 class="text-white font-bold tracking-[0.2em] uppercase mb-2">Service CRM PRO</h2>
+            <div class="flex items-center justify-center space-x-1">
+                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></span>
+                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+            </div>
+            <p class="text-slate-500 text-[10px] mt-4 uppercase font-bold tracking-widest">Загрузка системы...</p>
+        </div>
+        <div class="absolute bottom-10 left-0 right-0 px-20">
+            <div class="h-1 bg-slate-900 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-500 w-0 animate-[loading_3s_linear_forwards]"></div>
+            </div>
+        </div>
+        <style>
+            @keyframes loading { from { width: 0%; } to { width: 100%; } }
+        </style>
+    </div>
+
     <div id="app" v-cloak>
         <!-- Login Overlay -->
         <div v-if="!token" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
             <div class="max-w-md w-full glass p-10 rounded-3xl shadow-2xl">
                 <div class="text-center mb-8">
-                    <h1 class="text-3xl font-bold text-white mb-2">CRM PRO</h1>
-                    <p class="text-slate-400">Авторизация в системе ХОП</p>
+                    <h1 class="text-3xl font-bold text-main mb-2">CRM PRO</h1>
+                    <p class="text-dim">Авторизация в системе ХОП</p>
                 </div>
                 <form @submit.prevent="login" class="space-y-6">
                     <div>
-                        <label class="block text-sm font-medium text-slate-400 mb-2">Логин</label>
-                        <input v-model="loginForm.username" type="text" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-white" required>
+                        <label class="block text-sm font-medium text-dim mb-2">Логин</label>
+                        <input v-model="loginForm.username" type="text" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-main" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-400 mb-2">Пароль</label>
-                        <input v-model="loginForm.password" type="password" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-white" required>
+                        <label class="block text-sm font-medium text-dim mb-2">Пароль</label>
+                        <input v-model="loginForm.password" type="password" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-main" required>
                     </div>
                     <button type="submit" :disabled="loading" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/20 transition-all">
                         Войти в систему
@@ -108,7 +137,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 <div class="p-6">
                     <div class="flex items-center space-x-3 mb-10">
                         <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">C</div>
-                        <span class="text-xl font-bold text-white tracking-tight">CRM PRO</span>
+                        <span class="text-xl font-bold text-main tracking-tight">CRM PRO</span>
                     </div>
 
                     <nav class="space-y-1">
@@ -125,11 +154,11 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             {{ user.username[0] }}
                         </div>
                         <div class="overflow-hidden">
-                            <p class="text-sm font-bold text-white truncate">{{ user.full_name || user.username }}</p>
-                            <p class="text-xs text-slate-500 capitalize">{{ user.role }}</p>
+                            <p class="text-sm font-bold text-main truncate">{{ user.full_name || user.username }}</p>
+                            <p class="text-xs text-dim capitalize">{{ user.role }}</p>
                         </div>
                     </div>
-                    <button @click="logout" class="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-slate-900 hover:bg-red-900/20 hover:text-red-400 text-slate-400 transition-all border border-slate-800">
+                    <button @click="logout" class="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-slate-900 hover:bg-red-900/20 hover:text-red-400 text-dim transition-all border border-slate-800">
                         <i data-lucide="log-out" class="w-4 h-4"></i>
                         <span class="text-sm font-semibold">Выйти</span>
                     </button>
@@ -142,7 +171,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                 <header class="flex justify-between items-center mb-10">
                     <div class="flex-1 mr-8">
                         <div class="flex items-center space-x-3">
-                            <h2 class="text-3xl font-bold text-white">{{ currentMenuName }}</h2>
+                            <h2 class="text-3xl font-bold text-main">{{ currentMenuName }}</h2>
                             <div class="group relative inline-block">
                                 <i data-lucide="help-circle" class="w-4 h-4 text-slate-600 cursor-help"></i>
                                 <div class="absolute left-full ml-2 top-0 hidden group-hover:block w-48 p-2 bg-slate-800 text-[10px] rounded shadow-xl z-50">
@@ -154,10 +183,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 </div>
                             </div>
                         </div>
-                        <p class="text-slate-500">Система ХОП PRO • {{ user.role === 'admin' ? 'Полный доступ' : 'Доступ ограничен' }}</p>
+                        <p class="text-dim">Система ХОП PRO • {{ user.role === 'admin' ? 'Полный доступ' : 'Доступ ограничен' }}</p>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button @click="exportCSV" v-if="user.role === 'admin'" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center space-x-2 transition-all">
+                        <button @click="exportCSV" v-if="user.role === 'admin'" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center space-x-2 transition-all text-main">
                             <i data-lucide="download" class="w-4 h-4"></i>
                             <span>Экспорт CSV</span>
                         </button>
