@@ -63,7 +63,8 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             color: var(--text-main);
         }
         .glass { background: var(--bg-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(8px); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1); }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); backdrop-filter: blur(12px); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1); transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.2); }
         .sidebar-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-item.active { background: color-mix(in srgb, var(--primary), transparent 85%); border-right: 4px solid var(--primary); color: var(--primary); font-weight: 700; transform: translateX(4px); }
         .text-dim { color: var(--text-dim); }
@@ -272,9 +273,19 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <input type="date" v-model="taskFilter.date_end" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs text-white outline-none">
                         </div>
                         <button @click="taskFilter = {department_id:'', priority:'', date_start:'', date_end:''}" class="text-xs text-slate-500 hover:text-white">Сбросить</button>
+
+                        <div class="ml-auto flex items-center bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+                            <button @click="viewMode = 'kanban'" :class="['px-3 py-1.5 rounded-lg text-xs font-bold transition-all', viewMode === 'kanban' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300']">
+                                <i data-lucide="kanban" class="w-3.5 h-3.5 inline mr-1"></i> Канбан
+                            </button>
+                            <button @click="viewMode = 'table'" :class="['px-3 py-1.5 rounded-lg text-xs font-bold transition-all', viewMode === 'table' ? 'bg-indigo-600 text-white' : 'text-slate-500 hover:text-slate-300']">
+                                <i data-lucide="table" class="w-3.5 h-3.5 inline mr-1"></i> Таблица
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="flex space-x-6 overflow-x-auto pb-6 min-h-[600px]">
+                    <!-- Kanban View -->
+                    <div v-if="viewMode === 'kanban'" class="flex space-x-6 overflow-x-auto pb-6 min-h-[600px]">
                         <div v-for="status in statuses" :key="status.id" class="w-80 flex-shrink-0">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="font-bold text-slate-400 flex items-center">
@@ -285,27 +296,82 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                                 <button class="text-slate-600 hover:text-slate-400"><i data-lucide="plus" class="w-4 h-4"></i></button>
                             </div>
                             <div class="space-y-4">
-                                <div v-for="task in filteredTasks(status.id)" :key="task.id" @click="openTask(task)" class="card p-5 rounded-2xl cursor-pointer hover:border-indigo-500/50 transition-all group">
-                                    <div class="flex justify-between items-start mb-3">
-                                        <span :class="['text-[10px] uppercase font-black px-2 py-0.5 rounded', priorityClass(task.priority)]">
+                                    <!-- Premium Task Card -->
+                                    <div v-for="task in filteredTasks(status.id)" :key="task.id" @click="openTask(task)"
+                                         class="card p-5 rounded-3xl cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all group relative overflow-hidden">
+                                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 blur-2xl -mr-12 -mt-12 group-hover:bg-indigo-500/10 transition-all"></div>
+
+                                        <div class="flex justify-between items-start mb-4 relative z-10">
+                                            <span :class="['text-[9px] uppercase font-black px-2.5 py-1 rounded-full border', priorityClass(task.priority)]">
                                             {{ task.priority }}
                                         </span>
-                                        <span class="text-[10px] text-slate-600 font-mono">#{{ task.id }}</span>
+                                            <span class="text-[9px] text-dim font-mono bg-slate-900/50 px-2 py-0.5 rounded">#{{ task.id }}</span>
                                     </div>
-                                    <p class="text-sm font-semibold text-slate-200 mb-3 group-hover:text-indigo-400 transition-colors">{{ task.description.substring(0, 60) }}...</p>
-                                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-slate-800">
-                                        <div class="flex -space-x-2">
-                                            <div v-if="task.executor_id" class="w-6 h-6 rounded-full bg-indigo-500 border-2 border-slate-900 text-[8px] flex items-center justify-center font-bold">EX</div>
-                                            <div class="w-6 h-6 rounded-full bg-slate-800 border-2 border-slate-900 text-[8px] flex items-center justify-center font-bold">?</div>
+
+                                        <p class="text-sm font-bold text-main mb-4 leading-relaxed line-clamp-2 group-hover:text-indigo-400 transition-colors relative z-10">
+                                            {{ task.description }}
+                                        </p>
+
+                                        <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-800/50 relative z-10">
+                                            <div class="flex items-center space-x-2">
+                                                <div v-if="task.executor_id" class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-[8px] font-black text-white shadow-lg shadow-indigo-500/20">
+                                                    {{ executors.find(e => e.id == task.executor_id)?.full_name[0] || 'EX' }}
+                                                </div>
+                                                <div v-else class="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-dim">
+                                                    <i data-lucide="user" class="w-3 h-3"></i>
+                                                </div>
+                                                <span class="text-[9px] text-dim font-bold uppercase tracking-tighter">{{ deptName(task.department_id) }}</span>
                                         </div>
-                                        <div class="flex items-center text-slate-500 text-[10px] space-x-2">
-                                            <i data-lucide="calendar" class="w-3 h-3"></i>
-                                            <span>{{ task.created_at.split(' ')[0] }}</span>
+                                            <div class="text-right">
+                                                <p class="text-[8px] text-dim font-black uppercase">{{ task.created_at.split(' ')[0] }}</p>
+                                                <p class="text-[8px] text-indigo-500 font-bold mt-0.5">{{ task.created_at.split(' ')[1] }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Table View -->
+                    <div v-if="viewMode === 'table'" class="card rounded-3xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-900/50 border-b border-slate-800">
+                                    <th class="p-4 text-[10px] font-black uppercase text-dim tracking-widest">ID</th>
+                                    <th class="p-4 text-[10px] font-black uppercase text-dim tracking-widest">Дата</th>
+                                    <th class="p-4 text-[10px] font-black uppercase text-dim tracking-widest">Статус</th>
+                                    <th class="p-4 text-[10px] font-black uppercase text-dim tracking-widest">Приоритет</th>
+                                    <th class="p-4 text-[10px] font-black uppercase text-dim tracking-widest">Отдел</th>
+                                    <th class="p-4 text-[10px] font-black uppercase text-dim tracking-widest">Описание</th>
+                                    <th class="p-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="task in filteredTasksTable" :key="task.id" @click="openTask(task)" class="border-b border-slate-800/50 hover:bg-slate-800/20 cursor-pointer transition-colors group">
+                                    <td class="p-4 font-mono text-xs text-dim">#{{ task.id }}</td>
+                                    <td class="p-4 text-xs text-main">{{ task.created_at }}</td>
+                                    <td class="p-4">
+                                        <div class="flex items-center space-x-2">
+                                            <div :class="['w-2 h-2 rounded-full', statusColor(task.status)]"></div>
+                                            <span class="text-xs font-bold text-main uppercase">{{ task.status }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-4">
+                                        <span :class="['text-[10px] uppercase font-black px-2 py-0.5 rounded', priorityClass(task.priority)]">
+                                            {{ task.priority }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4 text-xs text-main">{{ deptName(task.department_id) }}</td>
+                                    <td class="p-4 text-xs text-main truncate max-w-xs">{{ task.description }}</td>
+                                    <td class="p-4 text-right">
+                                        <button class="text-slate-600 group-hover:text-indigo-400 transition-colors">
+                                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-if="!tasks.length" class="p-20 text-center text-dim italic">Нет заявок по заданным фильтрам</div>
                     </div>
                 </div>
 
@@ -345,9 +411,12 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                     <div class="card p-8 rounded-3xl">
                         <h3 class="text-lg font-bold text-white mb-6">Готовые шаблоны</h3>
                         <div class="space-y-3">
-                            <div v-for="tpl in settings.form_templates" :key="tpl.id" class="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center justify-between group">
-                                <span class="text-sm font-medium text-slate-300">{{ tpl.name }}</span>
-                                <button @click="applyTemplate(tpl)" class="text-xs font-bold text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">Применить</button>
+                            <div v-for="tpl in settings.form_templates" :key="tpl.id" class="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center justify-between group hover:border-indigo-500/50 transition-all">
+                                <span class="text-sm font-medium text-main">{{ tpl.name }}</span>
+                                <div class="flex items-center space-x-2">
+                                    <button @click="applyTemplate(tpl)" class="text-[10px] font-black text-indigo-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all">Применить</button>
+                                    <button @click="deleteTemplate(tpl.id)" class="text-red-500/50 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                </div>
                             </div>
                             <p v-if="!settings.form_templates?.length" class="text-xs text-slate-600 italic">Шаблонов пока нет</p>
                         </div>
@@ -628,7 +697,10 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
                             <button @click="taskModalTab = 'chat'" :class="['text-xs font-bold pb-2 border-b-2 transition-all', taskModalTab === 'chat' ? 'border-indigo-500 text-white' : 'border-transparent text-slate-500']">ЧАТ С ЗАКАЗЧИКОМ</button>
                         </nav>
                     </div>
-                    <button @click="selectedTask = null" class="text-slate-500 hover:text-white p-2 transition-all"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    <div class="flex items-center space-x-2">
+                        <button @click="printTask(selectedTask.id)" class="text-slate-500 hover:text-indigo-400 p-2 transition-all" title="Печать отчета"><i data-lucide="printer" class="w-5 h-5"></i></button>
+                        <button @click="selectedTask = null" class="text-slate-500 hover:text-white p-2 transition-all"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    </div>
                 </div>
                 <div class="flex-1 overflow-hidden flex">
                     <!-- Left Sidebar (Status Controls) -->

@@ -27,6 +27,7 @@ createApp({
             userSearch: '',
             deptSearch: '',
             taskFilter: { department_id: '', priority: '', date_start: '', date_end: '' },
+            viewMode: 'kanban',
             templateName: '',
             statuses: [
                 { id: 'new', name: 'Новые', color: 'bg-blue-500' },
@@ -84,6 +85,21 @@ createApp({
             return this.settings.departments.filter(d =>
                 d.name.toLowerCase().includes(this.deptSearch.toLowerCase())
             );
+        },
+        filteredTasksTable() {
+            return this.tasks.filter(t => {
+                const matchSearch = !this.searchQuery ||
+                                   t.id.toString().includes(this.searchQuery) ||
+                                   t.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+                const matchDept = !this.taskFilter.department_id || t.department_id == this.taskFilter.department_id;
+                const matchPriority = !this.taskFilter.priority || t.priority == this.taskFilter.priority;
+
+                let matchDate = true;
+                if (this.taskFilter.date_start) matchDate = matchDate && t.created_at >= this.taskFilter.date_start;
+                if (this.taskFilter.date_end) matchDate = matchDate && t.created_at <= this.taskFilter.date_end + ' 23:59:59';
+
+                return matchSearch && matchDept && matchPriority && matchDate;
+            });
         }
     },
     methods: {
@@ -304,6 +320,12 @@ createApp({
         applyTemplate(tpl) {
             this.settings.form_fields = [...tpl.fields];
         },
+        async deleteTemplate(id) {
+            if (confirm('Удалить этот шаблон?')) {
+                this.settings.form_templates = this.settings.form_templates.filter(t => t.id !== id);
+                await this.saveSettings();
+            }
+        },
         applyGlobalStyles() {
             // Apply Font
             if (this.settings.font_family) {
@@ -417,6 +439,9 @@ createApp({
         exportCSV() {
             window.location.href = 'admin.php?export=csv&token=' + encodeURIComponent(this.token);
             },
+        printTask(id) {
+            window.open(`api/report.php?id=${id}&token=${encodeURIComponent(this.token)}`, '_blank');
+        },
             startVoice(field) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 if (!SpeechRecognition) {
@@ -468,6 +493,15 @@ createApp({
     watch: {
         tab() {
             this.$nextTick(() => lucide.createIcons());
+        },
+        'settings.active_theme'() {
+            this.applyGlobalStyles();
+        },
+        'settings.font_family'() {
+            this.applyGlobalStyles();
+        },
+        'settings.font_size'() {
+            this.applyGlobalStyles();
         }
     }
 }).mount('#app');
