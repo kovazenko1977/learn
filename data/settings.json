@@ -1,0 +1,67 @@
+{
+    "app_name": "Service CRM PRO",
+    "storage_mode": "json",
+    "categories": [
+        "Техническая поддержка",
+        "Ремонт оборудования",
+        "Хозяйственные нужды",
+        "Программное обеспечение",
+        "Другое"
+    ],
+    "priorities": [
+        {
+            "id": "low",
+            "label": "Низкий",
+            "color": "#10b981",
+            "sla_hours": 48
+        },
+        {
+            "id": "medium",
+            "label": "Средний",
+            "color": "#3b82f6",
+            "sla_hours": 24
+        },
+        {
+            "id": "high",
+            "label": "Высокий",
+            "color": "#f59e0b",
+            "sla_hours": 8
+        },
+        {
+            "id": "critical",
+            "label": "Критический",
+            "color": "#ef4444",
+            "sla_hours": 2
+        }
+    ],
+    "form_fields": [
+        {
+            "id": "description",
+            "label": "Описание проблемы",
+            "type": "textarea",
+            "required": true
+        },
+        {
+            "id": "location",
+            "label": "Кабинет/Место",
+            "type": "text",
+            "required": true
+        }
+    ],
+    "departments": [
+        "IT",
+        "АХО",
+        "Бухгалтерия",
+        "Отдел продаж",
+        "HR"
+    ],
+    "themes": [
+        { "name": "Midnight Pro", "key": "midnight" },
+        { "name": "Modern Zinc", "key": "zinc" }
+    ],
+    "current_theme": "midnight",
+    "notifications": {
+        "telegram": false,
+        "email": false
+    }
+}

@@ -1,0 +1,81 @@
+:root {
+    --bg-main: #f8fafc;
+    --bg-sidebar: #0f172a;
+    --text-main: #1e293b;
+    --accent: #2563eb;
+    --border-color: #e2e8f0;
+}
+
+/* Glassmorphism effects */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.glass-dark {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Transitions */
+.transition-all {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Status colors */
+.status-new { color: #3b82f6; background: #eff6ff; }
+.status-assigned { color: #8b5cf6; background: #f5f3ff; }
+.status-work { color: #f59e0b; background: #fffbeb; }
+.status-done { color: #10b981; background: #ecfdf5; }
+.status-rejected { color: #ef4444; background: #fef2f2; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main-content { padding: 1rem; }
+}
+
+/* Dark mode theme variables */
+[data-theme='midnight'] {
+    --bg-main: #0f172a;
+    --bg-sidebar: #020617;
+    --text-main: #f1f5f9;
+    --accent: #3b82f6;
+    --border-color: #1e293b;
+}
+
+[data-theme='zinc'] {
+    --bg-main: #18181b;
+    --bg-sidebar: #09090b;
+    --text-main: #f4f4f5;
+    --accent: #52525b;
+    --border-color: #27272a;
+}
