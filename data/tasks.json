@@ -1,0 +1,247 @@
+[
+    {
+        "id": "fbdcb6b11ff567af",
+        "title": "Test Task",
+        "description": "Verify API works",
+        "category": "",
+        "priority": "High",
+        "status": "New",
+        "department": "General",
+        "creator_id": "abe06b46dd7591dd",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:21:08",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [
+            {
+                "id": "63c71681b351b244",
+                "user_id": "abe06b46dd7591dd",
+                "user_name": "System Administrator",
+                "text": "This is a test comment",
+                "time": "2026-04-28 01:21:08"
+            }
+        ],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:21:08"
+            }
+        ]
+    },
+    {
+        "id": "b2e99e2cec9c138f",
+        "title": "Playwright Test Task",
+        "description": "Created by automated verification script",
+        "category": "",
+        "priority": "Medium",
+        "status": "New",
+        "department": "General",
+        "creator_id": "abe06b46dd7591dd",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:26:51",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [
+            {
+                "id": "38ca73019b1c114c",
+                "user_id": "abe06b46dd7591dd",
+                "user_name": "System Administrator",
+                "text": "Auto-comment",
+                "time": "2026-04-28 01:26:54"
+            },
+            {
+                "id": "dff6c706edf3f80d",
+                "user_id": "abe06b46dd7591dd",
+                "user_name": "System Administrator",
+                "text": "Auto-comment",
+                "time": "2026-04-28 01:28:04"
+            },
+            {
+                "id": "c1f3340a1c6ad951",
+                "user_id": "abe06b46dd7591dd",
+                "user_name": "System Administrator",
+                "text": "Auto-comment",
+                "time": "2026-04-28 01:29:07"
+            },
+            {
+                "id": "1bed1fe47cc53d77",
+                "user_id": "abe06b46dd7591dd",
+                "user_name": "System Administrator",
+                "text": "Auto-comment",
+                "time": "2026-04-28 01:30:15"
+            }
+        ],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:26:51"
+            }
+        ]
+    },
+    {
+        "id": "9f48a5384eea1b72",
+        "title": "Playwright Test Task",
+        "description": "Created by automated verification script",
+        "category": "",
+        "priority": "Medium",
+        "status": "New",
+        "department": "General",
+        "creator_id": "abe06b46dd7591dd",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:28:01",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:28:01"
+            }
+        ]
+    },
+    {
+        "id": "18574940a00c7e22",
+        "title": "Playwright Test Task",
+        "description": "Created by automated verification script",
+        "category": "",
+        "priority": "Medium",
+        "status": "New",
+        "department": "General",
+        "creator_id": "abe06b46dd7591dd",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:29:05",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:29:05"
+            }
+        ]
+    },
+    {
+        "id": "2c51e3b5ed059eec",
+        "title": "Playwright Test Task",
+        "description": "Created by automated verification script",
+        "category": "",
+        "priority": "Medium",
+        "status": "New",
+        "department": "General",
+        "creator_id": "abe06b46dd7591dd",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:30:12",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:30:12"
+            }
+        ]
+    },
+    {
+        "id": "82f383bf5cf1c265",
+        "title": "Test Task",
+        "description": "Verify API works",
+        "category": "",
+        "priority": "High",
+        "status": "New",
+        "department": "General",
+        "creator_id": "abe06b46dd7591dd",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:31:51",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [
+            {
+                "id": "fd45ed5dea62fcaa",
+                "user_id": "abe06b46dd7591dd",
+                "user_name": "System Administrator",
+                "text": "This is a test comment",
+                "time": "2026-04-28 01:31:51"
+            }
+        ],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:31:51"
+            }
+        ]
+    },
+    {
+        "id": "9c089016dde7bd89",
+        "title": "Test Task",
+        "description": "Verify API works",
+        "category": "",
+        "priority": "High",
+        "status": "New",
+        "department": "General",
+        "creator_id": "6830d9b72c33c71b",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:38:44",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [
+            {
+                "id": "d413bd122f39b1f7",
+                "user_id": "6830d9b72c33c71b",
+                "user_name": "System Administrator",
+                "text": "This is a test comment",
+                "time": "2026-04-28 01:38:44"
+            }
+        ],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:38:44"
+            }
+        ]
+    },
+    {
+        "id": "a69db1c4af55bd0f",
+        "title": "Test Task",
+        "description": "Verify API works",
+        "category": "",
+        "priority": "High",
+        "status": "New",
+        "department": "General",
+        "creator_id": "6830d9b72c33c71b",
+        "creator_name": "System Administrator",
+        "created_at": "2026-04-28 01:42:32",
+        "executor_id": null,
+        "executor_name": null,
+        "comments": [
+            {
+                "id": "5670d941e3645eac",
+                "user_id": "6830d9b72c33c71b",
+                "user_name": "System Administrator",
+                "text": "This is a test comment",
+                "time": "2026-04-28 01:42:32"
+            }
+        ],
+        "attachments": [],
+        "history": [
+            {
+                "user": "System Administrator",
+                "action": "Создана заявка",
+                "time": "2026-04-28 01:42:32"
+            }
+        ]
+    }
+]

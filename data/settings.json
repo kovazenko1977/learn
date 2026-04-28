@@ -1,0 +1,1 @@
+{"categories":["IT Support","Maintenance","General"],"priorities":["Low","Medium","High","Urgent"],"statuses":["New","Assigned","In Work","Completed","Rejected"],"form_fields":[{"id":"desc","label":"Description","type":"textarea","required":true}],"jwt_secret":"91aa536f4f64b002bceb109b4a6adf399573244cf180adb065d5278d1bd5e585"}

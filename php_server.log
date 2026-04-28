@@ -1,0 +1,290 @@
+[Tue Apr 28 01:20:36 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue Apr 28 01:20:48 2026] 127.0.0.1:50608 Accepted
+[Tue Apr 28 01:20:48 2026] PHP Warning:  file_get_contents(php_input): Failed to open stream: No such file or directory in /app/api/login.php on line 8
+[Tue Apr 28 01:20:48 2026] 127.0.0.1:50608 [401]: POST /api/login.php
+[Tue Apr 28 01:20:48 2026] 127.0.0.1:50608 Closing
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40242 Accepted
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40242 [200]: POST /api/login.php
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40242 Closing
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40248 Accepted
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40248 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40248 Closing
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40252 Accepted
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40252 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40252 Closing
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40256 Accepted
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40256 [200]: GET /api/tasks.php
+[Tue Apr 28 01:21:08 2026] 127.0.0.1:40256 Closing
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57508 Accepted
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57508 [200]: POST /api/login.php
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57508 Closing
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57516 Accepted
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57516 [200]: POST /api/admin.php?action=save_user
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57516 Closing
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57526 Accepted
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57526 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:21:39 2026] 127.0.0.1:57526 Closing
+[Tue Apr 28 01:22:15 2026] 127.0.0.1:47754 Accepted
+[Tue Apr 28 01:22:15 2026] 127.0.0.1:47754 [401]: POST /api/login.php
+[Tue Apr 28 01:22:15 2026] 127.0.0.1:47754 Closing
+[Tue Apr 28 01:22:15 2026] 127.0.0.1:47768 Accepted
+[Tue Apr 28 01:22:15 2026] 127.0.0.1:47768 [401]: GET /api/analytics.php
+[Tue Apr 28 01:22:15 2026] 127.0.0.1:47768 Closing
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43790 Accepted
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43790 [200]: POST /api/login.php
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43790 Closing
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43806 Accepted
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43806 [200]: GET /api/analytics.php
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43806 Closing
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43820 Accepted
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43820 [200]: GET /api/export.php
+[Tue Apr 28 01:22:36 2026] 127.0.0.1:43820 Closing
+[Tue Apr 28 01:24:42 2026] 127.0.0.1:58784 Accepted
+[Tue Apr 28 01:24:42 2026] 127.0.0.1:58784 [200]: GET /
+[Tue Apr 28 01:24:42 2026] 127.0.0.1:58784 Closing
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55330 Accepted
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55330 [200]: POST /api/login.php
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55330 Closing
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55332 Accepted
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55332 [200]: GET /api/admin.php?action=settings
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55332 Closing
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55348 Accepted
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55348 [200]: GET /api/tasks.php
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55348 Closing
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55356 Accepted
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55356 [200]: GET /api/analytics.php
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55356 Closing
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55362 Accepted
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55362 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:24:45 2026] 127.0.0.1:55362 Closing
+[Tue Apr 28 01:24:47 2026] 127.0.0.1:55364 Accepted
+[Tue Apr 28 01:24:47 2026] 127.0.0.1:55364 [200]: GET /api/tasks.php
+[Tue Apr 28 01:24:47 2026] 127.0.0.1:55364 Closing
+[Tue Apr 28 01:25:43 2026] 127.0.0.1:40686 Accepted
+[Tue Apr 28 01:25:43 2026] 127.0.0.1:40686 [200]: GET /
+[Tue Apr 28 01:25:43 2026] 127.0.0.1:40686 Closing
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46968 Accepted
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46968 [200]: POST /api/login.php
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46968 Closing
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46984 Accepted
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46984 [200]: GET /api/admin.php?action=settings
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46984 Closing
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46988 Accepted
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46988 [200]: GET /api/tasks.php
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46988 Closing
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46992 Accepted
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46992 [200]: GET /api/analytics.php
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46992 Closing
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46994 Accepted
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46994 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:25:45 2026] 127.0.0.1:46994 Closing
+[Tue Apr 28 01:25:47 2026] 127.0.0.1:47006 Accepted
+[Tue Apr 28 01:25:47 2026] 127.0.0.1:47006 [200]: GET /api/tasks.php
+[Tue Apr 28 01:25:47 2026] 127.0.0.1:47006 Closing
+[Tue Apr 28 01:26:46 2026] 127.0.0.1:48294 Accepted
+[Tue Apr 28 01:26:46 2026] 127.0.0.1:48294 [200]: GET /
+[Tue Apr 28 01:26:46 2026] 127.0.0.1:48294 Closing
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48310 Accepted
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48310 [200]: POST /api/login.php
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48310 Closing
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48320 Accepted
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48320 [200]: GET /api/admin.php?action=settings
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48320 Closing
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48332 Accepted
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48332 [200]: GET /api/tasks.php
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48332 Closing
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48338 Accepted
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48338 [200]: GET /api/analytics.php
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48338 Closing
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48346 Accepted
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48346 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:26:48 2026] 127.0.0.1:48346 Closing
+[Tue Apr 28 01:26:49 2026] 127.0.0.1:48356 Accepted
+[Tue Apr 28 01:26:49 2026] 127.0.0.1:48356 [200]: GET /api/tasks.php
+[Tue Apr 28 01:26:49 2026] 127.0.0.1:48356 Closing
+[Tue Apr 28 01:26:51 2026] 127.0.0.1:48370 Accepted
+[Tue Apr 28 01:26:51 2026] 127.0.0.1:48370 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:26:51 2026] 127.0.0.1:48370 Closing
+[Tue Apr 28 01:26:51 2026] 127.0.0.1:48374 Accepted
+[Tue Apr 28 01:26:51 2026] 127.0.0.1:48374 [200]: GET /api/tasks.php
+[Tue Apr 28 01:26:51 2026] 127.0.0.1:48374 Closing
+[Tue Apr 28 01:26:54 2026] 127.0.0.1:48390 Accepted
+[Tue Apr 28 01:26:54 2026] 127.0.0.1:48390 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:26:54 2026] 127.0.0.1:48390 Closing
+[Tue Apr 28 01:26:54 2026] 127.0.0.1:48402 Accepted
+[Tue Apr 28 01:26:54 2026] 127.0.0.1:48402 [200]: GET /api/tasks.php
+[Tue Apr 28 01:26:54 2026] 127.0.0.1:48402 Closing
+[Tue Apr 28 01:27:56 2026] 127.0.0.1:60286 Accepted
+[Tue Apr 28 01:27:56 2026] 127.0.0.1:60286 [200]: GET /
+[Tue Apr 28 01:27:56 2026] 127.0.0.1:60286 Closing
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60300 Accepted
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60300 [200]: POST /api/login.php
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60300 Closing
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60316 Accepted
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60316 [200]: GET /api/admin.php?action=settings
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60316 Closing
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60322 Accepted
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60322 [200]: GET /api/tasks.php
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60322 Closing
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60324 Accepted
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60324 [200]: GET /api/analytics.php
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60324 Closing
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60328 Accepted
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60328 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:27:58 2026] 127.0.0.1:60328 Closing
+[Tue Apr 28 01:27:59 2026] 127.0.0.1:60336 Accepted
+[Tue Apr 28 01:27:59 2026] 127.0.0.1:60336 [200]: GET /api/tasks.php
+[Tue Apr 28 01:27:59 2026] 127.0.0.1:60336 Closing
+[Tue Apr 28 01:28:01 2026] 127.0.0.1:60338 Accepted
+[Tue Apr 28 01:28:01 2026] 127.0.0.1:60338 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:28:01 2026] 127.0.0.1:60338 Closing
+[Tue Apr 28 01:28:01 2026] 127.0.0.1:60340 Accepted
+[Tue Apr 28 01:28:01 2026] 127.0.0.1:60340 [200]: GET /api/tasks.php
+[Tue Apr 28 01:28:01 2026] 127.0.0.1:60340 Closing
+[Tue Apr 28 01:28:04 2026] 127.0.0.1:60354 Accepted
+[Tue Apr 28 01:28:04 2026] 127.0.0.1:60354 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:28:04 2026] 127.0.0.1:60354 Closing
+[Tue Apr 28 01:28:04 2026] 127.0.0.1:60358 Accepted
+[Tue Apr 28 01:28:04 2026] 127.0.0.1:60358 [200]: GET /api/tasks.php
+[Tue Apr 28 01:28:04 2026] 127.0.0.1:60358 Closing
+[Tue Apr 28 01:28:59 2026] 127.0.0.1:37222 Accepted
+[Tue Apr 28 01:28:59 2026] 127.0.0.1:37222 [200]: GET /
+[Tue Apr 28 01:28:59 2026] 127.0.0.1:37222 Closing
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37228 Accepted
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37228 [200]: POST /api/login.php
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37228 Closing
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37238 Accepted
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37238 [200]: GET /api/admin.php?action=settings
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37238 Closing
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37246 Accepted
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37246 [200]: GET /api/tasks.php
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37246 Closing
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37250 Accepted
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37250 [200]: GET /api/analytics.php
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37250 Closing
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37262 Accepted
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37262 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:29:01 2026] 127.0.0.1:37262 Closing
+[Tue Apr 28 01:29:03 2026] 127.0.0.1:37268 Accepted
+[Tue Apr 28 01:29:03 2026] 127.0.0.1:37268 [200]: GET /api/tasks.php
+[Tue Apr 28 01:29:03 2026] 127.0.0.1:37268 Closing
+[Tue Apr 28 01:29:05 2026] 127.0.0.1:46854 Accepted
+[Tue Apr 28 01:29:05 2026] 127.0.0.1:46854 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:29:05 2026] 127.0.0.1:46854 Closing
+[Tue Apr 28 01:29:05 2026] 127.0.0.1:46858 Accepted
+[Tue Apr 28 01:29:05 2026] 127.0.0.1:46858 [200]: GET /api/tasks.php
+[Tue Apr 28 01:29:05 2026] 127.0.0.1:46858 Closing
+[Tue Apr 28 01:29:07 2026] 127.0.0.1:46868 Accepted
+[Tue Apr 28 01:29:07 2026] 127.0.0.1:46868 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:29:07 2026] 127.0.0.1:46868 Closing
+[Tue Apr 28 01:29:07 2026] 127.0.0.1:46878 Accepted
+[Tue Apr 28 01:29:07 2026] 127.0.0.1:46878 [200]: GET /api/tasks.php
+[Tue Apr 28 01:29:07 2026] 127.0.0.1:46878 Closing
+[Tue Apr 28 01:30:07 2026] 127.0.0.1:33036 Accepted
+[Tue Apr 28 01:30:07 2026] 127.0.0.1:33036 [200]: GET /
+[Tue Apr 28 01:30:07 2026] 127.0.0.1:33036 Closing
+[Tue Apr 28 01:30:08 2026] 127.0.0.1:33042 Accepted
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33042 [200]: POST /api/login.php
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33042 Closing
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33054 Accepted
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33054 [200]: GET /api/admin.php?action=settings
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33054 Closing
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33062 Accepted
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33062 [200]: GET /api/tasks.php
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33062 Closing
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33068 Accepted
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33068 [200]: GET /api/analytics.php
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33068 Closing
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33072 Accepted
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33072 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:30:09 2026] 127.0.0.1:33072 Closing
+[Tue Apr 28 01:30:11 2026] 127.0.0.1:33080 Accepted
+[Tue Apr 28 01:30:11 2026] 127.0.0.1:33080 [200]: GET /api/tasks.php
+[Tue Apr 28 01:30:11 2026] 127.0.0.1:33080 Closing
+[Tue Apr 28 01:30:12 2026] 127.0.0.1:33096 Accepted
+[Tue Apr 28 01:30:12 2026] 127.0.0.1:33096 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:30:12 2026] 127.0.0.1:33096 Closing
+[Tue Apr 28 01:30:12 2026] 127.0.0.1:33110 Accepted
+[Tue Apr 28 01:30:12 2026] 127.0.0.1:33110 [200]: GET /api/tasks.php
+[Tue Apr 28 01:30:12 2026] 127.0.0.1:33110 Closing
+[Tue Apr 28 01:30:15 2026] 127.0.0.1:39912 Accepted
+[Tue Apr 28 01:30:15 2026] 127.0.0.1:39912 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:30:15 2026] 127.0.0.1:39912 Closing
+[Tue Apr 28 01:30:15 2026] 127.0.0.1:39914 Accepted
+[Tue Apr 28 01:30:15 2026] 127.0.0.1:39914 [200]: GET /api/tasks.php
+[Tue Apr 28 01:30:15 2026] 127.0.0.1:39914 Closing
+[Tue Apr 28 01:30:17 2026] 127.0.0.1:39924 Accepted
+[Tue Apr 28 01:30:17 2026] 127.0.0.1:39924 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:30:17 2026] 127.0.0.1:39924 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38754 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38754 [200]: POST /api/login.php
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38754 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38766 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38766 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38766 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38778 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38778 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38778 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38782 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38782 [200]: GET /api/tasks.php
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38782 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38794 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38794 [200]: POST /api/login.php
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38794 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38804 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38804 [200]: POST /api/admin.php?action=save_user
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38804 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38812 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38812 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38812 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38818 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38818 [200]: POST /api/login.php
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38818 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38826 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38826 [200]: GET /api/analytics.php
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38826 Closing
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38840 Accepted
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38840 [200]: GET /api/export.php
+[Tue Apr 28 01:31:51 2026] 127.0.0.1:38840 Closing
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55378 Accepted
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55378 [200]: POST /api/login.php
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55378 Closing
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55390 Accepted
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55390 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55390 Closing
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55400 Accepted
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55400 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55400 Closing
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55410 Accepted
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55410 [200]: GET /api/tasks.php
+[Tue Apr 28 01:38:44 2026] 127.0.0.1:55410 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40244 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40244 [200]: POST /api/login.php
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40244 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40252 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40252 [200]: POST /api/tasks.php?action=create
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40252 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40262 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40262 [200]: POST /api/tasks.php?action=add_comment
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40262 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40268 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40268 [200]: GET /api/tasks.php
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40268 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40280 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40280 [200]: POST /api/login.php
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40280 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40290 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40290 [200]: POST /api/admin.php?action=save_user
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40290 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40292 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40292 [200]: GET /api/admin.php?action=users
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40292 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40304 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40304 [200]: POST /api/login.php
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40304 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40318 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40318 [200]: GET /api/analytics.php
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40318 Closing
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40326 Accepted
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40326 [200]: GET /api/export.php
+[Tue Apr 28 01:42:32 2026] 127.0.0.1:40326 Closing

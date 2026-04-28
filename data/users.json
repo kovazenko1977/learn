@@ -1,0 +1,17 @@
+[
+    {
+        "id": "6830d9b72c33c71b",
+        "username": "admin",
+        "password": "$2y$10$IQbW\/QbE2NGXxfPFJ87nHO547ZwfT28M.0pzUFMCAMZrd4yhz75v6",
+        "role": "Administrator",
+        "name": "System Administrator"
+    },
+    {
+        "username": "tech1",
+        "name": "Technician One",
+        "role": "Executor",
+        "department": "IT Support",
+        "id": "a5a80037b3845e6d",
+        "password": "$2y$10$PHjIUOiGle1vOesu9yqfg.DXtzoX2aV7e\/ChWnGyZtX4Qa0tNh\/d6"
+    }
+]
