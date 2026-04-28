@@ -2,37 +2,37 @@
     {
         "id": "0000000000000001",
         "username": "1",
-        "password_hash": "$2y$10$3Eayq6HhU3YqFMFaUxal2OV83EG9IfVsIFdgBfQ1x.GWgyznSAQh2",
+        "password_hash": "$2y$10$nQIE1W2QpARtBYaQrlIGzeQZ4umkk1ieixrI39iIQKTAbxX5RJwrG",
         "full_name": "Администратор Системы",
         "role": "Administrator",
         "department": "IT",
-        "created_at": "2026-04-27 01:19:04"
+        "created_at": "2026-04-28 17:31:50"
     },
     {
-        "id": "a90b7bd04e0aede0",
+        "id": "b1287f3c508fca30",
         "username": "head",
-        "password_hash": "$2y$10$RMn3hSEg6Nsrczrw4Up4AOJAP38W41KJoIn0G0O7Qbsx0BRuYLdFC",
+        "password_hash": "$2y$10$IV9c99w6cG1DYB07ZlGuae0SukqICtw4\/80m58MKNWROO9AYsxhfK",
         "full_name": "Иванов Иван (Нач. IT)",
         "role": "Head of Department",
         "department": "IT",
-        "created_at": "2026-04-27 01:19:04"
+        "created_at": "2026-04-28 17:31:50"
     },
     {
-        "id": "44f1a4d1a1058b0a",
+        "id": "824bfc2203b945d4",
         "username": "tech",
-        "password_hash": "$2y$10$PfuwA7AojV3HCP7ruzwLpuR\/8ra1fL6fD.Xx7dfmcbrwyRrPWEJ8C",
+        "password_hash": "$2y$10$gJmqMQwsi993y1COHdLkP.Yyj14Q2CEVCgV5.h\/pN4Hy46l.wMXIC",
         "full_name": "Петров Петр (Техник)",
         "role": "Executor",
         "department": "IT",
-        "created_at": "2026-04-27 01:19:04"
+        "created_at": "2026-04-28 17:31:50"
     },
     {
-        "id": "220e19156bf331c2",
+        "id": "b8a5857134c47455",
         "username": "user",
-        "password_hash": "$2y$10$Q3zoA5F5\/ayu2I1.fWgAmOjizI8jKgl2jA0TsalKTw\/0sP24jJ0NW",
+        "password_hash": "$2y$10$IEiHVS7sETy.zakA3lTLaeBqgL2vhgFGHLi0uDIT.8LxMrSTl0obe",
         "full_name": "Сидорова Анна",
         "role": "Responsible Employee",
         "department": "Бухгалтерия",
-        "created_at": "2026-04-27 01:19:04"
+        "created_at": "2026-04-28 17:31:50"
     }
 ]

@@ -43,7 +43,7 @@
         },
         {
             "id": "location",
-            "label": "Кабинет/Место",
+            "label": "Кабинет\/Место",
             "type": "text",
             "required": true
         }
@@ -56,12 +56,19 @@
         "HR"
     ],
     "themes": [
-        { "name": "Midnight Pro", "key": "midnight" },
-        { "name": "Modern Zinc", "key": "zinc" }
+        {
+            "name": "Midnight Pro",
+            "key": "midnight"
+        },
+        {
+            "name": "Modern Zinc",
+            "key": "zinc"
+        }
     ],
     "current_theme": "midnight",
     "notifications": {
         "telegram": false,
         "email": false
-    }
+    },
+    "jwt_secret": "7dd205736da38ec8b2bd090842fb192a0642d21df2018c2f1b093ce1155fe99b"
 }

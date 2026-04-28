@@ -12,12 +12,18 @@ createApp({
             loading: false,
             searchQuery: '',
 
+            // UI State
+            showMobileSidebar: false,
+
             // Modals and Forms
             showUserModal: false,
             userForm: { id: '', username: '', full_name: '', role: 'Executor', department: '', password: '' },
             showTaskModal: false,
             selectedTask: null,
-            commentText: ''
+            commentText: '',
+
+            // Drag and Drop
+            draggedTask: null
         }
     },
     computed: {
@@ -28,7 +34,7 @@ createApp({
             return this.tasks.filter(t =>
                 t.title.toLowerCase().includes(q) ||
                 t.id.toLowerCase().includes(q) ||
-                t.created_by_name.toLowerCase().includes(q)
+                (t.created_by_name && t.created_by_name.toLowerCase().includes(q))
             );
         }
     },
@@ -99,7 +105,13 @@ createApp({
                 body: JSON.stringify({ task_id: this.selectedTask.id, text: this.commentText })
             });
             this.commentText = '';
-            this.fetchData(); // Refresh to get new comment
+            // Instead of full fetch, local update for speed
+            this.selectedTask.comments.push({
+                user_name: this.user.full_name,
+                text: this.commentText,
+                created_at: new Date().toISOString().replace('T', ' ').split('.')[0]
+            });
+            this.fetchData(); // Still refresh background
         },
         // User Actions
         async saveUser() {
@@ -130,6 +142,17 @@ createApp({
                 body: JSON.stringify(this.settings)
             });
             alert('Настройки сохранены');
+        },
+        // Drag and Drop
+        onDragStart(e, task) {
+            this.draggedTask = task;
+            e.dataTransfer.effectAllowed = 'move';
+        },
+        onDrop(e, status) {
+            if (this.draggedTask) {
+                this.updateTaskStatus(this.draggedTask, status);
+                this.draggedTask = null;
+            }
         }
     }
 }).mount('#app');
