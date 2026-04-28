@@ -1,1 +1,37 @@
-[Tue Apr 28 17:32:31 2026] Failed to listen on 0.0.0.0:8000 (reason: Address already in use)
+[Tue Apr 28 18:14:51 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue Apr 28 18:15:33 2026] 127.0.0.1:41086 Accepted
+[Tue Apr 28 18:15:33 2026] 127.0.0.1:41086 [200]: GET /index.php
+[Tue Apr 28 18:15:33 2026] 127.0.0.1:41086 Closing
+[Tue Apr 28 18:15:33 2026] 127.0.0.1:41088 Accepted
+[Tue Apr 28 18:15:33 2026] 127.0.0.1:41088 [200]: GET /assets/css/styles.css
+[Tue Apr 28 18:15:33 2026] 127.0.0.1:41088 Closing
+[Tue Apr 28 18:15:34 2026] 127.0.0.1:41096 Accepted
+[Tue Apr 28 18:15:34 2026] 127.0.0.1:41096 [200]: GET /api/settings.php
+[Tue Apr 28 18:15:34 2026] 127.0.0.1:41096 Closing
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41104 Accepted
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41104 [200]: POST /api/auth.php?action=login
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41104 Closing
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41110 Accepted
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41110 [200]: GET /api/auth.php?action=me
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41110 Closing
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41122 Accepted
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41130 Accepted
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41122 [200]: GET /api/tasks.php
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41122 Closing
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41130 [200]: GET /admin.php
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41130 Closing
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41136 Accepted
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41146 Accepted
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41136 [200]: GET /assets/css/styles.css
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41146 [200]: GET /assets/js/admin.js
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41136 Closing
+[Tue Apr 28 18:15:38 2026] 127.0.0.1:41146 Closing
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44514 Accepted
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44514 [200]: GET /index.php
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44514 Closing
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44530 Accepted
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44530 [200]: GET /assets/css/styles.css
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44530 Closing
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44532 Accepted
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44532 [200]: GET /api/settings.php
+[Tue Apr 28 18:16:44 2026] 127.0.0.1:44532 Closing

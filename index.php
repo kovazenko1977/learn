@@ -75,7 +75,9 @@
                 <div class="space-y-4">
                     <input v-model="loginForm.username" type="text" placeholder="Логин" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <input v-model="loginForm.password" @keyup.enter="login" type="password" placeholder="Пароль" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <button @click="login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200">Войти</button>
+                    <button @click="login" :disabled="loading" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200 disabled:opacity-50">
+                        {{ loading ? 'Вход...' : 'Войти' }}
+                    </button>
                     <div v-if="error" class="text-red-400 text-sm text-center">{{ error }}</div>
                 </div>
             </div>
@@ -129,7 +131,7 @@
                             <textarea v-if="field.type === 'textarea'" v-model="newRequest[field.id]" class="w-full bg-slate-900/50 border border-slate-700 rounded p-2 text-sm outline-none" rows="3"></textarea>
                             <input v-else v-model="newRequest[field.id]" :type="field.type" class="w-full bg-slate-900/50 border border-slate-700 rounded p-2 text-sm outline-none">
                         </div>
-                        <button @click="submitRequest" class="w-full bg-blue-600 py-3 rounded-lg font-bold text-sm hover:bg-blue-700 transition">Отправить заявку</button>
+                        <button @click="submitRequest" :disabled="loading" class="w-full bg-blue-600 py-3 rounded-lg font-bold text-sm hover:bg-blue-700 transition disabled:opacity-50">Отправить заявку</button>
                     </div>
 
                     <!-- My Requests List -->
@@ -174,7 +176,7 @@
         <!-- Start Menu Placeholder -->
         <div v-if="showStartMenu" class="fixed bottom-14 left-4 w-64 bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-2xl z-[10001]">
             <div class="flex items-center gap-3 mb-4 p-2">
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white uppercase">{{ user?.username[0] }}</div>
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white uppercase">{{ user?.username ? user.username[0] : 'U' }}</div>
                 <div>
                     <div class="text-sm font-bold text-white">{{ user?.full_name }}</div>
                     <div class="text-[10px] text-slate-400">{{ user?.role }}</div>
@@ -190,6 +192,7 @@
             data() {
                 return {
                     booting: true,
+                    loading: false,
                     isAuthenticated: false,
                     error: null,
                     loginForm: { username: '', password: '' },
@@ -205,14 +208,17 @@
                     showStartMenu: false
                 }
             },
-            mounted() {
-                setTimeout(() => { this.booting = false; }, 1500);
+            async mounted() {
                 this.updateClock();
                 setInterval(this.updateClock, 1000);
-                this.checkAuth();
-                this.fetchSettings();
                 this.checkMobile();
                 window.addEventListener('resize', this.checkMobile);
+
+                try {
+                    await Promise.all([this.checkAuth(), this.fetchSettings()]);
+                } finally {
+                    setTimeout(() => { this.booting = false; }, 800);
+                }
             },
             methods: {
                 checkMobile() {
@@ -222,16 +228,20 @@
                     this.currentTime = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
                 },
                 async fetchSettings() {
-                    const res = await fetch('api/settings.php');
-                    this.settings = await res.json();
-                    if (this.settings.categories.length) this.newRequest.category = this.settings.categories[0];
+                    try {
+                        const res = await fetch('api/settings.php');
+                        this.settings = await res.json();
+                        if (this.settings.categories.length) this.newRequest.category = this.settings.categories[0];
+                    } catch (e) {}
                 },
                 async fetchRequests() {
                     const token = localStorage.getItem('crm_token');
-                    const res = await fetch('api/tasks.php', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    this.requests = await res.json();
+                    try {
+                        const res = await fetch('api/tasks.php', {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        this.requests = await res.json();
+                    } catch (e) {}
                 },
                 async checkAuth() {
                     const token = localStorage.getItem('crm_token');
@@ -252,6 +262,7 @@
                 },
                 async login() {
                     this.error = null;
+                    this.loading = true;
                     try {
                         const res = await fetch('api/auth.php?action=login', {
                             method: 'POST',
@@ -260,9 +271,10 @@
                         const data = await res.json();
                         if (data.success) {
                             localStorage.setItem('crm_token', data.token);
-                            this.checkAuth();
+                            await this.checkAuth();
                         } else { this.error = data.message; }
                     } catch (e) { this.error = 'Ошибка соединения'; }
+                    finally { this.loading = false; }
                 },
                 logout() {
                     localStorage.removeItem('crm_token');
@@ -337,17 +349,20 @@
                 },
                 async submitRequest() {
                     const token = localStorage.getItem('crm_token');
-                    const res = await fetch('api/tasks.php', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify(this.newRequest)
-                    });
-                    if (res.ok) {
-                        this.closeWindow('new_request');
-                        this.fetchRequests();
-                        alert('Заявка создана успешно!');
-                        this.newRequest = { title: '', category: this.settings.categories[0], priority: 'medium' };
-                    }
+                    this.loading = true;
+                    try {
+                        const res = await fetch('api/tasks.php', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify(this.newRequest)
+                        });
+                        if (res.ok) {
+                            this.closeWindow('new_request');
+                            this.fetchRequests();
+                            alert('Заявка создана успешно!');
+                            this.newRequest = { title: '', category: this.settings.categories[0], priority: 'medium' };
+                        }
+                    } finally { this.loading = false; }
                 },
                 statusClass(status) {
                     const classes = {

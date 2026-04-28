@@ -10,6 +10,7 @@ createApp({
             settings: { categories: [], priorities: [], form_fields: [], departments: [] },
             stats: { total: 0, completed: 0, in_work: 0, overdue: 0 },
             loading: false,
+            booting: true,
             searchQuery: '',
 
             // UI State
@@ -32,17 +33,23 @@ createApp({
             if (!this.searchQuery) return this.tasks;
             const q = this.searchQuery.toLowerCase();
             return this.tasks.filter(t =>
-                t.title.toLowerCase().includes(q) ||
-                t.id.toLowerCase().includes(q) ||
+                (t.title && t.title.toLowerCase().includes(q)) ||
+                (t.id && t.id.toLowerCase().includes(q)) ||
                 (t.created_by_name && t.created_by_name.toLowerCase().includes(q))
             );
         }
     },
     async mounted() {
-        await this.checkAuth();
-        if (this.user && this.user.id) {
-            await this.fetchSettings();
-            await this.fetchData();
+        try {
+            await this.checkAuth();
+            if (this.user && this.user.id) {
+                await Promise.all([
+                    this.fetchSettings(),
+                    this.fetchData()
+                ]);
+            }
+        } finally {
+            this.booting = false;
         }
     },
     methods: {
@@ -56,27 +63,42 @@ createApp({
                 const data = await res.json();
                 if (data.success) {
                     this.user = data.user;
-                } else { window.location.href = 'index.php'; }
-            } catch (e) { window.location.href = 'index.php'; }
+                } else {
+                    localStorage.removeItem('crm_token');
+                    window.location.href = 'index.php';
+                }
+            } catch (e) {
+                localStorage.removeItem('crm_token');
+                window.location.href = 'index.php';
+            }
         },
         async fetchData() {
             this.loading = true;
             const token = localStorage.getItem('crm_token');
-            const [tasksRes, usersRes] = await Promise.all([
-                fetch('api/tasks.php', { headers: { 'Authorization': `Bearer ${token}` } }),
-                this.isAdmin ? fetch('api/users.php', { headers: { 'Authorization': `Bearer ${token}` } }) : Promise.resolve({ json: () => [] })
-            ]);
-            this.tasks = await tasksRes.json();
-            if (this.isAdmin) this.users = await usersRes.json();
-            this.calculateStats();
-            this.loading = false;
+            try {
+                const [tasksRes, usersRes] = await Promise.all([
+                    fetch('api/tasks.php', { headers: { 'Authorization': `Bearer ${token}` } }),
+                    this.isAdmin ? fetch('api/users.php', { headers: { 'Authorization': `Bearer ${token}` } }) : Promise.resolve({ json: () => [] })
+                ]);
+                this.tasks = await tasksRes.json();
+                if (this.isAdmin) this.users = await usersRes.json();
+                this.calculateStats();
+            } catch (e) {
+                console.error("Fetch error", e);
+            } finally {
+                this.loading = false;
+            }
         },
         async fetchSettings() {
-            const res = await fetch('api/settings.php');
-            this.settings = await res.json();
+            try {
+                const res = await fetch('api/settings.php');
+                this.settings = await res.json();
+            } catch (e) {
+                console.error("Settings fetch error", e);
+            }
         },
         calculateStats() {
-            this.stats.total = this.tasks.length;
+            this.stats.total = (this.tasks || []).length;
             this.stats.completed = this.tasks.filter(t => t.status === 'Completed').length;
             this.stats.in_work = this.tasks.filter(t => t.status === 'In Work' || t.status === 'Assigned').length;
             this.stats.overdue = this.tasks.filter(t => t.sla_status === 'overdue').length;
@@ -88,30 +110,44 @@ createApp({
         // Task Actions
         async updateTaskStatus(task, status) {
             const token = localStorage.getItem('crm_token');
+            const oldStatus = task.status;
             task.status = status;
-            await fetch('api/tasks.php', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(task)
-            });
-            this.calculateStats();
+            try {
+                const res = await fetch('api/tasks.php', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(task)
+                });
+                if (!res.ok) throw new Error();
+                this.calculateStats();
+            } catch (e) {
+                task.status = oldStatus;
+                alert('Ошибка при обновлении статуса');
+            }
         },
         async addComment() {
             if (!this.commentText) return;
             const token = localStorage.getItem('crm_token');
-            await fetch('api/tasks.php?action=comment', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ task_id: this.selectedTask.id, text: this.commentText })
-            });
+            const text = this.commentText;
             this.commentText = '';
-            // Instead of full fetch, local update for speed
-            this.selectedTask.comments.push({
-                user_name: this.user.full_name,
-                text: this.commentText,
-                created_at: new Date().toISOString().replace('T', ' ').split('.')[0]
-            });
-            this.fetchData(); // Still refresh background
+
+            try {
+                await fetch('api/tasks.php?action=comment', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ task_id: this.selectedTask.id, text: text })
+                });
+
+                if (!this.selectedTask.comments) this.selectedTask.comments = [];
+                this.selectedTask.comments.push({
+                    user_name: this.user.full_name,
+                    text: text,
+                    created_at: new Date().toISOString().replace('T', ' ').split('.')[0]
+                });
+                this.fetchData();
+            } catch (e) {
+                alert('Ошибка при добавлении комментария');
+            }
         },
         // User Actions
         async saveUser() {
@@ -149,7 +185,7 @@ createApp({
             e.dataTransfer.effectAllowed = 'move';
         },
         onDrop(e, status) {
-            if (this.draggedTask) {
+            if (this.draggedTask && this.draggedTask.status !== status) {
                 this.updateTaskStatus(this.draggedTask, status);
                 this.draggedTask = null;
             }

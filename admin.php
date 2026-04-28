@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body class="bg-slate-50 font-[Inter] h-screen flex flex-col overflow-hidden">
-    <div id="app" class="flex flex-1 overflow-hidden" v-if="user && user.username">
+    <div id="app" class="flex flex-1 overflow-hidden" v-if="user && user.id">
         <!-- Sidebar -->
         <aside :class="showMobileSidebar ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col transition-transform md:translate-x-0 md:static">
             <div class="p-6 text-white font-bold text-xl flex items-center justify-between">
@@ -29,11 +29,11 @@
                 </button>
                 <button @click="tab = 'kanban'; showMobileSidebar = false" :class="tab === 'kanban' ? 'bg-slate-800 text-white' : ''" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 012 2h2a2 2 0 012-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 012 2h2a2 2 0 012-2V7a2 2 0 01-2-2h-2a2 2 0 01-2 2"></path></svg>
-                    Канбан
+                    Задачи
                 </button>
                 <button v-if="isAdmin" @click="tab = 'users'; showMobileSidebar = false" :class="tab === 'users' ? 'bg-slate-800 text-white' : ''" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Сотрудники
+                    Персонал
                 </button>
                 <button v-if="isAdmin" @click="tab = 'settings'; showMobileSidebar = false" :class="tab === 'settings' ? 'bg-slate-800 text-white' : ''" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -42,10 +42,10 @@
             </nav>
             <div class="p-6 mt-auto border-t border-slate-800">
                 <div class="flex items-center gap-3 mb-4">
-                    <div v-if="user && user.username" class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">
-                        {{ user.username[0].toUpperCase() }}
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold uppercase">
+                        {{ (user.username || 'A')[0] }}
                     </div>
-                    <div v-if="user" class="overflow-hidden">
+                    <div class="overflow-hidden">
                         <div class="text-sm font-medium text-white truncate">{{ user.full_name }}</div>
                         <div class="text-xs text-slate-500 truncate">{{ user.role }}</div>
                     </div>
@@ -239,7 +239,7 @@
              <div class="bg-white w-full max-w-2xl md:rounded-3xl overflow-hidden shadow-2xl flex flex-col h-full md:h-auto max-h-screen md:max-h-[90vh]">
                  <div class="p-6 md:p-8 border-b border-slate-100 flex justify-between items-start">
                      <div>
-                         <div class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">#{{ selectedTask.id.slice(0,8) }}</div>
+                         <div class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">#{{ (selectedTask.id || '').slice(0,8) }}</div>
                          <h2 class="text-xl md:text-2xl font-bold text-slate-800">{{ selectedTask.title }}</h2>
                      </div>
                      <button @click="showTaskModal = false" class="p-2 text-slate-400 hover:text-slate-600">
@@ -266,13 +266,13 @@
                      <div>
                          <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
                              Комментарии
-                             <span class="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded-full">{{ selectedTask.comments.length }}</span>
+                             <span class="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded-full">{{ (selectedTask.comments || []).length }}</span>
                          </h4>
                          <div class="space-y-4 mb-6">
                              <div v-for="c in selectedTask.comments" :key="c.created_at" class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                                  <div class="flex justify-between items-center mb-1">
                                      <span class="font-bold text-xs text-slate-800">{{ c.user_name }}</span>
-                                     <span class="text-[10px] text-slate-400">{{ c.created_at.split(' ')[1].slice(0,5) }}</span>
+                                     <span class="text-[10px] text-slate-400">{{ (c.created_at || '').split(' ')[1]?.slice(0,5) }}</span>
                                  </div>
                                  <p class="text-xs text-slate-600">{{ c.text }}</p>
                              </div>
@@ -316,8 +316,14 @@
              </div>
         </div>
     </div>
-    <div v-else class="flex h-screen w-screen items-center justify-center bg-slate-900">
+    <div v-else-if="booting" class="flex h-screen w-screen items-center justify-center bg-slate-900">
          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+    <div v-else class="flex h-screen w-screen items-center justify-center bg-slate-950">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-white mb-4">Доступ запрещен</h1>
+            <button @click="logout" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold">Вернуться на вход</button>
+        </div>
     </div>
 
     <script src="assets/js/admin.js"></script>

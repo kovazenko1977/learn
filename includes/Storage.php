@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/Auth.php';
-
 class Storage {
     private static $settingsFile = __DIR__ . '/../data/settings.json';
     private static $pdo = null;
