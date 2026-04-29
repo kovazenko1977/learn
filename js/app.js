@@ -1,4 +1,4 @@
-const API_BASE = ''; // Same directory since we'll run PHP from root
+const API_BASE = '';
 let currentUser = null;
 let token = localStorage.getItem('token');
 let workTypes = [];
@@ -46,14 +46,17 @@ async function loadLookups() {
             apiFetch('/api/admin.php?action=worktypes'),
             apiFetch('/api/admin.php?action=departments')
         ]);
+        if (!wtRes.ok || !dRes.ok) throw new Error('Failed to load lookups');
         workTypes = await wtRes.json();
         departments = await dRes.json();
 
         if (currentUser.role === 'admin') {
             const uRes = await apiFetch('/api/admin.php?action=users');
-            users = await uRes.json();
+            if (uRes.ok) users = await uRes.json();
         }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error('Lookup loading failed:', e);
+    }
 }
 
 async function fetchUser() {
@@ -103,11 +106,11 @@ el.loginForm.addEventListener('submit', async (e) => {
             showLayout();
             renderDashboard();
         } else {
-            errorEl.innerText = data.message;
+            errorEl.innerText = data.message || 'Error logging in';
             errorEl.classList.remove('hidden');
         }
     } catch (err) {
-        errorEl.innerText = 'Server error';
+        errorEl.innerText = 'Server error during login';
         errorEl.classList.remove('hidden');
     }
 });
@@ -139,12 +142,17 @@ async function apiFetch(url, options = {}) {
         ...options.headers,
         'Authorization': `Bearer ${token}`
     };
-    const res = await fetch(`${API_BASE}${url}`, options);
-    if (res.status === 401) {
-        localStorage.removeItem('token');
-        location.reload();
+    try {
+        const res = await fetch(`${API_BASE}${url}`, options);
+        if (res.status === 401) {
+            localStorage.removeItem('token');
+            location.reload();
+        }
+        return res;
+    } catch (e) {
+        console.error('Fetch error:', e);
+        throw e;
     }
-    return res;
 }
 
 function getWorkTypeName(id) {
@@ -160,20 +168,24 @@ function getUserName(id) {
 
 async function renderDashboard() {
     el.appContent.innerHTML = '<h2>Мои заявки</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>';
-    const res = await apiFetch('/api/requests.php?action=my');
-    const requests = await res.json();
-    const tbody = document.getElementById('req-table');
-    requests.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td>${escapeHTML(r.description)}</td><td><span class="badge bg-secondary">${escapeHTML(r.status)}</span></td><td>${new Date(r.created_at).toLocaleDateString()}</td>`;
-        tbody.appendChild(tr);
-    });
-    tbody.querySelectorAll('.req-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            showRequestDetails(link.dataset.id);
+    try {
+        const res = await apiFetch('/api/requests.php?action=my');
+        const requests = await res.json();
+        const tbody = document.getElementById('req-table');
+        requests.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td>${escapeHTML(r.description)}</td><td><span class="badge bg-secondary">${escapeHTML(r.status)}</span></td><td>${new Date(r.created_at).toLocaleDateString()}</td>`;
+            tbody.appendChild(tr);
         });
-    });
+        tbody.querySelectorAll('.req-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                showRequestDetails(link.dataset.id);
+            });
+        });
+    } catch (e) {
+        el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных</div>';
+    }
 }
 
 async function renderCreate() {
@@ -213,103 +225,118 @@ async function renderCreate() {
     document.getElementById('create-request-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const res = await apiFetch('/api/requests.php?action=create', {
-            method: 'POST',
-            body: formData
-        });
-        if (res.ok) {
-            renderDashboard();
-        }
+        try {
+            const res = await apiFetch('/api/requests.php?action=create', {
+                method: 'POST',
+                body: formData
+            });
+            if (res.ok) {
+                renderDashboard();
+            } else {
+                const data = await res.json();
+                alert('Ошибка: ' + data.message);
+            }
+        } catch (err) { alert('Ошибка сервера'); }
     });
 }
 
 async function renderDepartment() {
     el.appContent.innerHTML = '<h2>Заявки отдела</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>';
-    const res = await apiFetch('/api/requests.php?action=department');
-    const requests = await res.json();
-    const tbody = document.getElementById('dept-req-table');
-    requests.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${escapeHTML(getUserName(r.assigned_to))}</td>`;
-        tbody.appendChild(tr);
-    });
-    tbody.querySelectorAll('.req-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            showRequestDetails(link.dataset.id);
+    try {
+        const res = await apiFetch('/api/requests.php?action=department');
+        const requests = await res.json();
+        const tbody = document.getElementById('dept-req-table');
+        requests.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${escapeHTML(getUserName(r.assigned_to))}</td>`;
+            tbody.appendChild(tr);
         });
-    });
+        tbody.querySelectorAll('.req-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                showRequestDetails(link.dataset.id);
+            });
+        });
+    } catch (e) {
+        el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных отдела</div>';
+    }
 }
 
 async function showRequestDetails(id) {
-    const res = await apiFetch(`/api/requests.php?action=details&id=${id}`);
-    const req = await res.json();
-    const histRes = await apiFetch(`/api/requests.php?action=history&id=${id}`);
-    const history = await histRes.json();
+    try {
+        const res = await apiFetch(`/api/requests.php?action=details&id=${id}`);
+        const req = await res.json();
+        const histRes = await apiFetch(`/api/requests.php?action=history&id=${id}`);
+        const history = await histRes.json();
 
-    const modalContent = document.getElementById('modal-content');
-    modalContent.innerHTML = `
-        <div class="row">
-            <div class="col-md-6">
-                <p><strong>Номер:</strong> ${escapeHTML(req.number)}</p>
-                <p><strong>Статус:</strong> <span class="badge bg-primary">${escapeHTML(req.status)}</span></p>
-                <p><strong>Приоритет:</strong> ${escapeHTML(req.priority)}</p>
-                <p><strong>Место:</strong> ${escapeHTML(req.location)}</p>
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Номер:</strong> ${escapeHTML(req.number)}</p>
+                    <p><strong>Статус:</strong> <span class="badge bg-primary">${escapeHTML(req.status)}</span></p>
+                    <p><strong>Приоритет:</strong> ${escapeHTML(req.priority)}</p>
+                    <p><strong>Место:</strong> ${escapeHTML(req.location)}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Создана:</strong> ${new Date(req.created_at).toLocaleString()}</p>
+                    <p><strong>Заявитель:</strong> ${escapeHTML(getUserName(req.requester_id))}</p>
+                    <p><strong>Исполнитель:</strong> ${escapeHTML(getUserName(req.assigned_to))}</p>
+                </div>
             </div>
-            <div class="col-md-6">
-                <p><strong>Создана:</strong> ${new Date(req.created_at).toLocaleString()}</p>
-                <p><strong>Заявитель:</strong> ${escapeHTML(getUserName(req.requester_id))}</p>
-                <p><strong>Исполнитель:</strong> ${escapeHTML(getUserName(req.assigned_to))}</p>
-            </div>
-        </div>
-        <hr>
-        <h6>Описание</h6>
-        <p>${escapeHTML(req.description)}</p>
-        ${req.file_path ? `<p><strong>Файл:</strong> <a href="${req.file_path.replace('..', '')}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
-        <hr>
-        <h6>История</h6>
-        <ul class="list-unstyled">
-            ${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}
-        </ul>
-        <hr>
-        <div id="action-buttons"></div>
-    `;
+            <hr>
+            <h6>Описание</h6>
+            <p>${escapeHTML(req.description)}</p>
+            ${req.file_path ? `<p><strong>Файл:</strong> <a href="${req.file_path}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
+            <hr>
+            <h6>История</h6>
+            <ul class="list-unstyled">
+                ${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}
+            </ul>
+            <hr>
+            <div id="action-buttons"></div>
+        `;
 
-    const btnsDiv = document.getElementById('action-buttons');
-    if (['admin', 'executor'].includes(currentUser.role) && ['assigned', 'new'].includes(req.status)) {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-success btn-sm me-2';
-        btn.innerText = 'В работу';
-        btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу');
-        btnsDiv.appendChild(btn);
-    }
-    if (['admin', 'executor', 'manager'].includes(currentUser.role) && req.status === 'in_progress') {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-info btn-sm me-2';
-        btn.innerText = 'Выполнено';
-        btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены');
-        btnsDiv.appendChild(btn);
-    }
-    if (req.requester_id == currentUser.id && req.status === 'completed') {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-success btn-sm me-2';
-        btn.innerText = 'Подтвердить';
-        btn.onclick = () => updateStatus(req.id, 'closed', 'Заявка подтверждена');
-        btnsDiv.appendChild(btn);
-    }
+        const btnsDiv = document.getElementById('action-buttons');
+        if (['admin', 'executor'].includes(currentUser.role) && ['assigned', 'new'].includes(req.status)) {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-success btn-sm me-2';
+            btn.innerText = 'В работу';
+            btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу');
+            btnsDiv.appendChild(btn);
+        }
+        if (['admin', 'executor', 'manager'].includes(currentUser.role) && req.status === 'in_progress') {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-info btn-sm me-2';
+            btn.innerText = 'Выполнено';
+            btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены');
+            btnsDiv.appendChild(btn);
+        }
+        if (req.requester_id == currentUser.id && req.status === 'completed') {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-success btn-sm me-2';
+            btn.innerText = 'Подтвердить';
+            btn.onclick = () => updateStatus(req.id, 'closed', 'Заявка подтверждена');
+            btnsDiv.appendChild(btn);
+        }
 
-    const modal = new bootstrap.Modal(document.getElementById('requestModal'));
-    modal.show();
+        const modal = new bootstrap.Modal(document.getElementById('requestModal'));
+        modal.show();
+    } catch (e) { alert('Ошибка загрузки деталей заявки'); }
 }
 
 async function updateStatus(id, status, comment) {
-    await apiFetch('/api/requests.php?action=update_status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status, comment })
-    });
-    bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
-    renderDashboard();
+    try {
+        const res = await apiFetch('/api/requests.php?action=update_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, status, comment })
+        });
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
+            renderDashboard();
+        }
+    } catch (e) { alert('Ошибка обновления статуса'); }
 }
 
 async function renderAdmin() {
@@ -317,6 +344,7 @@ async function renderAdmin() {
         <div class="d-flex justify-content-between">
             <h2>Администрирование</h2>
             <div>
+                <button class="btn btn-outline-danger btn-sm me-2" onclick="triggerRestore()">Восстановить из файла</button>
                 <button class="btn btn-outline-primary btn-sm me-2" onclick="createBackup()">Создать бекап</button>
                 <button class="btn btn-outline-success btn-sm" onclick="exportCSV()">Экспорт CSV</button>
             </div>
@@ -335,10 +363,23 @@ async function renderAdmin() {
     });
 }
 
+window.triggerRestore = async () => {
+    const file = prompt('Введите имя файла бекапа из папки data (например, backup_20260429_120000.zip):');
+    if (!file) return;
+    try {
+        const res = await apiFetch(`/api/admin.php?action=restore&file=${encodeURIComponent(file)}`);
+        const data = await res.json();
+        alert(data.message);
+        location.reload();
+    } catch (e) { alert('Ошибка восстановления'); }
+};
+
 window.createBackup = async () => {
-    const res = await apiFetch('/api/admin.php?action=backup');
-    const data = await res.json();
-    alert(`Бекап создан: ${data.file}`);
+    try {
+        const res = await apiFetch('/api/admin.php?action=backup');
+        const data = await res.json();
+        alert(`Бекап создан: ${data.file}`);
+    } catch (e) { alert('Ошибка создания бекапа'); }
 };
 
 window.exportCSV = () => {

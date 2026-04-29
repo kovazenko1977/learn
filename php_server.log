@@ -1,28 +1,28 @@
-[Wed Apr 29 12:25:27 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55510 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55510 [200]: GET /
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55510 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55512 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55512 [200]: GET /js/app.js
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55512 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55518 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55518 [200]: POST /api/auth.php?action=login
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55518 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55524 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55532 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55524 [200]: GET /api/admin.php?action=worktypes
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55524 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55532 [200]: GET /api/admin.php?action=departments
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55532 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55542 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55542 [200]: GET /api/admin.php?action=users
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55542 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55556 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55556 [200]: GET /api/requests.php?action=my
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55556 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55560 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55560 [200]: POST /api/requests.php?action=create
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55560 Closing
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55574 Accepted
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55574 [200]: GET /api/requests.php?action=my
-[Wed Apr 29 12:25:30 2026] 127.0.0.1:55574 Closing
+[Wed Apr 29 12:44:01 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40532 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40532 [200]: GET /
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40532 Closing
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40542 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40542 [200]: GET /js/app.js
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40542 Closing
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40546 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40546 [200]: POST /api/auth.php?action=login
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40546 Closing
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40560 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40566 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40560 [200]: GET /api/admin.php?action=worktypes
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40560 Closing
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40566 [200]: GET /api/admin.php?action=departments
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40566 Closing
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40582 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40582 [200]: GET /api/admin.php?action=users
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40582 Closing
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40592 Accepted
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40592 [200]: GET /api/requests.php?action=my
+[Wed Apr 29 12:44:04 2026] 127.0.0.1:40592 Closing
+[Wed Apr 29 12:44:05 2026] 127.0.0.1:40596 Accepted
+[Wed Apr 29 12:44:05 2026] 127.0.0.1:40596 [200]: POST /api/requests.php?action=create
+[Wed Apr 29 12:44:05 2026] 127.0.0.1:40596 Closing
+[Wed Apr 29 12:44:05 2026] 127.0.0.1:40606 Accepted
+[Wed Apr 29 12:44:05 2026] 127.0.0.1:40606 [200]: GET /api/requests.php?action=my
+[Wed Apr 29 12:44:05 2026] 127.0.0.1:40606 Closing

@@ -18,10 +18,9 @@ class Auth {
     }
 
     public static function check($roles = []) {
-        $headers = getallheaders();
         $token = null;
-        if (isset($headers['Authorization'])) {
-            $token = str_replace('Bearer ', '', $headers['Authorization']);
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $token = str_replace('Bearer ', '', $_SERVER['HTTP_AUTHORIZATION']);
         } elseif (isset($_GET['token'])) {
             $token = $_GET['token'];
         }

@@ -1,4 +1,12 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PATCH, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit;
+}
+
 header('Content-Type: application/json');
 require_once '../includes/Storage.php';
 require_once '../includes/Auth.php';
@@ -15,7 +23,16 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method == 'POST' && $action == 'create') {
     $data = $_POST;
+    if (empty($data['work_type_id']) || empty($data['location']) || empty($data['description'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Missing required fields']));
+    }
+
     $workType = $storage->findOne('work_types', ['id' => $data['work_type_id']]);
+    if (!$workType) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Invalid work type']));
+    }
 
     $file_path = null;
     $file_name = null;
@@ -27,8 +44,9 @@ if ($method == 'POST' && $action == 'create') {
             exit(json_encode(['message' => 'Invalid file type']));
         }
 
-        $dest = '../uploads/' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $dest)) {
+        if (!file_exists('../uploads')) mkdir('../uploads', 0755, true);
+        $dest = 'uploads/' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+        if (move_uploaded_file($_FILES['file']['tmp_name'], '../' . $dest)) {
             $file_path = $dest;
             $file_name = $_FILES['file']['name'];
         }
@@ -69,13 +87,22 @@ if ($method == 'POST' && $action == 'create') {
         echo json_encode($storage->find('requests', ['department_id' => $userData['department_id']]));
     }
 } elseif ($action == 'details') {
-    $id = $_GET['id'];
-    echo json_encode($storage->findOne('requests', ['id' => $id]));
+    $id = $_GET['id'] ?? 0;
+    $request = $storage->findOne('requests', ['id' => $id]);
+    if (!$request) {
+        http_response_code(404);
+        exit(json_encode(['message' => 'Request not found']));
+    }
+    echo json_encode($request);
 } elseif ($action == 'history') {
-    $id = $_GET['id'];
+    $id = $_GET['id'] ?? 0;
     echo json_encode($storage->find('status_history', ['request_id' => $id]));
 } elseif ($method == 'POST' && $action == 'update_status') {
     $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['id']) || empty($data['status'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Invalid data']));
+    }
     $id = $data['id'];
     $status = $data['status'];
     $comment = $data['comment'] ?? '';
@@ -92,7 +119,7 @@ if ($method == 'POST' && $action == 'create') {
         'comment' => $comment
     ]);
     echo json_encode(['status' => 'ok']);
-} elseif ($action == 'export') {
+} elseif ($action == 'export' && in_array($user['role'], ['admin', 'manager'])) {
     $requests = $storage->readCollection('requests');
     $workTypes = $storage->readCollection('work_types');
 

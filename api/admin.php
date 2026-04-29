@@ -4,7 +4,7 @@ require_once '../includes/Storage.php';
 require_once '../includes/Auth.php';
 
 $storage = new Storage('../data');
-$user = Auth::check(['admin']);
+$user = Auth::check();
 if (!$user) {
     http_response_code(401);
     exit(json_encode(['message' => 'Unauthorized']));
@@ -12,15 +12,16 @@ if (!$user) {
 
 $action = $_GET['action'] ?? '';
 
-if ($action == 'users') {
+if ($action == 'users' && $user['role'] == 'admin') {
     $users = $storage->readCollection('users');
     foreach ($users as &$u) unset($u['password_hash']);
     echo json_encode($users);
 } elseif ($action == 'worktypes') {
+    // All authenticated users can read lookups
     echo json_encode($storage->readCollection('work_types'));
 } elseif ($action == 'departments') {
     echo json_encode($storage->readCollection('departments'));
-} elseif ($action == 'backup') {
+} elseif ($action == 'backup' && $user['role'] == 'admin') {
     if (!class_exists('ZipArchive')) {
         exit(json_encode(['message' => 'ZipArchive not available']));
     }
@@ -36,7 +37,7 @@ if ($action == 'users') {
     }
     $zip->close();
     echo json_encode(['message' => 'Backup created', 'file' => $filename]);
-} elseif ($action == 'restore') {
+} elseif ($action == 'restore' && $user['role'] == 'admin') {
     $file = basename($_GET['file']);
     $filepath = "../data/" . $file;
     if (!file_exists($filepath)) {
@@ -50,4 +51,7 @@ if ($action == 'users') {
     } else {
         echo json_encode(['message' => 'Restore failed']);
     }
+} else {
+    http_response_code(403);
+    echo json_encode(['message' => 'Forbidden']);
 }
