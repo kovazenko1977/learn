@@ -5,28 +5,40 @@ class Auth {
     private static $secret = "php-crm-hop-very-secret-key-12345";
 
     public static function login($login, $password, $storage) {
-        $login = trim($login);
-        $user = $storage->findOne('users', ['login' => $login]);
+        $login = trim((string)$login);
+        if (empty($login)) return null;
 
-        if (!$user) return null;
+        $users = $storage->readCollection('users');
 
-        // Check if user is active (handles both int and string from JSON)
-        if (!isset($user['is_active']) || (int)$user['is_active'] !== 1) {
-            return null;
+        $foundUser = null;
+        foreach ($users as $u) {
+            if (!isset($u['login'])) continue;
+
+            $dbLogin = trim((string)$u['login']);
+            if (strcasecmp($dbLogin, $login) === 0) {
+                $foundUser = $u;
+                break;
+            }
         }
 
-        if (password_verify($password, $user['password_hash'])) {
-            unset($user['password_hash']);
+        if (!$foundUser) return null;
+
+        // Handle is_active defaulting to 1 if not present
+        $isActive = isset($foundUser['is_active']) ? (int)$foundUser['is_active'] : 1;
+        if ($isActive !== 1) return null;
+
+        if (password_verify($password, $foundUser['password_hash'])) {
+            unset($foundUser['password_hash']);
             $payload = [
-                'id' => $user['id'],
-                'role' => $user['role'],
-                'department_id' => isset($user['department_id']) ? $user['department_id'] : null,
+                'id' => $foundUser['id'],
+                'role' => $foundUser['role'],
+                'department_id' => isset($foundUser['department_id']) ? $foundUser['department_id'] : null,
                 'exp' => time() + 86400
             ];
             $jsonPayload = json_encode($payload);
             $signature = hash_hmac('sha256', $jsonPayload, self::$secret);
             $token = base64_encode($jsonPayload) . '.' . $signature;
-            return ['token' => $token, 'user' => $user];
+            return ['token' => $token, 'user' => $foundUser];
         }
         return null;
     }
@@ -34,16 +46,22 @@ class Auth {
     public static function check($roles = []) {
         $token = null;
 
-        // Robust token extraction
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
-        if (isset($headers['Authorization'])) {
-            $token = str_replace('Bearer ', '', $headers['Authorization']);
-        } elseif (isset($headers['authorization'])) {
-            $token = str_replace('Bearer ', '', $headers['authorization']);
-        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $token = str_replace('Bearer ', '', $_SERVER['HTTP_AUTHORIZATION']);
+        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $token = str_replace('Bearer ', '', $_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
         } elseif (isset($_GET['token'])) {
             $token = $_GET['token'];
+        }
+
+        if (!$token) {
+            $headers = function_exists('getallheaders') ? getallheaders() : [];
+            foreach ($headers as $name => $value) {
+                if (strcasecmp($name, 'Authorization') === 0) {
+                    $token = str_replace('Bearer ', '', $value);
+                    break;
+                }
+            }
         }
 
         if (!$token) return null;
