@@ -5,25 +5,16 @@ class Auth {
     private static $secret = "php-crm-hop-very-secret-key-12345";
 
     public static function login($login, $password, $storage) {
-        $login = trim((string)$login);
-        $users = $storage->readCollection('users');
-
-        // Manual search for better resilience (case-insensitive and type-safe)
-        $user = null;
-        foreach ($users as $u) {
-            if (isset($u['login']) && strcasecmp(trim($u['login']), $login) === 0) {
-                $user = $u;
-                break;
-            }
-        }
+        $login = trim($login);
+        $user = $storage->findOne('users', ['login' => $login]);
 
         if (!$user) return null;
 
+        // Check if user is active (handles both int and string from JSON)
         if (!isset($user['is_active']) || (int)$user['is_active'] !== 1) {
             return null;
         }
 
-        // Handle potentially different password hashing algos if migrated
         if (password_verify($password, $user['password_hash'])) {
             unset($user['password_hash']);
             $payload = [
@@ -43,21 +34,16 @@ class Auth {
     public static function check($roles = []) {
         $token = null;
 
-        if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        // Robust token extraction
+        $headers = function_exists('getallheaders') ? getallheaders() : [];
+        if (isset($headers['Authorization'])) {
+            $token = str_replace('Bearer ', '', $headers['Authorization']);
+        } elseif (isset($headers['authorization'])) {
+            $token = str_replace('Bearer ', '', $headers['authorization']);
+        } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
             $token = str_replace('Bearer ', '', $_SERVER['HTTP_AUTHORIZATION']);
-        } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
-            $token = str_replace('Bearer ', '', $_SERVER['REDIRECT_HTTP_AUTHORIZATION']);
         } elseif (isset($_GET['token'])) {
             $token = $_GET['token'];
-        }
-
-        if (!$token) {
-            $headers = function_exists('getallheaders') ? getallheaders() : [];
-            if (isset($headers['Authorization'])) {
-                $token = str_replace('Bearer ', '', $headers['Authorization']);
-            } elseif (isset($headers['authorization'])) {
-                $token = str_replace('Bearer ', '', $headers['authorization']);
-            }
         }
 
         if (!$token) return null;

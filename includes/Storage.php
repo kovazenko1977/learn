@@ -17,7 +17,10 @@ class Storage {
         if (!$fp) return [];
 
         flock($fp, LOCK_SH);
-        $data = file_get_contents($file);
+        $data = '';
+        while (!feof($fp)) {
+            $data .= fread($fp, 8192);
+        }
         flock($fp, LOCK_UN);
         fclose($fp);
 
@@ -27,11 +30,14 @@ class Storage {
     public function writeCollection($collection, $data) {
         $file = $this->dataDir . '/' . $collection . '.json';
 
-        $fp = fopen($file, 'w');
+        $fp = fopen($file, 'c'); // Open for reading/writing; create if not exists
         if (!$fp) return false;
 
         flock($fp, LOCK_EX);
+        ftruncate($fp, 0); // Clear the file
+        rewind($fp);
         fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        fflush($fp); // Flush output before releasing the lock
         flock($fp, LOCK_UN);
         fclose($fp);
 
@@ -71,7 +77,9 @@ class Storage {
 
     public function insert($collection, $item) {
         $items = $this->readCollection($collection);
-        $item['id'] = time() . rand(100, 999);
+        if (!isset($item['id'])) {
+            $item['id'] = time() . rand(100, 999);
+        }
         $items[] = $item;
         $this->writeCollection($collection, $items);
         return $item;
@@ -79,12 +87,17 @@ class Storage {
 
     public function update($collection, $id, $updates) {
         $items = $this->readCollection($collection);
+        $updated = false;
         foreach ($items as &$item) {
             if ($item['id'] == $id) {
                 $item = array_merge($item, $updates);
-                $this->writeCollection($collection, $items);
-                return $item;
+                $updated = true;
+                break;
             }
+        }
+        if ($updated) {
+            $this->writeCollection($collection, $items);
+            return true;
         }
         return null;
     }
