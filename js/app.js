@@ -1,4 +1,4 @@
-const API_BASE = '';
+const API_BASE = 'api';
 let currentUser = null;
 let token = localStorage.getItem('token');
 let workTypes = [];
@@ -43,15 +43,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadLookups() {
     try {
         const [wtRes, dRes] = await Promise.allSettled([
-            apiFetch('/api/admin.php?action=worktypes'),
-            apiFetch('/api/admin.php?action=departments')
+            apiFetch('/admin.php?action=worktypes'),
+            apiFetch('/admin.php?action=departments')
         ]);
 
         if (wtRes.status === 'fulfilled' && wtRes.value.ok) workTypes = await wtRes.value.json();
         if (dRes.status === 'fulfilled' && dRes.value.ok) departments = await dRes.value.json();
 
         if (currentUser && currentUser.role === 'admin') {
-            const uRes = await apiFetch('/api/admin.php?action=users');
+            const uRes = await apiFetch('/admin.php?action=users');
             if (uRes.ok) users = await uRes.json();
         }
     } catch (e) {
@@ -61,7 +61,7 @@ async function loadLookups() {
 
 async function fetchUser() {
     try {
-        const res = await fetch(`${API_BASE}/api/auth.php?action=me`, {
+        const res = await fetch(`${API_BASE}/auth.php?action=me`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -95,7 +95,7 @@ el.loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
     try {
-        const res = await fetch(`${API_BASE}/api/auth.php?action=login`, {
+        const res = await fetch(`${API_BASE}/auth.php?action=login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
@@ -175,7 +175,7 @@ function getUserName(id) {
 async function renderDashboard() {
     el.appContent.innerHTML = '<h2>Мои заявки</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>';
     try {
-        const res = await apiFetch('/api/requests.php?action=my');
+        const res = await apiFetch('/requests.php?action=my');
         const requests = await res.json();
         const tbody = document.getElementById('req-table');
         requests.forEach(r => {
@@ -232,7 +232,7 @@ async function renderCreate() {
         e.preventDefault();
         const formData = new FormData(e.target);
         try {
-            const res = await apiFetch('/api/requests.php?action=create', {
+            const res = await apiFetch('/requests.php?action=create', {
                 method: 'POST',
                 body: formData
             });
@@ -249,7 +249,7 @@ async function renderCreate() {
 async function renderDepartment() {
     el.appContent.innerHTML = '<h2>Заявки отдела</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>';
     try {
-        const res = await apiFetch('/api/requests.php?action=department');
+        const res = await apiFetch('/requests.php?action=department');
         const requests = await res.json();
         const tbody = document.getElementById('dept-req-table');
         requests.forEach(r => {
@@ -270,9 +270,9 @@ async function renderDepartment() {
 
 async function showRequestDetails(id) {
     try {
-        const res = await apiFetch(`/api/requests.php?action=details&id=${id}`);
+        const res = await apiFetch(`/requests.php?action=details&id=${id}`);
         const req = await res.json();
-        const histRes = await apiFetch(`/api/requests.php?action=history&id=${id}`);
+        const histRes = await apiFetch(`/requests.php?action=history&id=${id}`);
         const history = await histRes.json();
 
         const modalContent = document.getElementById('modal-content');
@@ -333,7 +333,7 @@ async function showRequestDetails(id) {
 
 async function updateStatus(id, status, comment) {
     try {
-        const res = await apiFetch('/api/requests.php?action=update_status', {
+        const res = await apiFetch('/requests.php?action=update_status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, status, comment })
@@ -373,7 +373,7 @@ window.triggerRestore = async () => {
     const file = prompt('Введите имя файла бекапа из папки data (например, backup_20260429_120000.zip):');
     if (!file) return;
     try {
-        const res = await apiFetch(`/api/admin.php?action=restore&file=${encodeURIComponent(file)}`);
+        const res = await apiFetch(`/admin.php?action=restore&file=${encodeURIComponent(file)}`);
         const data = await res.json();
         alert(data.message);
         location.reload();
@@ -382,16 +382,73 @@ window.triggerRestore = async () => {
 
 window.createBackup = async () => {
     try {
-        const res = await apiFetch('/api/admin.php?action=backup');
+        const res = await apiFetch('/admin.php?action=backup');
         const data = await res.json();
         alert(`Бекап создан: ${data.file}`);
     } catch (e) { alert('Ошибка создания бекапа'); }
 };
 
 window.exportCSV = () => {
-    window.open(`${API_BASE}/api/requests.php?action=export&token=${token}`, '_blank');
+    window.open(`${API_BASE}/requests.php?action=export&token=${token}`, '_blank');
 };
 
 async function renderReports() {
-    el.appContent.innerHTML = '<h2>Отчеты</h2><p>Модуль в разработке</p>';
+    el.appContent.innerHTML = `
+        <h2>Отчеты</h2>
+        <div id="reports-container" class="row">
+            <div class="col-md-12 text-center">Загрузка данных...</div>
+        </div>
+    `;
+    try {
+        const res = await apiFetch('/reports.php?action=summary');
+        const summary = await res.json();
+        el.appContent.innerHTML = `
+            <h2>Отчеты</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body text-center">
+                            <h5>Всего заявок</h5>
+                            <p class="display-6">${summary.total || 0}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white mb-3">
+                        <div class="card-body text-center">
+                            <h5>Выполнено</h5>
+                            <p class="display-6">${summary.completed || 0}</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-4">
+                    <div class="card bg-primary text-white mb-3">
+                        <div class="card-body text-center">
+                            <h5>В работе</h5>
+                            <p class="display-6">${summary.in_progress || 0}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h4>Загрузка исполнителей</h4>
+                    <div id="executor-stats" class="list-group"></div>
+                </div>
+            </div>
+        `;
+
+        const execRes = await apiFetch('/reports.php?action=executors');
+        const executors = await execRes.json();
+        const execList = document.getElementById('executor-stats');
+        executors.forEach(ex => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            item.innerHTML = `${escapeHTML(ex.full_name)} <span class="badge bg-primary rounded-pill">${ex.active_requests} активных</span>`;
+            execList.appendChild(item);
+        });
+
+    } catch (e) {
+        el.appContent.innerHTML = '<h2>Отчеты</h2><div class="alert alert-danger">Ошибка загрузки отчетов</div>';
+    }
 }

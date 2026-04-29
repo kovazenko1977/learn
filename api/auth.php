@@ -43,4 +43,7 @@ if ($action == 'login' && $method == 'POST') {
         http_response_code(401);
         echo json_encode(['message' => 'Unauthorized']);
     }
+} else {
+    http_response_code(404);
+    echo json_encode(['message' => 'Action not found or Method not allowed']);
 }

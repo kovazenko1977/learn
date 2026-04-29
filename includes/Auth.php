@@ -8,7 +8,12 @@ class Auth {
         $user = $storage->findOne('users', ['login' => $login, 'is_active' => 1]);
         if ($user && password_verify($password, $user['password_hash'])) {
             unset($user['password_hash']);
-            $payload = ['id' => $user['id'], 'role' => $user['role'], 'exp' => time() + 86400];
+            $payload = [
+                'id' => $user['id'],
+                'role' => $user['role'],
+                'department_id' => $user['department_id'],
+                'exp' => time() + 86400
+            ];
             $jsonPayload = json_encode($payload);
             $signature = hash_hmac('sha256', $jsonPayload, self::$secret);
             $token = base64_encode($jsonPayload) . '.' . $signature;
