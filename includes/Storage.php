@@ -1,0 +1,74 @@
+<?php
+class Storage {
+    private $dataDir;
+
+    public function __construct($dataDir) {
+        $this->dataDir = $dataDir;
+        if (!file_exists($dataDir)) {
+            mkdir($dataDir, 0777, true);
+        }
+    }
+
+    public function readCollection($collection) {
+        $file = $this->dataDir . '/' . $collection . '.json';
+        if (!file_exists($file)) return [];
+        $data = file_get_contents($file);
+        return json_decode($data, true) ?: [];
+    }
+
+    public function writeCollection($collection, $data) {
+        $file = $this->dataDir . '/' . $collection . '.json';
+        file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    public function findOne($collection, $query) {
+        $items = $this->readCollection($collection);
+        foreach ($items as $item) {
+            $match = true;
+            foreach ($query as $key => $value) {
+                if (!isset($item[$key]) || $item[$key] != $value) {
+                    $match = false;
+                    break;
+                }
+            }
+            if ($match) return $item;
+        }
+        return null;
+    }
+
+    public function find($collection, $query) {
+        $items = $this->readCollection($collection);
+        $result = [];
+        foreach ($items as $item) {
+            $match = true;
+            foreach ($query as $key => $value) {
+                if (!isset($item[$key]) || $item[$key] != $value) {
+                    $match = false;
+                    break;
+                }
+            }
+            if ($match) $result[] = $item;
+        }
+        return $result;
+    }
+
+    public function insert($collection, $item) {
+        $items = $this->readCollection($collection);
+        $item['id'] = time() . rand(100, 999);
+        $items[] = $item;
+        $this->writeCollection($collection, $items);
+        return $item;
+    }
+
+    public function update($collection, $id, $updates) {
+        $items = $this->readCollection($collection);
+        foreach ($items as &$item) {
+            if ($item['id'] == $id) {
+                $item = array_merge($item, $updates);
+                $this->writeCollection($collection, $items);
+                return $item;
+            }
+        }
+        return null;
+    }
+}

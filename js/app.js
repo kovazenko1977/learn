@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = ''; // Same directory since we'll run PHP from root
 let currentUser = null;
 let token = localStorage.getItem('token');
 let workTypes = [];
@@ -15,7 +15,6 @@ function escapeHTML(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Elements
 const el = {
     loginScreen: document.getElementById('login-screen'),
     mainLayout: document.getElementById('main-layout'),
@@ -43,20 +42,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadLookups() {
     try {
-        const [wtRes, uRes, dRes] = await Promise.all([
-            apiFetch('/admin/worktypes'),
-            currentUser.role === 'admin' ? apiFetch('/admin/users') : Promise.resolve({ json: () => [] }),
-            apiFetch('/admin/departments')
+        const [wtRes, dRes] = await Promise.all([
+            apiFetch('/api/admin.php?action=worktypes'),
+            apiFetch('/api/admin.php?action=departments')
         ]);
         workTypes = await wtRes.json();
-        users = await uRes.json();
         departments = await dRes.json();
+
+        if (currentUser.role === 'admin') {
+            const uRes = await apiFetch('/api/admin.php?action=users');
+            users = await uRes.json();
+        }
     } catch (e) { console.error(e); }
 }
 
 async function fetchUser() {
     try {
-        const res = await fetch(`${API_BASE}/auth/me`, {
+        const res = await fetch(`${API_BASE}/api/auth.php?action=me`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -87,7 +89,7 @@ el.loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
     try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
+        const res = await fetch(`${API_BASE}/api/auth.php?action=login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
@@ -146,19 +148,19 @@ async function apiFetch(url, options = {}) {
 }
 
 function getWorkTypeName(id) {
-    const wt = workTypes.find(w => w.id === parseInt(id));
+    const wt = workTypes.find(w => w.id == id);
     return wt ? wt.name : id;
 }
 
 function getUserName(id) {
     if (!id) return 'Не назначен';
-    const u = users.find(user => user.id === parseInt(id));
+    const u = users.find(user => user.id == id);
     return u ? u.full_name : `ID: ${id}`;
 }
 
 async function renderDashboard() {
     el.appContent.innerHTML = '<h2>Мои заявки</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>';
-    const res = await apiFetch('/requests/my');
+    const res = await apiFetch('/api/requests.php?action=my');
     const requests = await res.json();
     const tbody = document.getElementById('req-table');
     requests.forEach(r => {
@@ -211,7 +213,7 @@ async function renderCreate() {
     document.getElementById('create-request-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const res = await apiFetch('/requests', {
+        const res = await apiFetch('/api/requests.php?action=create', {
             method: 'POST',
             body: formData
         });
@@ -223,7 +225,7 @@ async function renderCreate() {
 
 async function renderDepartment() {
     el.appContent.innerHTML = '<h2>Заявки отдела</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>';
-    const res = await apiFetch('/requests/department');
+    const res = await apiFetch('/api/requests.php?action=department');
     const requests = await res.json();
     const tbody = document.getElementById('dept-req-table');
     requests.forEach(r => {
@@ -240,9 +242,9 @@ async function renderDepartment() {
 }
 
 async function showRequestDetails(id) {
-    const res = await apiFetch(`/requests/${id}`);
+    const res = await apiFetch(`/api/requests.php?action=details&id=${id}`);
     const req = await res.json();
-    const histRes = await apiFetch(`/requests/${id}/history`);
+    const histRes = await apiFetch(`/api/requests.php?action=history&id=${id}`);
     const history = await histRes.json();
 
     const modalContent = document.getElementById('modal-content');
@@ -263,7 +265,7 @@ async function showRequestDetails(id) {
         <hr>
         <h6>Описание</h6>
         <p>${escapeHTML(req.description)}</p>
-        ${req.file_path ? `<p><strong>Файл:</strong> <a href="/${req.file_path}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
+        ${req.file_path ? `<p><strong>Файл:</strong> <a href="${req.file_path.replace('..', '')}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
         <hr>
         <h6>История</h6>
         <ul class="list-unstyled">
@@ -278,21 +280,21 @@ async function showRequestDetails(id) {
         const btn = document.createElement('button');
         btn.className = 'btn btn-success btn-sm me-2';
         btn.innerText = 'В работу';
-        btn.onclick = () => takeRequest(req.id);
+        btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу');
         btnsDiv.appendChild(btn);
     }
     if (['admin', 'executor', 'manager'].includes(currentUser.role) && req.status === 'in_progress') {
         const btn = document.createElement('button');
         btn.className = 'btn btn-info btn-sm me-2';
         btn.innerText = 'Выполнено';
-        btn.onclick = () => completeRequest(req.id);
+        btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены');
         btnsDiv.appendChild(btn);
     }
-    if (req.requester_id === currentUser.id && req.status === 'completed') {
+    if (req.requester_id == currentUser.id && req.status === 'completed') {
         const btn = document.createElement('button');
         btn.className = 'btn btn-success btn-sm me-2';
         btn.innerText = 'Подтвердить';
-        btn.onclick = () => confirmRequest(req.id);
+        btn.onclick = () => updateStatus(req.id, 'closed', 'Заявка подтверждена');
         btnsDiv.appendChild(btn);
     }
 
@@ -300,33 +302,24 @@ async function showRequestDetails(id) {
     modal.show();
 }
 
-window.takeRequest = async (id) => {
-    await apiFetch(`/requests/${id}/take`, { method: 'PATCH' });
-    bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
-    renderDashboard();
-};
-
-window.completeRequest = async (id) => {
-    await apiFetch(`/requests/${id}/status`, {
-        method: 'PATCH',
+async function updateStatus(id, status, comment) {
+    await apiFetch('/api/requests.php?action=update_status', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'completed', comment: 'Работы завершены' })
+        body: JSON.stringify({ id, status, comment })
     });
     bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
     renderDashboard();
-};
-
-window.confirmRequest = async (id) => {
-    await apiFetch(`/requests/${id}/confirm`, { method: 'PATCH' });
-    bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
-    renderDashboard();
-};
+}
 
 async function renderAdmin() {
     el.appContent.innerHTML = `
         <div class="d-flex justify-content-between">
             <h2>Администрирование</h2>
-            <button class="btn btn-outline-success btn-sm" onclick="exportCSV()">Экспорт CSV</button>
+            <div>
+                <button class="btn btn-outline-primary btn-sm me-2" onclick="createBackup()">Создать бекап</button>
+                <button class="btn btn-outline-success btn-sm" onclick="exportCSV()">Экспорт CSV</button>
+            </div>
         </div>
         <hr>
         <h4>Пользователи</h4>
@@ -342,40 +335,16 @@ async function renderAdmin() {
     });
 }
 
+window.createBackup = async () => {
+    const res = await apiFetch('/api/admin.php?action=backup');
+    const data = await res.json();
+    alert(`Бекап создан: ${data.file}`);
+};
+
 window.exportCSV = () => {
-    window.open(`${API_BASE}/requests/export?token=${token}`, '_blank');
+    window.open(`${API_BASE}/api/requests.php?action=export&token=${token}`, '_blank');
 };
 
 async function renderReports() {
-    const res = await apiFetch('/reports/summary');
-    const summary = await res.json();
-    el.appContent.innerHTML = `
-        <h2>Отчеты</h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card bg-light">
-                    <div class="card-body text-center">
-                        <h5>Всего заявок</h5>
-                        <p class="display-6">${summary.total || 0}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <h5>Выполнено</h5>
-                        <p class="display-6">${summary.completed || 0}</p>
-                    </div>
-                </div>
-            </div>
-             <div class="col-md-4">
-                <div class="card bg-primary text-white">
-                    <div class="card-body text-center">
-                        <h5>В работе</h5>
-                        <p class="display-6">${summary.in_progress || 0}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+    el.appContent.innerHTML = '<h2>Отчеты</h2><p>Модуль в разработке</p>';
 }
