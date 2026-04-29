@@ -1,4 +1,12 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    exit;
+}
+
 header('Content-Type: application/json');
 require_once '../includes/Storage.php';
 require_once '../includes/Auth.php';
@@ -17,7 +25,6 @@ if ($action == 'users' && $user['role'] == 'admin') {
     foreach ($users as &$u) unset($u['password_hash']);
     echo json_encode($users);
 } elseif ($action == 'worktypes') {
-    // All authenticated users can read lookups
     echo json_encode($storage->readCollection('work_types'));
 } elseif ($action == 'departments') {
     echo json_encode($storage->readCollection('departments'));

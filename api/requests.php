@@ -93,9 +93,19 @@ if ($method == 'POST' && $action == 'create') {
         http_response_code(404);
         exit(json_encode(['message' => 'Request not found']));
     }
+    // Check permission
+    if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
     echo json_encode($request);
 } elseif ($action == 'history') {
     $id = $_GET['id'] ?? 0;
+    $request = $storage->findOne('requests', ['id' => $id]);
+    if ($request && $user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
     echo json_encode($storage->find('status_history', ['request_id' => $id]));
 } elseif ($method == 'POST' && $action == 'update_status') {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -104,6 +114,17 @@ if ($method == 'POST' && $action == 'create') {
         exit(json_encode(['message' => 'Invalid data']));
     }
     $id = $data['id'];
+    $request = $storage->findOne('requests', ['id' => $id]);
+    if (!$request) {
+        http_response_code(404);
+        exit(json_encode(['message' => 'Request not found']));
+    }
+    // Check permission
+    if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || $data['status'] != 'closed')) {
+         http_response_code(403);
+         exit(json_encode(['message' => 'Forbidden']));
+    }
+
     $status = $data['status'];
     $comment = $data['comment'] ?? '';
 

@@ -5,20 +5,37 @@ class Storage {
     public function __construct($dataDir) {
         $this->dataDir = $dataDir;
         if (!file_exists($dataDir)) {
-            mkdir($dataDir, 0777, true);
+            mkdir($dataDir, 0755, true);
         }
     }
 
     public function readCollection($collection) {
         $file = $this->dataDir . '/' . $collection . '.json';
         if (!file_exists($file)) return [];
+
+        $fp = fopen($file, 'r');
+        if (!$fp) return [];
+
+        flock($fp, LOCK_SH);
         $data = file_get_contents($file);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
         return json_decode($data, true) ?: [];
     }
 
     public function writeCollection($collection, $data) {
         $file = $this->dataDir . '/' . $collection . '.json';
-        file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+        $fp = fopen($file, 'w');
+        if (!$fp) return false;
+
+        flock($fp, LOCK_EX);
+        fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
+        return true;
     }
 
     public function findOne($collection, $query) {
