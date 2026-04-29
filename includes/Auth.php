@@ -4,11 +4,23 @@ require_once __DIR__ . '/Storage.php';
 class Auth {
     private static $secret = "php-crm-hop-very-secret-key-12345";
 
+    private static function log($msg) {
+        $logFile = __DIR__ . '/../data/auth_debug.log';
+        $time = date('c');
+        file_put_contents($logFile, "[$time] $msg\n", FILE_APPEND);
+    }
+
     public static function login($login, $password, $storage) {
         $login = trim((string)$login);
-        if (empty($login)) return null;
+        if (empty($login)) {
+            self::log("Login attempt with empty login field");
+            return null;
+        }
 
         $users = $storage->readCollection('users');
+        if (empty($users)) {
+            self::log("Login failed: users collection is empty");
+        }
 
         $foundUser = null;
         foreach ($users as $u) {
@@ -21,11 +33,16 @@ class Auth {
             }
         }
 
-        if (!$foundUser) return null;
+        if (!$foundUser) {
+            self::log("User not found: $login");
+            return null;
+        }
 
-        // Handle is_active defaulting to 1 if not present
         $isActive = isset($foundUser['is_active']) ? (int)$foundUser['is_active'] : 1;
-        if ($isActive !== 1) return null;
+        if ($isActive !== 1) {
+            self::log("User account inactive: $login");
+            return null;
+        }
 
         if (password_verify($password, $foundUser['password_hash'])) {
             unset($foundUser['password_hash']);
@@ -38,8 +55,11 @@ class Auth {
             $jsonPayload = json_encode($payload);
             $signature = hash_hmac('sha256', $jsonPayload, self::$secret);
             $token = base64_encode($jsonPayload) . '.' . $signature;
+            self::log("Login successful: $login");
             return ['token' => $token, 'user' => $foundUser];
         }
+
+        self::log("Password mismatch for user: $login");
         return null;
     }
 

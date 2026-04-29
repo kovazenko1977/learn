@@ -20,10 +20,30 @@ if (!$user) {
 
 $action = $_GET['action'] ?? '';
 
-if ($action == 'users' && $user['role'] == 'admin') {
+if ($action == 'users') {
     $users = $storage->readCollection('users');
     foreach ($users as &$u) unset($u['password_hash']);
     echo json_encode($users);
+} elseif ($action == 'create_user' && $_SERVER['REQUEST_METHOD'] == 'POST' && $user['role'] == 'admin') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['login']) || empty($data['password']) || empty($data['role'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Missing data']));
+    }
+
+    $newUser = [
+        'login' => $data['login'],
+        'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT),
+        'full_name' => $data['full_name'] ?? $data['login'],
+        'role' => $data['role'],
+        'department_id' => $data['department_id'] ?? null,
+        'is_active' => 1,
+        'created_at' => date('c')
+    ];
+
+    $saved = $storage->insert('users', $newUser);
+    unset($saved['password_hash']);
+    echo json_encode($saved);
 } elseif ($action == 'worktypes') {
     echo json_encode($storage->readCollection('work_types'));
 } elseif ($action == 'departments') {
@@ -59,6 +79,11 @@ if ($action == 'users' && $user['role'] == 'admin') {
         echo json_encode(['message' => 'Restore failed']);
     }
 } else {
-    http_response_code(403);
-    echo json_encode(['message' => 'Forbidden']);
+    // For non-admin, only allow lookups
+    if ($action == 'worktypes' || $action == 'departments') {
+         echo json_encode($storage->readCollection($action == 'worktypes' ? 'work_types' : 'departments'));
+    } else {
+        http_response_code(403);
+        echo json_encode(['message' => 'Forbidden']);
+    }
 }

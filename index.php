@@ -24,11 +24,11 @@
                     <form id="login-form">
                         <div class="mb-3">
                             <label class="form-label">Логин</label>
-                            <input type="text" id="login-username" class="form-control" required>
+                            <input type="text" id="login-username" class="form-control" autocomplete="username" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Пароль</label>
-                            <input type="password" id="login-password" class="form-control" required>
+                            <input type="password" id="login-password" class="form-control" autocomplete="current-password" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Войти</button>
                     </form>
@@ -81,6 +81,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

@@ -42,18 +42,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadLookups() {
     try {
-        const [wtRes, dRes] = await Promise.allSettled([
+        const [wtRes, dRes, uRes] = await Promise.allSettled([
             apiFetch('/admin.php?action=worktypes'),
-            apiFetch('/admin.php?action=departments')
+            apiFetch('/admin.php?action=departments'),
+            apiFetch('/admin.php?action=users')
         ]);
 
         if (wtRes.status === 'fulfilled' && wtRes.value.ok) workTypes = await wtRes.value.json();
         if (dRes.status === 'fulfilled' && dRes.value.ok) departments = await dRes.value.json();
+        if (uRes.status === 'fulfilled' && uRes.value.ok) users = await uRes.value.json();
 
-        if (currentUser && currentUser.role === 'admin') {
-            const uRes = await apiFetch('/admin.php?action=users');
-            if (uRes.ok) users = await uRes.json();
-        }
     } catch (e) {
         console.error('Lookup loading failed:', e);
     }
@@ -356,9 +354,43 @@ async function renderAdmin() {
             </div>
         </div>
         <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Создать пользователя</h4>
+                <form id="create-user-form" class="row g-3 mb-4">
+                    <div class="col-md-3"><input type="text" name="login" class="form-control" placeholder="Логин" required></div>
+                    <div class="col-md-3"><input type="password" name="password" class="form-control" placeholder="Пароль" required></div>
+                    <div class="col-md-3"><input type="text" name="full_name" class="form-control" placeholder="ФИО" required></div>
+                    <div class="col-md-2">
+                        <select name="role" class="form-select">
+                            <option value="user">Пользователь</option>
+                            <option value="executor">Исполнитель</option>
+                            <option value="manager">Руководитель</option>
+                            <option value="admin">Админ</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+</button></div>
+                </form>
+            </div>
+        </div>
+        <hr>
         <h4>Пользователи</h4>
         <div id="users-list"></div>
     `;
+
+    document.getElementById('create-user-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.from_row(new FormData(e.target));
+        const res = await apiFetch('/admin.php?action=create_user', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+        if (res.ok) {
+            await loadLookups();
+            renderAdmin();
+        }
+    });
+
     const list = document.getElementById('users-list');
     list.innerHTML = `<table class="table"><thead><tr><th>ID</th><th>Логин</th><th>Имя</th><th>Роль</th></tr></thead><tbody id="admin-users-table"></tbody></table>`;
     const tbody = document.getElementById('admin-users-table');
@@ -368,6 +400,12 @@ async function renderAdmin() {
         tbody.appendChild(tr);
     });
 }
+
+Object.from_row = (formData) => {
+    const obj = {};
+    formData.forEach((value, key) => obj[key] = value);
+    return obj;
+};
 
 window.triggerRestore = async () => {
     const file = prompt('Введите имя файла бекапа из папки data (например, backup_20260429_120000.zip):');

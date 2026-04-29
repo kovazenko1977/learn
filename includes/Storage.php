@@ -24,20 +24,23 @@ class Storage {
         flock($fp, LOCK_UN);
         fclose($fp);
 
+        // Remove UTF-8 BOM if present
+        $data = str_replace("\xEF\xBB\xBF", '', $data);
+
         return json_decode($data, true) ?: [];
     }
 
     public function writeCollection($collection, $data) {
         $file = $this->dataDir . '/' . $collection . '.json';
 
-        $fp = fopen($file, 'c'); // Open for reading/writing; create if not exists
+        $fp = fopen($file, 'c');
         if (!$fp) return false;
 
         flock($fp, LOCK_EX);
-        ftruncate($fp, 0); // Clear the file
+        ftruncate($fp, 0);
         rewind($fp);
         fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        fflush($fp); // Flush output before releasing the lock
+        fflush($fp);
         flock($fp, LOCK_UN);
         fclose($fp);
 

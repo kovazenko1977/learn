@@ -1,4 +1,28 @@
-[Wed Apr 29 14:52:15 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Wed Apr 29 14:52:17 2026] 127.0.0.1:54056 Accepted
-[Wed Apr 29 14:52:17 2026] 127.0.0.1:54056 [200]: POST /api/auth.php?action=login
-[Wed Apr 29 14:52:17 2026] 127.0.0.1:54056 Closing
+[Wed Apr 29 15:23:28 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Wed Apr 29 15:23:31 2026] 127.0.0.1:44816 Accepted
+[Wed Apr 29 15:23:31 2026] 127.0.0.1:44816 [200]: GET /
+[Wed Apr 29 15:23:31 2026] 127.0.0.1:44816 Closing
+[Wed Apr 29 15:23:31 2026] 127.0.0.1:44824 Accepted
+[Wed Apr 29 15:23:31 2026] 127.0.0.1:44824 [200]: GET /js/app.js?v=1777476211
+[Wed Apr 29 15:23:31 2026] 127.0.0.1:44824 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44836 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44836 [200]: POST /api/auth.php?action=login
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44836 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44848 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44862 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44878 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44848 [200]: GET /api/admin.php?action=worktypes
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44848 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44862 [200]: GET /api/admin.php?action=departments
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44862 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44878 [200]: GET /api/admin.php?action=users
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44878 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44888 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44888 [200]: GET /api/requests.php?action=my
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44888 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44890 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44890 [200]: POST /api/requests.php?action=create
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44890 Closing
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44892 Accepted
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44892 [200]: GET /api/requests.php?action=my
+[Wed Apr 29 15:23:32 2026] 127.0.0.1:44892 Closing
