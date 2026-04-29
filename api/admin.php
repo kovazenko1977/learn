@@ -8,10 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 header('Content-Type: application/json');
-require_once '../includes/Storage.php';
-require_once '../includes/Auth.php';
+require_once __DIR__ . '/../includes/Storage.php';
+require_once __DIR__ . '/../includes/Auth.php';
 
-$storage = new Storage('../data');
+$storage = new Storage(__DIR__ . '/../data');
 $user = Auth::check();
 if (!$user) {
     http_response_code(401);
@@ -34,11 +34,11 @@ if ($action == 'users' && $user['role'] == 'admin') {
     }
     $zip = new ZipArchive();
     $filename = "backup_" . date('Ymd_His') . ".zip";
-    $filepath = "../data/" . $filename;
+    $filepath = __DIR__ . "/../data/" . $filename;
     if ($zip->open($filepath, ZipArchive::CREATE)!==TRUE) {
         exit(json_encode(['message' => 'Cannot create zip']));
     }
-    $files = glob('../data/*.json');
+    $files = glob(__DIR__ . '/../data/*.json');
     foreach ($files as $file) {
         $zip->addFile($file, basename($file));
     }
@@ -46,13 +46,13 @@ if ($action == 'users' && $user['role'] == 'admin') {
     echo json_encode(['message' => 'Backup created', 'file' => $filename]);
 } elseif ($action == 'restore' && $user['role'] == 'admin') {
     $file = basename($_GET['file']);
-    $filepath = "../data/" . $file;
+    $filepath = __DIR__ . "/../data/" . $file;
     if (!file_exists($filepath)) {
         exit(json_encode(['message' => 'Backup file not found']));
     }
     $zip = new ZipArchive;
     if ($zip->open($filepath) === TRUE) {
-        $zip->extractTo('../data/');
+        $zip->extractTo(__DIR__ . '/../data/');
         $zip->close();
         echo json_encode(['message' => 'Restore complete']);
     } else {

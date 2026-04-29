@@ -8,10 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 header('Content-Type: application/json');
-require_once '../includes/Storage.php';
-require_once '../includes/Auth.php';
+require_once __DIR__ . '/../includes/Storage.php';
+require_once __DIR__ . '/../includes/Auth.php';
 
-$storage = new Storage('../data');
+$storage = new Storage(__DIR__ . '/../data');
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 

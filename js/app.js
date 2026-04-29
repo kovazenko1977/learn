@@ -42,15 +42,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadLookups() {
     try {
-        const [wtRes, dRes] = await Promise.all([
+        const [wtRes, dRes] = await Promise.allSettled([
             apiFetch('/api/admin.php?action=worktypes'),
             apiFetch('/api/admin.php?action=departments')
         ]);
-        if (!wtRes.ok || !dRes.ok) throw new Error('Failed to load lookups');
-        workTypes = await wtRes.json();
-        departments = await dRes.json();
 
-        if (currentUser.role === 'admin') {
+        if (wtRes.status === 'fulfilled' && wtRes.value.ok) workTypes = await wtRes.value.json();
+        if (dRes.status === 'fulfilled' && dRes.value.ok) departments = await dRes.value.json();
+
+        if (currentUser && currentUser.role === 'admin') {
             const uRes = await apiFetch('/api/admin.php?action=users');
             if (uRes.ok) users = await uRes.json();
         }
@@ -69,7 +69,10 @@ async function fetchUser() {
             return true;
         }
         return false;
-    } catch (e) { return false; }
+    } catch (e) {
+        console.error('fetchUser error:', e);
+        return false;
+    }
 }
 
 function showLogin() {
@@ -97,8 +100,9 @@ el.loginForm.addEventListener('submit', async (e) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
         });
-        const data = await res.json();
+
         if (res.ok) {
+            const data = await res.json();
             token = data.token;
             currentUser = data.user;
             localStorage.setItem('token', token);
@@ -106,11 +110,13 @@ el.loginForm.addEventListener('submit', async (e) => {
             showLayout();
             renderDashboard();
         } else {
-            errorEl.innerText = data.message || 'Error logging in';
+            const data = await res.json().catch(() => ({}));
+            errorEl.innerText = data.message || `Error ${res.status}: ${res.statusText}`;
             errorEl.classList.remove('hidden');
         }
     } catch (err) {
-        errorEl.innerText = 'Server error during login';
+        console.error('Login request failed:', err);
+        errorEl.innerText = 'Network error or server unavailable';
         errorEl.classList.remove('hidden');
     }
 });
@@ -150,7 +156,7 @@ async function apiFetch(url, options = {}) {
         }
         return res;
     } catch (e) {
-        console.error('Fetch error:', e);
+        console.error('apiFetch error:', e);
         throw e;
     }
 }
@@ -234,7 +240,7 @@ async function renderCreate() {
                 renderDashboard();
             } else {
                 const data = await res.json();
-                alert('Ошибка: ' + data.message);
+                alert('Ошибка: ' + (data.message || 'Unknown error'));
             }
         } catch (err) { alert('Ошибка сервера'); }
     });

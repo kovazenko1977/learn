@@ -1,5 +1,5 @@
 <?php
-require_once 'Storage.php';
+require_once __DIR__ . '/Storage.php';
 
 class Auth {
     private static $secret = "php-crm-hop-very-secret-key-12345";

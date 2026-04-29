@@ -8,10 +8,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 header('Content-Type: application/json');
-require_once '../includes/Storage.php';
-require_once '../includes/Auth.php';
+require_once __DIR__ . '/../includes/Storage.php';
+require_once __DIR__ . '/../includes/Auth.php';
 
-$storage = new Storage('../data');
+$storage = new Storage(__DIR__ . '/../data');
 $user = Auth::check();
 if (!$user) {
     http_response_code(401);
@@ -44,10 +44,13 @@ if ($method == 'POST' && $action == 'create') {
             exit(json_encode(['message' => 'Invalid file type']));
         }
 
-        if (!file_exists('../uploads')) mkdir('../uploads', 0755, true);
-        $dest = 'uploads/' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-        if (move_uploaded_file($_FILES['file']['tmp_name'], '../' . $dest)) {
-            $file_path = $dest;
+        $uploadsDir = __DIR__ . '/../uploads';
+        if (!file_exists($uploadsDir)) mkdir($uploadsDir, 0755, true);
+
+        $fileName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+        $dest = $uploadsDir . '/' . $fileName;
+        if (move_uploaded_file($_FILES['file']['tmp_name'], $dest)) {
+            $file_path = 'uploads/' . $fileName;
             $file_name = $_FILES['file']['name'];
         }
     }
@@ -93,7 +96,6 @@ if ($method == 'POST' && $action == 'create') {
         http_response_code(404);
         exit(json_encode(['message' => 'Request not found']));
     }
-    // Check permission
     if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
@@ -119,38 +121,30 @@ if ($method == 'POST' && $action == 'create') {
         http_response_code(404);
         exit(json_encode(['message' => 'Request not found']));
     }
-    // Check permission
     if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || $data['status'] != 'closed')) {
          http_response_code(403);
          exit(json_encode(['message' => 'Forbidden']));
     }
-
-    $status = $data['status'];
-    $comment = $data['comment'] ?? '';
-
     $storage->update('requests', $id, [
-        'status' => $status,
+        'status' => $data['status'],
         'updated_at' => date('c')
     ]);
     $storage->insert('status_history', [
         'request_id' => $id,
-        'status' => $status,
+        'status' => $data['status'],
         'changed_by' => $user['id'],
         'changed_at' => date('c'),
-        'comment' => $comment
+        'comment' => $data['comment'] ?? ''
     ]);
     echo json_encode(['status' => 'ok']);
 } elseif ($action == 'export' && in_array($user['role'], ['admin', 'manager'])) {
     $requests = $storage->readCollection('requests');
     $workTypes = $storage->readCollection('work_types');
-
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=requests.csv');
-
     $output = fopen('php://output', 'w');
-    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
     fputcsv($output, ['Номер', 'Тип', 'Место', 'Статус', 'Дата'], ';');
-
     foreach ($requests as $r) {
         $wt = array_filter($workTypes, fn($w) => $w['id'] == $r['work_type_id']);
         $wtName = count($wt) ? reset($wt)['name'] : $r['work_type_id'];
