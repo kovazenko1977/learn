@@ -16,17 +16,28 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 if ($action == 'login' && $method == 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    $data = json_decode($rawInput, true);
+
+    // Debug logging (temporary)
+    $debug = [
+        'timestamp' => date('c'),
+        'raw' => $rawInput,
+        'decoded' => $data
+    ];
+
     if (empty($data['login']) || empty($data['password'])) {
         http_response_code(400);
-        exit(json_encode(['message' => 'Missing credentials']));
+        exit(json_encode(['message' => 'Missing credentials', 'debug' => $debug]));
     }
+
     $result = Auth::login($data['login'], $data['password'], $storage);
+
     if ($result) {
         echo json_encode($result);
     } else {
         http_response_code(401);
-        echo json_encode(['message' => 'Invalid credentials']);
+        echo json_encode(['message' => 'Invalid credentials', 'input_received' => $data['login']]);
     }
 } elseif ($action == 'me') {
     $user = Auth::check();
