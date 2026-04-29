@@ -30,7 +30,7 @@ router.post('/users', auth('admin'), async (req, res) => {
 });
 
 // Departments CRUD
-router.get('/departments', auth(['admin', 'manager', 'user']), async (req, res) => {
+router.get('/departments', auth(['admin', 'manager', 'executor', 'user']), async (req, res) => {
     const departments = await storage.readCollection('departments');
     res.json(departments);
 });
@@ -41,7 +41,7 @@ router.post('/departments', auth('admin'), async (req, res) => {
 });
 
 // Work Types CRUD
-router.get('/worktypes', auth(['admin', 'user']), async (req, res) => {
+router.get('/worktypes', auth(['admin', 'manager', 'executor', 'user']), async (req, res) => {
     const workTypes = await storage.readCollection('work_types');
     res.json(workTypes);
 });

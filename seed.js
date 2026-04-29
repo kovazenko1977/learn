@@ -5,6 +5,10 @@ const path = require('path');
 async function seed() {
     const dataDir = path.join(__dirname, 'data');
 
+    // Ensure directories exist
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.mkdir(path.join(__dirname, 'uploads'), { recursive: true });
+
     const hashedPassword = await bcrypt.hash('admin', 10);
 
     const departments = [
@@ -36,7 +40,7 @@ async function seed() {
     await fs.writeFile(path.join(dataDir, 'requests.json'), JSON.stringify([], null, 2));
     await fs.writeFile(path.join(dataDir, 'status_history.json'), JSON.stringify([], null, 2));
 
-    console.log('Seeding complete.');
+    console.log('Seeding complete. Directories created.');
 }
 
 seed().catch(err => console.error(err));

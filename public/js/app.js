@@ -1,15 +1,9 @@
 const API_BASE = '/api';
 let currentUser = null;
 let token = localStorage.getItem('token');
-
-// Elements
-const loginScreen = document.getElementById('login-screen');
-const mainLayout = document.getElementById('main-layout');
-const loginForm = document.getElementById('login-form');
-const appContent = document.getElementById('app-content');
-const mainNav = document.getElementById('main-nav');
-const userInfo = document.getElementById('user-info');
-const logoutBtn = document.getElementById('logout-btn');
+let workTypes = [];
+let users = [];
+let departments = [];
 
 function escapeHTML(str) {
     if (!str) return '';
@@ -21,11 +15,22 @@ function escapeHTML(str) {
         .replace(/'/g, '&#039;');
 }
 
-// Initial Load
+// Elements
+const el = {
+    loginScreen: document.getElementById('login-screen'),
+    mainLayout: document.getElementById('main-layout'),
+    loginForm: document.getElementById('login-form'),
+    appContent: document.getElementById('app-content'),
+    mainNav: document.getElementById('main-nav'),
+    userInfo: document.getElementById('user-info'),
+    logoutBtn: document.getElementById('logout-btn')
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     if (token) {
         const success = await fetchUser();
         if (success) {
+            await loadLookups();
             showLayout();
             renderDashboard();
         } else {
@@ -35,6 +40,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         showLogin();
     }
 });
+
+async function loadLookups() {
+    try {
+        const [wtRes, uRes, dRes] = await Promise.all([
+            apiFetch('/admin/worktypes'),
+            currentUser.role === 'admin' ? apiFetch('/admin/users') : Promise.resolve({ json: () => [] }),
+            apiFetch('/admin/departments')
+        ]);
+        workTypes = await wtRes.json();
+        users = await uRes.json();
+        departments = await dRes.json();
+    } catch (e) { console.error(e); }
+}
 
 async function fetchUser() {
     try {
@@ -46,33 +64,28 @@ async function fetchUser() {
             return true;
         }
         return false;
-    } catch (e) {
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 function showLogin() {
-    loginScreen.classList.remove('hidden');
-    mainLayout.classList.add('hidden');
+    el.loginScreen.classList.remove('hidden');
+    el.mainLayout.classList.add('hidden');
 }
 
 function showLayout() {
-    loginScreen.classList.add('hidden');
-    mainLayout.classList.remove('hidden');
-    userInfo.innerText = `${currentUser.full_name} (${currentUser.role})`;
-
-    // Role based visibility
+    el.loginScreen.classList.add('hidden');
+    el.mainLayout.classList.remove('hidden');
+    el.userInfo.innerText = `${currentUser.full_name} (${currentUser.role})`;
     document.getElementById('nav-admin').classList.toggle('hidden', currentUser.role !== 'admin');
     document.getElementById('nav-reports').classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role));
     document.getElementById('nav-department').classList.toggle('hidden', currentUser.role === 'user');
 }
 
-loginForm.addEventListener('submit', async (e) => {
+el.loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const login = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
     const errorEl = document.getElementById('login-error');
-
     try {
         const res = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
@@ -84,6 +97,7 @@ loginForm.addEventListener('submit', async (e) => {
             token = data.token;
             currentUser = data.user;
             localStorage.setItem('token', token);
+            await loadLookups();
             showLayout();
             renderDashboard();
         } else {
@@ -96,20 +110,18 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
-logoutBtn.addEventListener('click', () => {
+el.logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('token');
     location.reload();
 });
 
-// Routing
-mainNav.addEventListener('click', (e) => {
+el.mainNav.addEventListener('click', (e) => {
     const link = e.target.closest('a');
     const view = link?.dataset.view;
     if (view) {
         e.preventDefault();
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-
         switch (view) {
             case 'dashboard': renderDashboard(); break;
             case 'department': renderDepartment(); break;
@@ -133,14 +145,25 @@ async function apiFetch(url, options = {}) {
     return res;
 }
 
+function getWorkTypeName(id) {
+    const wt = workTypes.find(w => w.id === parseInt(id));
+    return wt ? wt.name : id;
+}
+
+function getUserName(id) {
+    if (!id) return 'Не назначен';
+    const u = users.find(user => user.id === parseInt(id));
+    return u ? u.full_name : `ID: ${id}`;
+}
+
 async function renderDashboard() {
-    appContent.innerHTML = '<h2>Мои заявки</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>';
+    el.appContent.innerHTML = '<h2>Мои заявки</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>';
     const res = await apiFetch('/requests/my');
     const requests = await res.json();
     const tbody = document.getElementById('req-table');
     requests.forEach(r => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(r.description)}</td><td><span class="badge bg-secondary">${escapeHTML(r.status)}</span></td><td>${new Date(r.created_at).toLocaleDateString()}</td>`;
+        tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td>${escapeHTML(r.description)}</td><td><span class="badge bg-secondary">${escapeHTML(r.status)}</span></td><td>${new Date(r.created_at).toLocaleDateString()}</td>`;
         tbody.appendChild(tr);
     });
     tbody.querySelectorAll('.req-link').forEach(link => {
@@ -152,21 +175,18 @@ async function renderDashboard() {
 }
 
 async function renderCreate() {
-    const [wtRes, deptRes] = await Promise.all([apiFetch('/admin/worktypes'), apiFetch('/admin/departments')]);
-    const workTypes = await wtRes.json();
-
-    appContent.innerHTML = `
+    el.appContent.innerHTML = `
         <h2>Создать заявку</h2>
         <form id="create-request-form" style="max-width: 600px">
             <div class="mb-3">
                 <label class="form-label">Тип работ</label>
-                <select id="cr-worktype" class="form-select" required>
+                <select id="cr-worktype" name="work_type_id" class="form-select" required>
                     ${workTypes.map(wt => `<option value="${wt.id}">${escapeHTML(wt.name)}</option>`).join('')}
                 </select>
             </div>
             <div class="mb-3">
                 <label class="form-label">Приоритет</label>
-                <select id="cr-priority" class="form-select">
+                <select id="cr-priority" name="priority" class="form-select">
                     <option value="normal">Обычный</option>
                     <option value="high">Высокий</option>
                     <option value="low">Низкий</option>
@@ -174,11 +194,15 @@ async function renderCreate() {
             </div>
             <div class="mb-3">
                 <label class="form-label">Место выполнения</label>
-                <input type="text" id="cr-location" class="form-control" placeholder="Корпус, этаж, кабинет" required>
+                <input type="text" id="cr-location" name="location" class="form-control" placeholder="Корпус, этаж, кабинет" required>
             </div>
             <div class="mb-3">
                 <label class="form-label">Описание проблемы</label>
-                <textarea id="cr-description" class="form-control" rows="4" required></textarea>
+                <textarea id="cr-description" name="description" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Прикрепить фото/файл</label>
+                <input type="file" id="cr-file" name="file" class="form-control">
             </div>
             <button type="submit" id="cr-submit" class="btn btn-primary">Отправить</button>
         </form>
@@ -186,16 +210,10 @@ async function renderCreate() {
 
     document.getElementById('create-request-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const body = {
-            work_type_id: document.getElementById('cr-worktype').value,
-            priority: document.getElementById('cr-priority').value,
-            location: document.getElementById('cr-location').value,
-            description: document.getElementById('cr-description').value
-        };
+        const formData = new FormData(e.target);
         const res = await apiFetch('/requests', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
+            body: formData
         });
         if (res.ok) {
             renderDashboard();
@@ -204,13 +222,13 @@ async function renderCreate() {
 }
 
 async function renderDepartment() {
-    appContent.innerHTML = '<h2>Заявки отдела</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>';
+    el.appContent.innerHTML = '<h2>Заявки отдела</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>';
     const res = await apiFetch('/requests/department');
     const requests = await res.json();
     const tbody = document.getElementById('dept-req-table');
     requests.forEach(r => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(r.work_type_id)}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${escapeHTML(r.assigned_to) || 'Не назначен'}</td>`;
+        tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${escapeHTML(getUserName(r.assigned_to))}</td>`;
         tbody.appendChild(tr);
     });
     tbody.querySelectorAll('.req-link').forEach(link => {
@@ -238,13 +256,14 @@ async function showRequestDetails(id) {
             </div>
             <div class="col-md-6">
                 <p><strong>Создана:</strong> ${new Date(req.created_at).toLocaleString()}</p>
-                <p><strong>Заявитель ID:</strong> ${escapeHTML(req.requester_id)}</p>
-                <p><strong>Исполнитель ID:</strong> ${escapeHTML(req.assigned_to) || 'Не назначен'}</p>
+                <p><strong>Заявитель:</strong> ${escapeHTML(getUserName(req.requester_id))}</p>
+                <p><strong>Исполнитель:</strong> ${escapeHTML(getUserName(req.assigned_to))}</p>
             </div>
         </div>
         <hr>
         <h6>Описание</h6>
         <p>${escapeHTML(req.description)}</p>
+        ${req.file_path ? `<p><strong>Файл:</strong> <a href="/${req.file_path}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
         <hr>
         <h6>История</h6>
         <ul class="list-unstyled">
@@ -304,9 +323,15 @@ window.confirmRequest = async (id) => {
 };
 
 async function renderAdmin() {
-    appContent.innerHTML = '<h2>Администрирование</h2><div class="row"><div class="col-md-12"><h4>Пользователи</h4><div id="users-list"></div></div></div>';
-    const res = await apiFetch('/admin/users');
-    const users = await res.json();
+    el.appContent.innerHTML = `
+        <div class="d-flex justify-content-between">
+            <h2>Администрирование</h2>
+            <button class="btn btn-outline-success btn-sm" onclick="exportCSV()">Экспорт CSV</button>
+        </div>
+        <hr>
+        <h4>Пользователи</h4>
+        <div id="users-list"></div>
+    `;
     const list = document.getElementById('users-list');
     list.innerHTML = `<table class="table"><thead><tr><th>ID</th><th>Логин</th><th>Имя</th><th>Роль</th></tr></thead><tbody id="admin-users-table"></tbody></table>`;
     const tbody = document.getElementById('admin-users-table');
@@ -317,10 +342,14 @@ async function renderAdmin() {
     });
 }
 
+window.exportCSV = () => {
+    window.open(`${API_BASE}/requests/export?token=${token}`, '_blank');
+};
+
 async function renderReports() {
     const res = await apiFetch('/reports/summary');
     const summary = await res.json();
-    appContent.innerHTML = `
+    el.appContent.innerHTML = `
         <h2>Отчеты</h2>
         <div class="row">
             <div class="col-md-4">
