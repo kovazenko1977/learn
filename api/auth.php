@@ -28,15 +28,28 @@ if ($action == 'login' && $method == 'POST') {
 
     if (empty($login) || empty($password)) {
         http_response_code(400);
-        exit(json_encode(['message' => 'Login and password are required']));
+        exit(json_encode(['message' => 'Both login and password are required']));
     }
 
+    // Attempt login
     $result = Auth::login($login, $password, $storage);
 
     if ($result) {
         echo json_encode($result);
     } else {
         http_response_code(401);
+
+        // Debugging for 'admin' user specifically to help the user
+        if ($login === 'admin') {
+             $users = $storage->readCollection('users');
+             $found = false;
+             foreach($users as $u) if(isset($u['login']) && $u['login'] === 'admin') $found = true;
+
+             if (!$found) {
+                 exit(json_encode(['message' => 'Admin user missing from database. Run system_fix.php']));
+             }
+        }
+
         echo json_encode(['message' => 'Invalid login or password']);
     }
 } elseif ($action == 'me') {
@@ -44,14 +57,8 @@ if ($action == 'login' && $method == 'POST') {
     if ($user) {
         $userData = $storage->findOne('users', ['id' => $user['id']]);
         if (!$userData) {
-            // Manual fallback search
             $users = $storage->readCollection('users');
-            foreach ($users as $u) {
-                if ($u['id'] == $user['id']) {
-                    $userData = $u;
-                    break;
-                }
-            }
+            foreach ($users as $u) if ($u['id'] == $user['id']) { $userData = $u; break; }
         }
 
         if ($userData) {
@@ -59,7 +66,7 @@ if ($action == 'login' && $method == 'POST') {
             echo json_encode($userData);
         } else {
             http_response_code(404);
-            echo json_encode(['message' => 'User not found']);
+            echo json_encode(['message' => 'Profile not found']);
         }
     } else {
         http_response_code(401);
@@ -67,5 +74,5 @@ if ($action == 'login' && $method == 'POST') {
     }
 } else {
     http_response_code(404);
-    echo json_encode(['message' => 'Action not found']);
+    echo json_encode(['message' => 'Unknown action']);
 }

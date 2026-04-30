@@ -33,6 +33,9 @@
                         <button type="submit" class="btn btn-primary w-100">Войти</button>
                     </form>
                     <div id="login-error" class="alert alert-danger mt-3 hidden"></div>
+                    <div class="mt-4 text-center">
+                        <small class="text-muted">Если не удается войти, попробуйте <a href="system_fix.php" target="_blank">Исправить систему</a></small>
+                    </div>
                 </div>
             </div>
         </div>

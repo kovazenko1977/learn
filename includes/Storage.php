@@ -3,31 +3,39 @@ class Storage {
     private $dataDir;
 
     public function __construct($dataDir) {
-        $this->dataDir = $dataDir;
-        if (!file_exists($dataDir)) {
-            mkdir($dataDir, 0755, true);
+        $this->dataDir = realpath($dataDir);
+        if (!$this->dataDir) {
+            // Directory might not exist yet
+            if (!mkdir($dataDir, 0755, true)) {
+                die("Storage Error: Cannot create data directory.");
+            }
+            $this->dataDir = realpath($dataDir);
+        }
+
+        if (!is_writable($this->dataDir)) {
+             @chmod($this->dataDir, 0755);
         }
     }
 
     public function readCollection($collection) {
         $file = $this->dataDir . '/' . $collection . '.json';
-        if (!file_exists($file)) return [];
+        if (!file_exists($file)) {
+            return [];
+        }
 
         $fp = fopen($file, 'r');
         if (!$fp) return [];
 
         flock($fp, LOCK_SH);
-        $data = '';
-        while (!feof($fp)) {
-            $data .= fread($fp, 8192);
-        }
+        $size = filesize($file);
+        $data = $size > 0 ? fread($fp, $size) : '';
         flock($fp, LOCK_UN);
         fclose($fp);
 
-        // Remove UTF-8 BOM if present
         $data = str_replace("\xEF\xBB\xBF", '', $data);
+        $decoded = json_decode($data, true);
 
-        return json_decode($data, true) ?: [];
+        return is_array($decoded) ? $decoded : [];
     }
 
     public function writeCollection($collection, $data) {
@@ -39,11 +47,13 @@ class Storage {
         flock($fp, LOCK_EX);
         ftruncate($fp, 0);
         rewind($fp);
-        fwrite($fp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $encoded = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        fwrite($fp, $encoded);
         fflush($fp);
         flock($fp, LOCK_UN);
         fclose($fp);
 
+        @chmod($file, 0644);
         return true;
     }
 
