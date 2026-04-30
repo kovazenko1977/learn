@@ -15,15 +15,15 @@ function fix_system() {
 
     $usersFile = $dataDir . '/users.json';
 
-    // Explicitly using 'admin' / 'admin'
-    $hashedPassword = password_hash('admin', PASSWORD_DEFAULT);
+    // Explicitly using '1' / '1' as requested
+    $hashedPassword = password_hash('1', PASSWORD_DEFAULT);
 
     $users = [
         [
             'id' => 1,
-            'login' => 'admin',
+            'login' => '1',
             'password_hash' => $hashedPassword,
-            'full_name' => 'Администратор (Системный)',
+            'full_name' => 'Администратор (1)',
             'role' => 'admin',
             'department_id' => null,
             'is_active' => 1,
@@ -33,10 +33,10 @@ function fix_system() {
 
     if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
         chmod($usersFile, 0644);
-        echo "Re-initialized users.json with admin/admin.\n";
-        echo "Login: admin\n";
-        echo "Password: admin\n";
-        echo "Verify hash manually: " . (password_verify('admin', $hashedPassword) ? "YES" : "NO") . "\n";
+        echo "Re-initialized users.json with login '1' and password '1'.\n";
+        echo "Login: 1\n";
+        echo "Password: 1\n";
+        echo "Verify hash manually: " . (password_verify('1', $hashedPassword) ? "YES" : "NO") . "\n";
     } else {
         echo "FAILED to write users.json. Check directory ownership/permissions.\n";
     }
