@@ -14,8 +14,6 @@ function fix_system() {
     echo "Set data directory permissions to 0755.\n";
 
     $usersFile = $dataDir . '/users.json';
-
-    // Explicitly using '1' / '1' as requested
     $hashedPassword = password_hash('1', PASSWORD_DEFAULT);
 
     $users = [
@@ -34,12 +32,14 @@ function fix_system() {
     if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
         chmod($usersFile, 0644);
         echo "Re-initialized users.json with login '1' and password '1'.\n";
-        echo "Login: 1\n";
-        echo "Password: 1\n";
-        echo "Verify hash manually: " . (password_verify('1', $hashedPassword) ? "YES" : "NO") . "\n";
-    } else {
-        echo "FAILED to write users.json. Check directory ownership/permissions.\n";
     }
+
+    // DISABLE AUTH BY DEFAULT
+    $settingsFile = $dataDir . '/settings.json';
+    $settings = [['id' => 'global', 'auth_enabled' => false]];
+    file_put_contents($settingsFile, json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    chmod($settingsFile, 0644);
+    echo "Disabled global authentication. You can now enter without a password.\n";
 
     // Ensure other collections exist
     $files = ['requests.json', 'status_history.json', 'departments.json', 'work_types.json'];
@@ -52,7 +52,7 @@ function fix_system() {
         }
     }
 
-    echo "\nSystem fix complete. Try logging in now at index.php\n";
+    echo "\nSystem fix complete. Try refreshing index.php now.\n";
 }
 
 fix_system();

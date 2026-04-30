@@ -4,15 +4,11 @@ let token = localStorage.getItem('token');
 let workTypes = [];
 let users = [];
 let departments = [];
+let authRequired = true;
 
 function escapeHTML(str) {
     if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 
 const el = {
@@ -26,7 +22,24 @@ const el = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    if (token) {
+    // 1. Check system config
+    try {
+        const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
+        const cfg = await cfgRes.json();
+        authRequired = cfg.auth_required;
+    } catch (e) { console.error('Config fetch failed', e); }
+
+    if (!authRequired) {
+        // Auto-login as guest/admin
+        const res = await fetch(`${API_BASE}/auth.php?action=login`, { method: 'POST' });
+        const data = await res.json();
+        token = data.token;
+        currentUser = data.user;
+        localStorage.setItem('token', token);
+        await loadLookups();
+        showLayout();
+        renderDashboard();
+    } else if (token) {
         const success = await fetchUser();
         if (success) {
             await loadLookups();
@@ -47,30 +60,21 @@ async function loadLookups() {
             apiFetch('/admin.php?action=departments'),
             apiFetch('/admin.php?action=users')
         ]);
-
         if (wtRes.status === 'fulfilled' && wtRes.value.ok) workTypes = await wtRes.value.json();
         if (dRes.status === 'fulfilled' && dRes.value.ok) departments = await dRes.value.json();
         if (uRes.status === 'fulfilled' && uRes.value.ok) users = await uRes.value.json();
-
-    } catch (e) {
-        console.error('Lookup loading failed:', e);
-    }
+    } catch (e) { console.error('Lookup loading failed:', e); }
 }
 
 async function fetchUser() {
     try {
-        const res = await fetch(`${API_BASE}/auth.php?action=me`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res = await fetch(`${API_BASE}/auth.php?action=me`, { headers: { 'Authorization': `Bearer ${token}` } });
         if (res.ok) {
             currentUser = await res.json();
             return true;
         }
         return false;
-    } catch (e) {
-        console.error('fetchUser error:', e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 function showLogin() {
@@ -98,7 +102,6 @@ el.loginForm.addEventListener('submit', async (e) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
         });
-
         if (res.ok) {
             const data = await res.json();
             token = data.token;
@@ -109,12 +112,11 @@ el.loginForm.addEventListener('submit', async (e) => {
             renderDashboard();
         } else {
             const data = await res.json().catch(() => ({}));
-            errorEl.innerText = data.message || `Error ${res.status}: ${res.statusText}`;
+            errorEl.innerText = data.message || 'Login failed';
             errorEl.classList.remove('hidden');
         }
     } catch (err) {
-        console.error('Login request failed:', err);
-        errorEl.innerText = 'Network error or server unavailable';
+        errorEl.innerText = 'Server error';
         errorEl.classList.remove('hidden');
     }
 });
@@ -142,21 +144,15 @@ el.mainNav.addEventListener('click', (e) => {
 });
 
 async function apiFetch(url, options = {}) {
-    options.headers = {
-        ...options.headers,
-        'Authorization': `Bearer ${token}`
-    };
+    options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
     try {
         const res = await fetch(`${API_BASE}${url}`, options);
-        if (res.status === 401) {
+        if (res.status === 401 && authRequired) {
             localStorage.removeItem('token');
             location.reload();
         }
         return res;
-    } catch (e) {
-        console.error('apiFetch error:', e);
-        throw e;
-    }
+    } catch (e) { throw e; }
 }
 
 function getWorkTypeName(id) {
@@ -182,14 +178,9 @@ async function renderDashboard() {
             tbody.appendChild(tr);
         });
         tbody.querySelectorAll('.req-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                showRequestDetails(link.dataset.id);
-            });
+            link.addEventListener('click', (e) => { e.preventDefault(); showRequestDetails(link.dataset.id); });
         });
-    } catch (e) {
-        el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных</div>';
-    }
+    } catch (e) { el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных</div>'; }
 }
 
 async function renderCreate() {
@@ -230,16 +221,9 @@ async function renderCreate() {
         e.preventDefault();
         const formData = new FormData(e.target);
         try {
-            const res = await apiFetch('/requests.php?action=create', {
-                method: 'POST',
-                body: formData
-            });
-            if (res.ok) {
-                renderDashboard();
-            } else {
-                const data = await res.json();
-                alert('Ошибка: ' + (data.message || 'Unknown error'));
-            }
+            const res = await apiFetch('/requests.php?action=create', { method: 'POST', body: formData });
+            if (res.ok) renderDashboard();
+            else { const data = await res.json(); alert('Ошибка: ' + (data.message || 'Unknown error')); }
         } catch (err) { alert('Ошибка сервера'); }
     });
 }
@@ -256,14 +240,9 @@ async function renderDepartment() {
             tbody.appendChild(tr);
         });
         tbody.querySelectorAll('.req-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                showRequestDetails(link.dataset.id);
-            });
+            link.addEventListener('click', (e) => { e.preventDefault(); showRequestDetails(link.dataset.id); });
         });
-    } catch (e) {
-        el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных отдела</div>';
-    }
+    } catch (e) { el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных отдела</div>'; }
 }
 
 async function showRequestDetails(id) {
@@ -272,7 +251,6 @@ async function showRequestDetails(id) {
         const req = await res.json();
         const histRes = await apiFetch(`/requests.php?action=history&id=${id}`);
         const history = await histRes.json();
-
         const modalContent = document.getElementById('modal-content');
         modalContent.innerHTML = `
             <div class="row">
@@ -294,36 +272,20 @@ async function showRequestDetails(id) {
             ${req.file_path ? `<p><strong>Файл:</strong> <a href="${req.file_path}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
             <hr>
             <h6>История</h6>
-            <ul class="list-unstyled">
-                ${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}
-            </ul>
+            <ul class="list-unstyled">${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}</ul>
             <hr>
             <div id="action-buttons"></div>
         `;
-
         const btnsDiv = document.getElementById('action-buttons');
         if (['admin', 'executor'].includes(currentUser.role) && ['assigned', 'new'].includes(req.status)) {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-success btn-sm me-2';
-            btn.innerText = 'В работу';
-            btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу');
-            btnsDiv.appendChild(btn);
+            const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'В работу'; btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу'); btnsDiv.appendChild(btn);
         }
         if (['admin', 'executor', 'manager'].includes(currentUser.role) && req.status === 'in_progress') {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-info btn-sm me-2';
-            btn.innerText = 'Выполнено';
-            btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены');
-            btnsDiv.appendChild(btn);
+            const btn = document.createElement('button'); btn.className = 'btn btn-info btn-sm me-2'; btn.innerText = 'Выполнено'; btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены'); btnsDiv.appendChild(btn);
         }
         if (req.requester_id == currentUser.id && req.status === 'completed') {
-            const btn = document.createElement('button');
-            btn.className = 'btn btn-success btn-sm me-2';
-            btn.innerText = 'Подтвердить';
-            btn.onclick = () => updateStatus(req.id, 'closed', 'Заявка подтверждена');
-            btnsDiv.appendChild(btn);
+            const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'Подтвердить'; btn.onclick = () => updateStatus(req.id, 'closed', 'Заявка подтверждена'); btnsDiv.appendChild(btn);
         }
-
         const modal = new bootstrap.Modal(document.getElementById('requestModal'));
         modal.show();
     } catch (e) { alert('Ошибка загрузки деталей заявки'); }
@@ -331,15 +293,8 @@ async function showRequestDetails(id) {
 
 async function updateStatus(id, status, comment) {
     try {
-        const res = await apiFetch('/requests.php?action=update_status', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, status, comment })
-        });
-        if (res.ok) {
-            bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide();
-            renderDashboard();
-        }
+        const res = await apiFetch('/requests.php?action=update_status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status, comment }) });
+        if (res.ok) { bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide(); renderDashboard(); }
     } catch (e) { alert('Ошибка обновления статуса'); }
 }
 
@@ -351,6 +306,17 @@ async function renderAdmin() {
                 <button class="btn btn-outline-danger btn-sm me-2" onclick="triggerRestore()">Восстановить из файла</button>
                 <button class="btn btn-outline-primary btn-sm me-2" onclick="createBackup()">Создать бекап</button>
                 <button class="btn btn-outline-success btn-sm" onclick="exportCSV()">Экспорт CSV</button>
+            </div>
+        </div>
+        <hr>
+        <div class="card mb-4 border-warning">
+            <div class="card-body">
+                <h5 class="card-title text-warning">Безопасность</h5>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="auth-toggle" ${authRequired ? 'checked' : ''}>
+                    <label class="form-check-label" for="auth-toggle">Включить вход по логину и паролю</label>
+                </div>
+                <small class="text-muted">Если выключено, любой вход будет автоматически под ролью Администратора.</small>
             </div>
         </div>
         <hr>
@@ -378,17 +344,23 @@ async function renderAdmin() {
         <div id="users-list"></div>
     `;
 
-    document.getElementById('create-user-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const data = Object.from_row(new FormData(e.target));
-        const res = await apiFetch('/admin.php?action=create_user', {
+    document.getElementById('auth-toggle').addEventListener('change', async (e) => {
+        const enabled = e.target.checked;
+        const res = await apiFetch('/admin.php?action=update_settings', {
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify({ auth_enabled: enabled })
         });
         if (res.ok) {
-            await loadLookups();
-            renderAdmin();
+            authRequired = enabled;
+            alert('Настройки сохранены. ' + (enabled ? 'Вход защищен.' : 'Вход свободный.'));
         }
+    });
+
+    document.getElementById('create-user-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { await loadLookups(); renderAdmin(); }
     });
 
     const list = document.getElementById('users-list');
@@ -401,92 +373,45 @@ async function renderAdmin() {
     });
 }
 
-Object.from_row = (formData) => {
-    const obj = {};
-    formData.forEach((value, key) => obj[key] = value);
-    return obj;
-};
-
 window.triggerRestore = async () => {
-    const file = prompt('Введите имя файла бекапа из папки data (например, backup_20260429_120000.zip):');
+    const file = prompt('Введите имя файла бекапа из папки data:');
     if (!file) return;
     try {
         const res = await apiFetch(`/admin.php?action=restore&file=${encodeURIComponent(file)}`);
-        const data = await res.json();
-        alert(data.message);
-        location.reload();
+        const data = await res.json(); alert(data.message); location.reload();
     } catch (e) { alert('Ошибка восстановления'); }
 };
 
 window.createBackup = async () => {
     try {
         const res = await apiFetch('/admin.php?action=backup');
-        const data = await res.json();
-        alert(`Бекап создан: ${data.file}`);
+        const data = await res.json(); alert(`Бекап создан: ${data.file}`);
     } catch (e) { alert('Ошибка создания бекапа'); }
 };
 
-window.exportCSV = () => {
-    window.open(`${API_BASE}/requests.php?action=export&token=${token}`, '_blank');
-};
+window.exportCSV = () => { window.open(`${API_BASE}/requests.php?action=export&token=${token}`, '_blank'); };
 
 async function renderReports() {
-    el.appContent.innerHTML = `
-        <h2>Отчеты</h2>
-        <div id="reports-container" class="row">
-            <div class="col-md-12 text-center">Загрузка данных...</div>
-        </div>
-    `;
+    el.appContent.innerHTML = `<h2>Отчеты</h2><div id="reports-container" class="row"><div class="col-md-12 text-center">Загрузка данных...</div></div>`;
     try {
         const res = await apiFetch('/reports.php?action=summary');
         const summary = await res.json();
         el.appContent.innerHTML = `
             <h2>Отчеты</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <div class="card bg-light mb-3">
-                        <div class="card-body text-center">
-                            <h5>Всего заявок</h5>
-                            <p class="display-6">${summary.total || 0}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card bg-success text-white mb-3">
-                        <div class="card-body text-center">
-                            <h5>Выполнено</h5>
-                            <p class="display-6">${summary.completed || 0}</p>
-                        </div>
-                    </div>
-                </div>
-                 <div class="col-md-4">
-                    <div class="card bg-primary text-white mb-3">
-                        <div class="card-body text-center">
-                            <h5>В работе</h5>
-                            <p class="display-6">${summary.in_progress || 0}</p>
-                        </div>
-                    </div>
-                </div>
+                <div class="col-md-4"><div class="card bg-light mb-3"><div class="card-body text-center"><h5>Всего заявок</h5><p class="display-6">${summary.total || 0}</p></div></div></div>
+                <div class="col-md-4"><div class="card bg-success text-white mb-3"><div class="card-body text-center"><h5>Выполнено</h5><p class="display-6">${summary.completed || 0}</p></div></div></div>
+                <div class="col-md-4"><div class="card bg-primary text-white mb-3"><div class="card-body text-center"><h5>В работе</h5><p class="display-6">${summary.in_progress || 0}</p></div></div></div>
             </div>
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <h4>Загрузка исполнителей</h4>
-                    <div id="executor-stats" class="list-group"></div>
-                </div>
-            </div>
+            <div class="row mt-4"><div class="col-md-12"><h4>Загрузка исполнителей</h4><div id="executor-stats" class="list-group"></div></div></div>
         `;
-
         const execRes = await apiFetch('/reports.php?action=executors');
         const executors = await execRes.json();
         const execList = document.getElementById('executor-stats');
         executors.forEach(ex => {
-            const item = document.createElement('div');
-            item.className = 'list-group-item d-flex justify-content-between align-items-center';
+            const item = document.createElement('div'); item.className = 'list-group-item d-flex justify-content-between align-items-center';
             item.innerHTML = `${escapeHTML(ex.full_name)} <span class="badge bg-primary rounded-pill">${ex.active_requests} активных</span>`;
             execList.appendChild(item);
         });
-
-    } catch (e) {
-        el.appContent.innerHTML = '<h2>Отчеты</h2><div class="alert alert-danger">Ошибка загрузки отчетов</div>';
-    }
+    } catch (e) { el.appContent.innerHTML = '<h2>Отчеты</h2><div class="alert alert-danger">Ошибка загрузки отчетов</div>'; }
 }

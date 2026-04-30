@@ -15,64 +15,67 @@ $storage = new Storage(__DIR__ . '/../data');
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-if ($action == 'login' && $method == 'POST') {
-    $rawInput = file_get_contents('php://input');
-    $data = json_decode($rawInput, true);
+// Check global auth requirement
+$settings = $storage->findOne('settings', ['id' => 'global']) ?: ['auth_enabled' => false];
+$authRequired = isset($settings['auth_enabled']) ? (bool)$settings['auth_enabled'] : false;
 
-    if (empty($data) && !empty($_POST)) {
-        $data = $_POST;
+if ($action == 'config') {
+    echo json_encode(['auth_required' => $authRequired]);
+    exit;
+}
+
+if ($action == 'login' && $method == 'POST') {
+    if (!$authRequired) {
+        // Auto-login as admin if auth is disabled
+        $admin = $storage->findOne('users', ['role' => 'admin']);
+        if (!$admin) {
+            // Emergency fallback if admin missing
+            $admin = ['id' => 1, 'login' => 'admin', 'role' => 'admin', 'full_name' => 'System Admin'];
+        }
+        $result = Auth::forceLogin($admin);
+        echo json_encode($result);
+        exit;
     }
 
-    $login = isset($data['login']) ? trim((string)$data['login']) : '';
-    $password = isset($data['password']) ? (string)$data['password'] : '';
+    $rawInput = file_get_contents('php://input');
+    $data = json_decode($rawInput, true);
+    if (empty($data) && !empty($_POST)) $data = $_POST;
+
+    $login = $data['login'] ?? '';
+    $password = $data['password'] ?? '';
 
     if (empty($login) || empty($password)) {
         http_response_code(400);
-        exit(json_encode(['message' => 'Both login and password are required']));
+        exit(json_encode(['message' => 'Credentials required']));
     }
 
-    // Attempt login
     $result = Auth::login($login, $password, $storage);
-
     if ($result) {
         echo json_encode($result);
     } else {
         http_response_code(401);
-
-        // Debugging for 'admin' user specifically to help the user
-        if ($login === 'admin') {
-             $users = $storage->readCollection('users');
-             $found = false;
-             foreach($users as $u) if(isset($u['login']) && $u['login'] === 'admin') $found = true;
-
-             if (!$found) {
-                 exit(json_encode(['message' => 'Admin user missing from database. Run system_fix.php']));
-             }
-        }
-
         echo json_encode(['message' => 'Invalid login or password']);
     }
 } elseif ($action == 'me') {
+    if (!$authRequired) {
+        $admin = $storage->findOne('users', ['role' => 'admin']) ?: ['id' => 1, 'role' => 'admin', 'full_name' => 'System Admin'];
+        unset($admin['password_hash']);
+        echo json_encode($admin);
+        exit;
+    }
+
     $user = Auth::check();
     if ($user) {
         $userData = $storage->findOne('users', ['id' => $user['id']]);
-        if (!$userData) {
-            $users = $storage->readCollection('users');
-            foreach ($users as $u) if ($u['id'] == $user['id']) { $userData = $u; break; }
-        }
-
         if ($userData) {
             unset($userData['password_hash']);
             echo json_encode($userData);
         } else {
             http_response_code(404);
-            echo json_encode(['message' => 'Profile not found']);
+            echo json_encode(['message' => 'User not found']);
         }
     } else {
         http_response_code(401);
         echo json_encode(['message' => 'Unauthorized']);
     }
-} else {
-    http_response_code(404);
-    echo json_encode(['message' => 'Unknown action']);
 }
