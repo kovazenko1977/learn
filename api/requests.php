@@ -101,7 +101,8 @@ if ($method == 'POST' && $action == 'create') {
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;
     $requests = [];
-    if ($user['role'] == 'admin') {
+    $perms = $user['permissions'] ?? [];
+    if ($user['role'] == 'admin' || ($perms['can_edit_all'] ?? false)) {
         $requests = $storage->readCollection('requests');
     } else {
         $userData = $storage->findOne('users', ['id' => $user['id']]);
@@ -125,7 +126,8 @@ if ($method == 'POST' && $action == 'create') {
         http_response_code(404);
         exit(json_encode(['message' => 'Request not found']));
     }
-    if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+    $perms = $user['permissions'] ?? [];
+    if ($user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
     }
@@ -133,7 +135,8 @@ if ($method == 'POST' && $action == 'create') {
 } elseif ($action == 'history') {
     $id = $_GET['id'] ?? 0;
     $request = $storage->findOne('requests', ['id' => $id]);
-    if ($request && $user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+    $perms = $user['permissions'] ?? [];
+    if ($request && $user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
     }
@@ -282,7 +285,12 @@ if ($method == 'POST' && $action == 'create') {
     $storage->update('requests', $data['request_id'], ['updated_at' => date('c')]);
 
     echo json_encode($saved);
-} elseif ($action == 'export' && in_array($user['role'], ['admin', 'manager'])) {
+} elseif ($action == 'export') {
+    $perms = $user['permissions'] ?? [];
+    if (!in_array($user['role'], ['admin', 'manager']) && !($perms['can_export_data'] ?? false)) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;
     $allRequests = $storage->readCollection('requests');

@@ -12,10 +12,16 @@ require_once __DIR__ . '/../includes/Storage.php';
 require_once __DIR__ . '/../includes/Auth.php';
 
 $storage = new Storage(__DIR__ . '/../data');
-$user = Auth::check(['admin', 'manager']);
+$user = Auth::check();
 if (!$user) {
     http_response_code(401);
-    exit(json_encode(['message' => 'Unauthorized or Insufficient permissions']));
+    exit(json_encode(['message' => 'Unauthorized']));
+}
+
+$perms = $user['permissions'] ?? [];
+if ($user['role'] !== 'admin' && $user['role'] !== 'manager' && !($perms['can_view_reports'] ?? false)) {
+    http_response_code(403);
+    exit(json_encode(['message' => 'Forbidden']));
 }
 
 $action = $_GET['action'] ?? '';

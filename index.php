@@ -145,6 +145,53 @@
             #app-content {
                 padding: 1rem;
             }
+
+            /* Mobile Table to Card Transformation */
+            .mobile-card-table thead {
+                display: none;
+            }
+            .mobile-card-table tbody tr {
+                display: block;
+                margin-bottom: 1rem;
+                padding: 1rem;
+                background: #fff;
+                border-radius: 1rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                border: 1px solid #edf2f7;
+            }
+            .mobile-card-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.5rem 0;
+                border: none;
+                text-align: right;
+            }
+            .mobile-card-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: var(--text-muted);
+                text-align: left;
+                margin-right: 1rem;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+            }
+            .mobile-card-table tbody td:last-child {
+                border-bottom: 0;
+            }
+            .mobile-card-table .ps-4, .mobile-card-table .pe-4 {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            /* Form Optimization */
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .input-group > .form-control {
+                width: 100%;
+            }
         }
 
         /* Custom Scrollbar */
@@ -215,9 +262,7 @@
                     </form>
                     <div id="login-error" class="alert alert-danger mb-0 hidden"></div>
                     <div class="mt-4 text-center">
-                        <a href="system_fix.php" target="_blank" class="text-decoration-none small text-primary fw-medium">
-                            <i class="bi bi-patch-exclamation me-1"></i> Проблемы со входом?
-                        </a>
+                            <div class="text-muted small mb-2">Разработчик: Коваженко С.Б. <a href="https://wes.by" target="_blank" class="text-decoration-none">wes.by</a></div>
                     </div>
                 </div>
             </div>
@@ -246,10 +291,14 @@
                             <li class="nav-item" id="nav-create"><a class="nav-link" href="#" data-view="create"><i class="bi bi-plus-circle"></i> Создать заявку</a></li>
                             <li class="nav-item" id="nav-admin"><a class="nav-link" href="#" data-view="admin"><i class="bi bi-shield-lock"></i> Админ</a></li>
                             <li class="nav-item" id="nav-reports"><a class="nav-link" href="#" data-view="reports"><i class="bi bi-bar-chart"></i> Отчеты</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" data-view="help"><i class="bi bi-question-circle"></i> Справка</a></li>
                         </ul>
                         <div class="mt-auto px-3 pb-4">
                             <div id="user-info" class="small mb-3 text-light-50 bg-white bg-opacity-10 p-3 rounded-4"></div>
-                            <button id="logout-btn" class="btn btn-outline-light btn-sm w-100 rounded-pill"><i class="bi bi-box-arrow-right me-1"></i> Выйти</button>
+                            <button id="logout-btn" class="btn btn-outline-light btn-sm w-100 rounded-pill mb-3"><i class="bi bi-box-arrow-right me-1"></i> Выйти</button>
+                            <div class="text-center">
+                                <a href="https://wes.by" target="_blank" class="text-white-50 text-decoration-none" style="font-size: 0.65rem;">&copy; 2026 Коваженко С.Б.</a>
+                            </div>
                         </div>
                     </div>
                 </nav>

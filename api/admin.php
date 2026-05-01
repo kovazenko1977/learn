@@ -36,9 +36,12 @@ $adminOnly = [
     'update_settings', 'backup', 'restore', 'login_logs',
     'update_config', 'init_mysql', 'get_config'
 ];
-if ($authEnabled && in_array($action, $adminOnly) && ($user === null || $user['role'] !== 'admin')) {
-    http_response_code(403);
-    exit(json_encode(['message' => 'Forbidden']));
+if ($authEnabled && in_array($action, $adminOnly)) {
+    $perms = $user['permissions'] ?? [];
+    if ($user['role'] !== 'admin' && !($perms['can_manage_system'] ?? false)) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
 }
 
 // Read actions allow managers/executors for lookups
@@ -69,7 +72,11 @@ if ($action == 'users') {
         'permissions' => [
             'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
             'can_status' => (bool)($data['permissions']['can_status'] ?? true),
-            'can_assign' => (bool)($data['permissions']['can_assign'] ?? false)
+            'can_assign' => (bool)($data['permissions']['can_assign'] ?? false),
+            'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
+            'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
+            'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
+            'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false)
         ]
     ];
     $saved = $storage->insert('users', $newUser);

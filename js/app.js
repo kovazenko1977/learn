@@ -99,9 +99,11 @@ function showLayout() {
     const reportsEl = document.getElementById('nav-reports');
     const deptEl = document.getElementById('nav-department');
 
-    adminEl.classList.toggle('hidden', currentUser.role !== 'admin');
-    reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role));
-    deptEl.classList.toggle('hidden', currentUser.role === 'user');
+    const perms = currentUser.permissions || {};
+
+    adminEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
+    reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
+    deptEl.classList.toggle('hidden', currentUser.role === 'user' && !(perms.can_edit_all));
 
     // Clone nav to mobile
     const mobileNav = document.getElementById('mobile-nav');
@@ -168,6 +170,7 @@ document.addEventListener('click', (e) => {
             case 'create': renderCreate(); break;
             case 'admin': renderAdmin(); break;
             case 'reports': renderReports(); break;
+            case 'help': renderHelp(); break;
         }
     }
 });
@@ -224,21 +227,26 @@ function setToday(fromId, toId, callback) {
 }
 
 async function renderDashboard(from = '', to = '') {
+    const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Мои заявки</h2>
-            <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
-                <i class="bi bi-calendar3 text-muted ms-1"></i>
-                <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
-                <span class="text-muted small">до</span>
-                <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
-                <button class="btn btn-outline-secondary btn-sm rounded-2" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
-                <button class="btn btn-primary btn-sm rounded-2 px-3" onclick="filterDashboard()">Фильтр</button>
+            <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+                    <i class="bi bi-calendar3 text-muted ms-1"></i>
+                    <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
+                    <span class="text-muted small">до</span>
+                    <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
+                </div>
+                <div class="d-flex gap-2 w-100 w-md-auto">
+                    <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
+                    <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterDashboard()">Фильтр</button>
+                </div>
             </div>
         </div>
-        <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="${isMobile ? '' : 'card shadow-sm border-0 overflow-hidden'}">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0 ${isMobile ? 'mobile-card-table' : ''}">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Номер</th>
@@ -268,11 +276,11 @@ async function renderDashboard(from = '', to = '') {
         requests.forEach(r => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="ps-4"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
-                <td><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
                 <td class="d-none d-md-table-cell text-muted small">${escapeHTML(r.description.substring(0, 50))}${r.description.length > 50 ? '...' : ''}</td>
-                <td>${getStatusBadge(r.status)}</td>
-                <td class="pe-4 text-end text-muted small">${new Date(r.created_at).toLocaleDateString()}</td>
+                <td data-label="Статус">${getStatusBadge(r.status)}</td>
+                <td class="pe-4 text-end text-muted small" data-label="Дата">${new Date(r.created_at).toLocaleDateString()}</td>
             `;
             tbody.appendChild(tr);
         });
@@ -332,21 +340,26 @@ async function renderCreate() {
 }
 
 async function renderDepartment(from = '', to = '') {
+    const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Заявки отдела</h2>
-            <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
-                <i class="bi bi-calendar3 text-muted ms-1"></i>
-                <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
-                <span class="text-muted small">до</span>
-                <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
-                <button class="btn btn-outline-secondary btn-sm rounded-2" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
-                <button class="btn btn-primary btn-sm rounded-2 px-3" onclick="filterDept()">Фильтр</button>
+            <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+                    <i class="bi bi-calendar3 text-muted ms-1"></i>
+                    <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
+                    <span class="text-muted small">до</span>
+                    <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
+                </div>
+                <div class="d-flex gap-2 w-100 w-md-auto">
+                    <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
+                    <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterDept()">Фильтр</button>
+                </div>
             </div>
         </div>
-        <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="${isMobile ? '' : 'card shadow-sm border-0 overflow-hidden'}">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0 ${isMobile ? 'mobile-card-table' : ''}">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Номер</th>
@@ -382,10 +395,10 @@ async function renderDepartment(from = '', to = '') {
                 </select>` : escapeHTML(getUserName(r.assigned_to));
 
             tr.innerHTML = `
-                <td class="ps-4"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
-                <td><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
-                <td>${getStatusBadge(r.status)}</td>
-                <td class="pe-4">${assignHtml}</td>
+                <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                <td data-label="Статус">${getStatusBadge(r.status)}</td>
+                <td class="pe-4" data-label="Исполнитель">${assignHtml}</td>
             `;
             tbody.appendChild(tr);
         });
@@ -551,6 +564,7 @@ async function updateStatus(id, status, comment, rating = null) {
 }
 
 async function renderAdmin() {
+    const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Администрирование</h2>
@@ -568,7 +582,7 @@ async function renderAdmin() {
                         <h5 class="card-title fw-bold text-primary mb-4"><i class="bi bi-database"></i> Хранилище данных (JSON / MySQL)</h5>
                         <form id="storage-config-form" class="row g-3">
                             <div class="col-md-3">
-                                <label class="form-label small fw-bold">Режим работы</label>
+                                <label class="form-label small fw-bold">Режим работы <i class="bi bi-info-circle text-muted" title="JSON для простых задач, MySQL для высокой нагрузки"></i></label>
                                 <select id="storage-mode" class="form-select">
                                     <option value="json">JSON Файлы</option>
                                     <option value="mysql">MySQL БД</option>
@@ -596,7 +610,7 @@ async function renderAdmin() {
                         <h5 class="card-title fw-bold text-warning mb-3"><i class="bi bi-shield-check"></i> Безопасность</h5>
                         <div class="form-check form-switch h5">
                             <input class="form-check-input" type="checkbox" id="auth-toggle" ${authRequired ? 'checked' : ''}>
-                            <label class="form-check-label fw-medium" for="auth-toggle">Авторизация по паролю</label>
+                            <label class="form-check-label fw-medium" for="auth-toggle">Авторизация по паролю <i class="bi bi-question-circle text-muted small" title="Отключите для свободного входа при первичной настройке"></i></label>
                         </div>
                         <p class="text-muted small mb-0">Если выключено, вход свободный (Админ).</p>
                     </div>
@@ -632,9 +646,15 @@ async function renderAdmin() {
                         </div>
                         <div class="mb-4">
                             <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
-                            <div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Изменение статусов</label></div>
-                            <div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление заявок</label></div>
-                            <div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение исполнителей</label></div>
+                            <div class="row g-1">
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Статусы</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_edit_all" id="p-edit-all"><label class="form-check-label" for="p-edit-all">Все заявки</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="p-view-reports"><label class="form-check-label" for="p-view-reports">Отчеты</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="p-manage-system"><label class="form-check-label" for="p-manage-system">Система</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_export_data" id="p-export-data"><label class="form-check-label" for="p-export-data">Экспорт</label></div></div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill">Создать пользователя</button>
                     </form>
@@ -748,15 +768,17 @@ async function renderAdmin() {
     users.forEach(u => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="ps-4 text-muted small">${escapeHTML(u.id)}</td>
-            <td>
+            <td class="ps-4 text-muted small" data-label="ID">${escapeHTML(u.id)}</td>
+            <td data-label="ФИО">
                 <div class="fw-bold">${escapeHTML(u.full_name)}</div>
                 <div class="text-muted small">${escapeHTML(u.login)}</div>
             </td>
-            <td><span class="badge bg-light text-dark border small text-uppercase">${escapeHTML(u.role)}</span></td>
-            <td class="pe-4">
-                <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="resetUserPassword('${u.id}')" title="Сброс пароля"><i class="bi bi-key"></i></button>
-                <button class="btn btn-sm btn-outline-danger rounded-pill px-2">Отключить</button>
+            <td data-label="Роль"><span class="badge bg-light text-dark border small text-uppercase">${escapeHTML(u.role)}</span></td>
+            <td class="pe-4" data-label="Действия">
+                <div class="d-flex gap-1 justify-content-end">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="resetUserPassword('${u.id}')" title="Сброс пароля"><i class="bi bi-key"></i></button>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-2">Отключить</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -809,6 +831,12 @@ async function renderAdmin() {
         if (res.ok) alert('Объявление обновлено. Перезагрузите страницу для применения.');
     };
 
+    if (isMobile) {
+        document.querySelectorAll('.card-header .d-flex').forEach(flex => {
+            flex.classList.add('flex-wrap');
+        });
+    }
+
     window.resetUserPassword = async (userId) => {
         const newPass = prompt('Введите новый пароль для пользователя:');
         if (!newPass) return;
@@ -830,7 +858,11 @@ async function renderAdmin() {
             permissions: {
                 can_status: formData.get('perm_status') === 'on',
                 can_delete: formData.get('perm_delete') === 'on',
-                can_assign: formData.get('perm_assign') === 'on'
+                can_assign: formData.get('perm_assign') === 'on',
+                can_edit_all: formData.get('perm_edit_all') === 'on',
+                can_view_reports: formData.get('perm_view_reports') === 'on',
+                can_manage_system: formData.get('perm_manage_system') === 'on',
+                can_export_data: formData.get('perm_export_data') === 'on'
             }
         };
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
@@ -848,12 +880,12 @@ async function renderAdmin() {
             const logs = await res.json();
             tbody.innerHTML = logs.map(l => `
                 <tr>
-                    <td class="ps-4">
+                    <td class="ps-4" data-label="Пользователь">
                         <div class="fw-bold small">${escapeHTML(l.full_name)}</div>
                         <div class="text-muted" style="font-size: 0.7rem;">${escapeHTML(l.login)} (ID: ${l.user_id})</div>
                     </td>
-                    <td class="small text-muted">${escapeHTML(l.ip)}</td>
-                    <td class="pe-4 text-end">
+                    <td class="small text-muted" data-label="IP">${escapeHTML(l.ip)}</td>
+                    <td class="pe-4 text-end" data-label="Дата">
                         <div class="small fw-medium">${new Date(l.timestamp).toLocaleDateString()}</div>
                         <div class="text-muted" style="font-size: 0.7rem;">${new Date(l.timestamp).toLocaleTimeString()}</div>
                     </td>
@@ -954,17 +986,67 @@ window.deleteWT = async (id) => {
     }
 };
 
+async function renderHelp() {
+    el.appContent.innerHTML = `
+        <h2 class="fw-bold mb-4">Справка по системе CRM ХОП</h2>
+        <div class="row g-4 slide-in">
+            <div class="col-md-8">
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold text-primary"><i class="bi bi-info-circle me-2"></i> Общие сведения</h5>
+                    <p>CRM ХОП (Хозяйственно-Оперативная Поддержка) — это система для автоматизации подачи и обработки заявок на обслуживание.</p>
+                    <hr>
+                    <h6 class="fw-bold">Роли и возможности:</h6>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item px-0"><strong>Пользователь:</strong> создание своих заявок, отслеживание статуса, чат с исполнителем, подтверждение выполнения.</li>
+                        <li class="list-group-item px-0"><strong>Исполнитель:</strong> просмотр заявок своего отдела, принятие в работу, отметка о выполнении.</li>
+                        <li class="list-group-item px-0"><strong>Руководитель:</strong> мониторинг всех заявок отдела, назначение исполнителей, просмотр отчетов.</li>
+                        <li class="list-group-item px-0"><strong>Администратор:</strong> управление пользователями, отделами, системными настройками и базами данных.</li>
+                    </ul>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold text-success"><i class="bi bi-play-circle me-2"></i> Как работать с заявкой</h5>
+                    <ol class="mb-0">
+                        <li class="mb-2"><strong>Создание:</strong> Перейдите в "Создать заявку", выберите тип работ, укажите место и опишите проблему. Можно прикрепить фото.</li>
+                        <li class="mb-2"><strong>Назначение:</strong> Руководитель в разделе "Заявки отдела" назначает свободного специалиста.</li>
+                        <li class="mb-2"><strong>Выполнение:</strong> Исполнитель переводит заявку в статус "В работу", а по завершении — в "Выполнена".</li>
+                        <li class="mb-2"><strong>Закрытие:</strong> Заявитель проверяет работу, может написать в чат или нажать "Принять и закрыть". Если работа не устраивает — "На доработку".</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 mb-4 bg-light">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-code-slash me-2"></i> О разработчике</h5>
+                    <p class="mb-1"><strong>Разработчик:</strong> Коваженко С.Б.</p>
+                    <p class="mb-1"><strong>Сайт:</strong> <a href="https://wes.by" target="_blank" class="text-decoration-none">wes.by</a></p>
+                    <p class="text-muted small mt-3">Система построена на современном стеке PHP 8 + Vanilla JS + Bootstrap 5. Поддерживает работу с JSON и MySQL.</p>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i> Безопасность</h5>
+                    <p class="small text-muted mb-0">Все действия логируются. Пароли хранятся в виде защищенных хешей. Доступ к данным ограничен ролевой моделью и настройками разрешений.</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 async function renderReports(from = '', to = '') {
     el.appContent.innerHTML = `
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <h2 class="fw-bold mb-0">Аналитика и отчеты</h2>
-            <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
-                <i class="bi bi-filter-left text-muted ms-1"></i>
-                <input type="date" id="rep-from" class="form-control form-control-sm border-0" value="${from}">
-                <span class="text-muted small">до</span>
-                <input type="date" id="rep-to" class="form-control form-control-sm border-0" value="${to}">
-                <button class="btn btn-outline-secondary btn-sm rounded-2" onclick="setToday('rep-from', 'rep-to', () => document.getElementById('rep-filter').click())">Сегодня</button>
-                <button class="btn btn-primary btn-sm rounded-2 px-3" id="rep-filter">Обновить</button>
+            <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+                    <i class="bi bi-filter-left text-muted ms-1"></i>
+                    <input type="date" id="rep-from" class="form-control form-control-sm border-0" value="${from}">
+                    <span class="text-muted small">до</span>
+                    <input type="date" id="rep-to" class="form-control form-control-sm border-0" value="${to}">
+                </div>
+                <div class="d-flex gap-2 w-100 w-md-auto">
+                    <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('rep-from', 'rep-to', () => document.getElementById('rep-filter').click())">Сегодня</button>
+                    <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" id="rep-filter">Обновить</button>
+                </div>
             </div>
         </div>
         <div id="reports-container" class="row g-3"><div class="col-md-12 text-center py-5"><div class="spinner-border text-primary"></div></div></div>
@@ -1047,10 +1129,10 @@ async function renderReports(from = '', to = '') {
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3 fw-bold">Эффективность отделов</div>
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-hover align-middle mb-0 ${isMobile ? 'mobile-card-table' : ''}">
                             <thead class="table-light"><tr><th class="ps-4">Отдел</th><th>Всего</th><th>Выполнено</th><th class="text-danger">Просрочено</th><th class="pe-4">Рейтинг</th></tr></thead>
                             <tbody>
-                                ${s.dept_stats.map(d => `<tr><td class="ps-4 fw-medium">${escapeHTML(d.name)}</td><td>${d.total}</td><td>${d.completed}</td><td class="text-danger">${d.overdue}</td><td class="pe-4 text-success fw-bold">${d.avg_rating}</td></tr>`).join('')}
+                                ${s.dept_stats.map(d => `<tr><td class="ps-4 fw-medium" data-label="Отдел">${escapeHTML(d.name)}</td><td data-label="Всего">${d.total}</td><td data-label="Выполнено">${d.completed}</td><td class="text-danger" data-label="Просрочено">${d.overdue}</td><td class="pe-4 text-success fw-bold" data-label="Рейтинг">${d.avg_rating}</td></tr>`).join('')}
                             </tbody>
                         </table>
                     </div>
