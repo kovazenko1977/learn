@@ -19,41 +19,93 @@ if (!$user) {
 }
 
 $action = $_GET['action'] ?? '';
+$from = $_GET['from'] ?? null;
+$to = $_GET['to'] ?? null;
+
+function filterByDate($items, $from, $to, $key = 'created_at') {
+    if (!$from && !$to) return $items;
+    return array_filter($items, function($item) use ($from, $to, $key) {
+        $date = strtotime($item[$key]);
+        if ($from && $date < strtotime($from)) return false;
+        if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+        return true;
+    });
+}
 
 if ($action == 'summary') {
-    $requests = $storage->readCollection('requests');
+    $allRequests = $storage->readCollection('requests');
+    $requests = filterByDate($allRequests, $from, $to);
+    $history = $storage->readCollection('status_history');
+    $depts = $storage->readCollection('departments');
+
     $summary = [
         'total' => count($requests),
-        'new' => 0,
-        'assigned' => 0,
-        'in_progress' => 0,
-        'completed' => 0,
-        'closed' => 0,
+        'status_dist' => ['new' => 0, 'assigned' => 0, 'in_progress' => 0, 'completed' => 0, 'closed' => 0],
+        'priority_dist' => ['high' => 0, 'normal' => 0, 'low' => 0],
         'avg_rating' => 0,
-        'overdue' => 0
+        'overdue' => 0,
+        'avg_res_time_hours' => 0,
+        'dept_stats' => []
     ];
+
     $ratings = [];
+    $resTimes = [];
     $now = new DateTime();
+
+    $deptMap = [];
+    foreach($depts as $d) $deptMap[$d['id']] = ['name' => $d['name'], 'total' => 0, 'completed' => 0, 'ratings' => [], 'overdue' => 0];
+
     foreach ($requests as $r) {
-        if (isset($summary[$r['status']])) {
-            $summary[$r['status']]++;
-        }
+        if (isset($summary['status_dist'][$r['status']])) $summary['status_dist'][$r['status']]++;
+        if (isset($summary['priority_dist'][$r['priority']])) $summary['priority_dist'][$r['priority']]++;
+
         if (isset($r['rating'])) {
             $ratings[] = $r['rating'];
+            if (isset($deptMap[$r['department_id']])) $deptMap[$r['department_id']]['ratings'][] = $r['rating'];
         }
+
+        $isOverdue = false;
         if (!in_array($r['status'], ['closed', 'completed']) && isset($r['deadline_at'])) {
             $deadline = new DateTime($r['deadline_at']);
             if ($now > $deadline) {
                 $summary['overdue']++;
+                $isOverdue = true;
             }
         }
+
+        if (isset($deptMap[$r['department_id']])) {
+            $deptMap[$r['department_id']]['total']++;
+            if ($r['status'] == 'closed' || $r['status'] == 'completed') $deptMap[$r['department_id']]['completed']++;
+            if ($isOverdue) $deptMap[$r['department_id']]['overdue']++;
+        }
+
+        // Calc resolution time
+        if ($r['status'] == 'completed' || $r['status'] == 'closed') {
+            $reqHistory = array_filter($history, fn($h) => $h['request_id'] == $r['id']);
+            $start = null; $end = null;
+            foreach($reqHistory as $h) {
+                if ($h['status'] == 'in_progress' && !$start) $start = strtotime($h['changed_at']);
+                if ($h['status'] == 'completed' && !$end) $end = strtotime($h['changed_at']);
+            }
+            if ($start && $end && $end > $start) $resTimes[] = ($end - $start) / 3600;
+        }
     }
-    if (count($ratings)) {
-        $summary['avg_rating'] = round(array_sum($ratings) / count($ratings), 1);
+
+    if (count($ratings)) $summary['avg_rating'] = round(array_sum($ratings) / count($ratings), 1);
+    if (count($resTimes)) $summary['avg_res_time_hours'] = round(array_sum($resTimes) / count($resTimes), 1);
+
+    foreach($deptMap as $id => $stats) {
+        if ($stats['total'] > 0) {
+            $stats['avg_rating'] = count($stats['ratings']) ? round(array_sum($stats['ratings']) / count($stats['ratings']), 1) : 0;
+            unset($stats['ratings']);
+            $summary['dept_stats'][] = array_merge(['id' => $id], $stats);
+        }
     }
+
     echo json_encode($summary);
 } elseif ($action == 'executors') {
-    $requests = $storage->readCollection('requests');
+    $allRequests = $storage->readCollection('requests');
+    $requests = filterByDate($allRequests, $from, $to);
     $users = $storage->readCollection('users');
     $executors = array_filter($users, fn($u) => $u['role'] === 'executor');
 

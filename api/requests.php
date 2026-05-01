@@ -150,7 +150,20 @@ if ($method == 'POST' && $action == 'create') {
     ]);
     echo json_encode(['status' => 'ok']);
 } elseif ($action == 'export' && in_array($user['role'], ['admin', 'manager'])) {
-    $requests = $storage->readCollection('requests');
+    $from = $_GET['from'] ?? null;
+    $to = $_GET['to'] ?? null;
+    $allRequests = $storage->readCollection('requests');
+
+    $requests = $allRequests;
+    if ($from || $to) {
+        $requests = array_filter($allRequests, function($item) use ($from, $to) {
+            $date = strtotime($item['created_at']);
+            if ($from && $date < strtotime($from)) return false;
+            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+            return true;
+        });
+    }
+
     $workTypes = $storage->readCollection('work_types');
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename=requests.csv');

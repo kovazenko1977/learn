@@ -251,3 +251,33 @@
 [Fri May  1 03:21:08 2026] 127.0.0.1:46676 Accepted
 [Fri May  1 03:21:08 2026] 127.0.0.1:46676 [200]: GET /api/reports.php?action=executors
 [Fri May  1 03:21:08 2026] 127.0.0.1:46676 Closing
+[Fri May  1 03:43:40 2026] 127.0.0.1:40392 Accepted
+[Fri May  1 03:43:40 2026] 127.0.0.1:40392 [200]: GET /
+[Fri May  1 03:43:40 2026] 127.0.0.1:40392 Closing
+[Fri May  1 03:43:40 2026] 127.0.0.1:40400 Accepted
+[Fri May  1 03:43:40 2026] 127.0.0.1:40400 [200]: GET /js/app.js?v=1777607020
+[Fri May  1 03:43:40 2026] 127.0.0.1:40400 Closing
+[Fri May  1 03:43:40 2026] 127.0.0.1:40412 Accepted
+[Fri May  1 03:43:40 2026] 127.0.0.1:40412 [200]: GET /api/auth.php?action=config
+[Fri May  1 03:43:40 2026] 127.0.0.1:40412 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40426 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40426 [200]: POST /api/auth.php?action=login
+[Fri May  1 03:43:41 2026] 127.0.0.1:40426 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40438 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40448 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40464 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40438 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:43:41 2026] 127.0.0.1:40438 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40448 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:43:41 2026] 127.0.0.1:40448 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40464 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:43:41 2026] 127.0.0.1:40464 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40476 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40476 [200]: GET /api/requests.php?action=my
+[Fri May  1 03:43:41 2026] 127.0.0.1:40476 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40490 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40490 [200]: GET /api/reports.php?action=summary
+[Fri May  1 03:43:41 2026] 127.0.0.1:40490 Closing
+[Fri May  1 03:43:41 2026] 127.0.0.1:40498 Accepted
+[Fri May  1 03:43:41 2026] 127.0.0.1:40498 [200]: GET /api/reports.php?action=executors
+[Fri May  1 03:43:41 2026] 127.0.0.1:40498 Closing

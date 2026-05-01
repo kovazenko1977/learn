@@ -491,22 +491,70 @@ window.deleteWT = async (id) => {
     }
 };
 
-async function renderReports() {
-    el.appContent.innerHTML = `<h2>Отчеты</h2><div id="reports-container" class="row"><div class="col-md-12 text-center">Загрузка данных...</div></div>`;
-    try {
-        const res = await apiFetch('/reports.php?action=summary');
-        const summary = await res.json();
-        el.appContent.innerHTML = `
+async function renderReports(from = '', to = '') {
+    el.appContent.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Отчеты</h2>
-            <div class="row">
-                <div class="col-md-3"><div class="card bg-light mb-3"><div class="card-body text-center"><h5>Всего</h5><p class="display-6">${summary.total || 0}</p></div></div></div>
-                <div class="col-md-3"><div class="card bg-success text-white mb-3"><div class="card-body text-center"><h5>Рейтинг</h5><p class="display-6">${summary.avg_rating || 0}</p></div></div></div>
-                <div class="col-md-3"><div class="card bg-danger text-white mb-3"><div class="card-body text-center"><h5>Просрочено</h5><p class="display-6">${summary.overdue || 0}</p></div></div></div>
-                <div class="col-md-3"><div class="card bg-primary text-white mb-3"><div class="card-body text-center"><h5>В работе</h5><p class="display-6">${summary.in_progress || 0}</p></div></div></div>
+            <div class="d-flex gap-2">
+                <input type="date" id="rep-from" class="form-control form-control-sm" value="${from}">
+                <input type="date" id="rep-to" class="form-control form-control-sm" value="${to}">
+                <button class="btn btn-primary btn-sm" id="rep-filter">Ок</button>
             </div>
-            <div class="row mt-4"><div class="col-md-12"><h4>Загрузка исполнителей</h4><div id="executor-stats" class="list-group"></div></div></div>
+        </div>
+        <div id="reports-container" class="row"><div class="col-md-12 text-center">Загрузка данных...</div></div>
+    `;
+
+    document.getElementById('rep-filter').onclick = () => {
+        const f = document.getElementById('rep-from').value;
+        const t = document.getElementById('rep-to').value;
+        renderReports(f, t);
+    };
+
+    try {
+        const query = (from || to) ? `&from=${from}&to=${to}` : '';
+        const res = await apiFetch(`/reports.php?action=summary${query}`);
+        const s = await res.json();
+
+        el.appContent.querySelector('#reports-container').innerHTML = `
+            <div class="col-md-3"><div class="card bg-light mb-3"><div class="card-body text-center"><h5>Всего</h5><p class="display-6">${s.total}</p></div></div></div>
+            <div class="col-md-3"><div class="card bg-success text-white mb-3"><div class="card-body text-center"><h5>Рейтинг</h5><p class="display-6">${s.avg_rating}</p></div></div></div>
+            <div class="col-md-3"><div class="card bg-danger text-white mb-3"><div class="card-body text-center"><h5>Просрочено</h5><p class="display-6">${s.overdue}</p></div></div></div>
+            <div class="col-md-3"><div class="card bg-info text-white mb-3"><div class="card-body text-center"><h5>Время (ч)</h5><p class="display-6">${s.avg_res_time_hours}</p></div></div></div>
+
+            <div class="col-md-6 mt-4">
+                <h4>Статусы</h4>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between">Новые <span>${s.status_dist.new}</span></li>
+                    <li class="list-group-item d-flex justify-content-between">В работе <span>${s.status_dist.in_progress}</span></li>
+                    <li class="list-group-item d-flex justify-content-between">Выполнены <span>${s.status_dist.completed}</span></li>
+                    <li class="list-group-item d-flex justify-content-between">Закрыты <span>${s.status_dist.closed}</span></li>
+                </ul>
+            </div>
+            <div class="col-md-6 mt-4">
+                <h4>Приоритеты</h4>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between">Высокий <span class="badge bg-danger">${s.priority_dist.high}</span></li>
+                    <li class="list-group-item d-flex justify-content-between">Обычный <span class="badge bg-primary">${s.priority_dist.normal}</span></li>
+                    <li class="list-group-item d-flex justify-content-between">Низкий <span class="badge bg-secondary">${s.priority_dist.low}</span></li>
+                </ul>
+            </div>
+
+            <div class="col-md-12 mt-4">
+                <h4>Эффективность отделов</h4>
+                <table class="table table-sm mt-2">
+                    <thead><tr><th>Отдел</th><th>Всего</th><th>Выполнено</th><th>Просрочено</th><th>Рейтинг</th></tr></thead>
+                    <tbody>
+                        ${s.dept_stats.map(d => `<tr><td>${escapeHTML(d.name)}</td><td>${d.total}</td><td>${d.completed}</td><td class="text-danger">${d.overdue}</td><td>${d.avg_rating}</td></tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-12 mt-4">
+                <h4>Загрузка исполнителей</h4>
+                <div id="executor-stats" class="list-group"></div>
+            </div>
         `;
-        const execRes = await apiFetch('/reports.php?action=executors');
+        const execRes = await apiFetch(`/reports.php?action=executors${query}`);
         const executors = await execRes.json();
         const execList = document.getElementById('executor-stats');
         executors.forEach(ex => {
