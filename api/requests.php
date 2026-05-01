@@ -55,6 +55,9 @@ if ($method == 'POST' && $action == 'create') {
         }
     }
 
+    $slaHours = $workType['sla_hours'] ?? 24;
+    $deadline = date('c', time() + ($slaHours * 3600));
+
     $request = [
         'number' => 'ХОП-' . date('Ymd') . '-' . rand(1000, 9999),
         'requester_id' => $user['id'],
@@ -68,7 +71,8 @@ if ($method == 'POST' && $action == 'create') {
         'file_path' => $file_path,
         'file_original_name' => $file_name,
         'created_at' => date('c'),
-        'updated_at' => date('c')
+        'updated_at' => date('c'),
+        'deadline_at' => $deadline
     ];
 
     $saved = $storage->insert('requests', $request);
@@ -87,7 +91,11 @@ if ($method == 'POST' && $action == 'create') {
         echo json_encode($storage->readCollection('requests'));
     } else {
         $userData = $storage->findOne('users', ['id' => $user['id']]);
-        echo json_encode($storage->find('requests', ['department_id' => $userData['department_id']]));
+        if (!$userData['department_id']) {
+            echo json_encode([]);
+        } else {
+            echo json_encode($storage->find('requests', ['department_id' => $userData['department_id']]));
+        }
     }
 } elseif ($action == 'details') {
     $id = $_GET['id'] ?? 0;
@@ -125,10 +133,14 @@ if ($method == 'POST' && $action == 'create') {
          http_response_code(403);
          exit(json_encode(['message' => 'Forbidden']));
     }
-    $storage->update('requests', $id, [
+    $updateData = [
         'status' => $data['status'],
         'updated_at' => date('c')
-    ]);
+    ];
+    if ($data['status'] == 'closed' && isset($data['rating'])) {
+        $updateData['rating'] = (int)$data['rating'];
+    }
+    $storage->update('requests', $id, $updateData);
     $storage->insert('status_history', [
         'request_id' => $id,
         'status' => $data['status'],

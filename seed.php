@@ -22,7 +22,7 @@ $depts = [
 $storage->writeCollection('departments', $depts);
 
 $wt = [
-    ['id' => 1, 'name' => 'Мебель', 'department_id' => 1]
+    ['id' => 1, 'name' => 'Мебель', 'department_id' => 1, 'sla_hours' => 24]
 ];
 $storage->writeCollection('work_types', $wt);
 

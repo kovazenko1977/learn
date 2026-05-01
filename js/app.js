@@ -284,16 +284,31 @@ async function showRequestDetails(id) {
             const btn = document.createElement('button'); btn.className = 'btn btn-info btn-sm me-2'; btn.innerText = 'Выполнено'; btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены'); btnsDiv.appendChild(btn);
         }
         if (req.requester_id == currentUser.id && req.status === 'completed') {
-            const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'Подтвердить'; btn.onclick = () => updateStatus(req.id, 'closed', 'Заявка подтверждена'); btnsDiv.appendChild(btn);
+            const div = document.createElement('div');
+            div.className = 'mt-3 p-3 bg-light border rounded';
+            div.innerHTML = `
+                <label class="form-label">Оцените работу (1-5):</label>
+                <div class="d-flex mb-3">
+                    ${[1,2,3,4,5].map(i => `<div class="form-check me-3"><input class="form-check-input" type="radio" name="req-rating" value="${i}" id="r${i}" ${i==5?'checked':''}> <label class="form-check-label" for="r${i}">${i}</label></div>`).join('')}
+                </div>
+                <button class="btn btn-success btn-sm w-100" id="confirm-btn">Подтвердить и закрыть</button>
+            `;
+            div.querySelector('#confirm-btn').onclick = () => {
+                const rating = div.querySelector('input[name="req-rating"]:checked').value;
+                updateStatus(req.id, 'closed', 'Заявка подтверждена', rating);
+            };
+            btnsDiv.appendChild(div);
         }
         const modal = new bootstrap.Modal(document.getElementById('requestModal'));
         modal.show();
     } catch (e) { alert('Ошибка загрузки деталей заявки'); }
 }
 
-async function updateStatus(id, status, comment) {
+async function updateStatus(id, status, comment, rating = null) {
     try {
-        const res = await apiFetch('/requests.php?action=update_status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status, comment }) });
+        const body = { id, status, comment };
+        if (rating) body.rating = rating;
+        const res = await apiFetch('/requests.php?action=update_status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (res.ok) { bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide(); renderDashboard(); }
     } catch (e) { alert('Ошибка обновления статуса'); }
 }
@@ -342,7 +357,78 @@ async function renderAdmin() {
         <hr>
         <h4>Пользователи</h4>
         <div id="users-list"></div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Создать отдел</h4>
+                <form id="create-dept-form" class="row g-3 mb-4">
+                    <div class="col-md-5"><input type="text" name="name" class="form-control" placeholder="Название отдела" required></div>
+                    <div class="col-md-5">
+                        <select name="manager_id" class="form-select">
+                            <option value="">Без руководителя</option>
+                            ${users.filter(u => u.role === 'manager' || u.role === 'admin').map(u => `<option value="${u.id}">${escapeHTML(u.full_name)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-md-2"><button type="submit" class="btn btn-success w-100">+</button></div>
+                </form>
+            </div>
+        </div>
+        <h4>Отделы</h4>
+        <div id="depts-list"></div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Создать вид работ</h4>
+                <form id="create-wt-form" class="row g-3 mb-4">
+                    <div class="col-md-3"><input type="text" name="name" class="form-control" placeholder="Вид работ" required></div>
+                    <div class="col-md-3">
+                        <select name="department_id" class="form-select" required>
+                            <option value="">Выберите отдел</option>
+                            ${departments.map(d => `<option value="${d.id}">${escapeHTML(d.name)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-md-2"><input type="number" name="sla_hours" class="form-control" placeholder="SLA (часы)" value="24" required></div>
+                    <div class="col-md-3"><input type="text" name="description" class="form-control" placeholder="Описание"></div>
+                    <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+</button></div>
+                </form>
+            </div>
+        </div>
+        <h4>Справочник видов работ</h4>
+        <div id="wt-list"></div>
     `;
+
+    document.getElementById('create-dept-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        const res = await apiFetch('/admin.php?action=create_department', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { await loadLookups(); renderAdmin(); }
+    });
+
+    document.getElementById('create-wt-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        const res = await apiFetch('/admin.php?action=create_worktype', { method: 'POST', body: JSON.stringify(data) });
+        if (res.ok) { await loadLookups(); renderAdmin(); }
+    });
+
+    const dList = document.getElementById('depts-list');
+    dList.innerHTML = `<table class="table"><thead><tr><th>ID</th><th>Название</th><th>Руководитель</th><th>Действия</th></tr></thead><tbody id="admin-depts-table"></tbody></table>`;
+    const dtbody = document.getElementById('admin-depts-table');
+    departments.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${d.id}</td><td>${escapeHTML(d.name)}</td><td>${escapeHTML(getUserName(d.manager_id))}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteDept('${d.id}')">Удалить</button></td>`;
+        dtbody.appendChild(tr);
+    });
+
+    const wList = document.getElementById('wt-list');
+    wList.innerHTML = `<table class="table"><thead><tr><th>Название</th><th>Отдел</th><th>SLA</th><th>Действия</th></tr></thead><tbody id="admin-wt-table"></tbody></table>`;
+    const wtbody = document.getElementById('admin-wt-table');
+    workTypes.forEach(w => {
+        const tr = document.createElement('tr');
+        const dept = departments.find(d => d.id == w.department_id);
+        tr.innerHTML = `<td>${escapeHTML(w.name)}</td><td>${escapeHTML(dept ? dept.name : w.department_id)}</td><td>${w.sla_hours} ч.</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteWT('${w.id}')">Удалить</button></td>`;
+        wtbody.appendChild(tr);
+    });
 
     document.getElementById('auth-toggle').addEventListener('change', async (e) => {
         const enabled = e.target.checked;
@@ -391,6 +477,20 @@ window.createBackup = async () => {
 
 window.exportCSV = () => { window.open(`${API_BASE}/requests.php?action=export&token=${token}`, '_blank'); };
 
+window.deleteDept = async (id) => {
+    if (confirm('Удалить отдел?')) {
+        await apiFetch(`/admin.php?action=delete_department&id=${id}`, { method: 'POST' });
+        await loadLookups(); renderAdmin();
+    }
+};
+
+window.deleteWT = async (id) => {
+    if (confirm('Удалить вид работ?')) {
+        await apiFetch(`/admin.php?action=delete_worktype&id=${id}`, { method: 'POST' });
+        await loadLookups(); renderAdmin();
+    }
+};
+
 async function renderReports() {
     el.appContent.innerHTML = `<h2>Отчеты</h2><div id="reports-container" class="row"><div class="col-md-12 text-center">Загрузка данных...</div></div>`;
     try {
@@ -399,9 +499,10 @@ async function renderReports() {
         el.appContent.innerHTML = `
             <h2>Отчеты</h2>
             <div class="row">
-                <div class="col-md-4"><div class="card bg-light mb-3"><div class="card-body text-center"><h5>Всего заявок</h5><p class="display-6">${summary.total || 0}</p></div></div></div>
-                <div class="col-md-4"><div class="card bg-success text-white mb-3"><div class="card-body text-center"><h5>Выполнено</h5><p class="display-6">${summary.completed || 0}</p></div></div></div>
-                <div class="col-md-4"><div class="card bg-primary text-white mb-3"><div class="card-body text-center"><h5>В работе</h5><p class="display-6">${summary.in_progress || 0}</p></div></div></div>
+                <div class="col-md-3"><div class="card bg-light mb-3"><div class="card-body text-center"><h5>Всего</h5><p class="display-6">${summary.total || 0}</p></div></div></div>
+                <div class="col-md-3"><div class="card bg-success text-white mb-3"><div class="card-body text-center"><h5>Рейтинг</h5><p class="display-6">${summary.avg_rating || 0}</p></div></div></div>
+                <div class="col-md-3"><div class="card bg-danger text-white mb-3"><div class="card-body text-center"><h5>Просрочено</h5><p class="display-6">${summary.overdue || 0}</p></div></div></div>
+                <div class="col-md-3"><div class="card bg-primary text-white mb-3"><div class="card-body text-center"><h5>В работе</h5><p class="display-6">${summary.in_progress || 0}</p></div></div></div>
             </div>
             <div class="row mt-4"><div class="col-md-12"><h4>Загрузка исполнителей</h4><div id="executor-stats" class="list-group"></div></div></div>
         `;

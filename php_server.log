@@ -131,3 +131,123 @@
 [Thu Apr 30 17:11:39 2026] 127.0.0.1:40078 Accepted
 [Thu Apr 30 17:11:39 2026] 127.0.0.1:40078 [200]: GET /api/requests.php?action=my
 [Thu Apr 30 17:11:39 2026] 127.0.0.1:40078 Closing
+[Fri May  1 03:17:04 2026] 127.0.0.1:60222 Accepted
+[Fri May  1 03:17:04 2026] 127.0.0.1:60222 [200]: GET /
+[Fri May  1 03:17:04 2026] 127.0.0.1:60222 Closing
+[Fri May  1 03:17:04 2026] 127.0.0.1:60232 Accepted
+[Fri May  1 03:17:04 2026] 127.0.0.1:60232 [200]: GET /js/app.js?v=1777605424
+[Fri May  1 03:17:04 2026] 127.0.0.1:60232 Closing
+[Fri May  1 03:17:04 2026] 127.0.0.1:60234 Accepted
+[Fri May  1 03:17:04 2026] 127.0.0.1:60234 [200]: GET /api/auth.php?action=config
+[Fri May  1 03:17:04 2026] 127.0.0.1:60234 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60236 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60236 [200]: POST /api/auth.php?action=login
+[Fri May  1 03:17:05 2026] 127.0.0.1:60236 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60248 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60264 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60266 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60248 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:17:05 2026] 127.0.0.1:60248 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60264 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:17:05 2026] 127.0.0.1:60264 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60266 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:17:05 2026] 127.0.0.1:60266 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60278 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60278 [200]: GET /api/requests.php?action=my
+[Fri May  1 03:17:05 2026] 127.0.0.1:60278 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60294 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60294 [200]: POST /api/admin.php?action=create_department
+[Fri May  1 03:17:05 2026] 127.0.0.1:60294 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60296 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60302 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60308 Accepted
+[Fri May  1 03:17:05 2026] 127.0.0.1:60296 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:17:05 2026] 127.0.0.1:60296 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60302 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:17:05 2026] 127.0.0.1:60302 Closing
+[Fri May  1 03:17:05 2026] 127.0.0.1:60308 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:17:05 2026] 127.0.0.1:60308 Closing
+[Fri May  1 03:17:06 2026] 127.0.0.1:60320 Accepted
+[Fri May  1 03:17:06 2026] 127.0.0.1:60320 [200]: POST /api/admin.php?action=create_worktype
+[Fri May  1 03:17:06 2026] 127.0.0.1:60320 Closing
+[Fri May  1 03:17:06 2026] 127.0.0.1:60336 Accepted
+[Fri May  1 03:17:06 2026] 127.0.0.1:60348 Accepted
+[Fri May  1 03:17:06 2026] 127.0.0.1:60354 Accepted
+[Fri May  1 03:17:06 2026] 127.0.0.1:60336 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:17:06 2026] 127.0.0.1:60336 Closing
+[Fri May  1 03:17:06 2026] 127.0.0.1:60348 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:17:06 2026] 127.0.0.1:60348 Closing
+[Fri May  1 03:17:06 2026] 127.0.0.1:60354 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:17:06 2026] 127.0.0.1:60354 Closing
+[Fri May  1 03:17:06 2026] 127.0.0.1:60356 Accepted
+[Fri May  1 03:17:06 2026] 127.0.0.1:60356 [200]: GET /api/reports.php?action=summary
+[Fri May  1 03:17:06 2026] 127.0.0.1:60356 Closing
+[Fri May  1 03:17:06 2026] 127.0.0.1:60358 Accepted
+[Fri May  1 03:17:06 2026] 127.0.0.1:60358 [200]: GET /api/reports.php?action=executors
+[Fri May  1 03:17:06 2026] 127.0.0.1:60358 Closing
+[Fri May  1 03:18:59 2026] 127.0.0.1:58586 Accepted
+[Fri May  1 03:18:59 2026] 127.0.0.1:58586 [200]: GET /
+[Fri May  1 03:18:59 2026] 127.0.0.1:58586 Closing
+[Fri May  1 03:18:59 2026] 127.0.0.1:58592 Accepted
+[Fri May  1 03:18:59 2026] 127.0.0.1:58592 [200]: GET /js/app.js?v=1777605539
+[Fri May  1 03:18:59 2026] 127.0.0.1:58592 Closing
+[Fri May  1 03:18:59 2026] 127.0.0.1:58596 Accepted
+[Fri May  1 03:18:59 2026] 127.0.0.1:58596 [200]: GET /api/auth.php?action=config
+[Fri May  1 03:18:59 2026] 127.0.0.1:58596 Closing
+[Fri May  1 03:18:59 2026] 127.0.0.1:58602 Accepted
+[Fri May  1 03:18:59 2026] 127.0.0.1:58602 [401]: POST /api/auth.php?action=login
+[Fri May  1 03:18:59 2026] 127.0.0.1:58602 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46548 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46548 [200]: GET /
+[Fri May  1 03:21:06 2026] 127.0.0.1:46548 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46558 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46558 [200]: GET /js/app.js?v=1777605666
+[Fri May  1 03:21:06 2026] 127.0.0.1:46558 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46564 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46564 [200]: GET /api/auth.php?action=config
+[Fri May  1 03:21:06 2026] 127.0.0.1:46564 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46566 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46566 [200]: POST /api/auth.php?action=login
+[Fri May  1 03:21:06 2026] 127.0.0.1:46566 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46570 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46580 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46596 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46570 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:21:06 2026] 127.0.0.1:46570 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46580 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:21:06 2026] 127.0.0.1:46580 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46596 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:21:06 2026] 127.0.0.1:46596 Closing
+[Fri May  1 03:21:06 2026] 127.0.0.1:46608 Accepted
+[Fri May  1 03:21:06 2026] 127.0.0.1:46608 [200]: GET /api/requests.php?action=my
+[Fri May  1 03:21:06 2026] 127.0.0.1:46608 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46616 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46616 [200]: POST /api/admin.php?action=create_department
+[Fri May  1 03:21:07 2026] 127.0.0.1:46616 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46628 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46630 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46634 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46628 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:21:07 2026] 127.0.0.1:46628 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46630 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:21:07 2026] 127.0.0.1:46630 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46634 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:21:07 2026] 127.0.0.1:46634 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46646 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46646 [200]: POST /api/admin.php?action=create_worktype
+[Fri May  1 03:21:07 2026] 127.0.0.1:46646 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46654 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46660 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46664 Accepted
+[Fri May  1 03:21:07 2026] 127.0.0.1:46654 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 03:21:07 2026] 127.0.0.1:46654 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46660 [200]: GET /api/admin.php?action=departments
+[Fri May  1 03:21:07 2026] 127.0.0.1:46660 Closing
+[Fri May  1 03:21:07 2026] 127.0.0.1:46664 [200]: GET /api/admin.php?action=users
+[Fri May  1 03:21:07 2026] 127.0.0.1:46664 Closing
+[Fri May  1 03:21:08 2026] 127.0.0.1:46672 Accepted
+[Fri May  1 03:21:08 2026] 127.0.0.1:46672 [200]: GET /api/reports.php?action=summary
+[Fri May  1 03:21:08 2026] 127.0.0.1:46672 Closing
+[Fri May  1 03:21:08 2026] 127.0.0.1:46676 Accepted
+[Fri May  1 03:21:08 2026] 127.0.0.1:46676 [200]: GET /api/reports.php?action=executors
+[Fri May  1 03:21:08 2026] 127.0.0.1:46676 Closing

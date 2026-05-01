@@ -52,8 +52,74 @@ if ($action == 'users') {
     echo json_encode($saved);
 } elseif ($action == 'worktypes') {
     echo json_encode($storage->readCollection('work_types'));
+} elseif ($action == 'create_worktype' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['name']) || empty($data['department_id'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Name and Department ID required']));
+    }
+    $newWT = [
+        'name' => $data['name'],
+        'department_id' => $data['department_id'],
+        'sla_hours' => (int)($data['sla_hours'] ?? 24),
+        'description' => $data['description'] ?? ''
+    ];
+    echo json_encode($storage->insert('work_types', $newWT));
+} elseif ($action == 'update_worktype' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!$id || empty($data['name']) || empty($data['department_id'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID, Name, and Department ID required']));
+    }
+    $update = [
+        'name' => $data['name'],
+        'department_id' => $data['department_id'],
+        'sla_hours' => (int)($data['sla_hours'] ?? 24),
+        'description' => $data['description'] ?? ''
+    ];
+    echo json_encode($storage->update('work_types', $id, $update));
+} elseif ($action == 'delete_worktype' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    if (!$id) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID required']));
+    }
+    echo json_encode(['success' => $storage->delete('work_types', $id)]);
 } elseif ($action == 'departments') {
     echo json_encode($storage->readCollection('departments'));
+} elseif ($action == 'create_department' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['name'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Name is required']));
+    }
+    $newDept = [
+        'name' => $data['name'],
+        'manager_id' => $data['manager_id'] ?? null,
+        'description' => $data['description'] ?? ''
+    ];
+    echo json_encode($storage->insert('departments', $newDept));
+} elseif ($action == 'update_department' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!$id || empty($data['name'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID and Name required']));
+    }
+    $update = [
+        'name' => $data['name'],
+        'manager_id' => $data['manager_id'] ?? null,
+        'description' => $data['description'] ?? ''
+    ];
+    echo json_encode($storage->update('departments', $id, $update));
+} elseif ($action == 'delete_department' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    if (!$id) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID required']));
+    }
+    echo json_encode(['success' => $storage->delete('departments', $id)]);
 } elseif ($action == 'update_settings' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $newSettings = [
