@@ -30,14 +30,22 @@ $action = $_GET['action'] ?? '';
 
 // Role-based access for administrative actions
 $adminOnly = [
-    'users', 'create_user', 'reset_password',
+    'create_user', 'reset_password',
     'create_worktype', 'update_worktype', 'delete_worktype',
     'create_department', 'update_department', 'delete_department',
-    'update_settings', 'backup', 'restore', 'login_logs'
+    'update_settings', 'backup', 'restore', 'login_logs',
+    'update_config', 'init_mysql', 'get_config'
 ];
 if ($authEnabled && in_array($action, $adminOnly) && ($user === null || $user['role'] !== 'admin')) {
     http_response_code(403);
     exit(json_encode(['message' => 'Forbidden']));
+}
+
+// Read actions allow managers/executors for lookups
+$authenticatedOnly = ['users', 'worktypes', 'departments'];
+if ($authEnabled && in_array($action, $authenticatedOnly) && $user === null) {
+    http_response_code(401);
+    exit(json_encode(['message' => 'Unauthorized']));
 }
 
 if ($action == 'users') {
@@ -207,6 +215,30 @@ if ($action == 'users') {
     });
 
     echo json_encode(array_values($filtered));
+} elseif ($action == 'update_config' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!isset($data['mode'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Mode required']));
+    }
+    $storage->setConfig($data);
+    echo json_encode(['message' => 'Configuration updated']);
+} elseif ($action == 'init_mysql') {
+    if ($storage->getMode() !== 'mysql') {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Switch to MySQL mode first']));
+    }
+    $success = $storage->initMySQL();
+    echo json_encode(['success' => $success]);
+} elseif ($action == 'get_config') {
+    $configFile = __DIR__ . '/../data/config.json';
+    if (file_exists($configFile)) {
+        $config = json_decode(file_get_contents($configFile), true);
+        if (isset($config['mysql']['password'])) $config['mysql']['password'] = '********';
+        echo json_encode($config);
+    } else {
+        echo json_encode(['mode' => 'json']);
+    }
 } else {
     http_response_code(403);
     echo json_encode(['message' => 'Forbidden']);

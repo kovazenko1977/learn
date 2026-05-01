@@ -553,6 +553,34 @@ async function renderAdmin() {
         </div>
 
         <div class="row g-4 mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="card-body p-4 border-start border-primary border-5">
+                        <h5 class="card-title fw-bold text-primary mb-4"><i class="bi bi-database"></i> Хранилище данных (JSON / MySQL)</h5>
+                        <form id="storage-config-form" class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Режим работы</label>
+                                <select id="storage-mode" class="form-select">
+                                    <option value="json">JSON Файлы</option>
+                                    <option value="mysql">MySQL БД</option>
+                                </select>
+                            </div>
+                            <div class="col-md-9" id="mysql-settings-fields">
+                                <div class="row g-2">
+                                    <div class="col-md-3"><label class="form-label small fw-bold">Host</label><input type="text" id="db-host" class="form-control" placeholder="localhost"></div>
+                                    <div class="col-md-3"><label class="form-label small fw-bold">DB Name</label><input type="text" id="db-name" class="form-control" placeholder="crm_hop"></div>
+                                    <div class="col-md-3"><label class="form-label small fw-bold">User</label><input type="text" id="db-user" class="form-control" placeholder="root"></div>
+                                    <div class="col-md-3"><label class="form-label small fw-bold">Password</label><input type="password" id="db-pass" class="form-control" placeholder="********"></div>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary rounded-pill px-4">Сохранить конфигурацию</button>
+                                <button type="button" id="init-db-btn" class="btn btn-outline-success rounded-pill px-4 hidden">Инициализировать таблицы MySQL</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
                     <div class="card-body p-4 border-start border-warning border-5">
@@ -829,6 +857,59 @@ async function renderAdmin() {
         }
     };
     refreshLoginLogs();
+
+    // Storage Config Logic
+    const storageModeSelect = document.getElementById('storage-mode');
+    const initDbBtn = document.getElementById('init-db-btn');
+    const mysqlFields = document.getElementById('mysql-settings-fields');
+    const configForm = document.getElementById('storage-config-form');
+
+    storageModeSelect.onchange = () => {
+        const isMysql = storageModeSelect.value === 'mysql';
+        mysqlFields.classList.toggle('hidden', !isMysql);
+        initDbBtn.classList.toggle('hidden', !isMysql);
+    };
+
+    // Load current config
+    try {
+        const cRes = await apiFetch('/admin.php?action=get_config');
+        const config = await cRes.json();
+        storageModeSelect.value = config.mode || 'json';
+        if (config.mysql) {
+            document.getElementById('db-host').value = config.mysql.host || '';
+            document.getElementById('db-name').value = config.mysql.dbname || '';
+            document.getElementById('db-user').value = config.mysql.user || '';
+        }
+        storageModeSelect.onchange();
+    } catch (e) {}
+
+    configForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const mode = storageModeSelect.value;
+        const config = { mode };
+        if (mode === 'mysql') {
+            config.mysql = {
+                host: document.getElementById('db-host').value,
+                dbname: document.getElementById('db-name').value,
+                user: document.getElementById('db-user').value,
+                password: document.getElementById('db-pass').value
+            };
+            if (config.mysql.password === '********') delete config.mysql.password;
+        }
+        const res = await apiFetch('/admin.php?action=update_config', {
+            method: 'POST',
+            body: JSON.stringify(config)
+        });
+        if (res.ok) alert('Конфигурация сохранена. Перезагрузите страницу.');
+    };
+
+    initDbBtn.onclick = async () => {
+        if (!confirm('Это создаст необходимые таблицы в базе данных. Продолжить?')) return;
+        const res = await apiFetch('/admin.php?action=init_mysql');
+        const data = await res.json();
+        if (data.success) alert('Таблицы успешно созданы!');
+        else alert('Ошибка инициализации: ' + (data.message || 'Check logs'));
+    };
 }
 
 window.triggerRestore = async () => {

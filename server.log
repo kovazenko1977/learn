@@ -1,1 +1,4 @@
-[Fri May  1 08:37:51 2026] Failed to listen on 0.0.0.0:8000 (reason: Address already in use)
+[Fri May  1 12:44:43 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Fri May  1 12:47:02 2026] 127.0.0.1:52962 Accepted
+[Fri May  1 12:47:02 2026] 127.0.0.1:52962 [401]: POST /api/auth.php?action=login
+[Fri May  1 12:47:02 2026] 127.0.0.1:52962 Closing
