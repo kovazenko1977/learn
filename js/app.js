@@ -85,10 +85,31 @@ function showLogin() {
 function showLayout() {
     el.loginScreen.classList.add('hidden');
     el.mainLayout.classList.remove('hidden');
-    el.userInfo.innerText = `${currentUser.full_name} (${currentUser.role})`;
-    document.getElementById('nav-admin').classList.toggle('hidden', currentUser.role !== 'admin');
-    document.getElementById('nav-reports').classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role));
-    document.getElementById('nav-department').classList.toggle('hidden', currentUser.role === 'user');
+    el.userInfo.innerHTML = `
+        <div class="fw-bold">${escapeHTML(currentUser.full_name)}</div>
+        <div class="text-white-50 small">${escapeHTML(currentUser.role)}</div>
+    `;
+
+    const adminEl = document.getElementById('nav-admin');
+    const reportsEl = document.getElementById('nav-reports');
+    const deptEl = document.getElementById('nav-department');
+
+    adminEl.classList.toggle('hidden', currentUser.role !== 'admin');
+    reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role));
+    deptEl.classList.toggle('hidden', currentUser.role === 'user');
+
+    // Clone nav to mobile
+    const mobileNav = document.getElementById('mobile-nav');
+    mobileNav.innerHTML = el.mainNav.innerHTML;
+
+    // Setup mobile nav clicks
+    mobileNav.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link) {
+            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
+            if (offcanvas) offcanvas.hide();
+        }
+    });
 }
 
 el.loginForm.addEventListener('submit', async (e) => {
@@ -126,13 +147,16 @@ el.logoutBtn.addEventListener('click', () => {
     location.reload();
 });
 
-el.mainNav.addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    const view = link?.dataset.view;
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('.nav-link');
+    if (!link) return;
+
+    const view = link.dataset.view;
     if (view) {
         e.preventDefault();
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
+        // Mark both mobile and desktop links as active if they point to same view
+        document.querySelectorAll(`.nav-link[data-view="${view}"]`).forEach(l => l.classList.add('active'));
         switch (view) {
             case 'dashboard': renderDashboard(); break;
             case 'department': renderDepartment(); break;
@@ -155,6 +179,27 @@ async function apiFetch(url, options = {}) {
     } catch (e) { throw e; }
 }
 
+function getStatusBadge(status) {
+    const config = {
+        'new': 'bg-info text-white',
+        'assigned': 'bg-primary text-white',
+        'in_progress': 'bg-warning text-dark',
+        'completed': 'bg-success text-white',
+        'closed': 'bg-secondary text-white',
+        'rejected': 'bg-danger text-white'
+    };
+    const cls = config[status] || 'bg-secondary text-white';
+    const labels = {
+        'new': 'Новая',
+        'assigned': 'Назначена',
+        'in_progress': 'В работе',
+        'completed': 'Выполнена',
+        'closed': 'Закрыта',
+        'rejected': 'Отклонена'
+    };
+    return `<span class="badge ${cls}">${labels[status] || status}</span>`;
+}
+
 function getWorkTypeName(id) {
     const wt = workTypes.find(w => w.id == id);
     return wt ? wt.name : id;
@@ -168,15 +213,32 @@ function getUserName(id) {
 
 async function renderDashboard(from = '', to = '') {
     el.appContent.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Мои заявки</h2>
-            <div class="d-flex gap-2">
-                <input type="date" id="dash-from" class="form-control form-control-sm" value="${from}">
-                <input type="date" id="dash-to" class="form-control form-control-sm" value="${to}">
-                <button class="btn btn-outline-primary btn-sm" onclick="filterDashboard()">Ок</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <h2 class="fw-bold mb-0">Мои заявки</h2>
+            <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                <i class="bi bi-calendar3 text-muted ms-1"></i>
+                <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
+                <span class="text-muted small">до</span>
+                <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
+                <button class="btn btn-primary btn-sm rounded-2 px-3" onclick="filterDashboard()">Фильтр</button>
             </div>
         </div>
-        <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>
+        <div class="card shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Номер</th>
+                            <th>Тип</th>
+                            <th class="d-none d-md-table-cell">Описание</th>
+                            <th>Статус</th>
+                            <th class="pe-4 text-end">Дата</th>
+                        </tr>
+                    </thead>
+                    <tbody id="req-table" class="border-top-0"></tbody>
+                </table>
+            </div>
+        </div>
     `;
 
     window.filterDashboard = () => {
@@ -192,7 +254,13 @@ async function renderDashboard(from = '', to = '') {
         const tbody = document.getElementById('req-table');
         requests.forEach(r => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td>${escapeHTML(r.description)}</td><td><span class="badge bg-secondary">${escapeHTML(r.status)}</span></td><td>${new Date(r.created_at).toLocaleDateString()}</td>`;
+            tr.innerHTML = `
+                <td class="ps-4"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                <td><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                <td class="d-none d-md-table-cell text-muted small">${escapeHTML(r.description.substring(0, 50))}${r.description.length > 50 ? '...' : ''}</td>
+                <td>${getStatusBadge(r.status)}</td>
+                <td class="pe-4 text-end text-muted small">${new Date(r.created_at).toLocaleDateString()}</td>
+            `;
             tbody.appendChild(tr);
         });
         tbody.querySelectorAll('.req-link').forEach(link => {
@@ -203,10 +271,11 @@ async function renderDashboard(from = '', to = '') {
 
 async function renderCreate() {
     el.appContent.innerHTML = `
-        <h2>Создать заявку</h2>
-        <form id="create-request-form" style="max-width: 600px">
+        <h2 class="fw-bold mb-4">Создать заявку</h2>
+        <div class="card border-0 shadow-sm p-4" style="max-width: 700px">
+        <form id="create-request-form">
             <div class="mb-3">
-                <label class="form-label">Тип работ</label>
+                <label class="form-label fw-semibold">Тип работ</label>
                 <select id="cr-worktype" name="work_type_id" class="form-select" required>
                     ${workTypes.map(wt => `<option value="${wt.id}">${escapeHTML(wt.name)}</option>`).join('')}
                 </select>
@@ -231,8 +300,11 @@ async function renderCreate() {
                 <label class="form-label">Прикрепить фото/файл</label>
                 <input type="file" id="cr-file" name="file" class="form-control">
             </div>
-            <button type="submit" id="cr-submit" class="btn btn-primary">Отправить</button>
+            <div class="text-end">
+                <button type="submit" id="cr-submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">Отправить заявку</button>
+            </div>
         </form>
+        </div>
     `;
 
     document.getElementById('create-request-form').addEventListener('submit', async (e) => {
@@ -248,15 +320,31 @@ async function renderCreate() {
 
 async function renderDepartment(from = '', to = '') {
     el.appContent.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Заявки отдела</h2>
-            <div class="d-flex gap-2">
-                <input type="date" id="dept-from" class="form-control form-control-sm" value="${from}">
-                <input type="date" id="dept-to" class="form-control form-control-sm" value="${to}">
-                <button class="btn btn-outline-primary btn-sm" onclick="filterDept()">Ок</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <h2 class="fw-bold mb-0">Заявки отдела</h2>
+            <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                <i class="bi bi-calendar3 text-muted ms-1"></i>
+                <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
+                <span class="text-muted small">до</span>
+                <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
+                <button class="btn btn-primary btn-sm rounded-2 px-3" onclick="filterDept()">Фильтр</button>
             </div>
         </div>
-        <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>
+        <div class="card shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Номер</th>
+                            <th>Тип</th>
+                            <th>Статус</th>
+                            <th class="pe-4">Исполнитель</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dept-req-table" class="border-top-0"></tbody>
+                </table>
+            </div>
+        </div>
     `;
 
     window.filterDept = () => {
@@ -279,7 +367,12 @@ async function renderDepartment(from = '', to = '') {
                     ${users.filter(u => u.role === 'executor' && u.department_id == r.department_id).map(u => `<option value="${u.id}" ${r.assigned_to == u.id ? 'selected' : ''}>${escapeHTML(u.full_name)}</option>`).join('')}
                 </select>` : escapeHTML(getUserName(r.assigned_to));
 
-            tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${assignHtml}</td>`;
+            tr.innerHTML = `
+                <td class="ps-4"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                <td><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                <td>${getStatusBadge(r.status)}</td>
+                <td class="pe-4">${assignHtml}</td>
+            `;
             tbody.appendChild(tr);
         });
         tbody.querySelectorAll('.assign-select').forEach(sel => {
@@ -301,35 +394,43 @@ async function showRequestDetails(id) {
         modalContent.innerHTML = `
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Номер:</strong> ${escapeHTML(req.number)}</p>
-                    <p><strong>Статус:</strong> <span class="badge bg-primary">${escapeHTML(req.status)}</span></p>
-                    <p><strong>Приоритет:</strong> ${escapeHTML(req.priority)}</p>
-                    <p><strong>Место:</strong> ${escapeHTML(req.location)}</p>
+                    <div class="mb-2"><span class="text-muted small">Номер:</span> <span class="fw-bold">${escapeHTML(req.number)}</span></div>
+                    <div class="mb-2"><span class="text-muted small">Статус:</span> ${getStatusBadge(req.status)}</div>
+                    <div class="mb-2"><span class="text-muted small">Приоритет:</span> <span class="badge bg-light text-dark border">${escapeHTML(req.priority)}</span></div>
+                    <div class="mb-2"><span class="text-muted small">Место:</span> <span class="fw-medium">${escapeHTML(req.location)}</span></div>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Создана:</strong> ${new Date(req.created_at).toLocaleString()}</p>
-                    <p><strong>Заявитель:</strong> ${escapeHTML(getUserName(req.requester_id))}</p>
-                    <p><strong>Исполнитель:</strong> ${escapeHTML(getUserName(req.assigned_to))}</p>
+                    <div class="mb-2"><span class="text-muted small">Создана:</span> <span class="small">${new Date(req.created_at).toLocaleString()}</span></div>
+                    <div class="mb-2"><span class="text-muted small">Заявитель:</span> <span class="small fw-medium">${escapeHTML(getUserName(req.requester_id))}</span></div>
+                    <div class="mb-2"><span class="text-muted small">Исполнитель:</span> <span class="small fw-medium">${escapeHTML(getUserName(req.assigned_to))}</span></div>
                 </div>
             </div>
-            <hr>
-            <h6>Описание</h6>
-            <p>${escapeHTML(req.description)}</p>
-            ${req.file_path ? `<p><strong>Файл:</strong> <a href="${req.file_path}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
-            <hr>
-            <div class="row">
+            <div class="mt-4 p-3 bg-light rounded-3">
+                <h6 class="fw-bold small text-uppercase text-muted mb-2">Описание проблемы</h6>
+                <p class="mb-0">${escapeHTML(req.description)}</p>
+                ${req.file_path ? `<div class="mt-2"><i class="bi bi-paperclip text-primary"></i> <a href="${req.file_path}" target="_blank" class="small fw-medium">${escapeHTML(req.file_original_name)}</a></div>` : ''}
+            </div>
+            <div class="row mt-4 g-3">
                 <div class="col-md-6">
-                    <h6>История</h6>
-                    <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
-                        ${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}
-                    </ul>
+                    <h6 class="fw-bold small text-uppercase text-muted mb-3">История изменений</h6>
+                    <div class="pe-2" style="max-height: 200px; overflow-y: auto;">
+                        ${history.map(h => `
+                            <div class="mb-3 pb-2 border-bottom border-light">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="small fw-bold">${escapeHTML(h.status)}</span>
+                                    <span class="text-muted" style="font-size: 0.7rem">${new Date(h.changed_at).toLocaleTimeString()}</span>
+                                </div>
+                                <div class="small text-muted">${escapeHTML(h.comment)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <h6>Чат / Комментарии</h6>
-                    <div id="chat-box" class="bg-light p-2 mb-2 border rounded" style="height: 150px; overflow-y: auto;"></div>
-                    <div class="input-group input-group-sm">
-                        <input type="text" id="chat-input" class="form-control" placeholder="Сообщение...">
-                        <button class="btn btn-primary" id="chat-send">></button>
+                    <h6 class="fw-bold small text-uppercase text-muted mb-3">Чат поддержки</h6>
+                    <div id="chat-box" class="bg-white border p-3 mb-2 rounded-3 shadow-sm" style="height: 150px; overflow-y: auto;"></div>
+                    <div class="input-group input-group-sm shadow-sm">
+                        <input type="text" id="chat-input" class="form-control border-0 bg-light" placeholder="Напишите сообщение...">
+                        <button class="btn btn-primary" id="chat-send"><i class="bi bi-send"></i></button>
                     </div>
                 </div>
             </div>
@@ -375,13 +476,19 @@ async function showRequestDetails(id) {
 
         if (req.requester_id == currentUser.id && req.status === 'completed') {
             const div = document.createElement('div');
-            div.className = 'mt-3 p-3 bg-light border rounded';
+            div.className = 'mt-4 p-4 bg-primary bg-opacity-10 border-0 rounded-4';
             div.innerHTML = `
-                <label class="form-label">Оцените работу (1-5):</label>
-                <div class="d-flex mb-3">
-                    ${[1,2,3,4,5].map(i => `<div class="form-check me-3"><input class="form-check-input" type="radio" name="req-rating" value="${i}" id="r${i}" ${i==5?'checked':''}> <label class="form-check-label" for="r${i}">${i}</label></div>`).join('')}
+                <h6 class="fw-bold mb-3">Подтверждение выполнения</h6>
+                <label class="form-label small fw-medium">Пожалуйста, оцените качество работы:</label>
+                <div class="d-flex gap-3 mb-4">
+                    ${[1,2,3,4,5].map(i => `
+                        <div>
+                            <input type="radio" class="btn-check" name="req-rating" value="${i}" id="r${i}" ${i==5?'checked':''}>
+                            <label class="btn btn-outline-primary btn-sm rounded-circle" for="r${i}" style="width: 35px; height: 35px; line-height: 22px;">${i}</label>
+                        </div>
+                    `).join('')}
                 </div>
-                <button class="btn btn-success btn-sm w-100" id="confirm-btn">Подтвердить и закрыть</button>
+                <button class="btn btn-success w-100 fw-bold rounded-pill mb-2 py-2" id="confirm-btn">Принять и закрыть заявку</button>
             `;
             div.querySelector('#confirm-btn').onclick = () => {
                 const rating = div.querySelector('input[name="req-rating"]:checked').value;
@@ -431,93 +538,109 @@ async function updateStatus(id, status, comment, rating = null) {
 
 async function renderAdmin() {
     el.appContent.innerHTML = `
-        <div class="d-flex justify-content-between">
-            <h2>Администрирование</h2>
-            <div>
-                <button class="btn btn-outline-danger btn-sm me-2" onclick="triggerRestore()">Восстановить из файла</button>
-                <button class="btn btn-outline-primary btn-sm me-2" onclick="createBackup()">Создать бекап</button>
-                <button class="btn btn-outline-success btn-sm" onclick="exportCSV()">Экспорт CSV</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <h2 class="fw-bold mb-0">Администрирование</h2>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="triggerRestore()"><i class="bi bi-upload"></i> Восстановить</button>
+                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="createBackup()"><i class="bi bi-download"></i> Бекап</button>
+                <button class="btn btn-success btn-sm rounded-pill px-3" onclick="exportCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Экспорт</button>
             </div>
         </div>
-        <hr>
-        <div class="card mb-4 border-warning">
-            <div class="card-body">
-                <h5 class="card-title text-warning">Безопасность</h5>
-                <div class="form-check form-switch">
+
+        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+            <div class="card-body p-4 border-start border-warning border-5">
+                <h5 class="card-title fw-bold text-warning mb-3"><i class="bi bi-shield-check"></i> Настройки безопасности</h5>
+                <div class="form-check form-switch h5">
                     <input class="form-check-input" type="checkbox" id="auth-toggle" ${authRequired ? 'checked' : ''}>
-                    <label class="form-check-label" for="auth-toggle">Включить вход по логину и паролю</label>
+                    <label class="form-check-label fw-medium" for="auth-toggle">Включить авторизацию по паролю</label>
                 </div>
-                <small class="text-muted">Если выключено, любой вход будет автоматически под ролью Администратора.</small>
+                <p class="text-muted small mb-0">Если выключено, вход в систему будет свободным с правами Администратора.</p>
             </div>
         </div>
-        <hr>
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Создать пользователя</h4>
-                <form id="create-user-form" class="row g-3 mb-4">
-                    <div class="col-md-3"><input type="text" name="login" class="form-control" placeholder="Логин" required></div>
-                    <div class="col-md-3"><input type="password" name="password" class="form-control" placeholder="Пароль" required></div>
-                    <div class="col-md-3"><input type="text" name="full_name" class="form-control" placeholder="ФИО" required></div>
-                    <div class="col-md-2">
-                        <select name="role" class="form-select" id="user-role-select">
-                            <option value="user">Пользователь</option>
-                            <option value="executor">Исполнитель</option>
-                            <option value="manager">Руководитель</option>
-                            <option value="admin">Админ</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+</button></div>
-                    <div class="col-12 mt-2">
-                        <div class="d-flex gap-3">
-                            <div class="form-check"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Смена статуса</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление</label></div>
-                            <div class="form-check"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение</label></div>
+        <div class="row g-4 mb-5">
+            <div class="col-xl-4">
+                <div class="card border-0 shadow-sm p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-person-plus text-primary"></i> Новый пользователь</h5>
+                    <form id="create-user-form">
+                        <div class="mb-3"><input type="text" name="login" class="form-control rounded-3" placeholder="Логин" required></div>
+                        <div class="mb-3"><input type="password" name="password" class="form-control rounded-3" placeholder="Пароль" required></div>
+                        <div class="mb-3"><input type="text" name="full_name" class="form-control rounded-3" placeholder="ФИО" required></div>
+                        <div class="mb-3">
+                            <select name="role" class="form-select rounded-3" id="user-role-select">
+                                <option value="user">Пользователь</option>
+                                <option value="executor">Исполнитель</option>
+                                <option value="manager">Руководитель</option>
+                                <option value="admin">Администратор</option>
+                            </select>
                         </div>
+                        <div class="mb-4">
+                            <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
+                            <div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Изменение статусов</label></div>
+                            <div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление заявок</label></div>
+                            <div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение исполнителей</label></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill">Создать пользователя</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-xl-8">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div class="card-header bg-white py-3"><h5 class="fw-bold mb-0">Список пользователей</h5></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light"><tr><th class="ps-4">ID</th><th>Пользователь</th><th>Роль</th><th class="pe-4">Действия</th></tr></thead>
+                            <tbody id="admin-users-table"></tbody>
+                        </table>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
         <hr>
-        <h4>Пользователи</h4>
-        <div id="users-list"></div>
-        <hr>
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Создать отдел</h4>
-                <form id="create-dept-form" class="row g-3 mb-4">
-                    <div class="col-md-5"><input type="text" name="name" class="form-control" placeholder="Название отдела" required></div>
-                    <div class="col-md-5">
-                        <select name="manager_id" class="form-select">
-                            <option value="">Без руководителя</option>
-                            ${users.filter(u => u.role === 'manager' || u.role === 'admin').map(u => `<option value="${u.id}">${escapeHTML(u.full_name)}</option>`).join('')}
-                        </select>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-4">Отделы и виды работ</h5>
+                    <form id="create-dept-form" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="name" class="form-control" placeholder="Новый отдел" required>
+                            <select name="manager_id" class="form-select">
+                                <option value="">Без главы</option>
+                                ${users.filter(u => u.role === 'manager' || u.role === 'admin').map(u => `<option value="${u.id}">${escapeHTML(u.full_name)}</option>`).join('')}
+                            </select>
+                            <button type="submit" class="btn btn-success">+</button>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody id="admin-depts-table"></tbody>
+                        </table>
                     </div>
-                    <div class="col-md-2"><button type="submit" class="btn btn-success w-100">+</button></div>
-                </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-4">Виды работ (Услуги)</h5>
+                    <form id="create-wt-form" class="mb-4">
+                        <div class="row g-2">
+                            <div class="col-7"><input type="text" name="name" class="form-control form-control-sm" placeholder="Название" required></div>
+                            <div class="col-5">
+                                <select name="department_id" class="form-select form-select-sm" required>
+                                    <option value="">Отдел...</option>
+                                    ${departments.map(d => `<option value="${d.id}">${escapeHTML(d.name)}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="col-4"><input type="number" name="sla_hours" class="form-control form-control-sm" placeholder="SLA (ч)" value="24" required></div>
+                            <div class="col-8"><button type="submit" class="btn btn-success btn-sm w-100">Добавить услугу</button></div>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody id="admin-wt-table"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <h4>Отделы</h4>
-        <div id="depts-list"></div>
-        <hr>
-        <div class="row">
-            <div class="col-md-12">
-                <h4>Создать вид работ</h4>
-                <form id="create-wt-form" class="row g-3 mb-4">
-                    <div class="col-md-3"><input type="text" name="name" class="form-control" placeholder="Вид работ" required></div>
-                    <div class="col-md-3">
-                        <select name="department_id" class="form-select" required>
-                            <option value="">Выберите отдел</option>
-                            ${departments.map(d => `<option value="${d.id}">${escapeHTML(d.name)}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="col-md-2"><input type="number" name="sla_hours" class="form-control" placeholder="SLA (часы)" value="24" required></div>
-                    <div class="col-md-3"><input type="text" name="description" class="form-control" placeholder="Описание"></div>
-                    <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+</button></div>
-                </form>
-            </div>
-        </div>
-        <h4>Справочник видов работ</h4>
-        <div id="wt-list"></div>
     `;
 
     document.getElementById('create-dept-form').addEventListener('submit', async (e) => {
@@ -534,22 +657,44 @@ async function renderAdmin() {
         if (res.ok) { await loadLookups(); renderAdmin(); }
     });
 
-    const dList = document.getElementById('depts-list');
-    dList.innerHTML = `<table class="table"><thead><tr><th>ID</th><th>Название</th><th>Руководитель</th><th>Действия</th></tr></thead><tbody id="admin-depts-table"></tbody></table>`;
+    const tbody = document.getElementById('admin-users-table');
+    users.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="ps-4 text-muted small">${escapeHTML(u.id)}</td>
+            <td>
+                <div class="fw-bold">${escapeHTML(u.full_name)}</div>
+                <div class="text-muted small">${escapeHTML(u.login)}</div>
+            </td>
+            <td><span class="badge bg-light text-dark border small text-uppercase">${escapeHTML(u.role)}</span></td>
+            <td class="pe-4"><button class="btn btn-sm btn-outline-danger rounded-pill px-3">Отключить</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+
     const dtbody = document.getElementById('admin-depts-table');
     departments.forEach(d => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${d.id}</td><td>${escapeHTML(d.name)}</td><td>${escapeHTML(getUserName(d.manager_id))}</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteDept('${d.id}')">Удалить</button></td>`;
+        tr.innerHTML = `
+            <td><span class="fw-bold">${escapeHTML(d.name)}</span></td>
+            <td><span class="text-muted small">${escapeHTML(getUserName(d.manager_id))}</span></td>
+            <td class="text-end"><button class="btn btn-link text-danger btn-sm p-0" onclick="deleteDept('${d.id}')"><i class="bi bi-trash"></i></button></td>
+        `;
         dtbody.appendChild(tr);
     });
 
-    const wList = document.getElementById('wt-list');
-    wList.innerHTML = `<table class="table"><thead><tr><th>Название</th><th>Отдел</th><th>SLA</th><th>Действия</th></tr></thead><tbody id="admin-wt-table"></tbody></table>`;
     const wtbody = document.getElementById('admin-wt-table');
     workTypes.forEach(w => {
         const tr = document.createElement('tr');
         const dept = departments.find(d => d.id == w.department_id);
-        tr.innerHTML = `<td>${escapeHTML(w.name)}</td><td>${escapeHTML(dept ? dept.name : w.department_id)}</td><td>${w.sla_hours} ч.</td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteWT('${w.id}')">Удалить</button></td>`;
+        tr.innerHTML = `
+            <td>
+                <div class="fw-medium small">${escapeHTML(w.name)}</div>
+                <div class="text-muted" style="font-size: 0.7rem">${escapeHTML(dept ? dept.name : '')}</div>
+            </td>
+            <td class="text-muted small">${w.sla_hours}ч</td>
+            <td class="text-end"><button class="btn btn-link text-danger btn-sm p-0" onclick="deleteWT('${w.id}')"><i class="bi bi-trash"></i></button></td>
+        `;
         wtbody.appendChild(tr);
     });
 
@@ -581,15 +726,6 @@ async function renderAdmin() {
         };
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { await loadLookups(); renderAdmin(); }
-    });
-
-    const list = document.getElementById('users-list');
-    list.innerHTML = `<table class="table"><thead><tr><th>ID</th><th>Логин</th><th>Имя</th><th>Роль</th></tr></thead><tbody id="admin-users-table"></tbody></table>`;
-    const tbody = document.getElementById('admin-users-table');
-    users.forEach(u => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${escapeHTML(u.id)}</td><td>${escapeHTML(u.login)}</td><td>${escapeHTML(u.full_name)}</td><td>${escapeHTML(u.role)}</td>`;
-        tbody.appendChild(tr);
     });
 }
 
@@ -627,15 +763,17 @@ window.deleteWT = async (id) => {
 
 async function renderReports(from = '', to = '') {
     el.appContent.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Отчеты</h2>
-            <div class="d-flex gap-2">
-                <input type="date" id="rep-from" class="form-control form-control-sm" value="${from}">
-                <input type="date" id="rep-to" class="form-control form-control-sm" value="${to}">
-                <button class="btn btn-primary btn-sm" id="rep-filter">Ок</button>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <h2 class="fw-bold mb-0">Аналитика и отчеты</h2>
+            <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                <i class="bi bi-filter-left text-muted ms-1"></i>
+                <input type="date" id="rep-from" class="form-control form-control-sm border-0" value="${from}">
+                <span class="text-muted small">до</span>
+                <input type="date" id="rep-to" class="form-control form-control-sm border-0" value="${to}">
+                <button class="btn btn-primary btn-sm rounded-2 px-3" id="rep-filter">Обновить</button>
             </div>
         </div>
-        <div id="reports-container" class="row"><div class="col-md-12 text-center">Загрузка данных...</div></div>
+        <div id="reports-container" class="row g-3"><div class="col-md-12 text-center py-5"><div class="spinner-border text-primary"></div></div></div>
     `;
 
     document.getElementById('rep-filter').onclick = () => {
@@ -650,42 +788,86 @@ async function renderReports(from = '', to = '') {
         const s = await res.json();
 
         el.appContent.querySelector('#reports-container').innerHTML = `
-            <div class="col-md-3"><div class="card bg-light mb-3"><div class="card-body text-center"><h5>Всего</h5><p class="display-6">${s.total}</p></div></div></div>
-            <div class="col-md-3"><div class="card bg-success text-white mb-3"><div class="card-body text-center"><h5>Рейтинг</h5><p class="display-6">${s.avg_rating}</p></div></div></div>
-            <div class="col-md-3"><div class="card bg-danger text-white mb-3"><div class="card-body text-center"><h5>Просрочено</h5><p class="display-6">${s.overdue}</p></div></div></div>
-            <div class="col-md-3"><div class="card bg-info text-white mb-3"><div class="card-body text-center"><h5>Время (ч)</h5><p class="display-6">${s.avg_res_time_hours}</p></div></div></div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 p-3 bg-primary text-white">
+                    <div class="small fw-bold text-uppercase opacity-75">Всего заявок</div>
+                    <div class="display-5 fw-bold my-2">${s.total}</div>
+                    <div class="small"><i class="bi bi-arrow-up-short"></i> За весь период</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="small fw-bold text-uppercase text-muted">Средний рейтинг</div>
+                    <div class="display-5 fw-bold my-2 text-success">${s.avg_rating} <i class="bi bi-star-fill fs-4 align-middle"></i></div>
+                    <div class="small text-muted">По отзывам сотрудников</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="small fw-bold text-uppercase text-muted">Просрочено</div>
+                    <div class="display-5 fw-bold my-2 text-danger">${s.overdue}</div>
+                    <div class="small text-danger fw-medium">Требуют внимания</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 p-3">
+                    <div class="small fw-bold text-uppercase text-muted">Ср. время решения</div>
+                    <div class="display-5 fw-bold my-2 text-info">${s.avg_res_time_hours} <span class="fs-4">ч.</span></div>
+                    <div class="small text-muted">От "В работе" до "Выполнено"</div>
+                </div>
+            </div>
 
             <div class="col-md-6 mt-4">
-                <h4>Статусы</h4>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between">Новые <span>${s.status_dist.new}</span></li>
-                    <li class="list-group-item d-flex justify-content-between">В работе <span>${s.status_dist.in_progress}</span></li>
-                    <li class="list-group-item d-flex justify-content-between">Выполнены <span>${s.status_dist.completed}</span></li>
-                    <li class="list-group-item d-flex justify-content-between">Закрыты <span>${s.status_dist.closed}</span></li>
-                </ul>
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 fw-bold"><i class="bi bi-pie-chart me-2 text-primary"></i>Распределение по статусам</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small"><span class="fw-medium">Новые</span><span>${s.status_dist.new}</span></div>
+                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-info" style="width: ${s.total ? (s.status_dist.new/s.total*100) : 0}%"></div></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small"><span class="fw-medium">В работе</span><span>${s.status_dist.in_progress}</span></div>
+                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-warning" style="width: ${s.total ? (s.status_dist.in_progress/s.total*100) : 0}%"></div></div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1 small"><span class="fw-medium">Выполнены / Закрыты</span><span>${s.status_dist.completed + s.status_dist.closed}</span></div>
+                            <div class="progress" style="height: 6px;"><div class="progress-bar bg-success" style="width: ${s.total ? ((s.status_dist.completed + s.status_dist.closed)/s.total*100) : 0}%"></div></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-md-6 mt-4">
-                <h4>Приоритеты</h4>
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between">Высокий <span class="badge bg-danger">${s.priority_dist.high}</span></li>
-                    <li class="list-group-item d-flex justify-content-between">Обычный <span class="badge bg-primary">${s.priority_dist.normal}</span></li>
-                    <li class="list-group-item d-flex justify-content-between">Низкий <span class="badge bg-secondary">${s.priority_dist.low}</span></li>
-                </ul>
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white py-3 fw-bold"><i class="bi bi-lightning-charge me-2 text-warning"></i>Приоритеты</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">Высокий <span class="badge bg-danger rounded-pill">${s.priority_dist.high}</span></li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0">Обычный <span class="badge bg-primary rounded-pill">${s.priority_dist.normal}</span></li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">Низкий <span class="badge bg-secondary rounded-pill">${s.priority_dist.low}</span></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <div class="col-md-12 mt-4">
-                <h4>Эффективность отделов</h4>
-                <table class="table table-sm mt-2">
-                    <thead><tr><th>Отдел</th><th>Всего</th><th>Выполнено</th><th>Просрочено</th><th>Рейтинг</th></tr></thead>
-                    <tbody>
-                        ${s.dept_stats.map(d => `<tr><td>${escapeHTML(d.name)}</td><td>${d.total}</td><td>${d.completed}</td><td class="text-danger">${d.overdue}</td><td>${d.avg_rating}</td></tr>`).join('')}
-                    </tbody>
-                </table>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 fw-bold">Эффективность отделов</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light"><tr><th class="ps-4">Отдел</th><th>Всего</th><th>Выполнено</th><th class="text-danger">Просрочено</th><th class="pe-4">Рейтинг</th></tr></thead>
+                            <tbody>
+                                ${s.dept_stats.map(d => `<tr><td class="ps-4 fw-medium">${escapeHTML(d.name)}</td><td>${d.total}</td><td>${d.completed}</td><td class="text-danger">${d.overdue}</td><td class="pe-4 text-success fw-bold">${d.avg_rating}</td></tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-12 mt-4">
-                <h4>Загрузка исполнителей</h4>
-                <div id="executor-stats" class="list-group"></div>
+            <div class="col-md-12 mt-4 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 fw-bold">Загрузка исполнителей</div>
+                    <div id="executor-stats" class="list-group list-group-flush"></div>
+                </div>
             </div>
         `;
         const execRes = await apiFetch(`/reports.php?action=executors${query}`);
