@@ -317,11 +317,47 @@ async function showRequestDetails(id) {
             <p>${escapeHTML(req.description)}</p>
             ${req.file_path ? `<p><strong>Файл:</strong> <a href="${req.file_path}" target="_blank">${escapeHTML(req.file_original_name)}</a></p>` : ''}
             <hr>
-            <h6>История</h6>
-            <ul class="list-unstyled">${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}</ul>
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>История</h6>
+                    <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
+                        ${history.map(h => `<li class="small"><strong>${new Date(h.changed_at).toLocaleString()}:</strong> ${escapeHTML(h.status)} - ${escapeHTML(h.comment)}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>Чат / Комментарии</h6>
+                    <div id="chat-box" class="bg-light p-2 mb-2 border rounded" style="height: 150px; overflow-y: auto;"></div>
+                    <div class="input-group input-group-sm">
+                        <input type="text" id="chat-input" class="form-control" placeholder="Сообщение...">
+                        <button class="btn btn-primary" id="chat-send">></button>
+                    </div>
+                </div>
+            </div>
             <hr>
             <div id="action-buttons"></div>
         `;
+
+        const loadChat = async () => {
+            const chatRes = await apiFetch(`/requests.php?action=get_comments&id=${id}`);
+            const comments = await chatRes.json();
+            const box = document.getElementById('chat-box');
+            box.innerHTML = comments.map(c => `<div class="mb-1 small"><strong>${escapeHTML(c.user_name)}:</strong> ${escapeHTML(c.message)}</div>`).join('');
+            box.scrollTop = box.scrollHeight;
+        };
+
+        loadChat();
+
+        document.getElementById('chat-send').onclick = async () => {
+            const input = document.getElementById('chat-input');
+            if (!input.value) return;
+            const res = await apiFetch('/requests.php?action=add_comment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ request_id: id, message: input.value })
+            });
+            if (res.ok) { input.value = ''; loadChat(); }
+        };
+
         const btnsDiv = document.getElementById('action-buttons');
         const perms = currentUser.permissions || { can_status: true, can_delete: false, can_assign: false };
 
@@ -351,6 +387,15 @@ async function showRequestDetails(id) {
                 const rating = div.querySelector('input[name="req-rating"]:checked').value;
                 updateStatus(req.id, 'closed', 'Заявка подтверждена', rating);
             };
+            const rejBtn = document.createElement('button');
+            rejBtn.className = 'btn btn-outline-danger btn-sm w-100 mt-2';
+            rejBtn.innerText = 'На доработку (Отклонить)';
+            rejBtn.onclick = () => {
+                const comment = prompt('Укажите причину возврата на доработку:');
+                if (comment) updateStatus(req.id, 'rejected', comment);
+            };
+            div.appendChild(rejBtn);
+
             btnsDiv.appendChild(div);
         }
         const modal = new bootstrap.Modal(document.getElementById('requestModal'));

@@ -158,7 +158,7 @@ if ($method == 'POST' && $action == 'create') {
         exit(json_encode(['message' => 'Permission denied (can_status)']));
     }
 
-    if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || $data['status'] != 'closed')) {
+    if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || !in_array($data['status'], ['closed', 'rejected']))) {
          http_response_code(403);
          exit(json_encode(['message' => 'Forbidden']));
     }
@@ -227,6 +227,61 @@ if ($method == 'POST' && $action == 'create') {
 
     $storage->delete('requests', $id);
     echo json_encode(['status' => 'ok']);
+} elseif ($action == 'get_comments') {
+    $id = $_GET['id'] ?? 0;
+    $request = $storage->findOne('requests', ['id' => $id]);
+    if (!$request) {
+        http_response_code(404);
+        exit(json_encode(['message' => 'Request not found']));
+    }
+    if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
+    $comments = $storage->find('comments', ['request_id' => $id]);
+
+    // Enrich comments with user names
+    $users = $storage->readCollection('users');
+    $userMap = [];
+    foreach ($users as $u) {
+        $userMap[$u['id']] = $u['full_name'];
+    }
+
+    foreach ($comments as &$c) {
+        $c['user_name'] = $userMap[$c['user_id']] ?? 'Unknown';
+    }
+
+    echo json_encode(array_values($comments));
+} elseif ($method == 'POST' && $action == 'add_comment') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['request_id']) || empty($data['message'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Invalid data']));
+    }
+    $request = $storage->findOne('requests', ['id' => $data['request_id']]);
+    if (!$request) {
+        http_response_code(404);
+        exit(json_encode(['message' => 'Request not found']));
+    }
+    if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
+
+    $comment = [
+        'request_id' => (int)$data['request_id'],
+        'user_id' => $user['id'],
+        'message' => $data['message'],
+        'created_at' => date('c')
+    ];
+    $saved = $storage->insert('comments', $comment);
+
+    // Also log in history that a comment was added?
+    // Maybe not strictly necessary if we have a separate chat view,
+    // but useful for "last updated" logic.
+    $storage->update('requests', $data['request_id'], ['updated_at' => date('c')]);
+
+    echo json_encode($saved);
 } elseif ($action == 'export' && in_array($user['role'], ['admin', 'manager'])) {
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;

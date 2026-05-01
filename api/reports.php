@@ -40,7 +40,7 @@ if ($action == 'summary') {
 
     $summary = [
         'total' => count($requests),
-        'status_dist' => ['new' => 0, 'assigned' => 0, 'in_progress' => 0, 'completed' => 0, 'closed' => 0],
+        'status_dist' => ['new' => 0, 'assigned' => 0, 'in_progress' => 0, 'completed' => 0, 'closed' => 0, 'rejected' => 0],
         'priority_dist' => ['high' => 0, 'normal' => 0, 'low' => 0],
         'avg_rating' => 0,
         'overdue' => 0,
