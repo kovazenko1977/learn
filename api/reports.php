@@ -44,9 +44,19 @@ if ($action == 'summary') {
     $history = $storage->readCollection('status_history');
     $depts = $storage->readCollection('departments');
 
+    // Group history by request ID for efficiency
+    $historyByReq = [];
+    foreach ($history as $h) {
+        $historyByReq[$h['request_id']][] = $h;
+    }
+
     $summary = [
         'total' => count($requests),
-        'status_dist' => ['new' => 0, 'assigned' => 0, 'in_progress' => 0, 'completed' => 0, 'closed' => 0, 'rejected' => 0],
+        'status_dist' => [
+            'new' => 0, 'assigned' => 0, 'in_progress' => 0,
+            'completed' => 0, 'closed' => 0, 'rejected' => 0,
+            'waiting_parts' => 0, 'postponed' => 0, 'need_info' => 0
+        ],
         'priority_dist' => ['high' => 0, 'normal' => 0, 'low' => 0],
         'avg_rating' => 0,
         'overdue' => 0,
@@ -72,11 +82,13 @@ if ($action == 'summary') {
 
         $isOverdue = false;
         if (!in_array($r['status'], ['closed', 'completed']) && isset($r['deadline_at'])) {
-            $deadline = new DateTime($r['deadline_at']);
-            if ($now > $deadline) {
-                $summary['overdue']++;
-                $isOverdue = true;
-            }
+            try {
+                $deadline = new DateTime($r['deadline_at']);
+                if ($now > $deadline) {
+                    $summary['overdue']++;
+                    $isOverdue = true;
+                }
+            } catch (Exception $e) {}
         }
 
         if (isset($deptMap[$r['department_id']])) {
@@ -87,11 +99,11 @@ if ($action == 'summary') {
 
         // Calc resolution time
         if ($r['status'] == 'completed' || $r['status'] == 'closed') {
-            $reqHistory = array_filter($history, fn($h) => $h['request_id'] == $r['id']);
+            $reqHistory = $historyByReq[$r['id']] ?? [];
             $start = null; $end = null;
             foreach($reqHistory as $h) {
-                if ($h['status'] == 'in_progress' && !$start) $start = strtotime($h['changed_at']);
-                if ($h['status'] == 'completed' && !$end) $end = strtotime($h['changed_at']);
+                if ($h['status'] == 'in_progress' && !$start) $start = @strtotime($h['changed_at']);
+                if ($h['status'] == 'completed' && !$end) $end = @strtotime($h['changed_at']);
             }
             if ($start && $end && $end > $start) $resTimes[] = ($end - $start) / 3600;
         }

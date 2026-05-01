@@ -21,6 +21,37 @@ const el = {
     logoutBtn: document.getElementById('logout-btn')
 };
 
+let deferredPrompt;
+
+// PWA Logic
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
+    });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show banner only on mobile
+    if (window.innerWidth < 768) {
+        document.getElementById('pwa-install-banner').classList.remove('hidden');
+    }
+});
+
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    deferredPrompt = null;
+    document.getElementById('pwa-install-banner').classList.add('hidden');
+});
+
+document.getElementById('pwa-close').addEventListener('click', () => {
+    document.getElementById('pwa-install-banner').classList.add('hidden');
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Check system config
     try {
@@ -113,7 +144,8 @@ function showLayout() {
     mobileNav.addEventListener('click', (e) => {
         const link = e.target.closest('a');
         if (link) {
-            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('mobileSidebar'));
+            const offcanvasEl = document.getElementById('mobileSidebar');
+            const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
             if (offcanvas) offcanvas.hide();
         }
     });
@@ -1154,5 +1186,20 @@ async function renderReports(from = '', to = '') {
             item.innerHTML = `${escapeHTML(ex.full_name)} <span class="badge bg-primary rounded-pill">${ex.active_requests} активных</span>`;
             execList.appendChild(item);
         });
-    } catch (e) { el.appContent.innerHTML = '<h2>Отчеты</h2><div class="alert alert-danger">Ошибка загрузки отчетов</div>'; }
+    } catch (e) {
+        console.error('Reports load failed:', e);
+        el.appContent.innerHTML = `
+            <h2>Отчеты</h2>
+            <div class="alert alert-danger shadow-sm border-0 rounded-4 p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-2"></i>
+                    <div>
+                        <h5 class="fw-bold mb-1">Ошибка загрузки отчетов</h5>
+                        <p class="mb-0 small opacity-75">Не удалось получить данные с сервера. Пожалуйста, проверьте соединение или права доступа.</p>
+                    </div>
+                </div>
+                <button class="btn btn-outline-danger btn-sm mt-3 rounded-pill" onclick="renderReports()">Попробовать снова</button>
+            </div>
+        `;
+    }
 }

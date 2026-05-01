@@ -1,0 +1,21 @@
+{
+  "name": "CRM ХОП",
+  "short_name": "CRM ХОП",
+  "description": "Система управления заявками ХОП",
+  "start_url": "./index.php",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/tools.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/tools.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

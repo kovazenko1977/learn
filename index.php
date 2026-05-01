@@ -7,6 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         :root {
             --primary: #4f46e5;
@@ -134,7 +138,7 @@
         }
 
         @media (max-width: 767.98px) {
-            .sidebar {
+            nav.sidebar {
                 display: none;
             }
             .mobile-header {
@@ -202,6 +206,28 @@
 
         .hidden { display: none !important; }
 
+        /* PWA Install Prompt */
+        #pwa-install-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: var(--primary);
+            color: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         .req-link {
             text-decoration: none;
             font-weight: 600;
@@ -268,13 +294,28 @@
             </div>
         </div>
 
+        <!-- PWA Install Banner -->
+        <div id="pwa-install-banner" class="hidden">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-download fs-4"></i>
+                <div>
+                    <div class="fw-bold">Установить CRM ХОП?</div>
+                    <div class="small opacity-75">Добавьте на главный экран для быстрого доступа</div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button id="pwa-close" class="btn btn-sm btn-link text-white text-decoration-none">Позже</button>
+                <button id="pwa-install-btn" class="btn btn-sm btn-light fw-bold rounded-pill px-3">Установить</button>
+            </div>
+        </div>
+
         <!-- Main Application Layout -->
         <div id="main-layout" class="container-fluid hidden p-0">
             <!-- Mobile Top Header -->
             <header class="mobile-header shadow-sm d-md-none">
                 <span class="fw-bold">CRM ХОП</span>
-                <button class="btn btn-link text-white p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                    <i class="bi bi-list fs-2"></i>
+                <button class="btn btn-link text-white p-0 border-0 outline-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
+                    <i class="bi bi-list fs-1"></i>
                 </button>
             </header>
 
