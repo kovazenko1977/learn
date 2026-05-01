@@ -16,11 +16,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 // Check global auth requirement
-$settings = $storage->findOne('settings', ['id' => 'global']) ?: ['auth_enabled' => false];
+$settings = $storage->findOne('settings', ['id' => 'global']) ?: ['auth_enabled' => false, 'announcement' => ''];
 $authRequired = isset($settings['auth_enabled']) ? (bool)$settings['auth_enabled'] : false;
 
 if ($action == 'config') {
-    echo json_encode(['auth_required' => $authRequired]);
+    echo json_encode([
+        'auth_required' => $authRequired,
+        'announcement' => $settings['announcement'] ?? ''
+    ]);
     exit;
 }
 

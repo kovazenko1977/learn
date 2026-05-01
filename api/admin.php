@@ -29,8 +29,13 @@ if ($authEnabled) {
 $action = $_GET['action'] ?? '';
 
 // Role-based access for administrative actions
-$adminOnly = ['create_user', 'update_settings', 'backup', 'restore', 'login_logs', 'delete_department', 'delete_worktype'];
-if (in_array($action, $adminOnly) && $user['role'] !== 'admin') {
+$adminOnly = [
+    'users', 'create_user', 'reset_password',
+    'create_worktype', 'update_worktype', 'delete_worktype',
+    'create_department', 'update_department', 'delete_department',
+    'update_settings', 'backup', 'restore', 'login_logs'
+];
+if ($authEnabled && in_array($action, $adminOnly) && ($user === null || $user['role'] !== 'admin')) {
     http_response_code(403);
     exit(json_encode(['message' => 'Forbidden']));
 }
@@ -62,6 +67,16 @@ if ($action == 'users') {
     $saved = $storage->insert('users', $newUser);
     unset($saved['password_hash']);
     echo json_encode($saved);
+} elseif ($action == 'reset_password' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['user_id']) || empty($data['password'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'User ID and password required']));
+    }
+    $success = $storage->update('users', $data['user_id'], [
+        'password_hash' => password_hash($data['password'], PASSWORD_DEFAULT)
+    ]);
+    echo json_encode(['success' => $success]);
 } elseif ($action == 'worktypes') {
     echo json_encode($storage->readCollection('work_types'));
 } elseif ($action == 'create_worktype' && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -134,18 +149,27 @@ if ($action == 'users') {
     echo json_encode(['success' => $storage->delete('departments', $id)]);
 } elseif ($action == 'update_settings' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    $newSettings = [
-        'id' => 'global',
-        'auth_enabled' => (bool)$data['auth_enabled']
-    ];
-    // Atomic update
-    $existing = $storage->findOne('settings', ['id' => 'global']);
-    if ($existing) {
-        $storage->update('settings', 'global', $newSettings);
-    } else {
-        $storage->insert('settings', $newSettings);
-    }
-    echo json_encode(['message' => 'Settings updated', 'auth_enabled' => $newSettings['auth_enabled']]);
+
+    $storage->transactional('settings', function(&$items) use ($data) {
+        $found = false;
+        foreach ($items as &$item) {
+            if ($item['id'] == 'global') {
+                if (isset($data['auth_enabled'])) $item['auth_enabled'] = (bool)$data['auth_enabled'];
+                if (isset($data['announcement'])) $item['announcement'] = (string)$data['announcement'];
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $items[] = [
+                'id' => 'global',
+                'auth_enabled' => (bool)($data['auth_enabled'] ?? false),
+                'announcement' => (string)($data['announcement'] ?? '')
+            ];
+        }
+    });
+
+    echo json_encode(['message' => 'Settings updated']);
 } elseif ($action == 'backup') {
     if (!class_exists('ZipArchive')) exit(json_encode(['message' => 'ZipArchive missing']));
     $zip = new ZipArchive();

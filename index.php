@@ -248,6 +248,7 @@
 
                 <!-- Main Content Area -->
                 <main class="col-md-10 ms-sm-auto">
+                    <div id="announcement-banner" class="hidden alert alert-warning rounded-0 border-0 border-bottom mb-0 py-2 px-4 small text-center fw-bold shadow-sm"></div>
                     <div id="app-content" class="fade-in">
                         <!-- Views will be rendered here -->
                     </div>

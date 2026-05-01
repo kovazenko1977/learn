@@ -27,6 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
         const cfg = await cfgRes.json();
         authRequired = cfg.auth_required;
+        if (cfg.announcement) {
+            const banner = document.getElementById('announcement-banner');
+            banner.innerHTML = `<i class="bi bi-megaphone-fill me-2"></i> ${escapeHTML(cfg.announcement)}`;
+            banner.classList.remove('hidden');
+        }
     } catch (e) { console.error('Config fetch failed', e); }
 
     if (!authRequired) {
@@ -547,14 +552,29 @@ async function renderAdmin() {
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm mb-4 overflow-hidden">
-            <div class="card-body p-4 border-start border-warning border-5">
-                <h5 class="card-title fw-bold text-warning mb-3"><i class="bi bi-shield-check"></i> Настройки безопасности</h5>
-                <div class="form-check form-switch h5">
-                    <input class="form-check-input" type="checkbox" id="auth-toggle" ${authRequired ? 'checked' : ''}>
-                    <label class="form-check-label fw-medium" for="auth-toggle">Включить авторизацию по паролю</label>
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div class="card-body p-4 border-start border-warning border-5">
+                        <h5 class="card-title fw-bold text-warning mb-3"><i class="bi bi-shield-check"></i> Безопасность</h5>
+                        <div class="form-check form-switch h5">
+                            <input class="form-check-input" type="checkbox" id="auth-toggle" ${authRequired ? 'checked' : ''}>
+                            <label class="form-check-label fw-medium" for="auth-toggle">Авторизация по паролю</label>
+                        </div>
+                        <p class="text-muted small mb-0">Если выключено, вход свободный (Админ).</p>
+                    </div>
                 </div>
-                <p class="text-muted small mb-0">Если выключено, вход в систему будет свободным с правами Администратора.</p>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                    <div class="card-body p-4 border-start border-info border-5">
+                        <h5 class="card-title fw-bold text-info mb-3"><i class="bi bi-megaphone"></i> Объявление</h5>
+                        <div class="input-group">
+                            <input type="text" id="ann-text" class="form-control" placeholder="Текст объявления">
+                            <button class="btn btn-info text-white" onclick="saveAnnouncement()">Ок</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row g-4 mb-5">
@@ -696,7 +716,10 @@ async function renderAdmin() {
                 <div class="text-muted small">${escapeHTML(u.login)}</div>
             </td>
             <td><span class="badge bg-light text-dark border small text-uppercase">${escapeHTML(u.role)}</span></td>
-            <td class="pe-4"><button class="btn btn-sm btn-outline-danger rounded-pill px-3">Отключить</button></td>
+            <td class="pe-4">
+                <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="resetUserPassword('${u.id}')" title="Сброс пароля"><i class="bi bi-key"></i></button>
+                <button class="btn btn-sm btn-outline-danger rounded-pill px-2">Отключить</button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -738,6 +761,25 @@ async function renderAdmin() {
             alert('Настройки сохранены. ' + (enabled ? 'Вход защищен.' : 'Вход свободный.'));
         }
     });
+
+    window.saveAnnouncement = async () => {
+        const text = document.getElementById('ann-text').value;
+        const res = await apiFetch('/admin.php?action=update_settings', {
+            method: 'POST',
+            body: JSON.stringify({ announcement: text })
+        });
+        if (res.ok) alert('Объявление обновлено. Перезагрузите страницу для применения.');
+    };
+
+    window.resetUserPassword = async (userId) => {
+        const newPass = prompt('Введите новый пароль для пользователя:');
+        if (!newPass) return;
+        const res = await apiFetch('/admin.php?action=reset_password', {
+            method: 'POST',
+            body: JSON.stringify({ user_id: userId, password: newPass })
+        });
+        if (res.ok) alert('Пароль успешно изменен');
+    };
 
     document.getElementById('create-user-form').addEventListener('submit', async (e) => {
         e.preventDefault();
