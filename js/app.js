@@ -216,6 +216,13 @@ function getUserName(id) {
     return u ? u.full_name : `ID: ${id}`;
 }
 
+function setToday(fromId, toId, callback) {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById(fromId).value = today;
+    document.getElementById(toId).value = today;
+    callback();
+}
+
 async function renderDashboard(from = '', to = '') {
     el.appContent.innerHTML = `
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
@@ -225,6 +232,7 @@ async function renderDashboard(from = '', to = '') {
                 <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
                 <span class="text-muted small">до</span>
                 <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
+                <button class="btn btn-outline-secondary btn-sm rounded-2" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
                 <button class="btn btn-primary btn-sm rounded-2 px-3" onclick="filterDashboard()">Фильтр</button>
             </div>
         </div>
@@ -332,6 +340,7 @@ async function renderDepartment(from = '', to = '') {
                 <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
                 <span class="text-muted small">до</span>
                 <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
+                <button class="btn btn-outline-secondary btn-sm rounded-2" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
                 <button class="btn btn-primary btn-sm rounded-2 px-3" onclick="filterDept()">Фильтр</button>
             </div>
         </div>
@@ -638,6 +647,7 @@ async function renderAdmin() {
                         <div class="d-flex gap-2 align-items-center">
                             <input type="date" id="log-from" class="form-control form-control-sm border-0 bg-light" style="width: 130px;">
                             <input type="date" id="log-to" class="form-control form-control-sm border-0 bg-light" style="width: 130px;">
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="setToday('log-from', 'log-to', refreshLoginLogs)">Сегодня</button>
                             <select id="log-user" class="form-select form-select-sm border-0 bg-light" style="width: 150px;">
                                 <option value="">Все пользователи</option>
                                 ${users.map(u => `<option value="${u.id}">${escapeHTML(u.full_name)}</option>`).join('')}
@@ -953,6 +963,7 @@ async function renderReports(from = '', to = '') {
                 <input type="date" id="rep-from" class="form-control form-control-sm border-0" value="${from}">
                 <span class="text-muted small">до</span>
                 <input type="date" id="rep-to" class="form-control form-control-sm border-0" value="${to}">
+                <button class="btn btn-outline-secondary btn-sm rounded-2" onclick="setToday('rep-from', 'rep-to', () => document.getElementById('rep-filter').click())">Сегодня</button>
                 <button class="btn btn-primary btn-sm rounded-2 px-3" id="rep-filter">Обновить</button>
             </div>
         </div>

@@ -85,11 +85,13 @@
         .sidebar .nav-link:hover {
             color: #fff;
             background: rgba(255,255,255,0.05);
+            transform: translateX(4px);
         }
         .sidebar .nav-link.active {
             color: #fff;
             background-color: var(--sidebar-active);
             box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+            transform: translateX(4px);
         }
         .sidebar-brand {
             padding: 2rem 1.5rem;
@@ -102,11 +104,17 @@
         /* Main Content */
         #app-content {
             padding: 2rem;
+            transition: all 0.3s ease;
         }
         .card {
             border: none;
             border-radius: 1rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         .badge {
             font-weight: 600;
@@ -155,10 +163,23 @@
         .req-link:hover { text-decoration: underline; }
 
         /* Animation */
-        .fade-in { animation: fadeIn 0.3s ease-in; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .btn {
+            transition: all 0.2s ease !important;
+        }
+        .btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>

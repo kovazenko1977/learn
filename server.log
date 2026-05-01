@@ -1,4 +1,40 @@
-[Fri May  1 12:44:43 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Fri May  1 12:47:02 2026] 127.0.0.1:52962 Accepted
-[Fri May  1 12:47:02 2026] 127.0.0.1:52962 [401]: POST /api/auth.php?action=login
-[Fri May  1 12:47:02 2026] 127.0.0.1:52962 Closing
+[Fri May  1 13:44:48 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Fri May  1 13:47:44 2026] 127.0.0.1:44344 Accepted
+[Fri May  1 13:47:44 2026] 127.0.0.1:44344 [200]: GET /
+[Fri May  1 13:47:44 2026] 127.0.0.1:44344 Closing
+[Fri May  1 13:47:44 2026] 127.0.0.1:44356 Accepted
+[Fri May  1 13:47:44 2026] 127.0.0.1:44356 [200]: GET /js/app.js?v=1777643264
+[Fri May  1 13:47:44 2026] 127.0.0.1:44356 Closing
+[Fri May  1 13:47:45 2026] 127.0.0.1:44358 Accepted
+[Fri May  1 13:47:45 2026] 127.0.0.1:44358 [200]: GET /api/auth.php?action=config
+[Fri May  1 13:47:45 2026] 127.0.0.1:44358 Closing
+[Fri May  1 13:47:45 2026] 127.0.0.1:44368 Accepted
+[Fri May  1 13:47:45 2026] 127.0.0.1:44368 [200]: POST /api/auth.php?action=login
+[Fri May  1 13:47:45 2026] 127.0.0.1:44368 Closing
+[Fri May  1 13:47:45 2026] 127.0.0.1:44380 Accepted
+[Fri May  1 13:47:45 2026] 127.0.0.1:44396 Accepted
+[Fri May  1 13:47:45 2026] 127.0.0.1:44398 Accepted
+[Fri May  1 13:47:45 2026] 127.0.0.1:44380 [200]: GET /api/admin.php?action=worktypes
+[Fri May  1 13:47:45 2026] 127.0.0.1:44380 Closing
+[Fri May  1 13:47:45 2026] 127.0.0.1:44396 [200]: GET /api/admin.php?action=departments
+[Fri May  1 13:47:45 2026] 127.0.0.1:44396 Closing
+[Fri May  1 13:47:45 2026] 127.0.0.1:44398 [200]: GET /api/admin.php?action=users
+[Fri May  1 13:47:45 2026] 127.0.0.1:44398 Closing
+[Fri May  1 13:47:45 2026] 127.0.0.1:44404 Accepted
+[Fri May  1 13:47:45 2026] 127.0.0.1:44404 [200]: GET /api/requests.php?action=my
+[Fri May  1 13:47:45 2026] 127.0.0.1:44404 Closing
+[Fri May  1 13:47:46 2026] 127.0.0.1:44406 Accepted
+[Fri May  1 13:47:46 2026] 127.0.0.1:44406 [200]: GET /api/requests.php?action=my&from=2026-05-01&to=2026-05-01
+[Fri May  1 13:47:46 2026] 127.0.0.1:44406 Closing
+[Fri May  1 13:47:46 2026] 127.0.0.1:44422 Accepted
+[Fri May  1 13:47:46 2026] 127.0.0.1:44422 [200]: GET /api/reports.php?action=summary
+[Fri May  1 13:47:46 2026] 127.0.0.1:44422 Closing
+[Fri May  1 13:47:46 2026] 127.0.0.1:44438 Accepted
+[Fri May  1 13:47:46 2026] 127.0.0.1:44438 [200]: GET /api/reports.php?action=executors
+[Fri May  1 13:47:46 2026] 127.0.0.1:44438 Closing
+[Fri May  1 13:47:46 2026] 127.0.0.1:44446 Accepted
+[Fri May  1 13:47:46 2026] 127.0.0.1:44446 [200]: GET /api/reports.php?action=summary&from=2026-05-01&to=2026-05-01
+[Fri May  1 13:47:46 2026] 127.0.0.1:44446 Closing
+[Fri May  1 13:47:46 2026] 127.0.0.1:44462 Accepted
+[Fri May  1 13:47:46 2026] 127.0.0.1:44462 [200]: GET /api/reports.php?action=executors&from=2026-05-01&to=2026-05-01
+[Fri May  1 13:47:46 2026] 127.0.0.1:44462 Closing
