@@ -166,10 +166,28 @@ function getUserName(id) {
     return u ? u.full_name : `ID: ${id}`;
 }
 
-async function renderDashboard() {
-    el.appContent.innerHTML = '<h2>Мои заявки</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>';
+async function renderDashboard(from = '', to = '') {
+    el.appContent.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Мои заявки</h2>
+            <div class="d-flex gap-2">
+                <input type="date" id="dash-from" class="form-control form-control-sm" value="${from}">
+                <input type="date" id="dash-to" class="form-control form-control-sm" value="${to}">
+                <button class="btn btn-outline-primary btn-sm" onclick="filterDashboard()">Ок</button>
+            </div>
+        </div>
+        <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Описание</th><th>Статус</th><th>Дата</th></tr></thead><tbody id="req-table"></tbody></table></div>
+    `;
+
+    window.filterDashboard = () => {
+        const f = document.getElementById('dash-from').value;
+        const t = document.getElementById('dash-to').value;
+        renderDashboard(f, t);
+    };
+
     try {
-        const res = await apiFetch('/requests.php?action=my');
+        const query = (from || to) ? `&from=${from}&to=${to}` : '';
+        const res = await apiFetch(`/requests.php?action=my${query}`);
         const requests = await res.json();
         const tbody = document.getElementById('req-table');
         requests.forEach(r => {
@@ -228,16 +246,44 @@ async function renderCreate() {
     });
 }
 
-async function renderDepartment() {
-    el.appContent.innerHTML = '<h2>Заявки отдела</h2><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>';
+async function renderDepartment(from = '', to = '') {
+    el.appContent.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Заявки отдела</h2>
+            <div class="d-flex gap-2">
+                <input type="date" id="dept-from" class="form-control form-control-sm" value="${from}">
+                <input type="date" id="dept-to" class="form-control form-control-sm" value="${to}">
+                <button class="btn btn-outline-primary btn-sm" onclick="filterDept()">Ок</button>
+            </div>
+        </div>
+        <div class="table-responsive"><table class="table table-hover"><thead><tr><th>Номер</th><th>Тип</th><th>Статус</th><th>Исполнитель</th></tr></thead><tbody id="dept-req-table"></tbody></table></div>
+    `;
+
+    window.filterDept = () => {
+        const f = document.getElementById('dept-from').value;
+        const t = document.getElementById('dept-to').value;
+        renderDepartment(f, t);
+    };
+
     try {
-        const res = await apiFetch('/requests.php?action=department');
+        const query = (from || to) ? `&from=${from}&to=${to}` : '';
+        const res = await apiFetch(`/requests.php?action=department${query}`);
         const requests = await res.json();
         const tbody = document.getElementById('dept-req-table');
+        const perms = currentUser.permissions || { can_assign: false };
         requests.forEach(r => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${escapeHTML(getUserName(r.assigned_to))}</td>`;
+            const assignHtml = (currentUser.role === 'admin' || perms.can_assign) ?
+                `<select class="form-select form-select-sm assign-select" data-id="${r.id}">
+                    <option value="">Назначить...</option>
+                    ${users.filter(u => u.role === 'executor' && u.department_id == r.department_id).map(u => `<option value="${u.id}" ${r.assigned_to == u.id ? 'selected' : ''}>${escapeHTML(u.full_name)}</option>`).join('')}
+                </select>` : escapeHTML(getUserName(r.assigned_to));
+
+            tr.innerHTML = `<td><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td><td>${escapeHTML(getWorkTypeName(r.work_type_id))}</td><td><span class="badge bg-info text-dark">${escapeHTML(r.status)}</span></td><td>${assignHtml}</td>`;
             tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('.assign-select').forEach(sel => {
+            sel.onchange = (e) => assignRequest(sel.dataset.id, e.target.value);
         });
         tbody.querySelectorAll('.req-link').forEach(link => {
             link.addEventListener('click', (e) => { e.preventDefault(); showRequestDetails(link.dataset.id); });
@@ -277,12 +323,20 @@ async function showRequestDetails(id) {
             <div id="action-buttons"></div>
         `;
         const btnsDiv = document.getElementById('action-buttons');
-        if (['admin', 'executor'].includes(currentUser.role) && ['assigned', 'new'].includes(req.status)) {
-            const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'В работу'; btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу'); btnsDiv.appendChild(btn);
+        const perms = currentUser.permissions || { can_status: true, can_delete: false, can_assign: false };
+
+        if (currentUser.role === 'admin' || (perms.can_status && (['executor', 'manager'].includes(currentUser.role)))) {
+            if (['assigned', 'new'].includes(req.status)) {
+                const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'В работу'; btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу'); btnsDiv.appendChild(btn);
+            }
+            if (req.status === 'in_progress') {
+                const btn = document.createElement('button'); btn.className = 'btn btn-info btn-sm me-2'; btn.innerText = 'Выполнено'; btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены'); btnsDiv.appendChild(btn);
+            }
         }
-        if (['admin', 'executor', 'manager'].includes(currentUser.role) && req.status === 'in_progress') {
-            const btn = document.createElement('button'); btn.className = 'btn btn-info btn-sm me-2'; btn.innerText = 'Выполнено'; btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены'); btnsDiv.appendChild(btn);
+        if ((currentUser.role === 'admin' || perms.can_delete) && req.requester_id == currentUser.id) {
+            const btn = document.createElement('button'); btn.className = 'btn btn-outline-danger btn-sm me-2'; btn.innerText = 'Удалить'; btn.onclick = () => deleteRequest(req.id); btnsDiv.appendChild(btn);
         }
+
         if (req.requester_id == currentUser.id && req.status === 'completed') {
             const div = document.createElement('div');
             div.className = 'mt-3 p-3 bg-light border rounded';
@@ -302,6 +356,23 @@ async function showRequestDetails(id) {
         const modal = new bootstrap.Modal(document.getElementById('requestModal'));
         modal.show();
     } catch (e) { alert('Ошибка загрузки деталей заявки'); }
+}
+
+async function assignRequest(id, userId) {
+    if (!userId) return;
+    const res = await apiFetch('/requests.php?action=assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, assigned_to: userId })
+    });
+    if (res.ok) renderDepartment();
+}
+
+async function deleteRequest(id) {
+    if (confirm('Удалить заявку?')) {
+        const res = await apiFetch(`/requests.php?action=delete&id=${id}`, { method: 'POST' });
+        if (res.ok) { bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide(); renderDashboard(); }
+    }
 }
 
 async function updateStatus(id, status, comment, rating = null) {
@@ -343,7 +414,7 @@ async function renderAdmin() {
                     <div class="col-md-3"><input type="password" name="password" class="form-control" placeholder="Пароль" required></div>
                     <div class="col-md-3"><input type="text" name="full_name" class="form-control" placeholder="ФИО" required></div>
                     <div class="col-md-2">
-                        <select name="role" class="form-select">
+                        <select name="role" class="form-select" id="user-role-select">
                             <option value="user">Пользователь</option>
                             <option value="executor">Исполнитель</option>
                             <option value="manager">Руководитель</option>
@@ -351,6 +422,13 @@ async function renderAdmin() {
                         </select>
                     </div>
                     <div class="col-md-1"><button type="submit" class="btn btn-success w-100">+</button></div>
+                    <div class="col-12 mt-2">
+                        <div class="d-flex gap-3">
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Смена статуса</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление</label></div>
+                            <div class="form-check"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение</label></div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -444,7 +522,18 @@ async function renderAdmin() {
 
     document.getElementById('create-user-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.target));
+        const formData = new FormData(e.target);
+        const data = {
+            login: formData.get('login'),
+            password: formData.get('password'),
+            full_name: formData.get('full_name'),
+            role: formData.get('role'),
+            permissions: {
+                can_status: formData.get('perm_status') === 'on',
+                can_delete: formData.get('perm_delete') === 'on',
+                can_assign: formData.get('perm_assign') === 'on'
+            }
+        };
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { await loadLookups(); renderAdmin(); }
     });

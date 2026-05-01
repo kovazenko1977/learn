@@ -45,7 +45,12 @@ if ($action == 'users') {
         'role' => $data['role'],
         'department_id' => $data['department_id'] ?? null,
         'is_active' => 1,
-        'created_at' => date('c')
+        'created_at' => date('c'),
+        'permissions' => [
+            'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
+            'can_status' => (bool)($data['permissions']['can_status'] ?? true),
+            'can_assign' => (bool)($data['permissions']['can_assign'] ?? false)
+        ]
     ];
     $saved = $storage->insert('users', $newUser);
     unset($saved['password_hash']);

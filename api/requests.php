@@ -85,18 +85,39 @@ if ($method == 'POST' && $action == 'create') {
     ]);
     echo json_encode($saved);
 } elseif ($action == 'my') {
-    echo json_encode($storage->find('requests', ['requester_id' => $user['id']]));
+    $from = $_GET['from'] ?? null;
+    $to = $_GET['to'] ?? null;
+    $requests = $storage->find('requests', ['requester_id' => $user['id']]);
+    if ($from || $to) {
+        $requests = array_filter($requests, function($r) use ($from, $to) {
+            $date = strtotime($r['created_at']);
+            if ($from && $date < strtotime($from)) return false;
+            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+            return true;
+        });
+    }
+    echo json_encode(array_values($requests));
 } elseif ($action == 'department') {
+    $from = $_GET['from'] ?? null;
+    $to = $_GET['to'] ?? null;
+    $requests = [];
     if ($user['role'] == 'admin') {
-        echo json_encode($storage->readCollection('requests'));
+        $requests = $storage->readCollection('requests');
     } else {
         $userData = $storage->findOne('users', ['id' => $user['id']]);
-        if (!$userData['department_id']) {
-            echo json_encode([]);
-        } else {
-            echo json_encode($storage->find('requests', ['department_id' => $userData['department_id']]));
+        if ($userData['department_id']) {
+            $requests = $storage->find('requests', ['department_id' => $userData['department_id']]);
         }
     }
+    if ($from || $to) {
+        $requests = array_filter($requests, function($r) use ($from, $to) {
+            $date = strtotime($r['created_at']);
+            if ($from && $date < strtotime($from)) return false;
+            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+            return true;
+        });
+    }
+    echo json_encode(array_values($requests));
 } elseif ($action == 'details') {
     $id = $_GET['id'] ?? 0;
     $request = $storage->findOne('requests', ['id' => $id]);
@@ -129,6 +150,14 @@ if ($method == 'POST' && $action == 'create') {
         http_response_code(404);
         exit(json_encode(['message' => 'Request not found']));
     }
+
+    // Check granular permission for status change
+    $perms = $user['permissions'] ?? ['can_status' => true];
+    if (!$perms['can_status'] && $user['role'] != 'admin') {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Permission denied (can_status)']));
+    }
+
     if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || $data['status'] != 'closed')) {
          http_response_code(403);
          exit(json_encode(['message' => 'Forbidden']));
@@ -148,6 +177,55 @@ if ($method == 'POST' && $action == 'create') {
         'changed_at' => date('c'),
         'comment' => $data['comment'] ?? ''
     ]);
+    echo json_encode(['status' => 'ok']);
+} elseif ($method == 'POST' && $action == 'assign') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['id']) || empty($data['assigned_to'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Invalid data']));
+    }
+
+    $perms = $user['permissions'] ?? ['can_assign' => false];
+    if (!$perms['can_assign'] && $user['role'] != 'admin' && $user['role'] != 'manager') {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Permission denied (can_assign)']));
+    }
+
+    $request = $storage->findOne('requests', ['id' => $data['id']]);
+    if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id']) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
+
+    $storage->update('requests', $data['id'], ['assigned_to' => $data['assigned_to'], 'status' => 'assigned']);
+    $storage->insert('status_history', [
+        'request_id' => $data['id'],
+        'status' => 'assigned',
+        'changed_by' => $user['id'],
+        'changed_at' => date('c'),
+        'comment' => 'Назначен исполнитель'
+    ]);
+    echo json_encode(['status' => 'ok']);
+} elseif ($method == 'POST' && $action == 'delete') {
+    $id = $_GET['id'] ?? 0;
+    $perms = $user['permissions'] ?? ['can_delete' => false];
+    if (!$perms['can_delete'] && $user['role'] != 'admin') {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Permission denied (can_delete)']));
+    }
+
+    $request = $storage->findOne('requests', ['id' => $id]);
+    if (!$request) {
+        http_response_code(404);
+        exit(json_encode(['message' => 'Request not found']));
+    }
+
+    if ($user['role'] != 'admin' && $request['requester_id'] != $user['id']) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
+
+    $storage->delete('requests', $id);
     echo json_encode(['status' => 'ok']);
 } elseif ($action == 'export' && in_array($user['role'], ['admin', 'manager'])) {
     $from = $_GET['from'] ?? null;
