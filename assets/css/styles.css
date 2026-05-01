@@ -1,0 +1,89 @@
+:root {
+    --primary-color: #0d6efd;
+    --sidebar-width: 250px;
+}
+
+body {
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-new { background-color: #e3f2fd; color: #0d47a1; }
+.status-assigned { background-color: #f3e5f5; color: #4a148c; }
+.status-in_work { background-color: #fff3e0; color: #e65100; }
+.status-completed { background-color: #e8f5e9; color: #1b5e20; }
+.status-rejected { background-color: #ffevec; color: #b71c1c; }
+
+.priority-badge {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.priority-Низкий { background-color: #4caf50; }
+.priority-Средний { background-color: #ffc107; }
+.priority-Высокий { background-color: #ff9800; }
+.priority-Критический { background-color: #f44336; }
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.draggable-request {
+    cursor: grab;
+}
+
+.draggable-request:active {
+    cursor: grabbing;
+}
+
+.drop-zone {
+    min-height: 100px;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.drop-zone-active {
+    border-color: var(--primary-color);
+    background-color: rgba(13, 110, 253, 0.05);
+}

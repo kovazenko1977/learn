@@ -1,0 +1,38 @@
+[
+    {
+        "id": "u1",
+        "login": "admin",
+        "password": "$2y$10$ESF.JlKIFzzPs\/Ox6KGH4.dAO4dc8UluONuoBCylZHVOryL7.zzVW",
+        "role": "admin",
+        "name": "Администратор Системы",
+        "email": "admin@example.com",
+        "department_id": "d1"
+    },
+    {
+        "id": "u2",
+        "login": "head",
+        "password": "$2y$10$Q8dg\/JJFwFi6PS4f6GyIFuP8BNs4JyIJwV79wkXQaJ9nQAc95OpNW",
+        "role": "head",
+        "name": "Начальник Отдела",
+        "email": "head@example.com",
+        "department_id": "d1"
+    },
+    {
+        "id": "u3",
+        "login": "tech",
+        "password": "$2y$10$05MMyYHHFi5s0rYaZ1A5b.a16K\/U20AqBzk8elX\/IBxDYM8z6j2.W",
+        "role": "executor",
+        "name": "Исполнитель Техник",
+        "email": "tech@example.com",
+        "department_id": "d1"
+    },
+    {
+        "id": "u4",
+        "login": "user",
+        "password": "$2y$10$ePK9gIGH.GM9A9yY.I2wzusFhpwtn5uigdjd9kfOHCOlGge722Eiu",
+        "role": "employee",
+        "name": "Сотрудник Заявитель",
+        "email": "user@example.com",
+        "department_id": "d1"
+    }
+]

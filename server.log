@@ -1,0 +1,25 @@
+[Fri May  1 01:20:04 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Fri May  1 01:20:07 2026] 127.0.0.1:51586 Accepted
+[Fri May  1 01:20:07 2026] 127.0.0.1:51586 [200]: GET /
+[Fri May  1 01:20:07 2026] 127.0.0.1:51586 Closing
+[Fri May  1 01:20:07 2026] 127.0.0.1:51592 Accepted
+[Fri May  1 01:20:07 2026] 127.0.0.1:51594 Accepted
+[Fri May  1 01:20:07 2026] 127.0.0.1:51600 Accepted
+[Fri May  1 01:20:07 2026] 127.0.0.1:51592 [200]: GET /assets/css/styles.css
+[Fri May  1 01:20:07 2026] 127.0.0.1:51592 Closing
+[Fri May  1 01:20:07 2026] 127.0.0.1:51594 [200]: GET /assets/js/api.js
+[Fri May  1 01:20:07 2026] 127.0.0.1:51600 [200]: GET /assets/js/app.js
+[Fri May  1 01:20:07 2026] 127.0.0.1:51594 Closing
+[Fri May  1 01:20:07 2026] 127.0.0.1:51600 Closing
+[Fri May  1 01:20:08 2026] 127.0.0.1:51606 Accepted
+[Fri May  1 01:20:08 2026] 127.0.0.1:51606 [200]: POST /api/auth.php?action=login
+[Fri May  1 01:20:08 2026] 127.0.0.1:51606 Closing
+[Fri May  1 01:20:08 2026] 127.0.0.1:51618 Accepted
+[Fri May  1 01:20:08 2026] 127.0.0.1:51618 [200]: GET /api/admin.php?action=settings
+[Fri May  1 01:20:08 2026] 127.0.0.1:51618 Closing
+[Fri May  1 01:20:08 2026] 127.0.0.1:51634 Accepted
+[Fri May  1 01:20:08 2026] 127.0.0.1:51634 [200]: GET /api/analytics.php
+[Fri May  1 01:20:08 2026] 127.0.0.1:51634 Closing
+[Fri May  1 01:20:08 2026] 127.0.0.1:51636 Accepted
+[Fri May  1 01:20:08 2026] 127.0.0.1:51636 [200]: GET /api/requests.php?action=list
+[Fri May  1 01:20:08 2026] 127.0.0.1:51636 Closing
