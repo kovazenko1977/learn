@@ -584,6 +584,35 @@ async function renderAdmin() {
                 </div>
             </div>
             <div class="col-xl-8">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-primary"></i>Журнал входов</h5>
+                        <div class="d-flex gap-2 align-items-center">
+                            <input type="date" id="log-from" class="form-control form-control-sm border-0 bg-light" style="width: 130px;">
+                            <input type="date" id="log-to" class="form-control form-control-sm border-0 bg-light" style="width: 130px;">
+                            <select id="log-user" class="form-select form-select-sm border-0 bg-light" style="width: 150px;">
+                                <option value="">Все пользователи</option>
+                                ${users.map(u => `<option value="${u.id}">${escapeHTML(u.full_name)}</option>`).join('')}
+                            </select>
+                            <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="refreshLoginLogs()"><i class="bi bi-arrow-repeat"></i></button>
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th class="ps-4">Пользователь</th>
+                                    <th>IP Адрес</th>
+                                    <th class="pe-4">Дата и время</th>
+                                </tr>
+                            </thead>
+                            <tbody id="login-logs-table">
+                                <tr><td colspan="3" class="text-center py-4 text-muted small">Загрузка логов...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
                     <div class="card-header bg-white py-3"><h5 class="fw-bold mb-0">Список пользователей</h5></div>
                     <div class="table-responsive">
@@ -727,6 +756,37 @@ async function renderAdmin() {
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { await loadLookups(); renderAdmin(); }
     });
+
+    window.refreshLoginLogs = async () => {
+        const from = document.getElementById('log-from').value;
+        const to = document.getElementById('log-to').value;
+        const userId = document.getElementById('log-user').value;
+        const tbody = document.getElementById('login-logs-table');
+
+        try {
+            const res = await apiFetch(`/admin.php?action=login_logs&from=${from}&to=${to}&user_id=${userId}`);
+            const logs = await res.json();
+            tbody.innerHTML = logs.map(l => `
+                <tr>
+                    <td class="ps-4">
+                        <div class="fw-bold small">${escapeHTML(l.full_name)}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">${escapeHTML(l.login)} (ID: ${l.user_id})</div>
+                    </td>
+                    <td class="small text-muted">${escapeHTML(l.ip)}</td>
+                    <td class="pe-4 text-end">
+                        <div class="small fw-medium">${new Date(l.timestamp).toLocaleDateString()}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">${new Date(l.timestamp).toLocaleTimeString()}</div>
+                    </td>
+                </tr>
+            `).join('');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-muted small">Логов не найдено</td></tr>';
+            }
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-danger small">Ошибка загрузки логов</td></tr>';
+        }
+    };
+    refreshLoginLogs();
 }
 
 window.triggerRestore = async () => {

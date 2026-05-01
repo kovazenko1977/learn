@@ -51,6 +51,15 @@ if ($action == 'login' && $method == 'POST') {
 
     $result = Auth::login($login, $password, $storage);
     if ($result) {
+        // Log the login event
+        $storage->insert('login_logs', [
+            'user_id' => $result['user']['id'],
+            'full_name' => $result['user']['full_name'],
+            'login' => $result['user']['login'],
+            'timestamp' => date('c'),
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+        ]);
         echo json_encode($result);
     } else {
         http_response_code(401);

@@ -2,17 +2,34 @@
 require_once __DIR__ . '/Storage.php';
 
 class Auth {
-    private static $secret = "php-crm-hop-very-secret-key-12345";
+    private static $secret = null;
+
+    private static function getSecret() {
+        if (self::$secret !== null) return self::$secret;
+
+        $secretFile = __DIR__ . '/../data/secret.key';
+        if (file_exists($secretFile)) {
+            self::$secret = trim(file_get_contents($secretFile));
+        }
+
+        if (empty(self::$secret)) {
+            self::$secret = bin2hex(random_bytes(32));
+            file_put_contents($secretFile, self::$secret);
+            @chmod($secretFile, 0600);
+        }
+        return self::$secret;
+    }
 
     public static function forceLogin($user) {
         $payload = [
             'id' => $user['id'],
             'role' => $user['role'],
             'department_id' => $user['department_id'] ?? null,
+            'permissions' => $user['permissions'] ?? null,
             'exp' => time() + 86400
         ];
         $jsonPayload = json_encode($payload);
-        $signature = hash_hmac('sha256', $jsonPayload, self::$secret);
+        $signature = hash_hmac('sha256', $jsonPayload, self::getSecret());
         $token = base64_encode($jsonPayload) . '.' . $signature;
         return ['token' => $token, 'user' => $user];
     }
@@ -67,7 +84,7 @@ class Auth {
         $jsonPayload = base64_decode($parts[0]);
         $signature = $parts[1];
 
-        if (hash_hmac('sha256', $jsonPayload, self::$secret) !== $signature) return null;
+        if (hash_hmac('sha256', $jsonPayload, self::getSecret()) !== $signature) return null;
 
         $decoded = json_decode($jsonPayload, true);
         if (!$decoded || !isset($decoded['exp']) || $decoded['exp'] < time()) return null;

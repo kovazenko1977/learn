@@ -19,7 +19,7 @@ $authEnabled = isset($settings['auth_enabled']) ? (bool)$settings['auth_enabled'
 
 $user = null;
 if ($authEnabled) {
-    $user = Auth::check(['admin']);
+    $user = Auth::check();
     if (!$user) {
         http_response_code(401);
         exit(json_encode(['message' => 'Unauthorized']));
@@ -27,6 +27,13 @@ if ($authEnabled) {
 }
 
 $action = $_GET['action'] ?? '';
+
+// Role-based access for administrative actions
+$adminOnly = ['create_user', 'update_settings', 'backup', 'restore', 'login_logs', 'delete_department', 'delete_worktype'];
+if (in_array($action, $adminOnly) && $user['role'] !== 'admin') {
+    http_response_code(403);
+    exit(json_encode(['message' => 'Forbidden']));
+}
 
 if ($action == 'users') {
     $users = $storage->readCollection('users');
@@ -158,6 +165,24 @@ if ($action == 'users') {
         $zip->close();
         echo json_encode(['message' => 'Restore complete']);
     } else echo json_encode(['message' => 'Restore failed']);
+} elseif ($action == 'login_logs') {
+    $logs = $storage->readCollection('login_logs');
+    $from = $_GET['from'] ?? '';
+    $to = $_GET['to'] ?? '';
+    $user_id = $_GET['user_id'] ?? '';
+
+    $filtered = array_filter($logs, function($l) use ($from, $to, $user_id) {
+        if ($user_id && $l['user_id'] != $user_id) return false;
+        if ($from && substr($l['timestamp'], 0, 10) < $from) return false;
+        if ($to && substr($l['timestamp'], 0, 10) > $to) return false;
+        return true;
+    });
+
+    usort($filtered, function($a, $b) {
+        return strcmp($b['timestamp'], $a['timestamp']);
+    });
+
+    echo json_encode(array_values($filtered));
 } else {
     http_response_code(403);
     echo json_encode(['message' => 'Forbidden']);
