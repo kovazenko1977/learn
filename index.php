@@ -76,28 +76,31 @@
             transition: all 0.3s;
         }
         .sidebar .nav-link {
-            color: #e2e8f0 !important; /* Even lighter for maximum contrast on dark bg */
-            padding: 0.8rem 1.5rem;
+            color: #ffffff !important;
+            padding: 1.1rem 1.5rem;
             border-radius: 0.75rem;
-            margin: 0.2rem 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            margin: 0.4rem 0.75rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             cursor: pointer;
             text-decoration: none;
+            border: 1px solid transparent;
         }
         .sidebar .nav-link:hover {
             color: #fff !important;
-            background: rgba(255,255,255,0.12);
-            transform: translateX(4px);
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.02);
         }
         .sidebar .nav-link.active {
             color: #fff !important;
-            background-color: var(--sidebar-active) !important;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.5);
-            transform: translateX(4px);
+            background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%) !important;
+            box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.5);
+            transform: scale(1.02);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         .sidebar-brand {
             padding: 2rem 1.5rem;
@@ -144,7 +147,8 @@
                 display: none;
             }
             .offcanvas.sidebar {
-                z-index: 1060 !important; /* Ensure it is above the backdrop (1040) */
+                z-index: 1060 !important;
+                background-color: #0f172a !important; /* Deeper, richer dark background */
             }
             .mobile-header {
                 display: flex;
@@ -350,15 +354,19 @@
                 </nav>
 
                 <!-- Mobile Sidebar (Offcanvas) -->
-                <div class="offcanvas offcanvas-start sidebar p-0 border-0" tabindex="-1" id="mobileSidebar" style="width: 280px;">
-                    <div class="offcanvas-header text-white px-4 pt-4">
-                        <h5 class="offcanvas-title fw-bold"><i class="bi bi-tools me-2"></i> HOP</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+                <div class="offcanvas offcanvas-start sidebar p-0 border-0 shadow-lg" tabindex="-1" id="mobileSidebar" style="width: 300px;">
+                    <div class="offcanvas-header text-white px-4 py-4 border-bottom border-white border-opacity-10">
+                        <h4 class="offcanvas-title fw-bold"><i class="bi bi-tools me-2 text-info"></i> HOP CRM</h4>
+                        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"></button>
                     </div>
-                    <div class="offcanvas-body p-0 pt-3">
+                    <div class="offcanvas-body p-0 pt-3 d-flex flex-column">
                         <ul class="nav flex-column mb-auto" id="mobile-nav">
                             <!-- JS will clone navigation here -->
                         </ul>
+                        <div class="p-4 border-top border-white border-opacity-10 mt-auto">
+                             <div id="mobile-user-info" class="small mb-3 text-white-50 bg-white bg-opacity-10 p-3 rounded-4"></div>
+                             <button onclick="location.reload()" class="btn btn-outline-info btn-sm w-100 rounded-pill"><i class="bi bi-arrow-repeat me-1"></i> Обновить</button>
+                        </div>
                     </div>
                 </div>
 

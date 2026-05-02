@@ -129,10 +129,13 @@ function showLogin() {
 function showLayout() {
     el.loginScreen.classList.add('hidden');
     el.mainLayout.classList.remove('hidden');
-    el.userInfo.innerHTML = `
+    const userInfoHtml = `
         <div class="fw-bold">${escapeHTML(currentUser.full_name)}</div>
         <div class="text-white-50 small">${escapeHTML(currentUser.role)}</div>
     `;
+    el.userInfo.innerHTML = userInfoHtml;
+    const mobileUserInfo = document.getElementById('mobile-user-info');
+    if (mobileUserInfo) mobileUserInfo.innerHTML = userInfoHtml;
 
     const adminEl = document.getElementById('nav-admin');
     const reportsEl = document.getElementById('nav-reports');
@@ -148,13 +151,32 @@ function showLayout() {
     const mobileNav = document.getElementById('mobile-nav');
     mobileNav.innerHTML = el.mainNav.innerHTML;
 
-    // Setup mobile nav clicks
-    mobileNav.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
+    // Setup mobile nav clicks - Use event delegation and direct view triggering
+    mobileNav.addEventListener('click', (e) => {
+        const link = e.target.closest('.nav-link');
+        if (link) {
+            e.preventDefault();
+            const view = link.dataset.view;
+
+            // Trigger view change
+            switch (view) {
+                case 'dashboard': renderDashboard(); break;
+                case 'department': renderDepartment(); break;
+                case 'create': renderCreate(); break;
+                case 'admin': renderAdmin(); break;
+                case 'reports': renderReports(); break;
+                case 'help': renderHelp(); break;
+            }
+
+            // Update active state
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelectorAll(`.nav-link[data-view="${view}"]`).forEach(l => l.classList.add('active'));
+
+            // Hide offcanvas
             const offcanvasEl = document.getElementById('mobileSidebar');
-            const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+            const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
             if (offcanvas) offcanvas.hide();
-        });
+        }
     });
 }
 
