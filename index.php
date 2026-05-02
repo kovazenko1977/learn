@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script>
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            if (!window.location.pathname.includes('/mobile/')) {
+                window.location.href = 'mobile/';
+            }
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HOP | CRM Система управления поддержкой</title>

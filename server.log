@@ -1,22 +1,37 @@
-[Sat May  2 16:51:06 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Sat May  2 16:54:43 2026] 127.0.0.1:47878 Accepted
-[Sat May  2 16:54:43 2026] 127.0.0.1:47878 [200]: GET /mobile/index.php
-[Sat May  2 16:54:43 2026] 127.0.0.1:47878 Closing
-[Sat May  2 16:54:43 2026] 127.0.0.1:47882 Accepted
-[Sat May  2 16:54:43 2026] 127.0.0.1:47892 Accepted
-[Sat May  2 16:54:43 2026] 127.0.0.1:47882 [200]: GET /mobile/style.css
-[Sat May  2 16:54:43 2026] 127.0.0.1:47892 [200]: GET /mobile/app.js
-[Sat May  2 16:54:43 2026] 127.0.0.1:47882 Closing
-[Sat May  2 16:54:43 2026] 127.0.0.1:47892 Closing
-[Sat May  2 16:54:43 2026] 127.0.0.1:47900 Accepted
-[Sat May  2 16:54:44 2026] 127.0.0.1:47900 [200]: POST /api/auth.php?action=login
-[Sat May  2 16:54:44 2026] 127.0.0.1:47900 Closing
-[Sat May  2 16:54:44 2026] 127.0.0.1:47916 Accepted
-[Sat May  2 16:54:44 2026] 127.0.0.1:47922 Accepted
-[Sat May  2 16:54:44 2026] 127.0.0.1:47916 [200]: GET /api/admin.php?action=worktypes
-[Sat May  2 16:54:44 2026] 127.0.0.1:47916 Closing
-[Sat May  2 16:54:44 2026] 127.0.0.1:47922 [200]: GET /api/admin.php?action=users
-[Sat May  2 16:54:44 2026] 127.0.0.1:47922 Closing
-[Sat May  2 16:54:44 2026] 127.0.0.1:47930 Accepted
-[Sat May  2 16:54:44 2026] 127.0.0.1:47930 [200]: GET /api/requests.php?action=my
-[Sat May  2 16:54:44 2026] 127.0.0.1:47930 Closing
+[Sat May  2 17:47:26 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sat May  2 17:50:59 2026] 127.0.0.1:37310 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37310 [200]: GET /index.php
+[Sat May  2 17:50:59 2026] 127.0.0.1:37310 Closing
+[Sat May  2 17:50:59 2026] 127.0.0.1:37314 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37314 [200]: GET /js/app.js?v=1777744259
+[Sat May  2 17:50:59 2026] 127.0.0.1:37314 Closing
+[Sat May  2 17:50:59 2026] 127.0.0.1:37330 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37330 [200]: GET /api/auth.php?action=config
+[Sat May  2 17:50:59 2026] 127.0.0.1:37330 Closing
+[Sat May  2 17:50:59 2026] 127.0.0.1:37346 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37346 [200]: GET /sw.js
+[Sat May  2 17:50:59 2026] 127.0.0.1:37346 Closing
+[Sat May  2 17:50:59 2026] 127.0.0.1:37356 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37370 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37384 Accepted
+[Sat May  2 17:50:59 2026] 127.0.0.1:37356 [200]: GET /
+[Sat May  2 17:50:59 2026] 127.0.0.1:37356 Closing
+[Sat May  2 17:50:59 2026] 127.0.0.1:37370 [200]: GET /js/app.js
+[Sat May  2 17:50:59 2026] 127.0.0.1:37370 Closing
+[Sat May  2 17:50:59 2026] 127.0.0.1:37384 [200]: GET /index.php
+[Sat May  2 17:50:59 2026] 127.0.0.1:37384 Closing
+[Sat May  2 17:51:00 2026] 127.0.0.1:37396 Accepted
+[Sat May  2 17:51:00 2026] 127.0.0.1:37396 [200]: GET /index.php
+[Sat May  2 17:51:00 2026] 127.0.0.1:37396 Closing
+[Sat May  2 17:51:00 2026] 127.0.0.1:37404 Accepted
+[Sat May  2 17:51:00 2026] 127.0.0.1:37412 Accepted
+[Sat May  2 17:51:00 2026] 127.0.0.1:37404 [200]: GET /js/app.js?v=1777744260
+[Sat May  2 17:51:00 2026] 127.0.0.1:37404 Closing
+[Sat May  2 17:51:00 2026] 127.0.0.1:37412 [200]: GET /mobile/
+[Sat May  2 17:51:00 2026] 127.0.0.1:37412 Closing
+[Sat May  2 17:51:00 2026] 127.0.0.1:37420 Accepted
+[Sat May  2 17:51:00 2026] 127.0.0.1:37436 Accepted
+[Sat May  2 17:51:00 2026] 127.0.0.1:37420 [200]: GET /mobile/style.css
+[Sat May  2 17:51:00 2026] 127.0.0.1:37420 Closing
+[Sat May  2 17:51:00 2026] 127.0.0.1:37436 [200]: GET /mobile/app.js
+[Sat May  2 17:51:00 2026] 127.0.0.1:37436 Closing
