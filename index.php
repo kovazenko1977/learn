@@ -76,7 +76,7 @@
             transition: all 0.3s;
         }
         .sidebar .nav-link {
-            color: #94a3b8;
+            color: #e2e8f0 !important; /* Even lighter for maximum contrast on dark bg */
             padding: 0.8rem 1.5rem;
             border-radius: 0.75rem;
             margin: 0.2rem 0.75rem;
@@ -85,16 +85,18 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
         }
         .sidebar .nav-link:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.05);
+            color: #fff !important;
+            background: rgba(255,255,255,0.12);
             transform: translateX(4px);
         }
         .sidebar .nav-link.active {
-            color: #fff;
-            background-color: var(--sidebar-active);
-            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+            color: #fff !important;
+            background-color: var(--sidebar-active) !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.5);
             transform: translateX(4px);
         }
         .sidebar-brand {
@@ -140,6 +142,9 @@
         @media (max-width: 767.98px) {
             nav.sidebar {
                 display: none;
+            }
+            .offcanvas.sidebar {
+                z-index: 1060 !important; /* Ensure it is above the backdrop (1040) */
             }
             .mobile-header {
                 display: flex;
@@ -345,14 +350,14 @@
                 </nav>
 
                 <!-- Mobile Sidebar (Offcanvas) -->
-                <div class="offcanvas offcanvas-start sidebar p-0" tabindex="-1" id="mobileSidebar" style="width: 280px;">
-                    <div class="offcanvas-header text-white">
-                        <h5 class="offcanvas-title fw-bold">CRM ХОП</h5>
+                <div class="offcanvas offcanvas-start sidebar p-0 border-0" tabindex="-1" id="mobileSidebar" style="width: 280px;">
+                    <div class="offcanvas-header text-white px-4 pt-4">
+                        <h5 class="offcanvas-title fw-bold"><i class="bi bi-tools me-2"></i> CRM ХОП</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
                     </div>
-                    <div class="offcanvas-body p-0">
+                    <div class="offcanvas-body p-0 pt-3">
                         <ul class="nav flex-column mb-auto" id="mobile-nav">
-                            <!-- JS will clone navigation here or use same event delegation -->
+                            <!-- JS will clone navigation here -->
                         </ul>
                     </div>
                 </div>

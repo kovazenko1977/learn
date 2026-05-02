@@ -141,13 +141,12 @@ function showLayout() {
     mobileNav.innerHTML = el.mainNav.innerHTML;
 
     // Setup mobile nav clicks
-    mobileNav.addEventListener('click', (e) => {
-        const link = e.target.closest('a');
-        if (link) {
+    mobileNav.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
             const offcanvasEl = document.getElementById('mobileSidebar');
             const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
             if (offcanvas) offcanvas.hide();
-        }
+        });
     });
 }
 
@@ -1020,44 +1019,158 @@ window.deleteWT = async (id) => {
 
 async function renderHelp() {
     el.appContent.innerHTML = `
-        <h2 class="fw-bold mb-4">Справка по системе CRM ХОП</h2>
+        <h2 class="fw-bold mb-4">Подробное руководство пользователя</h2>
         <div class="row g-4 slide-in">
-            <div class="col-md-8">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm p-4 mb-4 border-start border-primary border-5">
+                    <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-badge me-2"></i> 0. Роли в системе</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-borderless align-middle mb-0">
+                            <thead><tr class="text-muted small uppercase"><th>Роль</th><th>Описание</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="badge bg-light text-dark border w-100">User</span></td><td>Может создавать заявки, отслеживать только свои, вести чат и закрывать их.</td></tr>
+                                <tr><td><span class="badge bg-light text-dark border w-100">Executor</span></td><td>Видит заявки своего отдела, переводит их в "В работу" и "Выполнена".</td></tr>
+                                <tr><td><span class="badge bg-light text-dark border w-100">Manager</span></td><td>Видит все заявки отдела, назначает исполнителей, просматривает отчеты.</td></tr>
+                                <tr><td><span class="badge bg-light text-dark border w-100">Admin</span></td><td>Полный доступ ко всем функциям, управление пользователями и системными настройками.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
                 <div class="card border-0 shadow-sm p-4 mb-4">
-                    <h5 class="fw-bold text-primary"><i class="bi bi-info-circle me-2"></i> Общие сведения</h5>
-                    <p>CRM ХОП (Хозяйственно-Оперативная Поддержка) — это система для автоматизации подачи и обработки заявок на обслуживание.</p>
-                    <hr>
-                    <h6 class="fw-bold">Роли и возможности:</h6>
-                    <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item px-0"><strong>Пользователь:</strong> создание своих заявок, отслеживание статуса, чат с исполнителем, подтверждение выполнения.</li>
-                        <li class="list-group-item px-0"><strong>Исполнитель:</strong> просмотр заявок своего отдела, принятие в работу, отметка о выполнении.</li>
-                        <li class="list-group-item px-0"><strong>Руководитель:</strong> мониторинг всех заявок отдела, назначение исполнителей, просмотр отчетов.</li>
-                        <li class="list-group-item px-0"><strong>Администратор:</strong> управление пользователями, отделами, системными настройками и базами данных.</li>
+                    <h5 class="fw-bold text-primary mb-3"><i class="bi bi-grid-1x2 me-2"></i> 1. Мои заявки (Рабочий стол пользователя)</h5>
+                    <p>Этот раздел является основным для обычных сотрудников. Здесь вы видите все поданные вами запросы.</p>
+                    <ul>
+                        <li><strong>Фильтрация:</strong> Используйте календарь сверху, чтобы найти заявки за определенный период. Кнопка "Сегодня" быстро установит текущую дату.</li>
+                        <li><strong>Статусы:</strong> Цветные индикаторы показывают на каком этапе находится ваш запрос (Новая, В работе, Выполнена и т.д.).</li>
+                        <li><strong>Просмотр деталей:</strong> Нажмите на номер заявки (например, ХОП-0001), чтобы открыть окно с подробностями и чатом.</li>
                     </ul>
                 </div>
+            </div>
 
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold text-success"><i class="bi bi-play-circle me-2"></i> Как работать с заявкой</h5>
-                    <ol class="mb-0">
-                        <li class="mb-2"><strong>Создание:</strong> Перейдите в "Создать заявку", выберите тип работ, укажите место и опишите проблему. Можно прикрепить фото.</li>
-                        <li class="mb-2"><strong>Назначение:</strong> Руководитель в разделе "Заявки отдела" назначает свободного специалиста.</li>
-                        <li class="mb-2"><strong>Выполнение:</strong> Исполнитель переводит заявку в статус "В работу", а по завершении — в "Выполнена".</li>
-                        <li class="mb-2"><strong>Закрытие:</strong> Заявитель проверяет работу, может написать в чат или нажать "Принять и закрыть". Если работа не устраивает — "На доработку".</li>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4 mb-4 h-100">
+                    <h5 class="fw-bold text-success mb-3"><i class="bi bi-plus-circle me-2"></i> 2. Создание заявки</h5>
+                    <p>Для подачи нового обращения:</p>
+                    <ol>
+                        <li>Выберите <strong>Тип работ</strong> (Электрика, Сантехника и т.д.). Система автоматически направит заявку в нужный отдел.</li>
+                        <li>Установите <strong>Приоритет</strong>. "Высокий" приоритет сигнализирует об аварийной ситуации.</li>
+                        <li>Укажите точное <strong>Место выполнения</strong> (корпус, этаж, кабинет).</li>
+                        <li>Подробно опишите проблему в поле <strong>Описание</strong>.</li>
+                        <li>При необходимости прикрепите фото поломки для ускорения диагностики.</li>
                     </ol>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-4 mb-4 bg-light">
-                    <h5 class="fw-bold mb-3"><i class="bi bi-code-slash me-2"></i> О разработчике</h5>
-                    <p class="mb-1"><strong>Разработчик:</strong> Коваженко С.Б.</p>
-                    <p class="mb-1"><strong>Сайт:</strong> <a href="https://wes.by" target="_blank" class="text-decoration-none">wes.by</a></p>
-                    <p class="text-muted small mt-3">Система построена на современном стеке PHP 8 + Vanilla JS + Bootstrap 5. Поддерживает работу с JSON и MySQL.</p>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4 mb-4 h-100">
+                    <h5 class="fw-bold text-warning mb-3"><i class="bi bi-people me-2"></i> 3. Заявки отдела (Для руководителей)</h5>
+                    <p>Специальный раздел для управления потоком работ:</p>
+                    <ul>
+                        <li><strong>Назначение:</strong> Выберите исполнителя из выпадающего списка в строке заявки. Исполнитель мгновенно увидит её в своем списке.</li>
+                        <li><strong>Контроль:</strong> Следите за тем, чтобы заявки не застаивались в статусе "Новая".</li>
+                        <li><strong>Переназначение:</strong> Вы можете сменить исполнителя в любой момент, если это необходимо.</li>
+                    </ul>
                 </div>
+            </div>
 
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i> Безопасность</h5>
-                    <p class="small text-muted mb-0">Все действия логируются. Пароли хранятся в виде защищенных хешей. Доступ к данным ограничен ролевой моделью и настройками разрешений.</p>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold text-info mb-3"><i class="bi bi-chat-dots me-2"></i> 4. Чат и Взаимодействие</h5>
+                    <p>Внутри каждой заявки есть "Чат поддержки":</p>
+                    <ul>
+                        <li>Вы можете задать уточняющий вопрос исполнителю.</li>
+                        <li>Исполнитель может запросить дополнительную информацию.</li>
+                        <li>Все сообщения сохраняются в истории заявки.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold text-danger mb-3"><i class="bi bi-check2-all me-2"></i> 5. Подтверждение и Оценка</h5>
+                    <p>Когда работа выполнена:</p>
+                    <ul>
+                        <li>Заявка переходит в статус <strong>"Выполнена"</strong>.</li>
+                        <li>У вас появится кнопка <strong>"Принять и закрыть"</strong>.</li>
+                        <li>Пожалуйста, поставьте оценку от 1 до 5 звезд. Это важно для рейтинга отделов.</li>
+                        <li>Если работа выполнена некачественно, нажмите <strong>"На доработку"</strong> и укажите причину.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm p-4 mb-4 bg-dark text-white">
+                    <h5 class="fw-bold text-info mb-3"><i class="bi bi-shield-lock me-2"></i> 6. Администрирование (Для системных администраторов)</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Пользователи</h6>
+                            <p class="small opacity-75">Создание аккаунтов, сброс паролей и настройка прав доступа (Permissions).</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Структура</h6>
+                            <p class="small opacity-75">Настройка отделов и привязка к ним типов работ (услуг) с указанием SLA (нормативного времени выполнения).</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Данные</h6>
+                            <p class="small opacity-75">Переключение между JSON и MySQL, создание резервных копий (Backup) и экспорт данных в Excel.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-question-diamond me-2"></i> 7. Часто задаваемые вопросы (FAQ)</h5>
+                    <div class="accordion accordion-flush" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Как быстро мою заявку выполнят?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body px-0 small text-muted">
+                                    У каждого типа работ есть свой норматив времени (SLA). Обычно это от 4 до 24 часов. Вы можете увидеть статус заявки в реальном времени в своем личном кабинете.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Что делать, если заявку отклонили?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body px-0 small text-muted">
+                                    Если заявка отклонена ("Rejected"), проверьте комментарий исполнителя в истории изменений или чате. Возможно, требуется уточнение данных или предоставление доступа в помещение.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold px-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Как изменить приоритет уже созданной заявки?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body px-0 small text-muted">
+                                    После создания заявки изменить приоритет может только руководитель отдела-исполнителя или администратор. Напишите соответствующую просьбу в чат к заявке.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 text-center mb-5">
+                <div class="p-4 bg-white border rounded-4 shadow-sm">
+                    <h6 class="fw-bold">О разработчике</h6>
+                    <p class="mb-1">Разработка и техническая поддержка системы: <strong>Коваженко С.Б.</strong></p>
+                    <p class="mb-0">Персональный сайт и контакты: <a href="https://wes.by" target="_blank" class="text-decoration-none fw-bold">wes.by</a></p>
+                    <div class="mt-3 small text-muted">Версия системы: 1.0.4 | 2026</div>
                 </div>
             </div>
         </div>
