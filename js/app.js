@@ -166,6 +166,9 @@ function showLayout() {
             offcanvas.show();
         };
     }
+
+    const mBack = document.getElementById('mobile-back-btn');
+    if (mBack) mBack.onclick = () => navigateToView('dashboard');
 }
 
 el.loginForm.addEventListener('submit', async (e) => {
@@ -208,6 +211,16 @@ function navigateToView(view) {
     if (!view) return;
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelectorAll(`.nav-link[data-view="${view}"]`).forEach(l => l.classList.add('active'));
+
+    // Mobile title management
+    const mTitle = document.getElementById('mobile-title');
+    const mBack = document.getElementById('mobile-back-btn');
+    if (mTitle) {
+        const titles = { 'dashboard': 'HOP', 'department': 'Заявки', 'create': 'Новая заявка', 'admin': 'Настройки', 'reports': 'Аналитика', 'help': 'Инфо' };
+        mTitle.innerText = titles[view] || 'HOP';
+    }
+    if (mBack) mBack.style.display = view === 'dashboard' ? 'none' : 'block';
+
     switch (view) {
         case 'dashboard': renderDashboard(); break;
         case 'department': renderDepartment(); break;
@@ -285,39 +298,63 @@ function setToday(fromId, toId, callback) {
 
 async function renderDashboard(from = '', to = '') {
     const isMobile = window.innerWidth < 768;
-    el.appContent.innerHTML = `
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <h2 class="fw-bold mb-0">Мои заявки</h2>
-            <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
-                <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
-                    <i class="bi bi-calendar3 text-muted ms-1"></i>
-                    <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
-                    <span class="text-muted small">до</span>
-                    <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
+    if (isMobile) {
+        el.appContent.innerHTML = `
+            <div class="p-3">
+                <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-calendar3 text-primary"></i>
+                        <input type="date" id="dash-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                        <span class="text-muted small">до</span>
+                        <input type="date" id="dash-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
+                        <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterDashboard()">Найти</button>
+                    </div>
                 </div>
-                <div class="d-flex gap-2 w-100 w-md-auto">
-                    <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
-                    <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterDashboard()">Фильтр</button>
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0 mobile-card-table">
+                        <tbody id="req-table"></tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-        <div class="${isMobile ? '' : 'card shadow-sm border-0 overflow-hidden'}">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 ${isMobile ? 'mobile-card-table' : ''}">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Номер</th>
-                            <th>Тип</th>
-                            <th class="d-none d-md-table-cell">Описание</th>
-                            <th>Статус</th>
-                            <th class="pe-4 text-end">Дата</th>
-                        </tr>
-                    </thead>
-                    <tbody id="req-table" class="border-top-0"></tbody>
-                </table>
+        `;
+    } else {
+        el.appContent.innerHTML = `
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <h2 class="fw-bold mb-0">Мои заявки</h2>
+                <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                    <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+                        <i class="bi bi-calendar3 text-muted ms-1"></i>
+                        <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
+                        <span class="text-muted small">до</span>
+                        <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
+                    </div>
+                    <div class="d-flex gap-2 w-100 w-md-auto">
+                        <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
+                        <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterDashboard()">Фильтр</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    `;
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Номер</th>
+                                <th>Тип</th>
+                                <th class="d-none d-md-table-cell">Описание</th>
+                                <th>Статус</th>
+                                <th class="pe-4 text-end">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody id="req-table" class="border-top-0"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
 
     window.filterDashboard = () => {
         const f = document.getElementById('dash-from').value;
@@ -365,10 +402,11 @@ async function renderDashboard(from = '', to = '') {
 }
 
 async function renderCreate() {
+    const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
-        <h2 class="fw-bold mb-4">Создать заявку</h2>
-        <div class="card border-0 shadow-sm p-4" style="max-width: 700px">
-        <form id="create-request-form">
+        ${isMobile ? '' : '<h2 class="fw-bold mb-4">Создать заявку</h2>'}
+        <div class="${isMobile ? 'p-3' : 'card border-0 shadow-sm p-4'}" style="max-width: 700px">
+        <form id="create-request-form" class="${isMobile ? 'bg-white p-4 rounded-4 shadow-sm' : ''}">
             <div class="mb-3">
                 <label class="form-label fw-semibold">Тип работ</label>
                 <select id="cr-worktype" name="work_type_id" class="form-select" required>
@@ -415,38 +453,62 @@ async function renderCreate() {
 
 async function renderDepartment(from = '', to = '') {
     const isMobile = window.innerWidth < 768;
-    el.appContent.innerHTML = `
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <h2 class="fw-bold mb-0">Заявки отдела</h2>
-            <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
-                <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
-                    <i class="bi bi-calendar3 text-muted ms-1"></i>
-                    <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
-                    <span class="text-muted small">до</span>
-                    <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
+    if (isMobile) {
+        el.appContent.innerHTML = `
+            <div class="p-3">
+                <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-calendar3 text-primary"></i>
+                        <input type="date" id="dept-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                        <span class="text-muted small">до</span>
+                        <input type="date" id="dept-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
+                        <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterDept()">Найти</button>
+                    </div>
                 </div>
-                <div class="d-flex gap-2 w-100 w-md-auto">
-                    <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
-                    <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterDept()">Фильтр</button>
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0 mobile-card-table">
+                        <tbody id="dept-req-table"></tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-        <div class="${isMobile ? '' : 'card shadow-sm border-0 overflow-hidden'}">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 ${isMobile ? 'mobile-card-table' : ''}">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Номер</th>
-                            <th>Тип</th>
-                            <th>Статус</th>
-                            <th class="pe-4">Исполнитель</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dept-req-table" class="border-top-0"></tbody>
-                </table>
+        `;
+    } else {
+        el.appContent.innerHTML = `
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <h2 class="fw-bold mb-0">Заявки отдела</h2>
+                <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                    <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+                        <i class="bi bi-calendar3 text-muted ms-1"></i>
+                        <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
+                        <span class="text-muted small">до</span>
+                        <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
+                    </div>
+                    <div class="d-flex gap-2 w-100 w-md-auto">
+                        <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
+                        <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterDept()">Фильтр</button>
+                    </div>
+                </div>
             </div>
-        </div>
-    `;
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Номер</th>
+                                <th>Тип</th>
+                                <th>Статус</th>
+                                <th class="pe-4">Исполнитель</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dept-req-table" class="border-top-0"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
 
     window.filterDept = () => {
         const f = document.getElementById('dept-from').value;
@@ -659,8 +721,8 @@ async function updateStatus(id, status, comment, rating = null) {
 async function renderAdmin() {
     const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <h2 class="fw-bold mb-0">Администрирование</h2>
+        <div class="${isMobile ? 'p-3' : 'd-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4'}">
+            ${isMobile ? '' : '<h2 class="fw-bold mb-0">Администрирование</h2>'}
             <div class="d-flex gap-2">
                 <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="triggerRestore()"><i class="bi bi-upload"></i> Восстановить</button>
                 <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="createBackup()"><i class="bi bi-download"></i> Бекап</button>
@@ -1220,9 +1282,11 @@ window.deleteWT = async (id) => {
 };
 
 async function renderHelp() {
+    const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
-        <h2 class="fw-bold mb-4">Подробное руководство пользователя HOP</h2>
-        <div class="row g-4 slide-in">
+        <div class="${isMobile ? 'p-3' : ''}">
+        ${isMobile ? '' : '<h2 class="fw-bold mb-4">Подробное руководство пользователя HOP</h2>'}
+        <div class="row g-3 slide-in">
             <div class="col-md-12">
                 <div class="card border-0 shadow-sm p-4 mb-4 border-start border-primary border-5">
                     <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-badge me-2"></i> 0. Роли в системе HOP</h5>
@@ -1409,9 +1473,10 @@ function startPolling() {
 }
 
 async function renderReports(from = '', to = '') {
+    const isMobile = window.innerWidth < 768;
     el.appContent.innerHTML = `
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <h2 class="fw-bold mb-0">Аналитика и отчеты</h2>
+        <div class="${isMobile ? 'p-3' : 'd-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4'}">
+            ${isMobile ? '' : '<h2 class="fw-bold mb-0">Аналитика и отчеты</h2>'}
             <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                 <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                     <i class="bi bi-filter-left text-muted ms-1"></i>

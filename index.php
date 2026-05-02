@@ -195,19 +195,22 @@
 
         .mobile-header {
             display: none;
-            background: #fff;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
             color: var(--text-main);
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             position: sticky;
             top: 0;
             z-index: 1050;
             border-bottom: 1px solid #f1f5f9;
+            height: 60px;
         }
 
         .rounded-top-5 { border-top-left-radius: 2.5rem !important; border-top-right-radius: 2.5rem !important; }
         .offcanvas-bottom { height: auto !important; max-height: 90vh; }
 
         @media (max-width: 767.98px) {
+            #main-layout { background: #f8fafc; min-height: 100vh; }
             .modal-dialog {
                 margin: 0;
                 width: 100%;
@@ -399,10 +402,10 @@
             <!-- Mobile Bottom Navigation -->
             <nav class="mobile-bottom-nav d-md-none">
                 <a href="#" class="nav-link active" data-view="dashboard"><i class="bi bi-house-door"></i><span>Главная</span></a>
-                <a href="#" class="nav-link" data-view="department" id="mob-nav-dept"><i class="bi bi-people"></i><span>Отдел</span></a>
+                <a href="#" class="nav-link" data-view="department" id="mob-nav-dept"><i class="bi bi-list-check"></i><span>Заявки</span></a>
                 <a href="#" class="nav-link" data-view="reports" id="mob-nav-rep"><i class="bi bi-bar-chart"></i><span>Отчеты</span></a>
-                <a href="#" class="nav-link" data-view="admin" id="mob-nav-admin"><i class="bi bi-shield-lock"></i><span>Админ</span></a>
-                <a href="#" class="nav-link" data-view="help"><i class="bi bi-question-circle"></i><span>Справка</span></a>
+                <a href="#" class="nav-link" data-view="admin" id="mob-nav-admin"><i class="bi bi-gear"></i><span>Админ</span></a>
+                <a href="#" class="nav-link" data-view="help"><i class="bi bi-info-circle"></i><span>Инфо</span></a>
             </nav>
 
             <!-- Floating Action Button -->
@@ -411,10 +414,11 @@
             </a>
 
             <!-- Mobile Top Header -->
-            <header class="mobile-header d-md-none justify-content-between align-items-center">
-                <span class="fs-4 fw-bold">HOP</span>
-                <div id="mobile-profile-trigger" class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 35px; height: 35px; cursor: pointer;">
-                    <i class="bi bi-person"></i>
+            <header class="mobile-header d-md-none align-items-center">
+                <div id="mobile-back-btn" class="me-auto" style="display: none; cursor: pointer;"><i class="bi bi-chevron-left fs-4 text-primary"></i></div>
+                <div id="mobile-title" class="flex-grow-1 fs-5 fw-bold text-center">HOP</div>
+                <div id="mobile-profile-trigger" class="ms-auto bg-light text-primary rounded-circle d-flex justify-content-center align-items-center shadow-sm" style="width: 35px; height: 35px; cursor: pointer;">
+                    <i class="bi bi-person-fill"></i>
                 </div>
             </header>
 
