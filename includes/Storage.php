@@ -301,7 +301,10 @@ class Storage {
             "CREATE TABLE IF NOT EXISTS `settings` (
                 id VARCHAR(50) PRIMARY KEY,
                 auth_enabled TINYINT,
-                announcement TEXT
+                announcement TEXT,
+                notify_sound TINYINT DEFAULT 0,
+                notify_browser TINYINT DEFAULT 0,
+                notify_new_text TEXT
             )"
         ];
         foreach ($sqls as $sql) $this->pdo->exec($sql);

@@ -221,7 +221,10 @@ if ($action == 'users') {
             $items[] = [
                 'id' => 'global',
                 'auth_enabled' => (bool)($data['auth_enabled'] ?? false),
-                'announcement' => (string)($data['announcement'] ?? '')
+                'announcement' => (string)($data['announcement'] ?? ''),
+                'notify_sound' => (bool)($data['notify_sound'] ?? false),
+                'notify_browser' => (bool)($data['notify_browser'] ?? false),
+                'notify_new_text' => (string)($data['notify_new_text'] ?? '')
             ];
         }
     });

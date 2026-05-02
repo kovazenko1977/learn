@@ -22,7 +22,10 @@ $authRequired = isset($settings['auth_enabled']) ? (bool)$settings['auth_enabled
 if ($action == 'config') {
     echo json_encode([
         'auth_required' => $authRequired,
-        'announcement' => $settings['announcement'] ?? ''
+        'announcement' => $settings['announcement'] ?? '',
+        'notify_sound' => isset($settings['notify_sound']) ? (bool)$settings['notify_sound'] : false,
+        'notify_browser' => isset($settings['notify_browser']) ? (bool)$settings['notify_browser'] : false,
+        'notify_new_text' => $settings['notify_new_text'] ?? ''
     ]);
     exit;
 }

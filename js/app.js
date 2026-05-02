@@ -912,7 +912,12 @@ async function renderAdmin() {
                 notify_new_text: text
             })
         });
-        if (res.ok) alert('Настройки уведомлений сохранены');
+        if (res.ok) {
+            systemSettings.notify_sound = sound;
+            systemSettings.notify_browser = browser;
+            systemSettings.notify_new_text = text;
+            alert('Настройки уведомлений сохранены');
+        }
     };
 
     if (isMobile) {
