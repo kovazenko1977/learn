@@ -125,6 +125,11 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+
+        .btn:active, .nav-link:active {
+            opacity: 0.7;
+            transform: scale(0.98);
+        }
         .badge {
             font-weight: 600;
             padding: 0.5em 0.8em;
@@ -134,12 +139,13 @@
         /* Responsive Mobile Nav */
         .mobile-header {
             display: none;
-            background: var(--sidebar-bg);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: #fff;
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1.25rem;
             position: sticky;
             top: 0;
             z-index: 1050;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         @media (max-width: 767.98px) {
@@ -148,7 +154,7 @@
             }
             .offcanvas.sidebar {
                 z-index: 1060 !important;
-                background-color: #0f172a !important; /* Deeper, richer dark background */
+                background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
             }
             .mobile-header {
                 display: flex;
@@ -198,9 +204,10 @@
             }
 
             /* Form Optimization */
-            .btn {
+            .btn:not(.btn-sm):not(.rounded-circle) {
                 width: 100%;
                 margin-bottom: 0.5rem;
+                padding: 0.75rem;
             }
             .input-group > .form-control {
                 width: 100%;

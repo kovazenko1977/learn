@@ -216,25 +216,32 @@ el.logoutBtn.addEventListener('click', () => {
     location.reload();
 });
 
+function navigateToView(view) {
+    if (!view) return;
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll(`.nav-link[data-view="${view}"]`).forEach(l => l.classList.add('active'));
+    switch (view) {
+        case 'dashboard': renderDashboard(); break;
+        case 'department': renderDepartment(); break;
+        case 'create': renderCreate(); break;
+        case 'admin': renderAdmin(); break;
+        case 'reports': renderReports(); break;
+        case 'help': renderHelp(); break;
+    }
+
+    // Close mobile offcanvas if open
+    const offcanvasEl = document.getElementById('mobileSidebar');
+    if (offcanvasEl) {
+        const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (offcanvas) offcanvas.hide();
+    }
+}
+
 document.addEventListener('click', (e) => {
     const link = e.target.closest('.nav-link');
     if (!link) return;
-
-    const view = link.dataset.view;
-    if (view) {
-        e.preventDefault();
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        // Mark both mobile and desktop links as active if they point to same view
-        document.querySelectorAll(`.nav-link[data-view="${view}"]`).forEach(l => l.classList.add('active'));
-        switch (view) {
-            case 'dashboard': renderDashboard(); break;
-            case 'department': renderDepartment(); break;
-            case 'create': renderCreate(); break;
-            case 'admin': renderAdmin(); break;
-            case 'reports': renderReports(); break;
-            case 'help': renderHelp(); break;
-        }
-    }
+    e.preventDefault();
+    navigateToView(link.dataset.view);
 });
 
 async function apiFetch(url, options = {}) {
