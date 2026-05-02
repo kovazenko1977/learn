@@ -30,7 +30,7 @@ $action = $_GET['action'] ?? '';
 
 // Role-based access for administrative actions
 $adminOnly = [
-    'create_user', 'reset_password',
+    'create_user', 'update_user', 'delete_user', 'reset_password',
     'create_worktype', 'update_worktype', 'delete_worktype',
     'create_department', 'update_department', 'delete_department',
     'update_settings', 'backup', 'restore', 'login_logs',
@@ -82,6 +82,45 @@ if ($action == 'users') {
     $saved = $storage->insert('users', $newUser);
     unset($saved['password_hash']);
     echo json_encode($saved);
+} elseif ($action == 'update_user' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!$id || empty($data['login']) || empty($data['role'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID, Login and Role required']));
+    }
+    $update = [
+        'login' => $data['login'],
+        'full_name' => $data['full_name'] ?? $data['login'],
+        'role' => $data['role'],
+        'department_id' => $data['department_id'] ?? null,
+        'is_active' => isset($data['is_active']) ? (int)$data['is_active'] : 1,
+        'permissions' => [
+            'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
+            'can_status' => (bool)($data['permissions']['can_status'] ?? true),
+            'can_assign' => (bool)($data['permissions']['can_assign'] ?? false),
+            'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
+            'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
+            'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
+            'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false)
+        ]
+    ];
+    if (!empty($data['password'])) {
+        $update['password_hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
+    }
+    echo json_encode($storage->update('users', $id, $update));
+} elseif ($action == 'delete_user' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    if (!$id) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID required']));
+    }
+    // Safety: don't delete self
+    if ($authEnabled && $user && $user['id'] == $id) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Cannot delete yourself']));
+    }
+    echo json_encode(['success' => $storage->delete('users', $id)]);
 } elseif ($action == 'reset_password' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     if (empty($data['user_id']) || empty($data['password'])) {
@@ -171,6 +210,9 @@ if ($action == 'users') {
             if ($item['id'] == 'global') {
                 if (isset($data['auth_enabled'])) $item['auth_enabled'] = (bool)$data['auth_enabled'];
                 if (isset($data['announcement'])) $item['announcement'] = (string)$data['announcement'];
+                if (isset($data['notify_sound'])) $item['notify_sound'] = (bool)$data['notify_sound'];
+                if (isset($data['notify_browser'])) $item['notify_browser'] = (bool)$data['notify_browser'];
+                if (isset($data['notify_new_text'])) $item['notify_new_text'] = (string)$data['notify_new_text'];
                 $found = true;
                 break;
             }

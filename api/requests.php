@@ -59,7 +59,7 @@ if ($method == 'POST' && $action == 'create') {
     $deadline = date('c', time() + ($slaHours * 3600));
 
     $request = [
-        'number' => 'ХОП-' . date('Ymd') . '-' . rand(1000, 9999),
+        'number' => 'HOP-' . date('Ymd') . '-' . rand(1000, 9999),
         'requester_id' => $user['id'],
         'work_type_id' => (int)$data['work_type_id'],
         'department_id' => $workType['department_id'],

@@ -5,6 +5,8 @@ let workTypes = [];
 let users = [];
 let departments = [];
 let authRequired = true;
+let systemSettings = {};
+let lastRequestCount = null;
 
 function escapeHTML(str) {
     if (!str) return '';
@@ -56,12 +58,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Check system config
     try {
         const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
-        const cfg = await cfgRes.json();
-        authRequired = cfg.auth_required;
-        if (cfg.announcement) {
+        systemSettings = await cfgRes.json();
+        authRequired = systemSettings.auth_required;
+        if (systemSettings.announcement) {
             const banner = document.getElementById('announcement-banner');
-            banner.innerHTML = `<i class="bi bi-megaphone-fill me-2"></i> ${escapeHTML(cfg.announcement)}`;
+            banner.innerHTML = `<i class="bi bi-megaphone-fill me-2"></i> ${escapeHTML(systemSettings.announcement)}`;
             banner.classList.remove('hidden');
+        }
+
+        if (systemSettings.notify_browser && Notification.permission === 'default') {
+            Notification.requestPermission();
         }
     } catch (e) { console.error('Config fetch failed', e); }
 
@@ -75,12 +81,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadLookups();
         showLayout();
         renderDashboard();
+        startPolling();
     } else if (token) {
         const success = await fetchUser();
         if (success) {
             await loadLookups();
             showLayout();
             renderDashboard();
+            startPolling();
         } else {
             showLogin();
         }
@@ -169,6 +177,7 @@ el.loginForm.addEventListener('submit', async (e) => {
             await loadLookups();
             showLayout();
             renderDashboard();
+            startPolling();
         } else {
             const data = await res.json().catch(() => ({}));
             errorEl.innerText = data.message || 'Login failed';
@@ -609,6 +618,34 @@ async function renderAdmin() {
         <div class="row g-4 mb-4">
             <div class="col-md-12">
                 <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="card-body p-4 border-start border-success border-5">
+                        <h5 class="card-title fw-bold text-success mb-4"><i class="bi bi-bell"></i> Настройка уведомлений</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="notify-sound-toggle" ${systemSettings.notify_sound ? 'checked' : ''}>
+                                    <label class="form-check-label fw-medium" for="notify-sound-toggle">Звуковое уведомление</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="notify-browser-toggle" ${systemSettings.notify_browser ? 'checked' : ''}>
+                                    <label class="form-check-label fw-medium" for="notify-browser-toggle">Браузерные уведомления</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small fw-bold">Текст уведомления о новой заявке</label>
+                                <input type="text" id="notify-new-text" class="form-control" value="${escapeHTML(systemSettings.notify_new_text || '')}" placeholder="У вас новая заявка!">
+                            </div>
+                            <div class="col-12 mt-2">
+                                <button class="btn btn-success rounded-pill px-4" onclick="saveNotificationSettings()">Сохранить настройки уведомлений</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm overflow-hidden">
                     <div class="card-body p-4 border-start border-primary border-5">
                         <h5 class="card-title fw-bold text-primary mb-4"><i class="bi bi-database"></i> Хранилище данных (JSON / MySQL)</h5>
                         <form id="storage-config-form" class="row g-3">
@@ -802,13 +839,13 @@ async function renderAdmin() {
             <td class="ps-4 text-muted small" data-label="ID">${escapeHTML(u.id)}</td>
             <td data-label="ФИО">
                 <div class="fw-bold">${escapeHTML(u.full_name)}</div>
-                <div class="text-muted small">${escapeHTML(u.login)}</div>
+                <div class="text-muted small">${escapeHTML(u.login)} ${u.is_active == 0 ? '<span class="text-danger">(Заблокирован)</span>' : ''}</div>
             </td>
             <td data-label="Роль"><span class="badge bg-light text-dark border small text-uppercase">${escapeHTML(u.role)}</span></td>
             <td class="pe-4" data-label="Действия">
                 <div class="d-flex gap-1 justify-content-end">
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="resetUserPassword('${u.id}')" title="Сброс пароля"><i class="bi bi-key"></i></button>
-                    <button class="btn btn-sm btn-outline-danger rounded-pill px-2">Отключить</button>
+                    <button class="btn btn-sm btn-outline-primary rounded-pill px-2" onclick="editUser('${u.id}')" title="Редактировать"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill px-2" onclick="deleteUser('${u.id}')" title="Удалить"><i class="bi bi-trash"></i></button>
                 </div>
             </td>
         `;
@@ -862,20 +899,127 @@ async function renderAdmin() {
         if (res.ok) alert('Объявление обновлено. Перезагрузите страницу для применения.');
     };
 
+    window.saveNotificationSettings = async () => {
+        const sound = document.getElementById('notify-sound-toggle').checked;
+        const browser = document.getElementById('notify-browser-toggle').checked;
+        const text = document.getElementById('notify-new-text').value;
+
+        const res = await apiFetch('/admin.php?action=update_settings', {
+            method: 'POST',
+            body: JSON.stringify({
+                notify_sound: sound,
+                notify_browser: browser,
+                notify_new_text: text
+            })
+        });
+        if (res.ok) alert('Настройки уведомлений сохранены');
+    };
+
     if (isMobile) {
         document.querySelectorAll('.card-header .d-flex').forEach(flex => {
             flex.classList.add('flex-wrap');
         });
     }
 
-    window.resetUserPassword = async (userId) => {
-        const newPass = prompt('Введите новый пароль для пользователя:');
-        if (!newPass) return;
-        const res = await apiFetch('/admin.php?action=reset_password', {
-            method: 'POST',
-            body: JSON.stringify({ user_id: userId, password: newPass })
-        });
-        if (res.ok) alert('Пароль успешно изменен');
+    window.editUser = async (userId) => {
+        const u = users.find(user => user.id == userId);
+        if (!u) return;
+
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = `
+            <form id="edit-user-form">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Логин</label>
+                        <input type="text" name="login" class="form-control" value="${escapeHTML(u.login)}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Новый пароль (оставьте пустым для сохранения)</label>
+                        <input type="password" name="password" class="form-control" placeholder="••••••••">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label small fw-bold">ФИО</label>
+                        <input type="text" name="full_name" class="form-control" value="${escapeHTML(u.full_name)}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Роль</label>
+                        <select name="role" class="form-select">
+                            <option value="user" ${u.role==='user'?'selected':''}>Пользователь</option>
+                            <option value="executor" ${u.role==='executor'?'selected':''}>Исполнитель</option>
+                            <option value="manager" ${u.role==='manager'?'selected':''}>Руководитель</option>
+                            <option value="admin" ${u.role==='admin'?'selected':''}>Администратор</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold">Отдел</label>
+                        <select name="department_id" class="form-select">
+                            <option value="">Нет</option>
+                            ${departments.map(d => `<option value="${d.id}" ${u.department_id==d.id?'selected':''}>${escapeHTML(d.name)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_active" id="edit-is-active" ${u.is_active != 0 ? 'checked' : ''}>
+                            <label class="form-check-label" for="edit-is-active">Активен</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
+                        <div class="row g-2">
+                            ${Object.keys(u.permissions || {}).map(p => `
+                                <div class="col-6 col-md-4">
+                                    <div class="form-check small">
+                                        <input class="form-check-input" type="checkbox" name="perm_${p}" id="edit-p-${p}" ${u.permissions[p] ? 'checked' : ''}>
+                                        <label class="form-check-label" for="edit-p-${p}">${p}</label>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4">Сохранить изменения</button>
+                </div>
+            </form>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById('requestModal'));
+        modal.show();
+
+        document.getElementById('edit-user-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                login: formData.get('login'),
+                full_name: formData.get('full_name'),
+                role: formData.get('role'),
+                department_id: formData.get('department_id'),
+                is_active: formData.get('is_active') === 'on' ? 1 : 0,
+                permissions: {}
+            };
+            if (formData.get('password')) data.password = formData.get('password');
+
+            Object.keys(u.permissions || {}).forEach(p => {
+                data.permissions[p] = formData.get(`perm_${p}`) === 'on';
+            });
+
+            const res = await apiFetch(`/admin.php?action=update_user&id=${userId}`, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                modal.hide();
+                await loadLookups();
+                renderAdmin();
+            }
+        };
+    };
+
+    window.deleteUser = async (userId) => {
+        if (!confirm('Вы уверены, что хотите полностью удалить этого пользователя?')) return;
+        const res = await apiFetch(`/admin.php?action=delete_user&id=${userId}`, { method: 'POST' });
+        if (res.ok) { await loadLookups(); renderAdmin(); }
+        else { const data = await res.json(); alert(data.message || 'Error deleting user'); }
     };
 
     document.getElementById('create-user-form').addEventListener('submit', async (e) => {
@@ -1019,11 +1163,11 @@ window.deleteWT = async (id) => {
 
 async function renderHelp() {
     el.appContent.innerHTML = `
-        <h2 class="fw-bold mb-4">Подробное руководство пользователя</h2>
+        <h2 class="fw-bold mb-4">Подробное руководство пользователя HOP</h2>
         <div class="row g-4 slide-in">
             <div class="col-md-12">
                 <div class="card border-0 shadow-sm p-4 mb-4 border-start border-primary border-5">
-                    <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-badge me-2"></i> 0. Роли в системе</h5>
+                    <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-badge me-2"></i> 0. Роли в системе HOP</h5>
                     <div class="table-responsive">
                         <table class="table table-sm table-borderless align-middle mb-0">
                             <thead><tr class="text-muted small uppercase"><th>Роль</th><th>Описание</th></tr></thead>
@@ -1041,11 +1185,11 @@ async function renderHelp() {
             <div class="col-md-12">
                 <div class="card border-0 shadow-sm p-4 mb-4">
                     <h5 class="fw-bold text-primary mb-3"><i class="bi bi-grid-1x2 me-2"></i> 1. Мои заявки (Рабочий стол пользователя)</h5>
-                    <p>Этот раздел является основным для обычных сотрудников. Здесь вы видите все поданные вами запросы.</p>
+                    <p>Этот раздел является основным для обычных сотрудников. Здесь вы видите все поданные вами запросы в системе HOP.</p>
                     <ul>
                         <li><strong>Фильтрация:</strong> Используйте календарь сверху, чтобы найти заявки за определенный период. Кнопка "Сегодня" быстро установит текущую дату.</li>
                         <li><strong>Статусы:</strong> Цветные индикаторы показывают на каком этапе находится ваш запрос (Новая, В работе, Выполнена и т.д.).</li>
-                        <li><strong>Просмотр деталей:</strong> Нажмите на номер заявки (например, ХОП-0001), чтобы открыть окно с подробностями и чатом.</li>
+                        <li><strong>Просмотр деталей:</strong> Нажмите на номер заявки (например, HOP-0001), чтобы открыть окно с подробностями и чатом.</li>
                     </ul>
                 </div>
             </div>
@@ -1175,6 +1319,35 @@ async function renderHelp() {
             </div>
         </div>
     `;
+}
+
+function startPolling() {
+    setInterval(async () => {
+        if (!token) return;
+        try {
+            // Check for new requests (assigned to me or in my department if manager)
+            let endpoint = '/requests.php?action=my';
+            if (currentUser.role === 'manager' || currentUser.role === 'admin') endpoint = '/requests.php?action=department';
+
+            const res = await apiFetch(endpoint);
+            const requests = await res.json();
+
+            if (lastRequestCount !== null && requests.length > lastRequestCount) {
+                // New request found!
+                if (systemSettings.notify_sound) {
+                    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                    audio.play().catch(e => console.log('Audio play blocked'));
+                }
+                if (systemSettings.notify_browser && Notification.permission === 'granted') {
+                    new Notification('HOP CRM', {
+                        body: systemSettings.notify_new_text || 'У вас новая заявка!',
+                        icon: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/tools.svg'
+                    });
+                }
+            }
+            lastRequestCount = requests.length;
+        } catch (e) {}
+    }, 30000); // Every 30 seconds
 }
 
 async function renderReports(from = '', to = '') {

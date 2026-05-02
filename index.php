@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM ХОП | Система управления поддержкой</title>
+    <title>HOP | CRM Система управления поддержкой</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -271,7 +271,7 @@
                         <div class="bg-primary text-white d-inline-block p-3 rounded-circle mb-3 shadow">
                             <i class="bi bi-tools fs-3"></i>
                         </div>
-                        <h2 class="fw-bold text-dark">CRM ХОП</h2>
+                        <h2 class="fw-bold text-dark">HOP</h2>
                         <p class="text-muted">Войдите в систему управления</p>
                     </div>
                     <form id="login-form">
@@ -304,7 +304,7 @@
             <div class="d-flex align-items-center gap-3">
                 <i class="bi bi-download fs-4"></i>
                 <div>
-                    <div class="fw-bold">Установить CRM ХОП?</div>
+                    <div class="fw-bold">Установить HOP?</div>
                     <div class="small opacity-75">Добавьте на главный экран для быстрого доступа</div>
                 </div>
             </div>
@@ -318,7 +318,7 @@
         <div id="main-layout" class="container-fluid hidden p-0">
             <!-- Mobile Top Header -->
             <header class="mobile-header shadow-sm d-md-none">
-                <span class="fw-bold">CRM ХОП</span>
+                <span class="fw-bold">HOP</span>
                 <button class="btn btn-link text-white p-0 border-0 outline-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
                     <i class="bi bi-list fs-1"></i>
                 </button>
@@ -328,7 +328,7 @@
                 <!-- Desktop Sidebar -->
                 <nav class="col-md-2 sidebar d-none d-md-block shadow">
                     <div class="sidebar-brand">
-                        <i class="bi bi-tools me-2"></i> CRM ХОП
+                        <i class="bi bi-tools me-2"></i> HOP
                     </div>
                     <div class="d-flex flex-column justify-content-between" style="height: calc(100vh - 100px);">
                         <ul class="nav flex-column" id="main-nav">
@@ -352,7 +352,7 @@
                 <!-- Mobile Sidebar (Offcanvas) -->
                 <div class="offcanvas offcanvas-start sidebar p-0 border-0" tabindex="-1" id="mobileSidebar" style="width: 280px;">
                     <div class="offcanvas-header text-white px-4 pt-4">
-                        <h5 class="offcanvas-title fw-bold"><i class="bi bi-tools me-2"></i> CRM ХОП</h5>
+                        <h5 class="offcanvas-title fw-bold"><i class="bi bi-tools me-2"></i> HOP</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
                     </div>
                     <div class="offcanvas-body p-0 pt-3">
