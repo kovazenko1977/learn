@@ -134,8 +134,11 @@ function showLayout() {
         <div class="text-white-50 small">${escapeHTML(currentUser.role)}</div>
     `;
     el.userInfo.innerHTML = userInfoHtml;
-    const mobileUserInfo = document.getElementById('mobile-user-info');
-    if (mobileUserInfo) mobileUserInfo.innerHTML = userInfoHtml;
+
+    const mName = document.getElementById('mobile-profile-name');
+    const mRole = document.getElementById('mobile-profile-role');
+    if (mName) mName.innerText = currentUser.full_name;
+    if (mRole) mRole.innerText = currentUser.role;
 
     const adminEl = document.getElementById('nav-admin');
     const reportsEl = document.getElementById('nav-reports');
@@ -147,37 +150,22 @@ function showLayout() {
     reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
     deptEl.classList.toggle('hidden', currentUser.role === 'user' && !(perms.can_edit_all));
 
-    // Clone nav to mobile
-    const mobileNav = document.getElementById('mobile-nav');
-    mobileNav.innerHTML = el.mainNav.innerHTML;
+    // Mobile specific nav toggles
+    const mAdmin = document.getElementById('mob-nav-admin');
+    const mRep = document.getElementById('mob-nav-rep');
+    const mDept = document.getElementById('mob-nav-dept');
+    if (mAdmin) mAdmin.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
+    if (mRep) mRep.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
+    if (mDept) mDept.classList.toggle('hidden', currentUser.role === 'user' && !(perms.can_edit_all));
 
-    // Setup mobile nav clicks - Use event delegation and direct view triggering
-    mobileNav.addEventListener('click', (e) => {
-        const link = e.target.closest('.nav-link');
-        if (link) {
-            e.preventDefault();
-            const view = link.dataset.view;
-
-            // Trigger view change
-            switch (view) {
-                case 'dashboard': renderDashboard(); break;
-                case 'department': renderDepartment(); break;
-                case 'create': renderCreate(); break;
-                case 'admin': renderAdmin(); break;
-                case 'reports': renderReports(); break;
-                case 'help': renderHelp(); break;
-            }
-
-            // Update active state
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.querySelectorAll(`.nav-link[data-view="${view}"]`).forEach(l => l.classList.add('active'));
-
-            // Hide offcanvas
-            const offcanvasEl = document.getElementById('mobileSidebar');
-            const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
-            if (offcanvas) offcanvas.hide();
-        }
-    });
+    // Mobile Profile Trigger
+    const profileTrigger = document.getElementById('mobile-profile-trigger');
+    if (profileTrigger) {
+        profileTrigger.onclick = () => {
+            const offcanvas = new bootstrap.Offcanvas(document.getElementById('mobileProfile'));
+            offcanvas.show();
+        };
+    }
 }
 
 el.loginForm.addEventListener('submit', async (e) => {
@@ -238,7 +226,7 @@ function navigateToView(view) {
 }
 
 document.addEventListener('click', (e) => {
-    const link = e.target.closest('.nav-link');
+    const link = e.target.closest('.nav-link') || e.target.closest('.mobile-fab');
     if (!link) return;
     e.preventDefault();
     navigateToView(link.dataset.view);
@@ -344,13 +332,30 @@ async function renderDashboard(from = '', to = '') {
         const tbody = document.getElementById('req-table');
         requests.forEach(r => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
-                <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
-                <td class="d-none d-md-table-cell text-muted small">${escapeHTML(r.description.substring(0, 50))}${r.description.length > 50 ? '...' : ''}</td>
-                <td data-label="Статус">${getStatusBadge(r.status)}</td>
-                <td class="pe-4 text-end text-muted small" data-label="Дата">${new Date(r.created_at).toLocaleDateString()}</td>
-            `;
+            if (isMobile) {
+                tr.innerHTML = `
+                    <td class="p-0 border-0">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <a href="#" class="req-link fw-bold h5 text-primary" data-id="${r.id}">${escapeHTML(r.number)}</a>
+                            ${getStatusBadge(r.status)}
+                        </div>
+                        <div class="mb-2"><span class="badge bg-light text-dark border">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></div>
+                        <div class="text-muted small mb-3 text-truncate-2">${escapeHTML(r.description)}</div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>${new Date(r.created_at).toLocaleDateString()}</span>
+                            <span class="text-muted small"><i class="bi bi-person me-1"></i>${escapeHTML(getUserName(r.assigned_to))}</span>
+                        </div>
+                    </td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                    <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                    <td class="d-none d-md-table-cell text-muted small">${escapeHTML(r.description.substring(0, 50))}${r.description.length > 50 ? '...' : ''}</td>
+                    <td data-label="Статус">${getStatusBadge(r.status)}</td>
+                    <td class="pe-4 text-end text-muted small" data-label="Дата">${new Date(r.created_at).toLocaleDateString()}</td>
+                `;
+            }
             tbody.appendChild(tr);
         });
         tbody.querySelectorAll('.req-link').forEach(link => {
@@ -463,12 +468,31 @@ async function renderDepartment(from = '', to = '') {
                     ${users.filter(u => u.role === 'executor' && u.department_id == r.department_id).map(u => `<option value="${u.id}" ${r.assigned_to == u.id ? 'selected' : ''}>${escapeHTML(u.full_name)}</option>`).join('')}
                 </select>` : escapeHTML(getUserName(r.assigned_to));
 
-            tr.innerHTML = `
-                <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
-                <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
-                <td data-label="Статус">${getStatusBadge(r.status)}</td>
-                <td class="pe-4" data-label="Исполнитель">${assignHtml}</td>
-            `;
+            if (isMobile) {
+                tr.innerHTML = `
+                    <td class="p-0 border-0">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <a href="#" class="req-link fw-bold h5 text-primary" data-id="${r.id}">${escapeHTML(r.number)}</a>
+                            ${getStatusBadge(r.status)}
+                        </div>
+                        <div class="mb-3"><span class="badge bg-light text-dark border">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></div>
+                        <div class="p-3 bg-light rounded-3 mb-3">
+                             <div class="small text-muted mb-1">Исполнитель:</div>
+                             ${assignHtml}
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>${new Date(r.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                    <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                    <td data-label="Статус">${getStatusBadge(r.status)}</td>
+                    <td class="pe-4" data-label="Исполнитель">${assignHtml}</td>
+                `;
+            }
             tbody.appendChild(tr);
         });
         tbody.querySelectorAll('.assign-select').forEach(sel => {

@@ -12,6 +12,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
@@ -136,55 +143,117 @@
             border-radius: 0.5rem;
         }
 
-        /* Responsive Mobile Nav */
+        /* Mobile Native UI */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 1040;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .mobile-bottom-nav .nav-link {
+            color: var(--text-muted) !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 5px 0;
+            gap: 4px;
+            width: 20%;
+            transition: all 0.2s;
+        }
+        .mobile-bottom-nav .nav-link i { font-size: 1.25rem; }
+        .mobile-bottom-nav .nav-link.active { color: var(--primary) !important; }
+
+        .mobile-fab {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+            z-index: 1045;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.75rem;
+            transition: all 0.3s;
+        }
+        .mobile-fab:active { transform: scale(0.9); }
+
         .mobile-header {
             display: none;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            color: #fff;
-            padding: 0.85rem 1.25rem;
+            background: #fff;
+            color: var(--text-main);
+            padding: 1rem 1.5rem;
             position: sticky;
             top: 0;
             z-index: 1050;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid #f1f5f9;
         }
 
+        .rounded-top-5 { border-top-left-radius: 2.5rem !important; border-top-right-radius: 2.5rem !important; }
+        .offcanvas-bottom { height: auto !important; max-height: 90vh; }
+
         @media (max-width: 767.98px) {
-            nav.sidebar {
-                display: none;
+            .modal-dialog {
+                margin: 0;
+                width: 100%;
+                max-width: 100% !important;
             }
-            .offcanvas.sidebar {
-                z-index: 1060 !important;
-                background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
-            }
-            .mobile-header {
+            .modal-content {
+                height: 100vh;
+                border-radius: 0 !important;
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
+                flex-direction: column;
             }
-            #app-content {
-                padding: 1rem;
+            .modal-body {
+                flex-grow: 1;
+                overflow-y: auto;
+                padding: 1.5rem !important;
+            }
+            .modal-header {
+                padding: 1.25rem 1.5rem !important;
+                border-bottom: 1px solid #f1f5f9 !important;
             }
 
-            /* Mobile Table to Card Transformation */
-            .mobile-card-table thead {
-                display: none;
+            nav.sidebar { display: none !important; }
+            .mobile-header, .mobile-bottom-nav, .mobile-fab { display: flex; }
+            #app-content {
+                padding: 1.25rem;
+                padding-bottom: 100px;
             }
+
+            /* Mobile Native-like List Styles */
+            .mobile-card-table thead { display: none; }
             .mobile-card-table tbody tr {
                 display: block;
-                margin-bottom: 1rem;
-                padding: 1rem;
+                margin-bottom: 0.75rem;
+                padding: 1.25rem;
                 background: #fff;
-                border-radius: 1rem;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                border: 1px solid #edf2f7;
+                border-radius: 1.25rem;
+                border: 1px solid #f1f5f9;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.02);
             }
             .mobile-card-table tbody td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 0.5rem 0;
+                padding: 0.4rem 0;
                 border: none;
-                text-align: right;
+                font-size: 0.95rem;
             }
             .mobile-card-table tbody td::before {
                 content: attr(data-label);
@@ -327,12 +396,26 @@
 
         <!-- Main Application Layout -->
         <div id="main-layout" class="container-fluid hidden p-0">
+            <!-- Mobile Bottom Navigation -->
+            <nav class="mobile-bottom-nav d-md-none">
+                <a href="#" class="nav-link active" data-view="dashboard"><i class="bi bi-house-door"></i><span>Главная</span></a>
+                <a href="#" class="nav-link" data-view="department" id="mob-nav-dept"><i class="bi bi-people"></i><span>Отдел</span></a>
+                <a href="#" class="nav-link" data-view="reports" id="mob-nav-rep"><i class="bi bi-bar-chart"></i><span>Отчеты</span></a>
+                <a href="#" class="nav-link" data-view="admin" id="mob-nav-admin"><i class="bi bi-shield-lock"></i><span>Админ</span></a>
+                <a href="#" class="nav-link" data-view="help"><i class="bi bi-question-circle"></i><span>Справка</span></a>
+            </nav>
+
+            <!-- Floating Action Button -->
+            <a href="#" class="mobile-fab d-md-none" data-view="create" id="mob-fab-create">
+                <i class="bi bi-plus-lg"></i>
+            </a>
+
             <!-- Mobile Top Header -->
-            <header class="mobile-header shadow-sm d-md-none">
-                <span class="fw-bold">HOP</span>
-                <button class="btn btn-link text-white p-0 border-0 outline-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar">
-                    <i class="bi bi-list fs-1"></i>
-                </button>
+            <header class="mobile-header d-md-none justify-content-between align-items-center">
+                <span class="fs-4 fw-bold">HOP</span>
+                <div id="mobile-profile-trigger" class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 35px; height: 35px; cursor: pointer;">
+                    <i class="bi bi-person"></i>
+                </div>
             </header>
 
             <div class="row g-0">
@@ -360,20 +443,27 @@
                     </div>
                 </nav>
 
-                <!-- Mobile Sidebar (Offcanvas) -->
-                <div class="offcanvas offcanvas-start sidebar p-0 border-0 shadow-lg" tabindex="-1" id="mobileSidebar" style="width: 300px;">
-                    <div class="offcanvas-header text-white px-4 py-4 border-bottom border-white border-opacity-10">
-                        <h4 class="offcanvas-title fw-bold"><i class="bi bi-tools me-2 text-info"></i> HOP CRM</h4>
-                        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas"></button>
-                    </div>
-                    <div class="offcanvas-body p-0 pt-3 d-flex flex-column">
-                        <ul class="nav flex-column mb-auto" id="mobile-nav">
-                            <!-- JS will clone navigation here -->
-                        </ul>
-                        <div class="p-4 border-top border-white border-opacity-10 mt-auto">
-                             <div id="mobile-user-info" class="small mb-3 text-white-50 bg-white bg-opacity-10 p-3 rounded-4"></div>
-                             <button onclick="location.reload()" class="btn btn-outline-info btn-sm w-100 rounded-pill"><i class="bi bi-arrow-repeat me-1"></i> Обновить</button>
+                <!-- Mobile Profile (Offcanvas Bottom Sheet style) -->
+                <div class="offcanvas offcanvas-bottom rounded-top-5" tabindex="-1" id="mobileProfile" style="height: 400px; border-top: none;">
+                    <div class="offcanvas-body p-4">
+                        <div class="text-center mb-4">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center mb-2" style="width: 70px; height: 70px; font-size: 2rem;">
+                                <i class="bi bi-person"></i>
+                            </div>
+                            <div id="mobile-profile-name" class="h5 fw-bold mb-0"></div>
+                            <div id="mobile-profile-role" class="text-muted small"></div>
                         </div>
+                        <div class="list-group list-group-flush mb-4">
+                            <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-0 rounded-3 mb-2" onclick="location.reload()">
+                                <i class="bi bi-arrow-repeat fs-5 text-info"></i>
+                                <span>Обновить данные</span>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 border-0 rounded-3 mb-2" onclick="el.logoutBtn.click()">
+                                <i class="bi bi-box-arrow-right fs-5 text-danger"></i>
+                                <span>Выйти из аккаунта</span>
+                            </a>
+                        </div>
+                        <button type="button" class="btn btn-light w-100 py-3 rounded-pill fw-bold" data-bs-dismiss="offcanvas">Закрыть</button>
                     </div>
                 </div>
 
