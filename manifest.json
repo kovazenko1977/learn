@@ -2,10 +2,10 @@
   "name": "HOP",
   "short_name": "HOP",
   "description": "CRM Система управления заявками HOP",
-  "start_url": "./index.php",
+  "start_url": "./mobile/index.php",
   "display": "standalone",
-  "background_color": "#1e293b",
-  "theme_color": "#4f46e5",
+  "background_color": "#f8fafc",
+  "theme_color": "#6366f1",
   "icons": [
     {
       "src": "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/tools.svg",
