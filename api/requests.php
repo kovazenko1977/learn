@@ -102,6 +102,12 @@ if ($method == 'POST' && $action == 'create') {
     $to = $_GET['to'] ?? null;
     $requests = [];
     $perms = $user['permissions'] ?? [];
+
+    if ($user['role'] !== 'admin' && !($perms['can_view_department'] ?? ($user['role'] != 'user'))) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden (can_view_department)']));
+    }
+
     if ($user['role'] == 'admin' || ($perms['can_edit_all'] ?? false)) {
         $requests = $storage->readCollection('requests');
     } else {

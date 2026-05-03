@@ -147,7 +147,7 @@ function showLayout() {
     el.mainLayout.classList.remove('hidden');
     const userInfoHtml = `
         <div class="fw-bold">${escapeHTML(currentUser.full_name)}</div>
-        <div class="text-white-50 small">${escapeHTML(currentUser.role)}</div>
+        <div class="text-white small opacity-75">${escapeHTML(currentUser.role)}</div>
     `;
     el.userInfo.innerHTML = userInfoHtml;
 
@@ -164,7 +164,7 @@ function showLayout() {
 
     adminEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
     reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
-    deptEl.classList.toggle('hidden', currentUser.role === 'user' && !(perms.can_edit_all));
+    deptEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user')));
 
     // Mobile specific nav toggles
     const mAdmin = document.getElementById('mob-nav-admin');
@@ -175,9 +175,9 @@ function showLayout() {
 
     if (mAdmin) mAdmin.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
     if (mRep) mRep.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
-    if (mDept) mDept.classList.toggle('hidden', currentUser.role === 'user' && !(perms.can_edit_all));
-    if (mChat) mChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_access_chat ?? true));
-    if (dChat) dChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_access_chat ?? true));
+    if (mDept) mDept.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user')));
+    if (mChat) mChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_chat ?? true));
+    if (dChat) dChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_chat ?? true));
 
     // Mobile Profile Trigger
     const profileTrigger = document.getElementById('mobile-profile-trigger');
@@ -881,7 +881,20 @@ async function renderAdmin() {
                                 <option value="admin">Администратор</option>
                             </select>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3 p-3 bg-light rounded-3">
+                            <label class="small fw-bold text-primary text-uppercase mb-2 d-block"><i class="bi bi-magic"></i> Шаблоны прав</label>
+                            <div class="input-group input-group-sm mb-2">
+                                <select id="perm-template-select" class="form-select">
+                                    <option value="">Выберите шаблон...</option>
+                                </select>
+                                <button type="button" class="btn btn-outline-danger" id="btn-del-template" title="Удалить шаблон"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="new-template-name" class="form-control" placeholder="Имя нового шаблона">
+                                <button type="button" class="btn btn-primary" id="btn-save-template">Сохр.</button>
+                            </div>
+                        </div>
+                        <div class="mb-4" id="create-perms-container">
                             <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
                             <div class="row g-1">
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Статусы</label></div></div>
@@ -892,6 +905,8 @@ async function renderAdmin() {
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="p-manage-system"><label class="form-check-label" for="p-manage-system">Система</label></div></div>
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_export_data" id="p-export-data"><label class="form-check-label" for="p-export-data">Экспорт</label></div></div>
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="p-access-chat" checked><label class="form-check-label" for="p-access-chat">Общий чат</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_department" id="p-view-department"><label class="form-check-label" for="p-view-department">Заявки отдела</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_chat" id="p-view-chat" checked><label class="form-check-label" for="p-view-chat">Виджет чата</label></div></div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill">Создать пользователя</button>
@@ -1176,7 +1191,16 @@ async function renderAdmin() {
                             <label class="form-check-label" for="edit-is-active">Активен</label>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 mb-2">
+                        <div class="p-3 bg-light rounded-3">
+                            <label class="small fw-bold text-primary text-uppercase mb-2 d-block"><i class="bi bi-magic"></i> Шаблоны прав</label>
+                            <select id="edit-perm-template-select" class="form-select form-select-sm">
+                                <option value="">Выберите шаблон для применения...</option>
+                                ${window.currentTemplates.map(t => `<option value="${t.id}">${escapeHTML(t.name)}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-12" id="edit-perms-container">
                         <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
                         <div class="row g-2">
                             <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_status" id="e-p-status" ${u.permissions?.can_status ? 'checked' : ''}><label class="form-check-label" for="e-p-status">Статусы</label></div></div>
@@ -1187,6 +1211,8 @@ async function renderAdmin() {
                             <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="e-p-manage-system" ${u.permissions?.can_manage_system ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-system">Система</label></div></div>
                             <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_export_data" id="e-p-export-data" ${u.permissions?.can_export_data ? 'checked' : ''}><label class="form-check-label" for="e-p-export-data">Экспорт</label></div></div>
                             <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="e-p-access-chat" ${u.permissions?.can_access_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-access-chat">Общий чат</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_department" id="e-p-view-department" ${u.permissions?.can_view_department ?? (u.role !== 'user') ? 'checked' : ''}><label class="form-check-label" for="e-p-view-department">Заявки отдела</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_chat" id="e-p-view-chat" ${u.permissions?.can_view_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-view-chat">Виджет чата</label></div></div>
                         </div>
                     </div>
                 </div>
@@ -1198,6 +1224,13 @@ async function renderAdmin() {
 
         const modal = new bootstrap.Modal(document.getElementById('requestModal'));
         modal.show();
+
+        const editTplSelect = document.getElementById('edit-perm-template-select');
+        if (editTplSelect) {
+            editTplSelect.onchange = (e) => {
+                applyTemplateToForm(e.target.value, 'edit-perms-container');
+            };
+        }
 
         document.getElementById('edit-user-form').onsubmit = async (e) => {
             e.preventDefault();
@@ -1220,7 +1253,9 @@ async function renderAdmin() {
                 can_view_reports: formData.get('perm_view_reports') === 'on',
                 can_manage_system: formData.get('perm_manage_system') === 'on',
                 can_export_data: formData.get('perm_export_data') === 'on',
-                can_access_chat: formData.get('perm_access_chat') === 'on'
+                can_access_chat: formData.get('perm_access_chat') === 'on',
+                can_view_department: formData.get('perm_view_department') === 'on',
+                can_view_chat: formData.get('perm_view_chat') === 'on'
             };
 
             const res = await apiFetch(`/admin.php?action=update_user&id=${userId}`, {
@@ -1258,12 +1293,74 @@ async function renderAdmin() {
                 can_view_reports: formData.get('perm_view_reports') === 'on',
                 can_manage_system: formData.get('perm_manage_system') === 'on',
                 can_export_data: formData.get('perm_export_data') === 'on',
-                can_access_chat: formData.get('perm_access_chat') === 'on'
+                can_access_chat: formData.get('perm_access_chat') === 'on',
+                can_view_department: formData.get('perm_view_department') === 'on',
+                can_view_chat: formData.get('perm_view_chat') === 'on'
             }
         };
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
         if (res.ok) { await loadLookups(); renderAdmin(); }
     });
+
+    const loadTemplates = async () => {
+        const res = await apiFetch('/admin.php?action=get_perm_templates');
+        const templates = await res.json();
+        const sel = document.getElementById('perm-template-select');
+        sel.innerHTML = '<option value="">Выберите шаблон...</option>' +
+            templates.map(t => `<option value="${t.id}">${escapeHTML(t.name)}</option>`).join('');
+        window.currentTemplates = templates;
+    };
+
+    loadTemplates();
+
+    const applyTemplateToForm = (templateId, containerId) => {
+        const t = window.currentTemplates.find(tpl => tpl.id == templateId);
+        if (!t) return;
+        const container = document.getElementById(containerId);
+        Object.entries(t.permissions).forEach(([key, val]) => {
+            const input = container.querySelector(`[name="perm_${key.replace('can_', '')}"]`);
+            if (input) input.checked = val;
+        });
+    };
+
+    document.getElementById('perm-template-select').onchange = (e) => {
+        applyTemplateToForm(e.target.value, 'create-perms-container');
+    };
+
+    document.getElementById('btn-save-template').onclick = async () => {
+        const name = document.getElementById('new-template-name').value;
+        if (!name) return alert('Введите имя шаблона');
+        const container = document.getElementById('create-perms-container');
+        const permissions = {
+            can_status: container.querySelector('[name="perm_status"]').checked,
+            can_delete: container.querySelector('[name="perm_delete"]').checked,
+            can_assign: container.querySelector('[name="perm_assign"]').checked,
+            can_edit_all: container.querySelector('[name="perm_edit_all"]').checked,
+            can_view_reports: container.querySelector('[name="perm_view_reports"]').checked,
+            can_manage_system: container.querySelector('[name="perm_manage_system"]').checked,
+            can_export_data: container.querySelector('[name="perm_export_data"]').checked,
+            can_access_chat: container.querySelector('[name="perm_access_chat"]').checked,
+            can_view_department: container.querySelector('[name="perm_view_department"]').checked,
+            can_view_chat: container.querySelector('[name="perm_view_chat"]').checked
+        };
+        const res = await apiFetch('/admin.php?action=save_perm_template', {
+            method: 'POST',
+            body: JSON.stringify({ name, permissions })
+        });
+        if (res.ok) {
+            document.getElementById('new-template-name').value = '';
+            await loadTemplates();
+            alert('Шаблон сохранен');
+        }
+    };
+
+    document.getElementById('btn-del-template').onclick = async () => {
+        const id = document.getElementById('perm-template-select').value;
+        if (!id) return;
+        if (!confirm('Удалить шаблон?')) return;
+        const res = await apiFetch(`/admin.php?action=delete_perm_template&id=${id}`, { method: 'POST' });
+        if (res.ok) await loadTemplates();
+    };
 
     window.refreshLoginLogs = async () => {
         const from = document.getElementById('log-from').value;
@@ -1351,7 +1448,7 @@ async function renderAdmin() {
 }
 
 window.triggerRestore = async () => {
-    const file = prompt('Введите имя файла бекапа из папки data:');
+        const file = prompt('Введите имя файла бекапа из папки data (например backup_...zip):');
     if (!file) return;
     try {
         const res = await apiFetch(`/admin.php?action=restore&file=${encodeURIComponent(file)}`);

@@ -25,7 +25,7 @@ body.theme-midnight {
     --card-bg: #1e293b;
     --border: rgba(51, 65, 85, 0.5);
     --success: #34d399;
-    --error: #f87171;
+    --error: #ef4444; /* Improved contrast red */
     --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
@@ -84,15 +84,16 @@ body {
 }
 
 #logout-btn {
-    background: rgba(239, 68, 68, 0.1);
+    background: var(--error);
     border: none;
-    color: var(--error);
+    color: white;
     width: 36px;
     height: 36px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* AUTH */

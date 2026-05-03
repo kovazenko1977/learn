@@ -509,8 +509,8 @@
                             <li class="nav-item"><a class="nav-link" href="#" data-view="help"><i class="bi bi-question-circle"></i> Справка</a></li>
                         </ul>
                         <div class="mt-auto px-3 pb-4">
-                            <div id="user-info" class="small mb-3 text-light-50 bg-white bg-opacity-10 p-3 rounded-4"></div>
-                            <button id="logout-btn" class="btn btn-outline-light btn-sm w-100 rounded-pill mb-3"><i class="bi bi-box-arrow-right me-1"></i> Выйти</button>
+                            <div id="user-info" class="small mb-3 text-white bg-white bg-opacity-10 p-3 rounded-4"></div>
+                            <button id="logout-btn" class="btn btn-danger btn-sm w-100 rounded-pill mb-3 shadow-sm"><i class="bi bi-box-arrow-right me-1"></i> Выйти</button>
                             <div class="text-center">
                                 <a href="https://wes.by" target="_blank" class="text-white-50 text-decoration-none" style="font-size: 0.65rem;">&copy; 2026 Коваженко С.Б.</a>
                             </div>

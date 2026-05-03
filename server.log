@@ -1,0 +1,25 @@
+[Sun May  3 11:08:20 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sun May  3 11:12:00 2026] 127.0.0.1:33220 Accepted
+[Sun May  3 11:12:00 2026] 127.0.0.1:33220 [200]: GET /mobile/
+[Sun May  3 11:12:00 2026] 127.0.0.1:33220 Closing
+[Sun May  3 11:12:00 2026] 127.0.0.1:33236 Accepted
+[Sun May  3 11:12:00 2026] 127.0.0.1:33248 Accepted
+[Sun May  3 11:12:00 2026] 127.0.0.1:33236 [200]: GET /mobile/style.css
+[Sun May  3 11:12:00 2026] 127.0.0.1:33248 [200]: GET /mobile/app.js
+[Sun May  3 11:12:00 2026] 127.0.0.1:33236 Closing
+[Sun May  3 11:12:00 2026] 127.0.0.1:33248 Closing
+[Sun May  3 11:12:00 2026] 127.0.0.1:33260 Accepted
+[Sun May  3 11:12:00 2026] 127.0.0.1:33260 [200]: GET /api/auth.php?action=config
+[Sun May  3 11:12:00 2026] 127.0.0.1:33260 Closing
+[Sun May  3 11:12:00 2026] 127.0.0.1:33272 Accepted
+[Sun May  3 11:12:01 2026] 127.0.0.1:33272 [200]: POST /api/auth.php?action=login
+[Sun May  3 11:12:01 2026] 127.0.0.1:33272 Closing
+[Sun May  3 11:12:01 2026] 127.0.0.1:33288 Accepted
+[Sun May  3 11:12:01 2026] 127.0.0.1:33294 Accepted
+[Sun May  3 11:12:01 2026] 127.0.0.1:33288 [200]: GET /api/admin.php?action=worktypes
+[Sun May  3 11:12:01 2026] 127.0.0.1:33288 Closing
+[Sun May  3 11:12:01 2026] 127.0.0.1:33294 [200]: GET /api/admin.php?action=users
+[Sun May  3 11:12:01 2026] 127.0.0.1:33294 Closing
+[Sun May  3 11:12:01 2026] 127.0.0.1:33308 Accepted
+[Sun May  3 11:12:01 2026] 127.0.0.1:33308 [200]: GET /api/requests.php?action=my
+[Sun May  3 11:12:01 2026] 127.0.0.1:33308 Closing

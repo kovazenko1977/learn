@@ -34,7 +34,8 @@ $adminOnly = [
     'create_worktype', 'update_worktype', 'delete_worktype',
     'create_department', 'update_department', 'delete_department',
     'update_settings', 'backup', 'restore', 'login_logs',
-    'update_config', 'init_mysql', 'get_config', 'list_files', 'delete_file'
+    'update_config', 'init_mysql', 'get_config', 'list_files', 'delete_file',
+    'get_perm_templates', 'save_perm_template', 'delete_perm_template'
 ];
 if ($authEnabled && in_array($action, $adminOnly)) {
     $perms = $user['permissions'] ?? [];
@@ -77,7 +78,9 @@ if ($action == 'users') {
             'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
             'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
             'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false),
-            'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true)
+            'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true),
+            'can_view_department' => (bool)($data['permissions']['can_view_department'] ?? ($data['role'] != 'user')),
+            'can_view_chat' => (bool)($data['permissions']['can_view_chat'] ?? true)
         ]
     ];
     $saved = $storage->insert('users', $newUser);
@@ -104,7 +107,9 @@ if ($action == 'users') {
             'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
             'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
             'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false),
-            'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true)
+            'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true),
+            'can_view_department' => (bool)($data['permissions']['can_view_department'] ?? ($data['role'] != 'user')),
+            'can_view_chat' => (bool)($data['permissions']['can_view_chat'] ?? true)
         ]
     ];
     if (!empty($data['password'])) {
@@ -310,6 +315,34 @@ if ($action == 'users') {
         http_response_code(404);
         echo json_encode(['message' => 'File not found']);
     }
+} elseif ($action == 'get_perm_templates') {
+    echo json_encode($storage->readCollection('permission_templates'));
+} elseif ($action == 'save_perm_template' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (empty($data['name']) || empty($data['permissions'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Name and Permissions required']));
+    }
+
+    // Check if exists
+    $existing = $storage->findOne('permission_templates', ['name' => $data['name']]);
+    if ($existing) {
+        $storage->update('permission_templates', $existing['id'], ['permissions' => $data['permissions']]);
+        echo json_encode(['success' => true, 'id' => $existing['id']]);
+    } else {
+        $new = $storage->insert('permission_templates', [
+            'name' => $data['name'],
+            'permissions' => $data['permissions']
+        ]);
+        echo json_encode($new);
+    }
+} elseif ($action == 'delete_perm_template' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = $_GET['id'] ?? null;
+    if (!$id) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'ID required']));
+    }
+    echo json_encode(['success' => $storage->delete('permission_templates', $id)]);
 } elseif ($action == 'get_config') {
     $configFile = __DIR__ . '/../data/config.json';
     if (file_exists($configFile)) {

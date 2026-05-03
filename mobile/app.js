@@ -95,13 +95,21 @@ function showAuth() {
 async function showApp() {
     screens.auth.classList.add('hidden');
     screens.app.classList.remove('hidden');
+
+    const perms = currentUser.permissions || {};
+
     const navRep = document.getElementById('nav-rep-btn');
-    if (navRep && !['admin', 'manager'].includes(currentUser.role)) {
+    if (navRep && !['admin', 'manager'].includes(currentUser.role) && !perms.can_view_reports) {
         navRep.classList.add('hidden');
     }
     const navChat = document.getElementById('nav-chat-btn');
-    if (navChat && currentUser.role !== 'admin' && !(currentUser.permissions?.can_access_chat ?? true)) {
+    if (navChat && currentUser.role !== 'admin' && !(perms.can_view_chat ?? true)) {
         navChat.classList.add('hidden');
+    }
+
+    const navDept = document.querySelector('.nav-btn[data-view="department"]');
+    if (navDept && currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user'))) {
+        navDept.classList.add('hidden');
     }
 
     if (systemSettings.org_name) {
