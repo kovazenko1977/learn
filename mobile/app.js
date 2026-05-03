@@ -25,12 +25,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const success = await fetchUser();
         if (success) {
             await loadLookups();
-            showApp();
+            await showApp();
+            hideSplashScreen();
         } else {
             showAuth();
+            hideSplashScreen();
         }
     } else {
         showAuth();
+        hideSplashScreen();
     }
 });
 
@@ -66,6 +69,14 @@ async function loadLookups() {
     } catch (e) {}
 }
 
+function hideSplashScreen() {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        splash.classList.add('hidden');
+        setTimeout(() => splash.remove(), 500);
+    }
+}
+
 async function apiFetch(url, options = {}) {
     options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
     const res = await fetch(`${API_BASE}${url}`, options);
@@ -81,7 +92,7 @@ function showAuth() {
     screens.app.classList.add('hidden');
 }
 
-function showApp() {
+async function showApp() {
     screens.auth.classList.add('hidden');
     screens.app.classList.remove('hidden');
     const navRep = document.getElementById('nav-rep-btn');
@@ -97,7 +108,7 @@ function showApp() {
         document.querySelectorAll('.org-name-header').forEach(h => h.innerText = systemSettings.org_name);
     }
 
-    renderDashboard();
+    await renderDashboard();
 }
 
 // LOGIN
@@ -133,17 +144,17 @@ document.getElementById('logout-btn').onclick = () => {
 
 // NAV
 document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.onclick = () => {
+    btn.onclick = async () => {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const view = btn.dataset.view;
         switch(view) {
-            case 'dashboard': renderDashboard(); break;
+            case 'dashboard': await renderDashboard(); break;
             case 'create': renderCreate(); break;
-            case 'department': renderDepartment(); break;
-            case 'reports': renderReports(); break;
+            case 'department': await renderDepartment(); break;
+            case 'reports': await renderReports(); break;
             case 'profile': renderProfile(); break;
-            case 'chat': renderGlobalChat(); break;
+            case 'chat': await renderGlobalChat(); break;
         }
     };
 });

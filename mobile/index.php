@@ -6,8 +6,71 @@
     <title>HOP MOBILE</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Loading Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #6366f1;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s;
+        }
+        #splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .splash-logo {
+            font-size: 3rem;
+            color: white;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        .splash-loader {
+            width: 150px;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .splash-loader::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background: white;
+            border-radius: 10px;
+            animation: loading 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes loading {
+            0% { left: -50%; }
+            100% { left: 100%; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-logo">HOP</div>
+        <div class="splash-loader"></div>
+        <div class="mt-3 text-white" style="font-size: 0.7rem; font-weight: 800; margin-top: 15px; opacity: 0.7; letter-spacing: 1px;">ЗАГРУЗКА...</div>
+    </div>
+
     <div id="auth-screen">
         <div class="header">HOP</div>
         <div class="content">

@@ -54,6 +54,14 @@ document.getElementById('pwa-close').addEventListener('click', () => {
     document.getElementById('pwa-install-banner').classList.add('hidden');
 });
 
+function hideSplashScreen() {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        splash.classList.add('hidden');
+        setTimeout(() => splash.remove(), 500);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Check system config
     try {
@@ -84,20 +92,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.setItem('token', token);
         await loadLookups();
         showLayout();
-        renderDashboard();
+        await renderDashboard();
         startPolling();
+        hideSplashScreen();
     } else if (token) {
         const success = await fetchUser();
         if (success) {
             await loadLookups();
             showLayout();
-            renderDashboard();
+            await renderDashboard();
             startPolling();
+            hideSplashScreen();
         } else {
             showLogin();
+            hideSplashScreen();
         }
     } else {
         showLogin();
+        hideSplashScreen();
     }
 });
 
