@@ -10,7 +10,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOP | CRM Система управления поддержкой</title>
+    <title id="page-title">HOP | CRM Система управления поддержкой</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -409,6 +409,7 @@
             <!-- Mobile Bottom Navigation -->
             <nav class="mobile-bottom-nav d-md-none">
                 <a href="#" class="nav-link active" data-view="dashboard"><i class="bi bi-house-door"></i><span>Главная</span></a>
+                <a href="#" class="nav-link" data-view="chat" id="mob-nav-chat"><i class="bi bi-chat-dots"></i><span>Чат</span></a>
                 <a href="#" class="nav-link" data-view="department" id="mob-nav-dept"><i class="bi bi-list-check"></i><span>Заявки</span></a>
                 <a href="#" class="nav-link" data-view="reports" id="mob-nav-rep"><i class="bi bi-bar-chart"></i><span>Отчеты</span></a>
                 <a href="#" class="nav-link" data-view="admin" id="mob-nav-admin"><i class="bi bi-gear"></i><span>Админ</span></a>
@@ -432,12 +433,13 @@
             <div class="row g-0">
                 <!-- Desktop Sidebar -->
                 <nav class="col-md-2 sidebar d-none d-md-block shadow">
-                    <div class="sidebar-brand">
+                    <div class="sidebar-brand" id="sidebar-org-name">
                         <i class="bi bi-tools me-2"></i> HOP
                     </div>
                     <div class="d-flex flex-column justify-content-between" style="height: calc(100vh - 100px);">
                         <ul class="nav flex-column" id="main-nav">
                             <li class="nav-item"><a class="nav-link" href="#" data-view="dashboard"><i class="bi bi-grid-1x2"></i> Мои заявки</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" data-view="chat" id="nav-chat"><i class="bi bi-chat-dots"></i> Общий чат</a></li>
                             <li class="nav-item" id="nav-department"><a class="nav-link" href="#" data-view="department"><i class="bi bi-people"></i> Заявки отдела</a></li>
                             <li class="nav-item" id="nav-create"><a class="nav-link" href="#" data-view="create"><i class="bi bi-plus-circle"></i> Создать заявку</a></li>
                             <li class="nav-item" id="nav-admin"><a class="nav-link" href="#" data-view="admin"><i class="bi bi-shield-lock"></i> Админ</a></li>

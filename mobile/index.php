@@ -29,7 +29,7 @@
 
     <div id="app-screen" class="hidden">
         <div class="header">
-            <span id="view-title">ЗАЯВКИ</span>
+            <span id="view-title" class="org-name-header">ЗАЯВКИ</span>
             <button id="logout-btn"><i class="bi bi-box-arrow-right"></i></button>
         </div>
 
@@ -40,6 +40,7 @@
         <div class="nav-bar">
             <button class="nav-btn active" data-view="dashboard"><i class="bi bi-list-task"></i></button>
             <button class="nav-btn" data-view="create"><i class="bi bi-plus-lg"></i></button>
+            <button class="nav-btn" data-view="chat" id="nav-chat-btn"><i class="bi bi-chat-dots"></i></button>
             <button class="nav-btn" data-view="department"><i class="bi bi-people"></i></button>
             <button class="nav-btn" data-view="reports" id="nav-rep-btn"><i class="bi bi-bar-chart"></i></button>
             <button class="nav-btn" data-view="profile"><i class="bi bi-person"></i></button>

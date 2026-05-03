@@ -34,7 +34,7 @@ $adminOnly = [
     'create_worktype', 'update_worktype', 'delete_worktype',
     'create_department', 'update_department', 'delete_department',
     'update_settings', 'backup', 'restore', 'login_logs',
-    'update_config', 'init_mysql', 'get_config'
+    'update_config', 'init_mysql', 'get_config', 'list_files', 'delete_file'
 ];
 if ($authEnabled && in_array($action, $adminOnly)) {
     $perms = $user['permissions'] ?? [];
@@ -76,7 +76,8 @@ if ($action == 'users') {
             'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
             'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
             'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
-            'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false)
+            'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false),
+            'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true)
         ]
     ];
     $saved = $storage->insert('users', $newUser);
@@ -102,7 +103,8 @@ if ($action == 'users') {
             'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
             'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
             'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
-            'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false)
+            'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false),
+            'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true)
         ]
     ];
     if (!empty($data['password'])) {
@@ -213,6 +215,7 @@ if ($action == 'users') {
                 if (isset($data['notify_sound'])) $item['notify_sound'] = (bool)$data['notify_sound'];
                 if (isset($data['notify_browser'])) $item['notify_browser'] = (bool)$data['notify_browser'];
                 if (isset($data['notify_new_text'])) $item['notify_new_text'] = (string)$data['notify_new_text'];
+                if (isset($data['org_name'])) $item['org_name'] = (string)$data['org_name'];
                 $found = true;
                 break;
             }
@@ -224,7 +227,8 @@ if ($action == 'users') {
                 'announcement' => (string)($data['announcement'] ?? ''),
                 'notify_sound' => (bool)($data['notify_sound'] ?? false),
                 'notify_browser' => (bool)($data['notify_browser'] ?? false),
-                'notify_new_text' => (string)($data['notify_new_text'] ?? '')
+                'notify_new_text' => (string)($data['notify_new_text'] ?? ''),
+                'org_name' => (string)($data['org_name'] ?? 'HOP CRM')
             ];
         }
     });
@@ -282,6 +286,30 @@ if ($action == 'users') {
     }
     $success = $storage->initMySQL();
     echo json_encode(['success' => $success]);
+} elseif ($action == 'list_files') {
+    $uploadDir = __DIR__ . '/../uploads/';
+    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+    $files = [];
+    foreach (scandir($uploadDir) as $f) {
+        if ($f == '.' || $f == '..') continue;
+        $files[] = [
+            'name' => $f,
+            'size' => filesize($uploadDir . $f),
+            'date' => date('c', filemtime($uploadDir . $f))
+        ];
+    }
+    echo json_encode($files);
+} elseif ($action == 'delete_file') {
+    $file = basename($_GET['file']);
+    $uploadDir = __DIR__ . '/../uploads/';
+    $path = $uploadDir . $file;
+    if (file_exists($path)) {
+        unlink($path);
+        echo json_encode(['success' => true]);
+    } else {
+        http_response_code(404);
+        echo json_encode(['message' => 'File not found']);
+    }
 } elseif ($action == 'get_config') {
     $configFile = __DIR__ . '/../data/config.json';
     if (file_exists($configFile)) {

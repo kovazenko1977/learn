@@ -3,6 +3,7 @@ let token = localStorage.getItem('token');
 let currentUser = null;
 let workTypes = [];
 let users = [];
+let systemSettings = {};
 
 const screens = {
     auth: document.getElementById('auth-screen'),
@@ -14,6 +15,12 @@ const screens = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     applyTheme(localStorage.getItem('mobile-theme') || 'default');
+
+    try {
+        const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
+        systemSettings = await cfgRes.json();
+    } catch (e) { console.error('Config fetch failed', e); }
+
     if (token) {
         const success = await fetchUser();
         if (success) {
@@ -81,6 +88,15 @@ function showApp() {
     if (navRep && !['admin', 'manager'].includes(currentUser.role)) {
         navRep.classList.add('hidden');
     }
+    const navChat = document.getElementById('nav-chat-btn');
+    if (navChat && currentUser.role !== 'admin' && !(currentUser.permissions?.can_access_chat ?? true)) {
+        navChat.classList.add('hidden');
+    }
+
+    if (systemSettings.org_name) {
+        document.querySelectorAll('.org-name-header').forEach(h => h.innerText = systemSettings.org_name);
+    }
+
     renderDashboard();
 }
 
@@ -127,6 +143,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
             case 'department': renderDepartment(); break;
             case 'reports': renderReports(); break;
             case 'profile': renderProfile(); break;
+            case 'chat': renderGlobalChat(); break;
         }
     };
 });
@@ -423,6 +440,46 @@ async function showDetails(id) {
             actions.appendChild(rejBtn);
         }
     } catch (e) { screens.modalBody.innerHTML = 'ОШИБКА ПРИ ЗАГРУЗКЕ'; }
+}
+
+async function renderGlobalChat() {
+    document.getElementById('view-title').innerText = 'ОБЩИЙ ЧАТ';
+    screens.main.innerHTML = `
+        <div class="chat-container" id="global-chat-box" style="height: calc(100vh - 200px);">
+            <div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="global-chat-input" placeholder="Ваше сообщение..." style="margin-bottom:0; flex:1; height: 50px;">
+            <button id="global-chat-send" style="width: 60px; height: 50px; padding: 0;"><i class="bi bi-send-fill"></i></button>
+        </div>
+    `;
+
+    const box = document.getElementById('global-chat-box');
+    const load = async () => {
+        try {
+            const res = await apiFetch('/chat.php?action=list');
+            const msgs = await res.json();
+            box.innerHTML = msgs.map(m => `
+                <div class="msg" style="${m.user_id == currentUser.id ? 'margin-left: 20%; border-right: 4px solid var(--primary);' : 'margin-right: 20%; border-left: 4px solid var(--accent);'}">
+                    <div class="msg-meta"><span>${m.user_name}</span><span>${new Date(m.created_at).toLocaleTimeString()}</span></div>
+                    <div class="msg-text">${m.message}</div>
+                </div>
+            `).join('');
+            box.scrollTop = box.scrollHeight;
+        } catch (e) { box.innerHTML = 'ОШИБКА ЧАТА'; }
+    };
+
+    load();
+    const interval = setInterval(() => { if (document.getElementById('global-chat-box')) load(); else clearInterval(interval); }, 5000);
+
+    document.getElementById('global-chat-send').onclick = async () => {
+        const input = document.getElementById('global-chat-input');
+        const res = await apiFetch('/chat.php?action=send', {
+            method: 'POST',
+            body: JSON.stringify({ message: input.value })
+        });
+        if (res.ok) { input.value = ''; load(); }
+    };
 }
 
 async function updateStatus(id, status, comment = 'ОБНОВЛЕНО ЧЕРЕЗ MOBILE') {

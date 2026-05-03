@@ -84,7 +84,7 @@ class Auth {
         $jsonPayload = base64_decode($parts[0]);
         $signature = $parts[1];
 
-        if (hash_hmac('sha256', $jsonPayload, self::getSecret()) !== $signature) return null;
+        if (!hash_equals(hash_hmac('sha256', $jsonPayload, self::getSecret()), $signature)) return null;
 
         $decoded = json_decode($jsonPayload, true);
         if (!$decoded || !isset($decoded['exp']) || $decoded['exp'] < time()) return null;

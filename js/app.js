@@ -69,6 +69,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (systemSettings.notify_browser && Notification.permission === 'default') {
             Notification.requestPermission();
         }
+        if (systemSettings.org_name) {
+            document.getElementById('sidebar-org-name').innerText = systemSettings.org_name;
+            document.getElementById('page-title').innerText = systemSettings.org_name;
+        }
     } catch (e) { console.error('Config fetch failed', e); }
 
     if (!authRequired) {
@@ -154,9 +158,14 @@ function showLayout() {
     const mAdmin = document.getElementById('mob-nav-admin');
     const mRep = document.getElementById('mob-nav-rep');
     const mDept = document.getElementById('mob-nav-dept');
+    const mChat = document.getElementById('mob-nav-chat');
+    const dChat = document.getElementById('nav-chat');
+
     if (mAdmin) mAdmin.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
     if (mRep) mRep.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
     if (mDept) mDept.classList.toggle('hidden', currentUser.role === 'user' && !(perms.can_edit_all));
+    if (mChat) mChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_access_chat ?? true));
+    if (dChat) dChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_access_chat ?? true));
 
     // Mobile Profile Trigger
     const profileTrigger = document.getElementById('mobile-profile-trigger');
@@ -216,7 +225,7 @@ function navigateToView(view) {
     const mTitle = document.getElementById('mobile-title');
     const mBack = document.getElementById('mobile-back-btn');
     if (mTitle) {
-        const titles = { 'dashboard': 'HOP', 'department': 'Заявки', 'create': 'Новая заявка', 'admin': 'Настройки', 'reports': 'Аналитика', 'help': 'Инфо' };
+        const titles = { 'dashboard': 'HOP', 'department': 'Заявки', 'create': 'Новая заявка', 'admin': 'Настройки', 'reports': 'Аналитика', 'help': 'Инфо', 'chat': 'Чат' };
         mTitle.innerText = titles[view] || 'HOP';
     }
     if (mBack) mBack.style.display = view === 'dashboard' ? 'none' : 'block';
@@ -228,6 +237,7 @@ function navigateToView(view) {
         case 'admin': renderAdmin(); break;
         case 'reports': renderReports(); break;
         case 'help': renderHelp(); break;
+        case 'chat': renderGlobalChat(); break;
     }
 
     // Close mobile offcanvas if open
@@ -732,6 +742,38 @@ async function renderAdmin() {
 
         <div class="row g-4 mb-4">
             <div class="col-md-12">
+                <div class="card border-0 shadow-sm overflow-hidden mb-4">
+                    <div class="card-body p-4 border-start border-primary border-5">
+                        <h5 class="card-title fw-bold text-primary mb-4"><i class="bi bi-building"></i> Общие настройки организации</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Название организации</label>
+                                <input type="text" id="set-org-name" class="form-control" value="${escapeHTML(systemSettings.org_name || 'HOP CRM')}">
+                            </div>
+                            <div class="col-md-12">
+                                <button class="btn btn-primary rounded-pill px-4" onclick="saveOrgSettings()">Сохранить название</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm overflow-hidden mb-4">
+                    <div class="card-body p-4 border-start border-info border-5">
+                        <h5 class="card-title fw-bold text-info mb-4"><i class="bi bi-folder2-open"></i> Обслуживание системы: Файлы</h5>
+                        <div class="table-responsive" style="max-height: 250px;">
+                            <table class="table table-sm table-hover align-middle">
+                                <thead class="table-light"><tr><th>Файл</th><th>Размер</th><th>Дата</th><th></th></tr></thead>
+                                <tbody id="admin-files-table"></tbody>
+                            </table>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-info btn-sm rounded-pill" onclick="refreshAdminFiles()">Обновить список файлов</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
                 <div class="card border-0 shadow-sm overflow-hidden">
                     <div class="card-body p-4 border-start border-success border-5">
                         <h5 class="card-title fw-bold text-success mb-4"><i class="bi bi-bell"></i> Настройка уведомлений</h5>
@@ -837,6 +879,7 @@ async function renderAdmin() {
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="p-view-reports"><label class="form-check-label" for="p-view-reports">Отчеты</label></div></div>
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="p-manage-system"><label class="form-check-label" for="p-manage-system">Система</label></div></div>
                                 <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_export_data" id="p-export-data"><label class="form-check-label" for="p-export-data">Экспорт</label></div></div>
+                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="p-access-chat" checked><label class="form-check-label" for="p-access-chat">Общий чат</label></div></div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill">Создать пользователя</button>
@@ -1035,6 +1078,44 @@ async function renderAdmin() {
         }
     };
 
+    window.saveOrgSettings = async () => {
+        const name = document.getElementById('set-org-name').value;
+        const res = await apiFetch('/admin.php?action=update_settings', {
+            method: 'POST',
+            body: JSON.stringify({ org_name: name })
+        });
+        if (res.ok) {
+            systemSettings.org_name = name;
+            document.getElementById('sidebar-org-name').innerText = name;
+            document.getElementById('page-title').innerText = name;
+            alert('Настройки сохранены');
+        }
+    };
+
+    window.refreshAdminFiles = async () => {
+        const tbody = document.getElementById('admin-files-table');
+        try {
+            const res = await apiFetch('/admin.php?action=list_files');
+            const files = await res.json();
+            tbody.innerHTML = files.map(f => `
+                <tr>
+                    <td><a href="uploads/${f.name}" target="_blank" class="small">${escapeHTML(f.name)}</a></td>
+                    <td class="small text-muted">${(f.size / 1024).toFixed(1)} KB</td>
+                    <td class="small text-muted">${new Date(f.date).toLocaleDateString()}</td>
+                    <td class="text-end"><button class="btn btn-link text-danger btn-sm p-0" onclick="deleteAdminFile('${f.name}')"><i class="bi bi-trash"></i></button></td>
+                </tr>
+            `).join('');
+        } catch (e) { tbody.innerHTML = '<tr><td colspan="4">Error</td></tr>'; }
+    };
+
+    window.deleteAdminFile = async (name) => {
+        if (!confirm('Delete file?')) return;
+        const res = await apiFetch(`/admin.php?action=delete_file&file=${encodeURIComponent(name)}`);
+        if (res.ok) refreshAdminFiles();
+    };
+
+    refreshAdminFiles();
+
     if (isMobile) {
         document.querySelectorAll('.card-header .d-flex').forEach(flex => {
             flex.classList.add('flex-wrap');
@@ -1086,14 +1167,14 @@ async function renderAdmin() {
                     <div class="col-12">
                         <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
                         <div class="row g-2">
-                            ${Object.keys(u.permissions || {}).map(p => `
-                                <div class="col-6 col-md-4">
-                                    <div class="form-check small">
-                                        <input class="form-check-input" type="checkbox" name="perm_${p}" id="edit-p-${p}" ${u.permissions[p] ? 'checked' : ''}>
-                                        <label class="form-check-label" for="edit-p-${p}">${p}</label>
-                                    </div>
-                                </div>
-                            `).join('')}
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_status" id="e-p-status" ${u.permissions?.can_status ? 'checked' : ''}><label class="form-check-label" for="e-p-status">Статусы</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_delete" id="e-p-delete" ${u.permissions?.can_delete ? 'checked' : ''}><label class="form-check-label" for="e-p-delete">Удаление</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_assign" id="e-p-assign" ${u.permissions?.can_assign ? 'checked' : ''}><label class="form-check-label" for="e-p-assign">Назначение</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_edit_all" id="e-p-edit-all" ${u.permissions?.can_edit_all ? 'checked' : ''}><label class="form-check-label" for="e-p-edit-all">Все заявки</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="e-p-view-reports" ${u.permissions?.can_view_reports ? 'checked' : ''}><label class="form-check-label" for="e-p-view-reports">Отчеты</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="e-p-manage-system" ${u.permissions?.can_manage_system ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-system">Система</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_export_data" id="e-p-export-data" ${u.permissions?.can_export_data ? 'checked' : ''}><label class="form-check-label" for="e-p-export-data">Экспорт</label></div></div>
+                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="e-p-access-chat" ${u.permissions?.can_access_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-access-chat">Общий чат</label></div></div>
                         </div>
                     </div>
                 </div>
@@ -1119,9 +1200,16 @@ async function renderAdmin() {
             };
             if (formData.get('password')) data.password = formData.get('password');
 
-            Object.keys(u.permissions || {}).forEach(p => {
-                data.permissions[p] = formData.get(`perm_${p}`) === 'on';
-            });
+            data.permissions = {
+                can_status: formData.get('perm_status') === 'on',
+                can_delete: formData.get('perm_delete') === 'on',
+                can_assign: formData.get('perm_assign') === 'on',
+                can_edit_all: formData.get('perm_edit_all') === 'on',
+                can_view_reports: formData.get('perm_view_reports') === 'on',
+                can_manage_system: formData.get('perm_manage_system') === 'on',
+                can_export_data: formData.get('perm_export_data') === 'on',
+                can_access_chat: formData.get('perm_access_chat') === 'on'
+            };
 
             const res = await apiFetch(`/admin.php?action=update_user&id=${userId}`, {
                 method: 'POST',
@@ -1157,7 +1245,8 @@ async function renderAdmin() {
                 can_edit_all: formData.get('perm_edit_all') === 'on',
                 can_view_reports: formData.get('perm_view_reports') === 'on',
                 can_manage_system: formData.get('perm_manage_system') === 'on',
-                can_export_data: formData.get('perm_export_data') === 'on'
+                can_export_data: formData.get('perm_export_data') === 'on',
+                can_access_chat: formData.get('perm_access_chat') === 'on'
             }
         };
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
@@ -1470,6 +1559,57 @@ function startPolling() {
             lastRequestCount = requests.length;
         } catch (e) {}
     }, 30000); // Every 30 seconds
+}
+
+async function renderGlobalChat() {
+    el.appContent.innerHTML = `
+        <div class="card border-0 shadow-sm overflow-hidden" style="height: calc(100vh - 150px); display: flex; flex-direction: column;">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-chat-quote-fill me-2"></i> Общий чат системы</h5>
+                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="renderGlobalChat()"><i class="bi bi-arrow-repeat"></i></button>
+            </div>
+            <div class="card-body bg-light p-4" id="global-chat-box" style="flex: 1; overflow-y: auto;">
+                <div class="text-center py-5 text-muted small">Загрузка сообщений...</div>
+            </div>
+            <div class="card-footer bg-white p-3 border-0">
+                <form id="global-chat-form" class="d-flex gap-2">
+                    <input type="text" id="global-chat-input" class="form-control rounded-pill border-0 bg-light px-4" placeholder="Ваше сообщение всему персоналу..." required>
+                    <button type="submit" class="btn btn-primary rounded-circle shadow-sm" style="width: 50px; height: 50px;"><i class="bi bi-send-fill"></i></button>
+                </form>
+            </div>
+        </div>
+    `;
+
+    const box = document.getElementById('global-chat-box');
+    const load = async () => {
+        try {
+            const res = await apiFetch('/chat.php?action=list');
+            const msgs = await res.json();
+            box.innerHTML = msgs.map(m => `
+                <div class="mb-3 ${m.user_id == currentUser.id ? 'text-end' : ''}">
+                    <div class="d-inline-block px-4 py-2 rounded-4 ${m.user_id == currentUser.id ? 'bg-primary text-white' : 'bg-white shadow-sm'}" style="max-width: 80%;">
+                        <div class="small fw-bold mb-1" style="font-size: 0.7rem; opacity: 0.8;">${escapeHTML(m.user_name)}</div>
+                        <div class="mb-1">${escapeHTML(m.message)}</div>
+                        <div class="small opacity-50" style="font-size: 0.6rem;">${new Date(m.created_at).toLocaleTimeString()}</div>
+                    </div>
+                </div>
+            `).join('');
+            box.scrollTop = box.scrollHeight;
+        } catch (e) { box.innerHTML = 'Ошибка загрузки чата'; }
+    };
+
+    load();
+    const interval = setInterval(() => { if (document.getElementById('global-chat-box')) load(); else clearInterval(interval); }, 5000);
+
+    document.getElementById('global-chat-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('global-chat-input');
+        const res = await apiFetch('/chat.php?action=send', {
+            method: 'POST',
+            body: JSON.stringify({ message: input.value })
+        });
+        if (res.ok) { input.value = ''; load(); }
+    };
 }
 
 async function renderReports(from = '', to = '') {

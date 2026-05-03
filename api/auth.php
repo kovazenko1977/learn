@@ -25,7 +25,8 @@ if ($action == 'config') {
         'announcement' => $settings['announcement'] ?? '',
         'notify_sound' => isset($settings['notify_sound']) ? (bool)$settings['notify_sound'] : false,
         'notify_browser' => isset($settings['notify_browser']) ? (bool)$settings['notify_browser'] : false,
-        'notify_new_text' => $settings['notify_new_text'] ?? ''
+        'notify_new_text' => $settings['notify_new_text'] ?? '',
+        'org_name' => $settings['org_name'] ?? 'HOP CRM'
     ]);
     exit;
 }
