@@ -9,22 +9,28 @@
 </head>
 <body>
     <div id="auth-screen">
-        <div class="header">HOP MOBILE</div>
+        <div class="header">HOP</div>
         <div class="content">
+            <div style="text-align:center; margin-bottom: 30px;">
+                <h2 style="font-weight: 800; color: var(--text-main);">С возвращением!</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Авторизуйтесь для продолжения</p>
+            </div>
             <form id="login-form">
-                <input type="text" id="login" placeholder="ЛОГИН" required autocomplete="off">
-                <input type="password" id="password" placeholder="ПАРОЛЬ" required>
-                <button type="submit">ВХОД</button>
-                <div id="login-error" class="error hidden">ОШИБКА АВТОРИЗАЦИИ</div>
+                <div class="label">ЛОГИН</div>
+                <input type="text" id="login" placeholder="Введите логин" required autocomplete="off">
+                <div class="label">ПАРОЛЬ</div>
+                <input type="password" id="password" placeholder="••••••••" required>
+                <button type="submit">ВОЙТИ В СИСТЕМУ</button>
+                <div id="login-error" class="error hidden">Неверные данные для входа</div>
             </form>
         </div>
-        <div class="footer">WES.BY</div>
+        <div class="footer">РАЗРАБОТКА: WES.BY</div>
     </div>
 
     <div id="app-screen" class="hidden">
         <div class="header">
             <span id="view-title">ЗАЯВКИ</span>
-            <button id="logout-btn"><i class="bi bi-x-lg"></i></button>
+            <button id="logout-btn"><i class="bi bi-box-arrow-right"></i></button>
         </div>
 
         <div id="main-content">
@@ -44,7 +50,7 @@
     <div id="modal-overlay" class="hidden">
         <div class="modal">
             <div class="modal-header">
-                <span id="modal-title">ДЕТАЛИ</span>
+                <span class="modal-title">ДЕТАЛИ ЗАЯВКИ</span>
                 <button id="modal-close"><i class="bi bi-x-lg"></i></button>
             </div>
             <div id="modal-body"></div>

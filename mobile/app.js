@@ -136,13 +136,13 @@ async function renderDashboard() {
             card.className = 'req-card';
             card.innerHTML = `
                 <div class="req-header">
-                    <span>${r.number}</span>
-                    <span class="status-badge">${getStatusLabel(r.status)}</span>
+                    <span class="req-number">${r.number}</span>
+                    <span class="status-badge status-${r.status}">${getStatusLabel(r.status)}</span>
                 </div>
                 <div class="req-desc">${r.description}</div>
                 <div class="req-meta">
-                    <span>${new Date(r.created_at).toLocaleDateString()}</span>
-                    <span>${getWorkTypeName(r.work_type_id)}</span>
+                    <span><i class="bi bi-calendar3 me-1"></i> ${new Date(r.created_at).toLocaleDateString()}</span>
+                    <span><i class="bi bi-tag me-1"></i> ${getWorkTypeName(r.work_type_id)}</span>
                 </div>
             `;
             card.onclick = () => showDetails(r.id);
@@ -164,13 +164,13 @@ async function renderDepartment() {
             card.className = 'req-card';
             card.innerHTML = `
                 <div class="req-header">
-                    <span>${r.number}</span>
-                    <span class="status-badge">${getStatusLabel(r.status)}</span>
+                    <span class="req-number">${r.number}</span>
+                    <span class="status-badge status-${r.status}">${getStatusLabel(r.status)}</span>
                 </div>
                 <div class="req-desc">${r.description}</div>
                 <div class="req-meta">
-                    <span>${getUserName(r.requester_id)}</span>
-                    <span>→ ${getUserName(r.assigned_to)}</span>
+                    <span><i class="bi bi-person me-1"></i> ${getUserName(r.requester_id)}</span>
+                    <span><i class="bi bi-arrow-right me-1"></i> ${getUserName(r.assigned_to)}</span>
                 </div>
             `;
             card.onclick = () => showDetails(r.id);
@@ -217,30 +217,35 @@ function renderCreate() {
 }
 
 async function renderReports() {
-    document.getElementById('view-title').innerText = 'ОТЧЕТЫ';
+    document.getElementById('view-title').innerText = 'АНАЛИТИКА';
     screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
     try {
         const res = await apiFetch('/reports.php?action=summary');
         const s = await res.json();
         screens.main.innerHTML = `
-            <div class="stat-box">
-                <div class="stat-lbl">ВСЕГО ЗАЯВОК</div>
-                <div class="stat-val">${s.total}</div>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-lbl">ВСЕГО</div>
+                    <div class="stat-val">${s.total}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-lbl">РЕЙТИНГ</div>
+                    <div class="stat-val">${s.avg_rating}</div>
+                </div>
+                <div class="stat-box" style="border-color: var(--error);">
+                    <div class="stat-lbl" style="color:var(--error);">ПРОСРОЧЕНО</div>
+                    <div class="stat-val" style="color:var(--error);">${s.overdue}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-lbl">В РАБОТЕ</div>
+                    <div class="stat-val">${s.status_dist.in_progress}</div>
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-lbl">СРЕДНИЙ РЕЙТИНГ</div>
-                <div class="stat-val">${s.avg_rating}</div>
-            </div>
-            <div class="stat-box" style="border-color: #f00; color: #f00;">
-                <div class="stat-lbl" style="color:#f00;">ПРОСРОЧЕНО</div>
-                <div class="stat-val">${s.overdue}</div>
-            </div>
-            <div class="divider"></div>
-            <div style="padding:10px;">
-                <span class="label">СТАТУСЫ:</span>
-                <div class="history-item">НОВЫЕ: ${s.status_dist.new}</div>
-                <div class="history-item">В РАБОТЕ: ${s.status_dist.in_progress}</div>
-                <div class="history-item">ВЫПОЛНЕНЫ: ${s.status_dist.completed + s.status_dist.closed}</div>
+            <div class="req-card">
+                <span class="label">СТАТИСТИКА СТАТУСОВ:</span>
+                <div class="history-item" style="border-left-color: var(--primary)">НОВЫЕ: ${s.status_dist.new}</div>
+                <div class="history-item" style="border-left-color: #fbbf24">В РАБОТЕ: ${s.status_dist.in_progress}</div>
+                <div class="history-item" style="border-left-color: var(--success)">ВЫПОЛНЕНЫ: ${s.status_dist.completed + s.status_dist.closed}</div>
             </div>
         `;
     } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
