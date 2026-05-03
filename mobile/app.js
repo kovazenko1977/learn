@@ -68,6 +68,12 @@ function showAuth() {
 function showApp() {
     screens.auth.classList.add('hidden');
     screens.app.classList.remove('hidden');
+
+    const navRep = document.getElementById('nav-rep-btn');
+    if (navRep && !['admin', 'manager'].includes(currentUser.role)) {
+        navRep.classList.add('hidden');
+    }
+
     renderDashboard();
 }
 
@@ -112,6 +118,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
             case 'dashboard': renderDashboard(); break;
             case 'create': renderCreate(); break;
             case 'department': renderDepartment(); break;
+            case 'reports': renderReports(); break;
             case 'profile': renderProfile(); break;
         }
     };
@@ -191,6 +198,8 @@ function renderCreate() {
             <input type="text" name="location" placeholder="МЕСТО" required>
             <span class="label">ОПИСАНИЕ</span>
             <textarea name="description" rows="5" placeholder="ОПИСАНИЕ" required></textarea>
+            <span class="label">ФОТО / ФАЙЛ</span>
+            <input type="file" name="file">
             <button type="submit">ОТПРАВИТЬ</button>
         </form>
     `;
@@ -205,6 +214,36 @@ function renderCreate() {
             alert('ОШИБКА');
         }
     };
+}
+
+async function renderReports() {
+    document.getElementById('view-title').innerText = 'ОТЧЕТЫ';
+    screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
+    try {
+        const res = await apiFetch('/reports.php?action=summary');
+        const s = await res.json();
+        screens.main.innerHTML = `
+            <div class="stat-box">
+                <div class="stat-lbl">ВСЕГО ЗАЯВОК</div>
+                <div class="stat-val">${s.total}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-lbl">СРЕДНИЙ РЕЙТИНГ</div>
+                <div class="stat-val">${s.avg_rating}</div>
+            </div>
+            <div class="stat-box" style="border-color: #f00; color: #f00;">
+                <div class="stat-lbl" style="color:#f00;">ПРОСРОЧЕНО</div>
+                <div class="stat-val">${s.overdue}</div>
+            </div>
+            <div class="divider"></div>
+            <div style="padding:10px;">
+                <span class="label">СТАТУСЫ:</span>
+                <div class="history-item">НОВЫЕ: ${s.status_dist.new}</div>
+                <div class="history-item">В РАБОТЕ: ${s.status_dist.in_progress}</div>
+                <div class="history-item">ВЫПОЛНЕНЫ: ${s.status_dist.completed + s.status_dist.closed}</div>
+            </div>
+        `;
+    } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
 }
 
 function renderProfile() {
@@ -227,8 +266,15 @@ async function showDetails(id) {
     screens.modal.classList.remove('hidden');
     screens.modalBody.innerHTML = 'ЗАГРУЗКА...';
     try {
-        const res = await apiFetch(`/requests.php?action=details&id=${id}`);
-        const r = await res.json();
+        const [reqRes, histRes, chatRes] = await Promise.all([
+            apiFetch(`/requests.php?action=details&id=${id}`),
+            apiFetch(`/requests.php?action=history&id=${id}`),
+            apiFetch(`/requests.php?action=get_comments&id=${id}`)
+        ]);
+        const r = await reqRes.json();
+        const history = await histRes.json();
+        const chat = await chatRes.json();
+
         screens.modalBody.innerHTML = `
             <span class="label">НОМЕР</span>
             <div class="value">${r.number}</div>
@@ -236,6 +282,7 @@ async function showDetails(id) {
             <div class="value">${getStatusLabel(r.status)}</div>
             <span class="label">ОПИСАНИЕ</span>
             <div class="value">${r.description}</div>
+            ${r.file_path ? `<div class="value"><a href="../${r.file_path}" target="_blank" style="color:var(--fg);">[ФАЙЛ: ${r.file_original_name}]</a></div>` : ''}
             <span class="label">МЕСТО</span>
             <div class="value">${r.location}</div>
             <span class="label">ЗАЯВИТЕЛЬ</span>
@@ -245,7 +292,44 @@ async function showDetails(id) {
 
             <div class="divider"></div>
             <div id="actions"></div>
+            <div class="divider"></div>
+
+            <span class="label">ЧАТ</span>
+            <div class="chat-container" id="mobile-chat">
+                ${chat.map(c => `
+                    <div class="msg">
+                        <div class="msg-meta"><span>${getUserName(c.user_id)}</span><span>${new Date(c.created_at).toLocaleTimeString()}</span></div>
+                        <div class="msg-text">${c.message}</div>
+                    </div>
+                `).join('')}
+            </div>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="chat-msg" placeholder="СООБЩЕНИЕ..." style="margin-bottom:0; flex:1;">
+                <button id="chat-send" style="width: auto; padding: 10px 20px;">OK</button>
+            </div>
+
+            <div class="divider"></div>
+            <span class="label">ИСТОРИЯ</span>
+            <div style="margin-bottom: 20px;">
+                ${history.map(h => `
+                    <div class="history-item">
+                        <div class="history-meta">${new Date(h.changed_at).toLocaleString()}</div>
+                        <div>${getStatusLabel(h.status)}: ${h.comment}</div>
+                    </div>
+                `).join('')}
+            </div>
         `;
+
+        document.getElementById('chat-send').onclick = async () => {
+            const msg = document.getElementById('chat-msg').value;
+            if (!msg) return;
+            const res = await apiFetch('/requests.php?action=add_comment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ request_id: id, message: msg })
+            });
+            if (res.ok) showDetails(id);
+        };
 
         const actions = document.getElementById('actions');
         if (['executor', 'admin', 'manager'].includes(currentUser.role)) {
@@ -267,15 +351,24 @@ async function showDetails(id) {
             btn.innerText = 'ЗАКРЫТЬ';
             btn.onclick = () => updateStatus(id, 'closed');
             actions.appendChild(btn);
+
+            const rejBtn = document.createElement('button');
+            rejBtn.innerText = 'ОТКЛОНИТЬ';
+            rejBtn.style = 'background:var(--bg); border: 2px solid var(--error); color:var(--error); margin-top:10px;';
+            rejBtn.onclick = () => {
+                const comment = prompt('ПРИЧИНА:');
+                if (comment) updateStatus(id, 'rejected', comment);
+            };
+            actions.appendChild(rejBtn);
         }
     } catch (e) { screens.modalBody.innerHTML = 'ОШИБКА'; }
 }
 
-async function updateStatus(id, status) {
+async function updateStatus(id, status, comment = 'ОБНОВЛЕНО ЧЕРЕЗ MOBILE') {
     const res = await apiFetch('/requests.php?action=update_status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status, comment: 'ОБНОВЛЕНО ЧЕРЕЗ MOBILE' })
+        body: JSON.stringify({ id, status, comment })
     });
     if (res.ok) {
         screens.modal.classList.add('hidden');

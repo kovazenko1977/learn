@@ -35,6 +35,7 @@
             <button class="nav-btn active" data-view="dashboard"><i class="bi bi-list-task"></i></button>
             <button class="nav-btn" data-view="create"><i class="bi bi-plus-lg"></i></button>
             <button class="nav-btn" data-view="department"><i class="bi bi-people"></i></button>
+            <button class="nav-btn" data-view="reports" id="nav-rep-btn"><i class="bi bi-bar-chart"></i></button>
             <button class="nav-btn" data-view="profile"><i class="bi bi-person"></i></button>
         </div>
     </div>
