@@ -13,6 +13,7 @@ const screens = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+    applyTheme(localStorage.getItem('mobile-theme') || 'default');
     if (token) {
         const success = await fetchUser();
         if (success) {
@@ -25,6 +26,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         showAuth();
     }
 });
+
+function applyTheme(theme) {
+    document.body.className = theme === 'default' ? '' : `theme-${theme}`;
+    localStorage.setItem('mobile-theme', theme);
+    document.querySelectorAll('.theme-opt').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.theme === theme);
+    });
+}
 
 async function fetchUser() {
     try {
@@ -68,12 +77,10 @@ function showAuth() {
 function showApp() {
     screens.auth.classList.add('hidden');
     screens.app.classList.remove('hidden');
-
     const navRep = document.getElementById('nav-rep-btn');
     if (navRep && !['admin', 'manager'].includes(currentUser.role)) {
         navRep.classList.add('hidden');
     }
-
     renderDashboard();
 }
 
@@ -124,6 +131,29 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     };
 });
 
+function getStatusLabel(status) {
+    const labels = {
+        'new': 'НОВАЯ',
+        'assigned': 'НАЗНАЧЕНА',
+        'in_progress': 'В РАБОТЕ',
+        'completed': 'ВЫПОЛНЕНА',
+        'closed': 'ЗАКРЫТА',
+        'rejected': 'ОТКЛОНЕНА'
+    };
+    return labels[status] || status;
+}
+
+function getWorkTypeName(id) {
+    const wt = workTypes.find(w => w.id == id);
+    return wt ? wt.name : id;
+}
+
+function getUserName(id) {
+    if (!id) return '---';
+    const u = users.find(user => user.id == id);
+    return u ? u.full_name : id;
+}
+
 async function renderDashboard() {
     document.getElementById('view-title').innerText = 'ЗАЯВКИ';
     screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
@@ -141,8 +171,8 @@ async function renderDashboard() {
                 </div>
                 <div class="req-desc">${r.description}</div>
                 <div class="req-meta">
-                    <span><i class="bi bi-calendar3 me-1"></i> ${new Date(r.created_at).toLocaleDateString()}</span>
-                    <span><i class="bi bi-tag me-1"></i> ${getWorkTypeName(r.work_type_id)}</span>
+                    <span><i class="bi bi-calendar3"></i> ${new Date(r.created_at).toLocaleDateString()}</span>
+                    <span><i class="bi bi-tag"></i> ${getWorkTypeName(r.work_type_id)}</span>
                 </div>
             `;
             card.onclick = () => showDetails(r.id);
@@ -169,8 +199,8 @@ async function renderDepartment() {
                 </div>
                 <div class="req-desc">${r.description}</div>
                 <div class="req-meta">
-                    <span><i class="bi bi-person me-1"></i> ${getUserName(r.requester_id)}</span>
-                    <span><i class="bi bi-arrow-right me-1"></i> ${getUserName(r.assigned_to)}</span>
+                    <span><i class="bi bi-person"></i> ${getUserName(r.requester_id)}</span>
+                    <span>→ ${getUserName(r.assigned_to)}</span>
                 </div>
             `;
             card.onclick = () => showDetails(r.id);
@@ -195,12 +225,12 @@ function renderCreate() {
                 <option value="low">НИЗКИЙ</option>
             </select>
             <span class="label">МЕСТО</span>
-            <input type="text" name="location" placeholder="МЕСТО" required>
+            <input type="text" name="location" placeholder="Корпус, этаж, кабинет" required>
             <span class="label">ОПИСАНИЕ</span>
-            <textarea name="description" rows="5" placeholder="ОПИСАНИЕ" required></textarea>
+            <textarea name="description" rows="5" placeholder="Опишите проблему..." required></textarea>
             <span class="label">ФОТО / ФАЙЛ</span>
             <input type="file" name="file">
-            <button type="submit">ОТПРАВИТЬ</button>
+            <button type="submit"><i class="bi bi-send-fill"></i> ОТПРАВИТЬ</button>
         </form>
     `;
 
@@ -211,7 +241,7 @@ function renderCreate() {
         if (res.ok) {
             document.querySelector('[data-view="dashboard"]').click();
         } else {
-            alert('ОШИБКА');
+            alert('ОШИБКА ПРИ СОЗДАНИИ');
         }
     };
 }
@@ -225,7 +255,7 @@ async function renderReports() {
         screens.main.innerHTML = `
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-lbl">ВСЕГО</div>
+                    <div class="stat-lbl">ЗАЯВОК</div>
                     <div class="stat-val">${s.total}</div>
                 </div>
                 <div class="stat-box">
@@ -242,10 +272,12 @@ async function renderReports() {
                 </div>
             </div>
             <div class="req-card">
-                <span class="label">СТАТИСТИКА СТАТУСОВ:</span>
-                <div class="history-item" style="border-left-color: var(--primary)">НОВЫЕ: ${s.status_dist.new}</div>
-                <div class="history-item" style="border-left-color: #fbbf24">В РАБОТЕ: ${s.status_dist.in_progress}</div>
-                <div class="history-item" style="border-left-color: var(--success)">ВЫПОЛНЕНЫ: ${s.status_dist.completed + s.status_dist.closed}</div>
+                <span class="label">СТАТИСТИКА:</span>
+                <div style="font-size: 0.85rem; line-height: 2;">
+                    <div>• НОВЫЕ: <b>${s.status_dist.new}</b></div>
+                    <div>• В РАБОТЕ: <b>${s.status_dist.in_progress}</b></div>
+                    <div>• ВЫПОЛНЕНЫ: <b>${s.status_dist.completed + s.status_dist.closed}</b></div>
+                </div>
             </div>
         `;
     } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
@@ -253,23 +285,34 @@ async function renderReports() {
 
 function renderProfile() {
     document.getElementById('view-title').innerText = 'ПРОФИЛЬ';
+    const currentTheme = localStorage.getItem('mobile-theme') || 'default';
     screens.main.innerHTML = `
-        <div style="padding: 20px;">
-            <span class="label">ФИО</span>
-            <div class="value">${currentUser.full_name}</div>
-            <span class="label">ЛОГИН</span>
-            <div class="value">${currentUser.login}</div>
-            <span class="label">РОЛЬ</span>
-            <div class="value">${currentUser.role}</div>
-            <div class="divider"></div>
-            <button onclick="location.reload()" style="background:var(--bg); border: 2px solid var(--border); color:var(--fg);">ОБНОВИТЬ</button>
+        <div class="req-card" style="margin-top: 10px;">
+            <span class="label">ПОЛЬЗОВАТЕЛЬ</span>
+            <div class="value" style="margin-bottom: 5px;">${currentUser.full_name}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">${currentUser.role.toUpperCase()}</div>
         </div>
+
+        <div class="req-card">
+            <span class="label">ВЫБОР ИНТЕРФЕЙСА (ПРЕМИУМ)</span>
+            <div class="theme-grid">
+                <div class="theme-opt ${currentTheme === 'default' ? 'active' : ''}" data-theme="default" style="background:#6366f1; color:white;">MODERN</div>
+                <div class="theme-opt ${currentTheme === 'midnight' ? 'active' : ''}" data-theme="midnight" style="background:#0f172a; color:#fbbf24;">MIDNIGHT</div>
+                <div class="theme-opt ${currentTheme === 'emerald' ? 'active' : ''}" data-theme="emerald" style="background:#059669; color:white;">EMERALD</div>
+            </div>
+        </div>
+
+        <button onclick="location.reload()" style="background:transparent; border: 1px solid var(--border); color:var(--text-main); box-shadow:none;">ОБНОВИТЬ ДАННЫЕ</button>
     `;
+
+    document.querySelectorAll('.theme-opt').forEach(opt => {
+        opt.onclick = () => applyTheme(opt.dataset.theme);
+    });
 }
 
 async function showDetails(id) {
     screens.modal.classList.remove('hidden');
-    screens.modalBody.innerHTML = 'ЗАГРУЗКА...';
+    screens.modalBody.innerHTML = '<div style="text-align:center; padding:40px;"><i class="bi bi-arrow-repeat spin"></i> ЗАГРУЗКА...</div>';
     try {
         const [reqRes, histRes, chatRes] = await Promise.all([
             apiFetch(`/requests.php?action=details&id=${id}`),
@@ -281,25 +324,34 @@ async function showDetails(id) {
         const chat = await chatRes.json();
 
         screens.modalBody.innerHTML = `
-            <span class="label">НОМЕР</span>
-            <div class="value">${r.number}</div>
-            <span class="label">СТАТУС</span>
-            <div class="value">${getStatusLabel(r.status)}</div>
+            <div class="req-header">
+                <span class="req-number">${r.number}</span>
+                <span class="status-badge">${getStatusLabel(r.status)}</span>
+            </div>
+
             <span class="label">ОПИСАНИЕ</span>
             <div class="value">${r.description}</div>
-            ${r.file_path ? `<div class="value"><a href="../${r.file_path}" target="_blank" style="color:var(--fg);">[ФАЙЛ: ${r.file_original_name}]</a></div>` : ''}
-            <span class="label">МЕСТО</span>
-            <div class="value">${r.location}</div>
-            <span class="label">ЗАЯВИТЕЛЬ</span>
-            <div class="value">${getUserName(r.requester_id)}</div>
-            <span class="label">ИСПОЛНИТЕЛЬ</span>
-            <div class="value">${getUserName(r.assigned_to)}</div>
+
+            ${r.file_path ? `
+                <span class="label">ВЛОЖЕНИЕ</span>
+                <div class="value"><a href="../${r.file_path}" target="_blank" style="color:var(--primary); text-decoration:none;"><i class="bi bi-paperclip"></i> ПРОСМОТР ФАЙЛА</a></div>
+            ` : ''}
+
+            <div class="stat-grid" style="margin-top: 10px;">
+                <div class="stat-box" style="padding: 10px;">
+                    <div class="stat-lbl">МЕСТО</div>
+                    <div class="stat-val" style="font-size: 0.9rem; margin-top: 5px;">${r.location}</div>
+                </div>
+                <div class="stat-box" style="padding: 10px;">
+                    <div class="stat-lbl">ЗАЯВИТЕЛЬ</div>
+                    <div class="stat-val" style="font-size: 0.9rem; margin-top: 5px;">${getUserName(r.requester_id)}</div>
+                </div>
+            </div>
+
+            <div id="actions" style="margin: 20px 0;"></div>
 
             <div class="divider"></div>
-            <div id="actions"></div>
-            <div class="divider"></div>
-
-            <span class="label">ЧАТ</span>
+            <span class="label">ЧАТ С ПОДДЕРЖКОЙ</span>
             <div class="chat-container" id="mobile-chat">
                 ${chat.map(c => `
                     <div class="msg">
@@ -307,19 +359,21 @@ async function showDetails(id) {
                         <div class="msg-text">${c.message}</div>
                     </div>
                 `).join('')}
+                ${chat.length === 0 ? '<div style="text-align:center; color:var(--text-muted); font-size: 0.8rem; padding: 20px;">СООБЩЕНИЙ НЕТ</div>' : ''}
             </div>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="chat-msg" placeholder="СООБЩЕНИЕ..." style="margin-bottom:0; flex:1;">
-                <button id="chat-send" style="width: auto; padding: 10px 20px;">OK</button>
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="chat-msg" placeholder="Напишите сообщение..." style="margin-bottom:0; flex:1; height: 50px;">
+                <button id="chat-send" style="width: 60px; height: 50px; padding: 0;"><i class="bi bi-send-fill"></i></button>
             </div>
 
             <div class="divider"></div>
-            <span class="label">ИСТОРИЯ</span>
+            <span class="label">ИСТОРИЯ ИЗМЕНЕНИЙ</span>
             <div style="margin-bottom: 20px;">
                 ${history.map(h => `
                     <div class="history-item">
                         <div class="history-meta">${new Date(h.changed_at).toLocaleString()}</div>
-                        <div>${getStatusLabel(h.status)}: ${h.comment}</div>
+                        <div style="font-weight: 600;">${getStatusLabel(h.status)}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${h.comment}</div>
                     </div>
                 `).join('')}
             </div>
@@ -340,12 +394,13 @@ async function showDetails(id) {
         if (['executor', 'admin', 'manager'].includes(currentUser.role)) {
             if (['new', 'assigned'].includes(r.status)) {
                 const btn = document.createElement('button');
-                btn.innerText = 'В РАБОТУ';
+                btn.innerHTML = '<i class="bi bi-play-fill"></i> В РАБОТУ';
                 btn.onclick = () => updateStatus(id, 'in_progress');
                 actions.appendChild(btn);
             } else if (r.status === 'in_progress') {
                 const btn = document.createElement('button');
-                btn.innerText = 'ВЫПОЛНЕНО';
+                btn.innerHTML = '<i class="bi bi-check-all"></i> ВЫПОЛНЕНО';
+                btn.style.background = 'var(--success)';
                 btn.onclick = () => updateStatus(id, 'completed');
                 actions.appendChild(btn);
             }
@@ -353,20 +408,21 @@ async function showDetails(id) {
 
         if (r.requester_id == currentUser.id && r.status === 'completed') {
             const btn = document.createElement('button');
-            btn.innerText = 'ЗАКРЫТЬ';
-            btn.onclick = () => updateStatus(id, 'closed');
+            btn.innerHTML = '<i class="bi bi-lock-fill"></i> ЗАКРЫТЬ ЗАЯВКУ';
+            btn.style.background = 'var(--success)';
+            btn.onclick = () => updateStatus(id, 'closed', 'ПОДТВЕРЖДЕНО ПОЛЬЗОВАТЕЛЕМ');
             actions.appendChild(btn);
 
             const rejBtn = document.createElement('button');
-            rejBtn.innerText = 'ОТКЛОНИТЬ';
-            rejBtn.style = 'background:var(--bg); border: 2px solid var(--error); color:var(--error); margin-top:10px;';
+            rejBtn.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i> НА ДОРАБОТКУ';
+            rejBtn.style = 'background:transparent; border: 1px solid var(--error); color:var(--error); margin-top:12px; box-shadow:none;';
             rejBtn.onclick = () => {
-                const comment = prompt('ПРИЧИНА:');
+                const comment = prompt('Укажите причину возврата:');
                 if (comment) updateStatus(id, 'rejected', comment);
             };
             actions.appendChild(rejBtn);
         }
-    } catch (e) { screens.modalBody.innerHTML = 'ОШИБКА'; }
+    } catch (e) { screens.modalBody.innerHTML = 'ОШИБКА ПРИ ЗАГРУЗКЕ'; }
 }
 
 async function updateStatus(id, status, comment = 'ОБНОВЛЕНО ЧЕРЕЗ MOBILE') {
@@ -379,33 +435,10 @@ async function updateStatus(id, status, comment = 'ОБНОВЛЕНО ЧЕРЕЗ
         screens.modal.classList.add('hidden');
         renderDashboard();
     } else {
-        alert('ОШИБКА');
+        alert('ОШИБКА ОБНОВЛЕНИЯ');
     }
 }
 
 document.getElementById('modal-close').onclick = () => {
     screens.modal.classList.add('hidden');
 };
-
-function getStatusLabel(status) {
-    const labels = {
-        'new': 'НОВАЯ',
-        'assigned': 'НАЗНАЧЕНА',
-        'in_progress': 'В РАБОТЕ',
-        'completed': 'ВЫПОЛНЕНА',
-        'closed': 'ЗАКРЫТА',
-        'rejected': 'ОТКЛОНЕНА'
-    };
-    return labels[status] || status;
-}
-
-function getWorkTypeName(id) {
-    const wt = workTypes.find(w => w.id == id);
-    return wt ? wt.name : id;
-}
-
-function getUserName(id) {
-    if (!id) return '---';
-    const u = users.find(user => user.id == id);
-    return u ? u.full_name : id;
-}
