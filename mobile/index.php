@@ -6,6 +6,20 @@
     <title>HOP MOBILE</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script>
+        // Emergency Splash Screen Removal
+        (function() {
+            function hide() {
+                var s = document.getElementById('splash-screen');
+                if (s) {
+                    s.classList.add('hidden');
+                    setTimeout(function() { if(s.parentNode) s.parentNode.removeChild(s); }, 500);
+                }
+            }
+            window.addEventListener('error', hide);
+            setTimeout(hide, 7000);
+        })();
+    </script>
     <style>
         /* Loading Screen */
         #splash-screen {

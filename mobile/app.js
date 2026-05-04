@@ -78,12 +78,24 @@ function applyTheme(theme) {
     });
 }
 
+function createAbortSignal(ms) {
+    if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+        return AbortSignal.timeout(ms);
+    }
+    if (typeof AbortController !== 'undefined') {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), ms);
+        return controller.signal;
+    }
+    return null;
+}
+
 async function fetchUser() {
     if (!token) return false;
     try {
         const res = await fetch(`${API_BASE}/auth.php?action=me`, {
             headers: { 'Authorization': `Bearer ${token}` },
-            signal: AbortSignal.timeout(5000) // Don't hang forever
+            signal: createAbortSignal(5000) // Don't hang forever
         });
         if (res.ok) {
             currentUser = await res.json();
@@ -117,7 +129,7 @@ function hideSplashScreen() {
 
 async function apiFetch(url, options = {}) {
     options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
-    if (!options.signal) options.signal = AbortSignal.timeout(10000); // Default timeout
+    if (!options.signal) options.signal = createAbortSignal(10000); // Default timeout
     const res = await fetch(`${API_BASE}${url}`, options);
     if (res.status === 401) {
         localStorage.removeItem('token');
