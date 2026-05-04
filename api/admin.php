@@ -394,77 +394,213 @@ if ($action == 'users') {
         echo json_encode($new);
     }
 } elseif ($action == 'seed_demo') {
-    $depts = $storage->readCollection('departments');
-    $wtypes = $storage->readCollection('work_types');
+    // Clear current demo data first to ensure clean state
+    $storage->transactional('requests', function(&$items) { $items = []; });
+    $storage->transactional('status_history', function(&$items) { $items = []; });
+    $storage->transactional('comments', function(&$items) { $items = []; });
+    $storage->transactional('users', function(&$items) { $items = []; });
+    $storage->transactional('departments', function(&$items) { $items = []; });
+    $storage->transactional('work_types', function(&$items) { $items = []; });
 
-    // Auto-create departments and work types if missing
-    if (empty($depts)) {
-        $storage->insert('departments', ['id' => 'd1', 'name' => 'IT отдел', 'description' => 'Поддержка техники']);
-        $storage->insert('departments', ['id' => 'd2', 'name' => 'Хозяйственный отдел', 'description' => 'Ремонт и уборка']);
-        $storage->insert('departments', ['id' => 'd3', 'name' => 'Энергетики', 'description' => 'Электрика и освещение']);
-        $depts = $storage->readCollection('departments');
-    }
-
-    if (empty($wtypes)) {
-        $storage->insert('work_types', ['id' => 'w1', 'name' => 'Компьютерная помощь', 'department_id' => 'd1', 'sla_hours' => 8]);
-        $storage->insert('work_types', ['id' => 'w2', 'name' => 'Сантехника', 'department_id' => 'd2', 'sla_hours' => 24]);
-        $storage->insert('work_types', ['id' => 'w3', 'name' => 'Электрика', 'department_id' => 'd3', 'sla_hours' => 12]);
-        $storage->insert('work_types', ['id' => 'w4', 'name' => 'Мебель', 'department_id' => 'd2', 'sla_hours' => 48]);
-        $wtypes = $storage->readCollection('work_types');
-    }
-
-    $allUsers = $storage->readCollection('users');
-    $users = array_values(array_filter($allUsers, fn($u) => in_array($u['role'], ['user', 'executor', 'admin'])));
-
-    if (empty($users)) {
-        // Create a default admin if somehow missing
-        $storage->insert('users', [
-            'id' => 'u1', 'login' => 'admin', 'full_name' => 'Администратор (Демо)',
-            'role' => 'admin', 'password_hash' => password_hash('admin123', PASSWORD_DEFAULT)
-        ]);
-        $users = $storage->readCollection('users');
-    }
-
-    $locations = ['Корпус А, 1 этаж, 101', 'Корпус Б, 3 этаж, 305', 'Цех №2, участок сборки', 'Офис, ресепшн', 'Склад №4', 'Серверная', 'Столовая'];
-    $descs = [
-        'Нужен ремонт смесителя, течет вода',
-        'Не горит свет в коридоре, моргает лампа',
-        'Просьба починить стул (сломана ножка)',
-        'Компьютер не включается, черный экран',
-        'Забилась раковина на кухне',
-        'Розетка искрит при включении чайника',
-        'Нужно перенести шкаф из 101 в 102',
-        'Плохо работает кондиционер, дует теплым',
-        'Принтер жует бумагу',
-        'Нужна влажная уборка после ремонта'
+    // 1. Create Default Admin
+    $admin = [
+        'id' => 'admin_id',
+        'login' => 'admin',
+        'password_hash' => password_hash('admin123', PASSWORD_DEFAULT),
+        'full_name' => 'Главный Администратор',
+        'role' => 'admin',
+        'is_active' => 1,
+        'created_at' => date('c'),
+        'permissions' => ['can_manage_system' => true] // Simplified admin perm
     ];
+    $storage->insert('users', $admin);
+
+    // Names for random generation
+    $lastNames = ['Иванов', 'Петров', 'Сидоров', 'Кузнецов', 'Смирнов', 'Попов', 'Васильев', 'Соколов', 'Михайлов', 'Новиков', 'Федоров', 'Морозов', 'Волков', 'Алексеев', 'Лебедев'];
+    $firstNames = ['Александр', 'Сергей', 'Дмитрий', 'Андрей', 'Алексей', 'Максим', 'Евгений', 'Иван', 'Михаил', 'Артем', 'Николай', 'Владимир', 'Денис', 'Павел', 'Игорь'];
+
+    // 2. Create 10 Departments and 10 Managers
+    $deptNames = [
+        'IT-департамент', 'Хозяйственный отдел', 'Энергослужба', 'Сантехнический участок',
+        'Транспортный цех', 'Охрана и безопасность', 'Клининговая служба', 'Ремонтно-строительный отдел',
+        'Отдел логистики', 'Мебельная мастерская'
+    ];
+
+    $departmentIds = [];
+    $managers = [];
+    $executors = [];
+    $requesters = [];
+
+    $storage->transactional('users', function(&$items) use ($admin, $lastNames, $firstNames, $deptNames, &$departmentIds, &$managers, &$executors, &$requesters) {
+        $items[] = $admin;
+
+        foreach ($deptNames as $i => $dName) {
+            $mId = "manager_" . ($i + 1);
+            $dId = "dept_" . ($i + 1);
+            $fullName = $lastNames[array_rand($lastNames)] . ' ' . $firstNames[array_rand($firstNames)];
+            $items[] = [
+                'id' => $mId,
+                'login' => "mgr" . ($i + 1),
+                'password_hash' => password_hash('manager123', PASSWORD_DEFAULT),
+                'full_name' => $fullName . " (Начальник)",
+                'role' => 'manager',
+                'department_id' => $dId,
+                'is_active' => 1,
+                'created_at' => date('c'),
+                'permissions' => ['can_view_department' => true, 'can_assign' => true, 'can_status' => true]
+            ];
+            $managers[] = $mId;
+            $departmentIds[] = $dId;
+        }
+
+        for ($i = 1; $i <= 30; $i++) {
+            $eId = "executor_" . $i;
+            $dId = $departmentIds[($i - 1) % 10];
+            $fullName = $lastNames[array_rand($lastNames)] . ' ' . $firstNames[array_rand($firstNames)];
+            $items[] = [
+                'id' => $eId,
+                'login' => "exec" . $i,
+                'password_hash' => password_hash('exec123', PASSWORD_DEFAULT),
+                'full_name' => $fullName . " (Исполнитель)",
+                'role' => 'executor',
+                'department_id' => $dId,
+                'is_active' => 1,
+                'created_at' => date('c'),
+                'permissions' => ['can_status' => true, 'can_comment' => true]
+            ];
+            $executors[] = $eId;
+        }
+
+        for ($i = 1; $i <= 50; $i++) {
+            $rId = "user_" . $i;
+            $fullName = $lastNames[array_rand($lastNames)] . ' ' . $firstNames[array_rand($firstNames)];
+            $items[] = [
+                'id' => $rId,
+                'login' => "user" . $i,
+                'password_hash' => password_hash('user123', PASSWORD_DEFAULT),
+                'full_name' => $fullName,
+                'role' => 'user',
+                'is_active' => 1,
+                'created_at' => date('c'),
+                'permissions' => ['can_status' => true]
+            ];
+            $requesters[] = $rId;
+        }
+    });
+
+    $storage->transactional('departments', function(&$items) use ($deptNames, $managers) {
+        foreach ($deptNames as $i => $dName) {
+            $items[] = [
+                'id' => "dept_" . ($i + 1),
+                'name' => $dName,
+                'manager_id' => $managers[$i],
+                'description' => "Демонстрационный отдел: $dName"
+            ];
+        }
+    });
+
+    // 5. Create 2-3 Work Types per Department
+    $workTypeTemplates = [
+        'dept_1' => ['Настройка ПК', 'Проблемы с сетью', 'Установка ПО'],
+        'dept_2' => ['Замена замка', 'Починка мебели', 'Ремонт дверей'],
+        'dept_3' => ['Замена ламп', 'Розетки/Выключатели', 'Ремонт щитка'],
+        'dept_4' => ['Течь смесителя', 'Засор канализации', 'Установка фильтра'],
+        'dept_5' => ['Доставка груза', 'Организация переезда', 'Погрузочные работы'],
+        'dept_6' => ['Выдача пропуска', 'Проверка датчиков', 'Доступ в помещение'],
+        'dept_7' => ['Генеральная уборка', 'Вывоз мусора', 'Мытье окон'],
+        'dept_8' => ['Покраска стен', 'Укладка линолеума', 'Шпаклевка'],
+        'dept_9' => ['Приемка товара', 'Отгрузка со склада', 'Инвентаризация'],
+        'dept_10' => ['Сборка стола', 'Перетяжка кресла', 'Ремонт тумбочки']
+    ];
+
+    $allWorkTypes = [];
+    $storage->transactional('work_types', function(&$items) use ($workTypeTemplates, &$allWorkTypes) {
+        foreach ($workTypeTemplates as $dId => $names) {
+            foreach ($names as $idx => $name) {
+                $wtId = "wt_" . $dId . "_" . $idx;
+                $items[] = [
+                    'id' => $wtId,
+                    'name' => $name,
+                    'department_id' => $dId,
+                    'sla_hours' => rand(4, 48),
+                    'description' => "Вид работ: $name"
+                ];
+                $allWorkTypes[] = ['id' => $wtId, 'dept_id' => $dId];
+            }
+        }
+    });
+
+    // 6. Generate 500 Requests
+    $locations = ['Корпус А, 1 эт', 'Корпус Б, 3 эт', 'Цех №2', 'Ресепшн', 'Склад №4', 'Серверная', 'Столовая', 'Конференц-зал', 'Гараж', 'Проходная'];
     $priorities = ['normal', 'high', 'low'];
     $statuses = ['new', 'assigned', 'in_progress', 'completed', 'closed', 'rejected'];
 
     $count = 0;
-    for ($i = 0; $i < 300; $i++) {
-        $wt = $wtypes[array_rand($wtypes)];
-        $requester = $users[array_rand($users)];
-        $executor = ($i % 2 == 0) ? $users[array_rand($users)]['id'] : null;
+    for ($i = 1; $i <= 500; $i++) {
+        $wt = $allWorkTypes[array_rand($allWorkTypes)];
+        $requesterId = $requesters[array_rand($requesters)];
+
+        // Find executors for this department
+        $deptExecutors = array_filter($executors, function($eId) use ($storage, $wt) {
+            // This is slightly inefficient but okay for a one-time seed
+            $u = $storage->findOne('users', ['id' => $eId]);
+            return $u && $u['department_id'] === $wt['dept_id'];
+        });
+
+        $status = $statuses[array_rand($statuses)];
+        $assignedTo = ($status !== 'new' && !empty($deptExecutors)) ? $deptExecutors[array_rand($deptExecutors)] : null;
+
+        $createdAt = date('c', strtotime("-" . rand(1, 60) . " days"));
 
         $request = [
-            'number' => 'DEMO-' . date('Ymd') . '-' . sprintf('%04d', $i),
-            'requester_id' => $requester['id'],
+            'id' => 'req_' . $i,
+            'number' => 'ХОП-' . date('Ymd', strtotime($createdAt)) . '-' . sprintf('%04d', $i),
+            'requester_id' => $requesterId,
             'work_type_id' => $wt['id'],
-            'department_id' => $wt['department_id'],
-            'assigned_to' => $executor,
+            'department_id' => $wt['dept_id'],
+            'assigned_to' => $assignedTo,
             'priority' => $priorities[array_rand($priorities)],
-            'location' => $locations[array_rand($locations)],
-            'description' => $descs[array_rand($descs)] . " (Демо запись #$i)",
-            'status' => $statuses[array_rand($statuses)],
-            'created_at' => date('c', strtotime("-" . rand(1, 30) . " days")),
-            'updated_at' => date('c'),
-            'deadline_at' => date('c', time() + 86400)
+            'location' => $locations[array_rand($locations)] . ", каб. " . rand(1, 50),
+            'description' => "Демонстрационная заявка №$i. Проблема с " . mb_strtolower($storage->findOne('work_types', ['id' => $wt['id']])['name']),
+            'status' => $status,
+            'created_at' => $createdAt,
+            'updated_at' => date('c', strtotime($createdAt . " + " . rand(1, 48) . " hours")),
+            'deadline_at' => date('c', strtotime($createdAt . " + 24 hours"))
         ];
+
         $storage->insert('requests', $request);
+
+        // Add some history for 30% of requests
+        if (rand(1, 100) > 70) {
+            $storage->insert('status_history', [
+                'id' => 'hist_' . $i,
+                'request_id' => 'req_' . $i,
+                'status' => $status,
+                'changed_by' => $assignedTo ?: $admin['id'],
+                'changed_at' => date('c'),
+                'comment' => 'Системная генерация демо-данных'
+            ]);
+        }
+
         $count++;
     }
-    echo json_encode(['success' => true, 'count' => $count]);
+
+    // Final check for system settings
+    $storage->transactional('settings', function(&$items) {
+        $found = false;
+        foreach ($items as &$item) {
+            if ($item['id'] == 'global') {
+                $item['auth_enabled'] = true;
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $items[] = ['id' => 'global', 'auth_enabled' => true, 'org_name' => 'HOP CRM Demo'];
+        }
+    });
+
+    echo json_encode(['success' => true, 'count' => $count, 'message' => "Создано 500 заявок, 10 отделов, 10 руководителей, 30 исполнителей"]);
 } elseif ($action == 'clear_demo') {
     $storage->writeCollection('requests', []);
     $storage->writeCollection('status_history', []);
