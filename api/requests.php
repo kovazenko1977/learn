@@ -97,6 +97,19 @@ if ($method == 'POST' && $action == 'create') {
         });
     }
     echo json_encode(array_values($requests));
+} elseif ($action == 'my_tasks') {
+    $from = $_GET['from'] ?? null;
+    $to = $_GET['to'] ?? null;
+    $requests = $storage->find('requests', ['assigned_to' => $user['id']]);
+    if ($from || $to) {
+        $requests = array_filter($requests, function($r) use ($from, $to) {
+            $date = strtotime($r['created_at']);
+            if ($from && $date < strtotime($from)) return false;
+            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+            return true;
+        });
+    }
+    echo json_encode(array_values($requests));
 } elseif ($action == 'department') {
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;
@@ -257,7 +270,7 @@ if ($method == 'POST' && $action == 'create') {
     }
 
     foreach ($comments as &$c) {
-        $c['user_name'] = $userMap[$c['user_id']] ?? 'Unknown';
+        $c['user_name'] = $userMap[$c['user_id']] ?? 'Неизвестный пользователь';
     }
 
     echo json_encode(array_values($comments));

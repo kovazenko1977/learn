@@ -35,7 +35,8 @@ $adminOnly = [
     'create_department', 'update_department', 'delete_department',
     'update_settings', 'backup', 'restore', 'login_logs',
     'update_config', 'init_mysql', 'get_config', 'list_files', 'delete_file',
-    'get_perm_templates', 'save_perm_template', 'delete_perm_template'
+    'get_perm_templates', 'save_perm_template', 'delete_perm_template',
+    'seed_demo', 'clear_demo'
 ];
 if ($authEnabled && in_array($action, $adminOnly)) {
     $perms = $user['permissions'] ?? [];
@@ -336,6 +337,61 @@ if ($action == 'users') {
         ]);
         echo json_encode($new);
     }
+} elseif ($action == 'seed_demo') {
+    $depts = $storage->readCollection('departments');
+    $wtypes = $storage->readCollection('work_types');
+    $users = array_values(array_filter($storage->readCollection('users'), fn($u) => $u['role'] == 'user' || $u['role'] == 'executor'));
+
+    if (empty($depts) || empty($wtypes)) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Add departments and work types first']));
+    }
+
+    $locations = ['Корпус А, 1 этаж, 101', 'Корпус Б, 3 этаж, 305', 'Цех №2, участок сборки', 'Офис, ресепшн', 'Склад №4', 'Серверная', 'Столовая'];
+    $descs = [
+        'Нужен ремонт смесителя, течет вода',
+        'Не горит свет в коридоре, моргает лампа',
+        'Просьба починить стул (сломана ножка)',
+        'Компьютер не включается, черный экран',
+        'Забилась раковина на кухне',
+        'Розетка искрит при включении чайника',
+        'Нужно перенести шкаф из 101 в 102',
+        'Плохо работает кондиционер, дует теплым',
+        'Принтер жует бумагу',
+        'Нужна влажная уборка после ремонта'
+    ];
+    $priorities = ['normal', 'high', 'low'];
+    $statuses = ['new', 'assigned', 'in_progress', 'completed', 'closed', 'rejected'];
+
+    $count = 0;
+    for ($i = 0; $i < 300; $i++) {
+        $wt = $wtypes[array_rand($wtypes)];
+        $requester = $users[array_rand($users)];
+        $executor = ($i % 2 == 0) ? $users[array_rand($users)]['id'] : null;
+
+        $request = [
+            'number' => 'DEMO-' . date('Ymd') . '-' . sprintf('%04d', $i),
+            'requester_id' => $requester['id'],
+            'work_type_id' => $wt['id'],
+            'department_id' => $wt['department_id'],
+            'assigned_to' => $executor,
+            'priority' => $priorities[array_rand($priorities)],
+            'location' => $locations[array_rand($locations)],
+            'description' => $descs[array_rand($descs)] . " (Демо запись #$i)",
+            'status' => $statuses[array_rand($statuses)],
+            'created_at' => date('c', strtotime("-" . rand(1, 30) . " days")),
+            'updated_at' => date('c'),
+            'deadline_at' => date('c', time() + 86400)
+        ];
+        $storage->insert('requests', $request);
+        $count++;
+    }
+    echo json_encode(['success' => true, 'count' => $count]);
+} elseif ($action == 'clear_demo') {
+    $storage->writeCollection('requests', []);
+    $storage->writeCollection('status_history', []);
+    $storage->writeCollection('comments', []);
+    echo json_encode(['success' => true]);
 } elseif ($action == 'delete_perm_template' && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = $_GET['id'] ?? null;
     if (!$id) {

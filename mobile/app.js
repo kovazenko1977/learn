@@ -16,38 +16,51 @@ const screens = {
 async function initApp() {
     applyTheme(localStorage.getItem('mobile-theme') || 'default');
 
+    // Safety timeout: hide splash anyway after 5 seconds
+    const safetyTimeout = setTimeout(hideSplashScreen, 5000);
+
     try {
         try {
             const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
-            systemSettings = await cfgRes.json();
+            if (cfgRes.ok) systemSettings = await cfgRes.json();
         } catch (e) { console.error('Config fetch failed', e); }
 
-        if (!systemSettings.auth_required && !token) {
+        if (systemSettings && !systemSettings.auth_required && !token) {
             try {
                 const res = await fetch(`${API_BASE}/auth.php?action=login`, { method: 'POST' });
-                const data = await res.json();
-                token = data.token;
-                currentUser = data.user;
-                localStorage.setItem('token', token);
+                if (res.ok) {
+                    const data = await res.json();
+                    token = data.token;
+                    currentUser = data.user;
+                    localStorage.setItem('token', token);
+                }
             } catch (e) { console.error('Auto-login failed', e); }
         }
 
         if (token) {
             const success = await fetchUser();
             if (success) {
+                // Decision made: we show the app. Hide splash as soon as we start loading app data
+                hideSplashScreen();
+                clearTimeout(safetyTimeout);
+
                 await loadLookups();
                 await showApp();
             } else {
                 showAuth();
+                hideSplashScreen();
+                clearTimeout(safetyTimeout);
             }
         } else {
             showAuth();
+            hideSplashScreen();
+            clearTimeout(safetyTimeout);
         }
     } catch (err) {
         console.error('Initialization error:', err);
         showAuth();
-    } finally {
         hideSplashScreen();
+        clearTimeout(safetyTimeout);
     }
 }
 
@@ -66,16 +79,21 @@ function applyTheme(theme) {
 }
 
 async function fetchUser() {
+    if (!token) return false;
     try {
         const res = await fetch(`${API_BASE}/auth.php?action=me`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` },
+            signal: AbortSignal.timeout(5000) // Don't hang forever
         });
         if (res.ok) {
             currentUser = await res.json();
             return true;
         }
         return false;
-    } catch (e) { return false; }
+    } catch (e) {
+        console.error('Fetch user failed', e);
+        return false;
+    }
 }
 
 async function loadLookups() {
@@ -99,6 +117,7 @@ function hideSplashScreen() {
 
 async function apiFetch(url, options = {}) {
     options.headers = { ...options.headers, 'Authorization': `Bearer ${token}` };
+    if (!options.signal) options.signal = AbortSignal.timeout(10000); // Default timeout
     const res = await fetch(`${API_BASE}${url}`, options);
     if (res.status === 401) {
         localStorage.removeItem('token');
@@ -116,7 +135,15 @@ async function showApp() {
     screens.auth.classList.add('hidden');
     screens.app.classList.remove('hidden');
 
+    // Safety check if splash is still there
+    hideSplashScreen();
+
     const perms = currentUser.permissions || {};
+
+    const navTasks = document.getElementById('nav-tasks-btn');
+    if (navTasks && !['admin', 'executor', 'manager'].includes(currentUser.role)) {
+        navTasks.classList.add('hidden');
+    }
 
     const navRep = document.getElementById('nav-rep-btn');
     if (navRep && !['admin', 'manager'].includes(currentUser.role) && !perms.can_view_reports) {
@@ -178,6 +205,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         const view = btn.dataset.view;
         switch(view) {
             case 'dashboard': await renderDashboard(); break;
+            case 'tasks': await renderTasks(); break;
             case 'create': renderCreate(); break;
             case 'department': await renderDepartment(); break;
             case 'reports': await renderReports(); break;
@@ -208,6 +236,34 @@ function getUserName(id) {
     if (!id) return '---';
     const u = users.find(user => user.id == id);
     return u ? u.full_name : id;
+}
+
+async function renderTasks() {
+    document.getElementById('view-title').innerText = 'ЗАДАЧИ';
+    screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
+    try {
+        const res = await apiFetch('/requests.php?action=my_tasks');
+        const requests = await res.json();
+        screens.main.innerHTML = '';
+        requests.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'req-card';
+            card.innerHTML = `
+                <div class="req-header">
+                    <span class="req-number">${r.number}</span>
+                    <span class="status-badge status-${r.status}">${getStatusLabel(r.status)}</span>
+                </div>
+                <div class="req-desc">${r.description}</div>
+                <div class="req-meta">
+                    <span><i class="bi bi-calendar3"></i> ${new Date(r.created_at).toLocaleDateString()}</span>
+                    <span><i class="bi bi-tag"></i> ${getWorkTypeName(r.work_type_id)}</span>
+                </div>
+            `;
+            card.onclick = () => showDetails(r.id);
+            screens.main.appendChild(card);
+        });
+        if (requests.length === 0) screens.main.innerHTML = '<div style="text-align:center; padding:20px;">НЕТ ЗАДАЧ</div>';
+    } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
 }
 
 async function renderDashboard() {
@@ -451,14 +507,29 @@ async function showDetails(id) {
             if (['new', 'assigned'].includes(r.status)) {
                 const btn = document.createElement('button');
                 btn.innerHTML = '<i class="bi bi-play-fill"></i> В РАБОТУ';
-                btn.onclick = () => updateStatus(id, 'in_progress');
+                btn.onclick = () => {
+                    const comment = prompt('Комментарий к статусу:', 'Взято в работу');
+                    if (comment !== null) updateStatus(id, 'in_progress', comment);
+                };
                 actions.appendChild(btn);
             } else if (r.status === 'in_progress') {
                 const btn = document.createElement('button');
                 btn.innerHTML = '<i class="bi bi-check-all"></i> ВЫПОЛНЕНО';
                 btn.style.background = 'var(--success)';
-                btn.onclick = () => updateStatus(id, 'completed');
+                btn.onclick = () => {
+                    const comment = prompt('Комментарий к результату:', 'Работы завершены');
+                    if (comment !== null) updateStatus(id, 'completed', comment);
+                };
                 actions.appendChild(btn);
+
+                const failBtn = document.createElement('button');
+                failBtn.innerHTML = '<i class="bi bi-x-circle"></i> НЕ ВЫПОЛНЕНО';
+                failBtn.style = 'background:transparent; border: 1px solid var(--error); color:var(--error); margin-top:12px; box-shadow:none;';
+                failBtn.onclick = () => {
+                    const comment = prompt('Причина невыполнения:');
+                    if (comment) updateStatus(id, 'rejected', comment);
+                };
+                actions.appendChild(failBtn);
             }
         }
 

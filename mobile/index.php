@@ -102,6 +102,7 @@
 
         <div class="nav-bar">
             <button class="nav-btn active" data-view="dashboard"><i class="bi bi-list-task"></i></button>
+            <button class="nav-btn" data-view="tasks" id="nav-tasks-btn"><i class="bi bi-check2-square"></i></button>
             <button class="nav-btn" data-view="create"><i class="bi bi-plus-lg"></i></button>
             <button class="nav-btn" data-view="chat" id="nav-chat-btn"><i class="bi bi-chat-dots"></i></button>
             <button class="nav-btn" data-view="department"><i class="bi bi-people"></i></button>

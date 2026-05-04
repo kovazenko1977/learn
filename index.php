@@ -471,6 +471,7 @@
             <!-- Mobile Bottom Navigation -->
             <nav class="mobile-bottom-nav d-md-none">
                 <a href="#" class="nav-link active" data-view="dashboard"><i class="bi bi-house-door"></i><span>Главная</span></a>
+                <a href="#" class="nav-link" data-view="tasks" id="mob-nav-tasks"><i class="bi bi-check2-square"></i><span>Задачи</span></a>
                 <a href="#" class="nav-link" data-view="chat" id="mob-nav-chat"><i class="bi bi-chat-dots"></i><span>Чат</span></a>
                 <a href="#" class="nav-link" data-view="department" id="mob-nav-dept"><i class="bi bi-list-check"></i><span>Заявки</span></a>
                 <a href="#" class="nav-link" data-view="reports" id="mob-nav-rep"><i class="bi bi-bar-chart"></i><span>Отчеты</span></a>
@@ -501,6 +502,7 @@
                     <div class="d-flex flex-column justify-content-between" style="height: calc(100vh - 100px);">
                         <ul class="nav flex-column" id="main-nav">
                             <li class="nav-item"><a class="nav-link" href="#" data-view="dashboard"><i class="bi bi-grid-1x2"></i> Мои заявки</a></li>
+                            <li class="nav-item" id="nav-tasks"><a class="nav-link" href="#" data-view="tasks"><i class="bi bi-list-check"></i> Мои задачи</a></li>
                             <li class="nav-item"><a class="nav-link" href="#" data-view="chat" id="nav-chat"><i class="bi bi-chat-dots"></i> Общий чат</a></li>
                             <li class="nav-item" id="nav-department"><a class="nav-link" href="#" data-view="department"><i class="bi bi-people"></i> Заявки отдела</a></li>
                             <li class="nav-item" id="nav-create"><a class="nav-link" href="#" data-view="create"><i class="bi bi-plus-circle"></i> Создать заявку</a></li>

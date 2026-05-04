@@ -162,6 +162,9 @@ function showLayout() {
 
     const perms = currentUser.permissions || {};
 
+    const tasksEl = document.getElementById('nav-tasks');
+    tasksEl.classList.toggle('hidden', !['admin', 'executor', 'manager'].includes(currentUser.role));
+
     adminEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
     reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
     deptEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user')));
@@ -170,12 +173,14 @@ function showLayout() {
     const mAdmin = document.getElementById('mob-nav-admin');
     const mRep = document.getElementById('mob-nav-rep');
     const mDept = document.getElementById('mob-nav-dept');
+    const mTasks = document.getElementById('mob-nav-tasks');
     const mChat = document.getElementById('mob-nav-chat');
     const dChat = document.getElementById('nav-chat');
 
     if (mAdmin) mAdmin.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
     if (mRep) mRep.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
     if (mDept) mDept.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user')));
+    if (mTasks) mTasks.classList.toggle('hidden', !['admin', 'executor', 'manager'].includes(currentUser.role));
     if (mChat) mChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_chat ?? true));
     if (dChat) dChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_chat ?? true));
 
@@ -237,13 +242,14 @@ function navigateToView(view) {
     const mTitle = document.getElementById('mobile-title');
     const mBack = document.getElementById('mobile-back-btn');
     if (mTitle) {
-        const titles = { 'dashboard': 'HOP', 'department': 'Заявки', 'create': 'Новая заявка', 'admin': 'Настройки', 'reports': 'Аналитика', 'help': 'Инфо', 'chat': 'Чат' };
+        const titles = { 'dashboard': 'HOP', 'tasks': 'Задачи', 'department': 'Заявки', 'create': 'Новая заявка', 'admin': 'Настройки', 'reports': 'Аналитика', 'help': 'Инфо', 'chat': 'Чат' };
         mTitle.innerText = titles[view] || 'HOP';
     }
     if (mBack) mBack.style.display = view === 'dashboard' ? 'none' : 'block';
 
     switch (view) {
         case 'dashboard': renderDashboard(); break;
+        case 'tasks': renderTasks(); break;
         case 'department': renderDepartment(); break;
         case 'create': renderCreate(); break;
         case 'admin': renderAdmin(); break;
@@ -316,6 +322,110 @@ function setToday(fromId, toId, callback) {
     document.getElementById(fromId).value = today;
     document.getElementById(toId).value = today;
     callback();
+}
+
+async function renderTasks(from = '', to = '') {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+        el.appContent.innerHTML = `
+            <div class="p-3">
+                <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-calendar3 text-primary"></i>
+                        <input type="date" id="tasks-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                        <span class="text-muted small">до</span>
+                        <input type="date" id="tasks-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('tasks-from', 'tasks-to', filterTasks)">Сегодня</button>
+                        <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterTasks()">Найти</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0 mobile-card-table">
+                        <tbody id="tasks-req-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    } else {
+        el.appContent.innerHTML = `
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <h2 class="fw-bold mb-0">Мои задачи</h2>
+                <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
+                    <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+                        <i class="bi bi-calendar3 text-muted ms-1"></i>
+                        <input type="date" id="tasks-from" class="form-control form-control-sm border-0" value="${from}">
+                        <span class="text-muted small">до</span>
+                        <input type="date" id="tasks-to" class="form-control form-control-sm border-0" value="${to}">
+                    </div>
+                    <div class="d-flex gap-2 w-100 w-md-auto">
+                        <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('tasks-from', 'tasks-to', filterTasks)">Сегодня</button>
+                        <button class="btn btn-primary btn-sm rounded-2 px-3 flex-grow-1" onclick="filterTasks()">Фильтр</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Номер</th>
+                                <th>Тип</th>
+                                <th class="d-none d-md-table-cell">Описание</th>
+                                <th>Статус</th>
+                                <th class="pe-4 text-end">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-req-table" class="border-top-0"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    window.filterTasks = () => {
+        const f = document.getElementById('tasks-from').value;
+        const t = document.getElementById('tasks-to').value;
+        renderTasks(f, t);
+    };
+
+    try {
+        const query = (from || to) ? `&from=${from}&to=${to}` : '';
+        const res = await apiFetch(`/requests.php?action=my_tasks${query}`);
+        const requests = await res.json();
+        const tbody = document.getElementById('tasks-req-table');
+        requests.forEach(r => {
+            const tr = document.createElement('tr');
+            if (isMobile) {
+                tr.innerHTML = `
+                    <td class="p-0 border-0">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <a href="#" class="req-link fw-bold h5 text-primary" data-id="${r.id}">${escapeHTML(r.number)}</a>
+                            ${getStatusBadge(r.status)}
+                        </div>
+                        <div class="mb-2"><span class="badge bg-light text-dark border">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></div>
+                        <div class="text-muted small mb-3 text-truncate-2">${escapeHTML(r.description)}</div>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>${new Date(r.created_at).toLocaleDateString()}</span>
+                        </div>
+                    </td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                    <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                    <td class="d-none d-md-table-cell text-muted small">${escapeHTML(r.description.substring(0, 50))}${r.description.length > 50 ? '...' : ''}</td>
+                    <td data-label="Статус">${getStatusBadge(r.status)}</td>
+                    <td class="pe-4 text-end text-muted small" data-label="Дата">${new Date(r.created_at).toLocaleDateString()}</td>
+                `;
+            }
+            tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('.req-link').forEach(link => {
+            link.addEventListener('click', (e) => { e.preventDefault(); showRequestDetails(link.dataset.id); });
+        });
+    } catch (e) { el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки задач</div>'; }
 }
 
 async function renderDashboard(from = '', to = '') {
@@ -668,10 +778,27 @@ async function showRequestDetails(id) {
 
         if (currentUser.role === 'admin' || (perms.can_status && (['executor', 'manager'].includes(currentUser.role)))) {
             if (['assigned', 'new'].includes(req.status)) {
-                const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'В работу'; btn.onclick = () => updateStatus(req.id, 'in_progress', 'Взято в работу'); btnsDiv.appendChild(btn);
+                const btn = document.createElement('button'); btn.className = 'btn btn-success btn-sm me-2'; btn.innerText = 'В работу';
+                btn.onclick = () => {
+                    const comment = prompt('Комментарий к статусу:', 'Взято в работу');
+                    if (comment !== null) updateStatus(req.id, 'in_progress', comment);
+                };
+                btnsDiv.appendChild(btn);
             }
             if (req.status === 'in_progress') {
-                const btn = document.createElement('button'); btn.className = 'btn btn-info btn-sm me-2'; btn.innerText = 'Выполнено'; btn.onclick = () => updateStatus(req.id, 'completed', 'Работы завершены'); btnsDiv.appendChild(btn);
+                const btn = document.createElement('button'); btn.className = 'btn btn-info btn-sm me-2'; btn.innerText = 'Выполнено';
+                btn.onclick = () => {
+                    const comment = prompt('Комментарий к результату:', 'Работы завершены');
+                    if (comment !== null) updateStatus(req.id, 'completed', comment);
+                };
+                btnsDiv.appendChild(btn);
+
+                const failBtn = document.createElement('button'); failBtn.className = 'btn btn-outline-danger btn-sm me-2'; failBtn.innerText = 'Не выполнено';
+                failBtn.onclick = () => {
+                    const comment = prompt('Причина невыполнения:');
+                    if (comment) updateStatus(req.id, 'rejected', comment);
+                };
+                btnsDiv.appendChild(failBtn);
             }
         }
         if ((currentUser.role === 'admin' || perms.can_delete) && req.requester_id == currentUser.id) {
@@ -745,7 +872,9 @@ async function renderAdmin() {
     el.appContent.innerHTML = `
         <div class="${isMobile ? 'p-3' : 'd-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4'}">
             ${isMobile ? '' : '<h2 class="fw-bold mb-0">Администрирование</h2>'}
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-warning btn-sm rounded-pill px-3" onclick="seedDemo()"><i class="bi bi-database-add"></i> Загрузить ДЕМО</button>
+                <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="clearDemo()"><i class="bi bi-trash-fill"></i> Удалить ВСЁ</button>
                 <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="triggerRestore()"><i class="bi bi-upload"></i> Восстановить</button>
                 <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="createBackup()"><i class="bi bi-download"></i> Бекап</button>
                 <button class="btn btn-success btn-sm rounded-pill px-3" onclick="exportCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Экспорт</button>
@@ -1454,6 +1583,25 @@ window.triggerRestore = async () => {
         const res = await apiFetch(`/admin.php?action=restore&file=${encodeURIComponent(file)}`);
         const data = await res.json(); alert(data.message); location.reload();
     } catch (e) { alert('Ошибка восстановления'); }
+};
+
+window.seedDemo = async () => {
+    if (!confirm('Загрузить 300 тестовых заявок?')) return;
+    try {
+        const res = await apiFetch('/admin.php?action=seed_demo');
+        const data = await res.json();
+        if (data.success) alert(`Загружено: ${data.count} записей`);
+        else alert('Ошибка: ' + (data.message || 'Check logs'));
+    } catch (e) { alert('Ошибка соединения'); }
+};
+
+window.clearDemo = async () => {
+    if (!confirm('ВНИМАНИЕ! Это удалит ВСЕ заявки, историю и чаты. Продолжить?')) return;
+    try {
+        const res = await apiFetch('/admin.php?action=clear_demo');
+        const data = await res.json();
+        if (data.success) alert('Все данные заявок удалены');
+    } catch (e) { alert('Ошибка соединения'); }
 };
 
 window.createBackup = async () => {
