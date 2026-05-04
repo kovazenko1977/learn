@@ -13,29 +13,49 @@ const screens = {
     modalBody: document.getElementById('modal-body')
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initApp() {
     applyTheme(localStorage.getItem('mobile-theme') || 'default');
 
     try {
-        const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
-        systemSettings = await cfgRes.json();
-    } catch (e) { console.error('Config fetch failed', e); }
+        try {
+            const cfgRes = await fetch(`${API_BASE}/auth.php?action=config`);
+            systemSettings = await cfgRes.json();
+        } catch (e) { console.error('Config fetch failed', e); }
 
-    if (token) {
-        const success = await fetchUser();
-        if (success) {
-            await loadLookups();
-            await showApp();
-            hideSplashScreen();
+        if (!systemSettings.auth_required && !token) {
+            try {
+                const res = await fetch(`${API_BASE}/auth.php?action=login`, { method: 'POST' });
+                const data = await res.json();
+                token = data.token;
+                currentUser = data.user;
+                localStorage.setItem('token', token);
+            } catch (e) { console.error('Auto-login failed', e); }
+        }
+
+        if (token) {
+            const success = await fetchUser();
+            if (success) {
+                await loadLookups();
+                await showApp();
+            } else {
+                showAuth();
+            }
         } else {
             showAuth();
-            hideSplashScreen();
         }
-    } else {
+    } catch (err) {
+        console.error('Initialization error:', err);
         showAuth();
+    } finally {
         hideSplashScreen();
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 function applyTheme(theme) {
     document.body.className = theme === 'default' ? '' : `theme-${theme}`;
