@@ -340,11 +340,33 @@ if ($action == 'users') {
 } elseif ($action == 'seed_demo') {
     $depts = $storage->readCollection('departments');
     $wtypes = $storage->readCollection('work_types');
-    $users = array_values(array_filter($storage->readCollection('users'), fn($u) => $u['role'] == 'user' || $u['role'] == 'executor'));
 
-    if (empty($depts) || empty($wtypes)) {
-        http_response_code(400);
-        exit(json_encode(['message' => 'Add departments and work types first']));
+    // Auto-create departments and work types if missing
+    if (empty($depts)) {
+        $storage->insert('departments', ['id' => 'd1', 'name' => 'IT отдел', 'description' => 'Поддержка техники']);
+        $storage->insert('departments', ['id' => 'd2', 'name' => 'Хозяйственный отдел', 'description' => 'Ремонт и уборка']);
+        $storage->insert('departments', ['id' => 'd3', 'name' => 'Энергетики', 'description' => 'Электрика и освещение']);
+        $depts = $storage->readCollection('departments');
+    }
+
+    if (empty($wtypes)) {
+        $storage->insert('work_types', ['id' => 'w1', 'name' => 'Компьютерная помощь', 'department_id' => 'd1', 'sla_hours' => 8]);
+        $storage->insert('work_types', ['id' => 'w2', 'name' => 'Сантехника', 'department_id' => 'd2', 'sla_hours' => 24]);
+        $storage->insert('work_types', ['id' => 'w3', 'name' => 'Электрика', 'department_id' => 'd3', 'sla_hours' => 12]);
+        $storage->insert('work_types', ['id' => 'w4', 'name' => 'Мебель', 'department_id' => 'd2', 'sla_hours' => 48]);
+        $wtypes = $storage->readCollection('work_types');
+    }
+
+    $allUsers = $storage->readCollection('users');
+    $users = array_values(array_filter($allUsers, fn($u) => in_array($u['role'], ['user', 'executor', 'admin'])));
+
+    if (empty($users)) {
+        // Create a default admin if somehow missing
+        $storage->insert('users', [
+            'id' => 'u1', 'login' => 'admin', 'full_name' => 'Администратор (Демо)',
+            'role' => 'admin', 'password_hash' => password_hash('admin123', PASSWORD_DEFAULT)
+        ]);
+        $users = $storage->readCollection('users');
     }
 
     $locations = ['Корпус А, 1 этаж, 101', 'Корпус Б, 3 этаж, 305', 'Цех №2, участок сборки', 'Офис, ресепшн', 'Склад №4', 'Серверная', 'Столовая'];
