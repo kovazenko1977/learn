@@ -40,9 +40,25 @@ $adminOnly = [
 ];
 if ($authEnabled && in_array($action, $adminOnly)) {
     $perms = $user['permissions'] ?? [];
-    if ($user['role'] !== 'admin' && !($perms['can_manage_system'] ?? false)) {
-        http_response_code(403);
-        exit(json_encode(['message' => 'Forbidden']));
+    $is_admin = $user['role'] === 'admin';
+    $has_sys = $perms['can_manage_system'] ?? false;
+
+    if (!$is_admin && !$has_sys) {
+        $allowed = false;
+        if (in_array($action, ['create_user', 'update_user', 'delete_user', 'reset_password']) && ($perms['can_manage_users'] ?? false)) $allowed = true;
+        if (in_array($action, ['create_worktype', 'update_worktype', 'delete_worktype', 'create_department', 'update_department', 'delete_department']) && ($perms['can_manage_structure'] ?? false)) $allowed = true;
+        if ($action == 'update_settings' && ($perms['can_manage_settings'] ?? false)) $allowed = true;
+        if (in_array($action, ['backup', 'restore']) && ($perms['can_manage_backups'] ?? false)) $allowed = true;
+        if ($action == 'login_logs' && ($perms['can_view_logs'] ?? false)) $allowed = true;
+        if (in_array($action, ['list_files', 'delete_file']) && ($perms['can_manage_files'] ?? false)) $allowed = true;
+        if (in_array($action, ['get_perm_templates', 'save_perm_template', 'delete_perm_template']) && ($perms['can_manage_users'] ?? false)) $allowed = true;
+        if ($action == 'seed_demo' && ($perms['can_seed_demo'] ?? false)) $allowed = true;
+        if ($action == 'clear_demo' && ($perms['can_clear_data'] ?? false)) $allowed = true;
+
+        if (!$allowed) {
+            http_response_code(403);
+            exit(json_encode(['message' => 'Forbidden: Insufficient permissions for ' . $action]));
+        }
     }
 }
 
@@ -72,16 +88,36 @@ if ($action == 'users') {
         'is_active' => 1,
         'created_at' => date('c'),
         'permissions' => [
-            'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
             'can_status' => (bool)($data['permissions']['can_status'] ?? true),
+            'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
+            'can_delete_any' => (bool)($data['permissions']['can_delete_any'] ?? false),
             'can_assign' => (bool)($data['permissions']['can_assign'] ?? false),
-            'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
+            'can_assign_any' => (bool)($data['permissions']['can_assign_any'] ?? false),
+            'can_view_all_tasks' => (bool)($data['permissions']['can_view_all_tasks'] ?? false),
+            'can_view_department' => (bool)($data['permissions']['can_view_department'] ?? ($data['role'] != 'user')),
             'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
             'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
+            'can_manage_users' => (bool)($data['permissions']['can_manage_users'] ?? false),
+            'can_manage_structure' => (bool)($data['permissions']['can_manage_structure'] ?? false),
+            'can_manage_settings' => (bool)($data['permissions']['can_manage_settings'] ?? false),
+            'can_manage_backups' => (bool)($data['permissions']['can_manage_backups'] ?? false),
+            'can_view_logs' => (bool)($data['permissions']['can_view_logs'] ?? false),
+            'can_manage_files' => (bool)($data['permissions']['can_manage_files'] ?? false),
             'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false),
             'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true),
-            'can_view_department' => (bool)($data['permissions']['can_view_department'] ?? ($data['role'] != 'user')),
-            'can_view_chat' => (bool)($data['permissions']['can_view_chat'] ?? true)
+            'can_view_chat' => (bool)($data['permissions']['can_view_chat'] ?? true),
+            'can_edit_requests' => (bool)($data['permissions']['can_edit_requests'] ?? false),
+            'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
+            'can_reopen_requests' => (bool)($data['permissions']['can_reopen_requests'] ?? false),
+            'can_seed_demo' => (bool)($data['permissions']['can_seed_demo'] ?? false),
+            'can_clear_data' => (bool)($data['permissions']['can_clear_data'] ?? false),
+            'can_view_history' => (bool)($data['permissions']['can_view_history'] ?? true),
+            'can_change_priority' => (bool)($data['permissions']['can_change_priority'] ?? false),
+            'can_comment' => (bool)($data['permissions']['can_comment'] ?? true),
+            'can_edit_own' => (bool)($data['permissions']['can_edit_own'] ?? true),
+            'can_upload_files' => (bool)($data['permissions']['can_upload_files'] ?? true),
+            'can_delete_comments' => (bool)($data['permissions']['can_delete_comments'] ?? false),
+            'can_view_unassigned' => (bool)($data['permissions']['can_view_unassigned'] ?? false)
         ]
     ];
     $saved = $storage->insert('users', $newUser);
@@ -101,16 +137,36 @@ if ($action == 'users') {
         'department_id' => $data['department_id'] ?? null,
         'is_active' => isset($data['is_active']) ? (int)$data['is_active'] : 1,
         'permissions' => [
-            'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
             'can_status' => (bool)($data['permissions']['can_status'] ?? true),
+            'can_delete' => (bool)($data['permissions']['can_delete'] ?? false),
+            'can_delete_any' => (bool)($data['permissions']['can_delete_any'] ?? false),
             'can_assign' => (bool)($data['permissions']['can_assign'] ?? false),
-            'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
+            'can_assign_any' => (bool)($data['permissions']['can_assign_any'] ?? false),
+            'can_view_all_tasks' => (bool)($data['permissions']['can_view_all_tasks'] ?? false),
+            'can_view_department' => (bool)($data['permissions']['can_view_department'] ?? ($data['role'] != 'user')),
             'can_view_reports' => (bool)($data['permissions']['can_view_reports'] ?? false),
             'can_manage_system' => (bool)($data['permissions']['can_manage_system'] ?? false),
+            'can_manage_users' => (bool)($data['permissions']['can_manage_users'] ?? false),
+            'can_manage_structure' => (bool)($data['permissions']['can_manage_structure'] ?? false),
+            'can_manage_settings' => (bool)($data['permissions']['can_manage_settings'] ?? false),
+            'can_manage_backups' => (bool)($data['permissions']['can_manage_backups'] ?? false),
+            'can_view_logs' => (bool)($data['permissions']['can_view_logs'] ?? false),
+            'can_manage_files' => (bool)($data['permissions']['can_manage_files'] ?? false),
             'can_export_data' => (bool)($data['permissions']['can_export_data'] ?? false),
             'can_access_chat' => (bool)($data['permissions']['can_access_chat'] ?? true),
-            'can_view_department' => (bool)($data['permissions']['can_view_department'] ?? ($data['role'] != 'user')),
-            'can_view_chat' => (bool)($data['permissions']['can_view_chat'] ?? true)
+            'can_view_chat' => (bool)($data['permissions']['can_view_chat'] ?? true),
+            'can_edit_requests' => (bool)($data['permissions']['can_edit_requests'] ?? false),
+            'can_edit_all' => (bool)($data['permissions']['can_edit_all'] ?? false),
+            'can_reopen_requests' => (bool)($data['permissions']['can_reopen_requests'] ?? false),
+            'can_seed_demo' => (bool)($data['permissions']['can_seed_demo'] ?? false),
+            'can_clear_data' => (bool)($data['permissions']['can_clear_data'] ?? false),
+            'can_view_history' => (bool)($data['permissions']['can_view_history'] ?? true),
+            'can_change_priority' => (bool)($data['permissions']['can_change_priority'] ?? false),
+            'can_comment' => (bool)($data['permissions']['can_comment'] ?? true),
+            'can_edit_own' => (bool)($data['permissions']['can_edit_own'] ?? true),
+            'can_upload_files' => (bool)($data['permissions']['can_upload_files'] ?? true),
+            'can_delete_comments' => (bool)($data['permissions']['can_delete_comments'] ?? false),
+            'can_view_unassigned' => (bool)($data['permissions']['can_view_unassigned'] ?? false)
         ]
     ];
     if (!empty($data['password'])) {

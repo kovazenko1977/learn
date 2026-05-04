@@ -36,7 +36,13 @@ if ($method == 'POST' && $action == 'create') {
 
     $file_path = null;
     $file_name = null;
+    $perms = $user['permissions'] ?? [];
     if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
+        if ($user['role'] !== 'admin' && !($perms['can_upload_files'] ?? true)) {
+            http_response_code(403);
+            exit(json_encode(['message' => 'Forbidden (can_upload_files)']));
+        }
+
         $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'txt'];
         if (!in_array($ext, $allowed)) {
@@ -96,6 +102,16 @@ if ($method == 'POST' && $action == 'create') {
             return true;
         });
     }
+    // Filter for unassigned if user has specific permission but not department/all access
+    $perms = $user['permissions'] ?? [];
+    if (!($perms['can_view_all_tasks'] ?? false) && ($perms['can_view_unassigned'] ?? false)) {
+        $unassigned = $storage->find('requests', ['assigned_to' => null]);
+        $requests = array_merge($requests, $unassigned);
+        // De-duplicate by ID
+        $temp = [];
+        foreach($requests as $r) $temp[$r['id']] = $r;
+        $requests = array_values($temp);
+    }
     echo json_encode(array_values($requests));
 } elseif ($action == 'my_tasks') {
     $from = $_GET['from'] ?? null;
@@ -116,12 +132,12 @@ if ($method == 'POST' && $action == 'create') {
     $requests = [];
     $perms = $user['permissions'] ?? [];
 
-    if ($user['role'] !== 'admin' && !($perms['can_view_department'] ?? ($user['role'] != 'user'))) {
+    if ($user['role'] !== 'admin' && !($perms['can_view_department'] ?? ($user['role'] != 'user')) && !($perms['can_view_all_tasks'] ?? false)) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden (can_view_department)']));
     }
 
-    if ($user['role'] == 'admin' || ($perms['can_edit_all'] ?? false)) {
+    if ($user['role'] == 'admin' || ($perms['can_view_all_tasks'] ?? false) || ($perms['can_edit_all'] ?? false)) {
         $requests = $storage->readCollection('requests');
     } else {
         $userData = $storage->findOne('users', ['id' => $user['id']]);
@@ -146,16 +162,27 @@ if ($method == 'POST' && $action == 'create') {
         exit(json_encode(['message' => 'Request not found']));
     }
     $perms = $user['permissions'] ?? [];
-    if ($user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+    if ($user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && !($perms['can_view_all_tasks'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
+    }
+
+    if ($user['role'] !== 'admin' && $request['requester_id'] == $user['id'] && !($perms['can_edit_own'] ?? true)) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden (can_edit_own disabled)']));
     }
     echo json_encode($request);
 } elseif ($action == 'history') {
     $id = $_GET['id'] ?? 0;
     $request = $storage->findOne('requests', ['id' => $id]);
     $perms = $user['permissions'] ?? [];
-    if ($request && $user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+
+    if ($user['role'] !== 'admin' && !($perms['can_view_history'] ?? true)) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden (can_view_history)']));
+    }
+
+    if ($request && $user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && !($perms['can_view_all_tasks'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
     }
@@ -180,14 +207,27 @@ if ($method == 'POST' && $action == 'create') {
         exit(json_encode(['message' => 'Permission denied (can_status)']));
     }
 
-    if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || !in_array($data['status'], ['closed', 'rejected']))) {
+    if ($user['role'] != 'admin' && !($perms['can_edit_all'] ?? false) && $request['department_id'] != $user['department_id'] && ($request['requester_id'] != $user['id'] || !in_array($data['status'], ['closed', 'rejected']))) {
+         // Special case for re-opening
+         if ($data['status'] == 'in_progress' && $request['status'] == 'closed' && !($perms['can_reopen_requests'] ?? false)) {
+             http_response_code(403);
+             exit(json_encode(['message' => 'Permission denied (can_reopen_requests)']));
+         }
+
          http_response_code(403);
          exit(json_encode(['message' => 'Forbidden']));
     }
+
+    if ($user['role'] !== 'admin' && isset($data['priority']) && !($perms['can_change_priority'] ?? false)) {
+         http_response_code(403);
+         exit(json_encode(['message' => 'Forbidden (can_change_priority)']));
+    }
+
     $updateData = [
         'status' => $data['status'],
         'updated_at' => date('c')
     ];
+    if (isset($data['priority'])) $updateData['priority'] = $data['priority'];
     if ($data['status'] == 'closed' && isset($data['rating'])) {
         $updateData['rating'] = (int)$data['rating'];
     }
@@ -214,7 +254,7 @@ if ($method == 'POST' && $action == 'create') {
     }
 
     $request = $storage->findOne('requests', ['id' => $data['id']]);
-    if ($user['role'] != 'admin' && $request['department_id'] != $user['department_id']) {
+    if ($user['role'] != 'admin' && !($perms['can_assign_any'] ?? false) && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
     }
@@ -256,7 +296,7 @@ if ($method == 'POST' && $action == 'create') {
         http_response_code(404);
         exit(json_encode(['message' => 'Request not found']));
     }
-    if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
+    if ($user['role'] != 'admin' && !($perms['can_view_all_tasks'] ?? false) && !($perms['can_edit_all'] ?? false) && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
     }
@@ -288,6 +328,12 @@ if ($method == 'POST' && $action == 'create') {
     if ($user['role'] != 'admin' && $request['requester_id'] != $user['id'] && $request['department_id'] != $user['department_id']) {
         http_response_code(403);
         exit(json_encode(['message' => 'Forbidden']));
+    }
+
+    $perms = $user['permissions'] ?? [];
+    if ($user['role'] !== 'admin' && !($perms['can_comment'] ?? true)) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden (can_comment)']));
     }
 
     $comment = [

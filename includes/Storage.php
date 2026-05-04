@@ -304,7 +304,8 @@ class Storage {
                 announcement TEXT,
                 notify_sound TINYINT DEFAULT 0,
                 notify_browser TINYINT DEFAULT 0,
-                notify_new_text TEXT
+                notify_new_text TEXT,
+                org_name VARCHAR(255)
             )"
         ];
         foreach ($sqls as $sql) $this->pdo->exec($sql);

@@ -153,21 +153,26 @@ async function showApp() {
     const perms = currentUser.permissions || {};
 
     const navTasks = document.getElementById('nav-tasks-btn');
-    if (navTasks && !['admin', 'executor', 'manager'].includes(currentUser.role)) {
+    const isWorker = ['admin', 'executor', 'manager'].includes(currentUser.role);
+    if (navTasks && !isWorker) {
         navTasks.classList.add('hidden');
     }
 
     const navRep = document.getElementById('nav-rep-btn');
-    if (navRep && !['admin', 'manager'].includes(currentUser.role) && !perms.can_view_reports) {
+    const canRep = currentUser.role === 'admin' || currentUser.role === 'manager' || (perms.can_view_reports);
+    if (navRep && !canRep) {
         navRep.classList.add('hidden');
     }
+
     const navChat = document.getElementById('nav-chat-btn');
-    if (navChat && currentUser.role !== 'admin' && !(perms.can_view_chat ?? true)) {
+    const canChat = currentUser.role === 'admin' || (perms.can_view_chat ?? true);
+    if (navChat && !canChat) {
         navChat.classList.add('hidden');
     }
 
     const navDept = document.querySelector('.nav-btn[data-view="department"]');
-    if (navDept && currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user'))) {
+    const canDept = currentUser.role === 'admin' || (perms.can_view_department ?? (currentUser.role !== 'user')) || (perms.can_view_all_tasks);
+    if (navDept && !canDept) {
         navDept.classList.add('hidden');
     }
 

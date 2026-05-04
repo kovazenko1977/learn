@@ -1025,17 +1025,49 @@ async function renderAdmin() {
                         </div>
                         <div class="mb-4" id="create-perms-container">
                             <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
-                            <div class="row g-1">
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Статусы</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_edit_all" id="p-edit-all"><label class="form-check-label" for="p-edit-all">Все заявки</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="p-view-reports"><label class="form-check-label" for="p-view-reports">Отчеты</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="p-manage-system"><label class="form-check-label" for="p-manage-system">Система</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_export_data" id="p-export-data"><label class="form-check-label" for="p-export-data">Экспорт</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="p-access-chat" checked><label class="form-check-label" for="p-access-chat">Общий чат</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_department" id="p-view-department"><label class="form-check-label" for="p-view-department">Заявки отдела</label></div></div>
-                                <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_chat" id="p-view-chat" checked><label class="form-check-label" for="p-view-chat">Виджет чата</label></div></div>
+                            <div class="p-2 border rounded-3 bg-light mb-2">
+                                <div class="small fw-bold text-primary mb-1">Заявки</div>
+                                <div class="row g-1">
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_status" id="p-status" checked><label class="form-check-label" for="p-status">Статусы</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete" id="p-delete"><label class="form-check-label" for="p-delete">Удаление (свои)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete_any" id="p-delete-any"><label class="form-check-label" for="p-delete-any">Удаление (любые)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_assign" id="p-assign"><label class="form-check-label" for="p-assign">Назначение (отдел)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_assign_any" id="p-assign-any"><label class="form-check-label" for="p-assign-any">Назначение (все)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_department" id="p-view-department"><label class="form-check-label" for="p-view-department">Просмотр (отдел)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_all_tasks" id="p-view-all-tasks"><label class="form-check-label" for="p-view-all-tasks">Просмотр (все)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_edit_requests" id="p-edit-requests"><label class="form-check-label" for="p-edit-requests">Редактирование</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_reopen_requests" id="p-reopen-requests"><label class="form-check-label" for="p-reopen-requests">Переоткрытие</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_edit_own" id="p-edit-own" checked><label class="form-check-label" for="p-edit-own">Редакт. свои</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_change_priority" id="p-change-priority"><label class="form-check-label" for="p-change-priority">Приоритеты</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_upload_files" id="p-upload-files" checked><label class="form-check-label" for="p-upload-files">Файлы (заявка)</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_comment" id="p-comment" checked><label class="form-check-label" for="p-comment">Комментарии</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_delete_comments" id="p-delete-comments"><label class="form-check-label" for="p-delete-comments">Удаление комм.</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_history" id="p-view-history" checked><label class="form-check-label" for="p-view-history">История</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_unassigned" id="p-view-unassigned"><label class="form-check-label" for="p-view-unassigned">Нераспр. заявки</label></div></div>
+                                </div>
+                            </div>
+                            <div class="p-2 border rounded-3 bg-light mb-2">
+                                <div class="small fw-bold text-success mb-1">Управление и Система</div>
+                                <div class="row g-1">
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_users" id="p-manage-users"><label class="form-check-label" for="p-manage-users">Пользователи</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_structure" id="p-manage-structure"><label class="form-check-label" for="p-manage-structure">Структура</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_settings" id="p-manage-settings"><label class="form-check-label" for="p-manage-settings">Настройки</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_backups" id="p-manage-backups"><label class="form-check-label" for="p-manage-backups">Бекапы</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_files" id="p-manage-files"><label class="form-check-label" for="p-manage-files">Файлы</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_logs" id="p-view-logs"><label class="form-check-label" for="p-view-logs">Логи входа</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="p-manage-system"><label class="form-check-label" for="p-manage-system">Полный доступ</label></div></div>
+                                </div>
+                            </div>
+                            <div class="p-2 border rounded-3 bg-light">
+                                <div class="small fw-bold text-warning mb-1">Прочее</div>
+                                <div class="row g-1">
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="p-view-reports"><label class="form-check-label" for="p-view-reports">Отчеты</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_export_data" id="p-export-data"><label class="form-check-label" for="p-export-data">Экспорт</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="p-access-chat" checked><label class="form-check-label" for="p-access-chat">Общий чат</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_view_chat" id="p-view-chat" checked><label class="form-check-label" for="p-view-chat">Виджет чата</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_seed_demo" id="p-seed-demo"><label class="form-check-label" for="p-seed-demo">Демо-данные</label></div></div>
+                                    <div class="col-6"><div class="form-check small mb-1"><input class="form-check-input" type="checkbox" name="perm_clear_data" id="p-clear-data"><label class="form-check-label" for="p-clear-data">Очистка БД</label></div></div>
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill">Создать пользователя</button>
@@ -1331,17 +1363,49 @@ async function renderAdmin() {
                     </div>
                     <div class="col-12" id="edit-perms-container">
                         <label class="small fw-bold text-muted text-uppercase mb-2 d-block">Разрешения</label>
-                        <div class="row g-2">
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_status" id="e-p-status" ${u.permissions?.can_status ? 'checked' : ''}><label class="form-check-label" for="e-p-status">Статусы</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_delete" id="e-p-delete" ${u.permissions?.can_delete ? 'checked' : ''}><label class="form-check-label" for="e-p-delete">Удаление</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_assign" id="e-p-assign" ${u.permissions?.can_assign ? 'checked' : ''}><label class="form-check-label" for="e-p-assign">Назначение</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_edit_all" id="e-p-edit-all" ${u.permissions?.can_edit_all ? 'checked' : ''}><label class="form-check-label" for="e-p-edit-all">Все заявки</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="e-p-view-reports" ${u.permissions?.can_view_reports ? 'checked' : ''}><label class="form-check-label" for="e-p-view-reports">Отчеты</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="e-p-manage-system" ${u.permissions?.can_manage_system ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-system">Система</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_export_data" id="e-p-export-data" ${u.permissions?.can_export_data ? 'checked' : ''}><label class="form-check-label" for="e-p-export-data">Экспорт</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="e-p-access-chat" ${u.permissions?.can_access_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-access-chat">Общий чат</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_department" id="e-p-view-department" ${u.permissions?.can_view_department ?? (u.role !== 'user') ? 'checked' : ''}><label class="form-check-label" for="e-p-view-department">Заявки отдела</label></div></div>
-                            <div class="col-6 col-md-4"><div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_chat" id="e-p-view-chat" ${u.permissions?.can_view_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-view-chat">Виджет чата</label></div></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-2 border rounded-3 bg-light h-100">
+                                    <div class="small fw-bold text-primary mb-1">Заявки</div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_status" id="e-p-status" ${u.permissions?.can_status ? 'checked' : ''}><label class="form-check-label" for="e-p-status">Статусы</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_delete" id="e-p-delete" ${u.permissions?.can_delete ? 'checked' : ''}><label class="form-check-label" for="e-p-delete">Удаление (свои)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_delete_any" id="e-p-delete-any" ${u.permissions?.can_delete_any ? 'checked' : ''}><label class="form-check-label" for="e-p-delete-any">Удаление (любые)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_assign" id="e-p-assign" ${u.permissions?.can_assign ? 'checked' : ''}><label class="form-check-label" for="e-p-assign">Назначение (отдел)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_assign_any" id="e-p-assign-any" ${u.permissions?.can_assign_any ? 'checked' : ''}><label class="form-check-label" for="e-p-assign-any">Назначение (все)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_department" id="e-p-view-department" ${u.permissions?.can_view_department ? 'checked' : ''}><label class="form-check-label" for="e-p-view-department">Просмотр (отдел)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_all_tasks" id="e-p-view-all-tasks" ${u.permissions?.can_view_all_tasks ? 'checked' : ''}><label class="form-check-label" for="e-p-view-all-tasks">Просмотр (все)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_edit_requests" id="e-p-edit-requests" ${u.permissions?.can_edit_requests ? 'checked' : ''}><label class="form-check-label" for="e-p-edit-requests">Редактирование</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_reopen_requests" id="e-p-reopen-requests" ${u.permissions?.can_reopen_requests ? 'checked' : ''}><label class="form-check-label" for="e-p-reopen-requests">Переоткрытие</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_edit_own" id="e-p-edit-own" ${u.permissions?.can_edit_own !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-edit-own">Редакт. свои</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_change_priority" id="e-p-change-priority" ${u.permissions?.can_change_priority ? 'checked' : ''}><label class="form-check-label" for="e-p-change-priority">Приоритеты</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_upload_files" id="e-p-upload-files" ${u.permissions?.can_upload_files !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-upload-files">Файлы (заявка)</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_comment" id="e-p-comment" ${u.permissions?.can_comment !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-comment">Комментарии</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_delete_comments" id="e-p-delete-comments" ${u.permissions?.can_delete_comments ? 'checked' : ''}><label class="form-check-label" for="e-p-delete-comments">Удаление комм.</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_history" id="e-p-view-history" ${u.permissions?.can_view_history !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-view-history">История</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_unassigned" id="e-p-view-unassigned" ${u.permissions?.can_view_unassigned ? 'checked' : ''}><label class="form-check-label" for="e-p-view-unassigned">Нераспр. заявки</label></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-2 border rounded-3 bg-light mb-2">
+                                    <div class="small fw-bold text-success mb-1">Управление</div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_users" id="e-p-manage-users" ${u.permissions?.can_manage_users ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-users">Пользователи</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_structure" id="e-p-manage-structure" ${u.permissions?.can_manage_structure ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-structure">Структура</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_settings" id="e-p-manage-settings" ${u.permissions?.can_manage_settings ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-settings">Настройки</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_backups" id="e-p-manage-backups" ${u.permissions?.can_manage_backups ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-backups">Бекапы</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_files" id="e-p-manage-files" ${u.permissions?.can_manage_files ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-files">Файлы</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_logs" id="e-p-view-logs" ${u.permissions?.can_view_logs ? 'checked' : ''}><label class="form-check-label" for="e-p-view-logs">Логи входа</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_manage_system" id="e-p-manage-system" ${u.permissions?.can_manage_system ? 'checked' : ''}><label class="form-check-label" for="e-p-manage-system">Полный доступ</label></div>
+                                </div>
+                                <div class="p-2 border rounded-3 bg-light">
+                                    <div class="small fw-bold text-warning mb-1">Прочее</div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_reports" id="e-p-view-reports" ${u.permissions?.can_view_reports ? 'checked' : ''}><label class="form-check-label" for="e-p-view-reports">Отчеты</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_export_data" id="e-p-export-data" ${u.permissions?.can_export_data ? 'checked' : ''}><label class="form-check-label" for="e-p-export-data">Экспорт</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_access_chat" id="e-p-access-chat" ${u.permissions?.can_access_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-access-chat">Общий чат</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_view_chat" id="e-p-view-chat" ${u.permissions?.can_view_chat !== false ? 'checked' : ''}><label class="form-check-label" for="e-p-view-chat">Виджет чата</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_seed_demo" id="e-p-seed-demo" ${u.permissions?.can_seed_demo ? 'checked' : ''}><label class="form-check-label" for="e-p-seed-demo">Демо-данные</label></div>
+                                    <div class="form-check small"><input class="form-check-input" type="checkbox" name="perm_clear_data" id="e-p-clear-data" ${u.permissions?.can_clear_data ? 'checked' : ''}><label class="form-check-label" for="e-p-clear-data">Очистка БД</label></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1377,14 +1441,34 @@ async function renderAdmin() {
             data.permissions = {
                 can_status: formData.get('perm_status') === 'on',
                 can_delete: formData.get('perm_delete') === 'on',
+                can_delete_any: formData.get('perm_delete_any') === 'on',
                 can_assign: formData.get('perm_assign') === 'on',
-                can_edit_all: formData.get('perm_edit_all') === 'on',
+                can_assign_any: formData.get('perm_assign_any') === 'on',
+                can_view_department: formData.get('perm_view_department') === 'on',
+                can_view_all_tasks: formData.get('perm_view_all_tasks') === 'on',
                 can_view_reports: formData.get('perm_view_reports') === 'on',
                 can_manage_system: formData.get('perm_manage_system') === 'on',
+                can_manage_users: formData.get('perm_manage_users') === 'on',
+                can_manage_structure: formData.get('perm_manage_structure') === 'on',
+                can_manage_settings: formData.get('perm_manage_settings') === 'on',
+                can_manage_backups: formData.get('perm_manage_backups') === 'on',
+                can_manage_files: formData.get('perm_manage_files') === 'on',
+                can_view_logs: formData.get('perm_view_logs') === 'on',
                 can_export_data: formData.get('perm_export_data') === 'on',
                 can_access_chat: formData.get('perm_access_chat') === 'on',
-                can_view_department: formData.get('perm_view_department') === 'on',
-                can_view_chat: formData.get('perm_view_chat') === 'on'
+                can_view_chat: formData.get('perm_view_chat') === 'on',
+                can_edit_requests: formData.get('perm_edit_requests') === 'on',
+                can_edit_all: formData.get('perm_edit_all') === 'on',
+                can_reopen_requests: formData.get('perm_reopen_requests') === 'on',
+                can_seed_demo: formData.get('perm_seed_demo') === 'on',
+                can_clear_data: formData.get('perm_clear_data') === 'on',
+                can_view_history: formData.get('perm_view_history') === 'on',
+                can_change_priority: formData.get('perm_change_priority') === 'on',
+                can_comment: formData.get('perm_comment') === 'on',
+                can_edit_own: formData.get('perm_edit_own') === 'on',
+                can_upload_files: formData.get('perm_upload_files') === 'on',
+                can_delete_comments: formData.get('perm_delete_comments') === 'on',
+                can_view_unassigned: formData.get('perm_view_unassigned') === 'on'
             };
 
             const res = await apiFetch(`/admin.php?action=update_user&id=${userId}`, {
@@ -1417,14 +1501,34 @@ async function renderAdmin() {
             permissions: {
                 can_status: formData.get('perm_status') === 'on',
                 can_delete: formData.get('perm_delete') === 'on',
+                can_delete_any: formData.get('perm_delete_any') === 'on',
                 can_assign: formData.get('perm_assign') === 'on',
-                can_edit_all: formData.get('perm_edit_all') === 'on',
+                can_assign_any: formData.get('perm_assign_any') === 'on',
+                can_view_department: formData.get('perm_view_department') === 'on',
+                can_view_all_tasks: formData.get('perm_view_all_tasks') === 'on',
                 can_view_reports: formData.get('perm_view_reports') === 'on',
                 can_manage_system: formData.get('perm_manage_system') === 'on',
+                can_manage_users: formData.get('perm_manage_users') === 'on',
+                can_manage_structure: formData.get('perm_manage_structure') === 'on',
+                can_manage_settings: formData.get('perm_manage_settings') === 'on',
+                can_manage_backups: formData.get('perm_manage_backups') === 'on',
+                can_manage_files: formData.get('perm_manage_files') === 'on',
+                can_view_logs: formData.get('perm_view_logs') === 'on',
                 can_export_data: formData.get('perm_export_data') === 'on',
                 can_access_chat: formData.get('perm_access_chat') === 'on',
-                can_view_department: formData.get('perm_view_department') === 'on',
-                can_view_chat: formData.get('perm_view_chat') === 'on'
+                can_view_chat: formData.get('perm_view_chat') === 'on',
+                can_edit_requests: formData.get('perm_edit_requests') === 'on',
+                can_edit_all: formData.get('perm_edit_all') === 'on',
+                can_reopen_requests: formData.get('perm_reopen_requests') === 'on',
+                can_seed_demo: formData.get('perm_seed_demo') === 'on',
+                can_clear_data: formData.get('perm_clear_data') === 'on',
+                can_view_history: formData.get('perm_view_history') === 'on',
+                can_change_priority: formData.get('perm_change_priority') === 'on',
+                can_comment: formData.get('perm_comment') === 'on',
+                can_edit_own: formData.get('perm_edit_own') === 'on',
+                can_upload_files: formData.get('perm_upload_files') === 'on',
+                can_delete_comments: formData.get('perm_delete_comments') === 'on',
+                can_view_unassigned: formData.get('perm_view_unassigned') === 'on'
             }
         };
         const res = await apiFetch('/admin.php?action=create_user', { method: 'POST', body: JSON.stringify(data) });
@@ -1463,14 +1567,34 @@ async function renderAdmin() {
         const permissions = {
             can_status: container.querySelector('[name="perm_status"]').checked,
             can_delete: container.querySelector('[name="perm_delete"]').checked,
+            can_delete_any: container.querySelector('[name="perm_delete_any"]').checked,
             can_assign: container.querySelector('[name="perm_assign"]').checked,
-            can_edit_all: container.querySelector('[name="perm_edit_all"]').checked,
+            can_assign_any: container.querySelector('[name="perm_assign_any"]').checked,
+            can_view_department: container.querySelector('[name="perm_view_department"]').checked,
+            can_view_all_tasks: container.querySelector('[name="perm_view_all_tasks"]').checked,
             can_view_reports: container.querySelector('[name="perm_view_reports"]').checked,
             can_manage_system: container.querySelector('[name="perm_manage_system"]').checked,
+            can_manage_users: container.querySelector('[name="perm_manage_users"]').checked,
+            can_manage_structure: container.querySelector('[name="perm_manage_structure"]').checked,
+            can_manage_settings: container.querySelector('[name="perm_manage_settings"]').checked,
+            can_manage_backups: container.querySelector('[name="perm_manage_backups"]').checked,
+            can_manage_files: container.querySelector('[name="perm_manage_files"]').checked,
+            can_view_logs: container.querySelector('[name="perm_view_logs"]').checked,
             can_export_data: container.querySelector('[name="perm_export_data"]').checked,
             can_access_chat: container.querySelector('[name="perm_access_chat"]').checked,
-            can_view_department: container.querySelector('[name="perm_view_department"]').checked,
-            can_view_chat: container.querySelector('[name="perm_view_chat"]').checked
+            can_view_chat: container.querySelector('[name="perm_view_chat"]').checked,
+            can_edit_requests: container.querySelector('[name="perm_edit_requests"]').checked,
+            can_edit_all: container.querySelector('[name="perm_edit_all"]').checked,
+            can_reopen_requests: container.querySelector('[name="perm_reopen_requests"]').checked,
+            can_seed_demo: container.querySelector('[name="perm_seed_demo"]').checked,
+            can_clear_data: container.querySelector('[name="perm_clear_data"]').checked,
+            can_view_history: container.querySelector('[name="perm_view_history"]').checked,
+            can_change_priority: container.querySelector('[name="perm_change_priority"]').checked,
+            can_comment: container.querySelector('[name="perm_comment"]').checked,
+            can_edit_own: container.querySelector('[name="perm_edit_own"]').checked,
+            can_upload_files: container.querySelector('[name="perm_upload_files"]').checked,
+            can_delete_comments: container.querySelector('[name="perm_delete_comments"]').checked,
+            can_view_unassigned: container.querySelector('[name="perm_view_unassigned"]').checked
         };
         const res = await apiFetch('/admin.php?action=save_perm_template', {
             method: 'POST',
