@@ -583,12 +583,23 @@ async function renderCreate() {
     });
 }
 
-async function renderDepartment(from = '', to = '') {
+async function renderDepartment(from = '', to = '', viewMode = 'table') {
     const isMobile = window.innerWidth < 768;
+    const viewSwitcher = `
+        <div class="btn-group btn-group-sm mb-3 mb-md-0 shadow-sm rounded-pill overflow-hidden">
+            <button class="btn ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment('${from}', '${to}', 'table')"><i class="bi bi-table"></i></button>
+            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment('${from}', '${to}', 'kanban')"><i class="bi bi-kanban"></i></button>
+        </div>
+    `;
+
     if (isMobile) {
         el.appContent.innerHTML = `
             <div class="p-3">
                 <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-bold small text-uppercase text-muted">Вид</span>
+                        ${viewSwitcher}
+                    </div>
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <i class="bi bi-calendar3 text-primary"></i>
                         <input type="date" id="dept-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
@@ -600,17 +611,24 @@ async function renderDepartment(from = '', to = '') {
                         <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterDept()">Найти</button>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-borderless mb-0 mobile-card-table">
-                        <tbody id="dept-req-table"></tbody>
-                    </table>
+                <div id="dept-data-container">
+                    ${viewMode === 'table' ? `
+                        <div class="table-responsive">
+                            <table class="table table-borderless mb-0 mobile-card-table">
+                                <tbody id="dept-req-table"></tbody>
+                            </table>
+                        </div>
+                    ` : '<div id="dept-kanban-container"></div>'}
                 </div>
             </div>
         `;
     } else {
         el.appContent.innerHTML = `
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                <h2 class="fw-bold mb-0">Заявки отдела</h2>
+                <div class="d-flex align-items-center gap-3">
+                    <h2 class="fw-bold mb-0">Заявки отдела</h2>
+                    ${viewSwitcher}
+                </div>
                 <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                     <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                         <i class="bi bi-calendar3 text-muted ms-1"></i>
@@ -624,20 +642,24 @@ async function renderDepartment(from = '', to = '') {
                     </div>
                 </div>
             </div>
-            <div class="card shadow-sm border-0 overflow-hidden">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4">Номер</th>
-                                <th>Тип</th>
-                                <th>Статус</th>
-                                <th class="pe-4">Исполнитель</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dept-req-table" class="border-top-0"></tbody>
-                    </table>
-                </div>
+            <div id="dept-data-container">
+                ${viewMode === 'table' ? `
+                    <div class="card shadow-sm border-0 overflow-hidden">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Номер</th>
+                                        <th>Тип</th>
+                                        <th>Статус</th>
+                                        <th class="pe-4">Исполнитель</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dept-req-table" class="border-top-0"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                ` : '<div id="dept-kanban-container"></div>'}
             </div>
         `;
     }
@@ -645,56 +667,61 @@ async function renderDepartment(from = '', to = '') {
     window.filterDept = () => {
         const f = document.getElementById('dept-from').value;
         const t = document.getElementById('dept-to').value;
-        renderDepartment(f, t);
+        renderDepartment(f, t, viewMode);
     };
 
     try {
         const query = (from || to) ? `&from=${from}&to=${to}` : '';
         const res = await apiFetch(`/requests.php?action=department${query}`);
         const requests = await res.json();
-        const tbody = document.getElementById('dept-req-table');
-        const perms = currentUser.permissions || { can_assign: false };
-        requests.forEach(r => {
-            const tr = document.createElement('tr');
-            const assignHtml = (currentUser.role === 'admin' || perms.can_assign) ?
-                `<select class="form-select form-select-sm assign-select" data-id="${r.id}">
-                    <option value="">Назначить...</option>
-                    ${users.filter(u => u.role === 'executor' && u.department_id == r.department_id).map(u => `<option value="${u.id}" ${r.assigned_to == u.id ? 'selected' : ''}>${escapeHTML(u.full_name)}</option>`).join('')}
-                </select>` : escapeHTML(getUserName(r.assigned_to));
 
-            if (isMobile) {
-                tr.innerHTML = `
-                    <td class="p-0 border-0">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <a href="#" class="req-link fw-bold h5 text-primary" data-id="${r.id}">${escapeHTML(r.number)}</a>
-                            ${getStatusBadge(r.status)}
-                        </div>
-                        <div class="mb-3"><span class="badge bg-light text-dark border">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></div>
-                        <div class="p-3 bg-light rounded-3 mb-3">
-                             <div class="small text-muted mb-1">Исполнитель:</div>
-                             ${assignHtml}
-                        </div>
-                        <div class="text-end">
-                            <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>${new Date(r.created_at).toLocaleDateString()}</span>
-                        </div>
-                    </td>
-                `;
-            } else {
-                tr.innerHTML = `
-                    <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
-                    <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
-                    <td data-label="Статус">${getStatusBadge(r.status)}</td>
-                    <td class="pe-4" data-label="Исполнитель">${assignHtml}</td>
-                `;
-            }
-            tbody.appendChild(tr);
-        });
-        tbody.querySelectorAll('.assign-select').forEach(sel => {
-            sel.onchange = (e) => assignRequest(sel.dataset.id, e.target.value);
-        });
-        tbody.querySelectorAll('.req-link').forEach(link => {
-            link.addEventListener('click', (e) => { e.preventDefault(); showRequestDetails(link.dataset.id); });
-        });
+        if (viewMode === 'kanban') {
+            renderKanban(requests, 'dept-kanban-container');
+        } else {
+            const tbody = document.getElementById('dept-req-table');
+            const perms = currentUser.permissions || { can_assign: false };
+            requests.forEach(r => {
+                const tr = document.createElement('tr');
+                const assignHtml = (currentUser.role === 'admin' || perms.can_assign) ?
+                    `<select class="form-select form-select-sm assign-select" data-id="${r.id}">
+                        <option value="">Назначить...</option>
+                        ${users.filter(u => u.role === 'executor' && u.department_id == r.department_id).map(u => `<option value="${u.id}" ${r.assigned_to == u.id ? 'selected' : ''}>${escapeHTML(u.full_name)}</option>`).join('')}
+                    </select>` : escapeHTML(getUserName(r.assigned_to));
+
+                if (isMobile) {
+                    tr.innerHTML = `
+                        <td class="p-0 border-0">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <a href="#" class="req-link fw-bold h5 text-primary" data-id="${r.id}">${escapeHTML(r.number)}</a>
+                                ${getStatusBadge(r.status)}
+                            </div>
+                            <div class="mb-3"><span class="badge bg-light text-dark border">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></div>
+                            <div class="p-3 bg-light rounded-3 mb-3">
+                                 <div class="small text-muted mb-1">Исполнитель:</div>
+                                 ${assignHtml}
+                            </div>
+                            <div class="text-end">
+                                <span class="text-muted small"><i class="bi bi-calendar-event me-1"></i>${new Date(r.created_at).toLocaleDateString()}</span>
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td class="ps-4" data-label="Номер"><a href="#" class="req-link" data-id="${r.id}">${escapeHTML(r.number)}</a></td>
+                        <td data-label="Тип"><span class="small fw-medium">${escapeHTML(getWorkTypeName(r.work_type_id))}</span></td>
+                        <td data-label="Статус">${getStatusBadge(r.status)}</td>
+                        <td class="pe-4" data-label="Исполнитель">${assignHtml}</td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            });
+            tbody.querySelectorAll('.assign-select').forEach(sel => {
+                sel.onchange = (e) => assignRequest(sel.dataset.id, e.target.value);
+            });
+            tbody.querySelectorAll('.req-link').forEach(link => {
+                link.addEventListener('click', (e) => { e.preventDefault(); showRequestDetails(link.dataset.id); });
+            });
+        }
     } catch (e) { el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки данных отдела</div>'; }
 }
 
@@ -2120,11 +2147,21 @@ async function renderGlobalChat() {
     };
 }
 
-async function renderReports(from = '', to = '') {
+async function renderReports(from = '', to = '', viewMode = 'stats') {
     const isMobile = window.innerWidth < 768;
+    const viewSwitcher = `
+        <div class="btn-group btn-group-sm shadow-sm rounded-pill overflow-hidden me-2">
+            <button class="btn ${viewMode === 'stats' ? 'btn-primary' : 'btn-light'}" onclick="renderReports('${from}', '${to}', 'stats')"><i class="bi bi-bar-chart"></i></button>
+            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderReports('${from}', '${to}', 'kanban')"><i class="bi bi-kanban"></i></button>
+        </div>
+    `;
+
     el.appContent.innerHTML = `
         <div class="${isMobile ? 'p-3' : 'd-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4'}">
-            ${isMobile ? '' : '<h2 class="fw-bold mb-0">Аналитика и отчеты</h2>'}
+            <div class="d-flex align-items-center gap-3">
+                ${isMobile ? '' : '<h2 class="fw-bold mb-0">Аналитика и отчеты</h2>'}
+                ${viewSwitcher}
+            </div>
             <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                 <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                     <i class="bi bi-filter-left text-muted ms-1"></i>
@@ -2144,11 +2181,20 @@ async function renderReports(from = '', to = '') {
     document.getElementById('rep-filter').onclick = () => {
         const f = document.getElementById('rep-from').value;
         const t = document.getElementById('rep-to').value;
-        renderReports(f, t);
+        renderReports(f, t, viewMode);
     };
 
     try {
         const query = (from || to) ? `&from=${from}&to=${to}` : '';
+
+        if (viewMode === 'kanban') {
+            const res = await apiFetch(`/requests.php?action=all${query}`);
+            const requests = await res.json();
+            document.getElementById('reports-container').innerHTML = '<div class="col-12" id="reports-kanban-container"></div>';
+            renderKanban(requests, 'reports-kanban-container');
+            return;
+        }
+
         const res = await apiFetch(`/reports.php?action=summary${query}`);
         const s = await res.json();
 
@@ -2262,4 +2308,72 @@ async function renderReports(from = '', to = '') {
             </div>
         `;
     }
+}
+
+function renderKanban(requests, containerId) {
+    const statuses = [
+        { id: 'new', label: 'Новые', cls: 'bg-info' },
+        { id: 'assigned', label: 'Назначены', cls: 'bg-primary' },
+        { id: 'in_progress', label: 'В работе', cls: 'bg-warning' },
+        { id: 'completed', label: 'Выполнены', cls: 'bg-success' },
+        { id: 'closed', label: 'Закрыты', cls: 'bg-secondary' },
+        { id: 'rejected', label: 'Отклонены', cls: 'bg-danger' }
+    ];
+
+    const container = document.getElementById(containerId);
+    container.innerHTML = '<div class="kanban-board"></div>';
+    const board = container.querySelector('.kanban-board');
+
+    statuses.forEach(status => {
+        const col = document.createElement('div');
+        col.className = 'kanban-col';
+        col.innerHTML = `
+            <div class="kanban-col-header">
+                <span>${status.label}</span>
+                <span class="badge ${status.cls} bg-opacity-10 text-dark rounded-pill">${requests.filter(r => r.status === status.id).length}</span>
+            </div>
+            <div class="kanban-list" data-status="${status.id}"></div>
+        `;
+        board.appendChild(col);
+
+        const list = col.querySelector('.kanban-list');
+        requests.filter(r => r.status === status.id).forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'kanban-card';
+            card.dataset.id = r.id;
+            card.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <a href="#" class="req-link small fw-bold text-decoration-none" data-id="${r.id}">${escapeHTML(r.number)}</a>
+                    <span class="badge ${r.priority === 'high' ? 'bg-danger' : r.priority === 'normal' ? 'bg-primary' : 'bg-secondary'} rounded-circle p-1" style="width:8px;height:8px;" title="Приоритет: ${r.priority}"></span>
+                </div>
+                <div class="small fw-medium mb-2 text-truncate-2" title="${escapeHTML(r.description)}">${escapeHTML(r.description)}</div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="text-muted" style="font-size:0.7rem;"><i class="bi bi-person me-1"></i>${escapeHTML(getUserName(r.assigned_to))}</span>
+                    <span class="text-muted" style="font-size:0.7rem;">${new Date(r.created_at).toLocaleDateString()}</span>
+                </div>
+            `;
+            list.appendChild(card);
+            card.querySelector('.req-link').onclick = (e) => { e.preventDefault(); showRequestDetails(r.id); };
+        });
+
+        if (typeof Sortable !== 'undefined' && (currentUser.role === 'admin' || currentUser.role === 'manager' || currentUser.role === 'executor')) {
+            new Sortable(list, {
+                group: 'kanban',
+                ghostClass: 'ghost',
+                animation: 150,
+                onEnd: async (evt) => {
+                    if (evt.from === evt.to) return;
+                    const id = evt.item.dataset.id;
+                    const newStatus = evt.to.dataset.status;
+                    const comment = prompt('Комментарий к смене статуса:', 'Смена статуса через Канбан-доску');
+                    if (comment !== null) {
+                        await updateStatus(id, newStatus, comment);
+                    } else {
+                        // Revert if cancelled
+                        renderDepartment();
+                    }
+                }
+            });
+        }
+    });
 }

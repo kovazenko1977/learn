@@ -404,6 +404,15 @@
         .btn:active {
             transform: scale(0.95);
         }
+        /* Kanban Styles */
+        .kanban-board { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; align-items: flex-start; }
+        .kanban-col { background: #f1f5f9; border-radius: 1rem; width: 320px; min-width: 320px; display: flex; flex-direction: column; max-height: calc(100vh - 250px); }
+        .kanban-col-header { padding: 1rem; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
+        .kanban-list { padding: 0.5rem; flex-grow: 1; overflow-y: auto; min-height: 100px; }
+        .kanban-card { background: #fff; border-radius: 0.75rem; padding: 1rem; margin-bottom: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: grab; border: 1px solid transparent; transition: all 0.2s; }
+        .kanban-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .kanban-card:active { cursor: grabbing; }
+        .kanban-card.ghost { opacity: 0.4; background: var(--primary); }
     </style>
 </head>
 <body>
@@ -570,5 +579,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app.js?v=<?php echo time(); ?>"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </body>
 </html>

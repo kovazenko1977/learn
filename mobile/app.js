@@ -311,31 +311,43 @@ async function renderDashboard() {
     } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
 }
 
-async function renderDepartment() {
+async function renderDepartment(viewMode = 'table') {
     document.getElementById('view-title').innerText = 'ОТДЕЛ';
-    screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
+    screens.main.innerHTML = `
+        <div class="view-mode-toggle">
+            <button class="view-mode-btn ${viewMode === 'table' ? 'active' : ''}" onclick="renderDepartment('table')">СПИСОК</button>
+            <button class="view-mode-btn ${viewMode === 'kanban' ? 'active' : ''}" onclick="renderDepartment('kanban')">ДОСКА</button>
+        </div>
+        <div id="dept-container"><div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div></div>
+    `;
     try {
         const res = await apiFetch('/requests.php?action=department');
         const requests = await res.json();
-        screens.main.innerHTML = '';
-        requests.forEach(r => {
-            const card = document.createElement('div');
-            card.className = 'req-card';
-            card.innerHTML = `
-                <div class="req-header">
-                    <span class="req-number">${r.number}</span>
-                    <span class="status-badge status-${r.status}">${getStatusLabel(r.status)}</span>
-                </div>
-                <div class="req-desc">${r.description}</div>
-                <div class="req-meta">
-                    <span><i class="bi bi-person"></i> ${getUserName(r.requester_id)}</span>
-                    <span>→ ${getUserName(r.assigned_to)}</span>
-                </div>
-            `;
-            card.onclick = () => showDetails(r.id);
-            screens.main.appendChild(card);
-        });
-        if (requests.length === 0) screens.main.innerHTML = '<div style="text-align:center; padding:20px;">НЕТ ЗАЯВОК</div>';
+        const container = document.getElementById('dept-container');
+        container.innerHTML = '';
+
+        if (viewMode === 'kanban') {
+            renderKanban(requests, 'dept-container');
+        } else {
+            requests.forEach(r => {
+                const card = document.createElement('div');
+                card.className = 'req-card';
+                card.innerHTML = `
+                    <div class="req-header">
+                        <span class="req-number">${r.number}</span>
+                        <span class="status-badge status-${r.status}">${getStatusLabel(r.status)}</span>
+                    </div>
+                    <div class="req-desc">${r.description}</div>
+                    <div class="req-meta">
+                        <span><i class="bi bi-person"></i> ${getUserName(r.requester_id)}</span>
+                        <span>→ ${getUserName(r.assigned_to)}</span>
+                    </div>
+                `;
+                card.onclick = () => showDetails(r.id);
+                container.appendChild(card);
+            });
+            if (requests.length === 0) container.innerHTML = '<div style="text-align:center; padding:20px;">НЕТ ЗАЯВОК</div>';
+        }
     } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
 }
 
@@ -375,13 +387,27 @@ function renderCreate() {
     };
 }
 
-async function renderReports() {
+async function renderReports(viewMode = 'stats') {
     document.getElementById('view-title').innerText = 'АНАЛИТИКА';
-    screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
+    screens.main.innerHTML = `
+        <div class="view-mode-toggle">
+            <button class="view-mode-btn ${viewMode === 'stats' ? 'active' : ''}" onclick="renderReports('stats')">ОТЧЕТЫ</button>
+            <button class="view-mode-btn ${viewMode === 'kanban' ? 'active' : ''}" onclick="renderReports('kanban')">ДОСКА</button>
+        </div>
+        <div id="reports-container"><div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div></div>
+    `;
     try {
+        const container = document.getElementById('reports-container');
+        if (viewMode === 'kanban') {
+            const res = await apiFetch('/requests.php?action=all');
+            const requests = await res.json();
+            renderKanban(requests, 'reports-container');
+            return;
+        }
+
         const res = await apiFetch('/reports.php?action=summary');
         const s = await res.json();
-        screens.main.innerHTML = `
+        container.innerHTML = `
             <div class="stat-grid">
                 <div class="stat-box">
                     <div class="stat-lbl">ЗАЯВОК</div>
@@ -669,3 +695,51 @@ async function updateStatus(id, status, comment = 'ОБНОВЛЕНО ЧЕРЕЗ
 document.getElementById('modal-close').onclick = () => {
     screens.modal.classList.add('hidden');
 };
+
+function renderKanban(requests, containerId) {
+    const statuses = [
+        { id: 'new', label: 'НОВЫЕ' },
+        { id: 'assigned', label: 'НАЗНАЧЕНЫ' },
+        { id: 'in_progress', label: 'В РАБОТЕ' },
+        { id: 'completed', label: 'ВЫПОЛНЕНЫ' },
+        { id: 'closed', label: 'ЗАКРЫТЫ' },
+        { id: 'rejected', label: 'ОТКЛОНЕНЫ' }
+    ];
+
+    const container = document.getElementById(containerId);
+    container.innerHTML = '<div class="kanban-board"></div>';
+    const board = container.querySelector('.kanban-board');
+
+    statuses.forEach(status => {
+        const colCount = requests.filter(r => r.status === status.id).length;
+        const col = document.createElement('div');
+        col.className = 'kanban-col';
+        col.innerHTML = `
+            <div class="kanban-col-header">
+                <span>${status.label}</span>
+                <span style="opacity: 0.6;">${colCount}</span>
+            </div>
+            <div class="kanban-list"></div>
+        `;
+        board.appendChild(col);
+
+        const list = col.querySelector('.kanban-list');
+        requests.filter(r => r.status === status.id).forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'kanban-card';
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom: 6px;">
+                    <span style="font-weight:800; color:var(--primary); font-size:0.8rem;">${r.number}</span>
+                    <span style="width:8px; height:8px; border-radius:50%; background:${r.priority === 'high' ? 'var(--error)' : 'var(--primary)'}"></span>
+                </div>
+                <div style="font-size:0.8rem; line-height:1.3; margin-bottom:8px;" class="req-desc">${r.description}</div>
+                <div style="font-size:0.65rem; color:var(--text-muted); display:flex; justify-content:space-between;">
+                    <span>${getUserName(r.assigned_to)}</span>
+                    <span>${new Date(r.created_at).toLocaleDateString()}</span>
+                </div>
+            `;
+            card.onclick = () => showDetails(r.id);
+            list.appendChild(card);
+        });
+    });
+}

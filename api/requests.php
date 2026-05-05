@@ -154,6 +154,24 @@ if ($method == 'POST' && $action == 'create') {
         });
     }
     echo json_encode(array_values($requests));
+} elseif ($action == 'all') {
+    $perms = $user['permissions'] ?? [];
+    if ($user['role'] !== 'admin' && !($perms['can_view_all_tasks'] ?? false)) {
+        http_response_code(403);
+        exit(json_encode(['message' => 'Forbidden']));
+    }
+    $from = $_GET['from'] ?? null;
+    $to = $_GET['to'] ?? null;
+    $requests = $storage->readCollection('requests');
+    if ($from || $to) {
+        $requests = array_filter($requests, function($r) use ($from, $to) {
+            $date = strtotime($r['created_at']);
+            if ($from && $date < strtotime($from)) return false;
+            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+            return true;
+        });
+    }
+    echo json_encode(array_values($requests));
 } elseif ($action == 'details') {
     $id = $_GET['id'] ?? 0;
     $request = $storage->findOne('requests', ['id' => $id]);

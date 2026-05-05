@@ -375,3 +375,13 @@ button:active {
 /* SCROLLBAR */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+/* Kanban Styles Mobile */
+.kanban-board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; -webkit-overflow-scrolling: touch; }
+.kanban-col { background: rgba(0,0,0,0.03); border-radius: 16px; min-width: 280px; display: flex; flex-direction: column; max-height: calc(100vh - 200px); }
+.kanban-col-header { padding: 12px 16px; font-weight: 800; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 1px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+.kanban-list { padding: 8px; flex-grow: 1; overflow-y: auto; min-height: 100px; }
+.kanban-card { background: var(--card-bg); border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.view-mode-toggle { display: flex; background: var(--border); border-radius: 10px; padding: 2px; margin-bottom: 16px; }
+.view-mode-btn { flex: 1; border: none; background: transparent; color: var(--text-muted); padding: 8px; font-size: 0.75rem; font-weight: 800; border-radius: 8px; box-shadow: none; }
+.view-mode-btn.active { background: var(--card-bg); color: var(--primary); box-shadow: var(--shadow); }
