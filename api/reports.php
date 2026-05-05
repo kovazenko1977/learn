@@ -137,6 +137,52 @@ if ($action == 'summary') {
         ];
     }
     echo json_encode($stats);
+} elseif ($action == 'executor_activity') {
+    $executorId = $_GET['id'] ?? null;
+    if (!$executorId) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Executor ID required']));
+    }
+
+    $requests = $storage->readCollection('requests');
+    $history = $storage->readCollection('status_history');
+    $comments = $storage->readCollection('comments');
+
+    $executorRequests = array_values(array_filter($requests, fn($r) => $r['assigned_to'] == $executorId));
+    $executorHistory = array_values(array_filter($history, fn($h) => $h['changed_by'] == $executorId));
+    $executorComments = array_values(array_filter($comments, fn($c) => $c['user_id'] == $executorId));
+
+    $activity = [];
+    foreach($executorRequests as $r) {
+        $activity[] = [
+            'type' => 'assigned',
+            'date' => $r['created_at'],
+            'request_number' => $r['number'],
+            'request_id' => $r['id'],
+            'text' => 'Назначена заявка'
+        ];
+    }
+    foreach($executorHistory as $h) {
+        $activity[] = [
+            'type' => 'status',
+            'date' => $h['changed_at'],
+            'request_id' => $h['request_id'],
+            'text' => 'Смена статуса: ' . $h['status'],
+            'comment' => $h['comment']
+        ];
+    }
+    foreach($executorComments as $c) {
+        $activity[] = [
+            'type' => 'comment',
+            'date' => $c['created_at'],
+            'request_id' => $c['request_id'],
+            'text' => 'Добавлен комментарий',
+            'comment' => $c['message']
+        ];
+    }
+
+    usort($activity, fn($a, $b) => strcmp($b['date'], $a['date']));
+    echo json_encode($activity);
 } else {
     http_response_code(404);
     echo json_encode(['message' => 'Action not found']);

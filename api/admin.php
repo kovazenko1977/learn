@@ -397,6 +397,7 @@ if ($action == 'users') {
     // Clear current demo data first to ensure clean state
     $storage->transactional('requests', function(&$items) { $items = []; });
     $storage->transactional('status_history', function(&$items) { $items = []; });
+    $storage->transactional('global_chat', function(&$items) { $items = []; });
     $storage->transactional('comments', function(&$items) { $items = []; });
     $storage->transactional('users', function(&$items) { $items = []; });
     $storage->transactional('departments', function(&$items) { $items = []; });
@@ -530,7 +531,30 @@ if ($action == 'users') {
         }
     });
 
-    // 6. Generate 500 Requests
+    // 6. Generate 300 Global Chat Messages
+    $chatPhrases = [
+        'Коллеги, кто свободен по IT?', 'Принял заявку по сантехнике.', 'Нужна помощь в корпусе А.',
+        'Заявка ХОП-001 готова.', 'Где найти ключи от склада?', 'Смена началась.', 'Всем продуктивного дня!',
+        'Запчасти приехали для лифта.', 'Уточните время прибытия.', 'Проблема решена.', 'Передал смену.',
+        'Нужно больше информации по заявке.', 'Кто ответственный за 2 этаж?', 'Проверьте почту.', 'ОК, принято.'
+    ];
+
+    $allUserIds = array_merge([$admin['id']], $managers, $executors);
+    $storage->transactional('global_chat', function(&$items) use ($allUserIds, $chatPhrases, $storage) {
+        for ($i = 0; $i < 300; $i++) {
+            $uId = $allUserIds[array_rand($allUserIds)];
+            $u = $storage->findOne('users', ['id' => $uId]);
+            $items[] = [
+                'user_id' => $uId,
+                'user_name' => $u['full_name'],
+                'message' => $chatPhrases[array_rand($chatPhrases)] . " (#$i)",
+                'created_at' => date('c', strtotime("-" . rand(0, 60) . " days - " . rand(0, 23) . " hours"))
+            ];
+        }
+        usort($items, fn($a, $b) => strcmp($a['created_at'], $b['created_at']));
+    });
+
+    // 7. Generate 500 Requests
     $locations = ['Корпус А, 1 эт', 'Корпус Б, 3 эт', 'Цех №2', 'Ресепшн', 'Склад №4', 'Серверная', 'Столовая', 'Конференц-зал', 'Гараж', 'Проходная'];
     $priorities = ['normal', 'high', 'low'];
     $statuses = ['new', 'assigned', 'in_progress', 'completed', 'closed', 'rejected'];

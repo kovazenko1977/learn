@@ -408,8 +408,51 @@ async function renderReports() {
                     <div>• ВЫПОЛНЕНЫ: <b>${s.status_dist.completed + s.status_dist.closed}</b></div>
                 </div>
             </div>
+
+            <div class="req-card">
+                <span class="label">ЗАГРУЗКА ИСПОЛНИТЕЛЕЙ:</span>
+                <div id="exec-load-list"></div>
+            </div>
         `;
+
+        const execRes = await apiFetch('/reports.php?action=executors');
+        const executors = await execRes.json();
+        const list = document.getElementById('exec-load-list');
+        executors.forEach(ex => {
+            const item = document.createElement('div');
+            item.style = 'padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.85rem;';
+            item.innerHTML = `<span style="font-weight: 600;">${ex.full_name}</span> <span style="color: var(--primary);">${ex.active_requests} акт.</span>`;
+            item.onclick = () => showExecutorActivity(ex.id, ex.full_name);
+            list.appendChild(item);
+        });
+
     } catch (e) { screens.main.innerHTML = 'ОШИБКА'; }
+}
+
+async function showExecutorActivity(id, name) {
+    screens.modal.classList.remove('hidden');
+    screens.modalBody.innerHTML = '<div style="text-align:center; padding:40px;"><i class="bi bi-arrow-repeat spin"></i> ЗАГРУЗКА...</div>';
+    try {
+        const res = await apiFetch(`/reports.php?action=executor_activity&id=${id}`);
+        const activity = await res.json();
+        screens.modalBody.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0; font-weight: 800;">${name}</h4>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">ИСТОРИЯ АКТИВНОСТИ</p>
+            </div>
+            <div class="divider"></div>
+            <div style="margin-bottom: 20px;">
+                ${activity.map(a => `
+                    <div class="history-item">
+                        <div class="history-meta">${new Date(a.date).toLocaleString()}</div>
+                        <div style="font-weight: 700; font-size: 0.9rem;">${a.text}</div>
+                        ${a.comment ? `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; background: rgba(0,0,0,0.03); padding: 5px; border-radius: 4px;">${a.comment}</div>` : ''}
+                    </div>
+                `).join('')}
+                ${activity.length === 0 ? '<div style="text-align:center; padding:20px; color:var(--text-muted);">АКТИВНОСТЬ НЕ НАЙДЕНА</div>' : ''}
+            </div>
+        `;
+    } catch (e) { screens.modalBody.innerHTML = 'ОШИБКА ЗАГРУЗКИ'; }
 }
 
 function renderProfile() {

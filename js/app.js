@@ -1728,6 +1728,42 @@ window.clearDemo = async () => {
     } catch (e) { alert('Ошибка соединения'); }
 };
 
+window.showExecutorActivity = async (id, name) => {
+    try {
+        const res = await apiFetch(`/reports.php?action=executor_activity&id=${id}`);
+        const activity = await res.json();
+        const modalContent = document.getElementById('modal-content');
+        modalContent.innerHTML = `
+            <div class="mb-4">
+                <h5 class="fw-bold mb-1">${escapeHTML(name)}</h5>
+                <p class="text-muted small">История активности исполнителя</p>
+            </div>
+            <div class="activity-timeline">
+                ${activity.length ? activity.map(a => `
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="text-center" style="width: 50px;">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 35px; height: 35px;">
+                                <i class="bi ${a.type === 'assigned' ? 'bi-plus-lg' : a.type === 'status' ? 'bi-arrow-left-right' : 'bi-chat-left-text'}"></i>
+                            </div>
+                            <div class="vr h-100 mt-2 opacity-10"></div>
+                        </div>
+                        <div class="flex-grow-1 pt-1">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div class="fw-bold small">${escapeHTML(a.text)}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">${new Date(a.date).toLocaleString()}</div>
+                            </div>
+                            ${a.request_number ? `<div class="mb-1"><a href="#" class="small text-decoration-none fw-bold" onclick="bootstrap.Modal.getInstance(document.getElementById('requestModal')).hide(); showRequestDetails('${a.request_id}')">${a.request_number}</a></div>` : ''}
+                            ${a.comment ? `<div class="p-2 bg-light rounded-3 small text-muted italic">${escapeHTML(a.comment)}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('') : '<div class="text-center py-4 text-muted">Активность не найдена</div>'}
+            </div>
+        `;
+        const modal = new bootstrap.Modal(document.getElementById('requestModal'));
+        modal.show();
+    } catch (e) { alert('Ошибка загрузки активности'); }
+};
+
 window.createBackup = async () => {
     try {
         const res = await apiFetch('/admin.php?action=backup');
@@ -2112,8 +2148,11 @@ async function renderReports(from = '', to = '') {
         const executors = await execRes.json();
         const execList = document.getElementById('executor-stats');
         executors.forEach(ex => {
-            const item = document.createElement('div'); item.className = 'list-group-item d-flex justify-content-between align-items-center';
-            item.innerHTML = `${escapeHTML(ex.full_name)} <span class="badge bg-primary rounded-pill">${ex.active_requests} активных</span>`;
+            const item = document.createElement('a');
+            item.href = '#';
+            item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+            item.innerHTML = `<span><i class="bi bi-person-circle me-2 text-primary"></i>${escapeHTML(ex.full_name)}</span> <span class="badge bg-primary rounded-pill">${ex.active_requests} активных</span>`;
+            item.onclick = (e) => { e.preventDefault(); showExecutorActivity(ex.id, ex.full_name); };
             execList.appendChild(item);
         });
     } catch (e) {
