@@ -873,15 +873,58 @@ async function renderAdmin() {
         <div class="${isMobile ? 'p-3' : 'd-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4'}">
             ${isMobile ? '' : '<h2 class="fw-bold mb-0">Администрирование</h2>'}
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-warning btn-sm rounded-pill px-3" onclick="seedDemo()"><i class="bi bi-database-add"></i> Загрузить ДЕМО</button>
-                <button class="btn btn-danger btn-sm rounded-pill px-3" onclick="clearDemo()"><i class="bi bi-trash-fill"></i> Удалить ВСЁ</button>
-                <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="triggerRestore()"><i class="bi bi-upload"></i> Восстановить</button>
-                <button class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="createBackup()"><i class="bi bi-download"></i> Бекап</button>
                 <button class="btn btn-success btn-sm rounded-pill px-3" onclick="exportCSV()"><i class="bi bi-file-earmark-spreadsheet"></i> Экспорт</button>
             </div>
         </div>
 
         <div class="row g-4 mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm overflow-hidden mb-4">
+                    <div class="card-body p-4 border-start border-danger border-5">
+                        <h5 class="card-title fw-bold text-danger mb-4"><i class="bi bi-gear-wide-connected"></i> Обслуживание системы: Бекапы и Данные</h5>
+                        <div class="row g-4">
+                            <div class="col-lg-5">
+                                <h6 class="fw-bold small text-muted text-uppercase mb-3">Резервное копирование</h6>
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="createBackup()"><i class="bi bi-shield-plus me-1"></i> Создать бекап</button>
+                                    <label class="btn btn-outline-primary btn-sm rounded-pill px-3 mb-0" style="cursor:pointer">
+                                        <i class="bi bi-cloud-upload me-1"></i> Загрузить файл
+                                        <input type="file" id="upload-backup-input" class="hidden" accept=".zip" onchange="uploadBackupFile(this)">
+                                    </label>
+                                </div>
+                                <div class="table-responsive" style="max-height: 200px;">
+                                    <table class="table table-sm table-hover align-middle small">
+                                        <thead class="table-light"><tr><th>Файл бекапа</th><th>Размер</th><th></th></tr></thead>
+                                        <tbody id="admin-backups-table"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 border-start border-light ps-lg-4">
+                                <h6 class="fw-bold small text-muted text-uppercase mb-3">Управление данными</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-warning btn-sm fw-bold py-2" onclick="seedDemo()"><i class="bi bi-database-fill-add me-2"></i> ЗАГРУЗИТЬ ДЕМО (500 записей)</button>
+                                    <button class="btn btn-danger btn-sm fw-bold py-2" onclick="clearDemo()"><i class="bi bi-exclamation-octagon me-2"></i> ОЧИСТИТЬ ВСЮ БД</button>
+                                </div>
+                                <div class="mt-3 small text-muted bg-light p-2 rounded-2">
+                                    <i class="bi bi-info-circle me-1"></i> Бекап сохраняет все заявки, пользователей и текущие настройки.
+                                </div>
+                            </div>
+                            <div class="col-lg-3 border-start border-light ps-lg-4">
+                                <h6 class="fw-bold small text-muted text-uppercase mb-3">Файлы системы</h6>
+                                <div class="table-responsive" style="max-height: 200px;">
+                                    <table class="table table-sm table-hover align-middle small">
+                                        <thead class="table-light"><tr><th>Имя</th><th></th></tr></thead>
+                                        <tbody id="admin-files-table"></tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-2 text-end">
+                                    <button class="btn btn-link btn-sm text-decoration-none" onclick="refreshAdminFiles()">Обновить файлы</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12">
                 <div class="card border-0 shadow-sm overflow-hidden mb-4">
                     <div class="card-body p-4 border-start border-primary border-5">
@@ -894,22 +937,6 @@ async function renderAdmin() {
                             <div class="col-md-12">
                                 <button class="btn btn-primary rounded-pill px-4" onclick="saveOrgSettings()">Сохранить название</button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <div class="card border-0 shadow-sm overflow-hidden mb-4">
-                    <div class="card-body p-4 border-start border-info border-5">
-                        <h5 class="card-title fw-bold text-info mb-4"><i class="bi bi-folder2-open"></i> Обслуживание системы: Файлы</h5>
-                        <div class="table-responsive" style="max-height: 250px;">
-                            <table class="table table-sm table-hover align-middle">
-                                <thead class="table-light"><tr><th>Файл</th><th>Размер</th><th>Дата</th><th></th></tr></thead>
-                                <tbody id="admin-files-table"></tbody>
-                            </table>
-                        </div>
-                        <div class="mt-3">
-                            <button class="btn btn-outline-info btn-sm rounded-pill" onclick="refreshAdminFiles()">Обновить список файлов</button>
                         </div>
                     </div>
                 </div>
@@ -1282,18 +1309,79 @@ async function renderAdmin() {
 
     window.refreshAdminFiles = async () => {
         const tbody = document.getElementById('admin-files-table');
+        if (!tbody) return;
         try {
             const res = await apiFetch('/admin.php?action=list_files');
             const files = await res.json();
             tbody.innerHTML = files.map(f => `
                 <tr>
-                    <td><a href="uploads/${f.name}" target="_blank" class="small">${escapeHTML(f.name)}</a></td>
-                    <td class="small text-muted">${(f.size / 1024).toFixed(1)} KB</td>
-                    <td class="small text-muted">${new Date(f.date).toLocaleDateString()}</td>
+                    <td title="${escapeHTML(f.name)}"><a href="uploads/${f.name}" target="_blank" class="small text-truncate d-inline-block" style="max-width: 120px;">${escapeHTML(f.name)}</a></td>
                     <td class="text-end"><button class="btn btn-link text-danger btn-sm p-0" onclick="deleteAdminFile('${f.name}')"><i class="bi bi-trash"></i></button></td>
                 </tr>
             `).join('');
-        } catch (e) { tbody.innerHTML = '<tr><td colspan="4">Error</td></tr>'; }
+        } catch (e) { tbody.innerHTML = '<tr><td colspan="2">Error</td></tr>'; }
+    };
+
+    window.refreshAdminBackups = async () => {
+        const tbody = document.getElementById('admin-backups-table');
+        if (!tbody) return;
+        try {
+            const res = await apiFetch('/admin.php?action=list_backups');
+            const backups = await res.json();
+            tbody.innerHTML = backups.map(b => `
+                <tr>
+                    <td>
+                        <div class="fw-bold" style="font-size: 0.75rem;">${escapeHTML(b.name)}</div>
+                        <div class="text-muted" style="font-size: 0.65rem;">${new Date(b.date).toLocaleString()}</div>
+                    </td>
+                    <td class="small text-muted">${(b.size / 1024 / 1024).toFixed(2)} MB</td>
+                    <td class="text-end">
+                        <div class="btn-group">
+                            <button class="btn btn-link btn-sm text-info p-0 me-2" onclick="downloadBackupFile('${b.name}')" title="Скачать"><i class="bi bi-download"></i></button>
+                            <button class="btn btn-link btn-sm text-success p-0 me-2" onclick="restoreBackupFile('${b.name}')" title="Восстановить"><i class="bi bi-arrow-counterclockwise"></i></button>
+                            <button class="btn btn-link btn-sm text-danger p-0" onclick="deleteBackupFile('${b.name}')" title="Удалить"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) { tbody.innerHTML = '<tr><td colspan="3">Error</td></tr>'; }
+    };
+
+    window.downloadBackupFile = (name) => {
+        window.open(`${API_BASE}/admin.php?action=download_backup&file=${encodeURIComponent(name)}&token=${token}`, '_blank');
+    };
+
+    window.uploadBackupFile = async (input) => {
+        if (!input.files[0]) return;
+        const formData = new FormData();
+        formData.append('backup', input.files[0]);
+        try {
+            const res = await apiFetch('/admin.php?action=upload_backup', { method: 'POST', body: formData });
+            if (res.ok) {
+                alert('Бекап успешно загружен на сервер');
+                refreshAdminBackups();
+            } else {
+                const data = await res.json();
+                alert('Ошибка: ' + data.message);
+            }
+        } catch (e) { alert('Ошибка сети'); }
+        input.value = '';
+    };
+
+    window.restoreBackupFile = async (name) => {
+        if (!confirm('ВНИМАНИЕ! Текущие данные будут полностью заменены данными из бекапа. Продолжить?')) return;
+        try {
+            const res = await apiFetch(`/admin.php?action=restore&file=${encodeURIComponent(name)}`);
+            const data = await res.json();
+            alert(data.message);
+            location.reload();
+        } catch (e) { alert('Ошибка восстановления'); }
+    };
+
+    window.deleteBackupFile = async (name) => {
+        if (!confirm('Удалить этот файл бекапа?')) return;
+        const res = await apiFetch(`/admin.php?action=delete_backup&file=${encodeURIComponent(name)}`);
+        if (res.ok) refreshAdminBackups();
     };
 
     window.deleteAdminFile = async (name) => {
@@ -1303,6 +1391,7 @@ async function renderAdmin() {
     };
 
     refreshAdminFiles();
+    refreshAdminBackups();
 
     if (isMobile) {
         document.querySelectorAll('.card-header .d-flex').forEach(flex => {
@@ -1767,7 +1856,9 @@ window.showExecutorActivity = async (id, name) => {
 window.createBackup = async () => {
     try {
         const res = await apiFetch('/admin.php?action=backup');
-        const data = await res.json(); alert(`Бекап создан: ${data.file}`);
+        const data = await res.json();
+        alert(`Бекап успешно создан на сервере: ${data.file}`);
+        if (typeof refreshAdminBackups === 'function') refreshAdminBackups();
     } catch (e) { alert('Ошибка создания бекапа'); }
 };
 

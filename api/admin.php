@@ -36,7 +36,7 @@ $adminOnly = [
     'update_settings', 'backup', 'restore', 'login_logs',
     'update_config', 'init_mysql', 'get_config', 'list_files', 'delete_file',
     'get_perm_templates', 'save_perm_template', 'delete_perm_template',
-    'seed_demo', 'clear_demo'
+    'seed_demo', 'clear_demo', 'list_backups', 'download_backup', 'upload_backup', 'delete_backup'
 ];
 if ($authEnabled && in_array($action, $adminOnly)) {
     $perms = $user['permissions'] ?? [];
@@ -299,12 +299,62 @@ if ($action == 'users') {
 } elseif ($action == 'backup') {
     if (!class_exists('ZipArchive')) exit(json_encode(['message' => 'ZipArchive missing']));
     $zip = new ZipArchive();
-    $filename = "backup_" . date('Ymd_His') . ".zip";
+    $filename = "hop_backup_" . date('Ymd_His') . ".zip";
     $filepath = __DIR__ . "/../data/" . $filename;
     if ($zip->open($filepath, ZipArchive::CREATE)!==TRUE) exit(json_encode(['message' => 'Zip failed']));
     foreach (glob(__DIR__ . '/../data/*.json') as $file) $zip->addFile($file, basename($file));
+    if (file_exists(__DIR__ . '/../data/config.json')) $zip->addFile(__DIR__ . '/../data/config.json', 'config.json');
     $zip->close();
     echo json_encode(['message' => 'Backup created', 'file' => $filename]);
+} elseif ($action == 'list_backups') {
+    $backups = [];
+    foreach (glob(__DIR__ . '/../data/hop_backup_*.zip') as $file) {
+        $backups[] = [
+            'name' => basename($file),
+            'size' => filesize($file),
+            'date' => date('c', filemtime($file))
+        ];
+    }
+    usort($backups, fn($a, $b) => strcmp($b['date'], $a['date']));
+    echo json_encode($backups);
+} elseif ($action == 'download_backup') {
+    $file = basename($_GET['file']);
+    $filepath = __DIR__ . "/../data/" . $file;
+    if (file_exists($filepath) && strpos($file, 'hop_backup_') === 0) {
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Length: ' . filesize($filepath));
+        readfile($filepath);
+        exit;
+    }
+    http_response_code(404);
+} elseif ($action == 'upload_backup' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!isset($_FILES['backup'])) {
+        http_response_code(400);
+        exit(json_encode(['message' => 'No file uploaded']));
+    }
+    $file = $_FILES['backup'];
+    $filename = basename($file['name']);
+    if (pathinfo($filename, PATHINFO_EXTENSION) !== 'zip') {
+        http_response_code(400);
+        exit(json_encode(['message' => 'Only .zip files allowed']));
+    }
+    $target = __DIR__ . "/../data/hop_backup_" . date('His') . "_" . $filename;
+    if (move_uploaded_file($file['tmp_name'], $target)) {
+        echo json_encode(['success' => true, 'message' => 'Backup uploaded']);
+    } else {
+        http_response_code(500);
+        echo json_encode(['message' => 'Upload failed']);
+    }
+} elseif ($action == 'delete_backup') {
+    $file = basename($_GET['file']);
+    $filepath = __DIR__ . "/../data/" . $file;
+    if (file_exists($filepath) && strpos($file, 'hop_backup_') === 0) {
+        unlink($filepath);
+        echo json_encode(['success' => true]);
+    } else {
+        http_response_code(404);
+    }
 } elseif ($action == 'restore') {
     $file = basename($_GET['file']);
     $filepath = __DIR__ . "/../data/" . $file;
