@@ -38,7 +38,11 @@ $currentFile = basename($_SERVER['PHP_SELF']);
                 </a>
                 <a href="hourly_calendar.php" class="<?php echo $currentFile == 'hourly_calendar.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    <span>Почасовой график</span>
+                    <span>Общий график</span>
+                </a>
+                <a href="sauna_calendar.php" class="<?php echo $currentFile == 'sauna_calendar.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span>График Сауны</span>
                 </a>
                 <?php endif; ?>
 

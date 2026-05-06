@@ -35,6 +35,7 @@ $permissionMap = [
     'today.php' => 'view_dashboard',
     'calendar.php' => 'view_calendar',
     'hourly_calendar.php' => 'view_calendar',
+    'sauna_calendar.php' => 'view_calendar',
     'guests.php' => 'manage_guests',
     'rooms.php' => 'manage_rooms',
     'room_classes.php' => 'manage_rooms',
