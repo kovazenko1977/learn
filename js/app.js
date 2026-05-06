@@ -2339,17 +2339,24 @@ function renderKanban(requests, containerId) {
         const list = col.querySelector('.kanban-list');
         requests.filter(r => r.status === status.id).forEach(r => {
             const card = document.createElement('div');
-            card.className = 'kanban-card';
+            card.className = `kanban-card priority-${r.priority || 'normal'}`;
             card.dataset.id = r.id;
+            const typeLabel = (workTypes || []).find(t => t.id == r.work_type_id)?.name || 'Прочее';
             card.innerHTML = `
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <a href="#" class="req-link small fw-bold text-decoration-none" data-id="${r.id}">${escapeHTML(r.number)}</a>
-                    <span class="badge ${r.priority === 'high' ? 'bg-danger' : r.priority === 'normal' ? 'bg-primary' : 'bg-secondary'} rounded-circle p-1" style="width:8px;height:8px;" title="Приоритет: ${r.priority}"></span>
+                    <span class="badge ${r.priority === 'high' ? 'bg-danger' : r.priority === 'normal' ? 'bg-primary' : 'bg-success'} bg-opacity-10 text-${r.priority === 'high' ? 'danger' : r.priority === 'normal' ? 'primary' : 'success'} border-0" style="font-size:0.6rem; text-transform: uppercase; letter-spacing:0.05em;">${r.priority}</span>
                 </div>
-                <div class="small fw-medium mb-2 text-truncate-2" title="${escapeHTML(r.description)}">${escapeHTML(r.description)}</div>
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                    <span class="text-muted" style="font-size:0.7rem;"><i class="bi bi-person me-1"></i>${escapeHTML(getUserName(r.assigned_to))}</span>
-                    <span class="text-muted" style="font-size:0.7rem;">${new Date(r.created_at).toLocaleDateString()}</span>
+                <div class="small text-muted mb-1" style="font-size: 0.7rem; font-weight: 600; text-transform: uppercase;">${escapeHTML(typeLabel)}</div>
+                <div class="small fw-medium mb-2 text-truncate-2" style="line-height: 1.4; color: #334155;" title="${escapeHTML(r.description)}">${escapeHTML(r.description)}</div>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-light">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width:24px; height:24px; font-size:0.65rem;">
+                            ${getUserInitials(r.assigned_to)}
+                        </div>
+                        <span class="text-muted" style="font-size:0.7rem;">${escapeHTML(getUserName(r.assigned_to))}</span>
+                    </div>
+                    <span class="text-muted" style="font-size:0.7rem; font-weight:500;">${new Date(r.created_at).toLocaleDateString([], {day:'numeric', month:'short'})}</span>
                 </div>
             `;
             list.appendChild(card);
@@ -2376,4 +2383,11 @@ function renderKanban(requests, containerId) {
             });
         }
     });
+}
+
+function getUserInitials(userId) {
+    if (!userId) return '?';
+    const name = getUserName(userId);
+    if (name === 'Не назначен') return '?';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 }
