@@ -3,7 +3,7 @@ require_once "../core/autoload.php";
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Guests\GuestManager;
 
-$store = new JsonStore(__DIR__ . '/data');
+$store = new JsonStore(__DIR__ . '/../data');
 $guestManager = new GuestManager($store);
 
 $guests = $guestManager->getAll();

@@ -4,12 +4,22 @@ use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Calendar\CalendarManager;
 use Sanatorium\Core\Booking\BookingManager;
 
-$store = new JsonStore(__DIR__ . '/data');
+$store = new JsonStore(__DIR__ . '/../data');
 $calendarManager = new CalendarManager($store);
 $bookingManager = new BookingManager($store);
 
 $startDate = !empty($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-d');
 $endDate = !empty($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d', strtotime($startDate . ' +14 days'));
+
+// Handle POST actions before any output
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+    $id = (int)$_POST['id'];
+    $status = $_POST['status'];
+    if ($bookingManager->updateBookingStatus($id, $status)) {
+        header("Location: calendar.php?start_date=$startDate&success=1");
+        exit;
+    }
+}
 
 $rooms = $store->findAll('rooms');
 $dates = $calendarManager->getDateRange($startDate, $endDate);
@@ -163,10 +173,10 @@ function showBookingDetails(id, roomNum) {
             </div>
         </div>
 
-        ${b.admin_notes ? `
+        \${b.admin_notes ? `
         <div style="margin-bottom: 15px; padding: 12px; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px;">
             <div style="font-size: 0.7rem; color: #b45309; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 5px;">Заметки</div>
-            <div style="font-size: 0.9rem; color: #92400e;">${b.admin_notes}</div>
+            <div style="font-size: 0.9rem; color: #92400e;">\${b.admin_notes}</div>
         </div>
         ` : ''}
     `;
@@ -176,13 +186,13 @@ function showBookingDetails(id, roomNum) {
     // Actions
     let actionsHtml = '';
     if (b.status === 'reserved') {
-        actionsHtml += `<button class="btn-m btn-m-primary" onclick="updateBookingStatus(${id}, 'booked')">Оформить заезд (Заселить)</button>`;
+        actionsHtml += `<button class="btn-m btn-m-primary" onclick="updateBookingStatus(\${id}, 'booked')">Оформить заезд (Заселить)</button>`;
     } else if (b.status === 'booked') {
-        actionsHtml += `<button class="btn-m" style="background: #f97316; color: white;" onclick="updateBookingStatus(${id}, 'confirmed')">Оформить выезд</button>`;
+        actionsHtml += `<button class="btn-m" style="background: #f97316; color: white;" onclick="updateBookingStatus(\${id}, 'confirmed')">Оформить выезд</button>`;
     }
 
     if (b.status !== 'cancelled' && b.status !== 'confirmed') {
-        actionsHtml += `<button class="btn-m" style="background: #fee2e2; color: #991b1b;" onclick="updateBookingStatus(${id}, 'cancelled')">Отменить бронирование</button>`;
+        actionsHtml += `<button class="btn-m" style="background: #fee2e2; color: #991b1b;" onclick="updateBookingStatus(\${id}, 'cancelled')">Отменить бронирование</button>`;
     }
 
     document.getElementById('m-actions-container').innerHTML = actionsHtml;
@@ -190,7 +200,7 @@ function showBookingDetails(id, roomNum) {
 }
 
 function quickReserve(roomId, roomNum, date) {
-    location.href = `create_booking.php?room_id=${roomId}&date=${date}`;
+    location.href = \`create_booking.php?room_id=\${roomId}&date=\${date}\`;
 }
 
 function closeDetails() {
@@ -206,11 +216,11 @@ function updateBookingStatus(id, status) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'calendar.php';
-    form.innerHTML = `
+    form.innerHTML = \`
         <input type="hidden" name="action" value="update_status">
-        <input type="hidden" name="id" value="${id}">
-        <input type="hidden" name="status" value="${status}">
-    `;
+        <input type="hidden" name="id" value="\${id}">
+        <input type="hidden" name="status" value="\${status}">
+    \`;
     document.body.appendChild(form);
     form.submit();
 }
@@ -220,17 +230,5 @@ document.getElementById('m-details-overlay').onclick = function(e) {
     if (e.target === this) closeDetails();
 }
 </script>
-
-<?php
-// Handle POST actions within the same file for simplicity
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
-    $id = (int)$_POST['id'];
-    $status = $_POST['status'];
-    if ($bookingManager->updateBookingStatus($id, $status)) {
-        header("Location: calendar.php?start_date=$startDate&success=1");
-        exit;
-    }
-}
-?>
 
 <?php include 'includes/footer.php'; ?>

@@ -3,7 +3,7 @@ require_once "../core/autoload.php";
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Planning\PlanningManager;
 
-$store = new JsonStore(__DIR__ . '/data');
+$store = new JsonStore(__DIR__ . '/../data');
 $planningManager = new PlanningManager($store);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'toggle') {

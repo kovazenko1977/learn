@@ -5,14 +5,24 @@ require_once "../core/autoload.php";
 use Sanatorium\Core\Helpers\WebParser;
 use Sanatorium\Core\Helpers\DemoDataLoader;
 use Sanatorium\Core\Helpers\BackupManager;
+use Sanatorium\Core\Database\JsonStore;
 
 $pageTitle = 'Настройки';
 $successMessage = '';
 $errorMessage = '';
 $importResults = null;
 
+$store = new JsonStore(__DIR__ . '/../data');
+$settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] === 'export_backup') {
+    if ($_POST['action'] === 'update_general') {
+        $settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true) ?: [];
+        $settings['org_name'] = $_POST['org_name'] ?? $settings['org_name'];
+        $settings['auth_enabled'] = isset($_POST['auth_enabled']);
+        file_put_contents(__DIR__ . '/../data/settings.json', json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $successMessage = "Настройки сохранены!";
+    } elseif ($_POST['action'] === 'export_backup') {
         $backup = new BackupManager(__DIR__ . '/../data');
         $zipPath = $backup->createBackup();
         if ($zipPath && file_exists($zipPath)) {
@@ -84,6 +94,25 @@ include 'includes/header.php';
 ?>
 
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <!-- Основные настройки -->
+    <div class="mica-card" style="grid-column: span 2;">
+        <h2>⚙️ Основные настройки</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="update_general">
+            <div class="form-group">
+                <label>Название организации</label>
+                <input type="text" name="org_name" value="<?php echo htmlspecialchars($settings['org_name'] ?? ''); ?>" style="width: 100%;">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="auth_enabled" <?php echo ($settings['auth_enabled'] ?? false) ? 'checked' : ''; ?>>
+                    Включить защиту паролем (авторизацию)
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Сохранить общие настройки</button>
+        </form>
+    </div>
+
     <!-- Управление пользователями -->
     <div class="mica-card" style="grid-column: span 2;">
         <h2>👥 Управление пользователями и правами</h2>

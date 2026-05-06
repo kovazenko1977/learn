@@ -3,7 +3,7 @@ require_once "../core/autoload.php";
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Analytics\AnalyticsManager;
 
-$store = new JsonStore(__DIR__ . '/data');
+$store = new JsonStore(__DIR__ . '/../data');
 $analytics = new AnalyticsManager($store);
 $stats = $analytics->getStats();
 

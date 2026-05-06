@@ -3,9 +3,23 @@ if (session_status() === PHP_SESSION_NONE) {
     @session_start();
 }
 
+require_once __DIR__ . '/../core/autoload.php';
+use Sanatorium\Core\Database\JsonStore;
+$store = new JsonStore(__DIR__ . '/../data');
+$settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true);
+
 if (!isset($_SESSION['admin_logged_in'])) {
-    header('Location: login.php');
-    exit;
+    if (isset($settings['auth_enabled']) && $settings['auth_enabled'] === false) {
+        // Auto-login as administrator
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['user_id'] = 1;
+        $_SESSION['username'] = 'admin';
+        $_SESSION['full_name'] = 'Администратор';
+        $_SESSION['role'] = 'administrator';
+    } else {
+        header('Location: login.php');
+        exit;
+    }
 }
 
 function hasPermission($permission) {
