@@ -13,7 +13,6 @@ class AnalyticsManager {
     public function getStats() {
         $bookings = $this->store->findAll('bookings');
         $rooms = $this->store->findAll('rooms');
-        $calendar = $this->store->findAll('room_calendar');
 
         $totalIncome = 0;
         $statusCounts = ['new' => 0, 'confirmed' => 0, 'cancelled' => 0];
@@ -51,27 +50,39 @@ class AnalyticsManager {
         arsort($procedurePopularity);
         arsort($servicePopularity);
 
-        // Occupancy last 30 days
+        // Occupancy last 30 days based on bookings
         $occupiedSlots = 0;
         $today = time();
         $totalRooms = count($rooms);
-        if (is_array($calendar)) {
-            for ($i = 0; $i < 30; $i++) {
-                $date = date('Y-m-d', $today - ($i * 86400));
-                foreach ($calendar as $entry) {
-                    if (is_array($entry) && isset($entry['date']) && $entry['date'] === $date && ($entry['status'] ?? 'free') !== 'free') {
+
+        $last30Days = [];
+        for ($i = 0; $i < 30; $i++) {
+            $last30Days[] = date('Y-m-d', $today - ($i * 86400));
+        }
+
+        if (is_array($bookings)) {
+            foreach ($bookings as $b) {
+                if (!is_array($b) || ($b['status'] ?? '') === 'cancelled') continue;
+
+                $bStart = strtotime(substr($b['check_in'], 0, 10));
+                $bEnd = strtotime(substr($b['check_out'], 0, 10));
+
+                foreach ($last30Days as $dayStr) {
+                    $dayTime = strtotime($dayStr);
+                    if ($dayTime >= $bStart && $dayTime < $bEnd) {
                         $occupiedSlots++;
                     }
                 }
             }
         }
+
         $totalSlots = $totalRooms * 30;
         $occupancyRate = $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
 
         return [
             'totalIncome' => $totalIncome,
             'totalBookings' => count($bookings),
-            'occupancyRate' => $occupancyRate,
+            'occupancyRate' => min(100, $occupancyRate),
             'statusCounts' => $statusCounts,
             'roomPopularity' => $roomPopularity,
             'procedurePopularity' => $procedurePopularity,

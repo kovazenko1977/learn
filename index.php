@@ -34,6 +34,11 @@ $fields = $config['fields'];
             <?php echo $textManager->getBySlug('booking_success'); ?>
         </div>
 
+        <div style="margin-bottom: 30px; text-align: center; display: flex; gap: 10px; justify-content: center;">
+            <a href="index.php" class="btn-primary" style="text-decoration: none;">Бронирование номеров</a>
+            <a href="sauna_booking.php" class="btn-secondary" style="text-decoration: none; background: #6264a7; color: white;">Бронирование сауны (по часам)</a>
+        </div>
+
         <form id="booking-form">
             <div class="form-row">
                 <div class="form-group">

@@ -11,12 +11,7 @@ $selectedDate = $_GET['date'] ?? date('Y-m-d');
 $rooms = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
 $saunaClassId = null;
-foreach($classes as $c) {
-    if (stripos($c['name'], 'Сауна') !== false) {
-        $saunaClassId = $c['id'];
-        break;
-    }
-}
+foreach($classes as $c) if(stripos($c['name'], 'Сауна') !== false) $saunaClassId = $c['id'];
 
 $saunas = array_filter($rooms, function($r) use ($saunaClassId) {
     return ($r['room_class_id'] == $saunaClassId);
@@ -27,19 +22,10 @@ $hourlyBookings = [];
 if (is_array($bookings)) {
     foreach ($bookings as $b) {
         if (!is_array($b) || ($b['status'] ?? '') === 'cancelled') continue;
-
         $isForSauna = false;
         foreach($saunas as $s) if($s['id'] == $b['room_id']) $isForSauna = true;
         if (!$isForSauna) continue;
-
-        $bStart = strtotime($b['check_in']);
-        $bEnd = strtotime($b['check_out']);
-        $dayStart = strtotime($selectedDate . ' 00:00:00');
-        $dayEnd = strtotime($selectedDate . ' 23:59:59');
-
-        if ($bStart <= $dayEnd && $bEnd >= $dayStart) {
-            $hourlyBookings[] = $b;
-        }
+        if (substr($b['check_in'], 0, 10) === $selectedDate) $hourlyBookings[] = $b;
     }
 }
 
@@ -48,102 +34,67 @@ include 'includes/header.php';
 ?>
 
 <style>
-    .sauna-grid-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .sauna-grid-table th { background: #f1f5f9; padding: 15px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
-    .sauna-grid-table td { border: 1px solid #e2e8f0; height: 60px; vertical-align: top; padding: 5px; }
-    .time-col { width: 80px; background: #f8fafc; font-weight: 800; color: #64748b; text-align: center; vertical-align: middle !important; }
-    .booking-block { background: var(--primary-color); color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid rgba(0,0,0,0.2); }
-    .booking-block.status-confirmed { background: #107c10; }
-    .booking-block.status-booked { background: #d83b01; }
-    .current-time-row { background: rgba(0, 120, 212, 0.05); }
+    .sauna-grid-wrapper { overflow-x: auto; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; }
+    .sauna-grid-table { border-collapse: collapse; min-width: 100%; table-layout: fixed; }
+    .sauna-grid-table th, .sauna-grid-table td { border: 1px solid #e2e8f0; text-align: center; }
+    .sauna-grid-table th { background: #f8fafc; padding: 12px 8px; font-size: 0.9rem; }
+    .time-cell { width: 60px; font-weight: 800; color: #64748b; background: #f8fafc !important; position: sticky; left: 0; z-index: 10; font-size: 0.8rem; }
+    .booking-bar { background: var(--primary-color); color: white; padding: 4px; border-radius: 4px; font-size: 0.7rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; margin: 2px; }
+    .booking-bar.status-booked { background: #d83b01; }
+    .booking-bar.status-confirmed { background: #107c10; }
+
+    @media (max-width: 768px) {
+        .sauna-grid-table { width: <?php echo (count($saunas) * 120 + 60); ?>px; }
+        .booking-bar { font-size: 0.65rem; padding: 2px; }
+    }
 </style>
 
 <div class="mica-card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px;">
-        <div>
-            <h2 style="margin:0;">🧖‍♀️ Расписание сауны</h2>
-            <p style="color: #666; margin: 5px 0 0 0;"><?php echo date('d F Y', strtotime($selectedDate)); ?></p>
-        </div>
-        <form method="get" style="display:flex; gap:12px; align-items: center;">
-            <input type="date" name="date" value="<?php echo $selectedDate; ?>" style="margin-bottom:0; border-radius: 8px; padding: 8px 12px;">
-            <button type="submit" class="btn btn-primary">Показать дату</button>
-            <a href="?date=<?php echo date('Y-m-d'); ?>" class="btn btn-secondary">Сегодня</a>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <h2 style="margin:0;">🧖‍♀️ График Сауны</h2>
+        <form method="get" style="display:flex; gap:8px;">
+            <input type="date" name="date" value="<?php echo $selectedDate; ?>" style="margin-bottom:0; width: auto;">
+            <button type="submit" class="btn btn-primary btn-sm">OK</button>
         </form>
     </div>
 
-    <div style="overflow-x: auto; margin: -10px;">
-        <div style="padding: 10px;">
-            <table class="sauna-grid-table" style="min-width: <?php echo (count($saunas) * 220 + 80); ?>px;">
-                <thead>
-                    <tr>
-                        <th class="time-col">Время</th>
-                        <?php foreach($saunas as $s): ?>
-                            <th>
-                                <div style="font-size: 1.1rem;"><?php echo htmlspecialchars($s['room_number']); ?></div>
-                                <div style="font-weight: normal; font-size: 0.75rem; color: #64748b; margin-top: 4px;">Макс: <?php echo $s['capacity']; ?> чел.</div>
-                            </th>
-                        <?php endforeach; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $currentHour = (int)date('H');
-                    $isToday = ($selectedDate === date('Y-m-d'));
-
-                    for ($h = 7; $h <= 23; $h++):
-                        $timeLabel = sprintf('%02d:00', $h);
-                        $slotStart = strtotime($selectedDate . " $h:00:00");
-                        $slotEnd = $slotStart + 3600;
-                        $isCurrent = ($isToday && $h === $currentHour);
-                    ?>
-                    <tr class="<?php echo $isCurrent ? 'current-time-row' : ''; ?>">
-                        <td class="time-col">
-                            <?php echo $timeLabel; ?>
-                            <?php if ($isCurrent): ?>
-                                <div style="font-size: 0.6rem; color: var(--primary-color);">СЕЙЧАС</div>
-                            <?php endif; ?>
+    <div class="sauna-grid-wrapper">
+        <table class="sauna-grid-table">
+            <thead>
+                <tr>
+                    <th class="time-cell">час</th>
+                    <?php foreach($saunas as $s): ?>
+                        <th style="width: 120px;"><?php echo htmlspecialchars($s['room_number']); ?></th>
+                    <?php endforeach; ?>
+                </tr>
+            </thead>
+            <tbody>
+                <?php for($h=8; $h<24; $h++):
+                    $t = sprintf('%02d:00', $h);
+                    $isNow = (date('Y-m-d')===$selectedDate && date('H')==$h);
+                ?>
+                <tr <?php echo $isNow ? 'style="background:rgba(0,120,212,0.05)"':''; ?>>
+                    <td class="time-cell"><?php echo $t; ?></td>
+                    <?php foreach($saunas as $s): ?>
+                        <td style="height: 44px; vertical-align: middle;" onclick="location.href='sauna_create_booking.php?room_id=<?php echo $s['id']; ?>&date=<?php echo $selectedDate; ?>T<?php echo $t; ?>'">
+                            <?php foreach($hourlyBookings as $b):
+                                if($b['room_id'] == $s['id'] && date('H', strtotime($b['check_in'])) == $h):
+                            ?>
+                                <div class="booking-bar status-<?php echo $b['status']; ?>" onclick="event.stopPropagation();">
+                                    <?php echo htmlspecialchars($b['client_name']); ?>
+                                </div>
+                            <?php endif; endforeach; ?>
                         </td>
-                        <?php foreach($saunas as $s): ?>
-                            <td onclick="location.href='create_booking.php?room_id=<?php echo $s['id']; ?>&date=<?php echo $selectedDate; ?>T<?php echo sprintf('%02d:00', $h); ?>'">
-                                <?php
-                                foreach ($hourlyBookings as $b):
-                                    if ($b['room_id'] != $s['id']) continue;
-                                    $bStart = strtotime($b['check_in']);
-                                    $bEnd = strtotime($b['check_out']);
-
-                                    if ($bStart < $slotEnd && $bEnd > $slotStart):
-                                ?>
-                                    <div class="booking-block status-<?php echo $b['status']; ?>" onclick="event.stopPropagation();">
-                                        <div style="font-weight: 700;"><?php echo htmlspecialchars($b['client_name']); ?></div>
-                                        <div style="display:flex; justify-content:space-between; align-items: center; margin-top: 2px; opacity: 0.9;">
-                                            <span><?php echo date('H:i', $bStart); ?> - <?php echo date('H:i', $bEnd); ?></span>
-                                            <span><?php echo $b['persons']; ?> чел.</span>
-                                        </div>
-                                    </div>
-                                <?php
-                                    endif;
-                                endforeach;
-                                ?>
-                            </td>
-                        <?php endforeach; ?>
-                    </tr>
-                    <?php endfor; ?>
-                </tbody>
-            </table>
-        </div>
+                    <?php endforeach; ?>
+                </tr>
+                <?php endfor; ?>
+            </tbody>
+        </table>
     </div>
+</div>
 
-    <div style="margin-top: 20px; display: flex; gap: 20px; font-size: 0.85rem; color: #666;">
-        <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 12px; height: 12px; background: var(--primary-color); border-radius: 3px;"></div> Ожидается
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 12px; height: 12px; background: #d83b01; border-radius: 3px;"></div> В сауне
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px;">
-            <div style="width: 12px; height: 12px; background: #107c10; border-radius: 3px;"></div> Завершено
-        </div>
-    </div>
+<div style="margin-top: 20px; text-align: center;">
+    <a href="../sauna_booking.php" class="btn btn-outline">Открыть публичную форму сауны</a>
 </div>
 
 <?php include 'includes/footer.php'; ?>

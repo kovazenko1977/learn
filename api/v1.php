@@ -118,6 +118,21 @@ switch ($action) {
         echo json_encode(['success' => $success]);
         break;
 
+    case 'sauna/slots':
+        $roomId = (int)($_GET['room_id'] ?? 0);
+        $date = $_GET['date'] ?? date('Y-m-d');
+        $bookingManager = new BookingManager($store);
+        $slots = [];
+        for($h = 8; $h < 24; $h++) {
+            $time = sprintf('%02d:00', $h);
+            $start = "$date $time:00";
+            $end = "$date " . sprintf('%02d:00', $h+1) . ":00";
+            $busy = !$bookingManager->isAvailable($roomId, $start, $end);
+            $slots[] = ['time' => $time, 'busy' => $busy];
+        }
+        echo json_encode(['slots' => $slots]);
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Not found']);

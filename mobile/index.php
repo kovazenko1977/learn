@@ -43,6 +43,10 @@ include 'includes/header.php';
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             Заезды и выезды
         </a>
+        <a href="../admin/sauna_calendar.php" class="btn-m" style="background: #6264a7; color: white;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            График Сауны
+        </a>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <a href="calendar.php" class="btn-m" style="background: #f1f5f9; color: #1e293b;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M3 3h18v18H3zM3 9h18M9 3v18"></path></svg>
