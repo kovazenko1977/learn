@@ -48,6 +48,7 @@ $permissionMap = [
     'text_blocks.php' => 'manage_settings',
     'import_csv.php' => 'manage_settings',
     'form_configurator.php' => 'manage_settings',
+    'system_health.php' => 'manage_settings',
 ];
 
 $currentFile = basename($_SERVER['PHP_SELF']);

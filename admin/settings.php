@@ -67,6 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         } else {
             $errorMessage = "Неверный пароль подтверждения.";
         }
+    } elseif ($_POST['action'] === 'clean_temp') {
+        $files = glob(__DIR__ . '/../data/*.zip');
+        foreach ($files as $file) {
+            if (is_file($file)) unlink($file);
+        }
+        $logFile = __DIR__ . '/../server.log';
+        if (file_exists($logFile)) file_put_contents($logFile, '');
+        $successMessage = "Временные файлы и логи очищены.";
     } elseif ($_POST['action'] === 'load_demo') {
         $loader = new DemoDataLoader();
         if ($loader->load()) {
@@ -159,7 +167,20 @@ include 'includes/header.php';
 
     <!-- Сброс данных -->
     <div class="mica-card">
-        <h2 style="color: #d83b01;">⚠️ Опасная зона</h2>
+        <h2 style="color: #d83b01;">🛠 Обслуживание системы</h2>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            <form method="POST">
+                <input type="hidden" name="action" value="clean_temp">
+                <button type="submit" class="btn btn-outline" style="width: 100%;">Очистить временные файлы и логи</button>
+            </form>
+
+            <a href="system_health.php" class="btn btn-outline" style="text-align: center;">Проверить целостность данных</a>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.05); margin: 20px 0;">
+
+        <h3 style="color: #d83b01; font-size: 1rem;">Опасная зона</h3>
         <p style="color: #666; margin-bottom: 20px;">
             Внимание: Операция «Сброс всех данных» безвозвратно удалит все бронирования, записи в календаре, данные гостей, списки номеров, процедур и другие настройки.
         </p>
@@ -256,7 +277,7 @@ function confirmReset() {
     const password = prompt("Для подтверждения удаления всех данных введите пароль:");
     if (password === null) return;
 
-    if (password === "12345") {
+    if (password === "admin123") {
         if (confirm("Вы абсолютно уверены? Все данные будут удалены навсегда!")) {
             document.getElementById('confirm_password').value = password;
             document.getElementById('reset-form').submit();

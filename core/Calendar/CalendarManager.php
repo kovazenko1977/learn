@@ -11,15 +11,26 @@ class CalendarManager {
     }
 
     public function getOccupancyData($startDate, $endDate) {
-        $calendar = $this->store->findAll('room_calendar');
+        $bookings = $this->store->findAll('bookings');
         $occupancy = [];
-        if (is_array($calendar)) {
-            foreach ($calendar as $entry) {
-                if (is_array($entry) && isset($entry['date']) && $entry['date'] >= $startDate && $entry['date'] <= $endDate) {
-                    $occupancy[$entry['room_id']][$entry['date']] = [
-                        'status' => $entry['status'] ?? 'booked',
-                        'booking_id' => $entry['booking_id'] ?? null
-                    ];
+
+        if (is_array($bookings)) {
+            foreach ($bookings as $b) {
+                if (!is_array($b) || ($b['status'] ?? '') === 'cancelled') continue;
+
+                $start = strtotime(substr($b['check_in'], 0, 10));
+                $end = strtotime(substr($b['check_out'], 0, 10));
+
+                $current = $start;
+                while ($current < $end) {
+                    $dateStr = date('Y-m-d', $current);
+                    if ($dateStr >= $startDate && $dateStr <= $endDate) {
+                        $occupancy[$b['room_id']][$dateStr] = [
+                            'status' => $b['status'] ?? 'booked',
+                            'booking_id' => $b['id']
+                        ];
+                    }
+                    $current = strtotime("+1 day", $current);
                 }
             }
         }
