@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "title": "Уборка номера 101",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Low",
+        "status": "completed"
+    },
+    {
+        "id": 2,
+        "title": "Проверка сантехники 102",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Medium",
+        "status": "completed"
+    },
+    {
+        "id": 3,
+        "title": "Пополнение мини-бара 103",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Medium",
+        "status": "completed"
+    },
+    {
+        "id": 4,
+        "title": "Уборка номера 104",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Medium",
+        "status": "completed"
+    },
+    {
+        "id": 5,
+        "title": "Пополнение мини-бара 105",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Medium",
+        "status": "completed"
+    },
+    {
+        "id": 6,
+        "title": "Пополнение мини-бара 106",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "High",
+        "status": "pending"
+    },
+    {
+        "id": 7,
+        "title": "Замена белья 107",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Medium",
+        "status": "completed"
+    },
+    {
+        "id": 8,
+        "title": "Пополнение мини-бара 108",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "Medium",
+        "status": "pending"
+    },
+    {
+        "id": 9,
+        "title": "Замена белья 109",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "High",
+        "status": "completed"
+    },
+    {
+        "id": 10,
+        "title": "Проверка сантехники 110",
+        "description": "Плановая задача для персонала.",
+        "date": "2026-02-14",
+        "priority": "High",
+        "status": "completed"
+    }
+]

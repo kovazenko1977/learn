@@ -1,0 +1,17 @@
+{
+    "fields": {
+        "client_name": {"enabled": true, "label": "ФИО", "required": true},
+        "phone": {"enabled": true, "label": "Телефон", "required": true},
+        "citizenship": {"enabled": true, "label": "Гражданство", "required": false},
+        "address": {"enabled": true, "label": "Адрес проживания", "required": false},
+        "persons": {"enabled": true, "label": "Кол-во человек", "required": true},
+        "package_id": {"enabled": true, "label": "Программа (пакет)", "required": false},
+        "procedures": {"enabled": true, "label": "Процедуры", "required": false},
+        "services": {"enabled": true, "label": "Доп. услуги", "required": false}
+    },
+    "general": {
+        "title": "Онлайн-бронирование",
+        "theme": "modern",
+        "allow_hourly": true
+    }
+}

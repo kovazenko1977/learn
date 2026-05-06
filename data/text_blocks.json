@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "key": "welcome_title",
+        "content": "Добро пожаловать в Sanatorium"
+    },
+    {
+        "id": 2,
+        "key": "welcome_subtitle",
+        "content": "Лучший отдых и лечение для вас и вашей семьи"
+    },
+    {
+        "id": 3,
+        "key": "footer_text",
+        "content": "© 2024 Sanatorium Booking System"
+    }
+]
