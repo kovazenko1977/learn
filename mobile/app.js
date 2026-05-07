@@ -255,13 +255,14 @@ function getUserName(id) {
     return u ? u.full_name : id;
 }
 
-async function renderTasks() {
+async function renderTasks(filters = {}) {
     document.getElementById('view-title').innerText = 'ЗАДАЧИ';
     screens.main.innerHTML = '<div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div>';
     try {
-        const res = await apiFetch('/requests.php?action=my_tasks');
+        const query = getMobileFilterParams('tasks');
+        const res = await apiFetch(`/requests.php?action=my_tasks&${query}`);
         const requests = await res.json();
-        screens.main.innerHTML = '';
+        screens.main.innerHTML = getMobileFilterHTML('tasks', filters);
         requests.forEach(r => {
             const card = document.createElement('div');
             card.className = 'req-card';
@@ -387,19 +388,21 @@ function renderCreate() {
     };
 }
 
-async function renderReports(viewMode = 'stats') {
+async function renderReports(viewMode = 'stats', filters = {}) {
     document.getElementById('view-title').innerText = 'АНАЛИТИКА';
     screens.main.innerHTML = `
         <div class="view-mode-toggle">
-            <button class="view-mode-btn ${viewMode === 'stats' ? 'active' : ''}" onclick="renderReports('stats')">ОТЧЕТЫ</button>
-            <button class="view-mode-btn ${viewMode === 'kanban' ? 'active' : ''}" onclick="renderReports('kanban')">ДОСКА</button>
+            <button class="view-mode-btn ${viewMode === 'stats' ? 'active' : ''}" onclick="renderReports('stats', ${JSON.stringify(filters).replace(/"/g, '&quot;')})">ОТЧЕТЫ</button>
+            <button class="view-mode-btn ${viewMode === 'kanban' ? 'active' : ''}" onclick="renderReports('kanban', ${JSON.stringify(filters).replace(/"/g, '&quot;')})">ДОСКА</button>
         </div>
+        ${viewMode === 'kanban' ? getMobileFilterHTML('rep', filters) : ''}
         <div id="reports-container"><div style="text-align:center; padding:20px;">ЗАГРУЗКА...</div></div>
     `;
     try {
         const container = document.getElementById('reports-container');
         if (viewMode === 'kanban') {
-            const res = await apiFetch('/requests.php?action=all');
+            const query = getMobileFilterParams('rep');
+            const res = await apiFetch(`/requests.php?action=all&${query}`);
             const requests = await res.json();
             renderKanban(requests, 'reports-container');
             return;

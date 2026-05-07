@@ -28,19 +28,37 @@ $action = $_GET['action'] ?? '';
 $from = $_GET['from'] ?? null;
 $to = $_GET['to'] ?? null;
 
-function filterByDate($items, $from, $to, $key = 'created_at') {
-    if (!$from && !$to) return $items;
-    return array_filter($items, function($item) use ($from, $to, $key) {
-        $date = strtotime($item[$key]);
-        if ($from && $date < strtotime($from)) return false;
-        if ($to && $date > strtotime($to . ' 23:59:59')) return false;
+function applyAdvancedFilters($items, $params) {
+    $from = $params['from'] ?? null;
+    $to = $params['to'] ?? null;
+    $status = $params['status'] ?? null;
+    $priority = $params['priority'] ?? null;
+    $wt = $params['work_type_id'] ?? null;
+    $req = $params['requester_id'] ?? null;
+    $exec = $params['assigned_to'] ?? null;
+    $loc = $params['location'] ?? null;
+    $q = $params['q'] ?? null;
+
+    return array_filter($items, function($item) use ($from, $to, $status, $priority, $wt, $req, $exec, $loc, $q) {
+        if ($from && strtotime($item['created_at']) < strtotime($from)) return false;
+        if ($to && strtotime($item['created_at']) > strtotime($to . ' 23:59:59')) return false;
+        if ($status && $item['status'] !== $status) return false;
+        if ($priority && $item['priority'] !== $priority) return false;
+        if ($wt && $item['work_type_id'] != $wt) return false;
+        if ($req && $item['requester_id'] != $req) return false;
+        if ($exec && ($item['assigned_to'] ?? '') != $exec) return false;
+        if ($loc && stripos($item['location'] ?? '', $loc) === false) return false;
+        if ($q) {
+            $searchStr = ($item['number'] ?? '') . ' ' . ($item['description'] ?? '') . ' ' . ($item['location'] ?? '');
+            if (stripos($searchStr, $q) === false) return false;
+        }
         return true;
     });
 }
 
 if ($action == 'summary') {
     $allRequests = $storage->readCollection('requests');
-    $requests = filterByDate($allRequests, $from, $to);
+    $requests = applyAdvancedFilters($allRequests, $_GET);
     $history = $storage->readCollection('status_history');
     $depts = $storage->readCollection('departments');
 
@@ -123,7 +141,7 @@ if ($action == 'summary') {
     echo json_encode($summary);
 } elseif ($action == 'executors') {
     $allRequests = $storage->readCollection('requests');
-    $requests = filterByDate($allRequests, $from, $to);
+    $requests = applyAdvancedFilters($allRequests, $_GET);
     $users = $storage->readCollection('users');
     $executors = array_filter($users, fn($u) => $u['role'] === 'executor');
 

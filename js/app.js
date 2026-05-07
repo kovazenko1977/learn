@@ -156,33 +156,45 @@ function showLayout() {
     if (mName) mName.innerText = currentUser.full_name;
     if (mRole) mRole.innerText = currentUser.role;
 
-    const adminEl = document.getElementById('nav-admin');
-    const reportsEl = document.getElementById('nav-reports');
-    const deptEl = document.getElementById('nav-department');
-
     const perms = currentUser.permissions || {};
 
+    // Visibility checks based on new granular permissions
+    const showTasks = perms.can_view_tasks_tab ?? ['admin', 'executor', 'manager'].includes(currentUser.role);
+    const showChat = perms.can_view_chat_tab ?? true;
+    const showDept = perms.can_view_dept_tab ?? (currentUser.role !== 'user' || perms.can_view_department);
+    const showAdmin = perms.can_view_admin_tab ?? (currentUser.role === 'admin' || perms.can_manage_system);
+    const showReports = perms.can_view_reports_tab ?? ['admin', 'manager'].includes(currentUser.role);
+    const showCreate = perms.can_view_create_tab ?? true;
+
+    // Desktop elements
     const tasksEl = document.getElementById('nav-tasks');
-    tasksEl.classList.toggle('hidden', !['admin', 'executor', 'manager'].includes(currentUser.role));
+    const chatEl = document.getElementById('nav-chat');
+    const deptEl = document.getElementById('nav-department');
+    const createEl = document.getElementById('nav-create');
+    const adminEl = document.getElementById('nav-admin');
+    const reportsEl = document.getElementById('nav-reports');
 
-    adminEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
-    reportsEl.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
-    deptEl.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user')));
+    if (tasksEl) tasksEl.classList.toggle('hidden', !showTasks);
+    if (chatEl) chatEl.classList.toggle('hidden', !showChat);
+    if (deptEl) deptEl.classList.toggle('hidden', !showDept);
+    if (createEl) createEl.classList.toggle('hidden', !showCreate);
+    if (adminEl) adminEl.classList.toggle('hidden', !showAdmin);
+    if (reportsEl) reportsEl.classList.toggle('hidden', !showReports);
 
-    // Mobile specific nav toggles
-    const mAdmin = document.getElementById('mob-nav-admin');
-    const mRep = document.getElementById('mob-nav-rep');
-    const mDept = document.getElementById('mob-nav-dept');
+    // Mobile elements
     const mTasks = document.getElementById('mob-nav-tasks');
     const mChat = document.getElementById('mob-nav-chat');
-    const dChat = document.getElementById('nav-chat');
+    const mDept = document.getElementById('mob-nav-dept');
+    const mAdmin = document.getElementById('mob-nav-admin');
+    const mRep = document.getElementById('mob-nav-rep');
+    const mFab = document.getElementById('mob-fab-create');
 
-    if (mAdmin) mAdmin.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_manage_system));
-    if (mRep) mRep.classList.toggle('hidden', !['admin', 'manager'].includes(currentUser.role) && !(perms.can_view_reports));
-    if (mDept) mDept.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_department ?? (currentUser.role !== 'user')));
-    if (mTasks) mTasks.classList.toggle('hidden', !['admin', 'executor', 'manager'].includes(currentUser.role));
-    if (mChat) mChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_chat ?? true));
-    if (dChat) dChat.classList.toggle('hidden', currentUser.role !== 'admin' && !(perms.can_view_chat ?? true));
+    if (mTasks) mTasks.classList.toggle('hidden', !showTasks);
+    if (mChat) mChat.classList.toggle('hidden', !showChat);
+    if (mDept) mDept.classList.toggle('hidden', !showDept);
+    if (mAdmin) mAdmin.classList.toggle('hidden', !showAdmin);
+    if (mRep) mRep.classList.toggle('hidden', !showReports);
+    if (mFab) mFab.classList.toggle('hidden', !showCreate);
 
     // Mobile Profile Trigger
     const profileTrigger = document.getElementById('mobile-profile-trigger');
@@ -324,23 +336,32 @@ function setToday(fromId, toId, callback) {
     callback();
 }
 
-async function renderTasks(from = '', to = '') {
+async function renderTasks(fParam = '', tParam = '') {
+    let filters = typeof fParam === 'object' ? fParam : { from: fParam, to: tParam };
+    const from = filters.from || '';
+    const to = filters.to || '';
     const isMobile = window.innerWidth < 768;
+
+    const filterControls = `
+        <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="bi bi-calendar3 text-primary"></i>
+                <input type="date" id="tasks-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                <span class="text-muted small">до</span>
+                <input type="date" id="tasks-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+            </div>
+            ${getAdvancedFilterHTML('tasks', filters)}
+            <div class="d-flex gap-2">
+                <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('tasks-from', 'tasks-to', filterTasks)">Сегодня</button>
+                <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterTasks()">Найти</button>
+            </div>
+        </div>
+    `;
+
     if (isMobile) {
         el.appContent.innerHTML = `
             <div class="p-3">
-                <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-calendar3 text-primary"></i>
-                        <input type="date" id="tasks-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
-                        <span class="text-muted small">до</span>
-                        <input type="date" id="tasks-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('tasks-from', 'tasks-to', filterTasks)">Сегодня</button>
-                        <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterTasks()">Найти</button>
-                    </div>
-                </div>
+                ${filterControls}
                 <div class="table-responsive">
                     <table class="table table-borderless mb-0 mobile-card-table">
                         <tbody id="tasks-req-table"></tbody>
@@ -365,6 +386,7 @@ async function renderTasks(from = '', to = '') {
                     </div>
                 </div>
             </div>
+            <div class="mb-3 d-none d-md-block">${getAdvancedFilterHTML('tasks', filters)}</div>
             <div class="card shadow-sm border-0 overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -385,14 +407,21 @@ async function renderTasks(from = '', to = '') {
     }
 
     window.filterTasks = () => {
-        const f = document.getElementById('tasks-from').value;
-        const t = document.getElementById('tasks-to').value;
-        renderTasks(f, t);
+        const f = {
+            from: document.getElementById('tasks-from').value,
+            to: document.getElementById('tasks-to').value,
+            q: document.getElementById('tasks-q').value,
+            status: document.getElementById('tasks-status').value,
+            priority: document.getElementById('tasks-priority').value,
+            work_type_id: document.getElementById('tasks-wt').value,
+            location: document.getElementById('tasks-loc').value
+        };
+        renderTasks(f);
     };
 
     try {
-        const query = (from || to) ? `&from=${from}&to=${to}` : '';
-        const res = await apiFetch(`/requests.php?action=my_tasks${query}`);
+        const query = getFilterParams('tasks');
+        const res = await apiFetch(`/requests.php?action=my_tasks&${query}`);
         const requests = await res.json();
         const tbody = document.getElementById('tasks-req-table');
         requests.forEach(r => {
@@ -428,7 +457,10 @@ async function renderTasks(from = '', to = '') {
     } catch (e) { el.appContent.innerHTML += '<div class="alert alert-danger">Ошибка загрузки задач</div>'; }
 }
 
-async function renderDashboard(from = '', to = '') {
+async function renderDashboard(fParam = '', tParam = '') {
+    let filters = typeof fParam === 'object' ? fParam : { from: fParam, to: tParam };
+    const from = filters.from || '';
+    const to = filters.to || '';
     const isMobile = window.innerWidth < 768;
     if (isMobile) {
         el.appContent.innerHTML = `
@@ -440,6 +472,7 @@ async function renderDashboard(from = '', to = '') {
                         <span class="text-muted small">до</span>
                         <input type="date" id="dash-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
                     </div>
+                    ${getAdvancedFilterHTML('dash', filters)}
                     <div class="d-flex gap-2">
                         <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
                         <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterDashboard()">Найти</button>
@@ -469,6 +502,7 @@ async function renderDashboard(from = '', to = '') {
                     </div>
                 </div>
             </div>
+            <div class="mb-3 d-none d-md-block">${getAdvancedFilterHTML('dash', filters)}</div>
             <div class="card shadow-sm border-0 overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -489,14 +523,21 @@ async function renderDashboard(from = '', to = '') {
     }
 
     window.filterDashboard = () => {
-        const f = document.getElementById('dash-from').value;
-        const t = document.getElementById('dash-to').value;
-        renderDashboard(f, t);
+        const f = {
+            from: document.getElementById('dash-from').value,
+            to: document.getElementById('dash-to').value,
+            q: document.getElementById('dash-q').value,
+            status: document.getElementById('dash-status').value,
+            priority: document.getElementById('dash-priority').value,
+            work_type_id: document.getElementById('dash-wt').value,
+            location: document.getElementById('dash-loc').value
+        };
+        renderDashboard(f);
     };
 
     try {
-        const query = (from || to) ? `&from=${from}&to=${to}` : '';
-        const res = await apiFetch(`/requests.php?action=my${query}`);
+        const query = getFilterParams('dash');
+        const res = await apiFetch(`/requests.php?action=my&${query}`);
         const requests = await res.json();
         const tbody = document.getElementById('req-table');
         requests.forEach(r => {
@@ -583,12 +624,15 @@ async function renderCreate() {
     });
 }
 
-async function renderDepartment(from = '', to = '', viewMode = 'table') {
+async function renderDepartment(fParam = '', tParam = '', viewMode = 'table') {
+    let filters = typeof fParam === 'object' ? fParam : { from: fParam, to: tParam };
+    const from = filters.from || '';
+    const to = filters.to || '';
     const isMobile = window.innerWidth < 768;
     const viewSwitcher = `
         <div class="btn-group btn-group-sm mb-3 mb-md-0 shadow-sm rounded-pill overflow-hidden">
-            <button class="btn ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment('${from}', '${to}', 'table')"><i class="bi bi-table"></i></button>
-            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment('${from}', '${to}', 'kanban')"><i class="bi bi-kanban"></i></button>
+            <button class="btn ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'table')"><i class="bi bi-table"></i></button>
+            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'kanban')"><i class="bi bi-kanban"></i></button>
         </div>
     `;
 
@@ -606,6 +650,7 @@ async function renderDepartment(from = '', to = '', viewMode = 'table') {
                         <span class="text-muted small">до</span>
                         <input type="date" id="dept-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
                     </div>
+                    ${getAdvancedFilterHTML('dept', filters)}
                     <div class="d-flex gap-2">
                         <button class="btn btn-light btn-sm flex-grow-1 rounded-pill" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
                         <button class="btn btn-primary btn-sm flex-grow-1 rounded-pill" onclick="filterDept()">Найти</button>
@@ -642,6 +687,7 @@ async function renderDepartment(from = '', to = '', viewMode = 'table') {
                     </div>
                 </div>
             </div>
+            <div class="mb-3 d-none d-md-block">${getAdvancedFilterHTML('dept', filters)}</div>
             <div id="dept-data-container">
                 ${viewMode === 'table' ? `
                     <div class="card shadow-sm border-0 overflow-hidden">
@@ -665,14 +711,21 @@ async function renderDepartment(from = '', to = '', viewMode = 'table') {
     }
 
     window.filterDept = () => {
-        const f = document.getElementById('dept-from').value;
-        const t = document.getElementById('dept-to').value;
-        renderDepartment(f, t, viewMode);
+        const f = {
+            from: document.getElementById('dept-from').value,
+            to: document.getElementById('dept-to').value,
+            q: document.getElementById('dept-q').value,
+            status: document.getElementById('dept-status').value,
+            priority: document.getElementById('dept-priority').value,
+            work_type_id: document.getElementById('dept-wt').value,
+            location: document.getElementById('dept-loc').value
+        };
+        renderDepartment(f, '', viewMode);
     };
 
     try {
-        const query = (from || to) ? `&from=${from}&to=${to}` : '';
-        const res = await apiFetch(`/requests.php?action=department${query}`);
+        const query = getFilterParams('dept');
+        const res = await apiFetch(`/requests.php?action=department&${query}`);
         const requests = await res.json();
 
         if (viewMode === 'kanban') {
@@ -2147,12 +2200,15 @@ async function renderGlobalChat() {
     };
 }
 
-async function renderReports(from = '', to = '', viewMode = 'stats') {
+async function renderReports(fParam = '', tParam = '', viewMode = 'stats') {
+    let filters = typeof fParam === 'object' ? fParam : { from: fParam, to: tParam };
+    const from = filters.from || '';
+    const to = filters.to || '';
     const isMobile = window.innerWidth < 768;
     const viewSwitcher = `
         <div class="btn-group btn-group-sm shadow-sm rounded-pill overflow-hidden me-2">
-            <button class="btn ${viewMode === 'stats' ? 'btn-primary' : 'btn-light'}" onclick="renderReports('${from}', '${to}', 'stats')"><i class="bi bi-bar-chart"></i></button>
-            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderReports('${from}', '${to}', 'kanban')"><i class="bi bi-kanban"></i></button>
+            <button class="btn ${viewMode === 'stats' ? 'btn-primary' : 'btn-light'}" onclick="renderReports(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'stats')"><i class="bi bi-bar-chart"></i></button>
+            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderReports(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'kanban')"><i class="bi bi-kanban"></i></button>
         </div>
     `;
 
@@ -2175,20 +2231,28 @@ async function renderReports(from = '', to = '', viewMode = 'stats') {
                 </div>
             </div>
         </div>
+        <div class="mb-3">${getAdvancedFilterHTML('rep', filters)}</div>
         <div id="reports-container" class="row g-3"><div class="col-md-12 text-center py-5"><div class="spinner-border text-primary"></div></div></div>
     `;
 
     document.getElementById('rep-filter').onclick = () => {
-        const f = document.getElementById('rep-from').value;
-        const t = document.getElementById('rep-to').value;
-        renderReports(f, t, viewMode);
+        const f = {
+            from: document.getElementById('rep-from').value,
+            to: document.getElementById('rep-to').value,
+            q: document.getElementById('rep-q').value,
+            status: document.getElementById('rep-status').value,
+            priority: document.getElementById('rep-priority').value,
+            work_type_id: document.getElementById('rep-wt').value,
+            location: document.getElementById('rep-loc').value
+        };
+        renderReports(f, '', viewMode);
     };
 
     try {
-        const query = (from || to) ? `&from=${from}&to=${to}` : '';
+        const query = getFilterParams('rep');
 
         if (viewMode === 'kanban') {
-            const res = await apiFetch(`/requests.php?action=all${query}`);
+            const res = await apiFetch(`/requests.php?action=all&${query}`);
             const requests = await res.json();
             document.getElementById('reports-container').innerHTML = '<div class="col-12" id="reports-kanban-container"></div>';
             renderKanban(requests, 'reports-kanban-container');
@@ -2390,4 +2454,88 @@ function getUserInitials(userId) {
     const name = getUserName(userId);
     if (name === 'Не назначен') return '?';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+}
+
+window.triggerDashFilter = () => window.filterDashboard();
+window.triggerTasksFilter = () => window.filterTasks();
+window.triggerDeptFilter = () => window.filterDept();
+window.triggerRepFilter = () => document.getElementById('rep-filter')?.click();
+
+function getAdvancedFilterHTML(idPrefix, currentFilters = {}) {
+    const statuses = [
+        {id: 'new', name: 'Новая'},
+        {id: 'assigned', name: 'Назначена'},
+        {id: 'in_progress', name: 'В работе'},
+        {id: 'completed', name: 'Выполнена'},
+        {id: 'closed', name: 'Закрыта'},
+        {id: 'rejected', name: 'Отклонена'}
+    ];
+    const priorities = [
+        {id: 'low', name: 'Низкий'},
+        {id: 'normal', name: 'Обычный'},
+        {id: 'high', name: 'Высокий'}
+    ];
+
+    let wtOptions = '<option value="">Все типы</option>';
+    (workTypes || []).forEach(wt => {
+        wtOptions += `<option value="${wt.id}" ${currentFilters.work_type_id == wt.id ? 'selected' : ''}>${escapeHTML(wt.name)}</option>`;
+    });
+
+    let statusOptions = '<option value="">Все статусы</option>';
+    statuses.forEach(s => {
+        statusOptions += `<option value="${s.id}" ${currentFilters.status == s.id ? 'selected' : ''}>${s.name}</option>`;
+    });
+
+    let priorityOptions = '<option value="">Все приоритеты</option>';
+    priorities.forEach(p => {
+        priorityOptions += `<option value="${p.id}" ${currentFilters.priority == p.id ? 'selected' : ''}>${p.name}</option>`;
+    });
+
+    const onchange = `window.trigger${idPrefix.charAt(0).toUpperCase() + idPrefix.slice(1)}Filter()`;
+    return `
+        <div class="row g-2 mb-3">
+            <div class="col-md-3 col-6">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" id="${idPrefix}-q" class="form-control border-start-0" placeholder="Поиск..." value="${currentFilters.q || ''}" oninput="${onchange}">
+                </div>
+            </div>
+            <div class="col-md-2 col-6">
+                <select id="${idPrefix}-status" class="form-select form-select-sm" onchange="${onchange}">${statusOptions}</select>
+            </div>
+            <div class="col-md-2 col-6">
+                <select id="${idPrefix}-priority" class="form-select form-select-sm" onchange="${onchange}">${priorityOptions}</select>
+            </div>
+            <div class="col-md-3 col-6">
+                <select id="${idPrefix}-wt" class="form-select form-select-sm" onchange="${onchange}">${wtOptions}</select>
+            </div>
+            <div class="col-md-2 col-12">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-geo-alt text-muted"></i></span>
+                    <input type="text" id="${idPrefix}-loc" class="form-control border-start-0" placeholder="Место" value="${currentFilters.location || ''}" oninput="${onchange}">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function getFilterParams(idPrefix) {
+    const params = new URLSearchParams();
+    const q = document.getElementById(`${idPrefix}-q`)?.value;
+    const status = document.getElementById(`${idPrefix}-status`)?.value;
+    const priority = document.getElementById(`${idPrefix}-priority`)?.value;
+    const wt = document.getElementById(`${idPrefix}-wt`)?.value;
+    const loc = document.getElementById(`${idPrefix}-loc`)?.value;
+    const from = document.getElementById(`${idPrefix}-from`)?.value;
+    const to = document.getElementById(`${idPrefix}-to`)?.value;
+
+    if (q) params.append('q', q);
+    if (status) params.append('status', status);
+    if (priority) params.append('priority', priority);
+    if (wt) params.append('work_type_id', wt);
+    if (loc) params.append('location', loc);
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+
+    return params.toString();
 }

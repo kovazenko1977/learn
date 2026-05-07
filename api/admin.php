@@ -117,7 +117,14 @@ if ($action == 'users') {
             'can_edit_own' => (bool)($data['permissions']['can_edit_own'] ?? true),
             'can_upload_files' => (bool)($data['permissions']['can_upload_files'] ?? true),
             'can_delete_comments' => (bool)($data['permissions']['can_delete_comments'] ?? false),
-            'can_view_unassigned' => (bool)($data['permissions']['can_view_unassigned'] ?? false)
+            'can_view_unassigned' => (bool)($data['permissions']['can_view_unassigned'] ?? false),
+            'can_view_tasks_tab' => (bool)($data['permissions']['can_view_tasks_tab'] ?? in_array($data['role'], ['admin', 'executor', 'manager'])),
+            'can_view_chat_tab' => (bool)($data['permissions']['can_view_chat_tab'] ?? true),
+            'can_view_dept_tab' => (bool)($data['permissions']['can_view_dept_tab'] ?? ($data['role'] != 'user')),
+            'can_view_create_tab' => (bool)($data['permissions']['can_view_create_tab'] ?? true),
+            'can_view_admin_tab' => (bool)($data['permissions']['can_view_admin_tab'] ?? ($data['role'] == 'admin')),
+            'can_view_reports_tab' => (bool)($data['permissions']['can_view_reports_tab'] ?? in_array($data['role'], ['admin', 'manager'])),
+            'can_view_help_tab' => (bool)($data['permissions']['can_view_help_tab'] ?? true)
         ]
     ];
     $saved = $storage->insert('users', $newUser);
@@ -166,7 +173,14 @@ if ($action == 'users') {
             'can_edit_own' => (bool)($data['permissions']['can_edit_own'] ?? true),
             'can_upload_files' => (bool)($data['permissions']['can_upload_files'] ?? true),
             'can_delete_comments' => (bool)($data['permissions']['can_delete_comments'] ?? false),
-            'can_view_unassigned' => (bool)($data['permissions']['can_view_unassigned'] ?? false)
+            'can_view_unassigned' => (bool)($data['permissions']['can_view_unassigned'] ?? false),
+            'can_view_tasks_tab' => (bool)($data['permissions']['can_view_tasks_tab'] ?? in_array($data['role'], ['admin', 'executor', 'manager'])),
+            'can_view_chat_tab' => (bool)($data['permissions']['can_view_chat_tab'] ?? true),
+            'can_view_dept_tab' => (bool)($data['permissions']['can_view_dept_tab'] ?? ($data['role'] != 'user')),
+            'can_view_create_tab' => (bool)($data['permissions']['can_view_create_tab'] ?? true),
+            'can_view_admin_tab' => (bool)($data['permissions']['can_view_admin_tab'] ?? ($data['role'] == 'admin')),
+            'can_view_reports_tab' => (bool)($data['permissions']['can_view_reports_tab'] ?? in_array($data['role'], ['admin', 'manager'])),
+            'can_view_help_tab' => (bool)($data['permissions']['can_view_help_tab'] ?? true)
         ]
     ];
     if (!empty($data['password'])) {
