@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const apiBase = '../api/v1.php';
+    const apiBase = 'api/v1.php';
     const form = document.getElementById('booking-form');
     const findRoomsBtn = document.getElementById('find-rooms');
     const roomsSelection = document.getElementById('rooms-selection');

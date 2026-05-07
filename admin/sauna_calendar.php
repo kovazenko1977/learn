@@ -94,7 +94,7 @@ include 'includes/header.php';
 </div>
 
 <div style="margin-top: 20px; text-align: center;">
-    <a href="../sauna_booking.php" class="btn btn-outline">Открыть публичную форму сауны</a>
+    <a href="../booking_sauna.php" class="btn btn-outline">Открыть публичную форму сауны</a>
 </div>
 
 <?php include 'includes/footer.php'; ?>

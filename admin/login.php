@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (isset($_SESSION['admin_logged_in'])) {
-    header('Location: dashboard.php');
+    header('Location: ../index.php');
     exit;
 }
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['role'] = $user['role'];
         $_SESSION['permissions'] = $user['permissions'] ?? [];
 
-        header('Location: dashboard.php');
+        header('Location: ../index.php');
         exit;
     } else {
         $error = "Неверный логин или пароль";

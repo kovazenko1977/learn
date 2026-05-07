@@ -1,3 +1,1 @@
-<?php
-header('Location: today.php');
-exit;
+<?php header('Location: ../index.php');
