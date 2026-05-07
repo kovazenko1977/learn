@@ -55,7 +55,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div style="margin-top: 12px; border-top: 1px solid #f1f5f9; pt: 10px;">
-                <a href="../admin/today.php" class="btn-m btn-m-primary" style="font-size: 0.75rem; padding: 6px;">Управление</a>
+                <a href="../index.php" class="btn-m btn-m-primary" style="font-size: 0.75rem; padding: 6px;">Управление</a>
             </div>
         </div>
     <?php endforeach; ?>
@@ -79,7 +79,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div style="margin-top: 12px; border-top: 1px solid #f1f5f9; pt: 10px;">
-                <a href="../admin/today.php" class="btn-m btn-m-primary" style="font-size: 0.75rem; padding: 6px; background: #f97316;">Оформить выезд</a>
+                <a href="../index.php" class="btn-m btn-m-primary" style="font-size: 0.75rem; padding: 6px; background: #f97316;">Оформить выезд</a>
             </div>
         </div>
     <?php endforeach; ?>

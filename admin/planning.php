@@ -111,14 +111,14 @@ include 'includes/header.php';
             <input type="date" name="date" id="p-date" required value="<?php echo date('Y-m-d'); ?>">
 
             <label>Приоритет</label>
-            <select name="priority" id="p-priority">
+            <select name="priority" onchange="this.form.submit()" id="p-priority">
                 <option value="low">Низкий</option>
                 <option value="medium" selected>Средний</option>
                 <option value="high">Высокий</option>
             </select>
 
             <label>Статус</label>
-            <select name="status" id="p-status">
+            <select name="status" onchange="this.form.submit()" id="p-status">
                 <option value="pending">В ожидании</option>
                 <option value="completed">Выполнено</option>
             </select>

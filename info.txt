@@ -1,0 +1,51 @@
+PROMPT FOR RECREATING THE SANATORIUM & SAUNA MANAGEMENT SYSTEM (v4.0)
+
+CONTEXT:
+Create a professional, standalone web application for managing a sanatorium and sauna business. The goal is to replace manual Excel-based recording with a robust, mobile-optimized digital system that handles both daily room bookings and hourly sauna sessions.
+
+TECHNICAL STACK:
+- Backend: PHP 8.1+ (Pure PHP, no heavy frameworks).
+- Database: File-based JSON storage with transactional locking (flock) for high reliability without MySQL overhead.
+- Frontend: Vanilla JavaScript, Modern CSS (Glassmorphism / Windows 11 Mica style).
+- Mobile: Dedicated touch-friendly mobile interface in a /mobile directory.
+- Integration: Token-based REST API for external connectivity.
+
+CORE FUNCTIONALITY:
+1. DUAL BOOKING ENGINE:
+   - DAILY MODE: For rooms/apartments. Standard check-in (14:00) and check-out (12:00) logic.
+   - HOURLY MODE: Specifically for Sauna class resources. Triggered by resource category. Support for precise start/end times and back-to-back booking overlap prevention.
+   - PRICING: Calculate price based on duration (days or hours), room rates, and selected packages/procedures.
+
+2. ADMINISTRATIVE DASHBOARD (index.php):
+   - TODAY PANEL: Immediate view of arrivals, departures, and active tasks.
+   - CHESSBOARD (Calendar): Interactive grid showing daily occupancy for all rooms.
+   - SAUNA GRID: Specialized hourly schedule for sauna resources with real-time "NOW" indicator.
+   - FORM CONSTRUCTOR: Admin UI to toggle fields (Name, Phone, Passport, etc.) for public forms and generate embedding shortcodes.
+
+3. PUBLIC BOOKING FORMS:
+   - booking_rooms.php: Daily booking with room selection and package options.
+   - booking_sauna.php: Hourly booking with interactive time-slot selection grid.
+   - EMBEDDING: A lightweight JS loader (booking-loader.js) to iframe these forms into any website via a simple <script> tag.
+
+4. SYSTEM MAINTENANCE:
+   - EXCEL IMPORT: Utility to load CSV files into the JSON database.
+   - BACKUP/RESTORE: One-click ZIP export/import of the entire /data directory.
+   - DEMO MODE: Generator for 350+ realistic booking records for immediate stress-testing.
+   - AUTH CONTROL: Initially open admin panel with a settings toggle to enable secure password protection.
+
+5. USER EXPERIENCE:
+   - AUTO-APPLY FILTERS: Any change in date or status filters must trigger an immediate page reload.
+   - MOBILE FIRST: Fully functional mobile version for staff to handle check-ins and tasks from their phones.
+   - SYSTEM HEALTH: Dashboard to monitor file permissions and environment compatibility.
+
+DIRECTORY STRUCTURE:
+/core/ - Business logic (Managers/Helpers/Database)
+/data/ - JSON storage protected by .htaccess
+/admin/ - Admin-only PHP components and inclusions
+/assets/ - CSS/JS/Images
+/mobile/ - Mobile-specific views
+/api/ - REST API endpoints
+index.php - Primary Admin Entry Point
+
+INSTRUCTIONS FOR AI:
+When generating this code, ensure that all relative paths are correctly handled for root access. Prioritize the 'Transactional' nature of the JSON store to prevent data loss. The UI must feel like a premium Windows 11 application using subtle blurs and rounded corners.

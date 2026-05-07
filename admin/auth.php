@@ -8,6 +8,14 @@ use Sanatorium\Core\Database\JsonStore;
 $store = new JsonStore(__DIR__ . '/../data');
 $settings = json_decode(file_get_contents(__DIR__ . '/../data/settings.json'), true);
 
+// Determine root path for redirects
+$currentPath = $_SERVER['PHP_SELF'];
+if (strpos($currentPath, '/admin/') !== false || strpos($currentPath, '/mobile/') !== false) {
+    $rootPath = '../';
+} else {
+    $rootPath = './';
+}
+
 if (!isset($_SESSION['admin_logged_in'])) {
     if (isset($settings['auth_enabled']) && $settings['auth_enabled'] === false) {
         $_SESSION['admin_logged_in'] = true;
@@ -16,8 +24,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
         $_SESSION['full_name'] = 'Администратор';
         $_SESSION['role'] = 'administrator';
     } else {
-        $root = (basename($_SERVER['PHP_SELF']) == 'index.php') ? '' : '../';
-        header('Location: ' . $root . 'admin/login.php');
+        header('Location: ' . $rootPath . 'admin/login.php');
         die();
     }
 }
@@ -31,7 +38,7 @@ function hasPermission($permission) {
 
 $permissionMap = [
     'dashboard.php' => 'view_dashboard',
-    'today.php' => 'view_dashboard',
+    'index.php' => 'view_dashboard',
     'calendar.php' => 'view_calendar',
     'hourly_calendar.php' => 'view_calendar',
     'sauna_calendar.php' => 'view_calendar',
@@ -57,9 +64,9 @@ if (isset($permissionMap[$currentFile])) {
         echo "<div style='padding: 20px; color: white; background: #d83b01; border-radius: 8px; margin: 20px; font-family: sans-serif;'>";
         echo "<h2>Доступ запрещен</h2>";
         echo "<p>У вас недостаточно прав для просмотра этого раздела.</p>";
-        $root = ($currentFile == 'index.php') ? '' : '../';
-        echo "<a href='{$root}index.php' style='color: white; font-weight: bold;'>Вернуться на главную</a>";
+        echo "<a href='{$rootPath}index.php' style='color: white; font-weight: bold;'>Вернуться на главную</a>";
         echo "</div>";
         die();
     }
 }
+?>

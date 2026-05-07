@@ -143,7 +143,7 @@ require_once __DIR__ . '/../admin/auth.php';
     <header class="mobile-header">
         <h1><?php echo $pageTitle; ?></h1>
         <div style="display: flex; align-items: center; gap: 8px;">
-            <a href="../admin/today.php" style="color: #64748b; font-size: 0.75rem; text-decoration: none; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">PC Версия</a>
+            <a href="../index.php" style="color: #64748b; font-size: 0.75rem; text-decoration: none; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">PC Версия</a>
             <div class="avatar" style="width: 32px; height: 32px; font-size: 0.9rem;"><?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1); ?></div>
         </div>
     </header>

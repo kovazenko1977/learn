@@ -95,9 +95,9 @@ include 'includes/header.php';
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <h2>📅 Сетка занятости номеров</h2>
         <form method="get" style="display:flex; gap:10px; align-items: center;">
-            <input type="date" name="start_date" value="<?php echo $startDate; ?>" style="width:auto; margin-bottom:0;">
+            <input type="date" name="start_date" onchange="this.form.submit()" value="<?php echo $startDate; ?>" style="width:auto; margin-bottom:0;">
             <span>—</span>
-            <input type="date" name="end_date" value="<?php echo $endDate; ?>" style="width:auto; margin-bottom:0;">
+            <input type="date" name="end_date" onchange="this.form.submit()" value="<?php echo $endDate; ?>" style="width:auto; margin-bottom:0;">
             <button type="submit" class="btn">Показать</button>
         </form>
     </div>

@@ -22,7 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['sauna'])) {
         if (!isset($config['sauna'])) $config['sauna'] = ['fields' => [], 'title' => 'Бронирование Сауны'];
         $config['sauna']['title'] = $_POST['sauna']['title'];
-        // Sauna fields logic could be added here if needed to be separate
+        foreach (['client_name', 'phone', 'persons'] as $key) {
+            $config['sauna']['fields'][$key]['enabled'] = isset($_POST['sauna']['fields'][$key]['enabled']);
+            $config['sauna']['fields'][$key]['required'] = isset($_POST['sauna']['fields'][$key]['required']);
+            $config['sauna']['fields'][$key]['label'] = $_POST['sauna']['fields'][$key]['label'] ?? $key;
+        }
     }
 
     file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -67,7 +71,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label>Заголовок</label>
                 <input type="text" name="sauna[title]" value="<?php echo htmlspecialchars($config['sauna']['title'] ?? 'Бронирование Сауны'); ?>">
             </div>
-            <p style="font-size: 0.85rem; color: #666;">Почасовое бронирование всегда включено для ресурсов типа «Сауна».</p>
+
+            <table class="table" style="font-size: 0.8rem;">
+                <thead>
+                    <tr><th>Поле</th><th>Имя</th><th>Вкл</th><th>Обяз</th></tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $saunaFields = ['client_name', 'phone', 'persons'];
+                    foreach ($saunaFields as $key):
+                        $f = $config['sauna']['fields'][$key] ?? ['enabled' => true, 'required' => true, 'label' => $key];
+                    ?>
+                    <tr>
+                        <td><?php echo $key; ?></td>
+                        <td><input type="text" name="sauna[fields][<?php echo $key; ?>][label]" value="<?php echo htmlspecialchars($f['label']); ?>" style="width:100%;"></td>
+                        <td><input type="checkbox" name="sauna[fields][<?php echo $key; ?>][enabled]" <?php echo $f['enabled'] ? 'checked' : ''; ?>></td>
+                        <td><input type="checkbox" name="sauna[fields][<?php echo $key; ?>][required]" <?php echo $f['required'] ? 'checked' : ''; ?>></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <p style="font-size: 0.85rem; color: #666; margin-top: 10px;">Почасовое бронирование всегда активно для этой формы.</p>
             <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;">Сохранить форму сауны</button>
         </form>
     </div>

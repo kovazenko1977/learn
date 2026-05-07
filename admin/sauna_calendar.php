@@ -53,7 +53,7 @@ include 'includes/header.php';
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
         <h2 style="margin:0;">🧖‍♀️ График Сауны</h2>
         <form method="get" style="display:flex; gap:8px;">
-            <input type="date" name="date" value="<?php echo $selectedDate; ?>" style="margin-bottom:0; width: auto;">
+            <input type="date" name="date" onchange="this.form.submit()" value="<?php echo $selectedDate; ?>" style="margin-bottom:0; width: auto;">
             <button type="submit" class="btn btn-primary btn-sm">OK</button>
         </form>
     </div>

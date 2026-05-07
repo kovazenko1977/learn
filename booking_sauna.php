@@ -11,13 +11,27 @@ foreach($classes as $c) if(stripos($c['name'], 'Сауна') !== false) $saunaCl
 $saunas = array_filter($rooms, function($r) use ($saunaClassId) {
     return ($r['room_class_id'] == $saunaClassId);
 });
+
+$config = json_decode(file_get_contents(__DIR__ . '/data/form_config.json'), true);
+$saunaConfig = $config['sauna'] ?? ['title' => 'Бронирование Сауны', 'fields' => []];
+$fields = $saunaConfig['fields'];
+
+function isFieldEnabled($fields, $key) {
+    return $fields[$key]['enabled'] ?? true;
+}
+function isFieldRequired($fields, $key) {
+    return $fields[$key]['required'] ?? true;
+}
+function getFieldLabel($fields, $key, $default) {
+    return $fields[$key]['label'] ?? $default;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Бронирование Сауны</title>
+    <title><?php echo htmlspecialchars($saunaConfig['title']); ?></title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 15px; }
@@ -29,16 +43,21 @@ $saunas = array_filter($rooms, function($r) use ($saunaClassId) {
 </head>
 <body>
     <div class="container">
-        <h1>🧖‍♀️ Забронировать Сауну</h1>
+        <h1><?php echo htmlspecialchars($saunaConfig['title']); ?></h1>
         <p>Выберите дату и удобное время. Оплата почасовая.</p>
+
+        <div style="margin-bottom: 30px; text-align: center; display: flex; gap: 10px; justify-content: center;">
+            <a href="booking_rooms.php" class="btn-secondary" style="text-decoration: none; background: #eee; color: #333;">Бронирование номеров</a>
+            <a href="booking_sauna.php" class="btn-primary" style="text-decoration: none;">Бронирование сауны</a>
+        </div>
 
         <form id="sauna-booking-form">
             <div class="form-group">
                 <label>Выберите сауну</label>
                 <select name="room_id" id="sauna_id" required>
                     <?php foreach($saunas as $s): ?>
-                        <option value="<?php echo $s['id']; ?>" data-price="<?php echo $s['price_per_hour']; ?>">
-                            <?php echo htmlspecialchars($s['room_number']); ?> (<?php echo $s['price_per_hour']; ?> ₽/час)
+                        <option value="<?php echo $s['id']; ?>" data-price="<?php echo $s['price_per_hour'] ?? 0; ?>">
+                            <?php echo htmlspecialchars($s['room_number']); ?> (<?php echo $s['price_per_hour'] ?? 0; ?> ₽/час)
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -51,28 +70,32 @@ $saunas = array_filter($rooms, function($r) use ($saunaClassId) {
 
             <div id="slots-container" style="display:none;">
                 <label>Доступное время (нажмите, чтобы выбрать часы)</label>
-                <div class="time-slots" id="time-slots">
-                    <!-- JS generated -->
-                </div>
+                <div class="time-slots" id="time-slots"></div>
             </div>
 
             <input type="hidden" name="check_in" id="check_in">
             <input type="hidden" name="check_out" id="check_out">
 
+            <?php if (isFieldEnabled($fields, 'persons')): ?>
             <div class="form-group" style="margin-top:20px;">
-                <label>Количество человек</label>
-                <input type="number" name="persons" value="2" min="1" max="15">
+                <label><?php echo getFieldLabel($fields, 'persons', 'Кол-во человек'); ?></label>
+                <input type="number" name="persons" value="2" min="1" max="15" <?php echo isFieldRequired($fields, 'persons') ? 'required' : ''; ?>>
             </div>
+            <?php endif; ?>
 
+            <?php if (isFieldEnabled($fields, 'client_name')): ?>
             <div class="form-group">
-                <label>Ваше имя</label>
-                <input type="text" name="client_name" required>
+                <label><?php echo getFieldLabel($fields, 'client_name', 'Ваше имя'); ?></label>
+                <input type="text" name="client_name" <?php echo isFieldRequired($fields, 'client_name') ? 'required' : ''; ?>>
             </div>
+            <?php endif; ?>
 
+            <?php if (isFieldEnabled($fields, 'phone')): ?>
             <div class="form-group">
-                <label>Телефон</label>
-                <input type="tel" name="phone" required placeholder="+7...">
+                <label><?php echo getFieldLabel($fields, 'phone', 'Телефон'); ?></label>
+                <input type="tel" name="phone" placeholder="+7..." <?php echo isFieldRequired($fields, 'phone') ? 'required' : ''; ?>>
             </div>
+            <?php endif; ?>
 
             <div id="price-summary" style="padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 20px 0; display:none;">
                 Выбрано часов: <strong id="hours-count">0</strong><br>
@@ -128,7 +151,8 @@ $saunas = array_filter($rooms, function($r) use ($saunaClassId) {
         }
 
         function updateSummary() {
-            const price = parseFloat(saunaSelect.selectedOptions[0].dataset.price);
+            const selectedOpt = saunaSelect.selectedOptions[0];
+            const price = selectedOpt ? parseFloat(selectedOpt.dataset.price) : 0;
             const count = selectedSlots.length;
 
             document.getElementById('hours-count').textContent = count;
@@ -140,7 +164,6 @@ $saunas = array_filter($rooms, function($r) use ($saunaClassId) {
             if(count > 0) {
                 const date = dateInput.value;
                 document.getElementById('check_in').value = `${date} ${selectedSlots[0]}:00`;
-                // Simple logic: last slot + 1 hour
                 const last = parseInt(selectedSlots[selectedSlots.length-1]);
                 document.getElementById('check_out').value = `${date} ${String(last + 1).padStart(2, '0')}:00`;
             }

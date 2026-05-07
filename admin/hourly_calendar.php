@@ -37,8 +37,8 @@ include 'includes/header.php';
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <h2>🕰 График на <?php echo date('d.m.Y', strtotime($selectedDate)); ?></h2>
         <form method="get" style="display:flex; gap:10px;">
-            <input type="date" name="date" value="<?php echo $selectedDate; ?>">
-            <select name="room_id">
+            <input type="date" name="date" onchange="this.form.submit()" value="<?php echo $selectedDate; ?>">
+            <select name="room_id" onchange="this.form.submit()">
                 <option value="">Все ресурсы</option>
                 <?php foreach ($rooms as $r): ?>
                     <option value="<?php echo $r['id']; ?>" <?php echo $selectedRoomId == $r['id'] ? 'selected' : ''; ?>>

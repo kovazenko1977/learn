@@ -4895,7 +4895,7 @@
         "check_out": "2026-06-06 12:00",
         "persons": 2,
         "package_id": 2,
-        "status": "booked",
+        "status": "confirmed",
         "total_price": 14000,
         "created_at": "2026-05-06 17:20:43"
     }

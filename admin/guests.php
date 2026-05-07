@@ -64,7 +64,7 @@ include 'includes/header.php';
         </div>
         <div>
             <label>Статус</label>
-            <select name="status">
+            <select name="status" onchange="this.form.submit()">
                 <option value="">Все</option>
                 <option value="staying" <?php echo $filterStatus === 'staying' ? 'selected' : ''; ?>>Сейчас в санатории</option>
                 <option value="not_staying" <?php echo $filterStatus === 'not_staying' ? 'selected' : ''; ?>>Не у нас</option>
