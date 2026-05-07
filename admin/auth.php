@@ -4,17 +4,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once __DIR__ . '/../core/autoload.php';
+
 use Sanatorium\Core\Database\JsonStore;
 $store = new JsonStore(__DIR__ . '/../data');
-$settings = json_decode(file_get_contents(__DIR__ . '/../data/settings.json'), true);
-
-// Determine root path for redirects
-$currentPath = $_SERVER['PHP_SELF'];
-if (strpos($currentPath, '/admin/') !== false || strpos($currentPath, '/mobile/') !== false) {
-    $rootPath = '../';
-} else {
-    $rootPath = './';
-}
+$settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true);
 
 if (!isset($_SESSION['admin_logged_in'])) {
     if (isset($settings['auth_enabled']) && $settings['auth_enabled'] === false) {
@@ -24,6 +17,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
         $_SESSION['full_name'] = 'Администратор';
         $_SESSION['role'] = 'administrator';
     } else {
+        $rootPath = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false || strpos($_SERVER['PHP_SELF'], '/mobile/') !== false) ? '../' : './';
         header('Location: ' . $rootPath . 'admin/login.php');
         die();
     }
@@ -61,6 +55,7 @@ $permissionMap = [
 $currentFile = basename($_SERVER['PHP_SELF']);
 if (isset($permissionMap[$currentFile])) {
     if (!hasPermission($permissionMap[$currentFile])) {
+        $rootPath = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : './';
         echo "<div style='padding: 20px; color: white; background: #d83b01; border-radius: 8px; margin: 20px; font-family: sans-serif;'>";
         echo "<h2>Доступ запрещен</h2>";
         echo "<p>У вас недостаточно прав для просмотра этого раздела.</p>";
@@ -69,4 +64,3 @@ if (isset($permissionMap[$currentFile])) {
         die();
     }
 }
-?>

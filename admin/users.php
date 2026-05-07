@@ -1,5 +1,5 @@
 <?php
-require_once 'admin/auth.php';
+require_once 'auth.php';
 require_once '../core/autoload.php';
 
 use Sanatorium\Core\Database\JsonStore;
