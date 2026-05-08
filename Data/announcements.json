@@ -1,0 +1,19 @@
+[
+    {
+        "text": "ВНИМАНИЕ: Смена #2 выходит на час раньше!",
+        "created_at": "2026-03-05 20:16:04",
+        "id": "d360a7eed077e228-1772741764"
+    },
+    {
+        "text": "Targeted test for sales",
+        "target": "sales_manager",
+        "created_at": "2026-03-05 20:35:02",
+        "id": "2e20b90b5553ea77-1772742902"
+    },
+    {
+        "text": "Targeted test for sales",
+        "target": "sales_manager",
+        "created_at": "2026-03-05 20:35:57",
+        "id": "465d88c20a887ba6-1772742957"
+    }
+]

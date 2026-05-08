@@ -1,0 +1,50 @@
+[
+    {
+        "id": "rm-juice",
+        "name": "Сок яблочный прямого отжима",
+        "unit": "л",
+        "quantity": 4811,
+        "min_quantity": 500,
+        "price": 1.2
+    },
+    {
+        "id": "rm-juice-ch",
+        "name": "Сок вишневый концентрированный",
+        "unit": "л",
+        "quantity": 2000,
+        "min_quantity": 200,
+        "price": 4.5
+    },
+    {
+        "id": "rm-sugar",
+        "name": "Сахар-песок ГОСТ",
+        "unit": "кг",
+        "quantity": 979,
+        "min_quantity": 100,
+        "price": 1.8
+    },
+    {
+        "id": "rm-bottle",
+        "name": "Бутылка стеклянная 0.5л",
+        "unit": "шт",
+        "quantity": 9580,
+        "min_quantity": 1000,
+        "price": 0.35
+    },
+    {
+        "id": "rm-bottle-07",
+        "name": "Бутылка винная 0.7л",
+        "unit": "шт",
+        "quantity": 5000,
+        "min_quantity": 500,
+        "price": 0.55
+    },
+    {
+        "id": "rm-label",
+        "name": "Этикетка самоклеящаяся",
+        "unit": "шт",
+        "quantity": 19580,
+        "min_quantity": 2000,
+        "price": 0.08
+    }
+]
