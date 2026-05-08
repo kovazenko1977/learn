@@ -39,21 +39,22 @@ if ($type === 'single') {
     }
 } elseif ($type === 'bulk') {
     $emails_file = __DIR__ . '/../data/emails.php';
-    $emails = loadData($emails_file) ?? [];
+    $emails_data = loadData($emails_file) ?? [];
 
     // Bulk sending logic
     set_time_limit(0);
     ignore_user_abort(true);
 
     $count = 0;
-    foreach ($emails as $email) {
+    foreach ($emails_data as $e) {
+        $email = is_array($e) ? $e['email'] : $e;
         $headers = "From: webmaster@example.com\r\n" .
                    "Reply-To: webmaster@example.com\r\n" .
                    "X-Mailer: PHP/" . phpversion();
         @mail($email, $subject, $body, $headers);
         error_log("Sending bulk email to $email: $subject");
         $count++;
-        if ($count < count($emails)) {
+        if ($count < count($emails_data)) {
             sleep($interval);
         }
     }

@@ -114,17 +114,26 @@ async function loadEmails() {
     renderEmails();
 }
 
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 function renderEmails() {
     const list = document.getElementById('email-list');
     const search = document.getElementById('search-emails').value.toLowerCase();
     list.innerHTML = '';
 
-    emails.filter(e => e.toLowerCase().includes(search)).forEach(email => {
+    emails.filter(e => e.email.toLowerCase().includes(search) || e.note.toLowerCase().includes(search)).forEach(e => {
         const div = document.createElement('div');
         div.className = 'ios-item flex justify-between items-center';
         div.innerHTML = `
-            <span>${email}</span>
-            <button onclick="deleteEmail('${email}')" class="text-red-500"><i data-lucide="trash-2"></i></button>
+            <div class="flex flex-col">
+                <span class="font-medium">${escapeHTML(e.email)}</span>
+                <span class="text-xs text-gray-500">${escapeHTML(e.note || 'No note')}</span>
+            </div>
+            <button onclick="deleteEmail('${escapeHTML(e.email)}')" class="text-red-500"><i data-lucide="trash-2"></i></button>
         `;
         list.appendChild(div);
     });
@@ -167,7 +176,8 @@ function showAddEmailModal() {
     showModal(`
         <div class="p-6">
             <h3 class="text-lg font-semibold mb-4 text-center">Add Email</h3>
-            <input type="email" id="new-email" class="w-full p-3 bg-gray-100 rounded-xl outline-none mb-4" placeholder="email@example.com">
+            <input type="email" id="new-email" class="w-full p-3 bg-gray-100 rounded-xl outline-none mb-2" placeholder="email@example.com">
+            <input type="text" id="new-note" class="w-full p-3 bg-gray-100 rounded-xl outline-none mb-4" placeholder="Note (who is this)">
             <div class="flex border-t">
                 <button onclick="closeModal()" class="flex-1 py-3 text-[#007aff] font-medium border-r">Cancel</button>
                 <button onclick="addEmail()" class="flex-1 py-3 text-[#007aff] font-bold">Add</button>
@@ -178,9 +188,10 @@ function showAddEmailModal() {
 
 async function addEmail() {
     const email = document.getElementById('new-email').value;
+    const note = document.getElementById('new-note').value;
     const res = await fetch('api/emails.php', {
         method: 'POST',
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, note })
     });
     const data = await res.json();
     if (data.success) {
@@ -217,8 +228,8 @@ function renderTemplates() {
         };
         div.innerHTML = `
             <div>
-                <div class="font-semibold">${t.name}</div>
-                <div class="text-xs text-gray-500">${t.subject}</div>
+                <div class="font-semibold">${escapeHTML(t.name)}</div>
+                <div class="text-xs text-gray-500">${escapeHTML(t.subject)}</div>
             </div>
             <button onclick="deleteTemplate(${t.id})" class="text-red-500"><i data-lucide="trash-2"></i></button>
         `;
@@ -269,8 +280,8 @@ function prepareSendTab() {
     select.innerHTML = '<option value="bulk">All in Database</option>';
     emails.forEach(e => {
         const opt = document.createElement('option');
-        opt.value = e;
-        opt.innerText = e;
+        opt.value = e.email;
+        opt.textContent = e.email + (e.note ? ` (${e.note})` : '');
         select.appendChild(opt);
     });
 
@@ -279,7 +290,7 @@ function prepareSendTab() {
     templates.forEach(t => {
         const opt = document.createElement('option');
         opt.value = t.id;
-        opt.innerText = t.name;
+        opt.textContent = t.name;
         tSelect.appendChild(opt);
     });
 
@@ -293,6 +304,12 @@ function prepareSendTab() {
 }
 
 async function sendMail() {
+    const btn = document.getElementById('send-now-btn');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Sending...';
+    btn.style.opacity = '0.5';
+
     const payload = {
         type: document.getElementById('send-to-select').value === 'bulk' ? 'bulk' : 'single',
         to: document.getElementById('send-to-select').value,
@@ -300,12 +317,20 @@ async function sendMail() {
         body: document.getElementById('send-body').value
     };
 
-    const res = await fetch('api/send.php', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-    });
-    const data = await res.json();
-    alert(data.message || 'Sent!');
+    try {
+        const res = await fetch('api/send.php', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        alert(data.message || 'Sent!');
+    } catch (e) {
+        alert('Error sending mail');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+        btn.style.opacity = '1';
+    }
 }
 
 // --- Settings ---

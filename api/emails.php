@@ -21,9 +21,19 @@ switch ($method) {
         break;
     case 'POST':
         $email = $data['email'] ?? '';
+        $note = $data['note'] ?? '';
         if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            if (!in_array($email, $emails)) {
-                $emails[] = $email;
+            // Check if already exists
+            $exists = false;
+            foreach ($emails as $e) {
+                if ($e['email'] === $email) {
+                    $exists = true;
+                    break;
+                }
+            }
+
+            if (!$exists) {
+                $emails[] = ['email' => $email, 'note' => $note];
                 saveData($emails_file, $emails);
                 echo json_encode(['success' => true]);
             } else {
@@ -36,10 +46,11 @@ switch ($method) {
         break;
     case 'DELETE':
         $email = $_GET['email'] ?? '';
-        if (($key = array_search($email, $emails)) !== false) {
-            unset($emails[$key]);
-            $emails = array_values($emails);
-            saveData($emails_file, $emails);
+        $filtered = array_filter($emails, function($e) use ($email) {
+            return $e['email'] !== $email;
+        });
+        if (count($filtered) !== count($emails)) {
+            saveData($emails_file, array_values($filtered));
             echo json_encode(['success' => true]);
         } else {
             http_response_code(404);
