@@ -1,0 +1,15 @@
+{
+  "name": "MailSender iOS",
+  "short_name": "MailSender",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/732/732200.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

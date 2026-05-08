@@ -69,6 +69,15 @@ function initApp() {
     switchTab('emails');
     loadSettings();
 
+    // Handle pre-fill from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefill = urlParams.get('email') || urlParams.get('mailto');
+    if (prefill) {
+        showAddEmailModal(prefill);
+        // Clear URL params without reloading to avoid multiple modals
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     document.getElementById('add-btn').onclick = () => {
         if (currentTab === 'emails') showAddEmailModal();
         if (currentTab === 'templates') showAddTemplateModal();
@@ -172,11 +181,11 @@ async function updateTemplate(id) {
 
 document.getElementById('search-emails').oninput = renderEmails;
 
-function showAddEmailModal() {
+function showAddEmailModal(prefill = '') {
     showModal(`
         <div class="p-6">
             <h3 class="text-lg font-semibold mb-4 text-center">Add Email</h3>
-            <input type="email" id="new-email" class="w-full p-3 bg-gray-100 rounded-xl outline-none mb-2" placeholder="email@example.com">
+            <input type="email" id="new-email" class="w-full p-3 bg-gray-100 rounded-xl outline-none mb-2" placeholder="email@example.com" value="${escapeHTML(prefill)}">
             <input type="text" id="new-note" class="w-full p-3 bg-gray-100 rounded-xl outline-none mb-4" placeholder="Note (who is this)">
             <div class="flex border-t">
                 <button onclick="closeModal()" class="flex-1 py-3 text-[#007aff] font-medium border-r">Cancel</button>
