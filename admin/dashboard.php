@@ -104,7 +104,7 @@ include 'includes/header.php';
                         <form method="post" style="display:inline; margin:0;">
                             <input type="hidden" name="action" value="update_status">
                             <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
-                            <select name="status" onchange="this.form.submit()" onchange="this.form.submit()" style="font-size:0.75rem; padding:4px; width: auto; margin-bottom: 0;">
+                            <select name="status" onchange="this.form.submit()" style="font-size:0.75rem; padding:4px; width: auto; margin-bottom: 0;">
                                 <option value="new" <?php if($b['status']=='new') echo 'selected'; ?>>Новое</option>
                                 <option value="reserved" <?php if($b['status']=='reserved') echo 'selected'; ?>>Зарезервировано</option>
                                 <option value="booked" <?php if($b['status']=='booked') echo 'selected'; ?>>Занято (заехали)</option>
