@@ -407,9 +407,8 @@
         /* Kanban Styles */
         .kanban-board {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 1.25rem;
-            overflow-x: auto;
             padding-bottom: 1.5rem;
             align-items: flex-start;
             scroll-behavior: smooth;
@@ -418,17 +417,19 @@
         .kanban-col {
             background: #eff3f6;
             border-radius: 1.25rem;
-            flex: 0 0 320px;
-            width: 320px;
-            min-width: 320px;
+            flex: 1 1 320px;
+            max-width: 400px;
+            min-width: 300px;
             display: flex;
             flex-direction: column;
             max-height: calc(100vh - 220px);
             border: 1px solid rgba(0,0,0,0.03);
+            margin-bottom: 1rem;
         }
         @media (min-width: 1400px) {
             .kanban-col {
-                flex: 0 0 calc(25% - 1rem);
+                flex: 0 0 calc(25% - 1.25rem);
+                max-width: calc(25% - 1.25rem);
             }
         }
         .kanban-col-header { padding: 1.25rem; font-weight: 800; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }

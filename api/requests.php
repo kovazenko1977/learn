@@ -94,14 +94,30 @@ if ($method == 'POST' && $action == 'create') {
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;
     $requests = $storage->find('requests', ['requester_id' => $user['id']]);
-    if ($from || $to) {
-        $requests = array_filter($requests, function($r) use ($from, $to) {
-            $date = strtotime($r['created_at']);
-            if ($from && $date < strtotime($from)) return false;
-            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
-            return true;
-        });
-    }
+    // Maximally expanded filters
+    $statusFilter = $_GET['status'] ?? null;
+    $priorityFilter = $_GET['priority'] ?? null;
+    $wtFilter = $_GET['work_type_id'] ?? null;
+    $reqFilter = $_GET['requester_id'] ?? null;
+    $execFilter = $_GET['assigned_to'] ?? null;
+    $locFilter = $_GET['location'] ?? null;
+    $qFilter = $_GET['q'] ?? null;
+
+    $requests = array_filter($requests, function($item) use ($from, $to, $statusFilter, $priorityFilter, $wtFilter, $reqFilter, $execFilter, $locFilter, $qFilter) {
+        if ($from && strtotime($item['created_at']) < strtotime($from)) return false;
+        if ($to && strtotime($item['created_at']) > strtotime($to . ' 23:59:59')) return false;
+        if ($statusFilter && $item['status'] !== $statusFilter) return false;
+        if ($priorityFilter && $item['priority'] !== $priorityFilter) return false;
+        if ($wtFilter && $item['work_type_id'] != $wtFilter) return false;
+        if ($reqFilter && $item['requester_id'] != $reqFilter) return false;
+        if ($execFilter && ($item['assigned_to'] ?? '') != $execFilter) return false;
+        if ($locFilter && stripos($item['location'] ?? '', $locFilter) === false) return false;
+        if ($qFilter) {
+            $searchStr = ($item['number'] ?? '') . ' ' . ($item['description'] ?? '') . ' ' . ($item['location'] ?? '');
+            if (stripos($searchStr, $qFilter) === false) return false;
+        }
+        return true;
+    });
     // Filter for unassigned if user has specific permission but not department/all access
     $perms = $user['permissions'] ?? [];
     if (!($perms['can_view_all_tasks'] ?? false) && ($perms['can_view_unassigned'] ?? false)) {
@@ -117,14 +133,30 @@ if ($method == 'POST' && $action == 'create') {
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;
     $requests = $storage->find('requests', ['assigned_to' => $user['id']]);
-    if ($from || $to) {
-        $requests = array_filter($requests, function($r) use ($from, $to) {
-            $date = strtotime($r['created_at']);
-            if ($from && $date < strtotime($from)) return false;
-            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
-            return true;
-        });
-    }
+    // Maximally expanded filters
+    $statusFilter = $_GET['status'] ?? null;
+    $priorityFilter = $_GET['priority'] ?? null;
+    $wtFilter = $_GET['work_type_id'] ?? null;
+    $reqFilter = $_GET['requester_id'] ?? null;
+    $execFilter = $_GET['assigned_to'] ?? null;
+    $locFilter = $_GET['location'] ?? null;
+    $qFilter = $_GET['q'] ?? null;
+
+    $requests = array_filter($requests, function($item) use ($from, $to, $statusFilter, $priorityFilter, $wtFilter, $reqFilter, $execFilter, $locFilter, $qFilter) {
+        if ($from && strtotime($item['created_at']) < strtotime($from)) return false;
+        if ($to && strtotime($item['created_at']) > strtotime($to . ' 23:59:59')) return false;
+        if ($statusFilter && $item['status'] !== $statusFilter) return false;
+        if ($priorityFilter && $item['priority'] !== $priorityFilter) return false;
+        if ($wtFilter && $item['work_type_id'] != $wtFilter) return false;
+        if ($reqFilter && $item['requester_id'] != $reqFilter) return false;
+        if ($execFilter && ($item['assigned_to'] ?? '') != $execFilter) return false;
+        if ($locFilter && stripos($item['location'] ?? '', $locFilter) === false) return false;
+        if ($qFilter) {
+            $searchStr = ($item['number'] ?? '') . ' ' . ($item['description'] ?? '') . ' ' . ($item['location'] ?? '');
+            if (stripos($searchStr, $qFilter) === false) return false;
+        }
+        return true;
+    });
     echo json_encode(array_values($requests));
 } elseif ($action == 'department') {
     $from = $_GET['from'] ?? null;
@@ -145,14 +177,30 @@ if ($method == 'POST' && $action == 'create') {
             $requests = $storage->find('requests', ['department_id' => $userData['department_id']]);
         }
     }
-    if ($from || $to) {
-        $requests = array_filter($requests, function($r) use ($from, $to) {
-            $date = strtotime($r['created_at']);
-            if ($from && $date < strtotime($from)) return false;
-            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
-            return true;
-        });
-    }
+    // Maximally expanded filters
+    $statusFilter = $_GET['status'] ?? null;
+    $priorityFilter = $_GET['priority'] ?? null;
+    $wtFilter = $_GET['work_type_id'] ?? null;
+    $reqFilter = $_GET['requester_id'] ?? null;
+    $execFilter = $_GET['assigned_to'] ?? null;
+    $locFilter = $_GET['location'] ?? null;
+    $qFilter = $_GET['q'] ?? null;
+
+    $requests = array_filter($requests, function($item) use ($from, $to, $statusFilter, $priorityFilter, $wtFilter, $reqFilter, $execFilter, $locFilter, $qFilter) {
+        if ($from && strtotime($item['created_at']) < strtotime($from)) return false;
+        if ($to && strtotime($item['created_at']) > strtotime($to . ' 23:59:59')) return false;
+        if ($statusFilter && $item['status'] !== $statusFilter) return false;
+        if ($priorityFilter && $item['priority'] !== $priorityFilter) return false;
+        if ($wtFilter && $item['work_type_id'] != $wtFilter) return false;
+        if ($reqFilter && $item['requester_id'] != $reqFilter) return false;
+        if ($execFilter && ($item['assigned_to'] ?? '') != $execFilter) return false;
+        if ($locFilter && stripos($item['location'] ?? '', $locFilter) === false) return false;
+        if ($qFilter) {
+            $searchStr = ($item['number'] ?? '') . ' ' . ($item['description'] ?? '') . ' ' . ($item['location'] ?? '');
+            if (stripos($searchStr, $qFilter) === false) return false;
+        }
+        return true;
+    });
     echo json_encode(array_values($requests));
 } elseif ($action == 'all') {
     $perms = $user['permissions'] ?? [];
@@ -163,14 +211,30 @@ if ($method == 'POST' && $action == 'create') {
     $from = $_GET['from'] ?? null;
     $to = $_GET['to'] ?? null;
     $requests = $storage->readCollection('requests');
-    if ($from || $to) {
-        $requests = array_filter($requests, function($r) use ($from, $to) {
-            $date = strtotime($r['created_at']);
-            if ($from && $date < strtotime($from)) return false;
-            if ($to && $date > strtotime($to . ' 23:59:59')) return false;
-            return true;
-        });
-    }
+    // Maximally expanded filters
+    $statusFilter = $_GET['status'] ?? null;
+    $priorityFilter = $_GET['priority'] ?? null;
+    $wtFilter = $_GET['work_type_id'] ?? null;
+    $reqFilter = $_GET['requester_id'] ?? null;
+    $execFilter = $_GET['assigned_to'] ?? null;
+    $locFilter = $_GET['location'] ?? null;
+    $qFilter = $_GET['q'] ?? null;
+
+    $requests = array_filter($requests, function($item) use ($from, $to, $statusFilter, $priorityFilter, $wtFilter, $reqFilter, $execFilter, $locFilter, $qFilter) {
+        if ($from && strtotime($item['created_at']) < strtotime($from)) return false;
+        if ($to && strtotime($item['created_at']) > strtotime($to . ' 23:59:59')) return false;
+        if ($statusFilter && $item['status'] !== $statusFilter) return false;
+        if ($priorityFilter && $item['priority'] !== $priorityFilter) return false;
+        if ($wtFilter && $item['work_type_id'] != $wtFilter) return false;
+        if ($reqFilter && $item['requester_id'] != $reqFilter) return false;
+        if ($execFilter && ($item['assigned_to'] ?? '') != $execFilter) return false;
+        if ($locFilter && stripos($item['location'] ?? '', $locFilter) === false) return false;
+        if ($qFilter) {
+            $searchStr = ($item['number'] ?? '') . ' ' . ($item['description'] ?? '') . ' ' . ($item['location'] ?? '');
+            if (stripos($searchStr, $qFilter) === false) return false;
+        }
+        return true;
+    });
     echo json_encode(array_values($requests));
 } elseif ($action == 'details') {
     $id = $_GET['id'] ?? 0;
