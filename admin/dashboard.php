@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $id = (int)$_POST['id'];
         $status = $_POST['status'];
         $bookingManager->updateBookingStatus($id, $status);
+    } elseif ($_POST['action'] === 'delete_booking') {
+        $bookingManager->deleteBooking((int)$_POST['id']);
     } elseif ($_POST['action'] === 'update_notes') {
         $id = (int)$_POST['id'];
         $notes = $_POST['admin_notes'];
@@ -66,7 +68,7 @@ include 'includes/header.php';
             <?php foreach (array_reverse($bookings) as $b):
                 if (!is_array($b)) continue; ?>
             <tr>
-                <td><?php echo $b['id'] ?? ''; ?></td>
+                <td><a href="edit_booking.php?id=<?php echo $b['id']; ?>" style="text-decoration:none; font-weight:bold; color:var(--primary-color);">#<?php echo $b['id']; ?></a></td>
                 <td><strong><?php echo htmlspecialchars($b['client_name'] ?? 'N/A'); ?></strong></td>
                 <td><?php echo htmlspecialchars($b['check_in'] ?? ''); ?> — <?php echo htmlspecialchars($b['check_out'] ?? ''); ?></td>
                 <td><?php echo htmlspecialchars($roomMap[$b['room_id'] ?? 0] ?? 'Room '.($b['room_id'] ?? '')); ?></td>
@@ -101,6 +103,7 @@ include 'includes/header.php';
                             </form>
                         <?php endif; ?>
 
+                        <div style="display:flex; gap:5px; align-items:center;">
                         <form method="post" style="display:inline; margin:0;">
                             <input type="hidden" name="action" value="update_status">
                             <input type="hidden" name="id" value="<?php echo $b['id'] ?? ''; ?>">
@@ -112,6 +115,12 @@ include 'includes/header.php';
                                 <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отменено</option>
                             </select>
                         </form>
+                        <form method="post" onsubmit="return confirm('Удалить бронирование БЕЗВОЗВРАТНО?')">
+                            <input type="hidden" name="action" value="delete_booking">
+                            <input type="hidden" name="id" value="<?php echo $b['id']; ?>">
+                            <button type="submit" class="btn btn-danger btn-sm" style="padding:2px 8px; font-size:0.7rem;">Удалить</button>
+                        </form>
+                    </div>
                     </div>
                 </td>
             </tr>

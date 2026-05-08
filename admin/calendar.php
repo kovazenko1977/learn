@@ -8,7 +8,8 @@ $store = new JsonStore(__DIR__ . '/../data');
 $bookingManager = new BookingManager($store);
 $calendarManager = new CalendarManager($store);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'quick_booking') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'quick_booking') {
     $duration = (int)($_POST['duration'] ?? 1);
     $bookingData = [
         'room_id' => (int)$_POST['room_id'],
@@ -26,24 +27,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $bookingData['service_ids'] = !empty($_POST['service_ids']) ? array_map('intval', $_POST['service_ids']) : [];
 
     $bookingId = $bookingManager->createBooking($bookingData);
-    if ($bookingId) {
-        header('Location: calendar.php?success=1');
-    } else {
-        header('Location: calendar.php?error=overlap');
+        if ($bookingId) {
+            header('Location: calendar.php?success=1');
+        } else {
+            header('Location: calendar.php?error=overlap');
+        }
+        exit;
+    } elseif ($_POST['action'] === 'update_booking') {
+        $bookingId = (int)$_POST['booking_id'];
+        $data = [
+            'room_id' => (int)$_POST['room_id'],
+            'check_in' => $_POST['check_in'],
+            'check_out' => $_POST['check_out'],
+            'status' => $_POST['status']
+        ];
+        if ($bookingManager->updateBooking($bookingId, $data)) {
+            header('Location: calendar.php?success=updated');
+        } else {
+            header('Location: calendar.php?error=overlap');
+        }
+        exit;
+    } elseif ($_POST['action'] === 'delete_booking') {
+        $bookingManager->deleteBooking((int)$_POST['booking_id']);
+        header('Location: calendar.php?success=deleted');
+        exit;
+    } elseif ($_POST['action'] === 'update_notes') {
+        $bookingId = (int)$_POST['booking_id'];
+        $notes = $_POST['admin_notes'] ?? '';
+        if ($bookingManager->updateBookingNotes($bookingId, $notes)) {
+            header("Location: calendar.php?success=notes_updated");
+        } else {
+            header("Location: calendar.php?error=save_failed");
+        }
+        exit;
     }
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_notes') {
-    $bookingId = (int)$_POST['booking_id'];
-    $notes = $_POST['admin_notes'] ?? '';
-
-    if ($bookingManager->updateBookingNotes($bookingId, $notes)) {
-        header("Location: calendar.php?success=notes_updated");
-    } else {
-        header("Location: calendar.php?error=save_failed");
-    }
-    exit;
 }
 
 $rooms = $store->findAll('rooms');
@@ -172,9 +189,14 @@ include 'includes/header.php';
     <div class="mica-card" style="width: 450px; margin-bottom: 0;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3>ℹ️ Детали бронирования</h3>
-            <button type="button" onclick="closeDetails()" style="background:none; border:none; cursor:pointer; font-size:1.5rem; line-height:1;">&times;</button>
+            <div style="display:flex; gap:10px;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="openEditMode()">Перенести/Изм.</button>
+                <button type="button" onclick="closeDetails()" style="background:none; border:none; cursor:pointer; font-size:1.5rem; line-height:1;">&times;</button>
+            </div>
         </div>
-        <div id="details-content" style="font-size: 0.95rem;">
+
+        <!-- View Mode -->
+        <div id="details-view-mode" style="font-size: 0.95rem;">
             <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #eee;">
                 <p style="margin:5px 0;"><span style="color:#666;">Гость:</span> <strong id="d-guest"></strong></p>
                 <p style="margin:5px 0;"><span style="color:#666;">Телефон:</span> <strong id="d-phone"></strong></p>
@@ -202,6 +224,53 @@ include 'includes/header.php';
                 </form>
             </div>
         </div>
+
+        <!-- Edit Mode (Initially Hidden) -->
+        <div id="details-edit-mode" style="display:none; font-size: 0.95rem;">
+            <form method="post">
+                <input type="hidden" name="action" value="update_booking">
+                <input type="hidden" name="booking_id" id="edit-booking-id">
+
+                <label>Номер</label>
+                <select name="room_id" id="edit-room-id" style="width:100%; margin-bottom:10px;">
+                    <?php foreach($rooms as $r): ?>
+                        <option value="<?php echo $r['id']; ?>"><?php echo htmlspecialchars($r['room_number']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+
+                <div class="grid-2">
+                    <div>
+                        <label>Заезд</label>
+                        <input type="date" name="check_in" id="edit-check-in" style="width:100%;">
+                    </div>
+                    <div>
+                        <label>Выезд</label>
+                        <input type="date" name="check_out" id="edit-check-out" style="width:100%;">
+                    </div>
+                </div>
+
+                <label>Статус</label>
+                <select name="status" id="edit-status" style="width:100%; margin-bottom:15px;">
+                    <option value="reserved">Зарезервировано</option>
+                    <option value="booked">Занято (заехали)</option>
+                    <option value="confirmed">Подтверждено</option>
+                    <option value="cancelled">Отменено</option>
+                </select>
+
+                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditMode()">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </form>
+
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <form method="post" onsubmit="return confirm('Удалить бронирование БЕЗВОЗВРАТНО?')">
+                <input type="hidden" name="action" value="delete_booking">
+                <input type="hidden" name="booking_id" id="delete-booking-id">
+                <button type="submit" class="btn btn-danger" style="width:100%;">❌ Полностью удалить бронь</button>
+            </form>
+        </div>
+
         <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
             <button type="button" class="btn" onclick="closeDetails()">Закрыть</button>
         </div>
@@ -301,11 +370,31 @@ include 'includes/header.php';
         'cancelled': 'Отменено'
     };
 
+    function openEditMode() {
+        document.getElementById('details-view-mode').style.display = 'none';
+        document.getElementById('details-edit-mode').style.display = 'block';
+    }
+
+    function closeEditMode() {
+        document.getElementById('details-view-mode').style.display = 'block';
+        document.getElementById('details-edit-mode').style.display = 'none';
+    }
+
     function viewBookingDetails(id, roomNum) {
         const b = bookingData[id];
         if (!b) return;
 
+        closeEditMode();
+
         document.getElementById('d-booking-id').value = id;
+        document.getElementById('edit-booking-id').value = id;
+        document.getElementById('delete-booking-id').value = id;
+
+        document.getElementById('edit-room-id').value = b.room_id;
+        document.getElementById('edit-check-in').value = b.check_in.split(' ')[0];
+        document.getElementById('edit-check-out').value = b.check_out.split(' ')[0];
+        document.getElementById('edit-status').value = b.status;
+
         document.getElementById('d-guest').textContent = b.client_name || 'N/A';
         document.getElementById('d-phone').textContent = b.phone || 'N/A';
         document.getElementById('d-room').textContent = roomNum;

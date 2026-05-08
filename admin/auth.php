@@ -50,6 +50,7 @@ $permissionMap = [
     'import_csv.php' => 'manage_settings',
     'constructor.php' => 'manage_settings',
     'system_health.php' => 'manage_settings',
+    'edit_booking.php' => 'manage_bookings',
 ];
 
 $currentFile = basename($_SERVER['PHP_SELF']);

@@ -124,6 +124,28 @@ class BookingManager {
         return $bookingId;
     }
 
+    public function updateBooking($id, $data) {
+        $existing = $this->store->findOne('bookings', $id);
+        if (!$existing) return false;
+
+        $roomId = $data['room_id'] ?? $existing['room_id'];
+        $checkIn = $data['check_in'] ?? $existing['check_in'];
+        $checkOut = $data['check_out'] ?? $existing['check_out'];
+
+        if (!$this->isAvailable($roomId, $checkIn, $checkOut, $id)) {
+            return false;
+        }
+
+        $merged = array_merge($existing, $data);
+        $merged['total_price'] = $this->calculatePrice($merged);
+
+        return $this->store->save('bookings', $merged);
+    }
+
+    public function deleteBooking($id) {
+        return $this->store->delete('bookings', $id);
+    }
+
     public function updateBookingStatus($bookingId, $status) {
         $booking = $this->store->findOne('bookings', $bookingId);
         if ($booking && is_array($booking)) {

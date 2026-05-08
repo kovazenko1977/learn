@@ -1,164 +1,177 @@
 <?php require_once "auth.php";
-$pageTitle = 'Полное руководство пользователя';
+$pageTitle = 'Пошаговое руководство';
 include 'includes/header.php';
 ?>
 
-<div class="mica-card help-content">
-    <header style="margin-bottom: 30px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 20px;">
-        <h1 style="margin-bottom: 10px;">🚀 Sanatorium Booking System v8.0</h1>
-        <p style="font-size: 1.1rem; color: #555;">Профессиональная система управления санаторием: от бронирования до аналитики.</p>
-        <div style="background: rgba(52, 152, 219, 0.1); padding: 10px 15px; border-radius: 8px; display: inline-block; font-weight: 600; color: #2980b9;">
-            Разработчик: wes.by Коваженко С.Б.
-        </div>
-    </header>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-
-        <section class="help-section">
-            <h3>🏠 Рабочий стол (Дашборд)</h3>
-            <p>Центральный узел управления, отображающий ключевые показатели:</p>
-            <ul>
-                <li><strong>Финансовые показатели:</strong> Суммарный доход и прогноз на текущий месяц.</li>
-                <li><strong>Загрузка номеров:</strong> Процент занятых номеров в реальном времени.</li>
-                <li><strong>Популярность услуг:</strong> Рейтинг самых востребованных процедур и пакетов.</li>
-                <li><strong>Быстрые действия:</strong> Переход к созданию бронирования в один клик.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>📅 Календарь занятости</h3>
-            <p>Визуальная интерактивная сетка для контроля номерного фонда:</p>
-            <ul>
-                <li><strong>Цветовая индикация:</strong>
-                    <span style="display:inline-block; width:12px; height:12px; background:#fff3cd; border:1px solid #ffeeba; border-radius:3px;"></span> Желтый (Резерв),
-                    <span style="display:inline-block; width:12px; height:12px; background:#fde2e1; border:1px solid #f8d7da; border-radius:3px;"></span> Красный (Заселен).
-                </li>
-                <li><strong>Быстрое бронирование:</strong> Клик по пустой ячейке открывает форму предзаполненного бронирования на выбранную дату и номер.</li>
-                <li><strong>Просмотр деталей:</strong> Клик по занятой ячейке вызывает окно с данными гостя, списком услуг и возможностью редактирования заметок администратора.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>🛎️ Оперативная работа (Сегодня)</h3>
-            <p>Ежедневный список задач для администратора службы приема и размещения:</p>
-            <ul>
-                <li><strong>Заезды:</strong> Список гостей, прибывающих сегодня. Кнопка «Заселить» переводит бронь в статус «Проживает».</li>
-                <li><strong>Выезды:</strong> Список гостей, покидающих санаторий. Позволяет быстро завершить бронирование.</li>
-                <li><strong>Проживающие:</strong> Полный список текущих гостей с указанием номеров и контактных данных.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>📝 Планирование и Задачи</h3>
-            <p>Внутренняя система управления поручениями для персонала:</p>
-            <ul>
-                <li><strong>Создание задач:</strong> Уборка номеров, техническое обслуживание, подготовка процедурных кабинетов.</li>
-                <li><strong>Приоритеты:</strong> Разделение задач на «Низкий», «Средний» и «Высокий» уровни важности.</li>
-                <li><strong>Статусы:</strong> Контроль выполнения текущих дел в рамках рабочего дня.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>👥 Управление гостями (Директория)</h3>
-            <p>База данных всех посетителей с историей взаимодействий:</p>
-            <ul>
-                <li><strong>Профили:</strong> Хранение ФИО, телефона, гражданства и адреса проживания.</li>
-                <li><strong>История посещений:</strong> Автоматическое связывание всех прошлых бронирований с профилем гостя по номеру телефона.</li>
-                <li><strong>Статус лояльности:</strong> Отслеживание частоты посещений и предпочтений гостя.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>📊 Аналитика и Отчетность</h3>
-            <p>Глубокий анализ эффективности работы учреждения:</p>
-            <ul>
-                <li><strong>Экспорт данных:</strong> Выгрузка всех бронирований в формат CSV для последующего анализа в Excel.</li>
-                <li><strong>Динамика доходов:</strong> Графики поступлений денежных средств по периодам.</li>
-                <li><strong>Эффективность услуг:</strong> Анализ рентабельности отдельных процедур и сервисов.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>⚙️ Ресурсы и Справочники</h3>
-            <p>Настройка базовых элементов системы:</p>
-            <ul>
-                <li><strong>Номерной фонд:</strong> Добавление номеров с указанием их класса, цены и вместимости.</li>
-                <li><strong>Медицина:</strong> Редактирование списка лечебных процедур и их стоимости.</li>
-                <li><strong>Путёвки:</strong> Создание комплексных предложений (пакетов), включающих проживание и набор процедур.</li>
-                <li><strong>Доп. услуги:</strong> Управление сервисами (парковка, трансфер, аренда оборудования).</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>👥 Пользователи и Доступ</h3>
-            <p>Система разграничения прав для сотрудников санатория:</p>
-            <ul>
-                <li><strong>Роли:</strong> Администратор (полный доступ) и Пользователь (ограниченный доступ).</li>
-                <li><strong>Гранулярные права:</strong> Для каждого пользователя можно выбрать конкретные разделы, которые он может видеть или редактировать.</li>
-                <li><strong>API Токены:</strong> Каждому пользователю автоматически присваивается уникальный ключ для доступа через мобильное приложение.</li>
-            </ul>
-        </section>
-
-        <section class="help-section">
-            <h3>🌐 Интеграция и API</h3>
-            <p>Технические возможности расширения системы:</p>
-            <ul>
-                <li><strong>REST API:</strong> Современный программный интерфейс для связи с внешними сервисами и приложениями.</li>
-                <li><strong>Текстовые блоки:</strong> Управление контентом на публичных страницах бронирования.</li>
-                <li><strong>Импорт :</strong> Интеллектуальный парсинг данных с вашего существующего сайта.</li>
-                <li><strong>Мобильное приложение:</strong> Система полностью готова к работе с мобильными клиентами через защищенные API-токены.</li>
-            </ul>
-        </section>
+<div class="mica-card help-content" style="max-width: 1100px; margin: 0 auto; padding: 40px;">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <h1 style="font-size: 2.8rem; margin-bottom: 10px; background: linear-gradient(90deg, var(--primary-color), #00b7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🚀 Руководство Sanatorium Pro</h1>
+        <p style="font-size: 1.2rem; color: #64748b;">Полный цикл управления: от первой настройки до глубокой аналитики</p>
     </div>
 
-    <section class="help-section" style="margin-top: 40px; padding: 25px; border-radius: 12px; background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(155, 89, 182, 0.1)); border: 1px solid rgba(52, 152, 219, 0.2);">
-        <h3>🛠️ Инструкция по внедрению</h3>
-        <p>Для отображения формы онлайн-бронирования на вашем основном сайте, вставьте следующий фрагмент кода в нужное место страницы:</p>
-        <pre style="background: #1e1e1e; color: #dcdcdc; padding: 20px; border-radius: 8px; font-family: 'Consolas', monospace; overflow-x: auto; font-size: 0.9rem; line-height: 1.5;">
-&lt;!-- Подключение скрипта загрузчика --&gt;
-&lt;script src="https://your-server.com/sanatorium-booking/embed/booking-loader.js"
-        data-api-url="https://your-server.com/sanatorium-booking/api/v1.php"&gt;&lt;/script&gt;
+    <div class="step-container">
+        <!-- Введение -->
+        <div class="step-item">
+            <div class="step-number">01</div>
+            <div class="step-body">
+                <h3>Вход и первый запуск</h3>
+                <p>Ваша система по умолчанию настроена на "Открытый доступ". Это значит, что при первом запуске пароль не требуется.</p>
+                <div class="tip-box">
+                    <strong>Совет:</strong> Если вы планируете работать через интернет, первым делом зайдите в <strong>"Настройки"</strong> и включите <strong>"Защиту паролем"</strong>. Данные администратора по умолчанию: <code>admin / admin123</code>.
+                </div>
+            </div>
+        </div>
 
-&lt;!-- Контейнер для формы --&gt;
-&lt;div id="sanatorium-booking-root"&gt;&lt;/div&gt;</pre>
-        <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">* Не забудьте заменить <code>your-server.com</code> на реальный адрес вашей установки.</p>
-    </section>
+        <!-- Настройка -->
+        <div class="step-item">
+            <div class="step-number">02</div>
+            <div class="step-body">
+                <h3>Настройка ресурсов</h3>
+                <p>Перейдите в блок меню <strong>"Ресурсы"</strong>. Здесь вы строите фундамент вашей системы:</p>
+                <ul>
+                    <li><strong>Классы номеров:</strong> Определите типы (Эконом, Стандарт, Сауна, VIP).</li>
+                    <li><strong>Номера:</strong> Добавьте конкретные комнаты.
+                        <ul>
+                            <li>Для жилых номеров указывайте цену за сутки.</li>
+                            <li>Для саун обязательно укажите <strong>"Цену за час"</strong>.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Процедуры и услуги:</strong> Наполните прайс-лист услугами (Массаж, Трансфер, Завтрак).</li>
+                </ul>
+            </div>
+        </div>
 
-    <footer style="margin-top: 50px; text-align: center; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 30px;">
-        <p style="color: #999; font-size: 0.9rem;">
-            © 2024 Sanatorium Booking System. Все права защищены.<br>
-            Техническая поддержка и разработка: <a href="https://wes.by" target="_blank" style="color: #3498db; text-decoration: none;">wes.by</a>
-        </p>
-    </footer>
+        <!-- Бронирование -->
+        <div class="step-item">
+            <div class="step-number">03</div>
+            <div class="step-body">
+                <h3>Работа с бронированиями</h3>
+                <p>Система предлагает 3 способа управления бронью:</p>
+                <ul>
+                    <li><strong>Шахматка (Календарь):</strong> Наглядная сетка для номеров. Клик на пустую дату — быстрая бронь. Клик на занятую — детали и редактирование.</li>
+                    <li><strong>График Сауны:</strong> Детальное почасовое расписание. Здесь можно "двигать" записи по часам и видеть окна в расписании.</li>
+                    <li><strong>Список бронирований:</strong> Таблица с поиском и фильтрами. Нажмите на <strong>ID (# номер)</strong> любой брони, чтобы открыть её полное редактирование.</li>
+                </ul>
+                <div class="tip-box" style="background: rgba(216, 59, 1, 0.05); border-left-color: #d83b01; color: #d83b01;">
+                    <strong>Важно:</strong> Вы можете полностью <strong>перенести</strong> бронь (сменить номер или даты). Система сама проверит, не занято ли новое время.
+                </div>
+            </div>
+        </div>
+
+        <!-- Конструктор -->
+        <div class="step-item">
+            <div class="step-number">04</div>
+            <div class="step-body">
+                <h3>Конструктор и сайт</h3>
+                <p>Чтобы ваши клиенты могли бронировать сами:</p>
+                <ol>
+                    <li>Зайдите в <strong>"Конструктор форм"</strong>.</li>
+                    <li>Настройте, какие поля (имя, телефон и т.д.) будут обязательными.</li>
+                    <li>Внизу страницы найдите <strong>"Шорт-код"</strong>.</li>
+                    <li>Скопируйте его и вставьте на ваш основной сайт.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Мобильная версия -->
+        <div class="step-item">
+            <div class="step-number">05</div>
+            <div class="step-body">
+                <h3>Мобильный интерфейс</h3>
+                <p>Ваши администраторы и персонал могут работать с телефонов. Мобильная версия оптимизирована для быстрой отметки заезда/выезда и выполнения задач.</p>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <a href="mobile/index.php" class="btn btn-outline btn-sm">Открыть мобильную версию</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Обслуживание -->
+        <div class="step-item">
+            <div class="step-number">06</div>
+            <div class="step-body">
+                <h3>Данные и Безопасность</h3>
+                <p>В разделе <strong>"Настройки"</strong> доступны инструменты обслуживания:</p>
+                <ul>
+                    <li><strong>Импорт:</strong> Если у вас есть список номеров в Excel, сохраните его как CSV и загрузите одним файлом.</li>
+                    <li><strong>Бэкап:</strong> Нажимайте "Скачать копию" раз в неделю. Это ваша страховка.</li>
+                    <li><strong>Здоровье:</strong> Проверяйте права доступа к файлам, чтобы система работала без ошибок.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 60px; padding: 40px; border-radius: 24px; background: #f8fafc; border: 1px solid #e2e8f0; text-align: center;">
+        <h2 style="margin-bottom: 20px;">Нужна помощь?</h2>
+        <p style="color: #64748b; max-width: 600px; margin: 0 auto 30px;">Система построена на принципах максимальной простоты. Все данные хранятся в папке <code>/data</code>. Для переноса программы на другой сервер достаточно просто скопировать все файлы.</p>
+        <div style="font-weight: 700; color: var(--primary-color);">Разработка и поддержка: wes.by</div>
+    </div>
 </div>
 
 <style>
-.help-content h3 {
-    color: #2c3e50;
-    margin-top: 0;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.help-section {
-    background: rgba(255, 255, 255, 0.5);
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-.help-section ul {
-    margin: 0;
-    padding-left: 20px;
-}
-.help-section li {
-    margin-bottom: 8px;
-    color: #444;
-}
-.help-content p {
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
+    .step-container {
+        position: relative;
+        padding-left: 40px;
+    }
+    .step-container::before {
+        content: '';
+        position: absolute;
+        left: 14px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, var(--primary-color) 0%, #e2e8f0 100%);
+    }
+    .step-item {
+        position: relative;
+        margin-bottom: 50px;
+    }
+    .step-number {
+        position: absolute;
+        left: -54px;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 800;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 10px rgba(0,120,212,0.2);
+        z-index: 2;
+    }
+    .step-body h3 {
+        margin-top: 0;
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+        color: #1e293b;
+    }
+    .step-body p {
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    .step-body ul, .step-body ol {
+        margin-bottom: 15px;
+        color: #475569;
+    }
+    .step-body li {
+        margin-bottom: 8px;
+    }
+    .tip-box {
+        background: rgba(0, 120, 212, 0.05);
+        border-left: 4px solid var(--primary-color);
+        padding: 15px;
+        border-radius: 0 8px 8px 0;
+        font-size: 0.95rem;
+        color: #005a9e;
+    }
+    .help-content li strong {
+        color: #1e293b;
+    }
 </style>
 
 <?php include 'includes/footer.php'; ?>
