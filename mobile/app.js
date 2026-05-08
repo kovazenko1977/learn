@@ -746,3 +746,13 @@ function renderKanban(requests, containerId) {
         });
     });
 }
+
+window.switchMobileDeptView = (mode) => {
+    const filters = {
+        q: document.getElementById('dept-q')?.value || '',
+        status: document.getElementById('dept-status')?.value || '',
+        priority: document.getElementById('dept-priority')?.value || '',
+        work_type_id: document.getElementById('dept-wt')?.value || ''
+    };
+    renderDepartment(mode, filters);
+};

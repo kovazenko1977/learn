@@ -346,9 +346,9 @@ async function renderTasks(fParam = '', tParam = '') {
         <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
             <div class="d-flex align-items-center gap-2 mb-3">
                 <i class="bi bi-calendar3 text-primary"></i>
-                <input type="date" id="tasks-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                <input type="date" id="tasks-from" class="form-control form-control-sm border-0 bg-light" onchange="window.triggerTasksFilter()" value="${from}">
                 <span class="text-muted small">до</span>
-                <input type="date" id="tasks-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+                <input type="date" id="tasks-to" class="form-control form-control-sm border-0 bg-light" onchange="window.triggerTasksFilter()" value="${to}">
             </div>
             ${getAdvancedFilterHTML('tasks', filters)}
             <div class="d-flex gap-2">
@@ -376,9 +376,9 @@ async function renderTasks(fParam = '', tParam = '') {
                 <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                     <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                         <i class="bi bi-calendar3 text-muted ms-1"></i>
-                        <input type="date" id="tasks-from" class="form-control form-control-sm border-0" value="${from}">
+                        <input type="date" id="tasks-from" class="form-control form-control-sm border-0" onchange="window.triggerTasksFilter()" value="${from}">
                         <span class="text-muted small">до</span>
-                        <input type="date" id="tasks-to" class="form-control form-control-sm border-0" value="${to}">
+                        <input type="date" id="tasks-to" class="form-control form-control-sm border-0" onchange="window.triggerTasksFilter()" value="${to}">
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
                         <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('tasks-from', 'tasks-to', filterTasks)">Сегодня</button>
@@ -468,9 +468,9 @@ async function renderDashboard(fParam = '', tParam = '') {
                 <div class="bg-white p-3 rounded-4 shadow-sm mb-3">
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <i class="bi bi-calendar3 text-primary"></i>
-                        <input type="date" id="dash-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                        <input type="date" id="dash-from" class="form-control form-control-sm border-0 bg-light" onchange="window.triggerDashFilter()" value="${from}">
                         <span class="text-muted small">до</span>
-                        <input type="date" id="dash-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+                        <input type="date" id="dash-to" class="form-control form-control-sm border-0 bg-light" onchange="window.triggerDashFilter()" value="${to}">
                     </div>
                     ${getAdvancedFilterHTML('dash', filters)}
                     <div class="d-flex gap-2">
@@ -492,9 +492,9 @@ async function renderDashboard(fParam = '', tParam = '') {
                 <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                     <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                         <i class="bi bi-calendar3 text-muted ms-1"></i>
-                        <input type="date" id="dash-from" class="form-control form-control-sm border-0" value="${from}">
+                        <input type="date" id="dash-from" class="form-control form-control-sm border-0" onchange="window.triggerDashFilter()" value="${from}">
                         <span class="text-muted small">до</span>
-                        <input type="date" id="dash-to" class="form-control form-control-sm border-0" value="${to}">
+                        <input type="date" id="dash-to" class="form-control form-control-sm border-0" onchange="window.triggerDashFilter()" value="${to}">
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
                         <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dash-from', 'dash-to', filterDashboard)">Сегодня</button>
@@ -631,10 +631,22 @@ async function renderDepartment(fParam = '', tParam = '', viewMode = 'table') {
     const isMobile = window.innerWidth < 768;
     const viewSwitcher = `
         <div class="btn-group btn-group-sm mb-3 mb-md-0 shadow-sm rounded-pill overflow-hidden">
-            <button class="btn ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'table')"><i class="bi bi-table"></i></button>
-            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderDepartment(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'kanban')"><i class="bi bi-kanban"></i></button>
+            <button class="btn ${viewMode === 'table' ? 'btn-primary' : 'btn-light'}" onclick="window.switchDeptView('table')"><i class="bi bi-table"></i></button>
+            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="window.switchDeptView('kanban')"><i class="bi bi-kanban"></i></button>
         </div>
     `;
+    window.switchDeptView = (mode) => {
+        const f = {
+            from: document.getElementById('dept-from')?.value || '',
+            to: document.getElementById('dept-to')?.value || '',
+            q: document.getElementById('dept-q')?.value || '',
+            status: document.getElementById('dept-status')?.value || '',
+            priority: document.getElementById('dept-priority')?.value || '',
+            work_type_id: document.getElementById('dept-wt')?.value || '',
+            location: document.getElementById('dept-loc')?.value || ''
+        };
+        renderDepartment(f, '', mode);
+    };
 
     if (isMobile) {
         el.appContent.innerHTML = `
@@ -646,9 +658,9 @@ async function renderDepartment(fParam = '', tParam = '', viewMode = 'table') {
                     </div>
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <i class="bi bi-calendar3 text-primary"></i>
-                        <input type="date" id="dept-from" class="form-control form-control-sm border-0 bg-light" value="${from}">
+                        <input type="date" id="dept-from" class="form-control form-control-sm border-0 bg-light" onchange="window.triggerDeptFilter()" value="${from}">
                         <span class="text-muted small">до</span>
-                        <input type="date" id="dept-to" class="form-control form-control-sm border-0 bg-light" value="${to}">
+                        <input type="date" id="dept-to" class="form-control form-control-sm border-0 bg-light" onchange="window.triggerDeptFilter()" value="${to}">
                     </div>
                     ${getAdvancedFilterHTML('dept', filters)}
                     <div class="d-flex gap-2">
@@ -677,9 +689,9 @@ async function renderDepartment(fParam = '', tParam = '', viewMode = 'table') {
                 <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                     <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                         <i class="bi bi-calendar3 text-muted ms-1"></i>
-                        <input type="date" id="dept-from" class="form-control form-control-sm border-0" value="${from}">
+                        <input type="date" id="dept-from" class="form-control form-control-sm border-0" onchange="window.triggerDeptFilter()" value="${from}">
                         <span class="text-muted small">до</span>
-                        <input type="date" id="dept-to" class="form-control form-control-sm border-0" value="${to}">
+                        <input type="date" id="dept-to" class="form-control form-control-sm border-0" onchange="window.triggerDeptFilter()" value="${to}">
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
                         <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('dept-from', 'dept-to', filterDept)">Сегодня</button>
@@ -2207,10 +2219,22 @@ async function renderReports(fParam = '', tParam = '', viewMode = 'stats') {
     const isMobile = window.innerWidth < 768;
     const viewSwitcher = `
         <div class="btn-group btn-group-sm shadow-sm rounded-pill overflow-hidden me-2">
-            <button class="btn ${viewMode === 'stats' ? 'btn-primary' : 'btn-light'}" onclick="renderReports(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'stats')"><i class="bi bi-bar-chart"></i></button>
-            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="renderReports(${JSON.stringify(filters).replace(/"/g, '&quot;')}, '', 'kanban')"><i class="bi bi-kanban"></i></button>
+            <button class="btn ${viewMode === 'stats' ? 'btn-primary' : 'btn-light'}" onclick="window.switchRepView('stats')"><i class="bi bi-bar-chart"></i></button>
+            <button class="btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-light'}" onclick="window.switchRepView('kanban')"><i class="bi bi-kanban"></i></button>
         </div>
     `;
+    window.switchRepView = (mode) => {
+        const f = {
+            from: document.getElementById('rep-from')?.value || '',
+            to: document.getElementById('rep-to')?.value || '',
+            q: document.getElementById('rep-q')?.value || '',
+            status: document.getElementById('rep-status')?.value || '',
+            priority: document.getElementById('rep-priority')?.value || '',
+            work_type_id: document.getElementById('rep-wt')?.value || '',
+            location: document.getElementById('rep-loc')?.value || ''
+        };
+        renderReports(f, '', mode);
+    };
 
     el.appContent.innerHTML = `
         <div class="${isMobile ? 'p-3' : 'd-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4'}">
@@ -2221,9 +2245,9 @@ async function renderReports(fParam = '', tParam = '', viewMode = 'stats') {
             <div class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm">
                 <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
                     <i class="bi bi-filter-left text-muted ms-1"></i>
-                    <input type="date" id="rep-from" class="form-control form-control-sm border-0" value="${from}">
+                    <input type="date" id="rep-from" class="form-control form-control-sm border-0" onchange="window.triggerRepFilter()" value="${from}">
                     <span class="text-muted small">до</span>
-                    <input type="date" id="rep-to" class="form-control form-control-sm border-0" value="${to}">
+                    <input type="date" id="rep-to" class="form-control form-control-sm border-0" onchange="window.triggerRepFilter()" value="${to}">
                 </div>
                 <div class="d-flex gap-2 w-100 w-md-auto">
                     <button class="btn btn-outline-secondary btn-sm rounded-2 flex-grow-1" onclick="setToday('rep-from', 'rep-to', () => document.getElementById('rep-filter').click())">Сегодня</button>
