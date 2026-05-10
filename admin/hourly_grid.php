@@ -102,7 +102,7 @@ include 'includes/header.php';
                 <tr <?php echo $isNow ? 'style="background:rgba(0,120,212,0.05)"':''; ?>>
                     <td class="time-cell"><?php echo $t; ?></td>
                     <?php foreach($hourlyRooms as $s): ?>
-                        <td style="height: 44px; vertical-align: middle;" onclick="location.href='sauna_create_booking.php?room_id=<?php echo $s['id']; ?>&date=<?php echo $selectedDate; ?>T<?php echo $t; ?>'">
+                        <td style="height: 44px; vertical-align: middle;" onclick="location.href='hourly_create_booking.php?room_id=<?php echo $s['id']; ?>&date=<?php echo $selectedDate; ?>T<?php echo $t; ?>'">
                             <?php foreach($hourlyBookings as $b):
                                 if($b['room_id'] == $s['id'] && date('H', strtotime($b['check_in'])) == $h):
                             ?>

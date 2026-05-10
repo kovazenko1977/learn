@@ -103,7 +103,11 @@ include 'includes/header.php';
     <div style="margin-top: 60px; padding: 40px; border-radius: 24px; background: #f8fafc; border: 1px solid #e2e8f0; text-align: center;">
         <h2 style="margin-bottom: 20px;">Нужна помощь?</h2>
         <p style="color: #64748b; max-width: 600px; margin: 0 auto 30px;">Система построена на принципах максимальной простоты. Все данные хранятся в папке <code>/data</code>. Для переноса программы на другой сервер достаточно просто скопировать все файлы.</p>
-        <div style="font-weight: 700; color: var(--primary-color);">Разработка и поддержка: wes.by</div>
+        <div style="font-weight: 700; color: var(--primary-color);">Разработка и поддержка: WES.BY</div>
+        <p style="margin-top: 10px; font-size: 0.9rem; color: #64748b;">
+            Разработчик: Коваженко Жанна Людвиговна<br>
+            Тел: +375333533971 | Email: 7578453@gmail.com
+        </p>
     </div>
 </div>
 

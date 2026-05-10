@@ -1,0 +1,21 @@
+{
+  "name": "Sanatorium Pro",
+  "short_name": "Sanatorium",
+  "description": "Система управления санаторием и почасовым бронированием",
+  "start_url": "/admin/index.php",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0078d4",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192.png?text=SP",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512.png?text=Sanatorium+Pro",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

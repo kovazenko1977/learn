@@ -11,6 +11,8 @@ $root = ($currentFile == 'index.php') ? '' : '../';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle; ?> | Sanatorium Booking</title>
     <link rel="stylesheet" href="<?php echo $root; ?>assets/css/admin.css">
+    <link rel="manifest" href="<?php echo $root; ?>manifest.json">
+    <meta name="theme-color" content="#0078d4">
 </head>
 <body class="admin-body">
     <div class="app-container">
@@ -37,10 +39,6 @@ $root = ($currentFile == 'index.php') ? '' : '../';
                 <a href="<?php echo $base; ?>calendar.php" class="<?php echo $currentFile == 'calendar.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     <span>Шахматка (по суткам)</span>
-                </a>
-                <a href="<?php echo $base; ?>hourly_calendar.php" class="<?php echo $currentFile == 'hourly_calendar.php' ? 'active' : ''; ?>">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                    <span>Общий график</span>
                 </a>
                 <a href="<?php echo $base; ?>hourly_grid.php" class="<?php echo $currentFile == 'hourly_grid.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
@@ -157,4 +155,31 @@ $root = ($currentFile == 'index.php') ? '' : '../';
                     <div class="avatar"><?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1); ?></div>
                 </div>
             </header>
+            <div id="pwa-install-banner" style="display:none; background: var(--primary-color); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 8px;">
+                <span>Установите приложение Sanatorium Pro на рабочий стол для быстрого доступа!</span>
+                <button id="pwa-install-btn" class="btn" style="background: white; color: var(--primary-color); border: none;">Установить</button>
+            </div>
+            <script>
+                let deferredPrompt;
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    document.getElementById('pwa-install-banner').style.display = 'flex';
+                });
+
+                document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            document.getElementById('pwa-install-banner').style.display = 'none';
+                        }
+                        deferredPrompt = null;
+                    }
+                });
+
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('<?php echo $root; ?>sw.js');
+                }
+            </script>
             <div class="content-body">

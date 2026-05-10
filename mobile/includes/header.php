@@ -10,6 +10,8 @@ require_once __DIR__ . '/../../admin/auth.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title><?php echo $pageTitle; ?> | Sanatorium Mobile</title>
     <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="manifest" href="../manifest.json">
+    <meta name="theme-color" content="#0078d4">
     <style>
         :root {
             --mobile-bg: #f8fafc;
@@ -140,6 +142,33 @@ require_once __DIR__ . '/../../admin/auth.php';
     </style>
 </head>
 <body class="mobile-body">
+    <div id="pwa-install-banner-m" style="display:none; background: var(--mobile-primary); color: white; padding: 12px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;">
+        <span>Установите мобильное приложение!</span>
+        <button id="pwa-install-btn-m" style="background: white; color: var(--mobile-primary); border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700;">Установить</button>
+    </div>
+    <script>
+        let deferredPromptM;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPromptM = e;
+            document.getElementById('pwa-install-banner-m').style.display = 'flex';
+        });
+
+        document.getElementById('pwa-install-btn-m')?.addEventListener('click', async () => {
+            if (deferredPromptM) {
+                deferredPromptM.prompt();
+                const { outcome } = await deferredPromptM.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwa-install-banner-m').style.display = 'none';
+                }
+                deferredPromptM = null;
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../sw.js');
+        }
+    </script>
     <header class="mobile-header">
         <h1><?php echo $pageTitle; ?></h1>
         <div style="display: flex; align-items: center; gap: 8px;">
