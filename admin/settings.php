@@ -229,6 +229,26 @@ include 'includes/header.php';
         </button>
     </div>
 
+    <!-- Установка PWA / Десктоп -->
+    <div class="mica-card" style="grid-column: span 2;">
+        <h2>📱 Установка wesbooking</h2>
+        <p style="color: #666; margin-bottom: 20px;">
+            Вы можете установить wesbooking как полноценное приложение на ваш компьютер или мобильное устройство.
+            Это обеспечит быстрый доступ без браузерной строки, работу в офлайн-режиме и нативные уведомления.
+        </p>
+        <div id="settings-install-container" style="padding: 20px; background: rgba(0,120,212,0.05); border-radius: 12px; border: 1px solid rgba(0,120,212,0.1); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <strong style="display: block; font-size: 1.1rem; color: var(--primary-color);">Готово к установке</strong>
+                <span style="font-size: 0.9rem; color: #666;">Нажмите кнопку справа, чтобы добавить wesbooking на рабочий стол</span>
+            </div>
+            <button id="settings-install-btn" class="btn btn-primary" style="padding: 12px 30px; font-weight: 700;">УСТАНОВИТЬ ПРИЛОЖЕНИЕ</button>
+        </div>
+        <div id="settings-installed-msg" style="display:none; padding: 20px; background: rgba(16, 124, 16, 0.05); border-radius: 12px; border: 1px solid rgba(16, 124, 16, 0.1); color: #166534;">
+            <strong>✅ Приложение уже установлено</strong><br>
+            <span style="font-size: 0.9rem;">wesbooking Pro работает в режиме нативного приложения.</span>
+        </div>
+    </div>
+
     <!-- Демо-данные -->
     <div class="mica-card" style="grid-column: span 2;">
         <h2>✨ Демонстрационный режим</h2>
@@ -294,6 +314,36 @@ function showImportModal() {
 function hideImportModal() {
     document.getElementById('import-modal').style.display = 'none';
 }
+
+// PWA Logic for Settings Page
+window.addEventListener('load', () => {
+    const installBtn = document.getElementById('settings-install-btn');
+    const container = document.getElementById('settings-install-container');
+    const installedMsg = document.getElementById('settings-installed-msg');
+
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        if(container) container.style.display = 'none';
+        if(installedMsg) installedMsg.style.display = 'block';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // The event is already being handled in header.php, but we can sync here
+        if(container) container.style.display = 'flex';
+    });
+
+    installBtn?.addEventListener('click', async () => {
+        // Use the global deferredPrompt from header.php
+        if (typeof deferredPrompt !== 'undefined' && deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                if(container) container.style.display = 'none';
+            }
+        } else {
+            alert('Для установки используйте меню браузера или кнопку в верхней части экрана (если она появилась).');
+        }
+    });
+});
 </script>
 
 <style>

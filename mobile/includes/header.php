@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../admin/auth.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title><?php echo $pageTitle; ?> | Sanatorium Mobile</title>
+    <title><?php echo $pageTitle; ?> | wesbooking Mobile</title>
     <link rel="stylesheet" href="../assets/css/admin.css">
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0078d4">

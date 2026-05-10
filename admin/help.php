@@ -5,7 +5,7 @@ include 'includes/header.php';
 
 <div class="mica-card help-content" style="max-width: 1100px; margin: 0 auto; padding: 40px;">
     <div style="text-align: center; margin-bottom: 50px;">
-        <h1 style="font-size: 2.8rem; margin-bottom: 10px; background: linear-gradient(90deg, var(--primary-color), #00b7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🚀 Руководство Sanatorium Pro</h1>
+        <h1 style="font-size: 2.8rem; margin-bottom: 10px; background: linear-gradient(90deg, var(--primary-color), #00b7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🚀 Руководство wesbooking Pro</h1>
         <p style="font-size: 1.2rem; color: #64748b;">Полный цикл управления: от первой настройки до глубокой аналитики</p>
     </div>
 

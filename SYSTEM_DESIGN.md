@@ -1,4 +1,4 @@
-# System Design: Sanatorium Booking System
+# System Design: wesbooking System
 
 ## Architecture Overview
 

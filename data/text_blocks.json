@@ -2,7 +2,7 @@
     {
         "id": 1,
         "key": "welcome_title",
-        "content": "Добро пожаловать в Sanatorium"
+        "content": "Добро пожаловать в wesbooking"
     },
     {
         "id": 2,
@@ -12,6 +12,6 @@
     {
         "id": 3,
         "key": "footer_text",
-        "content": "© 2024 Sanatorium Booking System"
+        "content": "© 2024 wesbooking System"
     }
 ]

@@ -1,4 +1,4 @@
-ПРОЕКТ: Sanatorium Booking System (Система бронирования санатория)
+ПРОЕКТ: wesbooking System (Система бронирования санатория)
 ВЕРСИЯ: 8.0 (Standalone PHP Edition)
 РАЗРАБОТЧИК: Коваженко С.Б. (wes.by)
 

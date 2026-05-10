@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход | Sanatorium Booking</title>
+    <title>Вход | wesbooking</title>
     <link rel="stylesheet" href="../assets/css/admin.css">
     <style>
         body.login-body {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div style="color: var(--primary-color); margin-bottom: 10px;">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             </div>
-            <h2 style="margin-bottom: 5px;">Sanatorium</h2>
+            <h2 style="margin-bottom: 5px;">wesbooking</h2>
             <p style="color: #666; font-size: 0.9rem;">Вход в панель управления</p>
         </div>
 
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <div style="margin-top: 30px; text-align: center; font-size: 0.8rem; color: #888;">
-            &copy; <?php echo date('Y'); ?> Sanatorium Booking System
+            &copy; <?php echo date('Y'); ?> wesbooking System
         </div>
     </div>
 </body>
