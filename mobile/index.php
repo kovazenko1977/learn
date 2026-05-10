@@ -19,7 +19,7 @@ include 'includes/header.php';
     <div class="m-stats-grid">
         <div class="m-stat-item" style="grid-column: span 2; background: linear-gradient(135deg, #0078d4, #005a9e); color: white;">
             <div class="m-stat-value" style="color: white;"><?php echo number_format($stats['totalIncome'] ?? 0, 0, '.', ' '); ?></div>
-            <div class="m-stat-label" style="color: rgba(255,255,255,0.8);">Общий доход (BYN)</div>
+            <div class="m-stat-label" style="color: rgba(255,255,255,0.8);">Общий доход (₽)</div>
         </div>
         <div class="m-stat-item">
             <div class="m-stat-value"><?php echo $stats['occupancyRate'] ?? 0; ?>%</div>
@@ -39,14 +39,6 @@ include 'includes/header.php';
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             Создать бронирование
         </a>
-        <a href="index.php" class="btn-m btn-m-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            Заезды и выезды
-        </a>
-        <a href="../admin/sauna_calendar.php" class="btn-m" style="background: #6264a7; color: white;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            График Сауны
-        </a>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <a href="calendar.php" class="btn-m" style="background: #f1f5f9; color: #1e293b;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M3 3h18v18H3zM3 9h18M9 3v18"></path></svg>
@@ -57,6 +49,10 @@ include 'includes/header.php';
                 Задачи
             </a>
         </div>
+        <a href="../admin/hourly_grid.php" class="btn-m" style="background: #6264a7; color: white;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            Почасовая сетка (Админ)
+        </a>
     </div>
 </div>
 
@@ -67,8 +63,8 @@ include 'includes/header.php';
         $bookings = $store->findAll('bookings');
         $arrivals = 0; $departures = 0;
         foreach($bookings as $b) {
-            if (($b['check_in'] ?? '') === $today && ($b['status'] ?? '') !== 'cancelled') $arrivals++;
-            if (($b['check_out'] ?? '') === $today && ($b['status'] ?? '') !== 'cancelled') $departures++;
+            if (strpos($b['check_in'] ?? '', $today) === 0 && ($b['status'] ?? '') !== 'cancelled') $arrivals++;
+            if (strpos($b['check_out'] ?? '', $today) === 0 && ($b['status'] ?? '') !== 'cancelled') $departures++;
         }
         $allPlans = $store->findAll('plans');
         $tasksToday = count(array_filter($allPlans, function($p) use ($today) { return ($p['date'] ?? '') === $today; }));

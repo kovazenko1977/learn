@@ -9,8 +9,16 @@
         "procedures": {"enabled": true, "label": "Процедуры", "required": false},
         "services": {"enabled": true, "label": "Доп. услуги", "required": false}
     },
+    "sauna": {
+        "title": "Почасовое бронирование",
+        "fields": {
+             "client_name": {"enabled": true, "label": "Ваше имя", "required": true},
+             "phone": {"enabled": true, "label": "Телефон", "required": true},
+             "persons": {"enabled": true, "label": "Кол-во гостей", "required": true}
+        }
+    },
     "general": {
-        "title": "Онлайн-бронирование",
+        "title": "Бронирование номеров",
         "theme": "modern",
         "allow_hourly": true
     }

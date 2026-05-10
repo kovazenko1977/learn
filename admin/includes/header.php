@@ -36,15 +36,15 @@ $root = ($currentFile == 'index.php') ? '' : '../';
                 <?php if (hasPermission('view_calendar')): ?>
                 <a href="<?php echo $base; ?>calendar.php" class="<?php echo $currentFile == 'calendar.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    <span>Календарь</span>
+                    <span>Шахматка (по суткам)</span>
                 </a>
                 <a href="<?php echo $base; ?>hourly_calendar.php" class="<?php echo $currentFile == 'hourly_calendar.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                     <span>Общий график</span>
                 </a>
-                <a href="<?php echo $base; ?>sauna_calendar.php" class="<?php echo $currentFile == 'sauna_calendar.php' ? 'active' : ''; ?>">
+                <a href="<?php echo $base; ?>hourly_grid.php" class="<?php echo $currentFile == 'hourly_grid.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                    <span>График Сауны</span>
+                    <span>График (по часам)</span>
                 </a>
                 <?php endif; ?>
 

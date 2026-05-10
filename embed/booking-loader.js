@@ -1,11 +1,10 @@
 (function() {
     const script = document.currentScript;
     const containerId = script.getAttribute('data-container') || 'sanatorium-booking-root';
-    const type = script.getAttribute('data-type') || 'rooms';
+    const typeId = script.getAttribute('data-type-id');
 
     const host = script.src.split('/embed/')[0];
-    const page = (type === 'sauna') ? 'booking_sauna.php' : 'booking_rooms.php';
-    const baseUrl = host + '/' + page;
+    const baseUrl = host + '/booking.php' + (typeId ? '?type_id=' + typeId : '');
 
     let container = document.getElementById(containerId);
     if (!container) {
@@ -17,7 +16,7 @@
     const iframe = document.createElement('iframe');
     iframe.src = baseUrl;
     iframe.style.width = '100%';
-    iframe.style.minHeight = (type === 'sauna') ? '900px' : '850px';
+    iframe.style.minHeight = '900px';
     iframe.style.border = 'none';
     iframe.style.overflow = 'auto';
     iframe.style.borderRadius = '12px';

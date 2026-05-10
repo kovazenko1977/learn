@@ -11,24 +11,25 @@ $pre_date = $_GET['date'] ?? '';
 
 $rooms = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
-$saunaClassId = null;
-foreach($classes as $c) if(stripos($c['name'], 'Сауна') !== false) $saunaClassId = $c['id'];
 
-$saunas = array_filter($rooms, function($r) use ($saunaClassId) {
-    return ($r['room_class_id'] == $saunaClassId);
+$hourlyClassIds = [];
+foreach($classes as $c) if(($c['booking_type'] ?? '') === 'hourly') $hourlyClassIds[] = $c['id'];
+
+$hourlyRooms = array_filter($rooms, function($r) use ($hourlyClassIds) {
+    return in_array($r['room_class_id'], $hourlyClassIds);
 });
 
-$pageTitle = 'Новое бронирование сауны';
+$pageTitle = 'Новое почасовое бронирование';
 include 'includes/header.php';
 ?>
 
 <div class="mica-card" style="max-width: 600px; margin: 0 auto;">
-    <h2>🆕 Бронь сауны (почасовая)</h2>
-    <form id="sauna-admin-form" class="modern-form">
+    <h2>🆕 Новое почасовое бронирование</h2>
+    <form id="hourly-admin-form" class="modern-form">
         <div class="form-group">
-            <label>Сауна</label>
-            <select name="room_id" id="sauna_id" required>
-                <?php foreach($saunas as $s): ?>
+            <label>Объект</label>
+            <select name="room_id" id="hourly_room_id" required>
+                <?php foreach($hourlyRooms as $s): ?>
                     <option value="<?php echo $s['id']; ?>" data-price="<?php echo $s['price_per_hour']; ?>" <?php echo ($pre_room_id == $s['id']) ? 'selected' : ''; ?>>
                         <?php echo htmlspecialchars($s['room_number']); ?> (<?php echo $s['price_per_hour']; ?> ₽/час)
                     </option>
@@ -75,30 +76,31 @@ include 'includes/header.php';
         </div>
 
         <div class="form-actions">
-            <a href="sauna_calendar.php" class="btn btn-secondary">Отмена</a>
+            <a href="hourly_grid.php" class="btn btn-secondary">Отмена</a>
             <button type="submit" class="btn btn-primary">Создать бронь</button>
         </div>
     </form>
 </div>
 
 <script>
-    const saunaSelect = document.getElementById('sauna_id');
+    const roomSelect = document.getElementById('hourly_room_id');
     const durationInput = document.getElementById('duration');
     const startSelect = document.getElementById('start_hour');
     const dateInput = document.getElementById('booking_date');
     const totalEl = document.getElementById('admin-total-sum');
 
     function updatePrice() {
-        const price = parseFloat(saunaSelect.selectedOptions[0].dataset.price);
+        if(!roomSelect.selectedOptions[0]) return;
+        const price = parseFloat(roomSelect.selectedOptions[0].dataset.price);
         const hours = parseInt(durationInput.value);
         totalEl.textContent = (price * hours).toLocaleString();
     }
 
-    saunaSelect.onchange = updatePrice;
+    roomSelect.onchange = updatePrice;
     durationInput.oninput = updatePrice;
     updatePrice();
 
-    document.getElementById('sauna-admin-form').onsubmit = async (e) => {
+    document.getElementById('hourly-admin-form').onsubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const obj = Object.fromEntries(formData.entries());
@@ -108,7 +110,8 @@ include 'includes/header.php';
         const hours = parseInt(durationInput.value);
 
         obj.check_in = `${date} ${start}:00`;
-        const endH = parseInt(start.split(':')[0]) + hours;
+        const startH = parseInt(start.split(':')[0]);
+        const endH = startH + hours;
         obj.check_out = `${date} ${String(endH).padStart(2, '0')}:00`;
         obj.is_hourly = true;
         obj.status = 'booked';
@@ -119,7 +122,7 @@ include 'includes/header.php';
         });
         const result = await resp.json();
         if(result.success) {
-            location.href = 'sauna_calendar.php?success=1';
+            location.href = 'hourly_grid.php?success=1';
         } else {
             alert('Ошибка: ' + (result.error || 'пересечение времени или ошибка сервера'));
         }

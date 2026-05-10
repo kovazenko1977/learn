@@ -18,25 +18,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["action"])) {
             "status" => $_POST["status"]
         ];
         if ($bookingManager->updateBooking($bookingId, $data)) {
-            header("Location: sauna_calendar.php?date=$selectedDate&success=updated");
+            header("Location: hourly_grid.php?date=$selectedDate&success=updated");
         } else {
-            header("Location: sauna_calendar.php?date=$selectedDate&error=overlap");
+            header("Location: hourly_grid.php?date=$selectedDate&error=overlap");
         }
         exit;
     } elseif ($_POST["action"] === "delete_booking") {
         $bookingManager->deleteBooking((int)$_POST["booking_id"]);
-        header("Location: sauna_calendar.php?date=$selectedDate&success=deleted");
+        header("Location: hourly_grid.php?date=$selectedDate&success=deleted");
         exit;
     }
 }
 
 $rooms = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
-$saunaClassId = null;
-foreach($classes as $c) if(stripos($c['name'], 'Сауна') !== false) $saunaClassId = $c['id'];
 
-$saunas = array_filter($rooms, function($r) use ($saunaClassId) {
-    return ($r['room_class_id'] == $saunaClassId);
+$hourlyClassIds = [];
+foreach($classes as $c) if(($c['booking_type'] ?? '') === 'hourly') $hourlyClassIds[] = $c['id'];
+
+$hourlyRooms = array_filter($rooms, function($r) use ($hourlyClassIds) {
+    return in_array($r['room_class_id'], $hourlyClassIds);
 });
 
 $bookings = $store->findAll('bookings');
@@ -46,14 +47,14 @@ if (is_array($bookings)) {
     foreach ($bookings as $b) {
         if (!is_array($b) || ($b['status'] ?? '') === 'cancelled') continue;
         if (isset($b['id'])) $bookingMap[$b['id']] = $b;
-        $isForSauna = false;
-        foreach($saunas as $s) if($s['id'] == $b['room_id']) $isForSauna = true;
-        if (!$isForSauna) continue;
+        $isHourly = false;
+        foreach($hourlyRooms as $hr) if($hr['id'] == $b['room_id']) $isHourly = true;
+        if (!$isHourly) continue;
         if (substr($b['check_in'], 0, 10) === $selectedDate) $hourlyBookings[] = $b;
     }
 }
 
-$pageTitle = 'График Сауны (по часам)';
+$pageTitle = 'Почасовой график объектов';
 include 'includes/header.php';
 ?>
 
@@ -68,26 +69,27 @@ include 'includes/header.php';
     .booking-bar.status-confirmed { background: #107c10; }
 
     @media (max-width: 768px) {
-        .sauna-grid-table { width: <?php echo (count($saunas) * 120 + 60); ?>px; }
-        .booking-bar { font-size: 0.65rem; padding: 2px; }
+        .sauna-grid-table { width: <?php echo (count($hourlyRooms) * 120 + 60); ?>px; }
     }
 </style>
 
 <div class="mica-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-        <h2 style="margin:0;">🧖‍♀️ График Сауны</h2>
+        <h2 style="margin:0;">🕰 Почасовой график</h2>
         <form method="get" style="display:flex; gap:8px;">
             <input type="date" name="date" onchange="this.form.submit()" value="<?php echo $selectedDate; ?>" style="margin-bottom:0; width: auto;">
-            <button type="submit" class="btn btn-primary btn-sm">OK</button>
         </form>
     </div>
 
+    <?php if(empty($hourlyRooms)): ?>
+        <p style="padding: 20px; text-align: center; color: #888;">Нет объектов с почасовым типом записи. <a href="room_classes.php">Настройте типы объектов</a>.</p>
+    <?php else: ?>
     <div class="sauna-grid-wrapper">
         <table class="sauna-grid-table">
             <thead>
                 <tr>
                     <th class="time-cell">час</th>
-                    <?php foreach($saunas as $s): ?>
+                    <?php foreach($hourlyRooms as $s): ?>
                         <th style="width: 120px;"><?php echo htmlspecialchars($s['room_number']); ?></th>
                     <?php endforeach; ?>
                 </tr>
@@ -99,7 +101,7 @@ include 'includes/header.php';
                 ?>
                 <tr <?php echo $isNow ? 'style="background:rgba(0,120,212,0.05)"':''; ?>>
                     <td class="time-cell"><?php echo $t; ?></td>
-                    <?php foreach($saunas as $s): ?>
+                    <?php foreach($hourlyRooms as $s): ?>
                         <td style="height: 44px; vertical-align: middle;" onclick="location.href='sauna_create_booking.php?room_id=<?php echo $s['id']; ?>&date=<?php echo $selectedDate; ?>T<?php echo $t; ?>'">
                             <?php foreach($hourlyBookings as $b):
                                 if($b['room_id'] == $s['id'] && date('H', strtotime($b['check_in'])) == $h):
@@ -115,16 +117,16 @@ include 'includes/header.php';
             </tbody>
         </table>
     </div>
+    <?php endif; ?>
 </div>
 
-<!-- Simple Details Modal -->
 <div id="sauna-details-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); backdrop-filter: blur(4px); z-index:1100; align-items:center; justify-content:center;">
     <div class="mica-card" style="width: 400px; margin-bottom: 0;">
         <div id="s-view-mode">
             <h3>ℹ️ Бронирование</h3>
+            <p>Объект: <strong id="s-room-num"></strong></p>
             <p>Гость: <strong id="s-guest"></strong></p>
             <p>Время: <strong id="s-time"></strong></p>
-            <p>Статус: <span id="s-status" class="status-badge"></span></p>
             <div style="display:flex; gap:10px; margin-top:20px; justify-content: flex-end;">
                 <button class="btn btn-secondary" onclick="openSEdit()">Изменить/Перенести</button>
                 <button class="btn" onclick="closeSDetails()">Закрыть</button>
@@ -135,25 +137,20 @@ include 'includes/header.php';
             <form method="post">
                 <input type="hidden" name="action" value="update_booking">
                 <input type="hidden" name="booking_id" id="se-id">
-
-                <label>Сауна</label>
+                <label>Объект</label>
                 <select name="room_id" id="se-room" style="width:100%;">
-                    <?php foreach($saunas as $s) echo "<option value='{$s['id']}'>{$s['room_number']}</option>"; ?>
+                    <?php foreach($rooms as $r) echo "<option value='{$r['id']}'>{$r['room_number']}</option>"; ?>
                 </select>
-
                 <label>Начало</label>
                 <input type="datetime-local" name="check_in" id="se-start" style="width:100%;">
-
                 <label>Конец</label>
                 <input type="datetime-local" name="check_out" id="se-end" style="width:100%;">
-
                 <label>Статус</label>
                 <select name="status" id="se-status" style="width:100%;">
                     <option value="booked">Ожидается</option>
                     <option value="confirmed">Завершено</option>
                     <option value="cancelled">Отменено</option>
                 </select>
-
                 <div style="display:flex; justify-content:space-between; margin-top:20px;">
                     <button type="button" class="btn btn-secondary" onclick="closeSEdit()">Отмена</button>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -170,19 +167,22 @@ include 'includes/header.php';
 
 <script>
 const bookingMap = <?php echo json_encode($bookingMap); ?>;
+const roomMap = <?php
+    $rm = [];
+    foreach($rooms as $r) $rm[$r['id']] = $r['room_number'];
+    echo json_encode($rm);
+?>;
 function viewDetails(id) {
     const b = bookingMap[id];
     document.getElementById('s-guest').textContent = b.client_name;
     document.getElementById('s-time').textContent = b.check_in + ' - ' + b.check_out;
-    document.getElementById('s-status').textContent = b.status;
-
+    document.getElementById('s-room-num').textContent = roomMap[b.room_id] || 'N/A';
     document.getElementById('se-id').value = id;
     document.getElementById('se-del-id').value = id;
     document.getElementById('se-room').value = b.room_id;
     document.getElementById('se-start').value = b.check_in.replace(' ', 'T');
     document.getElementById('se-end').value = b.check_out.replace(' ', 'T');
     document.getElementById('se-status').value = b.status;
-
     document.getElementById('sauna-details-overlay').style.display = 'flex';
 }
 function closeSDetails() { document.getElementById('sauna-details-overlay').style.display = 'none'; closeSEdit(); }

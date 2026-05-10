@@ -1,0 +1,117 @@
+[Sun May 10 06:04:11 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sun May 10 06:04:44 2026] 127.0.0.1:50398 Accepted
+[Sun May 10 06:04:44 2026] 127.0.0.1:50398 [302]: GET /admin/index.php
+[Sun May 10 06:04:44 2026] 127.0.0.1:50398 Closing
+[Sun May 10 06:04:44 2026] 127.0.0.1:50410 Accepted
+[Sun May 10 06:04:44 2026] 127.0.0.1:50410 [200]: GET /index.php
+[Sun May 10 06:04:44 2026] 127.0.0.1:50410 Closing
+[Sun May 10 06:04:44 2026] 127.0.0.1:50426 Accepted
+[Sun May 10 06:04:44 2026] 127.0.0.1:50426 [200]: GET /assets/css/admin.css
+[Sun May 10 06:04:44 2026] 127.0.0.1:50426 Closing
+[Sun May 10 06:04:45 2026] 127.0.0.1:32830 Accepted
+[Sun May 10 06:04:45 2026] 127.0.0.1:32830 [200]: GET /admin/hourly_grid.php
+[Sun May 10 06:04:45 2026] 127.0.0.1:32830 Closing
+[Sun May 10 06:04:45 2026] 127.0.0.1:32832 Accepted
+[Sun May 10 06:04:45 2026] 127.0.0.1:32832 [200]: GET /assets/css/admin.css
+[Sun May 10 06:04:45 2026] 127.0.0.1:32832 Closing
+[Sun May 10 06:04:46 2026] 127.0.0.1:32838 Accepted
+[Sun May 10 06:04:46 2026] 127.0.0.1:32838 [200]: GET /booking.php?type_id=5
+[Sun May 10 06:04:46 2026] 127.0.0.1:32838 Closing
+[Sun May 10 06:04:46 2026] 127.0.0.1:32840 Accepted
+[Sun May 10 06:04:46 2026] 127.0.0.1:32840 [200]: GET /assets/css/style.css
+[Sun May 10 06:04:46 2026] 127.0.0.1:32840 Closing
+[Sun May 10 06:04:46 2026] 127.0.0.1:32854 Accepted
+[Sun May 10 06:04:46 2026] 127.0.0.1:32854 [200]: GET /api/v1.php?action=sauna/slots&room_id=36&date=2026-05-10
+[Sun May 10 06:04:46 2026] 127.0.0.1:32854 Closing
+[Sun May 10 06:06:49 2026] 127.0.0.1:60204 Accepted
+[Sun May 10 06:06:49 2026] 127.0.0.1:60204 [302]: GET /admin/index.php
+[Sun May 10 06:06:49 2026] 127.0.0.1:60204 Closing
+[Sun May 10 06:06:49 2026] 127.0.0.1:60216 Accepted
+[Sun May 10 06:06:49 2026] 127.0.0.1:60216 [200]: GET /index.php
+[Sun May 10 06:06:49 2026] 127.0.0.1:60216 Closing
+[Sun May 10 06:06:49 2026] 127.0.0.1:60230 Accepted
+[Sun May 10 06:06:49 2026] 127.0.0.1:60230 [200]: GET /assets/css/admin.css
+[Sun May 10 06:06:49 2026] 127.0.0.1:60230 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60240 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60240 [200]: GET /admin/hourly_grid.php
+[Sun May 10 06:06:50 2026] 127.0.0.1:60240 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60254 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60254 [200]: GET /assets/css/admin.css
+[Sun May 10 06:06:50 2026] 127.0.0.1:60254 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60264 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60264 [200]: GET /booking.php?type_id=5
+[Sun May 10 06:06:50 2026] 127.0.0.1:60264 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60272 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60272 [200]: GET /assets/css/style.css
+[Sun May 10 06:06:50 2026] 127.0.0.1:60272 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60282 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60282 [200]: GET /api/v1.php?action=sauna/slots&room_id=36&date=2026-05-10
+[Sun May 10 06:06:50 2026] 127.0.0.1:60282 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60296 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60296 [200]: GET /booking.php?type_id=1
+[Sun May 10 06:06:50 2026] 127.0.0.1:60296 Closing
+[Sun May 10 06:06:50 2026] 127.0.0.1:60310 Accepted
+[Sun May 10 06:06:50 2026] 127.0.0.1:60310 [200]: GET /assets/css/style.css
+[Sun May 10 06:06:50 2026] 127.0.0.1:60310 Closing
+[Sun May 10 06:06:51 2026] 127.0.0.1:60322 Accepted
+[Sun May 10 06:06:51 2026] PHP Warning:  require_once(/app/mobile/includes/../admin/auth.php): Failed to open stream: No such file or directory in /app/mobile/includes/header.php on line 4
+[Sun May 10 06:06:51 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/mobile/includes/../admin/auth.php' (include_path='.:/usr/share/php') in /app/mobile/includes/header.php:4
+Stack trace:
+#0 /app/mobile/index.php(11): include()
+#1 {main}
+  thrown in /app/mobile/includes/header.php on line 4
+[Sun May 10 06:06:51 2026] 127.0.0.1:60322 [500]: GET /mobile/index.php - Uncaught Error: Failed opening required '/app/mobile/includes/../admin/auth.php' (include_path='.:/usr/share/php') in /app/mobile/includes/header.php:4
+Stack trace:
+#0 /app/mobile/index.php(11): include()
+#1 {main}
+  thrown in /app/mobile/includes/header.php on line 4
+[Sun May 10 06:06:51 2026] 127.0.0.1:60322 Closing
+[Sun May 10 06:08:31 2026] 127.0.0.1:50662 Accepted
+[Sun May 10 06:08:31 2026] PHP Warning:  require_once(/app/mobile/includes/../admin/auth.php): Failed to open stream: No such file or directory in /app/mobile/includes/header.php on line 4
+[Sun May 10 06:08:31 2026] PHP Fatal error:  Uncaught Error: Failed opening required '/app/mobile/includes/../admin/auth.php' (include_path='.:/usr/share/php') in /app/mobile/includes/header.php:4
+Stack trace:
+#0 /app/mobile/index.php(11): include()
+#1 {main}
+  thrown in /app/mobile/includes/header.php on line 4
+[Sun May 10 06:08:31 2026] 127.0.0.1:50662 [500]: GET /mobile/index.php - Uncaught Error: Failed opening required '/app/mobile/includes/../admin/auth.php' (include_path='.:/usr/share/php') in /app/mobile/includes/header.php:4
+Stack trace:
+#0 /app/mobile/index.php(11): include()
+#1 {main}
+  thrown in /app/mobile/includes/header.php on line 4
+[Sun May 10 06:08:31 2026] 127.0.0.1:50662 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:54954 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:54954 [302]: GET /admin/index.php
+[Sun May 10 06:11:15 2026] 127.0.0.1:54954 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:54962 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:54962 [200]: GET /index.php
+[Sun May 10 06:11:15 2026] 127.0.0.1:54962 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:54978 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:54978 [200]: GET /assets/css/admin.css
+[Sun May 10 06:11:15 2026] 127.0.0.1:54978 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:54990 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:54990 [200]: GET /admin/hourly_grid.php
+[Sun May 10 06:11:15 2026] 127.0.0.1:54990 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:55004 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:55004 [200]: GET /assets/css/admin.css
+[Sun May 10 06:11:15 2026] 127.0.0.1:55004 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:55006 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:55006 [200]: GET /booking.php?type_id=5
+[Sun May 10 06:11:15 2026] 127.0.0.1:55006 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:55010 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:55010 [200]: GET /assets/css/style.css
+[Sun May 10 06:11:15 2026] 127.0.0.1:55010 Closing
+[Sun May 10 06:11:15 2026] 127.0.0.1:55016 Accepted
+[Sun May 10 06:11:15 2026] 127.0.0.1:55016 [200]: GET /api/v1.php?action=sauna/slots&room_id=36&date=2026-05-10
+[Sun May 10 06:11:15 2026] 127.0.0.1:55016 Closing
+[Sun May 10 06:11:16 2026] 127.0.0.1:55022 Accepted
+[Sun May 10 06:11:16 2026] 127.0.0.1:55022 [200]: GET /booking.php?type_id=1
+[Sun May 10 06:11:16 2026] 127.0.0.1:55022 Closing
+[Sun May 10 06:11:16 2026] 127.0.0.1:55030 Accepted
+[Sun May 10 06:11:16 2026] 127.0.0.1:55030 [200]: GET /assets/css/style.css
+[Sun May 10 06:11:16 2026] 127.0.0.1:55030 Closing
+[Sun May 10 06:11:16 2026] 127.0.0.1:55034 Accepted
+[Sun May 10 06:11:16 2026] 127.0.0.1:55034 [200]: GET /mobile/index.php
+[Sun May 10 06:11:16 2026] 127.0.0.1:55034 Closing
+[Sun May 10 06:11:16 2026] 127.0.0.1:55038 Accepted
+[Sun May 10 06:11:16 2026] 127.0.0.1:55038 [200]: GET /assets/css/admin.css
+[Sun May 10 06:11:16 2026] 127.0.0.1:55038 Closing

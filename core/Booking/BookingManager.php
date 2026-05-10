@@ -24,9 +24,9 @@ class BookingManager {
         if (!$room || !is_array($room)) return 0;
 
         $roomClass = $this->store->findOne('room_classes', $room['room_class_id'] ?? 0);
-        $isHourly = ($roomClass && stripos($roomClass['name'], 'Сауна') !== false) || !empty($data['is_hourly']);
+        $bookingType = $roomClass['booking_type'] ?? 'daily';
 
-        if ($isHourly) {
+        if ($bookingType === 'hourly') {
             $hours = ceil(max(3600, ($checkOut - $checkIn)) / 3600);
             $totalPrice = (float)($room['price_per_hour'] ?? ($room['price_per_day'] / 24)) * $hours;
         } else {
@@ -60,6 +60,11 @@ class BookingManager {
         $start = strtotime($checkIn);
         $end = strtotime($checkOut);
 
+        $room = $this->store->findOne('rooms', $roomId);
+        $roomClass = $this->store->findOne('room_classes', $room['room_class_id'] ?? 0);
+        $bufferMinutes = (int)($roomClass['buffer_time'] ?? 0);
+        $bufferSeconds = $bufferMinutes * 60;
+
         $bookings = $this->store->findAll('bookings');
         if (is_array($bookings)) {
             foreach ($bookings as $b) {
@@ -67,8 +72,8 @@ class BookingManager {
                 if ($excludeBookingId && ($b['id'] ?? '') == $excludeBookingId) continue;
 
                 if (($b['room_id'] ?? 0) == $roomId) {
-                    $bStart = strtotime($b['check_in']);
-                    $bEnd = strtotime($b['check_out']);
+                    $bStart = strtotime($b['check_in']) - $bufferSeconds;
+                    $bEnd = strtotime($b['check_out']) + $bufferSeconds;
 
                     if ($start < $bEnd && $end > $bStart) {
                         return false;

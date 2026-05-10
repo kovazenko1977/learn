@@ -1,7 +1,7 @@
 <?php
 if (!isset($pageTitle)) $pageTitle = 'Панель управления';
 $currentFile = basename($_SERVER['PHP_SELF']);
-require_once __DIR__ . '/../admin/auth.php';
+require_once __DIR__ . '/../../admin/auth.php';
 ?>
 <!DOCTYPE html>
 <html lang="ru">

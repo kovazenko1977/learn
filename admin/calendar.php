@@ -64,6 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 $rooms = $store->findAll('rooms');
+$classes = $store->findAll('room_classes');
+$dailyClassIds = [];
+foreach($classes as $c) if(($c['booking_type'] ?? 'daily') === 'daily') $dailyClassIds[] = $c['id'];
+$rooms = array_filter($rooms, function($r) use ($dailyClassIds) {
+    return in_array($r['room_class_id'], $dailyClassIds);
+});
 $calendar = $store->findAll('room_calendar');
 $bookings = $store->findAll('bookings');
 $allPackages = $store->findAll('packages');

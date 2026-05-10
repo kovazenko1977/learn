@@ -15,11 +15,11 @@ class DemoDataLoader {
 
         // 1. Room Classes
         $classes = [
-            ['id' => 1, 'name' => 'Эконом', 'description' => 'Бюджетный вариант.'],
-            ['id' => 2, 'name' => 'Стандарт', 'description' => 'Классический номер.'],
-            ['id' => 3, 'name' => 'Люкс', 'description' => 'Улучшенная планировка.'],
-            ['id' => 4, 'name' => 'Апартаменты', 'description' => 'Кухня и гостиная.'],
-            ['id' => 5, 'name' => 'Сауна', 'description' => 'Почасовое бронирование.']
+            ['id' => 1, 'name' => 'Эконом', 'description' => 'Бюджетный вариант.', 'booking_type' => 'daily', 'show_slots' => false, 'min_duration' => 1, 'buffer_time' => 0],
+            ['id' => 2, 'name' => 'Стандарт', 'description' => 'Классический номер.', 'booking_type' => 'daily', 'show_slots' => false, 'min_duration' => 1, 'buffer_time' => 0],
+            ['id' => 3, 'name' => 'Люкс', 'description' => 'Улучшенная планировка.', 'booking_type' => 'daily', 'show_slots' => false, 'min_duration' => 1, 'buffer_time' => 0],
+            ['id' => 4, 'name' => 'Апартаменты', 'description' => 'Кухня и гостиная.', 'booking_type' => 'daily', 'show_slots' => false, 'min_duration' => 1, 'buffer_time' => 0],
+            ['id' => 5, 'name' => 'Сауна', 'description' => 'Почасовое бронирование.', 'booking_type' => 'hourly', 'show_slots' => true, 'min_duration' => 1, 'buffer_time' => 0]
         ];
         file_put_contents("$dataDir/room_classes.json", json_encode($classes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
@@ -33,6 +33,7 @@ class DemoDataLoader {
                     'room_number' => '1' . str_pad($i, 2, '0', STR_PAD_LEFT),
                     'room_class_id' => $classId,
                     'price_per_day' => (int)(1500 + ($classId - 1) * 1200 + rand(0, 5) * 100),
+                    'price_per_hour' => 0,
                     'capacity' => ($classId == 4) ? 4 : 2,
                     'status' => 'free'
                 ];
@@ -102,9 +103,10 @@ class DemoDataLoader {
             $checkInTime = ($isSauna) ? sprintf('%02d:00', rand(9, 21)) : '14:00';
             $checkOutTime = ($isSauna) ? sprintf('%02d:00', rand(11, 23)) : '12:00';
 
-            $checkIn = date('Y-m-d', strtotime("$today $offset days")) . ' ' . $checkInTime;
+            $checkInDate = date('Y-m-d', strtotime("$today $offset days"));
+            $checkIn = "$checkInDate $checkInTime:00";
             $duration = ($isSauna) ? 2 : rand(2, 14);
-            $checkOut = date('Y-m-d', strtotime("$checkIn +$duration " . ($isSauna ? "hours" : "days"))) . ' ' . $checkOutTime;
+            $checkOut = date('Y-m-d H:i:s', strtotime("$checkIn +$duration " . ($isSauna ? "hours" : "days")));
 
             $bookings[] = [
                 'id' => $i,
@@ -117,6 +119,7 @@ class DemoDataLoader {
                 'persons' => rand(1, 3),
                 'package_id' => $isSauna ? null : rand(1, 3),
                 'status' => ($offset < 0) ? 'confirmed' : 'booked',
+                'is_hourly' => $isSauna,
                 'total_price' => 5000 + rand(1, 50) * 500,
                 'created_at' => date('Y-m-d H:i:s')
             ];
