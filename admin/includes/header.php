@@ -155,7 +155,7 @@ $root = ($currentFile == 'index.php') ? '' : '../';
                     <div class="avatar"><?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1); ?></div>
                 </div>
             </header>
-            <div id="pwa-install-banner" style="display:none; background: var(--primary-color); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 8px;">
+            <div id="pwa-install-banner" style="display:none; background: var(--primary-color); color: white; padding: 10px 20px; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 8px;">
                 <span>Установите приложение Sanatorium Pro на рабочий стол для быстрого доступа!</span>
                 <button id="pwa-install-btn" class="btn" style="background: white; color: var(--primary-color); border: none;">Установить</button>
             </div>
@@ -179,7 +179,7 @@ $root = ($currentFile == 'index.php') ? '' : '../';
                 });
 
                 if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('<?php echo $root; ?>sw.js');
+                    navigator.serviceWorker.register('<?php echo $root; ?>sw.js', { scope: '<?php echo $root; ?>' });
                 }
             </script>
             <div class="content-body">

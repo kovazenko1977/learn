@@ -142,7 +142,7 @@ require_once __DIR__ . '/../../admin/auth.php';
     </style>
 </head>
 <body class="mobile-body">
-    <div id="pwa-install-banner-m" style="display:none; background: var(--mobile-primary); color: white; padding: 12px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;">
+    <div id="pwa-install-banner-m" style="display:none; background: var(--mobile-primary); color: white; padding: 12px; font-size: 0.85rem; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;">
         <span>Установите мобильное приложение!</span>
         <button id="pwa-install-btn-m" style="background: white; color: var(--mobile-primary); border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700;">Установить</button>
     </div>
@@ -166,7 +166,7 @@ require_once __DIR__ . '/../../admin/auth.php';
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('../sw.js');
+            navigator.serviceWorker.register('../sw.js', { scope: '../' });
         }
     </script>
     <header class="mobile-header">

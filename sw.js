@@ -1,9 +1,10 @@
 const CACHE_NAME = 'sanatorium-pro-v1';
 const ASSETS = [
-  '/',
-  '/admin/index.php',
-  '/assets/css/admin.css',
-  '/assets/css/style.css'
+  './index.php',
+  './admin/index.php',
+  './assets/css/admin.css',
+  './assets/css/style.css',
+  './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
