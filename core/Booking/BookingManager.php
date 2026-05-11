@@ -26,12 +26,20 @@ class BookingManager {
         $roomClass = $this->store->findOne('room_classes', $room['room_class_id'] ?? 0);
         $bookingType = $roomClass['booking_type'] ?? 'daily';
 
+        $totalPrice = 0;
         if ($bookingType === 'hourly') {
             $hours = ceil(max(3600, ($checkOut - $checkIn)) / 3600);
             $totalPrice = (float)($room['price_per_hour'] ?? ($room['price_per_day'] / 24)) * $hours;
         } else {
             $days = ceil(max(86400, ($checkOut - $checkIn)) / 86400);
-            $totalPrice = (float)($room['price_per_day'] ?? 0) * $days;
+
+            // Tiered pricing logic
+            $seatType = $data['seat_type'] ?? 'main';
+            $pricePerDay = ($seatType === 'extra')
+                ? (float)($room['price_extra'] ?? ($room['price_per_day'] * 0.7))
+                : (float)($room['price_main'] ?? $room['price_per_day']);
+
+            $totalPrice = $pricePerDay * $days;
         }
 
         if (!empty($data['package_id'])) {
@@ -56,16 +64,25 @@ class BookingManager {
         return $totalPrice;
     }
 
-    public function isAvailable($roomId, $checkIn, $checkOut, $excludeBookingId = null) {
+    public function isAvailable($roomId, $checkIn, $checkOut, $excludeBookingId = null, $requestedGender = null) {
         $start = strtotime($checkIn);
         $end = strtotime($checkOut);
 
         $room = $this->store->findOne('rooms', $roomId);
+        if (!$room) return false;
+
         $roomClass = $this->store->findOne('room_classes', $room['room_class_id'] ?? 0);
         $bufferMinutes = (int)($roomClass['buffer_time'] ?? 0);
         $bufferSeconds = $bufferMinutes * 60;
 
+        // Advanced Capacity: main + extra
+        $totalCapacity = (int)($room['main_seats_count'] ?? 0) + (int)($room['extra_seats_count'] ?? 0);
+        if ($totalCapacity <= 0) $totalCapacity = (int)($room['capacity'] ?? 1);
+
         $bookings = $this->store->findAll('bookings');
+        $occupiedSeatsAtTime = 0;
+        $existingGender = null;
+
         if (is_array($bookings)) {
             foreach ($bookings as $b) {
                 if (!is_array($b) || ($b['status'] ?? '') === 'cancelled') continue;
@@ -76,11 +93,26 @@ class BookingManager {
                     $bEnd = strtotime($b['check_out']) + $bufferSeconds;
 
                     if ($start < $bEnd && $end > $bStart) {
-                        return false;
+                        // Room is partially or fully occupied during this period
+                        $occupiedSeatsAtTime++;
+                        if (isset($b['guest_gender'])) {
+                            $existingGender = $b['guest_gender'];
+                        }
                     }
                 }
             }
         }
+
+        // 1. Check Capacity
+        if ($occupiedSeatsAtTime >= $totalCapacity) {
+            return false;
+        }
+
+        // 2. Check Gender Matching (Only if requested gender is provided)
+        if ($requestedGender && $existingGender && $existingGender !== $requestedGender) {
+            return false;
+        }
+
         return true;
     }
 
@@ -89,7 +121,7 @@ class BookingManager {
             return false;
         }
 
-        if (!$this->isAvailable($data['room_id'], $data['check_in'], $data['check_out'])) {
+        if (!$this->isAvailable($data['room_id'], $data['check_in'], $data['check_out'], null, $data['guest_gender'] ?? null)) {
             return false;
         }
 
@@ -97,6 +129,7 @@ class BookingManager {
         $guestsData = [
             'name' => $data['client_name'] ?? 'N/A',
             'phone' => $data['phone'],
+            'gender' => $data['guest_gender'] ?? 'unknown',
             'citizenship' => $data['citizenship'] ?? '',
             'address' => $data['address'] ?? ''
         ];
@@ -109,6 +142,7 @@ class BookingManager {
                 if (($g['phone'] ?? '') === $data['phone']) {
                     $guestId = $g['id'];
                     $g['name'] = $data['client_name'];
+                    $g['gender'] = $guestsData['gender'];
                     if (!empty($data['citizenship'])) $g['citizenship'] = $data['citizenship'];
                     if (!empty($data['address'])) $g['address'] = $data['address'];
                     $this->store->save('guests', $g);
@@ -136,8 +170,9 @@ class BookingManager {
         $roomId = $data['room_id'] ?? $existing['room_id'];
         $checkIn = $data['check_in'] ?? $existing['check_in'];
         $checkOut = $data['check_out'] ?? $existing['check_out'];
+        $gender = $data['guest_gender'] ?? $existing['guest_gender'] ?? null;
 
-        if (!$this->isAvailable($roomId, $checkIn, $checkOut, $id)) {
+        if (!$this->isAvailable($roomId, $checkIn, $checkOut, $id, $gender)) {
             return false;
         }
 

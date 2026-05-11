@@ -235,6 +235,11 @@ input:focus, select:focus {
 
 .btn:hover {
     filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
 }
 
 .btn-secondary {

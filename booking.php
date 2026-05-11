@@ -11,7 +11,6 @@ $type = null;
 foreach($classes as $c) if($c['id'] == $id) $type = $c;
 
 if (!$type) {
-    // Fallback to first available type
     $type = !empty($classes) ? $classes[0] : null;
 }
 
@@ -45,6 +44,7 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
         .slot:hover { border-color: var(--primary-color); background: rgba(0,120,212,0.05); }
         .slot.selected { background: var(--primary-color); color: white; border-color: var(--primary-color); }
         .slot.busy { background: #f5f5f5; color: #ccc; cursor: not-allowed; }
+        .form-section { background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -58,70 +58,93 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
         </div>
 
         <h1><?php echo htmlspecialchars($formTitle); ?></h1>
-        <p><?php echo htmlspecialchars($type['description']); ?></p>
+        <p style="margin-bottom: 30px;"><?php echo htmlspecialchars($type['description']); ?></p>
 
         <form id="unified-booking-form">
             <input type="hidden" name="booking_type" value="<?php echo $type['booking_type']; ?>">
 
-            <div class="form-group">
-                <label>Выберите конкретный объект</label>
-                <select name="room_id" id="object_id" required>
-                    <?php foreach($filteredRooms as $r): ?>
-                        <option value="<?php echo $r['id']; ?>" data-price-day="<?php echo $r['price_per_day']; ?>" data-price-hour="<?php echo $r['price_per_hour'] ?? 0; ?>">
-                            <?php echo htmlspecialchars($r['room_number']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Дата</label>
-                <input type="date" name="date" id="booking_date" value="<?php echo date('Y-m-d'); ?>" required>
-            </div>
-
-            <?php if($type['booking_type'] === 'hourly' && ($type['show_slots'] ?? true)): ?>
-                <div id="slots-container">
-                    <label>Выберите время (часы)</label>
-                    <div class="time-slots" id="time-slots"></div>
-                </div>
-            <?php else: ?>
+            <div class="form-section">
                 <div class="form-group">
-                    <label>Количество суток</label>
-                    <input type="number" name="duration" id="duration" value="<?php echo $type['min_duration']; ?>" min="<?php echo $type['min_duration']; ?>">
+                    <label>Выберите номер/ресурс</label>
+                    <select name="room_id" id="object_id" required>
+                        <?php foreach($filteredRooms as $r): ?>
+                            <option value="<?php echo $r['id']; ?>"
+                                    data-price-main="<?php echo $r['price_main'] ?? $r['price_per_day']; ?>"
+                                    data-price-extra="<?php echo $r['price_extra'] ?? 0; ?>"
+                                    data-price-hour="<?php echo $r['price_per_hour'] ?? 0; ?>">
+                                №<?php echo htmlspecialchars($r['room_number']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-            <?php endif; ?>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Дата заезда</label>
+                        <input type="date" name="date" id="booking_date" value="<?php echo date('Y-m-d'); ?>" required>
+                    </div>
+                    <?php if($type['booking_type'] !== 'hourly'): ?>
+                    <div class="form-group">
+                        <label>Количество суток</label>
+                        <input type="number" name="duration" id="duration" value="<?php echo $type['min_duration']; ?>" min="<?php echo $type['min_duration']; ?>">
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <?php if($type['booking_type'] === 'hourly' && ($type['show_slots'] ?? true)): ?>
+                    <div id="slots-container">
+                        <label>Выберите время (часы)</label>
+                        <div class="time-slots" id="time-slots"></div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-section">
+                <h3>Данные гостя</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Пол (для подселения)</label>
+                        <select name="guest_gender" required>
+                            <option value="male">👨 Мужской</option>
+                            <option value="female">👩 Женский</option>
+                        </select>
+                    </div>
+                    <?php if($type['booking_type'] !== 'hourly'): ?>
+                    <div class="form-group">
+                        <label>Тип места</label>
+                        <select name="seat_type" id="seat_type" required>
+                            <option value="main">Основное место</option>
+                            <option value="extra">Дополнительное место</option>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-row">
+                    <?php if (isFieldEnabled($fields, 'client_name')): ?>
+                    <div class="form-group">
+                        <label><?php echo getFieldLabel($fields, 'client_name', 'Ваше ФИО'); ?></label>
+                        <input type="text" name="client_name" <?php echo isFieldRequired($fields, 'client_name') ? 'required' : ''; ?>>
+                    </div>
+                    <?php endif; ?>
+
+                    <?php if (isFieldEnabled($fields, 'phone')): ?>
+                    <div class="form-group">
+                        <label><?php echo getFieldLabel($fields, 'phone', 'Телефон'); ?></label>
+                        <input type="tel" name="phone" placeholder="+7..." <?php echo isFieldRequired($fields, 'phone') ? 'required' : ''; ?>>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <input type="hidden" name="check_in" id="check_in">
             <input type="hidden" name="check_out" id="check_out">
 
-            <div class="form-row" style="margin-top:20px;">
-                <?php if (isFieldEnabled($fields, 'client_name')): ?>
-                <div class="form-group">
-                    <label><?php echo getFieldLabel($fields, 'client_name', 'Ваше имя'); ?></label>
-                    <input type="text" name="client_name" <?php echo isFieldRequired($fields, 'client_name') ? 'required' : ''; ?>>
-                </div>
-                <?php endif; ?>
-
-                <?php if (isFieldEnabled($fields, 'phone')): ?>
-                <div class="form-group">
-                    <label><?php echo getFieldLabel($fields, 'phone', 'Телефон'); ?></label>
-                    <input type="tel" name="phone" placeholder="+7..." <?php echo isFieldRequired($fields, 'phone') ? 'required' : ''; ?>>
-                </div>
-                <?php endif; ?>
+            <div id="price-summary" style="padding: 20px; background: var(--primary-color); color: white; border-radius: 12px; margin: 20px 0; text-align: center; font-size: 1.2rem;">
+                Предварительная стоимость: <strong id="total-sum">0</strong> ₽
             </div>
 
-            <?php if (isFieldEnabled($fields, 'persons')): ?>
-            <div class="form-group">
-                <label><?php echo getFieldLabel($fields, 'persons', 'Кол-во человек'); ?></label>
-                <input type="number" name="persons" value="1" min="1" <?php echo isFieldRequired($fields, 'persons') ? 'required' : ''; ?>>
-            </div>
-            <?php endif; ?>
-
-            <div id="price-summary" style="padding: 15px; background: #f8f9fa; border-radius: 12px; margin: 20px 0;">
-                Итого к оплате: <strong id="total-sum">0</strong> ₽
-            </div>
-
-            <button type="submit" id="btn-submit" class="btn-primary" style="width:100%;">Забронировать</button>
+            <button type="submit" id="btn-submit" class="btn-primary" style="width:100%; padding: 15px; font-size: 1.1rem; border-radius: 30px;">Оформить бронирование</button>
         </form>
     </div>
 
@@ -131,6 +154,7 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
         const dateInput = document.getElementById('booking_date');
         const slotsGrid = document.getElementById('time-slots');
         const durationInput = document.getElementById('duration');
+        const seatTypeSelect = document.getElementById('seat_type');
 
         let selectedSlots = [];
 
@@ -182,7 +206,8 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
                     document.getElementById('check_out').value = `${date} ${String(last + 1).padStart(2, '0')}:00`;
                 }
             } else {
-                const price = parseFloat(opt.dataset.priceDay);
+                const seatType = seatTypeSelect ? seatTypeSelect.value : 'main';
+                const price = (seatType === 'extra') ? parseFloat(opt.dataset.priceExtra) : parseFloat(opt.dataset.priceMain);
                 const days = parseInt(durationInput.value) || 1;
                 total = days * price;
                 document.getElementById('check_in').value = `${date} 14:00:00`;
@@ -196,6 +221,7 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
         objectSelect.onchange = updateView;
         dateInput.onchange = updateView;
         if(durationInput) durationInput.oninput = calculatePrice;
+        if(seatTypeSelect) seatTypeSelect.onchange = calculatePrice;
         window.onload = updateView;
 
         document.getElementById('unified-booking-form').onsubmit = async (e) => {
@@ -206,7 +232,7 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
             obj.check_out = document.getElementById('check_out').value;
             if(typeData.booking_type === 'hourly') obj.is_hourly = true;
 
-            if(!obj.check_in || !obj.check_out) { alert("Выберите время!"); return; }
+            if(!obj.check_in || !obj.check_out) { alert("Выберите время проживания!"); return; }
 
             const resp = await fetch('api/v1.php?action=booking/create', {
                 method: 'POST',
@@ -214,10 +240,10 @@ function getFieldLabel($fields, $key, $default) { return $fields[$key]['label'] 
             });
             const result = await resp.json();
             if(result.success) {
-                alert('Успешно забронировано!');
+                alert('Успешно забронировано! Ожидайте подтверждения.');
                 location.reload();
             } else {
-                alert('Ошибка: ' + (result.error || 'пересечение времени'));
+                alert('Ошибка: Недостаточно мест или нарушение правил подселения.');
             }
         };
     </script>

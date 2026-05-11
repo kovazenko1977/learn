@@ -9,8 +9,6 @@ $bookingManager = new BookingManager($store);
 $rooms = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
 $packages = $store->findAll('packages');
-$procedures = $store->findAll('procedures');
-$services = $store->findAll('extra_services');
 
 $classMap = [];
 foreach($classes as $c) $classMap[$c['id']] = $c;
@@ -38,16 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'room_id' => $roomId,
         'client_name' => $_POST['client_name'],
         'phone' => $_POST['phone'],
+        'guest_gender' => $_POST['guest_gender'] ?? 'male',
+        'seat_type' => $_POST['seat_type'] ?? 'main',
         'check_in' => $fullCheckIn,
         'check_out' => $fullCheckOut,
         'persons' => (int)($_POST['persons'] ?? 1),
         'status' => $_POST['status'] ?? 'reserved',
         'is_hourly' => $isHourly,
         'package_id' => !empty($_POST['package_id']) ? (int)$_POST['package_id'] : null,
-        'procedure_ids' => !empty($_POST['procedure_ids']) ? array_map('intval', $_POST['procedure_ids']) : [],
-        'service_ids' => !empty($_POST['service_ids']) ? array_map('intval', $_POST['service_ids']) : [],
-        'citizenship' => $_POST['citizenship'] ?? '',
-        'address' => $_POST['address'] ?? '',
         'admin_notes' => $_POST['admin_notes'] ?? ''
     ];
 
@@ -56,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: calendar.php?success=created");
         exit;
     } else {
-        $error = "Ошибка: Номер занят или данные некорректны.";
+        $error = "Ошибка: Номер занят или нарушены правила подселения.";
     }
 }
 
@@ -88,9 +84,26 @@ include 'includes/header.php';
             </select>
         </div>
 
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Пол гостя</label>
+                <select name="guest_gender" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <option value="male">👨 Муж.</option>
+                    <option value="female">👩 Жен.</option>
+                </select>
+            </div>
+            <div id="seat-type-container">
+                <label style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Тип места</label>
+                <select name="seat_type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <option value="main">Основное</option>
+                    <option value="extra">Доп.</option>
+                </select>
+            </div>
+        </div>
+
         <div style="margin-bottom: 15px;">
             <label style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Гость (ФИО)</label>
-            <input type="text" name="client_name" required placeholder="Имя гостя" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; box-sizing: border-box;">
+            <input type="text" name="client_name" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; box-sizing: border-box;">
         </div>
 
         <div style="margin-bottom: 15px;">
@@ -130,11 +143,6 @@ include 'includes/header.php';
         </div>
 
         <div style="margin-bottom: 15px;">
-            <label style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Кол-во человек</label>
-            <input type="number" name="persons" value="1" min="1" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; box-sizing: border-box;">
-        </div>
-
-        <div style="margin-bottom: 15px;">
             <label style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Статус</label>
             <select name="status" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
                 <option value="reserved">Резерв</option>
@@ -142,12 +150,7 @@ include 'includes/header.php';
             </select>
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 5px;">Заметки</label>
-            <textarea name="admin_notes" placeholder="..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; min-height: 60px; box-sizing: border-box;"></textarea>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; margin-top: 25px;">
             <a href="calendar.php" class="btn-m" style="background: #f1f5f9; color: #1e293b; flex: 1; text-align:center; padding-top:12px;">Отмена</a>
             <button type="submit" class="btn-m btn-m-primary" style="flex: 2;">Создать</button>
         </div>
@@ -163,19 +166,21 @@ function toggleTypeFields() {
     const daily = document.getElementById('daily-fields');
     const hourly = document.getElementById('hourly-fields');
     const pkg = document.getElementById('package-field');
+    const seatCont = document.getElementById('seat-type-container');
 
     if(type === 'hourly') {
         daily.style.display = 'none';
         pkg.style.display = 'none';
+        seatCont.style.visibility = 'hidden';
         hourly.style.display = 'grid';
         document.querySelector('input[name="duration"]').name = 'duration_unused';
         document.querySelector('input[name="duration_h"]').name = 'duration';
     } else {
         daily.style.display = 'block';
         pkg.style.display = 'block';
+        seatCont.style.visibility = 'visible';
         hourly.style.display = 'none';
         document.querySelector('input[name="duration_unused"]')?.setAttribute('name', 'duration');
-        document.querySelector('input[name="duration"]').name = 'duration';
         document.querySelector('input[name="duration_h"]').name = 'duration_unused_h';
     }
 }
@@ -188,7 +193,6 @@ function updateDuration() {
         document.getElementById('m-duration').value = days;
     }
 }
-
 window.onload = toggleTypeFields;
 </script>
 

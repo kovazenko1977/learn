@@ -9,9 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'id' => !empty($_POST['id']) ? (int)$_POST['id'] : null,
             'room_number' => $_POST['room_number'],
             'room_class_id' => (int)$_POST['room_class_id'],
-            'price_per_day' => (float)$_POST['price_per_day'],
+            'main_seats_count' => (int)$_POST['main_seats_count'],
+            'extra_seats_count' => (int)$_POST['extra_seats_count'],
+            'price_main' => (float)$_POST['price_main'],
+            'price_extra' => (float)$_POST['price_extra'],
+            'price_per_day' => (float)$_POST['price_main'], // Legacy compatibility
             'price_per_hour' => (float)($_POST['price_per_hour'] ?? 0),
-            'capacity' => (int)$_POST['capacity'],
+            'capacity' => (int)$_POST['main_seats_count'] + (int)$_POST['extra_seats_count'],
             'status' => $_POST['status'] ?? 'free'
         ]);
     } elseif ($_POST['action'] === 'delete') {
@@ -31,13 +35,13 @@ if (is_array($classes)) {
 }
 if (!is_array($items)) $items = [];
 
-$pageTitle = 'Управление номерами';
+$pageTitle = 'Управление номерным фондом';
 include 'includes/header.php';
 ?>
 
 <div class="mica-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-        <h2>📋 Список номеров</h2>
+        <h2>📋 Список номеров и ресурсов</h2>
     </div>
     <div class="table-responsive"><table>
         <thead>
@@ -45,8 +49,9 @@ include 'includes/header.php';
                 <th>ID</th>
                 <th>Номер</th>
                 <th>Класс</th>
-                <th>Цена</th>
-                <th>Мест</th>
+                <th>Места (осн+доп)</th>
+                <th>Цена (осн/доп)</th>
+                <th>Почасово</th>
                 <th>Статус</th>
                 <th>Действия</th>
             </tr>
@@ -58,8 +63,12 @@ include 'includes/header.php';
                 <td><?php echo $i['id'] ?? ''; ?></td>
                 <td><strong><?php echo htmlspecialchars($i['room_number'] ?? ''); ?></strong></td>
                 <td><?php echo htmlspecialchars($classMap[$i['room_class_id'] ?? 0] ?? 'N/A'); ?></td>
-                <td><?php echo number_format((float)($i['price_per_day'] ?? 0), 0, ',', ' '); ?> ₽</td>
-                <td><?php echo htmlspecialchars($i['capacity'] ?? 0); ?></td>
+                <td><?php echo ($i['main_seats_count'] ?? 1); ?> + <?php echo ($i['extra_seats_count'] ?? 0); ?></td>
+                <td>
+                    <span title="Основное место"><?php echo number_format((float)($i['price_main'] ?? $i['price_per_day'] ?? 0), 0, ',', ' '); ?> ₽</span> /
+                    <span title="Доп. место" style="color: #666;"><?php echo number_format((float)($i['price_extra'] ?? 0), 0, ',', ' '); ?> ₽</span>
+                </td>
+                <td><?php echo ($i['price_per_hour'] ?? 0) > 0 ? number_format((float)$i['price_per_hour'], 0, ',', ' ').' ₽' : '—'; ?></td>
                 <td><span class="status-badge" style="background:rgba(0,0,0,0.05); color:#333;"><?php echo htmlspecialchars($i['status'] ?? 'free'); ?></span></td>
                 <td>
                     <button class="btn btn-secondary" onclick='editItem(<?php echo json_encode($i); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
@@ -76,17 +85,17 @@ include 'includes/header.php';
 </div>
 
 <div class="mica-card">
-    <h3 id="form-title">➕ Добавить номер</h3>
-    <form method="post">
+    <h3 id="form-title">➕ Добавить номер / Ресурс</h3>
+    <form method="post" class="modern-form">
         <input type="hidden" name="action" value="save">
         <input type="hidden" name="id" id="item-id">
         <div class="grid-2">
             <div>
-                <label>Номер комнаты</label>
-                <input type="text" name="room_number" id="item-num" required>
+                <label>Номер / Название</label>
+                <input type="text" name="room_number" id="item-num" required placeholder="Напр: 101 или Сауна-1">
             </div>
             <div>
-                <label>Класс номера</label>
+                <label>Тип (Класс)</label>
                 <select name="room_class_id" id="item-class" required>
                     <option value="">-- Выберите класс --</option>
                     <?php foreach($classes as $c): ?>
@@ -94,54 +103,72 @@ include 'includes/header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
+        </div>
+
+        <div class="grid-4" style="margin-top: 15px;">
             <div>
-                <label>Цена за сутки (₽)</label>
-                <input type="number" name="price_per_day" id="item-price" required>
+                <label>Основных мест</label>
+                <input type="number" name="main_seats_count" id="item-main-seats" value="1" min="1" required>
             </div>
             <div>
-                <label>Цена за час (для саун)</label>
-                <input type="number" name="price_per_hour" id="item-hour-price">
+                <label>Цена осн. места (₽)</label>
+                <input type="number" name="price_main" id="item-price-main" required>
             </div>
             <div>
-                <label>Вместимость (чел.)</label>
-                <input type="number" name="capacity" id="item-cap" required>
+                <label>Доп. мест</label>
+                <input type="number" name="extra_seats_count" id="item-extra-seats" value="0" min="0">
             </div>
             <div>
-                <label>Текущий статус</label>
+                <label>Цена доп. места (₽)</label>
+                <input type="number" name="price_extra" id="item-price-extra" value="0">
+            </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 15px;">
+            <div>
+                <label>Цена за час (для почасовых)</label>
+                <input type="number" name="price_per_hour" id="item-hour-price" value="0">
+            </div>
+            <div>
+                <label>Начальный статус</label>
                 <select name="status" id="item-status">
                     <option value="free">Свободен</option>
-                    <option value="reserved">Резерв</option>
-                    <option value="booked">Занят</option>
+                    <option value="reserved">Резерв (Тех. обслуживание)</option>
                 </select>
             </div>
         </div>
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button type="submit" class="btn">Сохранить</button>
-            <button type="button" class="btn btn-secondary" onclick="resetForm()">Очистить</button>
+
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 30px;">Сохранить объект</button>
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Очистить форму</button>
         </div>
     </form>
 </div>
 
 <script>
     function editItem(item) {
-        document.getElementById('form-title').textContent = '📝 Редактировать номер';
+        document.getElementById('form-title').textContent = '📝 Редактировать: ' + item.room_number;
         document.getElementById('item-id').value = item.id;
         document.getElementById('item-num').value = item.room_number;
         document.getElementById('item-class').value = item.room_class_id || '';
-        document.getElementById('item-price').value = item.price_per_day;
-        document.getElementById('item-hour-price').value = item.price_per_hour || '';
-        document.getElementById('item-cap').value = item.capacity;
-        document.getElementById('item-status').value = item.status;
+        document.getElementById('item-main-seats').value = item.main_seats_count || item.capacity || 1;
+        document.getElementById('item-extra-seats').value = item.extra_seats_count || 0;
+        document.getElementById('item-price-main').value = item.price_main || item.price_per_day || 0;
+        document.getElementById('item-price-extra').value = item.price_extra || 0;
+        document.getElementById('item-hour-price').value = item.price_per_hour || 0;
+        document.getElementById('item-status').value = item.status || 'free';
         document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' });
     }
     function resetForm() {
-        document.getElementById('form-title').textContent = '➕ Добавить номер';
+        document.getElementById('form-title').textContent = '➕ Добавить номер / Ресурс';
         document.getElementById('item-id').value = '';
         document.getElementById('item-num').value = '';
         document.getElementById('item-class').value = '';
-        document.getElementById('item-price').value = '';
-        document.getElementById('item-hour-price').value = '';
-        document.getElementById('item-cap').value = '';
+        document.getElementById('item-main-seats').value = '1';
+        document.getElementById('item-extra-seats').value = '0';
+        document.getElementById('item-price-main').value = '';
+        document.getElementById('item-price-extra').value = '0';
+        document.getElementById('item-hour-price').value = '0';
         document.getElementById('item-status').value = 'free';
     }
 </script>
