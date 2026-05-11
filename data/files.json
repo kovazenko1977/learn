@@ -1,1 +1,18 @@
-[]
+[
+    {
+        "original_name": "test.png",
+        "filename": "6a02316a81298_test.png",
+        "size": 12,
+        "extension": "png",
+        "id": "6a02316a81724",
+        "uploaded_at": "2026-05-11 19:43:38"
+    },
+    {
+        "original_name": "test.pdf",
+        "filename": "6a02316a86a33_test.pdf",
+        "size": 10,
+        "extension": "pdf",
+        "id": "6a02316a86ba3",
+        "uploaded_at": "2026-05-11 19:43:38"
+    }
+]

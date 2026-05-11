@@ -22,11 +22,11 @@ $fileTmpPath = $file['tmp_name'];
 $fileSize = $file['size'];
 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-$allowedExtensions = ['doc', 'docx', 'xls', 'xlsx'];
+$blacklistedExtensions = ['php', 'phtml', 'php5', 'php7', 'js', 'html', 'htm', 'exe', 'sh', 'bat', 'cgi', 'pl', 'py'];
 
-if (!in_array($fileExtension, $allowedExtensions)) {
+if (in_array($fileExtension, $blacklistedExtensions)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Only Word and Excel files are allowed']);
+    echo json_encode(['error' => 'File type not allowed for security reasons']);
     exit;
 }
 

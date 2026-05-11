@@ -88,10 +88,10 @@
             <div class="glass-card mb-5">
                 <div class="p-4">
                     <div class="upload-zone" @click="$refs.fileInput.click()" @dragover.prevent @drop.prevent="handleDrop">
-                        <input type="file" ref="fileInput" class="d-none" @change="handleFileChange" accept=".doc,.docx,.xls,.xlsx">
+                        <input type="file" ref="fileInput" class="d-none" @change="handleFileChange">
                         <div class="text-center py-4">
                             <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
-                            <p class="mb-0">Нажмите или перетащите файл сюда (Word, Excel)</p>
+                            <p class="mb-0">Нажмите или перетащите файл сюда</p>
                         </div>
                     </div>
                     <div v-if="uploading" class="mt-3">
@@ -157,8 +157,13 @@
                         <h5 class="modal-title">{{ previewingFile?.original_name }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body p-0">
-                        <iframe v-if="previewingFile" :src="getPreviewUrl(previewingFile)" width="100%" height="600px" frameborder="0"></iframe>
+                    <div class="modal-body p-0 text-center">
+                        <template v-if="previewingFile">
+                            <img v-if="isImage(previewingFile.extension)" :src="'api/view.php?id=' + previewingFile.id" class="img-fluid p-3" style="max-height: 80vh">
+                            <video v-else-if="isVideo(previewingFile.extension)" :src="'api/view.php?id=' + previewingFile.id" controls class="w-100 p-3" style="max-height: 80vh"></video>
+                            <audio v-else-if="isAudio(previewingFile.extension)" :src="'api/view.php?id=' + previewingFile.id" controls class="w-75 my-5"></audio>
+                            <iframe v-else :src="getPreviewUrl(previewingFile)" width="100%" height="600px" frameborder="0"></iframe>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -193,10 +198,10 @@
                 };
 
                 const uploadFile = async (file) => {
-                    const allowed = ['doc', 'docx', 'xls', 'xlsx'];
+                    const blacklisted = ['php', 'phtml', 'js', 'html', 'exe', 'sh'];
                     const ext = file.name.split('.').pop().toLowerCase();
-                    if (!allowed.includes(ext)) {
-                        alert('Разрешены только файлы Word и Excel');
+                    if (blacklisted.includes(ext)) {
+                        alert('Этот тип файла запрещен из соображений безопасности');
                         return;
                     }
 
@@ -257,7 +262,7 @@
                     // Using Google Docs Viewer. Note: it requires a public URL.
                     // For local dev, this might not show anything, but it's the standard way.
                     const baseUrl = window.location.origin + window.location.pathname.replace('index.php', '');
-                    const fileUrl = baseUrl + 'api/download.php?id=' + file.id;
+                    const fileUrl = baseUrl + 'api/view.php?id=' + file.id;
                     return `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
                 };
 
@@ -269,9 +274,18 @@
                     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
                 };
 
+                const isImage = (ext) => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+                const isVideo = (ext) => ['mp4', 'webm', 'ogg'].includes(ext);
+                const isAudio = (ext) => ['mp3', 'wav', 'ogg'].includes(ext);
+
                 const getFileIcon = (ext) => {
                     if (['doc', 'docx'].includes(ext)) return 'far fa-file-word';
                     if (['xls', 'xlsx'].includes(ext)) return 'far fa-file-excel';
+                    if (['pdf'].includes(ext)) return 'far fa-file-pdf';
+                    if (isImage(ext)) return 'far fa-file-image';
+                    if (isVideo(ext)) return 'far fa-file-video';
+                    if (isAudio(ext)) return 'far fa-file-audio';
+                    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) return 'far fa-file-archive';
                     return 'far fa-file';
                 };
 
@@ -280,7 +294,8 @@
                 return {
                     files, uploading, uploadProgress, previewingFile,
                     handleFileChange, handleDrop, deleteFile, previewFile,
-                    getPreviewUrl, formatSize, getFileIcon
+                    getPreviewUrl, formatSize, getFileIcon,
+                    isImage, isVideo, isAudio
                 };
             }
         }).mount('#app');
