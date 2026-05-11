@@ -1,28 +1,61 @@
-[Sun May 10 18:49:18 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Sun May 10 18:49:19 2026] 127.0.0.1:52232 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52232 [200]: GET /admin/help.php
-[Sun May 10 18:49:19 2026] 127.0.0.1:52232 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52246 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52246 [200]: GET /assets/css/admin.css
-[Sun May 10 18:49:19 2026] 127.0.0.1:52246 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52258 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52258 [200]: GET /sw.js
-[Sun May 10 18:49:19 2026] 127.0.0.1:52258 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52262 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52264 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52278 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52262 [200]: GET /index.php
-[Sun May 10 18:49:19 2026] 127.0.0.1:52262 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52264 [302]: GET /admin/index.php
-[Sun May 10 18:49:19 2026] 127.0.0.1:52264 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52278 [200]: GET /assets/css/admin.css
-[Sun May 10 18:49:19 2026] 127.0.0.1:52278 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52280 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52292 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52304 Accepted
-[Sun May 10 18:49:19 2026] 127.0.0.1:52280 [200]: GET /index.php
-[Sun May 10 18:49:19 2026] 127.0.0.1:52280 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52292 [200]: GET /assets/css/style.css
-[Sun May 10 18:49:19 2026] 127.0.0.1:52304 [200]: GET /manifest.json
-[Sun May 10 18:49:19 2026] 127.0.0.1:52292 Closing
-[Sun May 10 18:49:19 2026] 127.0.0.1:52304 Closing
+[Mon May 11 07:54:53 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Mon May 11 07:54:55 2026] 127.0.0.1:54876 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54876 [200]: GET /index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:54876 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54888 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54888 [200]: GET /assets/css/admin.css
+[Mon May 11 07:54:55 2026] 127.0.0.1:54888 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54894 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54894 [200]: GET /sw.js
+[Mon May 11 07:54:55 2026] 127.0.0.1:54894 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54904 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54914 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54930 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54904 [200]: GET /index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:54904 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54914 [302]: GET /admin/index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:54914 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54930 [200]: GET /assets/css/admin.css
+[Mon May 11 07:54:55 2026] 127.0.0.1:54930 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54934 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54948 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54934 [200]: GET /index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:54934 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54958 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54948 [200]: GET /assets/css/style.css
+[Mon May 11 07:54:55 2026] 127.0.0.1:54958 [200]: GET /manifest.json
+[Mon May 11 07:54:55 2026] 127.0.0.1:54948 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54958 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54962 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54962 [200]: GET /manifest.json
+[Mon May 11 07:54:55 2026] 127.0.0.1:54962 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54974 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54974 [200]: GET /sw.js
+[Mon May 11 07:54:55 2026] 127.0.0.1:54974 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54990 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54990 [200]: GET /admin/system_health.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:54990 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:54998 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:54998 [200]: GET /assets/css/admin.css
+[Mon May 11 07:54:55 2026] 127.0.0.1:54998 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55012 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55012 [200]: GET /sw.js
+[Mon May 11 07:54:55 2026] 127.0.0.1:55012 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55028 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55042 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55054 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55028 [200]: GET /index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:55028 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55042 [302]: GET /admin/index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:55042 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55054 [200]: GET /assets/css/admin.css
+[Mon May 11 07:54:55 2026] 127.0.0.1:55054 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55060 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55070 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55080 Accepted
+[Mon May 11 07:54:55 2026] 127.0.0.1:55060 [200]: GET /index.php
+[Mon May 11 07:54:55 2026] 127.0.0.1:55060 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55070 [200]: GET /assets/css/style.css
+[Mon May 11 07:54:55 2026] 127.0.0.1:55080 [200]: GET /manifest.json
+[Mon May 11 07:54:55 2026] 127.0.0.1:55070 Closing
+[Mon May 11 07:54:55 2026] 127.0.0.1:55080 Closing

@@ -1,5 +1,5 @@
 {
-  "id": "sanatorium-pro-wes-by",
+  "id": "wesbooking-pro-v1",
   "name": "wesbooking Pro",
   "short_name": "wesbooking",
   "description": "Система управления санаторием и почасовым бронированием",
@@ -11,8 +11,18 @@
     {
       "src": "https://via.placeholder.com/192x192.png?text=SP",
       "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/192x192.png?text=SP",
+      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512.png?text=wesbooking+Pro",
+      "sizes": "512x512",
+      "type": "image/png"
     },
     {
       "src": "https://via.placeholder.com/512x512.png?text=wesbooking+Pro",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sanatorium-pro-v1';
+const CACHE_NAME = 'wesbooking-pro-v2';
 const ASSETS = [
   './index.php',
   './admin/index.php',
@@ -13,6 +13,22 @@ self.addEventListener('install', (event) => {
       return cache.addAll(ASSETS);
     })
   );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((name) => {
+          if (name !== CACHE_NAME) {
+            return caches.delete(name);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {

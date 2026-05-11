@@ -1,8 +1,9 @@
 <?php
 if (!isset($pageTitle)) $pageTitle = 'Панель управления';
 $currentFile = basename($_SERVER['PHP_SELF']);
-$base = ($currentFile == 'index.php') ? 'admin/' : '';
-$root = ($currentFile == 'index.php') ? '' : '../';
+$currentDir = basename(dirname($_SERVER['PHP_SELF']));
+$root = ($currentDir === 'admin') ? '../' : '';
+$base = ($currentDir === 'admin') ? '' : 'admin/';
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -155,7 +156,7 @@ $root = ($currentFile == 'index.php') ? '' : '../';
                     <div class="avatar"><?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1); ?></div>
                 </div>
             </header>
-            <div id="pwa-install-banner" style="display:none; background: var(--primary-color); color: white; padding: 10px 20px; justify-content: space-between; align-items: center; margin-bottom: 20px; border-radius: 8px;">
+            <div id="pwa-install-banner" style="display:none; background: var(--primary-color); color: white; padding: 15px 25px; justify-content: space-between; align-items: center; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,120,212,0.2); border: 1px solid rgba(255,255,255,0.1);">
                 <span>Установите приложение wesbooking Pro на рабочий стол для быстрого доступа!</span>
                 <button id="pwa-install-btn" class="btn" style="background: white; color: var(--primary-color); border: none;">Установить</button>
             </div>

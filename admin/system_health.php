@@ -50,6 +50,23 @@ $checks[] = [
     'message' => ($overlaps === 0) ? 'Дубликатов не обнаружено.' : "Найдено дублей: $overlaps"
 ];
 
+// 5. PWA Files Check
+$root = __DIR__ . '/../';
+$manifestPath = $root . 'manifest.json';
+$swPath = $root . 'sw.js';
+
+$checks[] = [
+    'title' => 'PWA: Manifest',
+    'status' => file_exists($manifestPath),
+    'message' => file_exists($manifestPath) ? 'Файл manifest.json найден.' : 'Файл manifest.json ОТСУТСТВУЕТ!'
+];
+
+$checks[] = [
+    'title' => 'PWA: Service Worker',
+    'status' => file_exists($swPath),
+    'message' => file_exists($swPath) ? 'Файл sw.js найден.' : 'Файл sw.js ОТСУТСТВУЕТ!'
+];
+
 ?>
 
 <div class="mica-card">
