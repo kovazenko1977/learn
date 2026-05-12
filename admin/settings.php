@@ -20,6 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true) ?: [];
         $settings['org_name'] = $_POST['org_name'] ?? $settings['org_name'];
         $settings['auth_enabled'] = isset($_POST['auth_enabled']);
+
+        if (isset($_POST['calendar_colors'])) {
+            $settings['calendar_colors'] = $_POST['calendar_colors'];
+        }
+
         file_put_contents(__DIR__ . '/../data/settings.json', json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         $successMessage = "Настройки сохранены!";
     } elseif ($_POST['action'] === 'export_backup') {
@@ -227,6 +232,37 @@ include 'includes/header.php';
         <button type="button" onclick="showImportModal()" class="btn btn-primary">
             <i class="lucide-globe"></i> Начать импорт с сайта
         </button>
+    </div>
+
+    <!-- Цвета шахматки -->
+    <div class="mica-card" style="grid-column: span 2;">
+        <h2>🎨 Цветовая схема шахматки</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="update_general">
+            <div class="grid-4">
+                <div>
+                    <label>Свободно</label>
+                    <input type="color" name="calendar_colors[free]" value="<?php echo $settings['calendar_colors']['free'] ?? '#ffffff'; ?>">
+                </div>
+                <div>
+                    <label>Резерв</label>
+                    <input type="color" name="calendar_colors[reserved]" value="<?php echo $settings['calendar_colors']['reserved'] ?? '#fff3cd'; ?>">
+                </div>
+                <div>
+                    <label>Частично (Муж)</label>
+                    <input type="color" name="calendar_colors[partial_male]" value="<?php echo $settings['calendar_colors']['partial_male'] ?? '#e0f2fe'; ?>">
+                </div>
+                <div>
+                    <label>Частично (Жен)</label>
+                    <input type="color" name="calendar_colors[partial_female]" value="<?php echo $settings['calendar_colors']['partial_female'] ?? '#fce7f3'; ?>">
+                </div>
+                <div>
+                    <label>Занято полностью</label>
+                    <input type="color" name="calendar_colors[full]" value="<?php echo $settings['calendar_colors']['full'] ?? '#fee2e2'; ?>">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Сохранить цвета</button>
+        </form>
     </div>
 
     <!-- Установка PWA / Десктоп -->

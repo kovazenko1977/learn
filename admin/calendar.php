@@ -51,6 +51,15 @@ $startDate = !empty($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
 $endDate = !empty($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-t');
 $dates = $calendarManager->getDateRange($startDate, $endDate);
 
+$settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true);
+$colors = $settings['calendar_colors'] ?? [
+    'free' => '#ffffff',
+    'reserved' => '#fff3cd',
+    'partial_male' => '#e0f2fe',
+    'partial_female' => '#fce7f3',
+    'full' => '#fee2e2'
+];
+
 $pageTitle = 'Шахматка (посуточно)';
 include 'includes/header.php';
 ?>
@@ -189,6 +198,14 @@ include 'includes/header.php';
 </script>
 
 <style>
+    :root {
+        --cal-free: <?php echo $colors['free']; ?>;
+        --cal-reserved: <?php echo $colors['reserved']; ?>;
+        --cal-partial-male: <?php echo $colors['partial_male']; ?>;
+        --cal-partial-female: <?php echo $colors['partial_female']; ?>;
+        --cal-full: <?php echo $colors['full']; ?>;
+    }
+
     .chess-table { border-collapse: separate; border-spacing: 0; width: 100%; }
     .chess-table th, .chess-table td { border: 1px solid #f0f0f0; padding: 0; height: 50px; text-align: center; }
     .chess-table th { background: #f8fafc; font-size: 0.75rem; color: #64748b; font-weight: 600; padding: 10px 5px; }
@@ -196,12 +213,12 @@ include 'includes/header.php';
     .cal-cell { cursor: pointer; transition: 0.2s; position: relative; }
     .cal-cell:hover { filter: brightness(0.95); }
 
-    .status-free { background: #fff; }
-    .status-reserved { background: #fff3cd; color: #856404; }
-    .status-full { background: #fee2e2; color: #991b1b; }
+    .status-free { background: var(--cal-free); }
+    .status-reserved { background: var(--cal-reserved); color: #856404; }
+    .status-full { background: var(--cal-full); color: #991b1b; }
 
-    .status-partial.gender-male { background: #e0f2fe; color: #0369a1; }
-    .status-partial.gender-female { background: #fce7f3; color: #be185d; }
+    .status-partial.gender-male { background: var(--cal-partial-male); color: #0369a1; }
+    .status-partial.gender-female { background: var(--cal-partial-female); color: #be185d; }
 
     .cell-info { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
     .gender-icon { font-size: 1.1rem; line-height: 1; margin-bottom: 2px; }
@@ -211,11 +228,11 @@ include 'includes/header.php';
 
     .legend-item { display: flex; align-items: center; gap: 8px; }
     .legend-item .box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #ddd; }
-    .box.free { background: #fff; }
-    .box.reserved { background: #fff3cd; }
-    .box.partial-male { background: #e0f2fe; }
-    .box.partial-female { background: #fce7f3; }
-    .box.full { background: #fee2e2; }
+    .box.free { background: var(--cal-free); }
+    .box.reserved { background: var(--cal-reserved); }
+    .box.partial-male { background: var(--cal-partial-male); }
+    .box.partial-female { background: var(--cal-partial-female); }
+    .box.full { background: var(--cal-full); }
 </style>
 
 <?php include 'includes/footer.php'; ?>

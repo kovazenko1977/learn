@@ -1,5 +1,12 @@
 {
-    "org_name": "Санаторий ПРО",
+    "org_name": "wesbooking Pro",
     "auth_enabled": false,
-    "theme": "modern"
+    "theme": "modern",
+    "calendar_colors": {
+        "free": "#ffffff",
+        "reserved": "#fff3cd",
+        "partial_male": "#e0f2fe",
+        "partial_female": "#fce7f3",
+        "full": "#fee2e2"
+    }
 }
