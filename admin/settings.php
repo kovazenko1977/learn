@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $dataFiles = [
                 'bookings.json', 'room_calendar.json', 'guests.json', 'plans.json',
                 'rooms.json', 'room_classes.json', 'procedures.json', 'extra_services.json',
-                'packages.json', 'text_blocks.json'
+                'packages.json', 'text_blocks.json', 'settings.json'
             ];
 
             $successCount = 0;

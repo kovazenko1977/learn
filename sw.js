@@ -1,7 +1,5 @@
-const CACHE_NAME = 'wesbooking-pro-v2';
-const ASSETS = [
-  './index.php',
-  './admin/index.php',
+const CACHE_NAME = 'wesbooking-pro-v3';
+const STATIC_ASSETS = [
   './assets/css/admin.css',
   './assets/css/style.css',
   './manifest.json'
@@ -10,7 +8,7 @@ const ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      return cache.addAll(STATIC_ASSETS);
     })
   );
   self.skipWaiting();
@@ -32,6 +30,18 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // Dynamic PHP pages should use Network-First strategy
+  if (url.pathname.endsWith('.php') || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Static assets can use Cache-First strategy
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
