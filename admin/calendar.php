@@ -33,6 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 $rooms = $store->findAll('rooms');
 $classes = $store->findAll('room_classes');
+$classMap = [];
+foreach($classes as $c) $classMap[$c['id']] = $c['name'];
+
 $dailyClassIds = [];
 foreach($classes as $c) if(($c['booking_type'] ?? 'daily') === 'daily') $dailyClassIds[] = $c['id'];
 $rooms = array_filter($rooms, function($r) use ($dailyClassIds) {
@@ -105,7 +108,7 @@ include 'includes/header.php';
 
                         $count = count($dayBookings);
                         $gender = null;
-                        if($count > 0) $gender = $dayBookings[0]['guest_gender'] ?? 'male';
+                        if($count > 0) $gender = $dayBookings[0]['guest_gender'] ?? 'unknown';
 
                         $status = 'free';
                         if($count > 0) {
@@ -117,10 +120,13 @@ include 'includes/header.php';
                         if($status === 'partial') $cellClass .= " gender-$gender";
 
                         $tooltip = "";
-                        foreach($dayBookings as $db) $tooltip .= ($db['client_name'] ?? 'Гость') . " (".($db['guest_gender']=='male'?'М':'Ж').")\n";
+                        foreach($dayBookings as $db) {
+                            $gChar = ($db['guest_gender'] ?? '') == 'male' ? 'М' : (($db['guest_gender'] ?? '') == 'female' ? 'Ж' : '?');
+                            $tooltip .= ($db['client_name'] ?? 'Гость') . " ($gChar)\n";
+                        }
                     ?>
                         <td class="<?php echo $cellClass; ?>"
-                            onclick="handleCellClick(<?php echo $rid; ?>, '<?php echo $date; ?>', <?php echo json_encode($dayBookings); ?>)"
+                            onclick='handleCellClick(<?php echo $rid; ?>, "<?php echo $date; ?>", <?php echo htmlspecialchars(json_encode($dayBookings), ENT_QUOTES, "UTF-8"); ?>)'
                             title="<?php echo htmlspecialchars($tooltip); ?>">
                             <?php if($count > 0): ?>
                                 <div class="cell-info">
@@ -158,30 +164,72 @@ include 'includes/header.php';
 </div>
 
 <script>
+    const roomDetails = <?php
+        $rd = [];
+        foreach($rooms as $r) {
+            $rd[$r['id']] = [
+                'number' => $r['room_number'],
+                'class' => $classMap[$r['room_class_id']] ?? 'N/A',
+                'main_seats' => $r['main_seats_count'] ?? 1,
+                'extra_seats' => $r['extra_seats_count'] ?? 0,
+                'price_main' => number_format($r['price_main'] ?? $r['price_per_day'] ?? 0, 0, ',', ' '),
+                'price_extra' => number_format($r['price_extra'] ?? 0, 0, ',', ' '),
+                'status' => $r['status'] ?? 'free'
+            ];
+        }
+        echo json_encode($rd);
+    ?>;
+    const statusLabels = {
+        'new': 'Новое',
+        'reserved': 'Резерв',
+        'booked': 'В номере',
+        'confirmed': 'Завершено',
+        'cancelled': 'Отменено'
+    };
+
     let currentRoomId, currentDate;
 
     function handleCellClick(rid, date, bookings) {
         currentRoomId = rid;
         currentDate = date;
+        const room = roomDetails[rid];
         const modal = document.getElementById('booking-modal');
         const content = document.getElementById('modal-content');
 
-        let html = `<p>Дата: <strong>${date}</strong></p>`;
+        let html = `
+            <div style="background: rgba(0,120,212,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(0,120,212,0.1);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <h4 style="margin:0; color:var(--primary-color);">№${room.number} — ${room.class}</h4>
+                    <span class="status-badge">${room.status}</span>
+                </div>
+                <div style="font-size:0.85rem; color:#666; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>Мест: <strong>${room.main_seats} + ${room.extra_seats}</strong></div>
+                    <div>Дата: <strong>${date}</strong></div>
+                    <div>Цена (осн): <strong>${room.price_main} ₽</strong></div>
+                    <div>Цена (доп): <strong>${room.price_extra} ₽</strong></div>
+                </div>
+            </div>
+        `;
+
         if(bookings.length > 0) {
-            html += '<div style="margin-top:15px;">';
+            html += '<h4 style="margin-bottom:10px;">Текущие бронирования:</h4>';
             bookings.forEach(b => {
+                const sLabel = statusLabels[b.status] || b.status;
                 html += `
-                <div style="padding:10px; background:rgba(0,0,0,0.03); border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <strong>${b.client_name}</strong> (${b.guest_gender == 'male' ? '👨' : '👩'})<br>
-                        <small>${b.seat_type == 'extra' ? 'Доп. место' : 'Основное'}</small>
+                <div style="padding:15px; background:white; border: 1px solid #eee; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                    <div style="flex:1;">
+                        <div style="font-weight:700; font-size:1.05rem;">${b.client_name} ${b.guest_gender == 'male' ? '👨' : (b.guest_gender == 'female' ? '👩' : '👤')}</div>
+                        <div style="font-size:0.8rem; color:#666; margin-top:4px;">
+                            ${b.seat_type == 'extra' ? '🛋 Доп. место' : '🛏 Основное место'} |
+                            <span class="status-badge status-${b.status}" style="font-size:0.7rem; padding: 2px 8px;">${sLabel}</span>
+                        </div>
+                        ${b.admin_notes ? `<div style="font-size:0.75rem; color:#d83b01; margin-top:8px; font-style:italic;">📝 ${b.admin_notes}</div>` : ''}
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="location.href='edit_booking.php?id=${b.id}'">Изм.</button>
+                    <button class="btn btn-secondary btn-sm" onclick="location.href='edit_booking.php?id=${b.id}'">Открыть</button>
                 </div>`;
             });
-            html += '</div>';
         } else {
-            html += '<p style="color:#888;">Места полностью свободны</p>';
+            html += '<p style="text-align:center; padding: 20px; color:#888; background:rgba(0,0,0,0.02); border-radius:12px;">На этот день места полностью свободны</p>';
         }
 
         content.innerHTML = html;
