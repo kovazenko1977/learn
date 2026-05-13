@@ -1,0 +1,103 @@
+[Wed May 13 01:21:46 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Wed May 13 01:22:23 2026] 127.0.0.1:37138 Accepted
+[Wed May 13 01:22:23 2026] 127.0.0.1:37138 [200]: GET /index.php
+[Wed May 13 01:22:23 2026] 127.0.0.1:37138 Closing
+[Wed May 13 01:22:26 2026] 127.0.0.1:37142 Accepted
+[Wed May 13 01:22:26 2026] 127.0.0.1:37142 [200]: POST /api/login.php
+[Wed May 13 01:22:26 2026] 127.0.0.1:37142 Closing
+[Wed May 13 01:22:26 2026] 127.0.0.1:37152 Accepted
+[Wed May 13 01:22:26 2026] 127.0.0.1:37152 [200]: GET /api/admin.php?action=settings
+[Wed May 13 01:22:26 2026] 127.0.0.1:37152 Closing
+[Wed May 13 01:22:27 2026] 127.0.0.1:37164 Accepted
+[Wed May 13 01:22:27 2026] 127.0.0.1:37164 [200]: GET /api/tasks.php
+[Wed May 13 01:22:27 2026] 127.0.0.1:37164 Closing
+[Wed May 13 01:22:27 2026] 127.0.0.1:37168 Accepted
+[Wed May 13 01:22:27 2026] 127.0.0.1:37168 [200]: GET /api/analytics.php
+[Wed May 13 01:22:27 2026] 127.0.0.1:37168 Closing
+[Wed May 13 01:22:27 2026] 127.0.0.1:37174 Accepted
+[Wed May 13 01:22:27 2026] 127.0.0.1:37174 [200]: GET /api/admin.php?action=users
+[Wed May 13 01:22:27 2026] 127.0.0.1:37174 Closing
+[Wed May 13 01:23:20 2026] 127.0.0.1:55754 Accepted
+[Wed May 13 01:23:20 2026] 127.0.0.1:55754 [200]: GET /index.php
+[Wed May 13 01:23:20 2026] 127.0.0.1:55754 Closing
+[Wed May 13 01:23:22 2026] 127.0.0.1:55760 Accepted
+[Wed May 13 01:23:22 2026] 127.0.0.1:55760 [200]: POST /api/login.php
+[Wed May 13 01:23:22 2026] 127.0.0.1:55760 Closing
+[Wed May 13 01:23:22 2026] 127.0.0.1:55768 Accepted
+[Wed May 13 01:23:22 2026] 127.0.0.1:55768 [200]: GET /api/admin.php?action=settings
+[Wed May 13 01:23:22 2026] 127.0.0.1:55768 Closing
+[Wed May 13 01:23:22 2026] 127.0.0.1:55774 Accepted
+[Wed May 13 01:23:22 2026] 127.0.0.1:55774 [200]: GET /api/tasks.php
+[Wed May 13 01:23:22 2026] 127.0.0.1:55774 Closing
+[Wed May 13 01:23:22 2026] 127.0.0.1:55788 Accepted
+[Wed May 13 01:23:22 2026] 127.0.0.1:55788 [200]: GET /api/analytics.php
+[Wed May 13 01:23:22 2026] 127.0.0.1:55788 Closing
+[Wed May 13 01:23:22 2026] 127.0.0.1:55794 Accepted
+[Wed May 13 01:23:22 2026] 127.0.0.1:55794 [200]: GET /api/admin.php?action=users
+[Wed May 13 01:23:22 2026] 127.0.0.1:55794 Closing
+[Wed May 13 01:23:24 2026] 127.0.0.1:55810 Accepted
+[Wed May 13 01:23:24 2026] 127.0.0.1:55810 [200]: GET /api/tasks.php
+[Wed May 13 01:23:24 2026] 127.0.0.1:55810 Closing
+[Wed May 13 01:23:27 2026] 127.0.0.1:37222 Accepted
+[Wed May 13 01:23:27 2026] 127.0.0.1:37222 [200]: GET /api/admin.php?action=users
+[Wed May 13 01:23:27 2026] 127.0.0.1:37222 Closing
+[Wed May 13 01:24:22 2026] 127.0.0.1:47882 Accepted
+[Wed May 13 01:24:22 2026] 127.0.0.1:47882 [200]: POST /api/login.php
+[Wed May 13 01:24:22 2026] 127.0.0.1:47882 Closing
+[Wed May 13 01:24:22 2026] 127.0.0.1:47896 Accepted
+[Wed May 13 01:24:22 2026] 127.0.0.1:47896 [200]: POST /api/tasks.php?action=create
+[Wed May 13 01:24:22 2026] 127.0.0.1:47896 Closing
+[Wed May 13 01:24:22 2026] 127.0.0.1:47900 Accepted
+[Wed May 13 01:24:22 2026] 127.0.0.1:47900 [200]: POST /api/tasks.php?action=add_comment
+[Wed May 13 01:24:22 2026] 127.0.0.1:47900 Closing
+[Wed May 13 01:24:22 2026] 127.0.0.1:47904 Accepted
+[Wed May 13 01:24:22 2026] 127.0.0.1:47904 [200]: GET /api/tasks.php
+[Wed May 13 01:24:22 2026] 127.0.0.1:47904 Closing
+[Wed May 13 01:24:22 2026] 127.0.0.1:47920 Accepted
+[Wed May 13 01:24:22 2026] 127.0.0.1:47920 [200]: GET /api/analytics.php
+[Wed May 13 01:24:22 2026] 127.0.0.1:47920 Closing
+[Wed May 13 01:27:39 2026] 127.0.0.1:52366 Accepted
+[Wed May 13 01:27:39 2026] 127.0.0.1:52366 [200]: POST /api/login.php
+[Wed May 13 01:27:39 2026] 127.0.0.1:52366 Closing
+[Wed May 13 01:28:07 2026] 127.0.0.1:41516 Accepted
+[Wed May 13 01:28:07 2026] 127.0.0.1:41516 [200]: GET /api/seed.php?secret=seed123
+[Wed May 13 01:28:07 2026] 127.0.0.1:41516 Closing
+[Wed May 13 01:28:07 2026] 127.0.0.1:40298 Accepted
+[Wed May 13 01:28:07 2026] 127.0.0.1:40298 [200]: POST /api/login.php?action=login
+[Wed May 13 01:28:07 2026] 127.0.0.1:40298 Closing
+[Wed May 13 01:28:07 2026] 127.0.0.1:40304 Accepted
+[Wed May 13 01:28:07 2026] 127.0.0.1:40304 [200]: POST /api/tasks.php?action=create
+[Wed May 13 01:28:07 2026] 127.0.0.1:40304 Closing
+[Wed May 13 01:28:07 2026] 127.0.0.1:40306 Accepted
+[Wed May 13 01:28:07 2026] 127.0.0.1:40306 [200]: POST /api/tasks.php?action=add_comment
+[Wed May 13 01:28:07 2026] 127.0.0.1:40306 Closing
+[Wed May 13 01:28:07 2026] 127.0.0.1:40314 Accepted
+[Wed May 13 01:28:07 2026] 127.0.0.1:40314 [200]: GET /api/tasks.php
+[Wed May 13 01:28:07 2026] 127.0.0.1:40314 Closing
+[Wed May 13 01:28:07 2026] 127.0.0.1:40320 Accepted
+[Wed May 13 01:28:07 2026] 127.0.0.1:40320 [200]: GET /api/analytics.php
+[Wed May 13 01:28:07 2026] 127.0.0.1:40320 Closing
+[Wed May 13 01:28:17 2026] 127.0.0.1:36126 Accepted
+[Wed May 13 01:28:17 2026] 127.0.0.1:36126 [200]: GET /index.php
+[Wed May 13 01:28:17 2026] 127.0.0.1:36126 Closing
+[Wed May 13 01:28:19 2026] 127.0.0.1:36130 Accepted
+[Wed May 13 01:28:19 2026] 127.0.0.1:36130 [200]: POST /api/login.php?action=login
+[Wed May 13 01:28:19 2026] 127.0.0.1:36130 Closing
+[Wed May 13 01:28:19 2026] 127.0.0.1:36134 Accepted
+[Wed May 13 01:28:19 2026] 127.0.0.1:36134 [200]: GET /api/admin.php?action=settings
+[Wed May 13 01:28:19 2026] 127.0.0.1:36134 Closing
+[Wed May 13 01:28:19 2026] 127.0.0.1:36146 Accepted
+[Wed May 13 01:28:19 2026] 127.0.0.1:36146 [200]: GET /api/tasks.php
+[Wed May 13 01:28:19 2026] 127.0.0.1:36146 Closing
+[Wed May 13 01:28:20 2026] 127.0.0.1:36158 Accepted
+[Wed May 13 01:28:20 2026] 127.0.0.1:36158 [200]: GET /api/analytics.php
+[Wed May 13 01:28:20 2026] 127.0.0.1:36158 Closing
+[Wed May 13 01:28:20 2026] 127.0.0.1:36172 Accepted
+[Wed May 13 01:28:20 2026] 127.0.0.1:36172 [200]: GET /api/admin.php?action=users
+[Wed May 13 01:28:20 2026] 127.0.0.1:36172 Closing
+[Wed May 13 01:28:22 2026] 127.0.0.1:36184 Accepted
+[Wed May 13 01:28:22 2026] 127.0.0.1:36184 [200]: GET /api/tasks.php
+[Wed May 13 01:28:22 2026] 127.0.0.1:36184 Closing
+[Wed May 13 01:28:25 2026] 127.0.0.1:36190 Accepted
+[Wed May 13 01:28:25 2026] 127.0.0.1:36190 [200]: GET /api/admin.php?action=users
+[Wed May 13 01:28:25 2026] 127.0.0.1:36190 Closing

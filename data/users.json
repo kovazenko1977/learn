@@ -1,0 +1,26 @@
+[
+    {
+        "id": "223f9abaa500f525",
+        "username": "admin",
+        "password": "$2y$10$QE5JxOkLEYGUqvaYQ\/3ta.hNMSS1V4csW1i6jiLoCLy5wkRKHwE\/K",
+        "role": "Administrator",
+        "name": "System Admin",
+        "department": "IT"
+    },
+    {
+        "id": "7c04cd5a72df84c8",
+        "username": "head",
+        "password": "$2y$10$\/slg3J0F2To6IKcFHplUDufVCzVb8qktNhowXr4zXmWKDii5sVh\/S",
+        "role": "Head of Department",
+        "name": "John Doe",
+        "department": "Maintenance"
+    },
+    {
+        "id": "0f29f37cfb07ac7a",
+        "username": "exec",
+        "password": "$2y$10$uwchT5XGn.u6buYXSSvGG.Kt7TN9K4bWf4Ik0S3HcdltmSH9SernW",
+        "role": "Executor",
+        "name": "Bill Gates",
+        "department": "Maintenance"
+    }
+]

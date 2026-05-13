@@ -1,0 +1,34 @@
+{
+    "categories": [
+        "Electrical",
+        "Plumbing",
+        "Cleaning",
+        "IT Support",
+        "General"
+    ],
+    "priorities": [
+        "Low",
+        "Medium",
+        "High",
+        "Urgent"
+    ],
+    "sla": {
+        "Low": 72,
+        "Medium": 48,
+        "High": 24,
+        "Urgent": 4
+    },
+    "form_fields": [
+        {
+            "id": "f1",
+            "label": "Room Number",
+            "type": "text"
+        },
+        {
+            "id": "f2",
+            "label": "Problem Description",
+            "type": "textarea"
+        }
+    ],
+    "jwt_secret": "2820a6e10017649bf85371033743b5d9eb5df6811beae760c5a9ef5b4347ebf7"
+}
