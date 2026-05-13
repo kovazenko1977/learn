@@ -239,4 +239,58 @@ class BookingManager {
 
         return $this->store->save('bookings', $booking);
     }
+
+    public function getRoomOccupancy($roomId, $checkIn, $checkOut, $excludeBookingId = null) {
+        $start = strtotime($checkIn);
+        $end = strtotime($checkOut);
+
+        $room = $this->store->findOne('rooms', $roomId);
+        if (!$room) return null;
+
+        $totalMain = (int)($room['main_seats_count'] ?? 0);
+        $totalExtra = (int)($room['extra_seats_count'] ?? 0);
+
+        // Fallback for simple rooms
+        if ($totalMain === 0 && $totalExtra === 0) {
+            $totalMain = (int)($room['capacity'] ?? 1);
+        }
+
+        $bookings = $this->store->findAll('bookings');
+        $occupiedMain = 0;
+        $occupiedExtra = 0;
+        $genders = [];
+
+        if (is_array($bookings)) {
+            foreach ($bookings as $b) {
+                if (!is_array($b) || ($b['status'] ?? '') === 'cancelled') continue;
+                if ($excludeBookingId && ($b['id'] ?? '') == $excludeBookingId) continue;
+
+                if (($b['room_id'] ?? 0) == $roomId) {
+                    $bStart = strtotime($b['check_in']);
+                    $bEnd = strtotime($b['check_out']);
+
+                    if ($start < $bEnd && $end > $bStart) {
+                        if (($b['seat_type'] ?? 'main') === 'extra') {
+                            $occupiedExtra++;
+                        } else {
+                            $occupiedMain++;
+                        }
+                        if (!empty($b['guest_gender'])) {
+                            $genders[] = $b['guest_gender'];
+                        }
+                    }
+                }
+            }
+        }
+
+        return [
+            'main_total' => $totalMain,
+            'main_occupied' => $occupiedMain,
+            'main_free' => max(0, $totalMain - $occupiedMain),
+            'extra_total' => $totalExtra,
+            'extra_occupied' => $occupiedExtra,
+            'extra_free' => max(0, $totalExtra - $occupiedExtra),
+            'genders' => array_unique($genders)
+        ];
+    }
 }

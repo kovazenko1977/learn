@@ -20,7 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $check_in = $_GET['check_in'] ?? '';
 $check_out = $_GET['check_out'] ?? '';
-$rooms = ($check_in && $check_out) ? $roomManager->getAllRooms() : []; // Simplification: let BookingManager handle advanced logic
+$selected_room_id = $_GET['room_id'] ?? '';
+
+$rooms = ($check_in && $check_out) ? $roomManager->getAllRooms() : [];
+
+$occupancy = null;
+if ($check_in && $check_out && $selected_room_id) {
+    $occupancy = $bookingManager->getRoomOccupancy($selected_room_id, $check_in, $check_out);
+}
 
 $pageTitle = 'Новое бронирование';
 include 'includes/header.php';
@@ -58,10 +65,13 @@ include 'includes/header.php';
         <div class="grid-2">
             <div>
                 <label>Объект (Номер)</label>
-                <select name="room_id" required>
+                <select name="room_id" required onchange="updateAvailability(this.value)">
+                    <option value="">-- Выберите номер --</option>
                     <?php foreach($rooms as $r):
-                        if (!is_array($r)) continue; ?>
-                        <option value="<?php echo $r['id'] ?? ''; ?>">
+                        if (!is_array($r)) continue;
+                        $sel = ($selected_room_id == $r['id']) ? 'selected' : '';
+                        ?>
+                        <option value="<?php echo $r['id'] ?? ''; ?>" <?php echo $sel; ?>>
                             №<?php echo $r['room_number'] ?? 'N/A'; ?>
                             (<?php echo ($r['main_seats_count'] ?? 1); ?>+<?php echo ($r['extra_seats_count'] ?? 0); ?> мест)
                         </option>
@@ -76,6 +86,24 @@ include 'includes/header.php';
                 </select>
             </div>
         </div>
+
+        <?php if ($occupancy): ?>
+        <div class="availability-info" style="margin-top: 15px; padding: 12px; background: rgba(0, 120, 212, 0.05); border: 1px solid rgba(0, 120, 212, 0.1); border-radius: 8px;">
+            <div style="display: flex; gap: 20px;">
+                <span>🛏 Свободно основных: <strong><?php echo $occupancy['main_free']; ?></strong> / <?php echo $occupancy['main_total']; ?></span>
+                <span>🛋 Свободно доп. мест: <strong><?php echo $occupancy['extra_free']; ?></strong> / <?php echo $occupancy['extra_total']; ?></span>
+            </div>
+            <?php if (!empty($occupancy['genders'])): ?>
+                <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+                    👥 В номере уже есть: <?php
+                        echo implode(', ', array_map(function($g) {
+                            return ($g === 'male' ? '👨 Мужчины' : '👩 Женщины');
+                        }, $occupancy['genders']));
+                    ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
 
         <div class="grid-2" style="margin-top: 15px;">
             <div>
@@ -110,5 +138,13 @@ include 'includes/header.php';
         </p>
     <?php endif; ?>
 </div>
+
+<script>
+function updateAvailability(roomId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('room_id', roomId);
+    window.location.href = url.toString();
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>
