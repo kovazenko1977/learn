@@ -209,4 +209,34 @@ class BookingManager {
         }
         return false;
     }
+
+    public function relocateGuest($bookingId, $newRoomId, $reason) {
+        $booking = $this->store->findOne('bookings', $bookingId);
+        if (!$booking) return false;
+
+        $checkIn = $booking['check_in'];
+        $checkOut = $booking['check_out'];
+        $gender = $booking['guest_gender'] ?? null;
+
+        if (!$this->isAvailable($newRoomId, $checkIn, $checkOut, $bookingId, $gender)) {
+            return false;
+        }
+
+        $oldRoom = $this->store->findOne('rooms', $booking['room_id']);
+        $newRoom = $this->store->findOne('rooms', $newRoomId);
+
+        $oldRoomNum = $oldRoom['room_number'] ?? 'ID '.$booking['room_id'];
+        $newRoomNum = $newRoom['room_number'] ?? 'ID '.$newRoomId;
+
+        $booking['room_id'] = $newRoomId;
+
+        $timestamp = date('d.m.Y H:i');
+        $logEntry = "\n[$timestamp] Переселение: из $oldRoomNum в $newRoomNum. Причина: $reason";
+        $booking['admin_notes'] = ($booking['admin_notes'] ?? '') . $logEntry;
+
+        // Recalculate price if room class changed
+        $booking['total_price'] = $this->calculatePrice($booking);
+
+        return $this->store->save('bookings', $booking);
+    }
 }

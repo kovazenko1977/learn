@@ -72,7 +72,9 @@ $allServices = $store->findAll('extra_services');
 $serviceMap = [];
 if (is_array($allServices)) foreach ($allServices as $s) if(isset($s['id'])) $serviceMap[$s['id']] = $s['name'];
 
-$pageTitle = 'Сегодня в санатории';
+$settings = json_decode(@file_get_contents(__DIR__ . '/data/settings.json'), true);
+$orgName = $settings['org_name'] ?? 'санатории';
+$pageTitle = 'Сегодня ' . $orgName;
 include 'admin/includes/header.php';
 ?>
 

@@ -409,6 +409,17 @@ window.addEventListener('load', () => {
     justify-content: center;
     z-index: 1000;
 }
+.modal-content {
+    background: #ffffff !important;
+    color: #323130 !important;
+}
+.modal-content h3 {
+    color: #323130 !important;
+}
+.modal-content label {
+    color: #323130 !important;
+    font-weight: 600;
+}
 </style>
 
 <?php include 'includes/footer.php'; ?>

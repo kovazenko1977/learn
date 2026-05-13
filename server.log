@@ -62,3 +62,315 @@
 [Wed May 13 05:11:26 2026] 127.0.0.1:53906 Accepted
 [Wed May 13 05:11:26 2026] 127.0.0.1:53906 [200]: GET /booking.php
 [Wed May 13 05:11:26 2026] 127.0.0.1:53906 Closing
+[Wed May 13 05:39:23 2026] 127.0.0.1:47850 Accepted
+[Wed May 13 05:39:23 2026] 127.0.0.1:47850 [200]: GET /admin/login.php
+[Wed May 13 05:39:23 2026] 127.0.0.1:47850 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:47854 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:47854 [200]: GET /assets/css/admin.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:47854 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41796 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41796 [302]: POST /admin/login.php
+[Wed May 13 05:39:24 2026] 127.0.0.1:41796 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41802 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41802 [200]: GET /index.php
+[Wed May 13 05:39:24 2026] 127.0.0.1:41802 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41818 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41818 [200]: GET /assets/css/admin.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:41818 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41822 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41822 [200]: GET /admin/settings.php
+[Wed May 13 05:39:24 2026] 127.0.0.1:41822 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41830 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41830 [200]: GET /sw.js
+[Wed May 13 05:39:24 2026] 127.0.0.1:41830 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41834 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41844 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41848 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41834 [200]: GET /assets/css/admin.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:41844 [200]: GET /assets/css/style.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:41848 [200]: GET /manifest.json
+[Wed May 13 05:39:24 2026] 127.0.0.1:41834 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41844 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41848 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41864 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41864 [200]: GET /assets/css/admin.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:41864 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41880 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41880 [200]: GET /sw.js
+[Wed May 13 05:39:24 2026] 127.0.0.1:41880 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41882 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41884 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41898 Accepted
+[Wed May 13 05:39:24 2026] 127.0.0.1:41882 [200]: GET /assets/css/admin.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:41882 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41884 [200]: GET /assets/css/style.css
+[Wed May 13 05:39:24 2026] 127.0.0.1:41884 Closing
+[Wed May 13 05:39:24 2026] 127.0.0.1:41898 [200]: GET /manifest.json
+[Wed May 13 05:39:24 2026] 127.0.0.1:41898 Closing
+[Wed May 13 05:39:25 2026] 127.0.0.1:41900 Accepted
+[Wed May 13 05:39:25 2026] 127.0.0.1:41900 [200]: POST /admin/settings.php
+[Wed May 13 05:39:25 2026] 127.0.0.1:41900 Closing
+[Wed May 13 05:39:25 2026] 127.0.0.1:41908 Accepted
+[Wed May 13 05:39:25 2026] 127.0.0.1:41908 [200]: GET /index.php
+[Wed May 13 05:39:25 2026] 127.0.0.1:41908 Closing
+[Wed May 13 05:39:25 2026] 127.0.0.1:41910 Accepted
+[Wed May 13 05:39:25 2026] 127.0.0.1:41910 [200]: GET /admin/users.php
+[Wed May 13 05:39:25 2026] 127.0.0.1:41910 Closing
+[Wed May 13 05:39:26 2026] 127.0.0.1:41914 Accepted
+[Wed May 13 05:39:26 2026] 127.0.0.1:41914 [200]: GET /sw.js
+[Wed May 13 05:39:26 2026] 127.0.0.1:41914 Closing
+[Wed May 13 05:39:26 2026] 127.0.0.1:41916 Accepted
+[Wed May 13 05:39:26 2026] 127.0.0.1:41916 [200]: GET /admin/settings.php
+[Wed May 13 05:39:26 2026] 127.0.0.1:41916 Closing
+[Wed May 13 05:39:26 2026] 127.0.0.1:41932 Accepted
+[Wed May 13 05:39:26 2026] 127.0.0.1:41932 [200]: GET /admin/dashboard.php
+[Wed May 13 05:39:26 2026] 127.0.0.1:41932 Closing
+[Wed May 13 05:39:26 2026] 127.0.0.1:41942 Accepted
+[Wed May 13 05:39:26 2026] 127.0.0.1:41942 [200]: GET /sw.js
+[Wed May 13 05:39:26 2026] 127.0.0.1:41942 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42512 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42512 [200]: GET /admin/login.php
+[Wed May 13 05:41:22 2026] 127.0.0.1:42512 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42526 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42526 [200]: GET /assets/css/admin.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42526 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42532 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42532 [302]: POST /admin/login.php
+[Wed May 13 05:41:22 2026] 127.0.0.1:42532 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42548 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42548 [200]: GET /index.php
+[Wed May 13 05:41:22 2026] 127.0.0.1:42548 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42550 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42550 [200]: GET /assets/css/admin.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42550 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42566 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42566 [200]: GET /admin/settings.php
+[Wed May 13 05:41:22 2026] 127.0.0.1:42566 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42580 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42580 [200]: GET /sw.js
+[Wed May 13 05:41:22 2026] 127.0.0.1:42580 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42584 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42590 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42594 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42584 [200]: GET /assets/css/style.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42590 [200]: GET /manifest.json
+[Wed May 13 05:41:22 2026] 127.0.0.1:42594 [200]: GET /assets/css/admin.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42584 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42590 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42594 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42606 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42606 [200]: GET /assets/css/admin.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42606 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42610 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42610 [200]: GET /sw.js
+[Wed May 13 05:41:22 2026] 127.0.0.1:42610 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42624 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42624 [200]: GET /assets/css/admin.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42624 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42636 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42648 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42636 [200]: GET /assets/css/style.css
+[Wed May 13 05:41:22 2026] 127.0.0.1:42648 [200]: GET /manifest.json
+[Wed May 13 05:41:22 2026] 127.0.0.1:42636 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42648 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42652 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42652 [200]: POST /admin/settings.php
+[Wed May 13 05:41:22 2026] 127.0.0.1:42652 Closing
+[Wed May 13 05:41:22 2026] 127.0.0.1:42658 Accepted
+[Wed May 13 05:41:22 2026] 127.0.0.1:42658 [200]: GET /index.php
+[Wed May 13 05:41:22 2026] 127.0.0.1:42658 Closing
+[Wed May 13 05:41:23 2026] 127.0.0.1:42662 Accepted
+[Wed May 13 05:41:23 2026] 127.0.0.1:42662 [200]: GET /admin/users.php
+[Wed May 13 05:41:23 2026] 127.0.0.1:42662 Closing
+[Wed May 13 05:41:23 2026] 127.0.0.1:42668 Accepted
+[Wed May 13 05:41:23 2026] 127.0.0.1:42668 [200]: GET /admin/settings.php
+[Wed May 13 05:41:23 2026] 127.0.0.1:42668 Closing
+[Wed May 13 05:41:23 2026] 127.0.0.1:42678 Accepted
+[Wed May 13 05:41:23 2026] 127.0.0.1:42678 [200]: POST /admin/settings.php
+[Wed May 13 05:41:23 2026] 127.0.0.1:42678 Closing
+[Wed May 13 05:41:23 2026] 127.0.0.1:42682 Accepted
+[Wed May 13 05:41:23 2026] 127.0.0.1:42682 [200]: GET /sw.js
+[Wed May 13 05:41:23 2026] 127.0.0.1:42682 Closing
+[Wed May 13 05:41:23 2026] 127.0.0.1:42684 Accepted
+[Wed May 13 05:41:24 2026] 127.0.0.1:42684 [200]: POST /admin/settings.php
+[Wed May 13 05:41:24 2026] 127.0.0.1:42684 Closing
+[Wed May 13 05:41:24 2026] 127.0.0.1:42686 Accepted
+[Wed May 13 05:41:24 2026] 127.0.0.1:42686 [200]: GET /admin/dashboard.php
+[Wed May 13 05:41:24 2026] 127.0.0.1:42686 Closing
+[Wed May 13 05:41:24 2026] 127.0.0.1:40142 Accepted
+[Wed May 13 05:41:24 2026] 127.0.0.1:40142 [200]: GET /sw.js
+[Wed May 13 05:41:24 2026] 127.0.0.1:40142 Closing
+[Wed May 13 05:41:24 2026] 127.0.0.1:40148 Accepted
+[Wed May 13 05:41:24 2026] 127.0.0.1:40148 [200]: GET /admin/edit_booking.php?id=350
+[Wed May 13 05:41:24 2026] 127.0.0.1:40148 Closing
+[Wed May 13 05:57:47 2026] 127.0.0.1:50880 Accepted
+[Wed May 13 05:57:47 2026] 127.0.0.1:50880 [200]: GET /admin/login.php
+[Wed May 13 05:57:47 2026] 127.0.0.1:50880 Closing
+[Wed May 13 05:57:47 2026] 127.0.0.1:50882 Accepted
+[Wed May 13 05:57:47 2026] 127.0.0.1:50882 [200]: GET /assets/css/admin.css
+[Wed May 13 05:57:47 2026] 127.0.0.1:50882 Closing
+[Wed May 13 05:57:47 2026] 127.0.0.1:50898 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50898 [200]: POST /admin/login.php
+[Wed May 13 05:57:48 2026] 127.0.0.1:50898 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50908 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50908 [200]: GET /assets/css/admin.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50908 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50920 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50920 [200]: GET /index.php
+[Wed May 13 05:57:48 2026] 127.0.0.1:50920 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50930 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50930 [200]: GET /assets/css/admin.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50930 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50936 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50936 [200]: GET /sw.js
+[Wed May 13 05:57:48 2026] 127.0.0.1:50936 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50942 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50942 [200]: GET /assets/css/admin.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50942 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50944 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50946 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50944 [200]: GET /assets/css/style.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50944 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50946 [200]: GET /manifest.json
+[Wed May 13 05:57:48 2026] 127.0.0.1:50946 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50956 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50956 [200]: GET /admin/users.php
+[Wed May 13 05:57:48 2026] 127.0.0.1:50956 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50968 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50968 [200]: GET /assets/css/admin.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50968 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50982 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50982 [200]: GET /sw.js
+[Wed May 13 05:57:48 2026] 127.0.0.1:50982 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50992 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50994 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50998 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:50992 [200]: GET /assets/css/admin.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50994 [200]: GET /assets/css/style.css
+[Wed May 13 05:57:48 2026] 127.0.0.1:50992 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50998 [200]: GET /manifest.json
+[Wed May 13 05:57:48 2026] 127.0.0.1:50994 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:50998 Closing
+[Wed May 13 05:57:48 2026] 127.0.0.1:51004 Accepted
+[Wed May 13 05:57:48 2026] 127.0.0.1:51004 [200]: GET /admin/dashboard.php
+[Wed May 13 05:57:48 2026] 127.0.0.1:51004 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:46628 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:46628 [200]: GET /admin/login.php
+[Wed May 13 06:00:34 2026] 127.0.0.1:46628 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:46630 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:46630 [200]: GET /assets/css/admin.css
+[Wed May 13 06:00:34 2026] 127.0.0.1:46630 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40914 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40914 [200]: POST /admin/login.php
+[Wed May 13 06:00:34 2026] 127.0.0.1:40914 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40930 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40930 [200]: GET /assets/css/admin.css
+[Wed May 13 06:00:34 2026] 127.0.0.1:40930 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40944 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40944 [200]: GET /admin/settings.php
+[Wed May 13 06:00:34 2026] 127.0.0.1:40944 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40948 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40948 [200]: GET /assets/css/admin.css
+[Wed May 13 06:00:34 2026] 127.0.0.1:40948 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40960 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40960 [200]: GET /sw.js
+[Wed May 13 06:00:34 2026] 127.0.0.1:40960 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40970 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40976 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40990 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40970 [200]: GET /assets/css/style.css
+[Wed May 13 06:00:34 2026] 127.0.0.1:40976 [200]: GET /manifest.json
+[Wed May 13 06:00:34 2026] 127.0.0.1:40990 [200]: GET /assets/css/admin.css
+[Wed May 13 06:00:34 2026] 127.0.0.1:40970 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40976 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40990 Closing
+[Wed May 13 06:00:34 2026] 127.0.0.1:40994 Accepted
+[Wed May 13 06:00:34 2026] 127.0.0.1:40994 [200]: POST /admin/settings.php
+[Wed May 13 06:00:34 2026] 127.0.0.1:40994 Closing
+[Wed May 13 06:00:37 2026] 127.0.0.1:41004 Accepted
+[Wed May 13 06:00:37 2026] 127.0.0.1:41004 [200]: GET /index.php
+[Wed May 13 06:00:37 2026] 127.0.0.1:41004 Closing
+[Wed May 13 06:00:37 2026] 127.0.0.1:41006 Accepted
+[Wed May 13 06:00:37 2026] 127.0.0.1:41006 [200]: GET /sw.js
+[Wed May 13 06:00:37 2026] 127.0.0.1:41006 Closing
+[Wed May 13 06:00:37 2026] 127.0.0.1:41016 Accepted
+[Wed May 13 06:00:37 2026] 127.0.0.1:41016 [200]: GET /sw.js
+[Wed May 13 06:00:37 2026] 127.0.0.1:41016 Closing
+[Wed May 13 06:00:37 2026] 127.0.0.1:41018 Accepted
+[Wed May 13 06:00:37 2026] 127.0.0.1:41020 Accepted
+[Wed May 13 06:00:37 2026] 127.0.0.1:41036 Accepted
+[Wed May 13 06:00:37 2026] 127.0.0.1:41018 [200]: GET /assets/css/admin.css
+[Wed May 13 06:00:37 2026] 127.0.0.1:41018 Closing
+[Wed May 13 06:00:37 2026] 127.0.0.1:41020 [200]: GET /assets/css/style.css
+[Wed May 13 06:00:37 2026] 127.0.0.1:41020 Closing
+[Wed May 13 06:00:37 2026] 127.0.0.1:41036 [200]: GET /manifest.json
+[Wed May 13 06:00:37 2026] 127.0.0.1:41036 Closing
+[Wed May 13 06:00:38 2026] 127.0.0.1:41042 Accepted
+[Wed May 13 06:00:38 2026] 127.0.0.1:41042 [200]: GET /admin/users.php
+[Wed May 13 06:00:38 2026] 127.0.0.1:41042 Closing
+[Wed May 13 06:00:38 2026] 127.0.0.1:41058 Accepted
+[Wed May 13 06:00:38 2026] 127.0.0.1:41058 [200]: GET /admin/dashboard.php
+[Wed May 13 06:00:38 2026] 127.0.0.1:41058 Closing
+[Wed May 13 06:00:40 2026] 127.0.0.1:41066 Accepted
+[Wed May 13 06:00:40 2026] 127.0.0.1:41066 [200]: GET /sw.js
+[Wed May 13 06:00:40 2026] 127.0.0.1:41066 Closing
+[Wed May 13 06:03:18 2026] 127.0.0.1:43982 Accepted
+[Wed May 13 06:03:18 2026] 127.0.0.1:43982 [200]: GET /admin/login.php
+[Wed May 13 06:03:18 2026] 127.0.0.1:43982 Closing
+[Wed May 13 06:03:18 2026] 127.0.0.1:43994 Accepted
+[Wed May 13 06:03:18 2026] 127.0.0.1:43994 [200]: GET /assets/css/admin.css
+[Wed May 13 06:03:18 2026] 127.0.0.1:43994 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44002 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44002 [200]: POST /admin/login.php
+[Wed May 13 06:03:19 2026] 127.0.0.1:44002 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44008 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44008 [200]: GET /assets/css/admin.css
+[Wed May 13 06:03:19 2026] 127.0.0.1:44008 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44012 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44012 [200]: GET /admin/settings.php
+[Wed May 13 06:03:19 2026] 127.0.0.1:44012 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44026 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44026 [200]: GET /assets/css/admin.css
+[Wed May 13 06:03:19 2026] 127.0.0.1:44026 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44030 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44030 [200]: GET /sw.js
+[Wed May 13 06:03:19 2026] 127.0.0.1:44030 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44038 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44042 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44058 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44038 [200]: GET /assets/css/admin.css
+[Wed May 13 06:03:19 2026] 127.0.0.1:44038 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44042 [200]: GET /assets/css/style.css
+[Wed May 13 06:03:19 2026] 127.0.0.1:44042 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44058 [200]: GET /manifest.json
+[Wed May 13 06:03:19 2026] 127.0.0.1:44058 Closing
+[Wed May 13 06:03:19 2026] 127.0.0.1:44074 Accepted
+[Wed May 13 06:03:19 2026] 127.0.0.1:44074 [200]: POST /admin/settings.php
+[Wed May 13 06:03:19 2026] 127.0.0.1:44074 Closing
+[Wed May 13 06:03:22 2026] 127.0.0.1:44086 Accepted
+[Wed May 13 06:03:22 2026] 127.0.0.1:44086 [200]: GET /sw.js
+[Wed May 13 06:03:22 2026] 127.0.0.1:44086 Closing
+[Wed May 13 06:03:24 2026] 127.0.0.1:60254 Accepted
+[Wed May 13 06:03:24 2026] 127.0.0.1:60254 [200]: GET /index.php
+[Wed May 13 06:03:24 2026] 127.0.0.1:60254 Closing
+[Wed May 13 06:03:24 2026] 127.0.0.1:60266 Accepted
+[Wed May 13 06:03:24 2026] 127.0.0.1:60266 [200]: GET /sw.js
+[Wed May 13 06:03:24 2026] 127.0.0.1:60266 Closing
+[Wed May 13 06:03:24 2026] 127.0.0.1:60270 Accepted
+[Wed May 13 06:03:24 2026] 127.0.0.1:60282 Accepted
+[Wed May 13 06:03:24 2026] 127.0.0.1:60298 Accepted
+[Wed May 13 06:03:24 2026] 127.0.0.1:60270 [200]: GET /assets/css/admin.css
+[Wed May 13 06:03:24 2026] 127.0.0.1:60270 Closing
+[Wed May 13 06:03:24 2026] 127.0.0.1:60282 [200]: GET /assets/css/style.css
+[Wed May 13 06:03:24 2026] 127.0.0.1:60282 Closing
+[Wed May 13 06:03:24 2026] 127.0.0.1:60298 [200]: GET /manifest.json
+[Wed May 13 06:03:24 2026] 127.0.0.1:60298 Closing
+[Wed May 13 06:03:25 2026] 127.0.0.1:60312 Accepted
+[Wed May 13 06:03:25 2026] 127.0.0.1:60312 [200]: GET /admin/users.php
+[Wed May 13 06:03:25 2026] 127.0.0.1:60312 Closing
+[Wed May 13 06:03:25 2026] 127.0.0.1:60314 Accepted
+[Wed May 13 06:03:25 2026] 127.0.0.1:60314 [200]: GET /admin/dashboard.php
+[Wed May 13 06:03:25 2026] 127.0.0.1:60314 Closing
+[Wed May 13 06:03:25 2026] 127.0.0.1:60316 Accepted
+[Wed May 13 06:03:25 2026] 127.0.0.1:60316 [200]: GET /admin/edit_booking.php?id=350
+[Wed May 13 06:03:25 2026] 127.0.0.1:60316 Closing

@@ -18,22 +18,33 @@ $message = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'client_name' => $_POST['client_name'],
-        'phone' => $_POST['phone'],
-        'room_id' => (int)$_POST['room_id'],
-        'check_in' => $_POST['check_in'],
-        'check_out' => $_POST['check_out'],
-        'status' => $_POST['status'],
-        'persons' => (int)$_POST['persons'],
-        'admin_notes' => $_POST['admin_notes']
-    ];
-
-    if ($bookingManager->updateBooking($id, $data)) {
-        $message = "Бронирование успешно обновлено!";
-        $booking = $store->findOne('bookings', $id);
+    if (isset($_POST['action']) && $_POST['action'] === 'relocate') {
+        $newRoomId = (int)$_POST['new_room_id'];
+        $reason = $_POST['relocation_reason'] ?? 'Не указана';
+        if ($bookingManager->relocateGuest($id, $newRoomId, $reason)) {
+            $message = "Гость успешно переселен!";
+            $booking = $store->findOne('bookings', $id);
+        } else {
+            $error = "Ошибка при переселении: Выбранный номер занят на эти даты.";
+        }
     } else {
-        $error = "Ошибка: Номер занят на эти даты или неверные данные.";
+        $data = [
+            'client_name' => $_POST['client_name'],
+            'phone' => $_POST['phone'],
+            'room_id' => (int)$_POST['room_id'],
+            'check_in' => $_POST['check_in'],
+            'check_out' => $_POST['check_out'],
+            'status' => $_POST['status'],
+            'persons' => (int)$_POST['persons'],
+            'admin_notes' => $_POST['admin_notes']
+        ];
+
+        if ($bookingManager->updateBooking($id, $data)) {
+            $message = "Бронирование успешно обновлено!";
+            $booking = $store->findOne('bookings', $id);
+        } else {
+            $error = "Ошибка: Номер занят на эти даты или неверные данные.";
+        }
     }
 }
 
@@ -116,6 +127,30 @@ include 'includes/header.php';
             <button type="button" class="btn btn-danger" onclick="if(confirm('Удалить бронь полностью?')) { document.getElementById('del-form').submit(); }">Удалить бронь</button>
         </div>
     </form>
+
+    <div class="mica-card" style="margin-top: 30px; border: 1px solid #ffeeba; background: #fffcf0;">
+        <h3 style="color: #856404;">🔄 Переселение гостя</h3>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Используйте эту функцию, чтобы перевести гостя в другой номер с автоматическим логированием причины.</p>
+        <form method="POST">
+            <input type="hidden" name="action" value="relocate">
+            <div class="form-group">
+                <label>Выберите новый номер</label>
+                <select name="new_room_id" required>
+                    <option value="">-- Выберите номер --</option>
+                    <?php foreach($rooms as $r): if($r['id'] == $booking['room_id']) continue; ?>
+                        <option value="<?php echo $r['id']; ?>">
+                            <?php echo htmlspecialchars($r['room_number']); ?> (<?php echo $r['capacity']; ?> чел.)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Причина переселения</label>
+                <input type="text" name="relocation_reason" placeholder="Например: Прорыв трубы, жалоба на шум..." required>
+            </div>
+            <button type="submit" class="btn btn-outline" style="width: 100%; border-color: #856404; color: #856404;">Выполнить переселение</button>
+        </form>
+    </div>
 
     <form id="del-form" method="post" action="dashboard.php" style="display:none;">
         <input type="hidden" name="action" value="delete_booking">

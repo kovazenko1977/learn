@@ -154,20 +154,21 @@ require_once 'includes/header.php';
 
 <style>
 :root {
-    --glass-bg: rgba(30, 30, 30, 0.9);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --modal-bg: #ffffff;
+    --modal-border: rgba(0, 0, 0, 0.1);
+    --modal-text: #323130;
 }
-.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-.modal-content { background: var(--glass-bg); margin: 2vh auto; padding: 25px; border-radius: 16px; border: 1px solid var(--glass-border); color: white !important; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-height: 94vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
-.modal-header h2 { margin: 0; color: white !important; font-size: 1.25rem; }
-.close { cursor: pointer; font-size: 24px; color: rgba(255,255,255,0.7); }
-.close:hover { color: white; }
-.form-group { margin-bottom: 12px; }
-.form-group label { display: block; margin-bottom: 5px; color: white !important; }
-.form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: white !important; }
-.form-control option { background: #333; color: white; }
-#permissions-section label { color: white !important; font-weight: normal; }
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+.modal-content { background: var(--modal-bg); margin: 5vh auto; padding: 25px; border-radius: 12px; border: 1px solid var(--modal-border); color: var(--modal-text) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15); max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--modal-border); padding-bottom: 15px; }
+.modal-header h2 { margin: 0; color: var(--modal-text) !important; font-size: 1.25rem; }
+.close { cursor: pointer; font-size: 24px; color: #666; }
+.close:hover { color: #000; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 6px; color: var(--modal-text) !important; font-weight: 600; font-size: 0.9rem; }
+.form-control { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.2); background: #fff; color: var(--modal-text) !important; }
+.form-control option { background: #fff; color: #000; }
+#permissions-section label { color: var(--modal-text) !important; font-weight: normal; }
 .btn-sm { padding: 4px 8px; font-size: 12px; }
 .alert { padding: 10px; border-radius: 8px; margin-bottom: 15px; }
 .alert-success { background: rgba(40, 167, 69, 0.2); border: 1px solid #28a745; color: #28a745; }
