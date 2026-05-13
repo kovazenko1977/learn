@@ -64,7 +64,7 @@ class BookingManager {
         return $totalPrice;
     }
 
-    public function isAvailable($roomId, $checkIn, $checkOut, $excludeBookingId = null, $requestedGender = null) {
+    public function isAvailable($roomId, $checkIn, $checkOut, $excludeBookingId = null, $requestedGender = null, $requestedSeatType = 'main', $isFamily = false) {
         $start = strtotime($checkIn);
         $end = strtotime($checkOut);
 
@@ -76,12 +76,17 @@ class BookingManager {
         $bufferSeconds = $bufferMinutes * 60;
 
         // Advanced Capacity: main + extra
-        $totalCapacity = (int)($room['main_seats_count'] ?? 0) + (int)($room['extra_seats_count'] ?? 0);
-        if ($totalCapacity <= 0) $totalCapacity = (int)($room['capacity'] ?? 1);
+        $totalMain = (int)($room['main_seats_count'] ?? 0);
+        $totalExtra = (int)($room['extra_seats_count'] ?? 0);
+        if ($totalMain === 0 && $totalExtra === 0) {
+            $totalMain = (int)($room['capacity'] ?? 1);
+        }
 
         $bookings = $this->store->findAll('bookings');
-        $occupiedSeatsAtTime = 0;
-        $existingGender = null;
+        $occupiedMain = 0;
+        $occupiedExtra = 0;
+        $existingGenders = [];
+        $hasExistingFamily = false;
 
         if (is_array($bookings)) {
             foreach ($bookings as $b) {
@@ -93,24 +98,39 @@ class BookingManager {
                     $bEnd = strtotime($b['check_out']) + $bufferSeconds;
 
                     if ($start < $bEnd && $end > $bStart) {
-                        // Room is partially or fully occupied during this period
-                        $occupiedSeatsAtTime++;
-                        if (isset($b['guest_gender'])) {
-                            $existingGender = $b['guest_gender'];
+                        if (($b['seat_type'] ?? 'main') === 'extra') {
+                            $occupiedExtra++;
+                        } else {
+                            $occupiedMain++;
+                        }
+                        if (!empty($b['guest_gender'])) {
+                            $existingGenders[] = $b['guest_gender'];
+                        }
+                        if (!empty($b['is_family'])) {
+                            $hasExistingFamily = true;
                         }
                     }
                 }
             }
         }
 
-        // 1. Check Capacity
-        if ($occupiedSeatsAtTime >= $totalCapacity) {
-            return false;
+        // 1. Check Capacity based on requested seat type
+        if ($requestedSeatType === 'extra') {
+            if ($occupiedExtra >= $totalExtra) return false;
+        } else {
+            if ($occupiedMain >= $totalMain) return false;
         }
 
-        // 2. Check Gender Matching (Only if requested gender is provided)
-        if ($requestedGender && $existingGender && $existingGender !== $requestedGender) {
-            return false;
+        // 2. Check Gender Matching
+        if ($isFamily || $hasExistingFamily) {
+            return true; // Family bypasses gender rules
+        }
+
+        $uniqueGenders = array_unique($existingGenders);
+        if ($requestedGender && count($uniqueGenders) > 0) {
+            if (!in_array($requestedGender, $uniqueGenders)) {
+                return false;
+            }
         }
 
         return true;
@@ -121,7 +141,9 @@ class BookingManager {
             return false;
         }
 
-        if (!$this->isAvailable($data['room_id'], $data['check_in'], $data['check_out'], null, $data['guest_gender'] ?? null)) {
+        $isFamily = !empty($data['is_family']);
+
+        if (!$this->isAvailable($data['room_id'], $data['check_in'], $data['check_out'], null, $data['guest_gender'] ?? null, $data['seat_type'] ?? 'main', $isFamily)) {
             return false;
         }
 
@@ -171,8 +193,10 @@ class BookingManager {
         $checkIn = $data['check_in'] ?? $existing['check_in'];
         $checkOut = $data['check_out'] ?? $existing['check_out'];
         $gender = $data['guest_gender'] ?? $existing['guest_gender'] ?? null;
+        $seatType = $data['seat_type'] ?? $existing['seat_type'] ?? 'main';
+        $isFamily = isset($data['is_family']) ? !empty($data['is_family']) : !empty($existing['is_family']);
 
-        if (!$this->isAvailable($roomId, $checkIn, $checkOut, $id, $gender)) {
+        if (!$this->isAvailable($roomId, $checkIn, $checkOut, $id, $gender, $seatType, $isFamily)) {
             return false;
         }
 
@@ -217,8 +241,10 @@ class BookingManager {
         $checkIn = $booking['check_in'];
         $checkOut = $booking['check_out'];
         $gender = $booking['guest_gender'] ?? null;
+        $seatType = $booking['seat_type'] ?? 'main';
+        $isFamily = !empty($booking['is_family']);
 
-        if (!$this->isAvailable($newRoomId, $checkIn, $checkOut, $bookingId, $gender)) {
+        if (!$this->isAvailable($newRoomId, $checkIn, $checkOut, $bookingId, $gender, $seatType, $isFamily)) {
             return false;
         }
 

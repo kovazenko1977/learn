@@ -65,7 +65,7 @@ include 'includes/header.php';
         <div class="grid-2">
             <div>
                 <label>Объект (Номер)</label>
-                <select name="room_id" required onchange="updateAvailability(this.value)">
+                <select name="room_id" id="room_id" required onchange="updateAvailability()">
                     <option value="">-- Выберите номер --</option>
                     <?php foreach($rooms as $r):
                         if (!is_array($r)) continue;
@@ -80,11 +80,16 @@ include 'includes/header.php';
             </div>
             <div>
                 <label>Пол гостя (для подселения)</label>
-                <select name="guest_gender" required>
+                <select name="guest_gender" id="guest_gender" required>
                     <option value="male">👨 Мужской</option>
                     <option value="female">👩 Женский</option>
                 </select>
             </div>
+        </div>
+
+        <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" name="is_family" id="is_family" value="1" onchange="updateAvailability()">
+            <label for="is_family" style="margin: 0; cursor: pointer;">💑 Семейная пара (разрешить разный пол в номере)</label>
         </div>
 
         <?php if ($occupancy): ?>
@@ -108,9 +113,9 @@ include 'includes/header.php';
         <div class="grid-2" style="margin-top: 15px;">
             <div>
                 <label>Тип места</label>
-                <select name="seat_type" required>
-                    <option value="main">🛏 Основное место</option>
-                    <option value="extra">🛋 Дополнительное место</option>
+                <select name="seat_type" id="seat_type" required onchange="updateAvailability()">
+                    <option value="main" <?php echo ($_GET['seat_type'] ?? '') === 'main' ? 'selected' : ''; ?>>🛏 Основное место</option>
+                    <option value="extra" <?php echo ($_GET['seat_type'] ?? '') === 'extra' ? 'selected' : ''; ?>>🛋 Дополнительное место</option>
                 </select>
             </div>
             <div>
@@ -129,7 +134,30 @@ include 'includes/header.php';
         <textarea name="admin_notes" rows="2" placeholder="Особые пожелания..."></textarea>
 
         <div style="margin-top: 25px;">
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">✅ Подтвердить бронирование</button>
+            <?php
+            $can_submit = true;
+            $error_msg = "";
+            if ($occupancy) {
+                $st = $_GET['seat_type'] ?? 'main';
+                if ($st === 'extra' && $occupancy['extra_free'] <= 0) {
+                    $can_submit = false;
+                    $error_msg = "Нет свободных дополнительных мест";
+                } elseif ($st === 'main' && $occupancy['main_free'] <= 0) {
+                    $can_submit = false;
+                    $error_msg = "Нет свободных основных мест";
+                }
+            }
+            ?>
+
+            <?php if (!$can_submit): ?>
+                <div style="color: #d83b01; margin-bottom: 10px; font-weight: bold; text-align: center;">
+                    ⚠️ <?php echo $error_msg; ?>
+                </div>
+            <?php endif; ?>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;" <?php echo !$can_submit ? 'disabled' : ''; ?>>
+                ✅ Подтвердить бронирование
+            </button>
         </div>
     </form>
     <?php else: ?>
@@ -140,11 +168,25 @@ include 'includes/header.php';
 </div>
 
 <script>
-function updateAvailability(roomId) {
+function updateAvailability() {
+    const roomId = document.getElementById('room_id').value;
+    const seatType = document.getElementById('seat_type').value;
+    const isFamily = document.getElementById('is_family').checked ? '1' : '';
+
     const url = new URL(window.location.href);
     url.searchParams.set('room_id', roomId);
+    url.searchParams.set('seat_type', seatType);
+    url.searchParams.set('is_family', isFamily);
     window.location.href = url.toString();
 }
+
+// Restore family checkbox state on load
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('is_family') === '1') {
+        document.getElementById('is_family').checked = true;
+    }
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>

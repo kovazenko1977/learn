@@ -36,6 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'check_out' => $_POST['check_out'],
             'status' => $_POST['status'],
             'persons' => (int)$_POST['persons'],
+            'guest_gender' => $_POST['guest_gender'],
+            'seat_type' => $_POST['seat_type'],
+            'is_family' => !empty($_POST['is_family']),
             'admin_notes' => $_POST['admin_notes']
         ];
 
@@ -76,6 +79,28 @@ include 'includes/header.php';
                 <label>Телефон</label>
                 <input type="tel" name="phone" value="<?php echo htmlspecialchars($booking['phone']); ?>" required>
             </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Пол гостя</label>
+                <select name="guest_gender" required>
+                    <option value="male" <?php echo ($booking['guest_gender'] ?? '') === 'male' ? 'selected' : ''; ?>>👨 Мужской</option>
+                    <option value="female" <?php echo ($booking['guest_gender'] ?? '') === 'female' ? 'selected' : ''; ?>>👩 Женский</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Тип места</label>
+                <select name="seat_type" required>
+                    <option value="main" <?php echo ($booking['seat_type'] ?? 'main') === 'main' ? 'selected' : ''; ?>>🛏 Основное место</option>
+                    <option value="extra" <?php echo ($booking['seat_type'] ?? '') === 'extra' ? 'selected' : ''; ?>>🛋 Дополнительное место</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" name="is_family" id="is_family" value="1" <?php echo !empty($booking['is_family']) ? 'checked' : ''; ?>>
+            <label for="is_family" style="margin: 0; cursor: pointer;">💑 Семейная пара (разрешить разный пол)</label>
         </div>
 
         <div class="form-group">
