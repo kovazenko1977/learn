@@ -12,6 +12,11 @@ include 'includes/header.php';
         <p style="font-size: 1.4rem; color: #475569; max-width: 800px; margin: 0 auto; line-height: 1.5;">
             Профессиональная экосистема для автоматизации бронирования ресурсов, управления номерным фондом и почасовыми услугами.
         </p>
+
+        <div style="margin-top: 30px; display: inline-block; background: #fffbeb; border: 1px solid #fef3c7; padding: 15px 30px; border-radius: 16px; text-align: left;">
+            <strong style="color: #92400e; display: block; margin-bottom: 5px;">🔑 Данные для входа (по умолчанию):</strong>
+            <code style="font-size: 1.1rem; color: #b45309;">Логин: admin / Пароль: admin</code>
+        </div>
     </div>
 
     <!-- 01. О программе -->
