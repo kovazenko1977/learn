@@ -1,0 +1,50 @@
+{
+    "promo_1": {
+        "id": "promo_1",
+        "title": "Специальная акция!",
+        "text": "Только сегодня скидка 20% на все товары при использовании промокода JULES2024.",
+        "image": "",
+        "animation": "fade",
+        "code": "promo_1"
+    },
+    "discount_50": {
+        "id": "discount_50",
+        "title": "Скидка 50%",
+        "text": "Мы распродаем остатки коллекции. Успейте купить со скидкой 50%!",
+        "image": "",
+        "animation": "slide",
+        "code": "discount_50"
+    },
+    "welcome_gift": {
+        "id": "welcome_gift",
+        "title": "Ваш подарок!",
+        "text": "Добро пожаловать на наш сайт. Мы подготовили для вас небольшой сюрприз при первом заказе.",
+        "image": "",
+        "animation": "zoom",
+        "code": "welcome_gift"
+    },
+    "6a04cdbc3d46e": {
+        "id": "6a04cdbc3d46e",
+        "title": "Тестовый попап",
+        "text": "Это текст тестового попапа для проверки анимации и картинок.",
+        "image": "",
+        "animation": "zoom",
+        "code": "test_popup_unique"
+    },
+    "6a04cdbc80356": {
+        "id": "6a04cdbc80356",
+        "title": "Акция 1",
+        "text": "Специальное предложение только сегодня!",
+        "image": "",
+        "animation": "fade",
+        "code": "promo_1"
+    },
+    "6a04cdd0097b8": {
+        "id": "6a04cdd0097b8",
+        "title": "Тестовый попап",
+        "text": "Это текст тестового попапа для проверки анимации и картинок.",
+        "image": "",
+        "animation": "zoom",
+        "code": "test_popup_unique_v3"
+    }
+}
