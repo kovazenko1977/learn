@@ -16,14 +16,11 @@ class JsonStore {
     }
 
     public function getAll(): array {
-        $handle = fopen($this->filePath, 'r');
+        $handle = fopen($this->filePath, 'rb');
         if (!$handle) return [];
 
         flock($handle, LOCK_SH);
-        $content = "";
-        if (filesize($this->filePath) > 0) {
-            $content = fread($handle, filesize($this->filePath));
-        }
+        $content = stream_get_contents($handle);
         flock($handle, LOCK_UN);
         fclose($handle);
 

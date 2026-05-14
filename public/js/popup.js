@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const popupBody = overlay.querySelector('.popup-body');
     const popupContent = overlay.querySelector('.popup-content');
 
+    // Detect API path relative to the script location
+    const scriptSrc = document.currentScript ? document.currentScript.src : '';
+    const scriptBase = scriptSrc.substring(0, scriptSrc.lastIndexOf('/js/'));
+    const apiBase = scriptBase ? scriptBase + '/api/get_popup.php' : '/api/get_popup.php';
+
     // Attach click events to buttons
     document.querySelectorAll('[data-popup-code]').forEach(button => {
         button.addEventListener('click', async (e) => {
@@ -31,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const code = button.getAttribute('data-popup-code');
 
             try {
-                const response = await fetch(`/api/get_popup.php?code=${code}`);
+                const response = await fetch(`${apiBase}?code=${code}`);
                 const data = await response.json();
 
                 if (data.error) {

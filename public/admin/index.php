@@ -1,4 +1,6 @@
 <?php
+require_once 'auth.php';
+requireAdmin();
 require_once __DIR__ . '/../../src/JsonStore.php';
 $store = new \App\JsonStore(__DIR__ . '/../../data/popups.json');
 $popups = $store->getAll();
@@ -40,8 +42,13 @@ $popups = $store->getAll();
                             <td><?= htmlspecialchars($popup['title']) ?></td>
                             <td><?= htmlspecialchars($popup['animation']) ?></td>
                             <td>
-                                <a href="edit.php?id=<?= $id ?>" class="btn btn-sm btn-outline-secondary">Изменить</a>
-                                <a href="delete.php?id=<?= $id ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Вы уверены?')">Удалить</a>
+                                <div class="btn-group">
+                                    <a href="edit.php?id=<?= $id ?>" class="btn btn-sm btn-outline-secondary">Изменить</a>
+                                    <form method="POST" action="delete.php" style="display:inline;" onsubmit="return confirm('Вы уверены?')">
+                                        <input type="hidden" name="id" value="<?= $id ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         <?php endforeach; ?>

@@ -1,4 +1,6 @@
 <?php
+require_once 'auth.php';
+requireAdmin();
 require_once __DIR__ . '/../../src/JsonStore.php';
 $store = new \App\JsonStore(__DIR__ . '/../../data/popups.json');
 
@@ -20,20 +22,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imagePath = $_POST['existing_image'];
 
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        $allowedMimeTypes = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/gif'  => 'gif',
+            'image/webp' => 'webp'
+        ];
         $fileType = mime_content_type($_FILES['image']['tmp_name']);
 
-        if (!in_array($fileType, $allowedTypes)) {
+        if (!isset($allowedMimeTypes[$fileType])) {
             die("Ошибка: Недопустимый тип файла. Разрешены только изображения.");
         }
 
-        $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $ext = $allowedMimeTypes[$fileType];
         $fileName = uniqid() . '.' . $ext;
         $uploadDir = __DIR__ . '/../uploads/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $fileName)) {
+            // Delete old image if it exists and we're updating
+            if (!empty($_POST['existing_image'])) {
+                $oldFile = __DIR__ . '/..' . $_POST['existing_image'];
+                if (file_exists($oldFile) && is_file($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
             $imagePath = '/uploads/' . $fileName;
         }
     }
