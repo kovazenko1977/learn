@@ -1,8 +1,8 @@
 <?php
 require_once 'auth.php';
 requireAdmin();
-require_once __DIR__ . '/../../src/JsonStore.php';
-$store = new \App\JsonStore(__DIR__ . '/../../data/popups.json');
+require_once __DIR__ . '/../src/JsonStore.php';
+$store = new \App\JsonStore(__DIR__ . '/../data/popups.json');
 
 $id = $_GET['id'] ?? null;
 $popup = $id ? $store->getById($id) : [
@@ -14,6 +14,10 @@ $popup = $id ? $store->getById($id) : [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        die('CSRF validation failed');
+    }
+
     $id = $_POST['id'] ?: uniqid();
     $title = $_POST['title'];
     $text = $_POST['text'];
@@ -36,17 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $ext = $allowedMimeTypes[$fileType];
         $fileName = uniqid() . '.' . $ext;
-        $uploadDir = __DIR__ . '/../uploads/';
+        $uploadDir = __DIR__ . '/uploads/';
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+            mkdir($uploadDir, 0755, true);
         }
         if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $fileName)) {
-            // Delete old image if it exists and we're updating
             if (!empty($_POST['existing_image'])) {
-                $oldFile = __DIR__ . '/..' . $_POST['existing_image'];
-                if (file_exists($oldFile) && is_file($oldFile)) {
-                    unlink($oldFile);
-                }
+                secureUnlink($_POST['existing_image']);
             }
             $imagePath = '/uploads/' . $fileName;
         }
@@ -64,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: index.php');
     exit;
 }
+$csrf_token = generateCsrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -84,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
                             <input type="hidden" name="existing_image" value="<?= htmlspecialchars($popup['image']) ?>">
+                            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
 
                             <div class="mb-3">
                                 <label class="form-label">Код вызова (slug)</label>
@@ -105,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label class="form-label">Изображение</label>
                                 <?php if ($popup['image']): ?>
                                     <div class="mb-2">
-                                        <img src="<?= $popup['image'] ?>" alt="Preview" style="max-height: 100px;">
+                                        <img src="<?= htmlspecialchars($popup['image']) ?>" alt="Preview" style="max-height: 100px;">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="image" class="form-control" accept="image/*">

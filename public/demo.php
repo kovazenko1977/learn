@@ -48,7 +48,7 @@
         </div>
 
         <div class="mt-5">
-            <a href="admin/index.php" class="btn btn-outline-light">Перейти в админку</a>
+            <a href="index.php" class="btn btn-outline-light">Перейти в админку</a>
         </div>
     </div>
 

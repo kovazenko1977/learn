@@ -6,7 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'] ?? '';
     $pass = $_POST['pass'] ?? '';
 
-    if ($user === ADMIN_USER && $pass === ADMIN_PASS) {
+    // Verify hash
+    if ($user === ADMIN_USER && password_verify($pass, password_hash('admin123', PASSWORD_BCRYPT))) {
         $_SESSION['admin_logged_in'] = true;
         header('Location: index.php');
         exit;

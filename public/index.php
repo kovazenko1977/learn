@@ -1,9 +1,10 @@
 <?php
 require_once 'auth.php';
 requireAdmin();
-require_once __DIR__ . '/../../src/JsonStore.php';
-$store = new \App\JsonStore(__DIR__ . '/../../data/popups.json');
+require_once __DIR__ . '/../src/JsonStore.php';
+$store = new \App\JsonStore(__DIR__ . '/../data/popups.json');
 $popups = $store->getAll();
+$csrf_token = generateCsrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -46,6 +47,7 @@ $popups = $store->getAll();
                                     <a href="edit.php?id=<?= $id ?>" class="btn btn-sm btn-outline-secondary">Изменить</a>
                                     <form method="POST" action="delete.php" style="display:inline;" onsubmit="return confirm('Вы уверены?')">
                                         <input type="hidden" name="id" value="<?= $id ?>">
+                                        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                                     </form>
                                 </div>
@@ -62,7 +64,7 @@ $popups = $store->getAll();
             </div>
         </div>
         <div class="mt-3">
-            <a href="../preview.php" class="btn btn-link">Перейти к просмотру (Demo)</a>
+            <a href="demo.php" class="btn btn-link">Перейти к просмотру (Demo)</a>
         </div>
     </div>
 </body>
