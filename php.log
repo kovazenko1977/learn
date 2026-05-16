@@ -1,0 +1,4 @@
+[Sat May 16 18:18:20 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sat May 16 18:18:22 2026] 127.0.0.1:34848 Accepted
+[Sat May 16 18:18:22 2026] 127.0.0.1:34848 [200]: GET /api/shortcode.php?id=render-test
+[Sat May 16 18:18:22 2026] 127.0.0.1:34848 Closing

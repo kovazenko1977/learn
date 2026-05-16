@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Тестовый раздел",
+        "id": "6a08b46dcfc39"
+    },
+    {
+        "id": "render-test",
+        "name": "Render Test"
+    },
+    {
+        "id": "news-test",
+        "name": "News Test"
+    }
+]
