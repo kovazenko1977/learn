@@ -100,6 +100,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         } else {
             $errorMessage = "Пожалуйста, введите корректный URL сайта.";
         }
+    } elseif ($_POST['action'] === 'update_telegram') {
+        $settings = json_decode(@file_get_contents(__DIR__ . '/../data/settings.json'), true) ?: [];
+        $settings['telegram'] = [
+            'bot_token' => $_POST['bot_token'] ?? '',
+            'chat_id' => $_POST['chat_id'] ?? '',
+            'enabled' => isset($_POST['tg_enabled'])
+        ];
+        file_put_contents(__DIR__ . '/../data/settings.json', json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        $successMessage = "Настройки Telegram сохранены!";
     }
 }
 
@@ -262,6 +271,45 @@ include 'includes/header.php';
                 </div>
             </div>
             <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Сохранить цвета</button>
+        </form>
+    </div>
+
+    <!-- Настройки Telegram -->
+    <div class="mica-card" style="grid-column: span 2;">
+        <h2>🤖 Уведомления в Telegram</h2>
+        <form method="POST">
+            <input type="hidden" name="action" value="update_telegram">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Токен бота (Bot Token)</label>
+                    <input type="password" name="bot_token" value="<?php echo htmlspecialchars($settings['telegram']['bot_token'] ?? ''); ?>" style="width: 100%;" placeholder="123456789:ABCDefgh...">
+                </div>
+                <div class="form-group">
+                    <label>ID чата (Chat ID)</label>
+                    <input type="text" name="chat_id" value="<?php echo htmlspecialchars($settings['telegram']['chat_id'] ?? ''); ?>" style="width: 100%;" placeholder="-100123456789">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="tg_enabled" <?php echo ($settings['telegram']['enabled'] ?? false) ? 'checked' : ''; ?>>
+                    Включить отправку уведомлений
+                </label>
+            </div>
+
+            <div style="background: rgba(0,120,212,0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(0,120,212,0.1);">
+                <h4 style="margin-top: 0; color: var(--primary-color);"> Как настроить?</h4>
+                <ol style="font-size: 0.9rem; padding-left: 20px; color: #444;">
+                    <li>Найдите в Telegram бота <b>@BotFather</b> и создайте нового бота командой <code>/newbot</code>.</li>
+                    <li>Скопируйте полученный <b>HTTP API Token</b> в поле выше.</li>
+                    <li>Добавьте бота в ваш чат или группу и напишите ему любое сообщение.</li>
+                    <li>Чтобы узнать свой <b>Chat ID</b>, перешлите любое сообщение из этого чата боту <b>@userinfobot</b> или воспользуйтесь ботом <b>@getmyid_bot</b>.</li>
+                    <li>Нажмите "Сохранить" и проверьте работу.</li>
+                </ol>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить настройки Telegram</button>
         </form>
     </div>
 

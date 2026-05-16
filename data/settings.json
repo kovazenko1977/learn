@@ -1,4 +1,9 @@
 {
     "org_name": "wesbooking Pro",
-    "auth_enabled": false
+    "auth_enabled": false,
+    "telegram": {
+        "bot_token": "123456789:TEST_TOKEN",
+        "chat_id": "-100987654321",
+        "enabled": true
+    }
 }

@@ -1,0 +1,31 @@
+[Sat May 16 10:58:50 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8001) started
+[Sat May 16 10:58:54 2026] 127.0.0.1:60030 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60030 [200]: GET /admin/login.php
+[Sat May 16 10:58:54 2026] 127.0.0.1:60030 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60042 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60042 [200]: GET /assets/css/admin.css
+[Sat May 16 10:58:54 2026] 127.0.0.1:60042 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60044 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60044 [200]: POST /admin/login.php
+[Sat May 16 10:58:54 2026] 127.0.0.1:60044 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60060 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60060 [200]: GET /assets/css/admin.css
+[Sat May 16 10:58:54 2026] 127.0.0.1:60060 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60064 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60064 [200]: GET /admin/system_health.php
+[Sat May 16 10:58:54 2026] 127.0.0.1:60064 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60078 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60078 [200]: GET /assets/css/admin.css
+[Sat May 16 10:58:54 2026] 127.0.0.1:60078 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60086 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60086 [200]: GET /sw.js
+[Sat May 16 10:58:54 2026] 127.0.0.1:60086 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60096 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60100 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60108 Accepted
+[Sat May 16 10:58:54 2026] 127.0.0.1:60096 [200]: GET /assets/css/admin.css
+[Sat May 16 10:58:54 2026] 127.0.0.1:60100 [200]: GET /assets/css/style.css
+[Sat May 16 10:58:54 2026] 127.0.0.1:60108 [200]: GET /manifest.json
+[Sat May 16 10:58:54 2026] 127.0.0.1:60096 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60100 Closing
+[Sat May 16 10:58:54 2026] 127.0.0.1:60108 Closing
