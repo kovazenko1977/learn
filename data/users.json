@@ -1,0 +1,22 @@
+[
+    {
+        "username": "admin",
+        "full_name": "Администратор",
+        "role": "administrator",
+        "permissions": [
+            "view_dashboard",
+            "manage_bookings",
+            "view_calendar",
+            "manage_guests",
+            "manage_rooms",
+            "manage_catalog",
+            "view_analytics",
+            "manage_planning",
+            "manage_users",
+            "manage_settings"
+        ],
+        "api_token": "cd336e570f145f6b14c8e9f4bb17891d",
+        "password_hash": "$2y$10$YTVaKVvZfFD\/Inuxbwlide4nI8xEm3I7ECotPi.2HhFI7xuGZEb3a",
+        "id": 1
+    }
+]
