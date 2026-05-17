@@ -6,8 +6,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'] ?? '';
     $pass = $_POST['pass'] ?? '';
 
+    $config = getConfig();
+
     // Verify hash
-    if ($user === ADMIN_USER && password_verify($pass, password_hash('admin123', PASSWORD_BCRYPT))) {
+    if ($user === 'admin' && password_verify($pass, $config['admin_pass_hash'])) {
         $_SESSION['admin_logged_in'] = true;
         header('Location: index.php');
         exit;
@@ -45,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary w-100">Войти</button>
         </form>
         <div class="mt-3 text-center text-muted small">
-            admin / admin123
+            admin / 123456
         </div>
     </div>
 </body>

@@ -1,10 +1,18 @@
 <?php
 session_start();
 
-// In a real production app, use password_hash() and a database.
-// This is a boilerplate configuration.
-define('ADMIN_USER', 'admin');
-define('ADMIN_PASS_HASH', '$2y$10$vO8qK/.R1/RMB9D8Y7uGuekQWpM9OQoV9U8D9U8D9U8D9U8D9U8D9'); // hash of 'admin123'
+function getConfig() {
+    $configFile = __DIR__ . '/data/config.json';
+    if (!file_exists($configFile)) {
+        return ['admin_pass_hash' => '$2y$10$7mwV7q.BdFuDu5/opP2wpuc0e4A5h1gycvArWSCif/Ghq9aQca2y2'];
+    }
+    return json_decode(file_get_contents($configFile), true);
+}
+
+function saveConfig($config) {
+    $configFile = __DIR__ . '/data/config.json';
+    file_put_contents($configFile, json_encode($config, JSON_PRETTY_PRINT));
+}
 
 function isAdmin() {
     return isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;

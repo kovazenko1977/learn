@@ -22,7 +22,10 @@ $csrf_token = generateCsrfToken();
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Управление всплывающими сообщениями</h1>
-            <a href="edit.php" class="btn btn-primary">Создать новый попап</a>
+            <div>
+                <a href="settings.php" class="btn btn-outline-secondary me-2">Настройки</a>
+                <a href="edit.php" class="btn btn-primary">Создать новый попап</a>
+            </div>
         </div>
 
         <div class="card">
