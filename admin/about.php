@@ -120,6 +120,25 @@ $newsCount = count(NewsItem::all());
                 <p class="mb-1">Контактный телефон: <a href="tel:+375333533971" class="text-decoration-none">+375 33 353-39-71</a></p>
                 <p class="mb-0">Разработчик: <b>Коваженко С.Б.</b></p>
             </div>
+            <div class="mt-5 text-start mx-auto" style="max-width: 700px;">
+                <h5 class="mb-3">Интеграция с WordPress</h5>
+                <p class="small text-muted">Для сайтов на WordPress добавьте следующий код в файл <code>functions.php</code> вашей темы:</p>
+                <pre class="bg-light p-3 rounded-3 small"><code>add_shortcode('news_section', function($atts) {
+    $atts = shortcode_atts(['id' => ''], $atts);
+    if (empty($atts['id'])) return '';
+
+    // Автоматическое определение URL панели
+    $base_url = '<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>';
+    $url = $base_url . '/api/shortcode.php?id=' . urlencode($atts['id']);
+
+    $response = wp_remote_get($url);
+    if (is_wp_error($response)) return 'Ошибка загрузки';
+
+    return wp_remote_retrieve_body($response);
+});</code></pre>
+                <p class="small text-muted mt-2">После этого вы сможете использовать шорткод <code>[news_section id="ID_РАЗДЕЛА"]</code> прямо в редакторе записей WordPress.</p>
+            </div>
+
             <div class="mt-5 text-muted small">
                 &copy; <?php echo date('Y'); ?> Все права защищены.
             </div>
