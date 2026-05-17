@@ -108,45 +108,20 @@ $newsCount = count(NewsItem::all());
 
     <div class="main-content">
         <header class="mb-5 d-flex justify-content-between align-items-center">
-            <h2>Дашборд</h2>
-            <div class="user-info">
-                <span class="badge bg-primary px-3 py-2">Администратор</span>
-            </div>
+            <h2>О программе</h2>
         </header>
 
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="glass-card text-center">
-                    <i class="bi bi-folder stat-icon"></i>
-                    <div class="stat-value"><?php echo $sectionsCount; ?></div>
-                    <div class="stat-label">Разделов создано</div>
-                </div>
+        <div class="glass-card text-center py-5">
+            <h4 class="mb-4"><b>News</b>Manager Pro</h4>
+            <p class="lead">Система управления контентом через шорткоды</p>
+            <hr class="my-4 mx-auto" style="width: 200px;">
+            <div class="mt-4">
+                <p class="mb-1">Разработано: <a href="https://wes.by" target="_blank" class="text-decoration-none">wes.by</a></p>
+                <p class="mb-1">Контактный телефон: <a href="tel:+375333533971" class="text-decoration-none">+375 33 353-39-71</a></p>
+                <p class="mb-0">Разработчик: <b>Коваженко С.Б.</b></p>
             </div>
-            <div class="col-md-4">
-                <div class="glass-card text-center">
-                    <i class="bi bi-newspaper stat-icon"></i>
-                    <div class="stat-value"><?php echo $newsCount; ?></div>
-                    <div class="stat-label">Новостей/Материалов</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="glass-card text-center">
-                    <i class="bi bi-clock stat-icon"></i>
-                    <div class="stat-value"><?php echo date('H:i'); ?></div>
-                    <div class="stat-label">Системное время</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="glass-card">
-                    <h5>Быстрые действия</h5>
-                    <div class="d-flex gap-3 mt-3">
-                        <a href="sections.php?action=add" class="btn btn-outline-primary rounded-pill">Создать раздел</a>
-                        <a href="news.php?action=add" class="btn btn-outline-primary rounded-pill">Добавить новость</a>
-                    </div>
-                </div>
+            <div class="mt-5 text-muted small">
+                &copy; <?php echo date('Y'); ?> Все права защищены.
             </div>
         </div>
     </div>

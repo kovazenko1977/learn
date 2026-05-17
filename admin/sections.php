@@ -115,6 +115,7 @@ if ($action === 'edit' && isset($_GET['id'])) {
             <a class="nav-link" href="news.php"><i class="bi bi-newspaper"></i> Новости</a>
             <a class="nav-link" href="backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
             <a class="nav-link" href="settings.php"><i class="bi bi-gear"></i> Настройки</a>
+            <a class="nav-link" href="about.php"><i class="bi bi-info-circle"></i> О программе</a>
             <hr>
             <a class="nav-link text-danger" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Выход</a>
         </nav>

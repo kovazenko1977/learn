@@ -107,14 +107,28 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
             margin-right: 12px;
             font-size: 1.2rem;
         }
-        #editor-container {
+        #editor-container, #html-editor {
             height: 400px;
             background: white;
             border-radius: 0 0 10px 10px;
         }
+        #html-editor {
+            width: 100%;
+            font-family: monospace;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            display: none;
+        }
         .ql-toolbar {
             background: #f8f9fa;
             border-radius: 10px 10px 0 0;
+        }
+        .preview-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid #eee;
+            min-height: 200px;
         }
     </style>
 </head>
@@ -127,6 +141,7 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
             <a class="nav-link active" href="news.php"><i class="bi bi-newspaper"></i> Новости</a>
             <a class="nav-link" href="backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
             <a class="nav-link" href="settings.php"><i class="bi bi-gear"></i> Настройки</a>
+            <a class="nav-link" href="about.php"><i class="bi bi-info-circle"></i> О программе</a>
             <hr>
             <a class="nav-link text-danger" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Выход</a>
         </nav>
@@ -190,12 +205,23 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Дата окончания (снятие с публикации)</label>
-                            <input type="datetime-local" name="expire_at" class="form-control rounded-3" value="<?php echo isset($editItem['expire_at']) ? date('Y-m-d\TH:i', strtotime($editItem['expire_at'])) : ''; ?>">
+                            <div class="input-group">
+                                <input type="datetime-local" name="expire_at" id="expire_at" class="form-control rounded-start-3" value="<?php echo isset($editItem['expire_at']) ? date('Y-m-d\TH:i', strtotime($editItem['expire_at'])) : ''; ?>" <?php echo empty($editItem['expire_at']) ? 'disabled' : ''; ?>>
+                                <div class="input-group-text bg-white border-start-0 rounded-end-3">
+                                    <input class="form-check-input mt-0 me-2" type="checkbox" id="indefinite" <?php echo empty($editItem['expire_at']) ? 'checked' : ''; ?>>
+                                    <label class="form-check-label small" for="indefinite">Бессрочно</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="d-flex gap-2 mt-4">
-                        <button type="submit" name="save_news" class="btn btn-primary rounded-pill px-4">Сохранить</button>
+                    <div class="mb-3 d-flex gap-2">
+                        <button type="button" class="btn btn-outline-info rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#previewModal" onclick="updatePreview()">Предпросмотр</button>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="toggle-html">Режим HTML</button>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4 border-top pt-4">
+                        <button type="submit" name="save_news" class="btn btn-primary rounded-pill px-5">Сохранить</button>
                         <a href="news.php" class="btn btn-light rounded-pill px-4">Отмена</a>
                     </div>
                 </form>
@@ -250,6 +276,22 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
         <?php endif; ?>
     </div>
 
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title">Предпросмотр</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h2 id="preview-title" class="mb-4"></h2>
+                    <div id="preview-body" class="preview-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -259,10 +301,14 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                 modules: {
                     toolbar: {
                         container: [
-                            [{ 'header': [1, 2, 3, false] }],
+                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                            [{ 'color': [] }, { 'background': [] }],
                             ['bold', 'italic', 'underline', 'strike'],
-                            ['link', 'image', 'code-block'],
+                            [{ 'align': [] }],
+                            ['blockquote', 'code-block'],
                             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            ['link', 'image', 'video'],
                             ['clean']
                         ],
                         handlers: {
@@ -271,6 +317,41 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                     }
                 }
             });
+
+            const htmlEditor = document.createElement('textarea');
+            htmlEditor.id = 'html-editor';
+            document.getElementById('editor-container').parentNode.insertBefore(htmlEditor, document.getElementById('editor-container').nextSibling);
+
+            document.getElementById('toggle-html').onclick = function() {
+                const container = document.getElementById('editor-container');
+                if (container.style.display !== 'none') {
+                    htmlEditor.value = quill.root.innerHTML;
+                    container.style.display = 'none';
+                    document.querySelector('.ql-toolbar').style.display = 'none';
+                    htmlEditor.style.display = 'block';
+                    this.textContent = 'Режим Визуальный';
+                } else {
+                    quill.root.innerHTML = htmlEditor.value;
+                    container.style.display = 'block';
+                    document.querySelector('.ql-toolbar').style.display = 'block';
+                    htmlEditor.style.display = 'none';
+                    this.textContent = 'Режим HTML';
+                }
+            };
+
+            function updatePreview() {
+                const content = document.getElementById('editor-container').style.display !== 'none'
+                    ? quill.root.innerHTML
+                    : htmlEditor.value;
+                document.getElementById('preview-title').textContent = document.querySelector('input[name="title"]').value;
+                document.getElementById('preview-body').innerHTML = content;
+            }
+
+            document.getElementById('indefinite').onchange = function() {
+                const expireInput = document.getElementById('expire_at');
+                expireInput.disabled = this.checked;
+                if (this.checked) expireInput.value = '';
+            };
 
             function imageHandler() {
                 var input = document.createElement('input');
@@ -299,7 +380,9 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
             }
 
             document.getElementById('newsForm').onsubmit = function() {
-                var content = document.querySelector('.ql-editor').innerHTML;
+                const content = document.getElementById('editor-container').style.display !== 'none'
+                    ? quill.root.innerHTML
+                    : htmlEditor.value;
                 document.getElementById('content-input').value = content;
             };
         }
