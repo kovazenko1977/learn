@@ -1,8 +1,8 @@
 <?php
 require_once 'auth.php';
 requireAdmin();
-require_once __DIR__ . '/../src/JsonStore.php';
-$store = new \App\JsonStore(__DIR__ . '/../data/popups.json');
+require_once __DIR__ . '/src/JsonStore.php';
+$store = new \App\JsonStore(__DIR__ . '/data/popups.json');
 
 $id = $_GET['id'] ?? null;
 $popup = $id ? $store->getById($id) : [

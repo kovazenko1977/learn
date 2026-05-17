@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../src/JsonStore.php';
+require_once __DIR__ . '/../src/JsonStore.php';
 header('Content-Type: application/json');
 
 $code = $_GET['code'] ?? null;
@@ -8,7 +8,7 @@ if (!$code) {
     exit;
 }
 
-$store = new \App\JsonStore(__DIR__ . '/../../data/popups.json');
+$store = new \App\JsonStore(__DIR__ . '/../data/popups.json');
 $popup = $store->getByCode($code);
 
 if ($popup) {
