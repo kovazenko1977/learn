@@ -15,7 +15,7 @@ $item = [
 ];
 NewsItem::save($item);
 
-NewsItem::incrementViews('test_item_v');
+NewsItem::incrementViews('test_item_v', 'test_visitor');
 $updated = NewsItem::find('test_item_v');
 if ($updated['views'] === 11) {
     echo "[PASSED] View Increment\n";

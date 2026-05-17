@@ -30,15 +30,15 @@
         "id": "n1",
         "section_id": "news-test",
         "title": "Past",
-        "publish_at": "2026-05-17 15:30:33",
-        "created_at": "2026-05-17 16:30:33"
+        "publish_at": "2026-05-17 16:36:30",
+        "created_at": "2026-05-17 17:36:30"
     },
     {
         "id": "n2",
         "section_id": "news-test",
         "title": "Future",
-        "publish_at": "2026-05-17 17:30:33",
-        "created_at": "2026-05-17 16:30:33"
+        "publish_at": "2026-05-17 18:36:30",
+        "created_at": "2026-05-17 17:36:30"
     },
     {
         "id": "6a08b593c5478",
@@ -59,5 +59,34 @@
         "expire_at": null,
         "updated_at": "2026-05-16 18:21:42",
         "created_at": "2026-05-16 18:21:42"
+    },
+    {
+        "id": "6a09ff1dce78d",
+        "section_id": "6a09ff1be789f",
+        "title": "New Feature Highlight",
+        "content": "<p>This is a <strong>test<\/strong> news item with deep settings.<\/p><p><img src=\"assets\/img\/no-image.jpg\"><\/p>",
+        "thumbnail": "",
+        "status": "published",
+        "is_pinned": false,
+        "publish_at": null,
+        "expire_at": null,
+        "seo_title": "",
+        "seo_description": "",
+        "tags": [
+            "ai",
+            "news",
+            "upgrade"
+        ],
+        "author": "Jules Developer",
+        "updated_at": "2026-05-17 17:47:09",
+        "views": 1,
+        "reaction_count": 1,
+        "created_at": "2026-05-17 17:47:09",
+        "view_logs": {
+            "679aa56b2357b3e4c17ae62aa9abf10f": "2026-05-17"
+        },
+        "reactions": [
+            "679aa56b2357b3e4c17ae62aa9abf10f"
+        ]
     }
 ]

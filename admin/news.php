@@ -55,12 +55,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'thumbnail' => $thumbnail,
             'status' => $_POST['status'] ?? 'published',
             'is_pinned' => isset($_POST['is_pinned']),
-            'publish_at' => $_POST['publish_at'] ?: null,
-            'expire_at' => $_POST['expire_at'] ?: null,
+            'publish_at' => ($_POST['publish_at'] ?? '') ?: null,
+            'expire_at' => ($_POST['expire_at'] ?? '') ?: null,
             'seo_title' => $_POST['seo_title'] ?? '',
             'seo_description' => $_POST['seo_description'] ?? '',
+            'tags' => array_filter(array_map('trim', explode(',', $_POST['tags'] ?? ''))),
+            'author' => $_POST['author'] ?? '',
             'updated_at' => date('Y-m-d H:i:s'),
-            'views' => $_POST['views'] ?? 0
+            'views' => (int)($_POST['views'] ?? 0),
+            'reaction_count' => (int)($_POST['reaction_count'] ?? 0)
         ];
 
         if ($data['title'] && $data['section_id']) {
@@ -196,6 +199,13 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                             <label class="form-label">Заголовок</label>
                             <input type="text" name="title" class="form-control rounded-3" value="<?php echo htmlspecialchars($editItem['title'] ?? ''); ?>" required>
                         </div>
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Автор</label>
+                            <input type="text" name="author" class="form-control rounded-3" value="<?php echo htmlspecialchars($editItem['author'] ?? ''); ?>">
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="form-label">Раздел</label>
                             <select name="section_id" class="form-select rounded-3" required>
@@ -226,8 +236,10 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                                 </div>
                             <?php endif; ?>
                         </div>
-                        <div class="col-md-6 mb-3 d-flex align-items-center pt-4">
-                            <div class="form-check form-switch">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Теги (через запятую)</label>
+                            <input type="text" name="tags" class="form-control rounded-3" value="<?php echo htmlspecialchars(implode(', ', $editItem['tags'] ?? [])); ?>" placeholder="акции, новости, важно">
+                            <div class="form-check form-switch mt-3">
                                 <input class="form-check-input" type="checkbox" name="is_pinned" id="is_pinned" <?php echo !empty($editItem['is_pinned']) ? 'checked' : ''; ?>>
                                 <label class="form-check-label" for="is_pinned">Закрепить в топе</label>
                             </div>

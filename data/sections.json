@@ -10,5 +10,24 @@
     {
         "id": "news-test",
         "name": "News Test"
+    },
+    {
+        "id": "6a09ff1be789f",
+        "name": "Feature Test Section 1779040027",
+        "view_type": "cards",
+        "items_per_page": 10,
+        "sort_by": "date_desc",
+        "custom_css": "",
+        "lang_read_more": "Читать далее",
+        "lang_search_placeholder": "Поиск новостей...",
+        "show_date": true,
+        "show_title": true,
+        "show_views": true,
+        "show_author": false,
+        "show_reading_time": true,
+        "show_tags": true,
+        "show_search": true,
+        "show_reactions": true,
+        "show_share": true
     }
 ]

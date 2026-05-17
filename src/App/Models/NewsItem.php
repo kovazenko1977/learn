@@ -60,13 +60,52 @@ class NewsItem
         return array_values($filtered);
     }
 
-    public static function incrementViews(string $id): void
+    public static function incrementViews(string $id, string $visitorHash): void
     {
         $item = self::find($id);
         if ($item) {
-            $item['views'] = ($item['views'] ?? 0) + 1;
-            self::save($item);
+            $viewLogs = $item['view_logs'] ?? [];
+            $today = date('Y-m-d');
+
+            // Check if this visitor already viewed this item today
+            if (!isset($viewLogs[$visitorHash]) || $viewLogs[$visitorHash] !== $today) {
+                $item['views'] = ($item['views'] ?? 0) + 1;
+                $viewLogs[$visitorHash] = $today;
+
+                // Cleanup old logs (keep only last 1000 visitors to avoid file bloat)
+                if (count($viewLogs) > 1000) {
+                    $viewLogs = array_slice($viewLogs, -1000, null, true);
+                }
+
+                $item['view_logs'] = $viewLogs;
+                self::save($item);
+            }
         }
+    }
+
+    public static function toggleReaction(string $id, string $visitorHash): array
+    {
+        $item = self::find($id);
+        if (!$item) return ['success' => false];
+
+        $reactions = $item['reactions'] ?? [];
+        if (in_array($visitorHash, $reactions)) {
+            $reactions = array_diff($reactions, [$visitorHash]);
+            $active = false;
+        } else {
+            $reactions[] = $visitorHash;
+            $active = true;
+        }
+
+        $item['reactions'] = array_values($reactions);
+        $item['reaction_count'] = count($item['reactions']);
+        self::save($item);
+
+        return [
+            'success' => true,
+            'count' => $item['reaction_count'],
+            'active' => $active
+        ];
     }
 
     public static function save(array $data): void

@@ -23,7 +23,32 @@ class Section
 
     public static function find(string $id): ?array
     {
-        return self::getStore()->findById($id);
+        $section = self::getStore()->findById($id);
+        if ($section) {
+            return array_merge(self::getDefaults(), $section);
+        }
+        return null;
+    }
+
+    public static function getDefaults(): array
+    {
+        return [
+            'view_type' => 'cards',
+            'items_per_page' => 10,
+            'show_date' => true,
+            'show_title' => true,
+            'show_views' => true,
+            'show_author' => false,
+            'show_reading_time' => true,
+            'show_tags' => true,
+            'show_search' => true,
+            'show_reactions' => true,
+            'show_share' => true,
+            'custom_css' => '',
+            'lang_read_more' => 'Читать далее',
+            'lang_search_placeholder' => 'Поиск новостей...',
+            'sort_by' => 'date_desc', // date_desc, date_asc, views_desc, reactions_desc
+        ];
     }
 
     public static function save(array $data): void
