@@ -122,13 +122,13 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
     <div class="sidebar">
         <h4 class="mb-5 px-3"><b>News</b>Manager</h4>
         <nav class="nav flex-column">
-            <a class="nav-link" href="/admin/index.php"><i class="bi bi-speedometer2"></i> Дашборд</a>
-            <a class="nav-link" href="/admin/sections.php"><i class="bi bi-folder"></i> Разделы</a>
-            <a class="nav-link active" href="/admin/news.php"><i class="bi bi-newspaper"></i> Новости</a>
-            <a class="nav-link" href="/admin/backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
-            <a class="nav-link" href="/admin/settings.php"><i class="bi bi-gear"></i> Настройки</a>
+            <a class="nav-link" href="index.php"><i class="bi bi-speedometer2"></i> Дашборд</a>
+            <a class="nav-link" href="sections.php"><i class="bi bi-folder"></i> Разделы</a>
+            <a class="nav-link active" href="news.php"><i class="bi bi-newspaper"></i> Новости</a>
+            <a class="nav-link" href="backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
+            <a class="nav-link" href="settings.php"><i class="bi bi-gear"></i> Настройки</a>
             <hr>
-            <a class="nav-link text-danger" href="/logout.php"><i class="bi bi-box-arrow-right"></i> Выход</a>
+            <a class="nav-link text-danger" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Выход</a>
         </nav>
     </div>
 
@@ -283,7 +283,7 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                     var formData = new FormData();
                     formData.append('image', file);
 
-                    fetch('/api/upload.php', {
+                    fetch('../api/upload.php', {
                         method: 'POST',
                         body: formData
                     }).then(res => res.json())

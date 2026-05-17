@@ -96,13 +96,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="sidebar">
         <h4 class="mb-5 px-3"><b>News</b>Manager</h4>
         <nav class="nav flex-column">
-            <a class="nav-link" href="/admin/index.php"><i class="bi bi-speedometer2"></i> Дашборд</a>
-            <a class="nav-link" href="/admin/sections.php"><i class="bi bi-folder"></i> Разделы</a>
-            <a class="nav-link" href="/admin/news.php"><i class="bi bi-newspaper"></i> Новости</a>
-            <a class="nav-link" href="/admin/backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
-            <a class="nav-link active" href="/admin/settings.php"><i class="bi bi-gear"></i> Настройки</a>
+            <a class="nav-link" href="index.php"><i class="bi bi-speedometer2"></i> Дашборд</a>
+            <a class="nav-link" href="sections.php"><i class="bi bi-folder"></i> Разделы</a>
+            <a class="nav-link" href="news.php"><i class="bi bi-newspaper"></i> Новости</a>
+            <a class="nav-link" href="backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
+            <a class="nav-link active" href="settings.php"><i class="bi bi-gear"></i> Настройки</a>
             <hr>
-            <a class="nav-link text-danger" href="/logout.php"><i class="bi bi-box-arrow-right"></i> Выход</a>
+            <a class="nav-link text-danger" href="../logout.php"><i class="bi bi-box-arrow-right"></i> Выход</a>
         </nav>
     </div>
 

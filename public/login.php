@@ -4,7 +4,7 @@ require_once __DIR__ . '/../src/autoload.php';
 use App\Helpers\Auth;
 
 if (Auth::check()) {
-    header('Location: /admin/index.php');
+    header('Location: admin/index.php');
     exit;
 }
 
@@ -12,7 +12,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pin = $_POST['pin'] ?? '';
     if (Auth::login($pin)) {
-        header('Location: /admin/index.php');
+        header('Location: admin/index.php');
         exit;
     } else {
         $error = 'Неверный пароль';
