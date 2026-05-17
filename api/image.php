@@ -5,7 +5,7 @@ if (!$name || !preg_match('/^[a-z0-9.]+$/i', $name)) {
     exit;
 }
 
-$filepath = __DIR__ . '/../../data/uploads/' . $name;
+$filepath = __DIR__ . '/../data/uploads/' . $name;
 if (file_exists($filepath)) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     header('Content-Type: ' . finfo_file($finfo, $filepath));

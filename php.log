@@ -1,4 +1,10 @@
-[Sun May 17 04:48:06 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Sun May 17 04:48:08 2026] 127.0.0.1:39912 Accepted
-[Sun May 17 04:48:08 2026] 127.0.0.1:39912 [302]: HEAD /
-[Sun May 17 04:48:08 2026] 127.0.0.1:39912 Closing
+[Sun May 17 05:03:40 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Sun May 17 05:03:42 2026] 127.0.0.1:53188 Accepted
+[Sun May 17 05:03:42 2026] 127.0.0.1:53188 [302]: HEAD /
+[Sun May 17 05:03:42 2026] 127.0.0.1:53188 Closing
+[Sun May 17 05:03:42 2026] 127.0.0.1:53194 Accepted
+[Sun May 17 05:03:42 2026] 127.0.0.1:53194 [302]: HEAD /public/
+[Sun May 17 05:03:42 2026] 127.0.0.1:53194 Closing
+[Sun May 17 05:03:42 2026] 127.0.0.1:53202 Accepted
+[Sun May 17 05:03:42 2026] 127.0.0.1:53202 [302]: HEAD /public/admin/
+[Sun May 17 05:03:42 2026] 127.0.0.1:53202 Closing

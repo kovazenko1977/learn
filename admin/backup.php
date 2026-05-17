@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../src/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
 use App\Helpers\Auth;
 
 Auth::requireAuth();
@@ -8,22 +8,22 @@ $success = '';
 if (isset($_POST['create_backup'])) {
     $zip = new ZipArchive();
     $filename = 'backup_' . date('Y-m-d_H-i-s') . '.zip';
-    $filepath = __DIR__ . '/../../data/backups/' . $filename;
+    $filepath = __DIR__ . '/../data/backups/' . $filename;
 
-    if (!is_dir(__DIR__ . '/../../data/backups/')) {
-        mkdir(__DIR__ . '/../../data/backups/', 0755, true);
+    if (!is_dir(__DIR__ . '/../data/backups/')) {
+        mkdir(__DIR__ . '/../data/backups/', 0755, true);
     }
 
     if ($zip->open($filepath, ZipArchive::CREATE) === TRUE) {
         $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(__DIR__ . '/../../data/'),
+            new RecursiveDirectoryIterator(__DIR__ . '/../data/'),
             RecursiveIteratorIterator::LEAVES_ONLY
         );
 
         foreach ($files as $name => $file) {
             if (!$file->isDir()) {
                 $filePath = $file->getRealPath();
-                $relativePath = substr($filePath, strlen(__DIR__ . '/../../data/'));
+                $relativePath = substr($filePath, strlen(__DIR__ . '/../data/'));
 
                 // Don't include backups in backups
                 if (strpos($relativePath, 'backups/') !== 0) {
@@ -37,8 +37,8 @@ if (isset($_POST['create_backup'])) {
 }
 
 if (isset($_GET['download'])) {
-    $file = __DIR__ . '/../../data/backups/' . $_GET['download'];
-    if (file_exists($file) && strpos(realpath($file), realpath(__DIR__ . '/../../data/backups/')) === 0) {
+    $file = __DIR__ . '/../data/backups/' . $_GET['download'];
+    if (file_exists($file) && strpos(realpath($file), realpath(__DIR__ . '/../data/backups/')) === 0) {
         header('Content-Type: application/zip');
         header('Content-Disposition: attachment; filename=' . basename($file));
         readfile($file);
@@ -46,7 +46,7 @@ if (isset($_GET['download'])) {
     }
 }
 
-$backupDir = __DIR__ . '/../../data/backups/';
+$backupDir = __DIR__ . '/../data/backups/';
 if (!is_dir($backupDir)) {
     mkdir($backupDir, 0755, true);
 }
@@ -164,7 +164,7 @@ $backups = array_diff(scandir($backupDir), ['.', '..']);
                         <?php foreach (array_reverse($backups) as $file): ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($file); ?></strong></td>
-                            <td><?php echo date('d.m.Y H:i', filemtime(__DIR__ . '/../../data/backups/' . $file)); ?></td>
+                            <td><?php echo date('d.m.Y H:i', filemtime(__DIR__ . '/../data/backups/' . $file)); ?></td>
                             <td class="text-end">
                                 <a href="?download=<?php echo urlencode($file); ?>" class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-download"></i> Скачать</a>
                             </td>

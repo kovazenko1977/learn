@@ -53,7 +53,17 @@ class Auth
     public static function requireAuth(): void
     {
         if (!self::check()) {
-            header('Location: /login.php');
+            $scriptName = $_SERVER['SCRIPT_NAME'];
+            $dir = dirname($scriptName);
+
+            // Если мы находимся в папке admin, то login.php находится уровнем выше
+            if (basename($dir) === 'admin') {
+                $loginUrl = '../login.php';
+            } else {
+                $loginUrl = 'login.php';
+            }
+
+            header('Location: ' . $loginUrl);
             exit;
         }
     }

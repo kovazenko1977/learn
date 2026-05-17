@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../src/autoload.php';
+require_once __DIR__ . '/../src/autoload.php';
 use App\Helpers\Auth;
 
 if (!Auth::check()) {
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
 
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = uniqid() . '.' . $ext;
-    $uploadDir = __DIR__ . '/../../data/uploads/';
+    $uploadDir = __DIR__ . '/../data/uploads/';
 
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
