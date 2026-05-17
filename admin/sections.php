@@ -186,9 +186,10 @@ if ($action === 'edit' && isset($_GET['id'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function copyShortcode(id) {
-            const text = `<div data-news-section="${id}"></div>`;
+            const baseUrl = '<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . rtrim(str_replace('/admin', '', dirname($_SERVER['SCRIPT_NAME'])), "/"); ?>';
+            const text = `<div data-news-section="${id}"></div>\n<script src="${baseUrl}/assets/js/shortcode.js"><\/script>`;
             navigator.clipboard.writeText(text).then(() => {
-                alert('Код для вставки скопирован: ' + text + '\n\nНе забудьте подключить скрипт shortcode.js на вашем сайте.');
+                alert('Код для вставки скопирован (блок + скрипт)!');
             });
         }
     </script>

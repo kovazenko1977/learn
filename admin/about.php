@@ -129,14 +129,28 @@ $newsCount = count(NewsItem::all());
 
     // Автоматическое определение URL панели
     $base_url = '<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]"; ?>';
-    $url = $base_url . '/api/shortcode.php?id=' . urlencode($atts['id']);
+    $path = '<?php echo dirname($_SERVER['SCRIPT_NAME']); ?>';
+    $path = str_replace('/admin', '', $path);
+    $url = $base_url . $path . '/api/shortcode.php?id=' . urlencode($atts['id']);
 
-    $response = wp_remote_get($url);
-    if (is_wp_error($response)) return 'Ошибка загрузки';
+    $response = wp_remote_get($url, ['timeout' => 15, 'sslverify' => false]);
+    if (is_wp_error($response)) return '<!-- NewsManager Error: ' . $response->get_error_message() . ' -->';
 
     return wp_remote_retrieve_body($response);
 });</code></pre>
                 <p class="small text-muted mt-2">После этого вы сможете использовать шорткод <code>[news_section id="ID_РАЗДЕЛА"]</code> прямо в редакторе записей WordPress.</p>
+
+                <h5 class="mb-3 mt-4">Вариант через Iframe (универсальный)</h5>
+                <p class="small text-muted">Если PHP вариант блокируется сервером, используйте Iframe. Это 100% рабочий вариант для любого сайта:</p>
+                <pre class="bg-light p-3 rounded-3 small"><code>&lt;iframe src="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]" . rtrim(str_replace('/admin', '', dirname($_SERVER['SCRIPT_NAME'])), "/") . '/api/shortcode.php?id=ID_РАЗДЕЛА'; ?>"
+        width="100%" height="800" frameborder="0" scrolling="no" onload="this.style.height=this.contentWindow.document.body.scrollHeight+'px';"&gt;&lt;/iframe&gt;</code></pre>
+
+                <h5 class="mb-3 mt-4">Возможные причины, если не работает:</h5>
+                <ul class="small text-muted">
+                    <li><b>CORS:</b> Мы добавили заголовки разрешения, но некоторые браузеры или плагины безопасности могут блокировать внешние запросы.</li>
+                    <li><b>HTTPS/HTTP:</b> Если основной сайт на HTTPS, а панель на HTTP, браузер заблокирует "смешанный контент". Убедитесь, что оба сайта используют SSL.</li>
+                    <li><b>WP Remote Get:</b> Некоторые хостинги отключают функции внешних запросов в PHP. В этом случае используйте вариант с Iframe.</li>
+                </ul>
             </div>
 
             <div class="mt-5 text-muted small">

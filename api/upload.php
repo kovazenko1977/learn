@@ -25,7 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
     }
 
     if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
-        echo json_encode(['url' => '/api/image.php?name=' . $filename]);
+        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
+        $host = $_SERVER['HTTP_HOST'];
+        $scriptPath = dirname($_SERVER['SCRIPT_NAME']); // /api
+        $baseUrl = str_replace('/api', '', $scriptPath);
+
+        $url = "$protocol://$host$baseUrl/api/image.php?name=" . $filename;
+        echo json_encode(['url' => $url]);
     } else {
         echo json_encode(['error' => 'Ошибка загрузки файла']);
     }
