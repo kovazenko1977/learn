@@ -13,9 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_section'])) {
         $id = $_POST['id'] ?? null;
         $name = $_POST['name'] ?? '';
+        $viewType = $_POST['view_type'] ?? 'cards';
+        $itemsPerPage = $_POST['items_per_page'] ?? 10;
 
         if ($name) {
-            Section::save(['id' => $id ?: uniqid(), 'name' => $name]);
+            Section::save([
+                'id' => $id ?: uniqid(),
+                'name' => $name,
+                'view_type' => $viewType,
+                'items_per_page' => (int)$itemsPerPage
+            ]);
             $success = 'Раздел успешно сохранен';
             $action = 'list';
         } else {
@@ -44,67 +51,7 @@ if ($action === 'edit' && isset($_GET['id'])) {
     <title>Управление разделами - NewsManager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --accent-color: #4facfe;
-        }
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .sidebar {
-            width: 280px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid var(--glass-border);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 2rem 1rem;
-            z-index: 1000;
-        }
-        .main-content {
-            margin-left: 280px;
-            padding: 2rem;
-        }
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .nav-link {
-            color: #555;
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            transition: all 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(79, 172, 254, 0.15);
-            color: var(--accent-color);
-        }
-        .nav-link i {
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
-        .shortcode-badge {
-            background: rgba(79, 172, 254, 0.1);
-            color: var(--accent-color);
-            padding: 5px 12px;
-            border-radius: 8px;
-            font-family: monospace;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
     <div class="sidebar">
@@ -139,9 +86,22 @@ if ($action === 'edit' && isset($_GET['id'])) {
                 <h5><?php echo $action === 'add' ? 'Новый раздел' : 'Редактировать раздел'; ?></h5>
                 <form method="POST">
                     <input type="hidden" name="id" value="<?php echo $editSection['id'] ?? ''; ?>">
-                    <div class="mb-3">
-                        <label class="form-label">Название раздела</label>
-                        <input type="text" name="name" class="form-control rounded-3" value="<?php echo htmlspecialchars($editSection['name'] ?? ''); ?>" required>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Название раздела</label>
+                            <input type="text" name="name" class="form-control rounded-3" value="<?php echo htmlspecialchars($editSection['name'] ?? ''); ?>" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Вид отображения</label>
+                            <select name="view_type" class="form-select rounded-3">
+                                <option value="cards" <?php echo ($editSection['view_type'] ?? '') === 'cards' ? 'selected' : ''; ?>>Карточки</option>
+                                <option value="table" <?php echo ($editSection['view_type'] ?? '') === 'table' ? 'selected' : ''; ?>>Таблица</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Новостей на страницу</label>
+                            <input type="number" name="items_per_page" class="form-control rounded-3" value="<?php echo $editSection['items_per_page'] ?? 10; ?>" min="1" max="100">
+                        </div>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="submit" name="save_section" class="btn btn-primary rounded-pill px-4">Сохранить</button>
@@ -157,6 +117,8 @@ if ($action === 'edit' && isset($_GET['id'])) {
                     <thead>
                         <tr>
                             <th>Название</th>
+                            <th>Вид</th>
+                            <th>Страница</th>
                             <th>Shortcode</th>
                             <th class="text-end">Действия</th>
                         </tr>
@@ -165,6 +127,13 @@ if ($action === 'edit' && isset($_GET['id'])) {
                         <?php foreach ($sections as $section): ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($section['name']); ?></strong></td>
+                            <td>
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-<?php echo ($section['view_type'] ?? 'cards') === 'cards' ? 'grid-3x3-gap' : 'list-ul'; ?>"></i>
+                                    <?php echo ($section['view_type'] ?? 'cards') === 'cards' ? 'Карточки' : 'Таблица'; ?>
+                                </span>
+                            </td>
+                            <td><small class="text-muted"><?php echo $section['items_per_page'] ?? 10; ?></small></td>
                             <td><span class="shortcode-badge" onclick="copyShortcode('<?php echo $section['id']; ?>')">&lt;div data-news-section="<?php echo $section['id']; ?>"&gt;&lt;/div&gt;</span></td>
                             <td class="text-end">
                                 <a href="?action=edit&id=<?php echo $section['id']; ?>" class="btn btn-sm btn-outline-secondary rounded-pill me-1"><i class="bi bi-pencil"></i></a>

@@ -16,19 +16,36 @@
             const sectionId = container.getAttribute('data-news-section');
             const apiUrl = container.getAttribute('data-api-url') || (baseUrl + 'api/shortcode.php');
 
-            fetch(`${apiUrl}?id=${sectionId}`)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
-                })
-                .then(html => {
-                    container.innerHTML = html;
-                    container.dataset.loaded = 'true';
-                })
-                .catch(error => {
-                    console.error('Error loading news section:', error);
-                    container.innerHTML = '<p style="color:red">Ошибка загрузки контента. Проверьте путь к API.</p>';
-                });
+            function loadPage(page) {
+                const url = new URL(apiUrl, window.location.origin);
+                url.searchParams.set('id', sectionId);
+                if (page) url.searchParams.set('page', page);
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.text();
+                    })
+                    .then(html => {
+                        container.innerHTML = html;
+                        container.dataset.loaded = 'true';
+
+                        // Handle pagination clicks
+                        container.querySelectorAll('.news-page-link').forEach(link => {
+                            link.onclick = (e) => {
+                                e.preventDefault();
+                                loadPage(link.dataset.page);
+                                container.scrollIntoView({ behavior: 'smooth' });
+                            };
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error loading news section:', error);
+                        container.innerHTML = '<p style="color:red">Ошибка загрузки контента. Проверьте путь к API.</p>';
+                    });
+            }
+
+            loadPage();
         });
     }
 

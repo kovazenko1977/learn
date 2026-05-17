@@ -34,6 +34,9 @@ class NewsItem
                 return false;
             }
             if ($onlyPublished) {
+                if (($item['status'] ?? 'published') !== 'published') {
+                    return false;
+                }
                 $now = date('Y-m-d H:i:s');
                 if (isset($item['publish_at']) && $item['publish_at'] && $item['publish_at'] > $now) {
                     return false;
@@ -46,10 +49,24 @@ class NewsItem
         });
 
         usort($filtered, function($a, $b) {
+            $aPinned = $a['is_pinned'] ?? false;
+            $bPinned = $b['is_pinned'] ?? false;
+            if ($aPinned !== $bPinned) {
+                return $bPinned <=> $aPinned;
+            }
             return ($b['publish_at'] ?? $b['created_at']) <=> ($a['publish_at'] ?? $a['created_at']);
         });
 
         return array_values($filtered);
+    }
+
+    public static function incrementViews(string $id): void
+    {
+        $item = self::find($id);
+        if ($item) {
+            $item['views'] = ($item['views'] ?? 0) + 1;
+            self::save($item);
+        }
     }
 
     public static function save(array $data): void

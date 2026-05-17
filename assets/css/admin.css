@@ -1,0 +1,121 @@
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --accent-color: #4facfe;
+    --sidebar-width: 280px;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #333;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border-right: 1px solid var(--glass-border);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 2rem 1rem;
+    z-index: 1000;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.nav-link {
+    color: #555;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: rgba(79, 172, 254, 0.15);
+    color: var(--accent-color);
+}
+
+.nav-link i {
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+/* News Specific */
+.news-thumbnail {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #eee;
+}
+
+.news-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.news-item-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.news-item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.news-item-card .card-img {
+    height: 180px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.shortcode-badge {
+    background: rgba(79, 172, 254, 0.1);
+    color: var(--accent-color);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+.rounded-4 { border-radius: 1rem !important; }
+.rounded-5 { border-radius: 2rem !important; }
+
+/* Editor */
+#editor-container, #html-editor {
+    height: 400px;
+    background: white;
+    border-radius: 0 0 10px 10px;
+}
+
+#html-editor {
+    width: 100%;
+    font-family: monospace;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    display: none;
+}

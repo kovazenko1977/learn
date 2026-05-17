@@ -10,17 +10,57 @@ $action = $_GET['action'] ?? 'list';
 $error = '';
 $success = '';
 
+// Handle Bulk Actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
+    $selectedIds = $_POST['selected_ids'] ?? [];
+    if (!empty($selectedIds)) {
+        if ($_POST['bulk_action'] === 'delete') {
+            foreach ($selectedIds as $id) {
+                NewsItem::delete($id);
+            }
+            $success = 'Выбранные новости удалены';
+        } elseif ($_POST['bulk_action'] === 'publish') {
+            foreach ($selectedIds as $id) {
+                $item = NewsItem::find($id);
+                if ($item) {
+                    $item['status'] = 'published';
+                    NewsItem::save($item);
+                }
+            }
+            $success = 'Выбранные новости опубликованы';
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['save_news'])) {
         $id = $_POST['id'] ?? null;
+
+        $thumbnail = $_POST['old_thumbnail'] ?? '';
+        if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../data/uploads/';
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+            $ext = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
+            $filename = uniqid('thumb_') . '.' . $ext;
+            if (move_uploaded_file($_FILES['thumbnail']['tmp_name'], $uploadDir . $filename)) {
+                $thumbnail = 'api/image.php?name=' . $filename;
+            }
+        }
+
         $data = [
             'id' => $id ?: uniqid(),
             'section_id' => $_POST['section_id'] ?? '',
             'title' => $_POST['title'] ?? '',
             'content' => $_POST['content'] ?? '',
+            'thumbnail' => $thumbnail,
+            'status' => $_POST['status'] ?? 'published',
+            'is_pinned' => isset($_POST['is_pinned']),
             'publish_at' => $_POST['publish_at'] ?: null,
             'expire_at' => $_POST['expire_at'] ?: null,
-            'updated_at' => date('Y-m-d H:i:s')
+            'seo_title' => $_POST['seo_title'] ?? '',
+            'seo_description' => $_POST['seo_description'] ?? '',
+            'updated_at' => date('Y-m-d H:i:s'),
+            'views' => $_POST['views'] ?? 0
         ];
 
         if ($data['title'] && $data['section_id']) {
@@ -40,6 +80,30 @@ if ($action === 'delete' && isset($_GET['id'])) {
 }
 
 $newsItems = NewsItem::all();
+
+// Filter and Search
+$filterSection = $_GET['filter_section'] ?? '';
+$filterStatus = $_GET['filter_status'] ?? '';
+$searchQuery = $_GET['q'] ?? '';
+
+if ($filterSection || $filterStatus || $searchQuery) {
+    $newsItems = array_filter($newsItems, function($item) use ($filterSection, $filterStatus, $searchQuery) {
+        if ($filterSection && $item['section_id'] !== $filterSection) return false;
+        if ($filterStatus && ($item['status'] ?? 'published') !== $filterStatus) return false;
+        if ($searchQuery) {
+            $q = mb_strtolower($searchQuery);
+            if (mb_strpos(mb_strtolower($item['title']), $q) === false &&
+                mb_strpos(mb_strtolower($item['content']), $q) === false) return false;
+        }
+        return true;
+    });
+}
+
+// Sorting
+usort($newsItems, function($a, $b) {
+    return ($b['publish_at'] ?? $b['created_at']) <=> ($a['publish_at'] ?? $a['created_at']);
+});
+
 $sections = Section::all();
 $editItem = null;
 if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
@@ -55,70 +119,8 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/admin.css">
     <style>
-        :root {
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --accent-color: #4facfe;
-        }
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        .sidebar {
-            width: 280px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border-right: 1px solid var(--glass-border);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 2rem 1rem;
-            z-index: 1000;
-        }
-        .main-content {
-            margin-left: 280px;
-            padding: 2rem;
-        }
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .nav-link {
-            color: #555;
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            transition: all 0.2s;
-        }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(79, 172, 254, 0.15);
-            color: var(--accent-color);
-        }
-        .nav-link i {
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
-        #editor-container, #html-editor {
-            height: 400px;
-            background: white;
-            border-radius: 0 0 10px 10px;
-        }
-        #html-editor {
-            width: 100%;
-            font-family: monospace;
-            padding: 1rem;
-            border: 1px solid #ccc;
-            display: none;
-        }
         .ql-toolbar {
             background: #f8f9fa;
             border-radius: 10px 10px 0 0;
@@ -149,10 +151,21 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
 
     <div class="main-content">
         <header class="mb-5 d-flex justify-content-between align-items-center">
-            <h2>Управление новостями</h2>
-            <?php if ($action === 'list'): ?>
-                <a href="?action=add" class="btn btn-primary rounded-pill px-4">Добавить новость</a>
-            <?php endif; ?>
+            <div>
+                <h2 class="mb-1">Управление новостями</h2>
+                <p class="text-muted mb-0">Всего новостей: <?php echo count($newsItems); ?></p>
+            </div>
+            <div class="d-flex gap-2">
+                <?php if ($action === 'list'): ?>
+                    <form action="export.php" method="GET" class="d-inline">
+                        <input type="hidden" name="filter_section" value="<?php echo htmlspecialchars($filterSection); ?>">
+                        <input type="hidden" name="filter_status" value="<?php echo htmlspecialchars($filterStatus); ?>">
+                        <input type="hidden" name="q" value="<?php echo htmlspecialchars($searchQuery); ?>">
+                        <button type="submit" class="btn btn-outline-secondary rounded-pill px-4">Экспорт CSV</button>
+                    </form>
+                    <a href="?action=add" class="btn btn-primary rounded-pill px-4">Добавить новость</a>
+                <?php endif; ?>
+            </div>
         </header>
 
         <?php if ($success): ?>
@@ -172,15 +185,18 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
         <?php if ($action === 'add' || $action === 'edit'): ?>
             <div class="glass-card mb-4">
                 <h5><?php echo $action === 'add' ? 'Новая новость' : 'Редактировать новость'; ?></h5>
-                <form method="POST" id="newsForm">
+                <form method="POST" id="newsForm" enctype="multipart/form-data">
                     <input type="hidden" name="id" value="<?php echo $editItem['id'] ?? ''; ?>">
                     <input type="hidden" name="content" id="content-input">
+                    <input type="hidden" name="old_thumbnail" value="<?php echo $editItem['thumbnail'] ?? ''; ?>">
+                    <input type="hidden" name="views" value="<?php echo $editItem['views'] ?? 0; ?>">
+
                     <div class="row">
-                        <div class="col-md-8 mb-3">
+                        <div class="col-md-7 mb-3">
                             <label class="form-label">Заголовок</label>
                             <input type="text" name="title" class="form-control rounded-3" value="<?php echo htmlspecialchars($editItem['title'] ?? ''); ?>" required>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <label class="form-label">Раздел</label>
                             <select name="section_id" class="form-select rounded-3" required>
                                 <option value="">Выберите раздел...</option>
@@ -191,11 +207,50 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">Статус</label>
+                            <select name="status" class="form-select rounded-3">
+                                <option value="published" <?php echo ($editItem['status'] ?? 'published') === 'published' ? 'selected' : ''; ?>>Опубликовано</option>
+                                <option value="draft" <?php echo ($editItem['status'] ?? '') === 'draft' ? 'selected' : ''; ?>>Черновик</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Превью (изображение)</label>
+                            <input type="file" name="thumbnail" class="form-control rounded-3" accept="image/*">
+                            <?php if (!empty($editItem['thumbnail'])): ?>
+                                <div class="mt-2">
+                                    <img src="../<?php echo $editItem['thumbnail']; ?>" class="news-thumbnail" style="width: 150px; height: auto;">
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-6 mb-3 d-flex align-items-center pt-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_pinned" id="is_pinned" <?php echo !empty($editItem['is_pinned']) ? 'checked' : ''; ?>>
+                                <label class="form-check-label" for="is_pinned">Закрепить в топе</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Контент</label>
                         <div id="editor-container"><?php echo $editItem['content'] ?? ''; ?></div>
+                    </div>
+
+                    <div class="glass-card bg-light border-0 mb-4">
+                        <h6 class="mb-3 text-primary"><i class="bi bi-search"></i> SEO настройки</h6>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">SEO Заголовок (Title)</label>
+                                <input type="text" name="seo_title" class="form-control rounded-3" value="<?php echo htmlspecialchars($editItem['seo_title'] ?? ''); ?>" placeholder="Оставьте пустым для использования заголовка новости">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">SEO Описание (Description)</label>
+                                <textarea name="seo_description" class="form-control rounded-3" rows="2"><?php echo htmlspecialchars($editItem['seo_description'] ?? ''); ?></textarea>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -226,53 +281,160 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                     </div>
                 </form>
             </div>
-        <?php else: ?>
-            <div class="glass-card">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Заголовок</th>
-                                <th>Раздел</th>
-                                <th>Статус</th>
-                                <th class="text-end">Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($newsItems as $item):
-                                $sec = array_filter($sections, fn($s) => $s['id'] === $item['section_id']);
-                                $secName = !empty($sec) ? reset($sec)['name'] : 'Неизвестно';
-
-                                $statusClass = 'bg-success';
-                                $statusText = 'Опубликовано';
-                                $now = date('Y-m-d H:i:s');
-                                if (isset($item['publish_at']) && $item['publish_at'] && $item['publish_at'] > $now) {
-                                    $statusClass = 'bg-warning text-dark';
-                                    $statusText = 'Запланировано';
-                                } elseif (isset($item['expire_at']) && $item['expire_at'] && $item['expire_at'] < $now) {
-                                    $statusClass = 'bg-secondary';
-                                    $statusText = 'Архив';
-                                }
-                            ?>
-                            <tr>
-                                <td><strong><?php echo htmlspecialchars($item['title']); ?></strong></td>
-                                <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($secName); ?></span></td>
-                                <td><span class="badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span></td>
-                                <td class="text-end">
-                                    <a href="?action=edit&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-secondary rounded-pill me-1"><i class="bi bi-pencil"></i></a>
-                                    <a href="?action=delete&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Вы уверены?')"><i class="bi bi-trash"></i></a>
-                                </td>
-                            </tr>
+        <?php else:
+            $viewMode = $_GET['view'] ?? 'table';
+        ?>
+            <div class="glass-card mb-4">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="q" class="form-control rounded-pill px-3" placeholder="Поиск новостей..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="filter_section" class="form-select rounded-pill">
+                            <option value="">Все разделы</option>
+                            <?php foreach ($sections as $sec): ?>
+                                <option value="<?php echo $sec['id']; ?>" <?php echo $filterSection === $sec['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($sec['name']); ?></option>
                             <?php endforeach; ?>
-                            <?php if (empty($newsItems)): ?>
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">Новостей еще нет</td>
-                            </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="filter_status" class="form-select rounded-pill">
+                            <option value="">Все статусы</option>
+                            <option value="published" <?php echo $filterStatus === 'published' ? 'selected' : ''; ?>>Опубликовано</option>
+                            <option value="draft" <?php echo $filterStatus === 'draft' ? 'selected' : ''; ?>>Черновик</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill flex-grow-1">Применить</button>
+                        <div class="btn-group rounded-pill overflow-hidden border">
+                            <a href="?view=table&<?php echo http_build_query(array_merge($_GET, ['view' => 'table'])); ?>" class="btn btn-light btn-sm <?php echo $viewMode === 'table' ? 'active' : ''; ?>"><i class="bi bi-list-ul"></i></a>
+                            <a href="?view=cards&<?php echo http_build_query(array_merge($_GET, ['view' => 'cards'])); ?>" class="btn btn-light btn-sm <?php echo $viewMode === 'cards' ? 'active' : ''; ?>"><i class="bi bi-grid-3x3-gap"></i></a>
+                        </div>
+                    </div>
+                </form>
             </div>
+
+            <form method="POST" id="bulkForm">
+                <div class="d-flex align-items-center mb-3 gap-2 px-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label class="form-check-label small" for="selectAll">Выбрать все</label>
+                    </div>
+                    <select name="bulk_action" class="form-select form-select-sm rounded-pill w-auto">
+                        <option value="">Массовые действия</option>
+                        <option value="publish">Опубликовать</option>
+                        <option value="delete">Удалить</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">Выполнить</button>
+                </div>
+
+                <?php if ($viewMode === 'table'): ?>
+                    <div class="glass-card">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th width="40"></th>
+                                        <th>Заголовок</th>
+                                        <th>Раздел</th>
+                                        <th>Просмотры</th>
+                                        <th>Статус</th>
+                                        <th class="text-end">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($newsItems as $item):
+                                        $sec = array_filter($sections, fn($s) => $s['id'] === $item['section_id']);
+                                        $secName = !empty($sec) ? reset($sec)['name'] : 'Неизвестно';
+
+                                        $statusClass = 'bg-success';
+                                        $statusText = 'Опубликовано';
+                                        $now = date('Y-m-d H:i:s');
+                                        if (($item['status'] ?? 'published') === 'draft') {
+                                            $statusClass = 'bg-warning text-dark';
+                                            $statusText = 'Черновик';
+                                        } elseif (isset($item['publish_at']) && $item['publish_at'] && $item['publish_at'] > $now) {
+                                            $statusClass = 'bg-info text-dark';
+                                            $statusText = 'Запланировано';
+                                        } elseif (isset($item['expire_at']) && $item['expire_at'] && $item['expire_at'] < $now) {
+                                            $statusClass = 'bg-secondary';
+                                            $statusText = 'Архив';
+                                        }
+                                    ?>
+                                    <tr>
+                                        <td><input type="checkbox" name="selected_ids[]" value="<?php echo $item['id']; ?>" class="item-checkbox"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <?php if (!empty($item['thumbnail'])): ?>
+                                                    <img src="../<?php echo $item['thumbnail']; ?>" class="news-thumbnail me-2">
+                                                <?php endif; ?>
+                                                <div>
+                                                    <strong><?php echo htmlspecialchars($item['title']); ?></strong>
+                                                    <?php if (!empty($item['is_pinned'])): ?>
+                                                        <i class="bi bi-pin-angle-fill text-primary ms-1" title="Закреплено"></i>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($secName); ?></span></td>
+                                        <td><small class="text-muted"><i class="bi bi-eye"></i> <?php echo $item['views'] ?? 0; ?></small></td>
+                                        <td><span class="badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span></td>
+                                        <td class="text-end">
+                                            <a href="?action=edit&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-secondary rounded-pill me-1"><i class="bi bi-pencil"></i></a>
+                                            <a href="?action=delete&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Вы уверены?')"><i class="bi bi-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div class="news-card-grid">
+                        <?php foreach ($newsItems as $item):
+                            $sec = array_filter($sections, fn($s) => $s['id'] === $item['section_id']);
+                            $secName = !empty($sec) ? reset($sec)['name'] : 'Неизвестно';
+                            $now = date('Y-m-d H:i:s');
+                            $isDraft = ($item['status'] ?? 'published') === 'draft';
+                        ?>
+                        <div class="news-item-card position-relative">
+                            <div class="position-absolute top-0 start-0 m-2 z-1">
+                                <input type="checkbox" name="selected_ids[]" value="<?php echo $item['id']; ?>" class="item-checkbox">
+                            </div>
+                            <?php if (!empty($item['is_pinned'])): ?>
+                                <div class="position-absolute top-0 end-0 m-2 z-1">
+                                    <span class="badge bg-primary rounded-pill"><i class="bi bi-pin-angle-fill"></i></span>
+                                </div>
+                            <?php endif; ?>
+
+                            <img src="../<?php echo !empty($item['thumbnail']) ? $item['thumbnail'] : 'assets/img/no-image.jpg'; ?>" class="card-img" alt="">
+
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge bg-light text-dark"><?php echo htmlspecialchars($secName); ?></span>
+                                    <small class="text-muted"><?php echo date('d.m.Y', strtotime($item['publish_at'] ?? $item['created_at'])); ?></small>
+                                </div>
+                                <h6 class="card-title"><?php echo htmlspecialchars($item['title']); ?></h6>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <small class="text-muted"><i class="bi bi-eye"></i> <?php echo $item['views'] ?? 0; ?></small>
+                                    <div>
+                                        <a href="?action=edit&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-link text-secondary p-0 me-2"><i class="bi bi-pencil"></i></a>
+                                        <a href="?action=delete&id=<?php echo $item['id']; ?>" class="btn btn-sm btn-link text-danger p-0"><i class="bi bi-trash"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (empty($newsItems)): ?>
+                    <div class="glass-card text-center py-5 text-muted">
+                        <i class="bi bi-newspaper display-1 mb-3 opacity-25"></i>
+                        <p>Новостей не найдено</p>
+                    </div>
+                <?php endif; ?>
+            </form>
         <?php endif; ?>
     </div>
 
@@ -384,6 +546,12 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                     ? quill.root.innerHTML
                     : htmlEditor.value;
                 document.getElementById('content-input').value = content;
+            };
+        }
+
+        if (document.getElementById('selectAll')) {
+            document.getElementById('selectAll').onclick = function() {
+                document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = this.checked);
             };
         }
     </script>
