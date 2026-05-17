@@ -17,12 +17,16 @@
 4. По умолчанию PIN-код: `123456`.
 
 ## Использование шорткодов
-Для отображения новостей раздела на вашем сайте используйте следующий код:
+Для отображения новостей раздела на вашем сайте выполните следующие шаги:
+
+1. Подключите скрипт автоматической загрузки контента:
 ```html
-<div id="news-container"></div>
-<script>
-fetch('/api/shortcode.php?id=ID_РАЗДЕЛА')
-  .then(response => response.text())
-  .then(html => document.getElementById('news-container').innerHTML = html);
-</script>
+<script src="/assets/js/shortcode.js"></script>
 ```
+
+2. Разместите блок в месте, где должны отображаться новости:
+```html
+<div data-news-section="ID_РАЗДЕЛА"></div>
+```
+
+Скрипт автоматически найдет все блоки с атрибутом `data-news-section` и загрузит в них соответствующий контент.

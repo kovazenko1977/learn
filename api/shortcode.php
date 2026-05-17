@@ -15,6 +15,7 @@ if (!$section) {
 
 $newsItems = NewsItem::findBySection($sectionId);
 
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: text/html; charset=UTF-8');
 ?>
 <div class="news-section" id="news-section-<?php echo htmlspecialchars($sectionId); ?>">

@@ -165,7 +165,7 @@ if ($action === 'edit' && isset($_GET['id'])) {
                         <?php foreach ($sections as $section): ?>
                         <tr>
                             <td><strong><?php echo htmlspecialchars($section['name']); ?></strong></td>
-                            <td><span class="shortcode-badge" onclick="copyShortcode('<?php echo $section['id']; ?>')">[news-section id="<?php echo $section['id']; ?>"]</span></td>
+                            <td><span class="shortcode-badge" onclick="copyShortcode('<?php echo $section['id']; ?>')">&lt;div data-news-section="<?php echo $section['id']; ?>"&gt;&lt;/div&gt;</span></td>
                             <td class="text-end">
                                 <a href="?action=edit&id=<?php echo $section['id']; ?>" class="btn btn-sm btn-outline-secondary rounded-pill me-1"><i class="bi bi-pencil"></i></a>
                                 <a href="?action=delete&id=<?php echo $section['id']; ?>" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Вы уверены?')"><i class="bi bi-trash"></i></a>
@@ -186,9 +186,9 @@ if ($action === 'edit' && isset($_GET['id'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function copyShortcode(id) {
-            const text = `[news-section id="${id}"]`;
+            const text = `<div data-news-section="${id}"></div>`;
             navigator.clipboard.writeText(text).then(() => {
-                alert('Шорткод скопирован: ' + text);
+                alert('Код для вставки скопирован: ' + text + '\n\nНе забудьте подключить скрипт shortcode.js на вашем сайте.');
             });
         }
     </script>
