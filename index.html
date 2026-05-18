@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ежедневник Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7360f2">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app" v-cloak :class="{ 'dark-mode': darkMode }">
+        <div v-if="!authenticated" class="login-container">
+            <div class="login-box">
+                <h1>Вход</h1>
+                <p>Введите 6-значный ПИН-код</p>
+                <div class="pin-display">
+                    <span v-for="i in 6" :key="i" :class="{ filled: pin.length >= i }"></span>
+                </div>
+                <div class="numpad">
+                    <button v-for="n in 9" :key="n" @click="appendPin(n)">{{ n }}</button>
+                    <button @click="clearPin">C</button>
+                    <button @click="appendPin(0)">0</button>
+                    <button @click="deletePin">←</button>
+                </div>
+                <p v-if="error" class="error">{{ error }}</p>
+            </div>
+        </div>
+
+        <div v-else class="app-container">
+            <header>
+                <div class="logo">
+                    <h1>Diary Pro</h1>
+                    <div class="stats-mini">
+                        <span>✅ {{ stats.done }}</span>
+                        <span>⏳ {{ stats.pending }}</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button @click="darkMode = !darkMode" class="icon-btn">{{ darkMode ? '☀️' : '🌙' }}</button>
+                    <button @click="requestNotificationPermission" class="icon-btn">🔔</button>
+                    <button @click="showSettings = true" class="icon-btn">⚙️</button>
+                    <button @click="logout" class="icon-btn">🚪</button>
+                </div>
+            </header>
+
+            <nav class="main-nav">
+                <button @click="activeTab = 'diary'" :class="{ active: activeTab === 'diary' }">🗓 Ежедневник</button>
+                <button @click="activeTab = 'ideas'" :class="{ active: activeTab === 'ideas' }">💡 Идеи</button>
+            </nav>
+
+            <main v-if="activeTab === 'diary'">
+                <div class="search-bar">
+                    <input v-model="searchQuery" type="text" placeholder="Поиск записей...">
+                    <select v-model="filterCategory">
+                        <option value="All">Все категории</option>
+                        <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                    </select>
+                </div>
+
+                <div class="tabs">
+                    <button @click="filterStatus = 'Active'" :class="{ active: filterStatus === 'Active' }">Активные</button>
+                    <button @click="filterStatus = 'Completed'" :class="{ active: filterStatus === 'Completed' }">Выполненные</button>
+                    <button @click="filterStatus = 'All'" :class="{ active: filterStatus === 'All' }">Все</button>
+                </div>
+
+                <div v-if="filterStatus === 'Completed' && filteredEntries.length > 0" class="tab-actions">
+                    <button @click="clearCompleted" class="btn-text-danger">Удалить все выполненные</button>
+                </div>
+
+                <div class="calendar-widget">
+                    <div class="calendar-header">
+                        <button @click="prevMonth" class="icon-btn">‹</button>
+                        <h2 @click="goToToday" style="cursor:pointer">{{ monthName }}</h2>
+                        <button @click="nextMonth" class="icon-btn">›</button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div v-for="day in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="day" class="calendar-day-name">{{ day }}</div>
+                        <div v-for="dayObj in calendarDays" :key="dayObj.day + '-' + dayObj.month"
+                             class="calendar-day"
+                             :class="{ 'other-month': !dayObj.current, 'today': isToday(dayObj), 'selected': isSelected(dayObj) }"
+                             @click="selectDate(dayObj)">
+                            {{ dayObj.day }}
+                            <div v-if="getEntryCount(dayObj) > 0" class="entry-count-badge">{{ getEntryCount(dayObj) }}</div>
+                            <div v-if="getEntryCount(dayObj) > 0" class="entry-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <span>{{ selectedDate ? 'Записи на ' + selectedDate.toLocaleDateString('ru-RU') : 'Ваш список' }}</span>
+                    <button v-if="selectedDate" @click="selectedDate = null" class="btn-cancel">Сбросить дату</button>
+                </div>
+
+                <div class="entries-list">
+                    <div v-if="filteredEntries.length === 0" class="empty-state">
+                        <p>Ничего не найдено</p>
+                    </div>
+                    <div v-for="entry in filteredEntries" :key="entry.id"
+                         class="entry-card" :class="{ 'is-completed': entry.completed, 'is-pinned': entry.pinned }"
+                         @click="editEntry(entry)">
+                        <div class="entry-header-row">
+                            <span class="category-tag">{{ entry.category }}</span>
+                            <span class="mood-tag">{{ entry.mood }}</span>
+                            <span v-if="entry.pinned" class="pin-icon">📌</span>
+                        </div>
+                        <div class="entry-content">
+                            <h3>{{ entry.title }}</h3>
+                            <p>{{ entry.description }}</p>
+                        </div>
+                        <div class="entry-footer">
+                            <span class="entry-date">{{ formatDate(entry.date) }}</span>
+                            <div class="entry-actions">
+                                <button @click.stop="speak(entry.title + '. ' + entry.description)" class="action-btn">🔊</button>
+                                <button @click.stop="copyEntry(entry)" class="action-btn">📋</button>
+                                <button @click.stop="duplicateEntry(entry)" class="action-btn">👯</button>
+                                <button @click.stop="toggleComplete(entry)" class="action-btn-check">
+                                    {{ entry.completed ? '↩️' : '✅' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button @click="openAddModal" class="fab">+</button>
+            </main>
+
+            <main v-if="activeTab === 'ideas'">
+                <div v-if="!currentIdea" class="ideas-list">
+                    <div class="section-title">
+                        <span>Ваши идеи</span>
+                        <button @click="showIdeaModal = true" class="btn btn-primary" style="padding: 8px 16px;">+ Новая идея</button>
+                    </div>
+                    <div v-for="idea in ideas" :key="idea.id" class="entry-card" @click="currentIdea = idea">
+                        <h3>{{ idea.title }}</h3>
+                        <p>{{ idea.description }}</p>
+                        <div class="entry-footer">
+                            <span>💬 {{ idea.comments.length }} обсуждений</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else class="idea-chat">
+                    <button @click="currentIdea = null" class="btn-cancel" style="margin-bottom: 20px;">← К списку идей</button>
+                    <div class="idea-header entry-card">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <h2>{{ currentIdea.title }}</h2>
+                            <button @click="deleteIdea(currentIdea.id)" class="icon-btn">🗑️</button>
+                        </div>
+                        <p>{{ currentIdea.description }}</p>
+                    </div>
+
+                    <div class="chat-messages">
+                        <div v-for="comment in currentIdea.comments" :key="comment.id" class="message-bubble" @click="speak(comment.text)">
+                            <p>{{ comment.text }}</p>
+                            <span class="message-time">{{ formatDate(comment.created_at) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-input">
+                        <button @click="startVoiceRecognition('newIdeaComment')" :class="{ recording: recordingField === 'newIdeaComment' }" class="icon-btn-chat">🎤</button>
+                        <input v-model="newIdeaComment" type="text" placeholder="Обсудить идею..." @keyup.enter="addComment(currentIdea.id)">
+                        <button @click="addComment(currentIdea.id)" class="btn-send">↗️</button>
+                    </div>
+                </div>
+
+                <!-- Modal for New Idea -->
+                <div v-if="showIdeaModal" class="modal-overlay" @click.self="showIdeaModal = false">
+                    <div class="modal">
+                        <h2>Новая идея</h2>
+                        <div class="form-group">
+                            <label>Название</label>
+                            <div class="input-with-voice">
+                                <input v-model="ideaForm.title" type="text">
+                                <button @click="startVoiceRecognition('ideaTitle')" :class="{ recording: recordingField === 'ideaTitle' }">🎤</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <div class="input-with-voice">
+                                <textarea v-model="ideaForm.description"></textarea>
+                                <button @click="startVoiceRecognition('ideaDescription')" :class="{ recording: recordingField === 'ideaDescription' }">🎤</button>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button @click="showIdeaModal = false" class="btn btn-secondary">Отмена</button>
+                            <button @click="saveIdea" class="btn btn-primary">Создать</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Modal for Add/Edit Entry -->
+            <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2>{{ editingId ? 'Правка записи' : 'Новая запись' }}</h2>
+                        <button @click="entryForm.pinned = !entryForm.pinned" class="pin-toggle" :class="{ active: entryForm.pinned }">📌</button>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Заголовок</label>
+                            <div class="input-with-voice">
+                                <input v-model="entryForm.title" type="text" placeholder="Что нужно сделать?">
+                                <button @click="startVoiceRecognition('title')" :class="{ recording: recordingField === 'title' }">🎤</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Категория</label>
+                                <select v-model="entryForm.category">
+                                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Настроение</label>
+                                <select v-model="entryForm.mood">
+                                    <option v-for="m in moods" :key="m" :value="m">{{ m }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <div class="input-with-voice">
+                                <textarea v-model="entryForm.description" placeholder="Детали..."></textarea>
+                                <button @click="startVoiceRecognition('description')" :class="{ recording: recordingField === 'description' }">🎤</button>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Дата</label>
+                                <input v-model="entryForm.date" type="datetime-local">
+                            </div>
+                            <div class="form-group">
+                                <label>Приоритет</label>
+                                <select v-model="entryForm.priority">
+                                    <option value="low">Низкий</option>
+                                    <option value="medium">Средний</option>
+                                    <option value="high">Высокий</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="reminder" v-model="entryForm.reminder">
+                            <label for="reminder">Уведомление</label>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button v-if="editingId" @click="deleteEntry(editingId)" class="btn btn-danger">Удалить</button>
+                        <button @click="closeModal" class="btn btn-secondary">Отмена</button>
+                        <button @click="saveEntry" class="btn btn-primary">Готово</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Settings -->
+            <div v-if="showSettings" class="modal-overlay" @click.self="showSettings = false">
+                <div class="modal">
+                    <h2>Настройки и Данные</h2>
+                    <div class="form-group">
+                        <label>Новый ПИН-код (6 цифр)</label>
+                        <input v-model="newPin" type="password" maxlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Интерфейс</label>
+                        <select v-model="uiTheme">
+                            <option value="standard">Стандартный</option>
+                            <option value="minimal">Минималистичный</option>
+                            <option value="glass">Стеклянный</option>
+                            <option value="neo">Неоморфизм</option>
+                        </select>
+                    </div>
+                    <div class="settings-btns">
+                        <button @click="changePin" class="btn btn-primary">Сменить ПИН</button>
+                        <button v-if="deferredPrompt" @click="installApp" class="btn btn-success">Установить как приложение</button>
+                        <button @click="exportData" class="btn btn-secondary">Экспорт (JSON)</button>
+                    </div>
+                    <div class="modal-actions">
+                        <button @click="showSettings = false" class="btn btn-secondary">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="toast" class="toast" :class="toast.type">{{ toast.message }}</div>
+    </div>
+    <script src="assets/js/app.js"></script>
+    <script> if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); </script>
+</body>
+</html>

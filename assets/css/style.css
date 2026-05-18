@@ -1,0 +1,181 @@
+:root {
+    --primary-color: #7360f2;
+    --primary-light: #ece9ff;
+    --primary-dark: #5a49d1;
+    --bg-color: #f4f7fe;
+    --card-bg: #ffffff;
+    --text-color: #2d3748;
+    --text-muted: #718096;
+    --border-color: #e2e8f0;
+    --error-color: #e53e3e;
+    --success-color: #38a169;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.dark-mode {
+    --bg-color: #1a202c;
+    --card-bg: #2d3748;
+    --text-color: #f7fafc;
+    --text-muted: #a0aec0;
+    --border-color: #4a5568;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s; min-height: 100vh; }
+[v-cloak] { display: none; }
+
+.app-container { max-width: 800px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.logo h1 { font-size: 1.5rem; font-weight: 800; color: var(--primary-color); }
+.stats-mini { font-size: 0.8rem; display: flex; gap: 10px; margin-top: 4px; }
+.header-actions { display: flex; gap: 8px; }
+
+.icon-btn { background: var(--card-bg); border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; color: var(--text-color); }
+
+.search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+.search-bar input { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); }
+.search-bar select { padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); }
+
+.tabs { display: flex; gap: 10px; margin-bottom: 20px; background: var(--border-color); padding: 5px; border-radius: 14px; }
+.tabs button { flex: 1; padding: 10px; border: none; background: none; border-radius: 10px; cursor: pointer; color: var(--text-muted); font-weight: 600; }
+.tabs button.active { background: var(--card-bg); color: var(--primary-color); box-shadow: var(--shadow-sm); }
+
+.tab-actions { margin-bottom: 15px; text-align: right; }
+.btn-text-danger { background: none; border: none; color: var(--error-color); font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+
+.main-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+.main-nav button { background: none; border: none; font-size: 1rem; font-weight: 700; color: var(--text-muted); cursor: pointer; padding: 5px 10px; border-radius: 8px; }
+.main-nav button.active { color: var(--primary-color); background: var(--primary-light); }
+
+.chat-messages { display: flex; flex-direction: column; gap: 10px; margin-bottom: 80px; }
+.message-bubble { background: var(--card-bg); padding: 12px 16px; border-radius: 18px 18px 18px 4px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); align-self: flex-start; max-width: 85%; }
+.message-time { font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 4px; }
+.chat-input { position: fixed; bottom: 20px; left: 20px; right: 20px; display: flex; gap: 10px; max-width: 760px; margin: 0 auto; }
+.chat-input input { flex: 1; padding: 14px; border-radius: 15px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); box-shadow: var(--shadow-md); min-width: 0; }
+.chat-input .btn-send { width: 50px; border-radius: 15px; border: none; background: var(--primary-color); color: white; font-size: 1.2rem; cursor: pointer; box-shadow: var(--shadow-md); }
+.icon-btn-chat { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 15px; width: 50px; cursor: pointer; font-size: 1.2rem; box-shadow: var(--shadow-md); color: var(--text-color); }
+.icon-btn-chat.recording { background: var(--error-color); color: white; animation: pulse 1.5s infinite; }
+
+.calendar-widget { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: var(--shadow-md); margin-bottom: 24px; border: 1px solid var(--border-color); }
+.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.calendar-day-name { text-align: center; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
+.calendar-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.9rem; border-radius: 10px; cursor: pointer; position: relative; }
+.calendar-day.today { color: var(--primary-color); font-weight: 800; }
+.calendar-day.selected { background: var(--primary-color); color: white; }
+.calendar-day.other-month { opacity: 0.3; }
+.entry-dot { width: 4px; height: 4px; background: var(--primary-color); border-radius: 50%; position: absolute; bottom: 4px; }
+.entry-count-badge { font-size: 0.6rem; background: var(--primary-light); color: var(--primary-color); padding: 0 4px; border-radius: 4px; position: absolute; top: 2px; right: 2px; }
+
+.section-title { font-size: 1rem; font-weight: 700; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+
+.entry-card { background: var(--card-bg); padding: 18px; border-radius: 18px; box-shadow: var(--shadow-sm); margin-bottom: 15px; border: 1px solid var(--border-color); transition: 0.2s; position: relative; overflow: hidden; }
+.entry-card.is-completed { opacity: 0.6; }
+.entry-card.is-pinned { border-left: 4px solid var(--primary-color); }
+.entry-header-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+.category-tag { font-size: 0.7rem; background: var(--primary-light); color: var(--primary-color); padding: 2px 8px; border-radius: 6px; font-weight: 700; }
+.mood-tag { font-size: 1rem; }
+.entry-content h3 { font-size: 1.1rem; margin-bottom: 5px; }
+.entry-content p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; }
+.entry-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.entry-date { font-size: 0.75rem; color: var(--text-muted); }
+.entry-actions { display: flex; gap: 5px; }
+.action-btn { background: var(--bg-color); border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: var(--text-color); display: flex; align-items: center; justify-content: center; }
+.action-btn-check { background: var(--bg-color); border: none; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; }
+
+.fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 20px; background: var(--primary-color); color: white; font-size: 2rem; border: none; box-shadow: 0 8px 20px rgba(115, 96, 242, 0.4); cursor: pointer; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 15px; }
+.modal { background: var(--card-bg); padding: 25px; border-radius: 24px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.pin-toggle { background: none; border: none; font-size: 1.5rem; opacity: 0.3; cursor: pointer; }
+.pin-toggle.active { opacity: 1; }
+
+.form-row { display: flex; gap: 15px; }
+.form-row .form-group { flex: 1; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--text-muted); }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1rem; }
+.input-with-voice { display: flex; gap: 8px; }
+.input-with-voice button { background: var(--border-color); border: none; border-radius: 10px; width: 45px; cursor: pointer; }
+.input-with-voice button.recording { background: var(--error-color); color: white; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+.modal-actions { display: flex; gap: 10px; margin-top: 25px; }
+.btn { flex: 1; padding: 14px; border-radius: 14px; border: none; font-weight: 700; cursor: pointer; }
+.btn-primary { background: var(--primary-color); color: white; }
+.btn-success { background: var(--success-color); color: white; }
+.btn-secondary { background: var(--border-color); color: var(--text-color); }
+.btn-cancel { background: var(--border-color); border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: var(--text-color); }
+.btn-danger { background: #fee2e2; color: var(--error-color); flex: 0 0 50px; }
+
+.settings-btns { display: flex; gap: 10px; margin-top: 15px; }
+
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 14px; background: #333; color: white; z-index: 2000; font-size: 0.9rem; }
+.toast.error { background: var(--error-color); }
+.toast.success { background: var(--success-color); }
+
+.empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+
+.login-container { height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-box { background: var(--card-bg); padding: 40px; border-radius: 30px; text-align: center; width: 100%; max-width: 400px; box-shadow: var(--shadow-md); }
+.pin-display { display: flex; justify-content: center; gap: 10px; margin: 30px 0; }
+.pin-display span { width: 15px; height: 15px; border: 2px solid var(--primary-light); border-radius: 50%; }
+.pin-display span.filled { background: var(--primary-color); border-color: var(--primary-color); }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.numpad button { height: 65px; border-radius: 15px; border: none; background: var(--bg-color); font-size: 1.5rem; font-weight: 700; color: var(--text-color); cursor: pointer; }
+
+@media (max-width: 600px) { .form-row { flex-direction: column; gap: 0; } }
+
+/* Theme Variations */
+
+/* Minimal */
+.theme-minimal {
+    --bg-color: #ffffff;
+    --card-bg: #f8f9fa;
+    --primary-color: #000000;
+    --primary-light: #e9ecef;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --border-color: #dee2e6;
+}
+.theme-minimal .entry-card { border-radius: 0; border: none; border-bottom: 1px solid var(--border-color); box-shadow: none; }
+.theme-minimal .calendar-widget { border-radius: 0; border: 1px solid var(--border-color); box-shadow: none; }
+
+/* Glassmorphism */
+.theme-glass {
+    --bg-color: #7360f2;
+    background-image: linear-gradient(135deg, #7360f2 0%, #a095ee 100%);
+    background-attachment: fixed;
+}
+.theme-glass .app-container { color: white; }
+.theme-glass .logo h1 { color: white; }
+.theme-glass .card-bg, .theme-glass .entry-card, .theme-glass .calendar-widget, .theme-glass .modal, .theme-glass .tabs button.active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+.theme-glass .text-muted, .theme-glass .entry-date, .theme-glass .calendar-day-name { color: rgba(255, 255, 255, 0.7); }
+.theme-glass .icon-btn { background: rgba(255, 255, 255, 0.2); color: white; border: none; }
+.theme-glass .search-bar input, .theme-glass .search-bar select { background: rgba(255, 255, 255, 0.2); color: white; border: none; }
+.theme-glass .tabs { background: rgba(255, 255, 255, 0.1); }
+.theme-glass .tabs button { color: rgba(255, 255, 255, 0.6); }
+
+/* Neumorphism */
+.theme-neo {
+    --bg-color: #e0e5ec;
+    --card-bg: #e0e5ec;
+    --text-color: #44474a;
+}
+.theme-neo .entry-card, .theme-neo .calendar-widget, .theme-neo .icon-btn, .theme-neo .search-bar input, .theme-neo .search-bar select, .theme-neo .numpad button, .theme-neo .modal {
+    box-shadow: 9px 9px 16px rgb(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5) !important;
+    border: none;
+    background: var(--bg-color);
+}
+.theme-neo .fab {
+    box-shadow: 4px 4px 8px rgb(163,177,198,0.6), -4px -4px 8px rgba(255,255,255, 0.5) !important;
+}
