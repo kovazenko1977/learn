@@ -6,7 +6,6 @@
         const script = document.querySelector('script[src*="shortcode.js"]');
         if (script) {
             const src = script.getAttribute('src');
-            // Support both relative and absolute paths
             if (src.indexOf('http') === 0) {
                 baseUrl = new URL(src).origin + new URL(src).pathname.replace('assets/js/shortcode.js', '');
             } else {
@@ -15,30 +14,51 @@
         }
 
         containers.forEach(container => {
-            if (container.dataset.initialized) return;
-            container.dataset.initialized = 'true';
+            if (container.dataset.initialized_v3) return;
+            container.dataset.initialized_v3 = 'true';
 
             const sectionId = container.getAttribute('data-news-section');
             const apiUrl = container.getAttribute('data-api-url') || (baseUrl + 'api/shortcode.php');
 
-            function loadData(params = {}) {
-                const url = new URL(apiUrl, window.location.origin.includes('localhost') || window.location.origin.includes('0.0.0.0') ? window.location.origin : (baseUrl.startsWith('http') ? baseUrl : window.location.origin));
+            let currentParams = {};
 
-                // If baseUrl is absolute, use it
+            function loadData(params = {}) {
+                currentParams = {...currentParams, ...params};
+                const url = new URL(apiUrl, window.location.origin.includes('localhost') || window.location.origin.includes('0.0.0.0') ? window.location.origin : (baseUrl.startsWith('http') ? baseUrl : window.location.origin));
                 const finalUrl = baseUrl.startsWith('http') ? new URL('api/shortcode.php', baseUrl) : url;
 
                 finalUrl.searchParams.set('id', sectionId);
-                Object.keys(params).forEach(key => finalUrl.searchParams.set(key, params[key]));
+                Object.keys(currentParams).forEach(key => {
+                    if (currentParams[key] !== undefined) finalUrl.searchParams.set(key, currentParams[key]);
+                });
 
-                fetch(finalUrl)
+                const body = new FormData();
+                if (currentParams.section_pass) body.append('section_pass', currentParams.section_pass);
+                if (currentParams.action === 'reaction') body.append('news_id', currentParams.news_id);
+
+                const fetchOptions = {
+                    method: currentParams.action === 'reaction' || currentParams.section_pass ? 'POST' : 'GET'
+                };
+                if (fetchOptions.method === 'POST') fetchOptions.body = body;
+
+                fetch(finalUrl, fetchOptions)
                     .then(response => response.text())
                     .then(html => {
-                        container.innerHTML = html;
-                        attachEvents();
-                    })
-                    .catch(error => {
-                        console.error('Error loading news:', error);
-                        container.innerHTML = '<p style="color:red">Ошибка загрузки контента.</p>';
+                        if (currentParams.action === 'reaction') {
+                            const data = JSON.parse(html);
+                            if (data.success) {
+                                const btn = container.querySelector(`.news-reaction-btn[data-id="${currentParams.news_id}"]`);
+                                if (btn) {
+                                    btn.classList.toggle('active', data.active);
+                                    btn.querySelector('i').className = data.active ? 'bi bi-heart-fill' : 'bi bi-heart';
+                                    btn.querySelector('.reaction-count').textContent = data.count;
+                                }
+                            }
+                            currentParams.action = undefined;
+                        } else {
+                            container.innerHTML = html;
+                            attachEvents();
+                        }
                     });
             }
 
@@ -66,7 +86,8 @@
                 container.querySelectorAll('.news-back-link').forEach(link => {
                     link.onclick = (e) => {
                         e.preventDefault();
-                        loadData();
+                        currentParams.news_id = undefined;
+                        loadData({ news_id: undefined });
                     };
                 });
 
@@ -94,27 +115,99 @@
                 container.querySelectorAll('.news-reaction-btn').forEach(btn => {
                     btn.onclick = (e) => {
                         e.preventDefault();
-                        const formData = new FormData();
-                        formData.append('news_id', btn.dataset.id);
+                        loadData({ action: 'reaction', news_id: btn.dataset.id });
+                    };
+                });
 
-                        const reactionUrl = new URL(apiUrl, baseUrl.startsWith('http') ? baseUrl : window.location.origin);
-                        if (baseUrl.startsWith('http')) {
-                             reactionUrl.pathname = (new URL(baseUrl).pathname + 'api/shortcode.php').replace('//', '/');
-                        }
+                // Password
+                const passBtn = container.querySelector('.news-pass-btn');
+                if (passBtn) {
+                    passBtn.onclick = () => {
+                        const val = container.querySelector('.news-pass-input').value;
+                        loadData({ section_pass: val });
+                    };
+                }
 
-                        fetch(reactionUrl.href + '?action=reaction&id=' + sectionId, {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                btn.classList.toggle('active', data.active);
-                                const icon = btn.querySelector('i');
-                                icon.className = data.active ? 'bi bi-heart-fill' : 'bi bi-heart';
-                                btn.querySelector('.reaction-count').textContent = data.count;
-                            }
-                        });
+                // Accessibility
+                container.querySelectorAll('.acc-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        const action = btn.dataset.action;
+                        const wrap = container.querySelector('.news-section-wrapper');
+                        let currentSize = parseInt(window.getComputedStyle(wrap).fontSize);
+                        if (action === 'font-inc') wrap.style.fontSize = (currentSize + 2) + 'px';
+                        if (action === 'font-dec') wrap.style.fontSize = (currentSize - 2) + 'px';
+                        if (action === 'theme-toggle') wrap.classList.toggle('news-dark-theme');
+                    };
+                });
+
+                // Table of Contents
+                const toc = container.querySelector('.news-toc');
+                const content = container.querySelector('.news-content');
+                if (toc && content) {
+                    const headers = content.querySelectorAll('h1, h2, h3');
+                    const list = toc.querySelector('.toc-list');
+                    headers.forEach((h, i) => {
+                        const id = 'h-' + i;
+                        h.id = id;
+                        const li = document.createElement('li');
+                        li.style.paddingLeft = (parseInt(h.tagName[1]) - 1) * 15 + 'px';
+                        const a = document.createElement('a');
+                        a.href = '#' + id;
+                        a.textContent = h.textContent;
+                        a.onclick = (e) => {
+                            e.preventDefault();
+                            h.scrollIntoView({ behavior: 'smooth' });
+                        };
+                        li.appendChild(a);
+                        list.appendChild(li);
+                    });
+                    if (headers.length === 0) toc.style.display = 'none';
+                }
+
+                // Reading Progress
+                const progress = container.querySelector('.news-progress-bar');
+                if (progress) {
+                    window.onscroll = () => {
+                        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                        const scrolled = (winScroll / height) * 100;
+                        progress.style.width = scrolled + "%";
+                    };
+                }
+
+                // Scroll to top
+                const scrollTop = container.querySelector('.news-scroll-top');
+                if (scrollTop) {
+                    window.addEventListener('scroll', () => {
+                        scrollTop.style.display = window.scrollY > 300 ? 'flex' : 'none';
+                    });
+                    scrollTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+
+                // Copy link
+                container.querySelectorAll('.news-copy-link-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        navigator.clipboard.writeText(btn.dataset.url).then(() => alert('Ссылка скопирована!'));
+                    };
+                });
+
+                // External Link Tracking
+                container.querySelectorAll('.news-ext-link').forEach(link => {
+                    link.onclick = (e) => {
+                        const url = link.dataset.url;
+                        const newsId = link.dataset.news;
+                        console.log(`Link clicked: ${url} in news ${newsId}`);
+                        // Optionally call an API to track clicks
+                    };
+                });
+
+                // QR Code (Placeholder for real implementation, using a public API)
+                container.querySelectorAll('.news-qr-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        const url = btn.dataset.url;
+                        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+                        const win = window.open("", "QR Code", "width=250,height=250");
+                        win.document.write(`<img src="${qrUrl}" style="margin:20px auto; display:block;">`);
                     };
                 });
             }

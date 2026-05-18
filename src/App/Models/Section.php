@@ -33,6 +33,7 @@ class Section
     public static function getDefaults(): array
     {
         return [
+            'mode' => 'news', // news, info
             'view_type' => 'cards',
             'items_per_page' => 10,
             'show_date' => true,
@@ -47,7 +48,31 @@ class Section
             'custom_css' => '',
             'lang_read_more' => 'Читать далее',
             'lang_search_placeholder' => 'Поиск новостей...',
-            'sort_by' => 'date_desc', // date_desc, date_asc, views_desc, reactions_desc
+            'sort_by' => 'date_desc',
+
+            // New Advanced Settings
+            'animation' => 'none', // none, fade, slide, zoom
+            'bg_type' => 'none', // none, color, gradient
+            'bg_color' => '#ffffff',
+            'bg_gradient' => 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+            'text_color' => '#333333',
+            'container_shadow' => false,
+            'border_radius' => 15,
+            'font_family' => 'inherit',
+            'show_toc' => false,
+            'show_progress_bar' => false,
+            'password_protection' => '',
+            'show_accessibility' => false,
+            'allow_theme_toggle' => false,
+            'show_qr' => false,
+            'show_copy_link' => false,
+            'show_breadcrumbs' => false,
+            'show_scroll_top' => false,
+            'custom_header' => '',
+            'custom_footer' => '',
+            'related_count' => 0,
+            'webhook_url' => '',
+            'lazy_load' => true
         ];
     }
 

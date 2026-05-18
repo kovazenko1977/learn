@@ -98,6 +98,7 @@ $newsCount = count(NewsItem::all());
             <a class="nav-link active" href="index.php"><i class="bi bi-speedometer2"></i> Дашборд</a>
             <a class="nav-link" href="sections.php"><i class="bi bi-folder"></i> Разделы</a>
             <a class="nav-link" href="news.php"><i class="bi bi-newspaper"></i> Новости</a>
+            <a class="nav-link" href="analytics.php"><i class="bi bi-bar-chart"></i> Аналитика</a>
             <a class="nav-link" href="backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
             <a class="nav-link" href="settings.php"><i class="bi bi-gear"></i> Настройки</a>
             <a class="nav-link" href="about.php"><i class="bi bi-info-circle"></i> О программе</a>

@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = [
                 'id' => $id ?: uniqid(),
                 'name' => $name,
+                'mode' => $_POST['mode'] ?? 'news',
                 'view_type' => $_POST['view_type'] ?? 'cards',
                 'items_per_page' => (int)($_POST['items_per_page'] ?? 10),
                 'sort_by' => $_POST['sort_by'] ?? 'date_desc',
@@ -33,6 +34,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'show_search' => isset($_POST['show_search']),
                 'show_reactions' => isset($_POST['show_reactions']),
                 'show_share' => isset($_POST['show_share']),
+
+                // Advanced
+                'animation' => $_POST['animation'] ?? 'none',
+                'bg_type' => $_POST['bg_type'] ?? 'none',
+                'bg_color' => $_POST['bg_color'] ?? '#ffffff',
+                'bg_gradient' => $_POST['bg_gradient'] ?? '',
+                'text_color' => $_POST['text_color'] ?? '#333333',
+                'container_shadow' => isset($_POST['container_shadow']),
+                'border_radius' => (int)($_POST['border_radius'] ?? 15),
+                'font_family' => $_POST['font_family'] ?? 'inherit',
+                'show_toc' => isset($_POST['show_toc']),
+                'show_progress_bar' => isset($_POST['show_progress_bar']),
+                'password_protection' => $_POST['password_protection'] ?? '',
+                'show_accessibility' => isset($_POST['show_accessibility']),
+                'allow_theme_toggle' => isset($_POST['allow_theme_toggle']),
+                'show_qr' => isset($_POST['show_qr']),
+                'show_copy_link' => isset($_POST['show_copy_link']),
+                'show_breadcrumbs' => isset($_POST['show_breadcrumbs']),
+                'show_scroll_top' => isset($_POST['show_scroll_top']),
+                'custom_header' => $_POST['custom_header'] ?? '',
+                'custom_footer' => $_POST['custom_footer'] ?? '',
+                'related_count' => (int)($_POST['related_count'] ?? 0),
+                'webhook_url' => $_POST['webhook_url'] ?? '',
+                'lazy_load' => isset($_POST['lazy_load']),
             ];
 
             Section::save($data);
@@ -73,6 +98,7 @@ if ($action === 'edit' && isset($_GET['id'])) {
             <a class="nav-link" href="index.php"><i class="bi bi-speedometer2"></i> Дашборд</a>
             <a class="nav-link active" href="sections.php"><i class="bi bi-folder"></i> Разделы</a>
             <a class="nav-link" href="news.php"><i class="bi bi-newspaper"></i> Новости</a>
+            <a class="nav-link" href="analytics.php"><i class="bi bi-bar-chart"></i> Аналитика</a>
             <a class="nav-link" href="backup.php"><i class="bi bi-cloud-arrow-down"></i> Резервное копирование</a>
             <a class="nav-link" href="settings.php"><i class="bi bi-gear"></i> Настройки</a>
             <a class="nav-link" href="about.php"><i class="bi bi-info-circle"></i> О программе</a>
@@ -113,6 +139,12 @@ if ($action === 'edit' && isset($_GET['id'])) {
                             <button class="nav-link" id="lang-tab" data-bs-toggle="tab" data-bs-target="#lang" type="button">Локализация</button>
                         </li>
                         <li class="nav-item">
+                            <button class="nav-link" id="styling-tab" data-bs-toggle="tab" data-bs-target="#styling" type="button">Стилизация</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced" type="button">Дополнительно</button>
+                        </li>
+                        <li class="nav-item">
                             <button class="nav-link" id="css-tab" data-bs-toggle="tab" data-bs-target="#css" type="button">Custom CSS</button>
                         </li>
                     </ul>
@@ -121,9 +153,16 @@ if ($action === 'edit' && isset($_GET['id'])) {
                         <!-- Основные -->
                         <div class="tab-pane fade show active" id="general">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-4 mb-3">
                                     <label class="form-label">Название раздела</label>
                                     <input type="text" name="name" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['name'] ?? ''); ?>" required>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="form-label">Режим</label>
+                                    <select name="mode" class="form-select rounded-3">
+                                        <option value="news" <?php echo ($s['mode'] ?? '') === 'news' ? 'selected' : ''; ?>>Новости</option>
+                                        <option value="info" <?php echo ($s['mode'] ?? '') === 'info' ? 'selected' : ''; ?>>Информация</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="form-label">Вид отображения</label>
@@ -218,6 +257,131 @@ if ($action === 'edit' && isset($_GET['id'])) {
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Placeholder поиска</label>
                                     <input type="text" name="lang_search_placeholder" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['lang_search_placeholder'] ?? 'Поиск новостей...'); ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Стилизация -->
+                        <div class="tab-pane fade" id="styling">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Анимация появления</label>
+                                    <select name="animation" class="form-select rounded-3">
+                                        <option value="none" <?php echo ($s['animation'] ?? '') === 'none' ? 'selected' : ''; ?>>Нет</option>
+                                        <option value="fade" <?php echo ($s['animation'] ?? '') === 'fade' ? 'selected' : ''; ?>>Fade In</option>
+                                        <option value="slide" <?php echo ($s['animation'] ?? '') === 'slide' ? 'selected' : ''; ?>>Slide Up</option>
+                                        <option value="zoom" <?php echo ($s['animation'] ?? '') === 'zoom' ? 'selected' : ''; ?>>Zoom In</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Тип фона</label>
+                                    <select name="bg_type" class="form-select rounded-3">
+                                        <option value="none" <?php echo ($s['bg_type'] ?? '') === 'none' ? 'selected' : ''; ?>>Прозрачный</option>
+                                        <option value="color" <?php echo ($s['bg_type'] ?? '') === 'color' ? 'selected' : ''; ?>>Цвет</option>
+                                        <option value="gradient" <?php echo ($s['bg_type'] ?? '') === 'gradient' ? 'selected' : ''; ?>>Градиент</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Цвет текста</label>
+                                    <input type="color" name="text_color" class="form-control form-control-color w-100 rounded-3" value="<?php echo $s['text_color'] ?? '#333333'; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Цвет фона</label>
+                                    <input type="color" name="bg_color" class="form-control form-control-color w-100 rounded-3" value="<?php echo $s['bg_color'] ?? '#ffffff'; ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">CSS Градиент</label>
+                                    <input type="text" name="bg_gradient" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['bg_gradient'] ?? ''); ?>" placeholder="linear-gradient(...)">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Скругление углов (px)</label>
+                                    <input type="number" name="border_radius" class="form-control rounded-3" value="<?php echo $s['border_radius'] ?? 15; ?>">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Шрифт</label>
+                                    <input type="text" name="font_family" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['font_family'] ?? 'inherit'); ?>" placeholder="например, Montserrat">
+                                </div>
+                                <div class="col-md-4 mb-3 d-flex align-items-center pt-4">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="container_shadow" <?php echo ($s['container_shadow'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Тень контейнера</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Дополнительно -->
+                        <div class="tab-pane fade" id="advanced">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Защита паролем (оставьте пустым для отключения)</label>
+                                    <input type="text" name="password_protection" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['password_protection'] ?? ''); ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Webhook URL (уведомления)</label>
+                                    <input type="url" name="webhook_url" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['webhook_url'] ?? ''); ?>">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_toc" <?php echo ($s['show_toc'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Содержание (ToC)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_progress_bar" <?php echo ($s['show_progress_bar'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Индикатор чтения</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_accessibility" <?php echo ($s['show_accessibility'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Инструменты доступности</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="allow_theme_toggle" <?php echo ($s['allow_theme_toggle'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Переключатель тем (L/D)</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_qr" <?php echo ($s['show_qr'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">QR-код новости</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_copy_link" <?php echo ($s['show_copy_link'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Кнопка "Копировать ссылку"</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_breadcrumbs" <?php echo ($s['show_breadcrumbs'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Хлебные крошки</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_scroll_top" <?php echo ($s['show_scroll_top'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Кнопка Наверх</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="lazy_load" <?php echo ($s['lazy_load'] ?? true) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Lazy Loading</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Custom Header (HTML)</label>
+                                    <textarea name="custom_header" class="form-control rounded-3 font-monospace" rows="2"><?php echo htmlspecialchars($s['custom_header'] ?? ''); ?></textarea>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Custom Footer (HTML)</label>
+                                    <textarea name="custom_footer" class="form-control rounded-3 font-monospace" rows="2"><?php echo htmlspecialchars($s['custom_footer'] ?? ''); ?></textarea>
                                 </div>
                             </div>
                         </div>
