@@ -122,6 +122,7 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     <link rel="stylesheet" href="../assets/css/admin.css">
     <style>
         .ql-toolbar {
@@ -468,12 +469,17 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
     </div>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         if (document.getElementById('editor-container')) {
+            // Register ImageResize if not already
             var quill = new Quill('#editor-container', {
                 theme: 'snow',
                 modules: {
+                    imageResize: {
+                        displaySize: true
+                    },
                     toolbar: {
                         container: [
                             [{ 'header': [1, 2, 3, 4, 5, 6, false] }],

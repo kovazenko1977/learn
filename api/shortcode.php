@@ -337,8 +337,10 @@ function calculateReadingTime($content) {
                     $shareTitle = urlencode($singleItem['title']);
                 ?>
                     <div class="news-share-btns">
-                        <a href="https://t.me/share/url?url=<?php echo urlencode($shareUrl); ?>&text=<?php echo $shareTitle; ?>" target="_blank" class="share-btn tg"><i class="bi bi-telegram"></i></a>
-                        <a href="https://wa.me/?text=<?php echo $shareTitle . '%20' . urlencode($shareUrl); ?>" target="_blank" class="share-btn wa"><i class="bi bi-whatsapp"></i></a>
+                        <a href="https://t.me/share/url?url=<?php echo urlencode($shareUrl); ?>&text=<?php echo $shareTitle; ?>" target="_blank" class="share-btn tg" title="Telegram"><i class="bi bi-telegram"></i></a>
+                        <a href="https://wa.me/?text=<?php echo $shareTitle . '%20' . urlencode($shareUrl); ?>" target="_blank" class="share-btn wa" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                        <a href="viber://forward?text=<?php echo $shareTitle . '%20' . urlencode($shareUrl); ?>" target="_blank" class="share-btn vi" title="Viber"><i class="bi bi-chat-dots-fill"></i></a>
+                        <a href="https://vk.com/share.php?url=<?php echo urlencode($shareUrl); ?>&title=<?php echo $shareTitle; ?>" target="_blank" class="share-btn vk" title="VK"><i class="bi bi-vimeo"></i></a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -563,6 +565,8 @@ function calculateReadingTime($content) {
     .share-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; font-size: 1.1rem; transition: opacity 0.2s; }
     .share-btn.tg { background: #0088cc; }
     .share-btn.wa { background: #25d366; }
+    .share-btn.vi { background: #7360f2; }
+    .share-btn.vk { background: #0077ff; }
     .share-btn:hover { opacity: 0.8; }
 
     .news-pagination { display: flex; gap: 10px; justify-content: center; margin-top: 40px; }
