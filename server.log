@@ -1,97 +1,34 @@
-[Tue May 19 05:41:53 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Tue May 19 05:42:35 2026] 127.0.0.1:59744 Accepted
-[Tue May 19 05:42:35 2026] 127.0.0.1:59744 [200]: GET /login.php
-[Tue May 19 05:42:35 2026] 127.0.0.1:59744 Closing
-[Tue May 19 05:42:35 2026] 127.0.0.1:59754 Accepted
-[Tue May 19 05:42:35 2026] 127.0.0.1:59754 [200]: POST /login.php
-[Tue May 19 05:42:35 2026] 127.0.0.1:59754 Closing
-[Tue May 19 05:44:39 2026] 127.0.0.1:36796 Accepted
-[Tue May 19 05:44:39 2026] 127.0.0.1:36796 [200]: GET /login.php
-[Tue May 19 05:44:39 2026] 127.0.0.1:36796 Closing
-[Tue May 19 05:44:39 2026] 127.0.0.1:36808 Accepted
-[Tue May 19 05:44:39 2026] 127.0.0.1:36808 [302]: POST /login.php
-[Tue May 19 05:44:39 2026] 127.0.0.1:36808 Closing
-[Tue May 19 05:44:39 2026] 127.0.0.1:36822 Accepted
-[Tue May 19 05:44:39 2026] 127.0.0.1:36822 [200]: GET /admin/index.php
-[Tue May 19 05:44:39 2026] 127.0.0.1:36822 Closing
-[Tue May 19 05:45:53 2026] 127.0.0.1:50376 Accepted
-[Tue May 19 05:45:53 2026] 127.0.0.1:50376 [200]: GET /login.php
-[Tue May 19 05:45:53 2026] 127.0.0.1:50376 Closing
-[Tue May 19 05:45:53 2026] 127.0.0.1:50388 Accepted
-[Tue May 19 05:45:53 2026] 127.0.0.1:50388 [302]: POST /login.php
-[Tue May 19 05:45:53 2026] 127.0.0.1:50388 Closing
-[Tue May 19 05:45:53 2026] 127.0.0.1:50396 Accepted
-[Tue May 19 05:45:53 2026] 127.0.0.1:50396 [200]: GET /admin/index.php
-[Tue May 19 05:45:53 2026] 127.0.0.1:50396 Closing
-[Tue May 19 05:45:55 2026] 127.0.0.1:50398 Accepted
-[Tue May 19 05:45:55 2026] 127.0.0.1:50398 [200]: GET /admin/sections.php
-[Tue May 19 05:45:55 2026] 127.0.0.1:50398 Closing
-[Tue May 19 05:45:55 2026] 127.0.0.1:50404 Accepted
-[Tue May 19 05:45:55 2026] 127.0.0.1:50404 [200]: GET /assets/css/admin.css
-[Tue May 19 05:45:55 2026] 127.0.0.1:50404 Closing
-[Tue May 19 05:47:27 2026] 127.0.0.1:58436 Accepted
-[Tue May 19 05:47:27 2026] 127.0.0.1:58436 [200]: GET /login.php
-[Tue May 19 05:47:27 2026] 127.0.0.1:58436 Closing
-[Tue May 19 05:47:27 2026] 127.0.0.1:58442 Accepted
-[Tue May 19 05:47:27 2026] 127.0.0.1:58442 [302]: POST /login.php
-[Tue May 19 05:47:27 2026] 127.0.0.1:58442 Closing
-[Tue May 19 05:47:27 2026] 127.0.0.1:58446 Accepted
-[Tue May 19 05:47:27 2026] 127.0.0.1:58446 [200]: GET /admin/index.php
-[Tue May 19 05:47:27 2026] 127.0.0.1:58446 Closing
-[Tue May 19 05:47:27 2026] 127.0.0.1:58452 Accepted
-[Tue May 19 05:47:27 2026] 127.0.0.1:58452 [200]: GET /assets/css/admin.css
-[Tue May 19 05:47:27 2026] 127.0.0.1:58452 Closing
-[Tue May 19 05:47:29 2026] 127.0.0.1:58460 Accepted
-[Tue May 19 05:47:29 2026] 127.0.0.1:58460 [200]: GET /admin/sections.php
-[Tue May 19 05:47:29 2026] 127.0.0.1:58460 Closing
-[Tue May 19 05:47:29 2026] 127.0.0.1:58476 Accepted
-[Tue May 19 05:47:29 2026] 127.0.0.1:58476 [200]: GET /assets/css/admin.css
-[Tue May 19 05:47:29 2026] 127.0.0.1:58476 Closing
-[Tue May 19 05:48:42 2026] 127.0.0.1:51330 Accepted
-[Tue May 19 05:48:42 2026] 127.0.0.1:51330 [200]: GET /login.php
-[Tue May 19 05:48:42 2026] 127.0.0.1:51330 Closing
-[Tue May 19 05:48:42 2026] 127.0.0.1:51340 Accepted
-[Tue May 19 05:48:43 2026] 127.0.0.1:51340 [302]: POST /login.php
-[Tue May 19 05:48:43 2026] 127.0.0.1:51340 Closing
-[Tue May 19 05:48:43 2026] 127.0.0.1:51348 Accepted
-[Tue May 19 05:48:43 2026] 127.0.0.1:51348 [200]: GET /admin/index.php
-[Tue May 19 05:48:43 2026] 127.0.0.1:51348 Closing
-[Tue May 19 05:48:43 2026] 127.0.0.1:51358 Accepted
-[Tue May 19 05:48:43 2026] 127.0.0.1:51358 [200]: GET /assets/css/admin.css
-[Tue May 19 05:48:43 2026] 127.0.0.1:51358 Closing
-[Tue May 19 05:48:44 2026] 127.0.0.1:51360 Accepted
-[Tue May 19 05:48:44 2026] 127.0.0.1:51360 [200]: GET /admin/sections.php
-[Tue May 19 05:48:44 2026] 127.0.0.1:51360 Closing
-[Tue May 19 05:48:44 2026] 127.0.0.1:51372 Accepted
-[Tue May 19 05:48:44 2026] 127.0.0.1:51372 [200]: GET /assets/css/admin.css
-[Tue May 19 05:48:44 2026] 127.0.0.1:51372 Closing
-[Tue May 19 05:49:59 2026] 127.0.0.1:55972 Accepted
-[Tue May 19 05:49:59 2026] 127.0.0.1:55972 [200]: GET /login.php
-[Tue May 19 05:49:59 2026] 127.0.0.1:55972 Closing
-[Tue May 19 05:49:59 2026] 127.0.0.1:55974 Accepted
-[Tue May 19 05:49:59 2026] 127.0.0.1:55974 [302]: POST /login.php
-[Tue May 19 05:49:59 2026] 127.0.0.1:55974 Closing
-[Tue May 19 05:49:59 2026] 127.0.0.1:55976 Accepted
-[Tue May 19 05:49:59 2026] 127.0.0.1:55976 [200]: GET /admin/index.php
-[Tue May 19 05:49:59 2026] 127.0.0.1:55976 Closing
-[Tue May 19 05:49:59 2026] 127.0.0.1:55988 Accepted
-[Tue May 19 05:49:59 2026] 127.0.0.1:55988 [200]: GET /assets/css/admin.css
-[Tue May 19 05:49:59 2026] 127.0.0.1:55988 Closing
-[Tue May 19 05:50:01 2026] 127.0.0.1:34148 Accepted
-[Tue May 19 05:50:01 2026] 127.0.0.1:34148 [200]: GET /admin/sections.php
-[Tue May 19 05:50:01 2026] 127.0.0.1:34148 Closing
-[Tue May 19 05:50:01 2026] 127.0.0.1:34160 Accepted
-[Tue May 19 05:50:01 2026] 127.0.0.1:34160 [200]: GET /assets/css/admin.css
-[Tue May 19 05:50:01 2026] 127.0.0.1:34160 Closing
-[Tue May 19 05:50:01 2026] 127.0.0.1:34172 Accepted
-[Tue May 19 05:50:01 2026] 127.0.0.1:34172 [200]: GET /admin/health.php
-[Tue May 19 05:50:01 2026] 127.0.0.1:34172 Closing
-[Tue May 19 05:50:01 2026] 127.0.0.1:34182 Accepted
-[Tue May 19 05:50:01 2026] 127.0.0.1:34182 [200]: GET /assets/css/admin.css
-[Tue May 19 05:50:01 2026] 127.0.0.1:34182 Closing
-[Tue May 19 05:50:01 2026] 127.0.0.1:34194 Accepted
-[Tue May 19 05:50:01 2026] 127.0.0.1:34194 [200]: GET /admin/analytics.php
-[Tue May 19 05:50:01 2026] 127.0.0.1:34194 Closing
-[Tue May 19 05:50:01 2026] 127.0.0.1:34206 Accepted
-[Tue May 19 05:50:01 2026] 127.0.0.1:34206 [200]: GET /assets/css/admin.css
-[Tue May 19 05:50:01 2026] 127.0.0.1:34206 Closing
+[Tue May 19 07:03:30 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue May 19 07:05:51 2026] 127.0.0.1:40128 Accepted
+[Tue May 19 07:05:51 2026] 127.0.0.1:40128 [200]: GET /login.php
+[Tue May 19 07:05:51 2026] 127.0.0.1:40128 Closing
+[Tue May 19 07:05:51 2026] 127.0.0.1:40144 Accepted
+[Tue May 19 07:05:51 2026] 127.0.0.1:40144 [302]: POST /login.php
+[Tue May 19 07:05:51 2026] 127.0.0.1:40144 Closing
+[Tue May 19 07:05:51 2026] 127.0.0.1:54390 Accepted
+[Tue May 19 07:05:51 2026] 127.0.0.1:54390 [200]: GET /admin/index.php
+[Tue May 19 07:05:51 2026] 127.0.0.1:54390 Closing
+[Tue May 19 07:05:51 2026] 127.0.0.1:54406 Accepted
+[Tue May 19 07:05:51 2026] 127.0.0.1:54406 [200]: GET /assets/css/admin.css
+[Tue May 19 07:05:51 2026] 127.0.0.1:54406 Closing
+[Tue May 19 07:05:51 2026] 127.0.0.1:54410 Accepted
+[Tue May 19 07:05:51 2026] 127.0.0.1:54410 [200]: GET /admin/news.php?action=add
+[Tue May 19 07:05:51 2026] 127.0.0.1:54410 Closing
+[Tue May 19 07:05:51 2026] 127.0.0.1:54422 Accepted
+[Tue May 19 07:05:51 2026] 127.0.0.1:54422 [200]: GET /assets/css/admin.css
+[Tue May 19 07:05:51 2026] 127.0.0.1:54422 Closing
+[Tue May 19 07:06:41 2026] 127.0.0.1:42216 Accepted
+[Tue May 19 07:06:41 2026] 127.0.0.1:42216 [403]: POST /api/upload.php
+[Tue May 19 07:06:41 2026] 127.0.0.1:42216 Closing
+[Tue May 19 07:07:49 2026] 127.0.0.1:34316 Accepted
+[Tue May 19 07:07:49 2026] 127.0.0.1:34316 [403]: POST /api/upload.php
+[Tue May 19 07:07:49 2026] 127.0.0.1:34316 Closing
+[Tue May 19 07:10:00 2026] 127.0.0.1:43362 Accepted
+[Tue May 19 07:10:00 2026] 127.0.0.1:43362 [302]: POST /login.php
+[Tue May 19 07:10:00 2026] 127.0.0.1:43362 Closing
+[Tue May 19 07:10:00 2026] 127.0.0.1:43374 Accepted
+[Tue May 19 07:10:00 2026] 127.0.0.1:43374 [200]: GET /admin/index.php
+[Tue May 19 07:10:00 2026] 127.0.0.1:43374 Closing
+[Tue May 19 07:10:00 2026] 127.0.0.1:43388 Accepted
+[Tue May 19 07:10:00 2026] 127.0.0.1:43388 [200]: POST /api/upload.php
+[Tue May 19 07:10:00 2026] 127.0.0.1:43388 Closing

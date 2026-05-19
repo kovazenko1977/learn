@@ -8,6 +8,7 @@ if (!Auth::check()) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
+    header('Content-Type: application/json');
     $file = $_FILES['image'];
     $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
@@ -27,8 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
     if (move_uploaded_file($file['tmp_name'], $uploadDir . $filename)) {
         $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http");
         $host = $_SERVER['HTTP_HOST'];
-        $scriptPath = dirname($_SERVER['SCRIPT_NAME']); // /api
-        $baseUrl = str_replace('/api', '', $scriptPath);
+
+        // Better way to determine the absolute base URL
+        $currentDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+        $parentDir = str_replace('\\', '/', dirname($currentDir));
+        $baseUrl = ($parentDir === '/') ? '' : $parentDir;
 
         $url = "$protocol://$host$baseUrl/api/image.php?name=" . $filename;
         echo json_encode(['url' => $url]);

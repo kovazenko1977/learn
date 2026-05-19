@@ -131,7 +131,6 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     <link rel="stylesheet" href="../assets/css/admin.css">
     <style>
         .ql-toolbar {
@@ -144,6 +143,14 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
             border-radius: 15px;
             border: 1px solid #eee;
             min-height: 200px;
+        }
+        .ql-editor img {
+            max-width: 100%;
+            height: auto;
+        }
+        .preview-content img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -515,6 +522,7 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
     <?php endif; ?>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>window.Quill = Quill;</script>
     <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -525,13 +533,16 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                 } else {
                     document.getElementById('html-editor').value = content;
                 }
-                bootstrap.Modal.getInstance(document.getElementById('revisionsModal')).hide();
+                const modal = document.getElementById('revisionsModal');
+                if (modal) {
+                    const bsModal = bootstrap.Modal.getInstance(modal);
+                    if (bsModal) bsModal.hide();
+                }
             }
         }
     </script>
     <script>
         if (document.getElementById('editor-container')) {
-            // Register ImageResize if not already
             var quill = new Quill('#editor-container', {
                 theme: 'snow',
                 modules: {
@@ -593,28 +604,36 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
             };
 
             function imageHandler() {
-                var input = document.createElement('input');
+                const input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.setAttribute('accept', 'image/*');
                 input.click();
 
-                input.onchange = function() {
-                    var file = input.files[0];
-                    var formData = new FormData();
+                input.onchange = async function() {
+                    const file = input.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
                     formData.append('image', file);
 
-                    fetch('../api/upload.php', {
-                        method: 'POST',
-                        body: formData
-                    }).then(res => res.json())
-                    .then(result => {
+                    try {
+                        const response = await fetch('../api/upload.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
+
                         if (result.url) {
-                            var range = quill.getSelection();
+                            const range = quill.getSelection(true);
                             quill.insertEmbed(range.index, 'image', result.url);
+                            quill.setSelection(range.index + 1);
                         } else {
                             alert(result.error || 'Ошибка загрузки');
                         }
-                    });
+                    } catch (e) {
+                        console.error('Upload error:', e);
+                        alert('Ошибка при загрузке изображения на сервер');
+                    }
                 };
             }
 
