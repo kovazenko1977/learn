@@ -67,7 +67,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
 
         if ($data['title'] && $data['section_id']) {
+            $isNew = empty($id);
             NewsItem::save($data);
+
+            if ($isNew && $data['status'] === 'published') {
+                $section = Section::find($data['section_id']);
+                if ($section && !empty($section['webhook_url'])) {
+                    \App\Helpers\Webhook::send($section['webhook_url'], $data, $section['name']);
+                }
+            }
+
             $success = 'Новость успешно сохранена';
             $action = 'list';
         } else {
@@ -249,7 +258,12 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Контент</label>
+                        <label class="form-label d-flex justify-content-between">
+                            Контент
+                            <?php if ($editItem): ?>
+                            <a href="#" class="small text-decoration-none" data-bs-toggle="modal" data-bs-target="#revisionsModal">История правок</a>
+                            <?php endif; ?>
+                        </label>
                         <div id="editor-container"><?php echo $editItem['content'] ?? ''; ?></div>
                     </div>
 
@@ -468,9 +482,53 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
         </div>
     </div>
 
+    <!-- Revisions Modal -->
+    <?php if ($editItem): ?>
+    <div class="modal fade" id="revisionsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title">История правок</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="list-group list-group-flush">
+                        <?php
+                        $revisions = NewsItem::getRevisions($editItem['id']);
+                        foreach (array_reverse($revisions) as $rev): ?>
+                            <div class="list-group-item p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted"><?php echo $rev['timestamp']; ?> (<?php echo $rev['user']; ?>)</small>
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" onclick="restoreRevision(<?php echo htmlspecialchars(json_encode($rev['content'])); ?>)">Восстановить</button>
+                                </div>
+                                <div class="small text-truncate opacity-50"><?php echo strip_tags($rev['content']); ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                        <?php if (empty($revisions)): ?>
+                            <div class="p-4 text-center text-muted">Нет сохраненных версий</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function restoreRevision(content) {
+            if (confirm('Восстановить эту версию контента? Текущие несохраненные изменения будут потеряны.')) {
+                if (document.getElementById('editor-container').style.display !== 'none') {
+                    quill.root.innerHTML = content;
+                } else {
+                    document.getElementById('html-editor').value = content;
+                }
+                bootstrap.Modal.getInstance(document.getElementById('revisionsModal')).hide();
+            }
+        }
+    </script>
     <script>
         if (document.getElementById('editor-container')) {
             // Register ImageResize if not already

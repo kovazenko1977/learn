@@ -425,6 +425,17 @@ function calculateReadingTime($content) {
         </nav>
     <?php endif; ?>
 
+    <?php if (!$singleItem && ($section['show_subscribe'] ?? false)): ?>
+        <div class="news-subscribe-wrap">
+            <h5><?php echo htmlspecialchars($section['lang_subscribe_title'] ?? 'Подпишитесь на новости'); ?></h5>
+            <form class="news-subscribe-form" data-section="<?php echo $sectionId; ?>">
+                <input type="email" placeholder="Ваш email..." required>
+                <button type="submit"><?php echo htmlspecialchars($section['lang_subscribe_btn'] ?? 'OK'); ?></button>
+            </form>
+            <div class="news-subscribe-msg"></div>
+        </div>
+    <?php endif; ?>
+
     <?php if ($section['show_scroll_top'] ?? false): ?>
         <button class="news-scroll-top"><i class="bi bi-arrow-up-short"></i></button>
     <?php endif; ?>
@@ -573,4 +584,10 @@ function calculateReadingTime($content) {
     .news-page-link { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; border-radius: 10px; text-decoration: none; color: #555; transition: all 0.3s; font-weight: 600; }
     .news-page-link:hover { border-color: #4facfe; color: #4facfe; }
     .news-page-link.active { background: #4facfe; color: #fff; border-color: #4facfe; box-shadow: 0 4px 10px rgba(79, 172, 254, 0.3); }
+
+    .news-subscribe-wrap { background: #f8f9fa; padding: 30px; border-radius: 15px; margin-top: 40px; text-align: center; }
+    .news-subscribe-form { display: flex; gap: 10px; max-width: 400px; margin: 15px auto 0; }
+    .news-subscribe-form input { flex-grow: 1; padding: 10px 20px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
+    .news-subscribe-form button { background: #4facfe; color: #fff; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; }
+    .news-subscribe-msg { margin-top: 10px; font-size: 0.85rem; }
 </style>

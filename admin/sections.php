@@ -58,6 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'related_count' => (int)($_POST['related_count'] ?? 0),
                 'webhook_url' => $_POST['webhook_url'] ?? '',
                 'lazy_load' => isset($_POST['lazy_load']),
+                'show_subscribe' => isset($_POST['show_subscribe']),
+                'lang_subscribe_title' => $_POST['lang_subscribe_title'] ?? 'Подпишитесь на новости',
+                'lang_subscribe_btn' => $_POST['lang_subscribe_btn'] ?? 'ОК',
             ];
 
             Section::save($data);
@@ -374,6 +377,20 @@ if ($action === 'edit' && isset($_GET['id'])) {
                                         <input class="form-check-input" type="checkbox" name="lazy_load" <?php echo ($s['lazy_load'] ?? true) ? 'checked' : ''; ?>>
                                         <label class="form-check-label">Lazy Loading</label>
                                     </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="show_subscribe" <?php echo ($s['show_subscribe'] ?? false) ? 'checked' : ''; ?>>
+                                        <label class="form-check-label">Форма подписки</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Заголовок подписки</label>
+                                    <input type="text" name="lang_subscribe_title" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['lang_subscribe_title'] ?? 'Подпишитесь на новости'); ?>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Текст кнопки подписки</label>
+                                    <input type="text" name="lang_subscribe_btn" class="form-control rounded-3" value="<?php echo htmlspecialchars($s['lang_subscribe_btn'] ?? 'ОК'); ?>">
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label class="form-label">Custom Header (HTML)</label>

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Database\JsonStore;
+use App\Helpers\Auth;
 
 class NewsItem
 {
     private static ?JsonStore $store = null;
+    private static ?JsonStore $revisionStore = null;
 
     public static function getStore(): JsonStore
     {
@@ -14,6 +16,14 @@ class NewsItem
             self::$store = new JsonStore(__DIR__ . '/../../../data/news.json');
         }
         return self::$store;
+    }
+
+    public static function getRevisionStore(): JsonStore
+    {
+        if (self::$revisionStore === null) {
+            self::$revisionStore = new JsonStore(__DIR__ . '/../../../data/revisions.json');
+        }
+        return self::$revisionStore;
     }
 
     public static function all(): array
@@ -67,18 +77,16 @@ class NewsItem
             $viewLogs = $item['view_logs'] ?? [];
             $today = date('Y-m-d');
 
-            // Check if this visitor already viewed this item today
             if (!isset($viewLogs[$visitorHash]) || $viewLogs[$visitorHash] !== $today) {
                 $item['views'] = ($item['views'] ?? 0) + 1;
                 $viewLogs[$visitorHash] = $today;
 
-                // Cleanup old logs (keep only last 1000 visitors to avoid file bloat)
                 if (count($viewLogs) > 1000) {
                     $viewLogs = array_slice($viewLogs, -1000, null, true);
                 }
 
                 $item['view_logs'] = $viewLogs;
-                self::save($item);
+                self::save($item, false); // Don't create revision for view count
             }
         }
     }
@@ -99,7 +107,7 @@ class NewsItem
 
         $item['reactions'] = array_values($reactions);
         $item['reaction_count'] = count($item['reactions']);
-        self::save($item);
+        self::save($item, false); // Don't create revision for reactions
 
         return [
             'success' => true,
@@ -108,7 +116,13 @@ class NewsItem
         ];
     }
 
-    public static function save(array $data): void
+    public static function getRevisions(string $newsId): array
+    {
+        $revisions = self::getRevisionStore()->getAll();
+        return array_filter($revisions, fn($r) => $r['news_id'] === $newsId);
+    }
+
+    public static function save(array $data, bool $createRevision = true): void
     {
         if (!isset($data['id'])) {
             $data['id'] = uniqid();
@@ -116,11 +130,37 @@ class NewsItem
         if (!isset($data['created_at'])) {
             $data['created_at'] = date('Y-m-d H:i:s');
         }
+
+        if ($createRevision) {
+            $oldItem = self::find($data['id']);
+            $newContent = $data['content'] ?? '';
+            $oldContent = $oldItem['content'] ?? '';
+            if ($oldItem && $oldContent !== $newContent) {
+                $revision = [
+                    'id' => uniqid(),
+                    'news_id' => $data['id'],
+                    'content' => $oldContent,
+                    'title' => $oldItem['title'] ?? '',
+                    'timestamp' => date('Y-m-d H:i:s'),
+                    'user' => $_SESSION['username'] ?? 'System'
+                ];
+                $revStore = self::getRevisionStore();
+                $revisions = $revStore->getAll();
+                $revisions[] = $revision;
+                $revStore->set(array_slice($revisions, -100)); // Last 100 revisions total
+            }
+        }
+
         self::getStore()->saveItem($data);
     }
 
     public static function delete(string $id): void
     {
         self::getStore()->deleteById($id);
+        // Cleanup revisions
+        $revStore = self::getRevisionStore();
+        $revisions = $revStore->getAll();
+        $revisions = array_filter($revisions, fn($r) => $r['news_id'] !== $id);
+        $revStore->set(array_values($revisions));
     }
 }

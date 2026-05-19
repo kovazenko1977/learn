@@ -15,8 +15,13 @@ function test($name, $fn) {
 }
 
 test("Auth logic", function() {
-    Auth::updatePin("111111");
-    if (!Auth::login("111111")) throw new Exception("Login failed");
+    // Re-initialize user store
+    $userStore = Auth::getUserStore();
+    $users = $userStore->getAll();
+    $admin = $users[0];
+
+    Auth::updatePin("111111", $admin['id']);
+    if (!Auth::login("111111")) throw new Exception("Login failed with new PIN");
     if (Auth::login("000000")) throw new Exception("Wrong PIN login allowed");
 });
 
@@ -30,8 +35,8 @@ test("Section CRUD", function() {
 
 test("NewsItem Scheduling", function() {
     Section::save(['id' => 'news-test', 'name' => 'News Test']);
-    NewsItem::save(['id' => 'n1', 'section_id' => 'news-test', 'title' => 'Past', 'publish_at' => date('Y-m-d H:i:s', time() - 3600)]);
-    NewsItem::save(['id' => 'n2', 'section_id' => 'news-test', 'title' => 'Future', 'publish_at' => date('Y-m-d H:i:s', time() + 3600)]);
+    NewsItem::save(['id' => 'n1', 'section_id' => 'news-test', 'title' => 'Past', 'content' => '...', 'publish_at' => date('Y-m-d H:i:s', time() - 3600)]);
+    NewsItem::save(['id' => 'n2', 'section_id' => 'news-test', 'title' => 'Future', 'content' => '...', 'publish_at' => date('Y-m-d H:i:s', time() + 3600)]);
 
     $items = NewsItem::findBySection('news-test', true);
     if (count($items) !== 1) throw new Exception("Scheduling filter failed: expected 1, got " . count($items));

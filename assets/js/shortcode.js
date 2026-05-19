@@ -210,6 +210,31 @@
                         win.document.write(`<img src="${qrUrl}" style="margin:20px auto; display:block;">`);
                     };
                 });
+
+                // Subscribe form
+                const subForm = container.querySelector('.news-subscribe-form');
+                if (subForm) {
+                    subForm.onsubmit = (e) => {
+                        e.preventDefault();
+                        const email = subForm.querySelector('input').value;
+                        const msg = container.querySelector('.news-subscribe-msg');
+                        msg.textContent = 'Отправка...';
+
+                        const subBody = new FormData();
+                        subBody.append('email', email);
+                        subBody.append('section_id', sectionId);
+
+                        fetch(baseUrl + 'api/subscribe.php', {
+                            method: 'POST',
+                            body: subBody
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            msg.textContent = data.message;
+                            if (data.success) subForm.style.display = 'none';
+                        });
+                    };
+                }
             }
 
             loadData();

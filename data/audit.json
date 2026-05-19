@@ -1,0 +1,42 @@
+[
+    {
+        "id": "6a0bfa07dc23a",
+        "timestamp": "2026-05-19 05:49:59",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a0bf9bb0d701",
+        "timestamp": "2026-05-19 05:48:43",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a0bf96fd58a0",
+        "timestamp": "2026-05-19 05:47:27",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a0bf9119d987",
+        "timestamp": "2026-05-19 05:45:53",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a0bf8c7c0e6b",
+        "timestamp": "2026-05-19 05:44:39",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    }
+]

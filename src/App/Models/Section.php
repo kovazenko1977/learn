@@ -72,7 +72,10 @@ class Section
             'custom_footer' => '',
             'related_count' => 0,
             'webhook_url' => '',
-            'lazy_load' => true
+            'lazy_load' => true,
+            'show_subscribe' => false,
+            'lang_subscribe_title' => 'Подпишитесь на новости',
+            'lang_subscribe_btn' => 'ОК'
         ];
     }
 
