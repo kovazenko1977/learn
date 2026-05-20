@@ -11,7 +11,30 @@ class RoomManager {
     }
 
     public function getAllRooms() {
-        return $this->store->findAll('rooms');
+        $rooms = $this->store->findAll('rooms');
+        // Initialize housekeeping status if not present
+        $changed = false;
+        foreach ($rooms as &$room) {
+            if (!isset($room['housekeeping'])) {
+                $room['housekeeping'] = 'clean'; // clean, dirty, cleaning
+                $changed = true;
+            }
+        }
+        if ($changed) {
+            $this->store->save('rooms', $rooms);
+        }
+        return $rooms;
+    }
+
+    public function updateHousekeeping($roomId, $status) {
+        $rooms = $this->getAllRooms();
+        foreach ($rooms as &$room) {
+            if ($room['id'] == $roomId) {
+                $room['housekeeping'] = $status;
+                break;
+            }
+        }
+        $this->store->save('rooms', $rooms);
     }
 
     public function getAvailableRooms($checkIn, $checkOut, $persons = 0) {

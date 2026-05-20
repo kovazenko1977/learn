@@ -75,7 +75,9 @@ class DemoDataLoader {
                 'name' => $firstNames[rand(0, count($firstNames)-1)] . ' ' . $lastNames[rand(0, count($lastNames)-1)],
                 'phone' => '+7 (900) ' . rand(100, 999) . '-' . rand(10, 99) . '-' . rand(10, 99),
                 'citizenship' => 'РФ',
-                'address' => 'г. Москва, ул. Мира ' . $i
+                'address' => 'г. Москва, ул. Мира ' . $i,
+                'birth_date' => date('Y-m-d', strtotime('-' . rand(20, 70) . ' years -' . rand(0, 365) . ' days')),
+                'medical_notes' => rand(0, 1) ? 'Противопоказаний нет' : 'Аллергия на хлор, диета №5'
             ];
         }
         file_put_contents("$dataDir/guests.json", json_encode($guests, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
@@ -119,7 +121,8 @@ class DemoDataLoader {
                 'status' => ($offset < 0) ? 'confirmed' : 'booked',
                 'is_hourly' => $isSauna,
                 'total_price' => 5000 + rand(1, 50) * 500,
-                'created_at' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'source' => ['Телефон', 'Сайт', 'Рекомендация', 'Booking.com'][rand(0, 3)]
             ];
         }
         file_put_contents("$dataDir/bookings.json", json_encode($bookings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

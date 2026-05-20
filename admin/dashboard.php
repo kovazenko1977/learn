@@ -115,6 +115,7 @@ include 'includes/header.php';
                                 <option value="cancelled" <?php if($b['status']=='cancelled') echo 'selected'; ?>>Отменено</option>
                             </select>
                         </form>
+                        <a href="print_voucher.php?id=<?php echo $b['id']; ?>" target="_blank" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;">🖨️ Ваучер</a>
                         <form method="post" onsubmit="return confirm('Удалить бронирование БЕЗВОЗВРАТНО?')">
                             <input type="hidden" name="action" value="delete_booking">
                             <input type="hidden" name="id" value="<?php echo $b['id']; ?>">

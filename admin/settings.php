@@ -52,23 +52,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         } else {
             $errorMessage = "Пожалуйста, выберите корректный файл архива.";
         }
-    } elseif ($_POST['action'] === 'reset_all') {
+    } elseif ($_POST['action'] === 'reset_selective') {
         if ($_POST['confirm_password'] === 'admin123') {
-            $dataFiles = [
-                'bookings.json', 'room_calendar.json', 'guests.json', 'plans.json',
-                'rooms.json', 'room_classes.json', 'procedures.json', 'extra_services.json',
-                'packages.json', 'text_blocks.json', 'settings.json'
-            ];
+            $toDelete = $_POST['delete'] ?? [];
+            $files = [];
+
+            if (isset($toDelete['bookings'])) {
+                $files[] = 'bookings.json';
+                $files[] = 'room_calendar.json';
+            }
+            if (isset($toDelete['guests'])) {
+                $files[] = 'guests.json';
+                // Integrity: deleting guests must clear bookings
+                if (!in_array('bookings.json', $files)) $files[] = 'bookings.json';
+            }
+            if (isset($toDelete['rooms'])) {
+                $files[] = 'rooms.json';
+                $files[] = 'room_classes.json';
+                // Integrity: deleting rooms must clear bookings
+                if (!in_array('bookings.json', $files)) $files[] = 'bookings.json';
+                if (!in_array('room_calendar.json', $files)) $files[] = 'room_calendar.json';
+            }
+            if (isset($toDelete['dictionaries'])) {
+                $files[] = 'procedures.json';
+                $files[] = 'extra_services.json';
+                $files[] = 'packages.json';
+                $files[] = 'text_blocks.json';
+            }
+            if (isset($toDelete['system'])) {
+                $files[] = 'audit_log.json';
+                $files[] = 'expenses.json';
+                $files[] = 'inventory.json';
+                $files[] = 'tasks.json';
+            }
 
             $successCount = 0;
-            foreach ($dataFiles as $file) {
+            foreach (array_unique($files) as $file) {
                 $path = __DIR__ . '/../data/' . $file;
                 if (file_exists($path)) {
                     file_put_contents($path, json_encode([]));
                     $successCount++;
                 }
             }
-            $successMessage = "Все данные успешно удалены. Очищено файлов: $successCount.";
+            $successMessage = "Выбранные данные успешно очищены ($successCount файлов).";
         } else {
             $errorMessage = "Неверный пароль подтверждения.";
         }
@@ -212,9 +238,38 @@ include 'includes/header.php';
         <?php endif; ?>
 
         <form id="reset-form" method="POST">
-            <input type="hidden" name="action" value="reset_all">
+            <input type="hidden" name="action" value="reset_selective">
             <input type="hidden" name="confirm_password" id="confirm_password">
-            <button type="button" onclick="confirmReset()" class="btn btn-danger">Удалить все данные программы</button>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+                <label class="checkbox-container">
+                    <input type="checkbox" name="delete[bookings]" checked>
+                    <span class="checkmark"></span>
+                    Бронирования и шахматка
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" name="delete[guests]">
+                    <span class="checkmark"></span>
+                    Справочник гостей (очистит и бронирования)
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" name="delete[rooms]">
+                    <span class="checkmark"></span>
+                    Номера и категории (очистит и бронирования)
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" name="delete[dictionaries]">
+                    <span class="checkmark"></span>
+                    Справочники (услуги, процедуры, пакеты)
+                </label>
+                <label class="checkbox-container">
+                    <input type="checkbox" name="delete[system]">
+                    <span class="checkmark"></span>
+                    Системные логи, задачи и финансы
+                </label>
+            </div>
+
+            <button type="button" onclick="confirmReset()" class="btn btn-danger" style="width: 100%;">Выполнить очистку выбранных данных</button>
         </form>
     </div>
 
@@ -467,6 +522,51 @@ window.addEventListener('load', () => {
 .modal-content label {
     color: #323130 !important;
     font-weight: 600;
+}
+
+.checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    user-select: none;
+    color: #323130;
+}
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0; width: 0;
+}
+.checkmark {
+    position: absolute;
+    top: 0; left: 0;
+    height: 22px; width: 22px;
+    background-color: #eee;
+    border-radius: 4px;
+}
+.checkbox-container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+.checkbox-container input:checked ~ .checkmark {
+    background-color: #d83b01;
+}
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+.checkbox-container .checkmark:after {
+    left: 8px; top: 4px;
+    width: 6px; height: 11px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
 }
 </style>
 

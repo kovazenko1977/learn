@@ -54,6 +54,28 @@ $base = ($currentDir === 'admin') ? '' : 'admin/';
                 </a>
                 <?php endif; ?>
 
+                <div class="nav-divider">Сервис</div>
+
+                <a href="<?php echo $base; ?>housekeeping.php" class="<?php echo $currentFile == 'housekeeping.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <span>Уборка</span>
+                </a>
+                <a href="<?php echo $base; ?>tasks.php" class="<?php echo $currentFile == 'tasks.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    <span>Задачи</span>
+                </a>
+
+                <div class="nav-divider">Управление</div>
+
+                <a href="<?php echo $base; ?>finance.php" class="<?php echo $currentFile == 'finance.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span>Финансы</span>
+                </a>
+                <a href="<?php echo $base; ?>inventory.php" class="<?php echo $currentFile == 'inventory.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span>Склад</span>
+                </a>
+
                 <div class="nav-divider">Ресурсы</div>
 
                 <?php if (hasPermission('manage_planning')): ?>

@@ -52,6 +52,17 @@ foreach($staying as $b) {
 
 $plansToday = $planManager->getByDate($today);
 
+$allGuests = $store->findAll('guests');
+$birthdaysToday = [];
+if (is_array($allGuests)) {
+    $mDay = date('m-d');
+    foreach ($allGuests as $g) {
+        if (!empty($g['birth_date']) && substr($g['birth_date'], 5, 5) === $mDay) {
+            $birthdaysToday[] = $g;
+        }
+    }
+}
+
 $rooms = $store->findAll('rooms');
 $roomMap = [];
 if (is_array($rooms)) {
@@ -157,6 +168,17 @@ include 'admin/includes/header.php';
 
     <!-- Plans -->
     <div class="mica-card">
+        <?php if (!empty($birthdaysToday)): ?>
+            <div style="background: rgba(255,105,180,0.1); border: 1px solid rgba(255,105,180,0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin-top:0; color: #d01d8b;">🎂 Дни рождения сегодня!</h4>
+                <ul style="list-style:none; padding:0; margin:0; font-size: 0.9rem;">
+                    <?php foreach($birthdaysToday as $bg): ?>
+                        <li><strong><?php echo htmlspecialchars($bg['name']); ?></strong> (<?php echo htmlspecialchars($bg['phone']); ?>)</li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
         <h3>📅 Планы на сегодня (<?php echo count($plansToday); ?>)</h3>
         <?php if(empty($plansToday)): ?>
             <p style="color:#888; padding: 20px 0;">На сегодня планов нет</p>

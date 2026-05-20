@@ -171,8 +171,26 @@ include 'includes/header.php';
             <label>Гражданство</label>
             <input type="text" name="citizenship" id="g-citizenship">
 
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label>Дата рождения</label>
+                    <input type="date" name="birth_date" id="g-birth_date">
+                </div>
+                <div>
+                    <label>Пол</label>
+                    <select name="gender" id="g-gender">
+                        <option value="male">Мужской</option>
+                        <option value="female">Женский</option>
+                        <option value="unknown">Не указан</option>
+                    </select>
+                </div>
+            </div>
+
             <label>Адрес</label>
-            <textarea name="address" id="g-address" style="width:100%; height:60px; padding:10px; border-radius:6px; border:1px solid rgba(0,0,0,0.2);"></textarea>
+            <textarea name="address" id="g-address" style="width:100%; height:40px; padding:8px; border-radius:6px; border:1px solid rgba(0,0,0,0.2);"></textarea>
+
+            <label>Медицинские заметки / Противопоказания</label>
+            <textarea name="medical_notes" id="g-medical_notes" style="width:100%; height:60px; padding:8px; border-radius:6px; border:1px solid rgba(0,0,0,0.2); background: #fffcf0;"></textarea>
 
             <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
@@ -189,6 +207,9 @@ include 'includes/header.php';
         document.getElementById('g-phone').value = g.phone;
         document.getElementById('g-citizenship').value = g.citizenship || '';
         document.getElementById('g-address').value = g.address || '';
+        document.getElementById('g-birth_date').value = g.birth_date || '';
+        document.getElementById('g-gender').value = g.gender || 'unknown';
+        document.getElementById('g-medical_notes').value = g.medical_notes || '';
         document.getElementById('modal-guest').style.display = 'flex';
     }
     function closeModal() {
