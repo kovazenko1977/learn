@@ -23,32 +23,30 @@ class DemoDataLoader {
         ];
         file_put_contents("$dataDir/room_classes.json", json_encode($classes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-        // 2. Rooms (40 rooms)
+        // 2. Rooms (10 rooms + 1 sauna)
         $rooms = [];
-        for ($i = 1; $i <= 40; $i++) {
-            if ($i <= 35) {
-                $classId = ($i <= 10) ? 1 : (($i <= 20) ? 2 : (($i <= 30) ? 3 : 4));
-                $rooms[] = [
-                    'id' => $i,
-                    'room_number' => '1' . str_pad($i, 2, '0', STR_PAD_LEFT),
-                    'room_class_id' => $classId,
-                    'price_per_day' => (int)(1500 + ($classId - 1) * 1200 + rand(0, 5) * 100),
-                    'price_per_hour' => 0,
-                    'capacity' => ($classId == 4) ? 4 : 2,
-                    'status' => 'free'
-                ];
-            } else {
-                $rooms[] = [
-                    'id' => $i,
-                    'room_number' => 'Сауна-' . ($i - 35),
-                    'room_class_id' => 5,
-                    'price_per_day' => 10000,
-                    'price_per_hour' => 1500,
-                    'capacity' => 10,
-                    'status' => 'free'
-                ];
-            }
+        for ($i = 1; $i <= 10; $i++) {
+            $classId = ($i <= 3) ? 1 : (($i <= 6) ? 2 : (($i <= 8) ? 3 : 4));
+            $rooms[] = [
+                'id' => $i,
+                'room_number' => '1' . str_pad($i, 2, '0', STR_PAD_LEFT),
+                'room_class_id' => $classId,
+                'price_per_day' => (int)(1500 + ($classId - 1) * 1200 + rand(0, 5) * 100),
+                'price_per_hour' => 0,
+                'capacity' => ($classId == 4) ? 4 : 2,
+                'status' => 'free'
+            ];
         }
+        // 1 Sauna
+        $rooms[] = [
+            'id' => 11,
+            'room_number' => 'Сауна-1',
+            'room_class_id' => 5,
+            'price_per_day' => 10000,
+            'price_per_hour' => 1500,
+            'capacity' => 10,
+            'status' => 'free'
+        ];
         file_put_contents("$dataDir/rooms.json", json_encode($rooms, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         // 3. Procedures
@@ -67,14 +65,14 @@ class DemoDataLoader {
         }
         file_put_contents("$dataDir/extra_services.json", json_encode($services, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-        // 5. Guests (100)
-        $firstNames = ['Александр', 'Михаил', 'Иван', 'Сергей', 'Анна', 'Мария', 'Елена'];
-        $lastNames = ['Иванов', 'Петров', 'Смирнов', 'Кузнецов', 'Попова', 'Соколова'];
+        // 5. Guests (300)
+        $firstNames = ['Александр', 'Михаил', 'Иван', 'Сергей', 'Дмитрий', 'Андрей', 'Алексей', 'Николай', 'Анна', 'Мария', 'Елена', 'Ольга', 'Татьяна', 'Наталья', 'Ирина'];
+        $lastNames = ['Иванов', 'Петров', 'Смирнов', 'Кузнецов', 'Попов', 'Соколов', 'Васильев', 'Новиков', 'Федоров', 'Морозов', 'Волков', 'Алексеев', 'Лебедев', 'Семенов', 'Егоров'];
         $guests = [];
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 300; $i++) {
             $guests[] = [
                 'id' => $i,
-                'name' => $firstNames[rand(0, 6)] . ' ' . $lastNames[rand(0, 5)],
+                'name' => $firstNames[rand(0, count($firstNames)-1)] . ' ' . $lastNames[rand(0, count($lastNames)-1)],
                 'phone' => '+7 (900) ' . rand(100, 999) . '-' . rand(10, 99) . '-' . rand(10, 99),
                 'citizenship' => 'РФ',
                 'address' => 'г. Москва, ул. Мира ' . $i
@@ -94,8 +92,8 @@ class DemoDataLoader {
         $bookings = [];
         $today = date('Y-m-d');
         for ($i = 1; $i <= 350; $i++) {
-            $guestIdx = rand(0, 99);
-            $roomIdx = rand(0, 39);
+            $guestIdx = rand(0, 299);
+            $roomIdx = rand(0, count($rooms) - 1);
             $room = $rooms[$roomIdx];
             $isSauna = ($room['room_class_id'] == 5);
 

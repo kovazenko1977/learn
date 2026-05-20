@@ -12,7 +12,7 @@
         "id": 2,
         "room_number": "102",
         "room_class_id": 1,
-        "price_per_day": 1700,
+        "price_per_day": 1600,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -21,7 +21,7 @@
         "id": 3,
         "room_number": "103",
         "room_class_id": 1,
-        "price_per_day": 1800,
+        "price_per_day": 1600,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -29,8 +29,8 @@
     {
         "id": 4,
         "room_number": "104",
-        "room_class_id": 1,
-        "price_per_day": 1900,
+        "room_class_id": 2,
+        "price_per_day": 3100,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -38,8 +38,8 @@
     {
         "id": 5,
         "room_number": "105",
-        "room_class_id": 1,
-        "price_per_day": 1600,
+        "room_class_id": 2,
+        "price_per_day": 3200,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -47,8 +47,8 @@
     {
         "id": 6,
         "room_number": "106",
-        "room_class_id": 1,
-        "price_per_day": 1700,
+        "room_class_id": 2,
+        "price_per_day": 2800,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -56,8 +56,8 @@
     {
         "id": 7,
         "room_number": "107",
-        "room_class_id": 1,
-        "price_per_day": 1600,
+        "room_class_id": 3,
+        "price_per_day": 4100,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -65,8 +65,8 @@
     {
         "id": 8,
         "room_number": "108",
-        "room_class_id": 1,
-        "price_per_day": 1700,
+        "room_class_id": 3,
+        "price_per_day": 4200,
         "price_per_hour": 0,
         "capacity": 2,
         "status": "free"
@@ -74,285 +74,24 @@
     {
         "id": 9,
         "room_number": "109",
-        "room_class_id": 1,
-        "price_per_day": 1600,
+        "room_class_id": 4,
+        "price_per_day": 5200,
         "price_per_hour": 0,
-        "capacity": 2,
+        "capacity": 4,
         "status": "free"
     },
     {
         "id": 10,
         "room_number": "110",
-        "room_class_id": 1,
-        "price_per_day": 2000,
+        "room_class_id": 4,
+        "price_per_day": 5200,
         "price_per_hour": 0,
-        "capacity": 2,
+        "capacity": 4,
         "status": "free"
     },
     {
         "id": 11,
-        "room_number": "111",
-        "room_class_id": 2,
-        "price_per_day": 3000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 12,
-        "room_number": "112",
-        "room_class_id": 2,
-        "price_per_day": 3200,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 13,
-        "room_number": "113",
-        "room_class_id": 2,
-        "price_per_day": 3200,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 14,
-        "room_number": "114",
-        "room_class_id": 2,
-        "price_per_day": 2900,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 15,
-        "room_number": "115",
-        "room_class_id": 2,
-        "price_per_day": 2700,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 16,
-        "room_number": "116",
-        "room_class_id": 2,
-        "price_per_day": 3000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 17,
-        "room_number": "117",
-        "room_class_id": 2,
-        "price_per_day": 2900,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 18,
-        "room_number": "118",
-        "room_class_id": 2,
-        "price_per_day": 3000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 19,
-        "room_number": "119",
-        "room_class_id": 2,
-        "price_per_day": 2700,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 20,
-        "room_number": "120",
-        "room_class_id": 2,
-        "price_per_day": 3000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 21,
-        "room_number": "121",
-        "room_class_id": 3,
-        "price_per_day": 4100,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 22,
-        "room_number": "122",
-        "room_class_id": 3,
-        "price_per_day": 4000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 23,
-        "room_number": "123",
-        "room_class_id": 3,
-        "price_per_day": 4100,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 24,
-        "room_number": "124",
-        "room_class_id": 3,
-        "price_per_day": 4300,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 25,
-        "room_number": "125",
-        "room_class_id": 3,
-        "price_per_day": 4000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 26,
-        "room_number": "126",
-        "room_class_id": 3,
-        "price_per_day": 4300,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 27,
-        "room_number": "127",
-        "room_class_id": 3,
-        "price_per_day": 4100,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 28,
-        "room_number": "128",
-        "room_class_id": 3,
-        "price_per_day": 4000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 29,
-        "room_number": "129",
-        "room_class_id": 3,
-        "price_per_day": 4000,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 30,
-        "room_number": "130",
-        "room_class_id": 3,
-        "price_per_day": 3900,
-        "price_per_hour": 0,
-        "capacity": 2,
-        "status": "free"
-    },
-    {
-        "id": 31,
-        "room_number": "131",
-        "room_class_id": 4,
-        "price_per_day": 5100,
-        "price_per_hour": 0,
-        "capacity": 4,
-        "status": "free"
-    },
-    {
-        "id": 32,
-        "room_number": "132",
-        "room_class_id": 4,
-        "price_per_day": 5600,
-        "price_per_hour": 0,
-        "capacity": 4,
-        "status": "free"
-    },
-    {
-        "id": 33,
-        "room_number": "133",
-        "room_class_id": 4,
-        "price_per_day": 5100,
-        "price_per_hour": 0,
-        "capacity": 4,
-        "status": "free"
-    },
-    {
-        "id": 34,
-        "room_number": "134",
-        "room_class_id": 4,
-        "price_per_day": 5400,
-        "price_per_hour": 0,
-        "capacity": 4,
-        "status": "free"
-    },
-    {
-        "id": 35,
-        "room_number": "135",
-        "room_class_id": 4,
-        "price_per_day": 5500,
-        "price_per_hour": 0,
-        "capacity": 4,
-        "status": "free"
-    },
-    {
-        "id": 36,
         "room_number": "Сауна-1",
-        "room_class_id": 5,
-        "price_per_day": 10000,
-        "price_per_hour": 1500,
-        "capacity": 10,
-        "status": "free"
-    },
-    {
-        "id": 37,
-        "room_number": "Сауна-2",
-        "room_class_id": 5,
-        "price_per_day": 10000,
-        "price_per_hour": 1500,
-        "capacity": 10,
-        "status": "free"
-    },
-    {
-        "id": 38,
-        "room_number": "Сауна-3",
-        "room_class_id": 5,
-        "price_per_day": 10000,
-        "price_per_hour": 1500,
-        "capacity": 10,
-        "status": "free"
-    },
-    {
-        "id": 39,
-        "room_number": "Сауна-4",
-        "room_class_id": 5,
-        "price_per_day": 10000,
-        "price_per_hour": 1500,
-        "capacity": 10,
-        "status": "free"
-    },
-    {
-        "id": 40,
-        "room_number": "Сауна-5",
         "room_class_id": 5,
         "price_per_day": 10000,
         "price_per_hour": 1500,
