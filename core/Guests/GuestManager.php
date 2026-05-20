@@ -30,6 +30,16 @@ class GuestManager {
         return $this->store->save('guests', $data);
     }
 
+    public function toggleBlacklist($id, $reason = '') {
+        $guest = $this->getById($id);
+        if ($guest) {
+            $guest['is_blacklisted'] = !empty($guest['is_blacklisted']) ? false : true;
+            $guest['blacklist_reason'] = $guest['is_blacklisted'] ? $reason : '';
+            return $this->save($guest);
+        }
+        return false;
+    }
+
     public function delete($id) {
         return $this->store->delete('guests', $id);
     }

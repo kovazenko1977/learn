@@ -47,7 +47,7 @@ include 'includes/header.php';
 <div class="mica-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <h2>📋 Активные заявки</h2>
-        <a href="export_csv.php" class="btn" style="background:#28a745;">📥 Экспорт в CSV</a>
+        <a href="export.php?type=bookings" class="btn" style="background:#28a745;">📥 Экспорт в CSV</a>
     </div>
     <div class="table-responsive">
     <table>

@@ -2,12 +2,15 @@
 namespace Sanatorium\Core\Booking;
 
 use Sanatorium\Core\Database\JsonStore;
+use Sanatorium\Core\Helpers\AuditLogger;
 
 class BookingManager {
     private $store;
+    private $logger;
 
     public function __construct(JsonStore $store) {
         $this->store = $store;
+        $this->logger = new AuditLogger($store);
     }
 
     public function calculatePrice($data) {
@@ -182,6 +185,9 @@ class BookingManager {
         $data['created_at'] = date('Y-m-d H:i:s');
 
         $bookingId = $this->store->save('bookings', $data);
+
+        $this->logger->log('CREATE', 'booking', $bookingId, "Новое бронирование для " . ($data['client_name'] ?? 'N/A'));
+
         return $bookingId;
     }
 
@@ -203,18 +209,25 @@ class BookingManager {
         $merged = array_merge($existing, $data);
         $merged['total_price'] = $this->calculatePrice($merged);
 
-        return $this->store->save('bookings', $merged);
+        $result = $this->store->save('bookings', $merged);
+        if ($result) {
+            $this->logger->log('UPDATE', 'booking', $id, "Обновление данных бронирования");
+        }
+        return $result;
     }
 
     public function deleteBooking($id) {
+        $this->logger->log('DELETE', 'booking', $id, "Удаление бронирования");
         return $this->store->delete('bookings', $id);
     }
 
     public function updateBookingStatus($bookingId, $status) {
         $booking = $this->store->findOne('bookings', $bookingId);
         if ($booking && is_array($booking)) {
+            $oldStatus = $booking['status'] ?? 'unknown';
             $booking['status'] = $status;
             $this->store->save('bookings', $booking);
+            $this->logger->log('STATUS_CHANGE', 'booking', $bookingId, "Смена статуса: $oldStatus -> $status");
             return true;
         }
         return false;

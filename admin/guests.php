@@ -51,6 +51,9 @@ include 'includes/header.php';
 <div class="mica-card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
         <h2>👥 Список гостей</h2>
+        <div style="display:flex; gap: 10px;">
+            <a href="export.php?type=guests" class="btn btn-secondary">📥 Экспорт в CSV</a>
+        </div>
     </div>
 
     <form method="get" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom: 30px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px;">
@@ -104,7 +107,11 @@ include 'includes/header.php';
                 <td>
                     <?php if ($isStaying): ?>
                         <span class="status-badge status-confirmed">Гостит сейчас</span>
-                    <?php else: ?>
+                    <?php endif; ?>
+                    <?php if (!empty($g['is_blacklisted'])): ?>
+                        <span class="status-badge status-cancelled" title="<?php echo htmlspecialchars($g['blacklist_reason'] ?? ''); ?>">ЧЕРНЫЙ СПИСОК</span>
+                    <?php endif; ?>
+                    <?php if (!$isStaying && empty($g['is_blacklisted'])): ?>
                         <span class="status-badge" style="background:rgba(0,0,0,0.05); color:#666;">Не у нас</span>
                     <?php endif; ?>
                 </td>
@@ -122,7 +129,19 @@ include 'includes/header.php';
                     <?php endif; ?>
                 </td>
                 <td>
-                    <button class="btn btn-secondary" onclick='editGuest(<?php echo htmlspecialchars(json_encode($g), ENT_QUOTES, 'UTF-8'); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn btn-secondary" onclick='editGuest(<?php echo htmlspecialchars(json_encode($g), ENT_QUOTES, 'UTF-8'); ?>)' style="padding: 4px 10px; font-size: 0.8rem;">Изм.</button>
+                        <form method="post" action="guests_extra_action.php" onsubmit="return confirm('Изменить статус черного списка?')">
+                            <input type="hidden" name="action" value="toggle_blacklist">
+                            <input type="hidden" name="id" value="<?php echo $gid; ?>">
+                            <?php if (empty($g['is_blacklisted'])): ?>
+                                <input type="hidden" name="reason" value="Нарушение правил">
+                                <button type="submit" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem; background:#d13438;">В ЧС</button>
+                            <?php else: ?>
+                                <button type="submit" class="btn" style="padding: 4px 10px; font-size: 0.8rem; background:#107c10;">Обелить</button>
+                            <?php endif; ?>
+                        </form>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>
