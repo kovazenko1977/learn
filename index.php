@@ -29,6 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 $bookings = $store->findAll('bookings');
 if (!is_array($bookings)) $bookings = [];
 
+$classes = $store->findAll('room_classes');
+if (!is_array($classes)) $classes = [];
+
 $arrivals = array_filter($bookings, function($b) use ($today) {
     return substr($b['check_in'] ?? '', 0, 10) === $today && ($b['status'] ?? '') !== 'cancelled' && ($b['status'] ?? '') !== 'booked';
 });
@@ -42,12 +45,21 @@ $staying = array_filter($bookings, function($b) use ($today) {
 });
 
 $totalRevenueToday = 0;
+$classOccupancy = []; // classId => count
+foreach($classes as $c) $classOccupancy[$c['id']] = 0;
+
 foreach($staying as $b) {
     $totalPrice = (float)($b['total_price'] ?? 0);
     $checkIn = strtotime($b['check_in']);
     $checkOut = strtotime($b['check_out']);
     $days = max(1, ($checkOut - $checkIn) / 86400);
     $totalRevenueToday += $totalPrice / $days;
+
+    $room = $store->findOne('rooms', $b['room_id']);
+    if($room) {
+        $cid = $room['room_class_id'];
+        $classOccupancy[$cid] = ($classOccupancy[$cid] ?? 0) + 1;
+    }
 }
 
 $plansToday = $planManager->getByDate($today);
@@ -123,6 +135,25 @@ include 'admin/includes/header.php';
     <div style="margin-top: 8px; font-size: 0.8rem; color: #666; display:flex; justify-content:space-between;">
         <span>Свободно: <?php echo $totalRooms - count($staying); ?></span>
         <span>Всего номеров: <?php echo $totalRooms; ?></span>
+    </div>
+
+    <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+        <?php foreach($classes as $c):
+            $totalInClass = count(array_filter($rooms, function($r) use ($c) { return $r['room_class_id'] == $c['id']; }));
+            if($totalInClass == 0) continue;
+            $occCount = $classOccupancy[$c['id']] ?? 0;
+            $perc = round(($occCount / $totalInClass) * 100);
+        ?>
+            <div style="font-size: 0.75rem; color: #555;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span><?php echo htmlspecialchars($c['name']); ?></span>
+                    <strong><?php echo $perc; ?>%</strong>
+                </div>
+                <div style="height: 4px; background: rgba(0,0,0,0.05); border-radius: 2px;">
+                    <div style="height: 100%; background: #0078d4; width: <?php echo $perc; ?>%;"></div>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 

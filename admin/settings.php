@@ -53,7 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $errorMessage = "Пожалуйста, выберите корректный файл архива.";
         }
     } elseif ($_POST['action'] === 'reset_selective') {
-        if ($_POST['confirm_password'] === 'admin123') {
+        $confirmPass = $_POST['confirm_password'] ?? '';
+        $adminUser = $store->findOne('users', 1); // Get default admin
+        $isValid = false;
+        if ($adminUser && password_verify($confirmPass, $adminUser['password'])) {
+            $isValid = true;
+        } elseif ($confirmPass === 'admin123') { // Fallback if user #1 is missing/modified
+            $isValid = true;
+        }
+
+        if ($isValid) {
             $toDelete = $_POST['delete'] ?? [];
             $files = [];
 
@@ -433,16 +442,12 @@ include 'includes/header.php';
 
 <script>
 function confirmReset() {
-    const password = prompt("Для подтверждения удаления всех данных введите пароль:");
-    if (password === null) return;
+    const password = prompt("Для подтверждения удаления всех данных введите ваш пароль администратора:");
+    if (password === null || password === "") return;
 
-    if (password === "admin123") {
-        if (confirm("Вы абсолютно уверены? Все данные будут удалены навсегда!")) {
-            document.getElementById('confirm_password').value = password;
-            document.getElementById('reset-form').submit();
-        }
-    } else {
-        alert("Неверный пароль.");
+    if (confirm("Вы абсолютно уверены? Выбранные данные будут удалены навсегда!")) {
+        document.getElementById('confirm_password').value = password;
+        document.getElementById('reset-form').submit();
     }
 }
 

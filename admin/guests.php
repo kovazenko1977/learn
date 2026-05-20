@@ -189,6 +189,15 @@ include 'includes/header.php';
             <label>Адрес</label>
             <textarea name="address" id="g-address" style="width:100%; height:40px; padding:8px; border-radius:6px; border:1px solid rgba(0,0,0,0.2);"></textarea>
 
+            <label>Тип питания / Диета</label>
+            <select name="diet_type" id="g-diet_type">
+                <option value="standard">Стандарт (Общий стол)</option>
+                <option value="diet_5">Диета №5 (Печеночная)</option>
+                <option value="diet_9">Диета №9 (Диабетическая)</option>
+                <option value="vegetarian">Вегетарианское</option>
+                <option value="children">Детское меню</option>
+            </select>
+
             <label>Медицинские заметки / Противопоказания</label>
             <textarea name="medical_notes" id="g-medical_notes" style="width:100%; height:60px; padding:8px; border-radius:6px; border:1px solid rgba(0,0,0,0.2); background: #fffcf0;"></textarea>
 
@@ -210,6 +219,7 @@ include 'includes/header.php';
         document.getElementById('g-birth_date').value = g.birth_date || '';
         document.getElementById('g-gender').value = g.gender || 'unknown';
         document.getElementById('g-medical_notes').value = g.medical_notes || '';
+        document.getElementById('g-diet_type').value = g.diet_type || 'standard';
         document.getElementById('modal-guest').style.display = 'flex';
     }
     function closeModal() {

@@ -1,86 +1,43 @@
-[Wed May 20 08:35:33 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Wed May 20 08:35:38 2026] 127.0.0.1:44562 Accepted
-[Wed May 20 08:35:38 2026] 127.0.0.1:44562 [200]: GET /admin/login.php
-[Wed May 20 08:35:38 2026] 127.0.0.1:44562 Closing
-[Wed May 20 08:35:38 2026] 127.0.0.1:44576 Accepted
-[Wed May 20 08:35:38 2026] 127.0.0.1:44576 [200]: GET /assets/css/admin.css
-[Wed May 20 08:35:38 2026] 127.0.0.1:44576 Closing
-[Wed May 20 08:35:39 2026] 127.0.0.1:44582 Accepted
-[Wed May 20 08:35:39 2026] 127.0.0.1:44582 [200]: POST /admin/login.php
-[Wed May 20 08:35:39 2026] 127.0.0.1:44582 Closing
-[Wed May 20 08:35:39 2026] 127.0.0.1:44584 Accepted
-[Wed May 20 08:35:39 2026] 127.0.0.1:44584 [200]: GET /assets/css/admin.css
-[Wed May 20 08:35:39 2026] 127.0.0.1:44584 Closing
-[Wed May 20 08:40:22 2026] 127.0.0.1:57604 Accepted
-[Wed May 20 08:40:22 2026] 127.0.0.1:57604 [200]: GET /admin/login.php
-[Wed May 20 08:40:22 2026] 127.0.0.1:57604 Closing
-[Wed May 20 08:40:22 2026] 127.0.0.1:57618 Accepted
-[Wed May 20 08:40:22 2026] 127.0.0.1:57618 [200]: GET /assets/css/admin.css
-[Wed May 20 08:40:22 2026] 127.0.0.1:57618 Closing
-[Wed May 20 08:40:22 2026] 127.0.0.1:57634 Accepted
-[Wed May 20 08:40:23 2026] 127.0.0.1:57634 [200]: POST /admin/login.php
-[Wed May 20 08:40:23 2026] 127.0.0.1:57634 Closing
-[Wed May 20 08:40:23 2026] 127.0.0.1:57648 Accepted
-[Wed May 20 08:40:23 2026] 127.0.0.1:57648 [200]: GET /assets/css/admin.css
-[Wed May 20 08:40:23 2026] 127.0.0.1:57648 Closing
-[Wed May 20 08:43:44 2026] 127.0.0.1:36778 Accepted
-[Wed May 20 08:43:44 2026] 127.0.0.1:36778 [200]: GET /admin/login.php
-[Wed May 20 08:43:44 2026] 127.0.0.1:36778 Closing
-[Wed May 20 08:43:44 2026] 127.0.0.1:36788 Accepted
-[Wed May 20 08:43:44 2026] 127.0.0.1:36788 [200]: GET /assets/css/admin.css
-[Wed May 20 08:43:44 2026] 127.0.0.1:36788 Closing
-[Wed May 20 08:43:44 2026] 127.0.0.1:36804 Accepted
-[Wed May 20 08:43:44 2026] 127.0.0.1:36804 [200]: POST /admin/login.php
-[Wed May 20 08:43:44 2026] 127.0.0.1:36804 Closing
-[Wed May 20 08:43:44 2026] 127.0.0.1:36814 Accepted
-[Wed May 20 08:43:44 2026] 127.0.0.1:36814 [200]: GET /assets/css/admin.css
-[Wed May 20 08:43:44 2026] 127.0.0.1:36814 Closing
-[Wed May 20 08:43:45 2026] 127.0.0.1:36818 Accepted
-[Wed May 20 08:43:45 2026] 127.0.0.1:36818 [200]: GET /admin/settings.php
-[Wed May 20 08:43:45 2026] 127.0.0.1:36818 Closing
-[Wed May 20 08:43:45 2026] 127.0.0.1:36830 Accepted
-[Wed May 20 08:43:45 2026] 127.0.0.1:36830 [200]: GET /assets/css/admin.css
-[Wed May 20 08:43:45 2026] 127.0.0.1:36830 Closing
-[Wed May 20 08:43:46 2026] 127.0.0.1:36840 Accepted
-[Wed May 20 08:43:46 2026] 127.0.0.1:36840 [200]: GET /admin/housekeeping.php
-[Wed May 20 08:43:46 2026] 127.0.0.1:36840 Closing
-[Wed May 20 08:43:46 2026] 127.0.0.1:36848 Accepted
-[Wed May 20 08:43:46 2026] 127.0.0.1:36848 [200]: GET /assets/css/admin.css
-[Wed May 20 08:43:46 2026] 127.0.0.1:36848 Closing
-[Wed May 20 08:43:46 2026] 127.0.0.1:36858 Accepted
-[Wed May 20 08:43:46 2026] 127.0.0.1:36858 [200]: GET /admin/tasks.php
-[Wed May 20 08:43:46 2026] 127.0.0.1:36858 Closing
-[Wed May 20 08:43:46 2026] 127.0.0.1:36862 Accepted
-[Wed May 20 08:43:46 2026] 127.0.0.1:36862 [200]: GET /assets/css/admin.css
-[Wed May 20 08:43:46 2026] 127.0.0.1:36862 Closing
-[Wed May 20 08:49:24 2026] 127.0.0.1:56588 Accepted
-[Wed May 20 08:49:24 2026] 127.0.0.1:56588 [200]: GET /admin/login.php
-[Wed May 20 08:49:24 2026] 127.0.0.1:56588 Closing
-[Wed May 20 08:49:24 2026] 127.0.0.1:56596 Accepted
-[Wed May 20 08:49:24 2026] 127.0.0.1:56596 [200]: GET /assets/css/admin.css
-[Wed May 20 08:49:24 2026] 127.0.0.1:56596 Closing
-[Wed May 20 08:49:24 2026] 127.0.0.1:56598 Accepted
-[Wed May 20 08:49:24 2026] 127.0.0.1:56598 [200]: POST /admin/login.php
-[Wed May 20 08:49:24 2026] 127.0.0.1:56598 Closing
-[Wed May 20 08:49:25 2026] 127.0.0.1:56602 Accepted
-[Wed May 20 08:49:25 2026] 127.0.0.1:56602 [200]: GET /assets/css/admin.css
-[Wed May 20 08:49:25 2026] 127.0.0.1:56602 Closing
-[Wed May 20 08:49:25 2026] 127.0.0.1:56612 Accepted
-[Wed May 20 08:49:25 2026] 127.0.0.1:56612 [200]: GET /admin/settings.php
-[Wed May 20 08:49:25 2026] 127.0.0.1:56612 Closing
-[Wed May 20 08:49:25 2026] 127.0.0.1:56626 Accepted
-[Wed May 20 08:49:25 2026] 127.0.0.1:56626 [200]: GET /assets/css/admin.css
-[Wed May 20 08:49:25 2026] 127.0.0.1:56626 Closing
-[Wed May 20 08:49:25 2026] 127.0.0.1:56632 Accepted
-[Wed May 20 08:49:25 2026] PHP Warning:  Undefined array key "room_number" in /app/admin/housekeeping.php on line 27
-[Wed May 20 08:49:25 2026] 127.0.0.1:56632 [200]: GET /admin/housekeeping.php
-[Wed May 20 08:49:25 2026] 127.0.0.1:56632 Closing
-[Wed May 20 08:49:25 2026] 127.0.0.1:56648 Accepted
-[Wed May 20 08:49:25 2026] 127.0.0.1:56648 [200]: GET /assets/css/admin.css
-[Wed May 20 08:49:25 2026] 127.0.0.1:56648 Closing
-[Wed May 20 08:49:26 2026] 127.0.0.1:56650 Accepted
-[Wed May 20 08:49:26 2026] 127.0.0.1:56650 [200]: GET /admin/tasks.php
-[Wed May 20 08:49:26 2026] 127.0.0.1:56650 Closing
-[Wed May 20 08:49:26 2026] 127.0.0.1:56652 Accepted
-[Wed May 20 08:49:26 2026] 127.0.0.1:56652 [200]: GET /assets/css/admin.css
-[Wed May 20 08:49:26 2026] 127.0.0.1:56652 Closing
+[Wed May 20 10:32:36 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Wed May 20 10:32:42 2026] 127.0.0.1:53532 Accepted
+[Wed May 20 10:32:42 2026] 127.0.0.1:53532 [200]: GET /admin/login.php
+[Wed May 20 10:32:42 2026] 127.0.0.1:53532 Closing
+[Wed May 20 10:32:42 2026] 127.0.0.1:53540 Accepted
+[Wed May 20 10:32:42 2026] 127.0.0.1:53540 [200]: GET /assets/css/admin.css
+[Wed May 20 10:32:42 2026] 127.0.0.1:53540 Closing
+[Wed May 20 10:32:42 2026] 127.0.0.1:53542 Accepted
+[Wed May 20 10:32:42 2026] 127.0.0.1:53542 [200]: POST /admin/login.php
+[Wed May 20 10:32:42 2026] 127.0.0.1:53542 Closing
+[Wed May 20 10:32:42 2026] 127.0.0.1:53558 Accepted
+[Wed May 20 10:32:42 2026] 127.0.0.1:53558 [200]: GET /assets/css/admin.css
+[Wed May 20 10:32:42 2026] 127.0.0.1:53558 Closing
+[Wed May 20 10:32:43 2026] 127.0.0.1:47470 Accepted
+[Wed May 20 10:32:43 2026] PHP Warning:  Undefined variable $classes in /app/index.php on line 46
+[Wed May 20 10:32:43 2026] PHP Warning:  foreach() argument must be of type array|object, null given in /app/index.php on line 46
+[Wed May 20 10:32:43 2026] PHP Warning:  Undefined array key "room_number" in /app/index.php on line 79
+[Wed May 20 10:32:43 2026] PHP Warning:  Undefined array key "room_number" in /app/index.php on line 79
+[Wed May 20 10:32:43 2026] PHP Warning:  Undefined variable $classes in /app/index.php on line 138
+[Wed May 20 10:32:43 2026] PHP Warning:  foreach() argument must be of type array|object, null given in /app/index.php on line 138
+[Wed May 20 10:32:43 2026] 127.0.0.1:47470 [200]: GET /index.php
+[Wed May 20 10:32:43 2026] 127.0.0.1:47470 Closing
+[Wed May 20 10:32:43 2026] 127.0.0.1:47472 Accepted
+[Wed May 20 10:32:43 2026] 127.0.0.1:47472 [200]: GET /assets/css/admin.css
+[Wed May 20 10:32:43 2026] 127.0.0.1:47472 Closing
+[Wed May 20 10:32:43 2026] 127.0.0.1:47478 Accepted
+[Wed May 20 10:32:43 2026] 127.0.0.1:47478 [200]: GET /admin/tasks.php
+[Wed May 20 10:32:43 2026] 127.0.0.1:47478 Closing
+[Wed May 20 10:32:43 2026] 127.0.0.1:47484 Accepted
+[Wed May 20 10:32:43 2026] 127.0.0.1:47484 [200]: GET /assets/css/admin.css
+[Wed May 20 10:32:43 2026] 127.0.0.1:47484 Closing
+[Wed May 20 10:32:44 2026] 127.0.0.1:47500 Accepted
+[Wed May 20 10:32:44 2026] 127.0.0.1:47500 [200]: GET /admin/rooms.php
+[Wed May 20 10:32:44 2026] 127.0.0.1:47500 Closing
+[Wed May 20 10:32:44 2026] 127.0.0.1:47510 Accepted
+[Wed May 20 10:32:44 2026] 127.0.0.1:47510 [200]: GET /assets/css/admin.css
+[Wed May 20 10:32:44 2026] 127.0.0.1:47510 Closing
+[Wed May 20 10:32:44 2026] 127.0.0.1:47520 Accepted
+[Wed May 20 10:32:44 2026] 127.0.0.1:47520 [200]: GET /admin/guests.php
+[Wed May 20 10:32:44 2026] 127.0.0.1:47520 Closing
+[Wed May 20 10:32:44 2026] 127.0.0.1:47526 Accepted
+[Wed May 20 10:32:44 2026] 127.0.0.1:47526 [200]: GET /assets/css/admin.css
+[Wed May 20 10:32:44 2026] 127.0.0.1:47526 Closing

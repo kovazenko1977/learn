@@ -77,7 +77,8 @@ class DemoDataLoader {
                 'citizenship' => 'РФ',
                 'address' => 'г. Москва, ул. Мира ' . $i,
                 'birth_date' => date('Y-m-d', strtotime('-' . rand(20, 70) . ' years -' . rand(0, 365) . ' days')),
-                'medical_notes' => rand(0, 1) ? 'Противопоказаний нет' : 'Аллергия на хлор, диета №5'
+                'medical_notes' => rand(0, 1) ? 'Противопоказаний нет' : 'Аллергия на хлор, диета №5',
+                'diet_type' => ['standard', 'diet_5', 'diet_9', 'vegetarian', 'children'][rand(0, 4)]
             ];
         }
         file_put_contents("$dataDir/guests.json", json_encode($guests, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));

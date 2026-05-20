@@ -20,6 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $check_in = $_GET['check_in'] ?? '';
 $check_out = $_GET['check_out'] ?? '';
+
+// If check_out is missing (often when coming from chessboard single-day click), set it to check_in + 1 day
+if ($check_in && !$check_out) {
+    $check_out = date('Y-m-d', strtotime($check_in . ' +1 day'));
+}
+
 $selected_room_id = $_GET['room_id'] ?? '';
 
 $rooms = ($check_in && $check_out) ? $roomManager->getAllRooms() : [];

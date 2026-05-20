@@ -3,6 +3,7 @@ namespace Sanatorium\Core\Booking;
 
 use Sanatorium\Core\Database\JsonStore;
 use Sanatorium\Core\Helpers\AuditLogger;
+use Sanatorium\Core\Helpers\TelegramNotifier;
 
 class BookingManager {
     private $store;
@@ -187,6 +188,14 @@ class BookingManager {
         $bookingId = $this->store->save('bookings', $data);
 
         $this->logger->log('CREATE', 'booking', $bookingId, "Новое бронирование для " . ($data['client_name'] ?? 'N/A'));
+
+        $notifier = new TelegramNotifier();
+        $message = "🔔 <b>Новое бронирование!</b>\n\n";
+        $message .= "👤 Гость: " . ($data['client_name'] ?? 'N/A') . "\n";
+        $message .= "📞 Тел: " . ($data['phone'] ?? '') . "\n";
+        $message .= "📅 Период: " . ($data['check_in'] ?? '') . " - " . ($data['check_out'] ?? '') . "\n";
+        $message .= "💰 Сумма: " . number_format($data['total_price'] ?? 0, 0, ',', ' ') . " ₽";
+        $notifier->sendMessage($message);
 
         return $bookingId;
     }

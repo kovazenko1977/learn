@@ -16,7 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             'price_per_day' => (float)$_POST['price_main'], // Legacy compatibility
             'price_per_hour' => (float)($_POST['price_per_hour'] ?? 0),
             'capacity' => (int)$_POST['main_seats_count'] + (int)$_POST['extra_seats_count'],
-            'status' => $_POST['status'] ?? 'free'
+            'status' => $_POST['status'] ?? 'free',
+            'equipment' => $_POST['equipment'] ?? []
         ]);
     } elseif ($_POST['action'] === 'delete') {
         $store->delete('rooms', (int)$_POST['id']);
@@ -124,6 +125,20 @@ include 'includes/header.php';
             </div>
         </div>
 
+        <div class="grid-1" style="margin-top: 15px;">
+            <label>Оснащение номера</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px;">
+                <?php
+                $eqOptions = ['TV' => '📺 Телевизор', 'AC' => '❄️ Кондиционер', 'Fridge' => '🧊 Холодильник', 'Safe' => '🔐 Сейф', 'Wifi' => '📶 Wi-Fi', 'Balcony' => '🌅 Балкон', 'Teapot' => '☕ Чайник', 'Hairdryer' => '💨 Фен'];
+                foreach($eqOptions as $key => $label): ?>
+                    <label style="display:flex; align-items:center; gap:8px; margin:0; cursor:pointer; font-weight: normal;">
+                        <input type="checkbox" name="equipment[]" value="<?php echo $key; ?>" class="eq-check" data-key="<?php echo $key; ?>" style="width:auto; margin:0;">
+                        <?php echo $label; ?>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
         <div class="grid-2" style="margin-top: 15px;">
             <div>
                 <label>Цена за час (для почасовых)</label>
@@ -157,6 +172,16 @@ include 'includes/header.php';
         document.getElementById('item-price-extra').value = item.price_extra || 0;
         document.getElementById('item-hour-price').value = item.price_per_hour || 0;
         document.getElementById('item-status').value = item.status || 'free';
+
+        // Reset checkboxes
+        document.querySelectorAll('.eq-check').forEach(cb => cb.checked = false);
+        if (item.equipment && Array.isArray(item.equipment)) {
+            item.equipment.forEach(key => {
+                const cb = document.querySelector(`.eq-check[value="${key}"]`);
+                if (cb) cb.checked = true;
+            });
+        }
+
         document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' });
     }
     function resetForm() {
@@ -170,6 +195,7 @@ include 'includes/header.php';
         document.getElementById('item-price-extra').value = '0';
         document.getElementById('item-hour-price').value = '0';
         document.getElementById('item-status').value = 'free';
+        document.querySelectorAll('.eq-check').forEach(cb => cb.checked = false);
     }
 </script>
 

@@ -26,16 +26,24 @@ include 'includes/header.php';
     </div>
     <div class="mica-card">
         <h3>Список поручений</h3>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
             <?php foreach(array_reverse($tasks) as $t): ?>
-                <div style="padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.02); border-left: 4px solid #0078d4;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <strong><?php echo htmlspecialchars($t['assignee']); ?></strong>
-                        <span style="font-size: 0.8rem; color: #666;"><?php echo $t['created_at']; ?></span>
+                <div style="padding: 15px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-left: 5px solid #0078d4; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px;">
+                        <strong style="color: #0078d4; font-size: 0.9rem;"><?php echo htmlspecialchars($t['assignee']); ?></strong>
+                        <span style="font-size: 0.75rem; color: #888;"><?php echo $t['created_at']; ?></span>
                     </div>
-                    <p style="margin: 5px 0;"><?php echo htmlspecialchars($t['text']); ?></p>
+                    <p style="margin: 0; color: #323130; font-size: 1rem; line-height: 1.4; font-weight: 500;">
+                        <?php echo nl2br(htmlspecialchars($t['text'])); ?>
+                    </p>
+                    <div style="margin-top: 10px; text-align: right;">
+                        <span style="font-size: 0.7rem; padding: 2px 8px; background: #e1f0fe; color: #0078d4; border-radius: 4px; font-weight: 600;">В РАБОТЕ</span>
+                    </div>
                 </div>
             <?php endforeach; ?>
+            <?php if(empty($tasks)): ?>
+                <div style="text-align: center; padding: 40px; color: #888;">Задач пока нет</div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
