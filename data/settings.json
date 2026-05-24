@@ -1,1 +1,9 @@
-{"org_name":"Sanatorium Pro Elite","auth_enabled":false,"telegram":{"bot_token":"123456789:TEST_TOKEN","chat_id":"-100987654321","enabled":true}}
+{
+    "org_name": "Sanatorium Pro Elite",
+    "auth_enabled": false,
+    "telegram": {
+        "bot_token": "123456789:TEST_TOKEN",
+        "chat_id": "-100987654321",
+        "enabled": true
+    }
+}

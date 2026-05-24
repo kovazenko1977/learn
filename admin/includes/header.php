@@ -14,6 +14,63 @@ $base = ($currentDir === 'admin') ? '' : 'admin/';
     <link rel="stylesheet" href="<?php echo $root; ?>assets/css/admin.css">
     <link rel="manifest" href="<?php echo $root; ?>manifest.json">
     <meta name="theme-color" content="#0078d4">
+    <?php
+    $appPath = __DIR__ . '/../../data/settings.json';
+    $appSettings = json_decode(@file_get_contents($appPath), true) ?: [];
+    $appearance = $appSettings['appearance'] ?? [];
+    if (!empty($appearance)):
+    ?>
+    <style>
+        :root {
+            --primary-color: <?php echo $appearance['primary_color'] ?? '#0078d4'; ?>;
+            --secondary-color: <?php echo $appearance['secondary_color'] ?? '#2b88d8'; ?>;
+            --bg-color: <?php echo $appearance['bg_color'] ?? '#f3f2f1'; ?>;
+            --sidebar-bg: <?php echo $appearance['sidebar_bg'] ?? '#ffffff'; ?>;
+            --sidebar-text: <?php echo $appearance['sidebar_text'] ?? '#323130'; ?>;
+            --sidebar-active-bg: <?php echo $appearance['sidebar_active_bg'] ?? '#f3f2f1'; ?>;
+            --card-bg: <?php echo $appearance['card_bg'] ?? '#ffffff'; ?>;
+            --text-main: <?php echo $appearance['text_main'] ?? '#323130'; ?>;
+            --text-muted: <?php echo $appearance['text_muted'] ?? '#605e5c'; ?>;
+            --border-color: <?php echo $appearance['border_color'] ?? '#edebe9'; ?>;
+            --accent-color: <?php echo $appearance['accent_color'] ?? '#d83b01'; ?>;
+            --font-family: <?php echo $appearance['font_family'] ?? "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"; ?>;
+            --font-size-base: <?php echo $appearance['font_size_base'] ?? '14px'; ?>;
+            --border-radius: <?php echo $appearance['border_radius'] ?? '8px'; ?>;
+            --card-padding: <?php echo $appearance['card_padding'] ?? '20px'; ?>;
+            --sidebar-width: <?php echo $appearance['sidebar_width'] ?? '260px'; ?>;
+            --header-height: <?php echo $appearance['header_height'] ?? '60px'; ?>;
+            --container-padding: <?php echo $appearance['container_padding'] ?? '25px'; ?>;
+            --transition-speed: <?php echo $appearance['transition_speed'] ?? '0.2s'; ?>;
+            --shadow-sm: <?php echo $appearance['shadow_sm'] ?? '0 2px 4px rgba(0,0,0,0.05)'; ?>;
+            --shadow-md: <?php echo $appearance['shadow_md'] ?? '0 4px 12px rgba(0,0,0,0.1)'; ?>;
+            --glass-effect: <?php echo $appearance['glass_effect'] ?? 'blur(10px)'; ?>;
+        }
+        body { font-family: var(--font-family); font-size: var(--font-size-base); background-color: var(--bg-color); color: var(--text-main); }
+        h1 { font-size: <?php echo $appearance['h1_size'] ?? '24px'; ?>; }
+        h2 { font-size: <?php echo $appearance['h2_size'] ?? '20px'; ?>; }
+        h3 { font-size: <?php echo $appearance['h3_size'] ?? '16px'; ?>; }
+        .sidebar { width: var(--sidebar-width); background: var(--sidebar-bg); border-right: 1px solid var(--border-color); }
+        .sidebar-nav a { color: var(--sidebar-text); transition: all var(--transition-speed); }
+        .sidebar-nav a.active { background: var(--sidebar-active-bg); border-left: 4px solid var(--primary-color); color: var(--primary-color); }
+        .mica-card { background: var(--card-bg); border-radius: var(--border-radius); padding: var(--card-padding); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+        .main-content { margin-left: var(--sidebar-width); }
+        .content-header { height: var(--header-height); padding: 0 var(--container-padding); border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.7); backdrop-filter: var(--glass-effect); }
+        .content-body { padding: var(--container-padding); }
+        .btn-primary { background: var(--primary-color); }
+
+        /* Chessboard custom styles */
+        .calendar-grid-container {
+            --cell-w: <?php echo $appearance['cb_cell_width'] ?? '40px'; ?>;
+            --cell-h: <?php echo $appearance['cb_cell_height'] ?? '45px'; ?>;
+        }
+        .calendar-header-cell { background: <?php echo $appearance['cb_header_bg'] ?? '#faf9f8'; ?>; }
+        .status-booked { background-color: <?php echo $appearance['cb_status_booked'] ?? '#fee2e2'; ?> !important; }
+        .status-confirmed { background-color: <?php echo $appearance['cb_status_confirmed'] ?? '#d1e7dd'; ?> !important; }
+        .status-cancelled { background-color: <?php echo $appearance['cb_status_cancelled'] ?? '#f8d7da'; ?> !important; }
+        .status-partial { background-color: <?php echo $appearance['cb_status_partial'] ?? '#fff3cd'; ?> !important; }
+        .today-highlight { background: <?php echo $appearance['cb_today_bg'] ?? 'rgba(0, 120, 212, 0.05)'; ?>; }
+    </style>
+    <?php endif; ?>
 </head>
 <body class="admin-body">
     <div class="app-container">
@@ -156,6 +213,10 @@ $base = ($currentDir === 'admin') ? '' : 'admin/';
                 <a href="<?php echo $base; ?>audit_log.php" class="<?php echo $currentFile == 'audit_log.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                     <span>История действий</span>
+                </a>
+                <a href="<?php echo $base; ?>appearance.php" class="<?php echo $currentFile == 'appearance.php' ? 'active' : ''; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                    <span>Внешний вид</span>
                 </a>
                 <a href="<?php echo $base; ?>settings.php" class="<?php echo $currentFile == 'settings.php' ? 'active' : ''; ?>">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>

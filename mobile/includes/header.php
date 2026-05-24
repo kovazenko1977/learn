@@ -12,21 +12,32 @@ require_once __DIR__ . '/../../admin/auth.php';
     <link rel="stylesheet" href="../assets/css/admin.css">
     <link rel="manifest" href="../manifest.json">
     <meta name="theme-color" content="#0078d4">
+    <?php
+    $appPath = __DIR__ . '/../../data/settings.json';
+    $appSettings = json_decode(@file_get_contents($appPath), true) ?: [];
+    $appearance = $appSettings['appearance'] ?? [];
+    ?>
     <style>
         :root {
-            --mobile-bg: #f8fafc;
-            --mobile-primary: #0078d4;
+            --mobile-bg: <?php echo $appearance['bg_color'] ?? '#f8fafc'; ?>;
+            --mobile-primary: <?php echo $appearance['primary_color'] ?? '#0078d4'; ?>;
             --mobile-glass: rgba(255, 255, 255, 0.9);
-            --mobile-border: rgba(0, 0, 0, 0.05);
+            --mobile-border: <?php echo $appearance['border_color'] ?? 'rgba(0, 0, 0, 0.05)'; ?>;
             --safe-area-bottom: env(safe-area-inset-bottom);
+
+            --primary-color: var(--mobile-primary);
+            --bg-color: var(--mobile-bg);
+            --border-radius: <?php echo $appearance['border_radius'] ?? '12px'; ?>;
+            --font-family: <?php echo $appearance['font_family'] ?? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'; ?>;
         }
         body.mobile-body {
             background: var(--mobile-bg);
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: var(--font-family);
             padding-bottom: calc(70px + var(--safe-area-bottom));
             -webkit-tap-highlight-color: transparent;
+            color: <?php echo $appearance['text_main'] ?? '#1e293b'; ?>;
         }
         .mobile-header {
             position: sticky;

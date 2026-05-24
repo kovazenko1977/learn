@@ -48,6 +48,7 @@ $permissionMap = [
     'text_blocks.php' => 'manage_settings',
     'import_csv.php' => 'manage_settings',
     'constructor.php' => 'manage_settings',
+    'appearance.php' => 'manage_settings',
     'system_health.php' => 'manage_settings',
     'edit_booking.php' => 'manage_bookings',
 ];

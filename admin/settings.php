@@ -153,6 +153,16 @@ include 'includes/header.php';
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
     <!-- Основные настройки -->
     <div class="mica-card" style="grid-column: span 2;">
+        <h2>🎨 Настройки внешнего вида</h2>
+        <p style="color: #666; margin-bottom: 20px;">
+            Полная кастомизация интерфейса: цвета, шрифты, отступы, размеры ячеек шахматки и визуальные эффекты. Более 30 параметров для идеальной настройки под ваш бренд.
+        </p>
+        <a href="appearance.php" class="btn btn-primary">
+            <i class="lucide-paint-bucket"></i> Перейти к редактору внешнего вида
+        </a>
+    </div>
+
+    <div class="mica-card" style="grid-column: span 2;">
         <h2>⚙️ Основные настройки</h2>
         <form method="POST">
             <input type="hidden" name="action" value="update_general">
