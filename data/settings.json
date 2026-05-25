@@ -1,9 +1,7 @@
 {
-    "org_name": "Sanatorium Pro Elite",
-    "auth_enabled": false,
-    "telegram": {
-        "bot_token": "123456789:TEST_TOKEN",
-        "chat_id": "-100987654321",
-        "enabled": true
-    }
+    "org_name": "Санаторий \"Светлый\"",
+    "currency": "RUB",
+    "check_in_time": "14:00",
+    "check_out_time": "12:00",
+    "sync_mode": "standalone"
 }
