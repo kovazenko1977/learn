@@ -153,6 +153,16 @@ include 'includes/header.php';
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
     <!-- Основные настройки -->
     <div class="mica-card" style="grid-column: span 2;">
+        <h2>🔄 Синхронизация данных (Локально ↔ Облако)</h2>
+        <p style="color: #666; margin-bottom: 20px;">
+            Настройте автоматический обмен данными между локальным компьютером и веб-сервером. Позволяет работать без интернета и обновлять информацию при появлении связи.
+        </p>
+        <a href="sync.php" class="btn btn-outline">
+            <i class="lucide-refresh-cw"></i> Настроить синхронизацию
+        </a>
+    </div>
+
+    <div class="mica-card" style="grid-column: span 2;">
         <h2>🎨 Настройки внешнего вида</h2>
         <p style="color: #666; margin-bottom: 20px;">
             Полная кастомизация интерфейса: цвета, шрифты, отступы, размеры ячеек шахматки и визуальные эффекты. Более 30 параметров для идеальной настройки под ваш бренд.
