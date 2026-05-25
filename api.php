@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../src/Database/JsonStore.php';
-require_once __DIR__ . '/../src/Models/Configuration.php';
-require_once __DIR__ . '/../src/Services/EncryptionService.php';
+require_once __DIR__ . '/src/Database/JsonStore.php';
+require_once __DIR__ . '/src/Models/Configuration.php';
+require_once __DIR__ . '/src/Services/EncryptionService.php';
 
 use App\Database\JsonStore;
 use App\Models\Configuration;
@@ -10,7 +10,7 @@ use App\Services\EncryptionService;
 
 header('Content-Type: application/json');
 
-$store = new JsonStore(__DIR__ . '/../../data/device_memory.json');
+$store = new JsonStore(__DIR__ . '/data/device_memory.json');
 $encryption = new EncryptionService();
 
 $method = $_SERVER['REQUEST_METHOD'];

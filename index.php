@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конфигуратор Болид С2000М</title>
+    <title>Старовойтов tools pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,10 +13,14 @@
         <!-- Header -->
         <header class="bg-slate-800 text-white shadow-md p-4 flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <div class="bg-red-600 p-2 rounded text-xl font-bold">B</div>
-                <h1 class="text-xl font-semibold uppercase tracking-wider">Конфигуратор оборудования (RS-485)</h1>
+                <div class="bg-blue-600 p-2 rounded text-xl font-bold">S</div>
+                <h1 class="text-xl font-semibold uppercase tracking-wider">Старовойтов tools pro</h1>
             </div>
             <div class="flex items-center space-x-6">
+                <button @click="toggleDemoMode" :class="isDemoMode ? 'bg-orange-600' : 'bg-slate-700'" class="px-4 py-1 rounded-full text-xs font-bold transition-all flex items-center shadow-inner">
+                    <span :class="isDemoMode ? 'bg-white' : 'bg-orange-500'" class="w-2 h-2 rounded-full mr-2 animate-pulse"></span>
+                    {{ isDemoMode ? 'ДЕМО-РЕЖИМ: ВКЛ' : 'ДЕМО-РЕЖИМ: ВЫКЛ' }}
+                </button>
                 <div id="connection-status" class="flex items-center space-x-2 text-sm">
                     <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                     <span>Пульт подключен (COM3)</span>
@@ -45,6 +49,7 @@
                     <li><button @click="currentTab = 'zones'" :class="{'bg-slate-600 text-white': currentTab === 'zones'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-sensor w-6"></i>Входные зоны</button></li>
                     <li><button @click="currentTab = 'scenarios'" :class="{'bg-slate-600 text-white': currentTab === 'scenarios'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-project-diagram w-6"></i>Сценарии</button></li>
                     <li><button @click="currentTab = 'events'" :class="{'bg-slate-600 text-white': currentTab === 'events'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-history w-6"></i>События ЖКИ</button></li>
+                    <li><button @click="currentTab = 'about'" :class="{'bg-slate-600 text-white': currentTab === 'about'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-info-circle w-6"></i>О программе</button></li>
                 </ul>
 
                 <div class="mt-8 p-4 uppercase text-xs font-bold text-gray-500 tracking-widest border-t border-slate-600">Файл</div>
@@ -59,7 +64,28 @@
             </nav>
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto bg-white p-8">
+            <main class="flex-1 overflow-y-auto bg-white p-8 relative">
+                <!-- Simulation Overlay -->
+                <div v-if="isDemoMode" class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 animate-pulse z-10"></div>
+
+                <!-- Event Log Drawer (Fixed Bottom) -->
+                <div v-if="events.length > 0" class="fixed bottom-0 right-0 w-96 max-h-64 bg-slate-900 text-gray-300 shadow-2xl rounded-tl-xl border-l border-t border-slate-700 overflow-hidden flex flex-col z-40">
+                    <div class="p-3 bg-slate-800 flex justify-between items-center border-b border-slate-700">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400"><i class="fas fa-terminal mr-2"></i>Лента событий</span>
+                        <button @click="events = []" class="text-[10px] hover:text-white uppercase">Очистить</button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-2 font-mono text-[11px] space-y-1">
+                        <div v-for="(event, idx) in events" :key="idx" class="flex space-x-2">
+                            <span class="text-gray-500">[{{ event.time }}]</span>
+                            <span :class="{
+                                'text-red-400 font-bold': event.type === 'alarm',
+                                'text-yellow-400': event.type === 'warning',
+                                'text-green-400': event.type === 'status',
+                                'text-blue-400': event.type === 'info'
+                            }">{{ event.text }}</span>
+                        </div>
+                    </div>
+                </div>
                 <!-- Devices Tab -->
                 <section v-if="currentTab === 'devices'">
                     <div class="flex justify-between items-center mb-6">
@@ -118,6 +144,25 @@
                             <div class="flex space-x-2">
                                 <button class="flex-1 text-xs bg-gray-100 hover:bg-gray-200 py-2 rounded transition">Редактировать шлейфы</button>
                                 <button class="flex-1 text-xs bg-gray-100 hover:bg-gray-200 py-2 rounded transition">Привязка реле</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- About Tab -->
+                <section v-if="currentTab === 'about'" class="flex flex-col items-center justify-center h-full text-center">
+                    <div class="bg-blue-50 p-12 rounded-2xl border border-blue-100 shadow-inner max-w-2xl">
+                        <div class="bg-blue-600 text-white w-20 h-20 rounded-2xl flex items-center justify-center text-4xl font-bold mx-auto mb-6 shadow-lg">S</div>
+                        <h2 class="text-3xl font-extrabold text-slate-800 mb-4 tracking-tight">Старовойтов tools pro</h2>
+                        <p class="text-lg text-slate-600 leading-relaxed mb-8">
+                            Профессиональный комплекс для конфигурирования систем безопасности через интерфейс RS-485.
+                        </p>
+                        <div class="border-t border-blue-200 pt-8 mt-4 text-slate-500">
+                            <p class="mb-2 font-medium">Разработчик:</p>
+                            <p class="text-xl text-slate-700 font-bold mb-1">Коваженко С.Б.</p>
+                            <a href="https://wes.by" target="_blank" class="text-blue-600 hover:underline">wes.by</a>
+                            <div class="mt-8 text-sm italic">
+                                Специально для Старовойтова Алексея.
                             </div>
                         </div>
                     </div>

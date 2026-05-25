@@ -30,7 +30,10 @@ createApp({
                 show: false,
                 message: '',
                 type: 'success'
-            }
+            },
+            isDemoMode: false,
+            events: [],
+            demoInterval: null
         };
     },
     mounted() {
@@ -150,6 +153,54 @@ createApp({
             setTimeout(() => {
                 this.toast.show = false;
             }, 3000);
+        },
+
+        toggleDemoMode() {
+            this.isDemoMode = !this.isDemoMode;
+            if (this.isDemoMode) {
+                this.showToast('Режим демо-эмуляции включен', 'success');
+                this.startSimulation();
+            } else {
+                this.showToast('Режим эмуляции выключен', 'info');
+                clearInterval(this.demoInterval);
+                this.demoInterval = null;
+            }
+        },
+
+        startSimulation() {
+            this.addEvent('Система переведена в режим эмуляции', 'info');
+            this.demoInterval = setInterval(() => {
+                this.generateSimulatedEvent();
+            }, 5000);
+        },
+
+        generateSimulatedEvent() {
+            const types = ['ALARM', 'STATUS', 'INFO', 'WARNING'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const device = this.config.devices.length > 0
+                ? this.config.devices[Math.floor(Math.random() * this.config.devices.length)].address
+                : '1';
+
+            const messages = {
+                'ALARM': [`ТРЕВОГА: Проникновение (Шлейф ${Math.floor(Math.random()*8)+1})`, `ПОЖАР: Задымление (Шлейф ${Math.floor(Math.random()*8)+1})`],
+                'STATUS': ['Прибор на связи', 'Взятие под охрану', 'Снятие с охраны'],
+                'INFO': ['Проверка связи выполнена', 'Питание в норме', 'Температура корпуса +35C'],
+                'WARNING': ['Корпус открыт', 'Низкий заряд АКБ', 'Ошибка шлейфа (Обрыв)']
+            };
+
+            const msgPool = messages[type];
+            const msg = msgPool[Math.floor(Math.random() * msgPool.length)];
+
+            this.addEvent(`[Адрес ${device}] ${msg}`, type.toLowerCase());
+        },
+
+        addEvent(text, type = 'info') {
+            this.events.unshift({
+                time: new Date().toLocaleTimeString(),
+                text: text,
+                type: type
+            });
+            if (this.events.length > 50) this.events.pop();
         }
     }
 }).mount('#app');
