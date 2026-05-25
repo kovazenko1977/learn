@@ -2,7 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e293b">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3067/3067451.png">
     <title>Старовойтов tools pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/style.css">
@@ -11,19 +14,24 @@
 <body class="bg-gray-100 font-sans text-gray-900">
     <div id="app" class="min-h-screen flex flex-col">
         <!-- Header -->
-        <header class="bg-slate-800 text-white shadow-md p-4 flex justify-between items-center">
+        <header class="bg-slate-800 text-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center space-x-4">
-                <div class="bg-blue-600 p-2 rounded text-xl font-bold">S</div>
-                <h1 class="text-xl font-semibold uppercase tracking-wider">Старовойтов tools pro</h1>
+                <button @click="showSidebar = !showSidebar" class="lg:hidden p-2 text-gray-300">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="bg-blue-600 p-2 rounded text-xl font-bold shadow-lg">S</div>
+                <h1 class="text-sm lg:text-xl font-semibold uppercase tracking-wider truncate">Старовойтов tools pro</h1>
             </div>
             <div class="flex items-center space-x-6">
-                <button @click="toggleDemoMode" :class="isDemoMode ? 'bg-orange-600' : 'bg-slate-700'" class="px-4 py-1 rounded-full text-xs font-bold transition-all flex items-center shadow-inner">
-                    <span :class="isDemoMode ? 'bg-white' : 'bg-orange-500'" class="w-2 h-2 rounded-full mr-2 animate-pulse"></span>
-                    {{ isDemoMode ? 'ДЕМО-РЕЖИМ: ВКЛ' : 'ДЕМО-РЕЖИМ: ВЫКЛ' }}
+                <button @click="toggleDemoMode" :class="isDemoMode ? 'bg-orange-600' : 'bg-slate-700'" class="px-2 lg:px-4 py-1 rounded-full text-[10px] lg:text-xs font-bold transition-all flex items-center shadow-inner">
+                    <span :class="isDemoMode ? 'bg-white' : 'bg-orange-500'" class="w-2 h-2 rounded-full lg:mr-2 animate-pulse"></span>
+                    <span class="hidden lg:inline">{{ isDemoMode ? 'ДЕМО-РЕЖИМ: ВКЛ' : 'ДЕМО-РЕЖИМ: ВЫКЛ' }}</span>
+                    <span class="lg:hidden">{{ isDemoMode ? 'ДЕМО' : 'ДЕМО' }}</span>
                 </button>
-                <div id="connection-status" class="flex items-center space-x-2 text-sm">
-                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                    <span>Пульт подключен (COM3)</span>
+                <div id="connection-status" class="flex items-center space-x-2 text-[10px] lg:text-sm">
+                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse flex-shrink-0"></span>
+                    <span class="hidden sm:inline">Пульт подключен (COM3)</span>
+                    <span class="sm:hidden">COM3</span>
                 </div>
                 <div class="flex space-x-2">
                     <button @click="readFromDevice" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition">
@@ -37,19 +45,19 @@
         </header>
 
         <!-- Main Content -->
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex overflow-hidden relative">
             <!-- Sidebar Navigation -->
-            <nav class="w-64 bg-slate-700 text-gray-300 flex-shrink-0 overflow-y-auto">
+            <nav :class="showSidebar ? 'translate-x-0' : '-translate-x-full'" class="fixed lg:relative lg:translate-x-0 z-40 w-64 h-full bg-slate-700 text-gray-300 flex-shrink-0 overflow-y-auto transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none">
                 <div class="p-4 uppercase text-xs font-bold text-gray-500 tracking-widest">Меню</div>
                 <ul class="space-y-1">
-                    <li><button @click="currentTab = 'devices'" :class="{'bg-slate-600 text-white': currentTab === 'devices'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-microchip w-6"></i>Приборы</button></li>
-                    <li><button @click="currentTab = 'partitions'" :class="{'bg-slate-600 text-white': currentTab === 'partitions'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-th-large w-6"></i>Разделы</button></li>
-                    <li><button @click="currentTab = 'relays'" :class="{'bg-slate-600 text-white': currentTab === 'relays'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-toggle-on w-6"></i>Реле и тактики</button></li>
-                    <li><button @click="currentTab = 'users'" :class="{'bg-slate-600 text-white': currentTab === 'users'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-users w-6"></i>Пользователи</button></li>
-                    <li><button @click="currentTab = 'zones'" :class="{'bg-slate-600 text-white': currentTab === 'zones'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-sensor w-6"></i>Входные зоны</button></li>
-                    <li><button @click="currentTab = 'scenarios'" :class="{'bg-slate-600 text-white': currentTab === 'scenarios'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-project-diagram w-6"></i>Сценарии</button></li>
-                    <li><button @click="currentTab = 'events'" :class="{'bg-slate-600 text-white': currentTab === 'events'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-history w-6"></i>События ЖКИ</button></li>
-                    <li><button @click="currentTab = 'about'" :class="{'bg-slate-600 text-white': currentTab === 'about'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-info-circle w-6"></i>О программе</button></li>
+                    <li><button @click="currentTab = 'devices'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'devices'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-microchip w-6"></i>Приборы</button></li>
+                    <li><button @click="currentTab = 'partitions'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'partitions'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-th-large w-6"></i>Разделы</button></li>
+                    <li><button @click="currentTab = 'relays'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'relays'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-toggle-on w-6"></i>Реле и тактики</button></li>
+                    <li><button @click="currentTab = 'users'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'users'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-users w-6"></i>Пользователи</button></li>
+                    <li><button @click="currentTab = 'zones'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'zones'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-sensor w-6"></i>Входные зоны</button></li>
+                    <li><button @click="currentTab = 'scenarios'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'scenarios'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-project-diagram w-6"></i>Сценарии</button></li>
+                    <li><button @click="currentTab = 'events'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'events'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-history w-6"></i>События ЖКИ</button></li>
+                    <li><button @click="currentTab = 'about'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'about'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-info-circle w-6"></i>О программе</button></li>
                 </ul>
 
                 <div class="mt-8 p-4 uppercase text-xs font-bold text-gray-500 tracking-widest border-t border-slate-600">Файл</div>
@@ -63,13 +71,16 @@
                 </div>
             </nav>
 
+            <!-- Overlay for mobile sidebar -->
+            <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
+
             <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto bg-white p-8 relative">
+            <main class="flex-1 overflow-y-auto bg-white p-4 lg:p-8 relative">
                 <!-- Simulation Overlay -->
                 <div v-if="isDemoMode" class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 animate-pulse z-10"></div>
 
                 <!-- Event Log Drawer (Fixed Bottom) -->
-                <div v-if="events.length > 0" class="fixed bottom-0 right-0 w-96 max-h-64 bg-slate-900 text-gray-300 shadow-2xl rounded-tl-xl border-l border-t border-slate-700 overflow-hidden flex flex-col z-40">
+                <div v-if="events.length > 0" class="fixed bottom-0 right-0 w-full lg:w-96 max-h-64 bg-slate-900 text-gray-300 shadow-2xl lg:rounded-tl-xl border-l border-t border-slate-700 overflow-hidden flex flex-col z-40">
                     <div class="p-3 bg-slate-800 flex justify-between items-center border-b border-slate-700">
                         <span class="text-xs font-bold uppercase tracking-widest text-slate-400"><i class="fas fa-terminal mr-2"></i>Лента событий</span>
                         <button @click="events = []" class="text-[10px] hover:text-white uppercase">Очистить</button>
@@ -95,8 +106,8 @@
                         </button>
                     </div>
 
-                    <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-                        <table class="w-full text-left">
+                    <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-x-auto">
+                        <table class="w-full text-left min-w-[600px]">
                             <thead class="bg-gray-100 border-b border-gray-200 text-gray-600 uppercase text-xs">
                                 <tr>
                                     <th class="px-6 py-3">Адрес</th>
@@ -359,5 +370,10 @@
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="assets/js/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
 </body>
 </html>

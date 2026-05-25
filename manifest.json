@@ -1,0 +1,16 @@
+{
+  "name": "Старовойтов tools pro",
+  "short_name": "STools Pro",
+  "start_url": "/index.php",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#1e293b",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3067/3067451.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

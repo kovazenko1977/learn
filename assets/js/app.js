@@ -31,6 +31,7 @@ createApp({
                 message: '',
                 type: 'success'
             },
+            showSidebar: false,
             isDemoMode: false,
             events: [],
             demoInterval: null
