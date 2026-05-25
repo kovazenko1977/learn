@@ -34,11 +34,22 @@ createApp({
             showSidebar: false,
             isDemoMode: false,
             events: [],
-            demoInterval: null
+            demoInterval: null,
+            deferredPrompt: null
         };
     },
     mounted() {
         this.fetchConfig();
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+        });
+    },
+    watch: {
+        showSidebar(val) {
+            if (val) document.body.classList.add('sidebar-open');
+            else document.body.classList.remove('sidebar-open');
+        }
     },
     methods: {
         async fetchConfig() {
@@ -202,6 +213,16 @@ createApp({
                 type: type
             });
             if (this.events.length > 50) this.events.pop();
+        },
+
+        async installApp() {
+            if (!this.deferredPrompt) return;
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                this.showToast('Приложение будет установлено');
+            }
+            this.deferredPrompt = null;
         }
     }
 }).mount('#app');

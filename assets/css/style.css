@@ -53,3 +53,17 @@
 .shadow-soft {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
+
+.animate-bounce-slow {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open {
+    overflow: hidden;
+}

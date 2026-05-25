@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1e293b">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3067/3067451.png">
@@ -11,10 +11,25 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans text-gray-900">
-    <div id="app" class="min-h-screen flex flex-col">
+<body class="bg-gray-100 font-sans text-gray-900 overflow-x-hidden w-full">
+    <div id="app" v-cloak class="min-h-screen flex flex-col w-full overflow-x-hidden">
+        <!-- PWA Install Banner -->
+        <div v-if="deferredPrompt" class="bg-blue-700 text-white p-4 flex justify-between items-center z-[60] sticky top-0 shadow-lg animate-bounce-slow">
+            <div class="flex items-center">
+                <i class="fas fa-mobile-alt mr-3 text-xl"></i>
+                <div class="text-sm">
+                    <div class="font-bold">Установить как приложение</div>
+                    <div class="text-blue-100 text-[10px]">Работайте быстрее и без интернета</div>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button @click="installApp" class="bg-white text-blue-700 px-4 py-1 rounded-full text-xs font-bold">УСТАНОВИТЬ</button>
+                <button @click="deferredPrompt = null" class="p-1"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+
         <!-- Header -->
-        <header class="bg-slate-800 text-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+        <header class="bg-slate-800 text-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50 w-full">
             <div class="flex items-center space-x-4">
                 <button @click="showSidebar = !showSidebar" class="lg:hidden p-2 text-gray-300">
                     <i class="fas fa-bars text-xl"></i>
@@ -22,23 +37,23 @@
                 <div class="bg-blue-600 p-2 rounded text-xl font-bold shadow-lg">S</div>
                 <h1 class="text-sm lg:text-xl font-semibold uppercase tracking-wider truncate">Старовойтов tools pro</h1>
             </div>
-            <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-2 lg:space-x-6">
                 <button @click="toggleDemoMode" :class="isDemoMode ? 'bg-orange-600' : 'bg-slate-700'" class="px-2 lg:px-4 py-1 rounded-full text-[10px] lg:text-xs font-bold transition-all flex items-center shadow-inner">
-                    <span :class="isDemoMode ? 'bg-white' : 'bg-orange-500'" class="w-2 h-2 rounded-full lg:mr-2 animate-pulse"></span>
+                    <span :class="isDemoMode ? 'bg-white' : 'bg-orange-500'" class="w-2 h-2 rounded-full lg:mr-2 animate-pulse flex-shrink-0"></span>
                     <span class="hidden lg:inline">{{ isDemoMode ? 'ДЕМО-РЕЖИМ: ВКЛ' : 'ДЕМО-РЕЖИМ: ВЫКЛ' }}</span>
                     <span class="lg:hidden">{{ isDemoMode ? 'ДЕМО' : 'ДЕМО' }}</span>
                 </button>
-                <div id="connection-status" class="flex items-center space-x-2 text-[10px] lg:text-sm">
-                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse flex-shrink-0"></span>
-                    <span class="hidden sm:inline">Пульт подключен (COM3)</span>
-                    <span class="sm:hidden">COM3</span>
+            <div id="connection-status" class="hidden md:flex items-center space-x-2 text-[10px] lg:text-sm text-green-400">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0"></span>
+                <span class="hidden lg:inline">Пульт подключен (COM3)</span>
+                <span class="lg:hidden">COM3</span>
                 </div>
-                <div class="flex space-x-2">
-                    <button @click="readFromDevice" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition">
-                        <i class="fas fa-download mr-1"></i> Читать
+            <div class="flex space-x-1 lg:space-x-2">
+                <button @click="readFromDevice" class="bg-blue-600 hover:bg-blue-700 px-2 lg:px-3 py-1.5 lg:py-1 rounded-lg text-[10px] lg:text-sm transition flex items-center">
+                    <i class="fas fa-download lg:mr-1"></i> <span class="hidden lg:inline">Читать</span>
                     </button>
-                    <button @click="writeToDevice" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition">
-                        <i class="fas fa-upload mr-1"></i> Записать
+                <button @click="writeToDevice" class="bg-green-600 hover:bg-green-700 px-2 lg:px-3 py-1.5 lg:py-1 rounded-lg text-[10px] lg:text-sm transition flex items-center">
+                    <i class="fas fa-upload lg:mr-1"></i> <span class="hidden lg:inline">Записать</span>
                     </button>
                 </div>
             </div>
@@ -60,6 +75,11 @@
                     <li><button @click="currentTab = 'events'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'events'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-history w-6"></i>События ЖКИ</button></li>
                     <li><button @click="currentTab = 'about'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'about'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-info-circle w-6"></i>О программе</button></li>
                     <li><button @click="currentTab = 'help'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'help'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-question-circle w-6"></i>Справка</button></li>
+                    <li v-if="deferredPrompt" class="lg:hidden">
+                        <button @click="installApp" class="w-full text-left px-6 py-4 bg-blue-600 text-white hover:bg-blue-500 transition flex items-center font-bold">
+                            <i class="fas fa-download w-6"></i>Установить приложение
+                        </button>
+                    </li>
                 </ul>
 
                 <div class="mt-8 p-4 uppercase text-xs font-bold text-gray-500 tracking-widest border-t border-slate-600">Файл</div>
@@ -338,15 +358,16 @@
                 <!-- Users Tab -->
                 <section v-if="currentTab === 'users'">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">Пользователи и пароли</h2>
-                        <button @click="addUser" class="bg-slate-800 text-white px-4 py-2 rounded shadow hover:bg-slate-900 transition">
-                            <i class="fas fa-user-plus mr-2"></i> Добавить пользователя
+                        <h2 class="text-2xl font-bold">Пользователи</h2>
+                        <button @click="addUser" class="bg-slate-800 text-white px-4 py-2 rounded-xl shadow-lg hover:bg-slate-900 transition flex items-center">
+                            <i class="fas fa-user-plus sm:mr-2"></i> <span class="hidden sm:inline">Добавить</span>
                         </button>
                     </div>
 
-                    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+                    <!-- Desktop -->
+                    <div class="hidden lg:block bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
                         <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold tracking-wider">
                                 <tr>
                                     <th class="px-6 py-4">Имя / Описание</th>
                                     <th class="px-6 py-4">Пароль / PIN</th>
@@ -354,90 +375,152 @@
                                     <th class="px-6 py-4 text-right">Действия</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr v-for="(user, index) in config.users" :key="index">
+                            <tbody class="divide-y divide-slate-100">
+                                <tr v-for="(user, index) in config.users" :key="index" class="hover:bg-slate-50">
                                     <td class="px-6 py-4">
-                                        <input v-model="user.name" class="w-full focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1" placeholder="Введите имя">
+                                        <input v-model="user.name" class="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:outline-none py-1" placeholder="Введите имя">
                                     </td>
                                     <td class="px-6 py-4">
-                                        <input v-model="user.password" type="password" class="w-24 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1" placeholder="******">
+                                        <input v-model="user.password" type="password" class="w-24 font-mono bg-transparent border-b border-transparent focus:border-blue-500 focus:outline-none py-1" placeholder="******">
                                     </td>
                                     <td class="px-6 py-4">
-                                        <select v-model="user.role" class="bg-gray-50 border-none text-sm focus:ring-0 rounded">
+                                        <select v-model="user.role" class="bg-slate-100 border-none text-sm rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500">
                                             <option value="user">Пользователь</option>
                                             <option value="operator">Оператор</option>
                                             <option value="admin">Администратор</option>
                                         </select>
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <button @click="removeUser(index)" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-user-minus"></i></button>
+                                        <button @click="removeUser(index)" class="text-slate-400 hover:text-red-500 p-2"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile -->
+                    <div class="lg:hidden space-y-4">
+                        <div v-for="(user, index) in config.users" :key="index" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                            <div class="flex justify-between items-center">
+                                <div class="bg-blue-50 text-blue-700 w-10 h-10 rounded-xl flex items-center justify-center font-bold">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <button @click="removeUser(index)" class="text-red-500 p-2"><i class="fas fa-trash"></i></button>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="block">
+                                    <span class="text-[10px] uppercase font-bold text-slate-400 ml-1">Имя пользователя</span>
+                                    <input v-model="user.name" class="w-full mt-1 bg-slate-50 rounded-xl px-4 py-2 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 text-sm" placeholder="Имя">
+                                </label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label>
+                                        <span class="text-[10px] uppercase font-bold text-slate-400 ml-1">Пароль</span>
+                                        <input v-model="user.password" type="password" class="w-full mt-1 bg-slate-50 rounded-xl px-4 py-2 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 text-sm font-mono" placeholder="******">
+                                    </label>
+                                    <label>
+                                        <span class="text-[10px] uppercase font-bold text-slate-400 ml-1">Роль</span>
+                                        <select v-model="user.role" class="w-full mt-1 bg-slate-50 rounded-xl px-4 py-2 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 text-sm">
+                                            <option value="user">Пользователь</option>
+                                            <option value="operator">Оператор</option>
+                                            <option value="admin">Админ</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 <!-- Relays Tab -->
                 <section v-if="currentTab === 'relays'">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">Управление реле и тактики</h2>
-                        <button @click="addRelay" class="bg-slate-800 text-white px-4 py-2 rounded shadow hover:bg-slate-900 transition">
-                            <i class="fas fa-plus mr-2"></i> Добавить реле
+                        <h2 class="text-2xl font-bold">Реле и тактики</h2>
+                        <button @click="addRelay" class="bg-slate-800 text-white px-4 py-2 rounded-xl shadow-lg hover:bg-slate-900 transition">
+                            <i class="fas fa-plus sm:mr-2"></i> <span class="hidden sm:inline">Добавить</span>
                         </button>
                     </div>
                     <div class="grid grid-cols-1 gap-4">
-                        <div v-for="(relay, index) in config.relays" :key="index" class="p-4 border rounded-lg flex items-center space-x-4 bg-gray-50">
-                            <div class="font-bold text-lg">#{{ index + 1 }}</div>
-                            <div class="flex-1 grid grid-cols-3 gap-4">
-                                <input v-model="relay.name" placeholder="Название реле" class="border p-2 rounded">
-                                <select v-model="relay.tactic" class="border p-2 rounded">
+                        <div v-for="(relay, index) in config.relays" :key="index" class="bg-white p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 shadow-sm hover:shadow-md transition">
+                            <div class="bg-slate-100 text-slate-700 w-12 h-12 rounded-xl flex items-center justify-center font-bold shadow-inner">#{{ index + 1 }}</div>
+                            <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <input v-model="relay.name" placeholder="Название реле" class="bg-slate-50 rounded-xl px-4 py-2 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 text-sm">
+                                <select v-model="relay.tactic" class="bg-slate-50 rounded-xl px-4 py-2 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 text-sm">
                                     <option value="1">Включить при пожаре</option>
                                     <option value="2">Выключить при пожаре</option>
                                     <option value="3">ПЦН</option>
                                     <option value="4">Лампа</option>
                                 </select>
-                                <select v-model="relay.partition" class="border p-2 rounded">
+                                <select v-model="relay.partition" class="bg-slate-50 rounded-xl px-4 py-2 border-transparent focus:border-blue-500 focus:bg-white focus:ring-0 text-sm">
                                     <option v-for="(p, pi) in config.partitions" :value="pi">Раздел: {{ p.name }}</option>
                                 </select>
                             </div>
-                            <button @click="config.relays.splice(index, 1)" class="text-red-500"><i class="fas fa-trash"></i></button>
+                            <button @click="config.relays.splice(index, 1)" class="text-red-500 p-2 self-end sm:self-center"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </section>
 
                 <!-- Zones Tab -->
                 <section v-if="currentTab === 'zones'">
-                    <h2 class="text-2xl font-bold mb-6">Настройка входных зон</h2>
-                    <div class="bg-white border rounded shadow-sm">
-                        <table class="w-full">
-                            <thead class="bg-gray-50 text-xs">
+                    <h2 class="text-2xl font-bold mb-6">Входные зоны</h2>
+
+                    <!-- Desktop -->
+                    <div class="hidden lg:block bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-bold tracking-wider">
                                 <tr>
-                                    <th class="p-3 text-left">Зона</th>
-                                    <th class="p-3 text-left">Тип ШС</th>
-                                    <th class="p-3 text-left">Раздел</th>
-                                    <th class="p-3 text-left">Задержка</th>
+                                    <th class="px-6 py-4">Зона</th>
+                                    <th class="px-6 py-4">Тип ШС</th>
+                                    <th class="px-6 py-4">Раздел</th>
+                                    <th class="px-6 py-4">Задержка</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr v-for="i in 8" :key="i" class="border-t">
-                                    <td class="p-3">Шлейф {{ i }}</td>
-                                    <td class="p-3">
-                                        <select class="border text-sm p-1">
+                            <tbody class="divide-y divide-slate-100">
+                                <tr v-for="i in 8" :key="i" class="hover:bg-slate-50">
+                                    <td class="px-6 py-4 font-bold text-slate-700">Шлейф {{ i }}</td>
+                                    <td class="px-6 py-4">
+                                        <select class="bg-slate-100 border-none text-sm rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500">
                                             <option>Охранный</option>
                                             <option>Пожарный</option>
                                             <option>Тревожный</option>
                                         </select>
                                     </td>
-                                    <td class="p-3">
-                                        <select class="border text-sm p-1">
+                                    <td class="px-6 py-4">
+                                        <select class="bg-slate-100 border-none text-sm rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500">
                                             <option v-for="(p, pi) in config.partitions" :value="pi">{{ p.name }}</option>
                                         </select>
                                     </td>
-                                    <td class="p-3"><input type="number" class="border w-16 p-1 text-sm" value="0"> сек.</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="number" class="w-16 bg-slate-100 border-none text-sm rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500" value="0">
+                                            <span class="text-xs text-slate-400">сек.</span>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile -->
+                    <div class="lg:hidden grid grid-cols-2 gap-3">
+                        <div v-for="i in 8" :key="i" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col space-y-3">
+                            <div class="font-bold text-slate-800 border-b pb-2 flex justify-between items-center">
+                                <span>ШС {{ i }}</span>
+                                <i class="fas fa-shield-alt text-blue-500 text-xs"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <select class="w-full bg-slate-50 rounded-xl px-2 py-2 border-transparent text-[11px] font-bold uppercase">
+                                    <option>Охранный</option>
+                                    <option>Пожарный</option>
+                                </select>
+                                <select class="w-full bg-slate-50 rounded-xl px-2 py-2 border-transparent text-[11px]">
+                                    <option v-for="(p, pi) in config.partitions" :value="pi">{{ p.name }}</option>
+                                </select>
+                                <div class="flex items-center space-x-1">
+                                    <input type="number" class="w-12 bg-slate-50 rounded-xl px-2 py-1 border-transparent text-xs" value="0">
+                                    <span class="text-[10px] text-slate-400 italic">сек. задержки</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
