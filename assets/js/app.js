@@ -3,7 +3,7 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            currentTab: 'devices',
+            currentTab: 'dashboard',
             config: {
                 devices: [],
                 partitions: [],

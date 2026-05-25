@@ -37,3 +37,19 @@
 .fade-enter-from, .fade-leave-to {
     opacity: 0;
 }
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    input, select, button {
+        font-size: 16px !important; /* Prevent iOS zoom on focus */
+    }
+
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+.shadow-soft {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}

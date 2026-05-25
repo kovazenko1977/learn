@@ -50,6 +50,7 @@
             <nav :class="showSidebar ? 'translate-x-0' : '-translate-x-full'" class="fixed lg:relative lg:translate-x-0 z-40 w-64 h-full bg-slate-700 text-gray-300 flex-shrink-0 overflow-y-auto transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none">
                 <div class="p-4 uppercase text-xs font-bold text-gray-500 tracking-widest">Меню</div>
                 <ul class="space-y-1">
+                    <li><button @click="currentTab = 'dashboard'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'dashboard'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-tachometer-alt w-6"></i>Главная</button></li>
                     <li><button @click="currentTab = 'devices'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'devices'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-microchip w-6"></i>Приборы</button></li>
                     <li><button @click="currentTab = 'partitions'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'partitions'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-th-large w-6"></i>Разделы</button></li>
                     <li><button @click="currentTab = 'relays'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'relays'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-toggle-on w-6"></i>Реле и тактики</button></li>
@@ -58,6 +59,7 @@
                     <li><button @click="currentTab = 'scenarios'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'scenarios'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-project-diagram w-6"></i>Сценарии</button></li>
                     <li><button @click="currentTab = 'events'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'events'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-history w-6"></i>События ЖКИ</button></li>
                     <li><button @click="currentTab = 'about'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'about'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-info-circle w-6"></i>О программе</button></li>
+                    <li><button @click="currentTab = 'help'; showSidebar = false" :class="{'bg-slate-600 text-white': currentTab === 'help'}" class="w-full text-left px-6 py-3 hover:bg-slate-600 transition flex items-center"><i class="fas fa-question-circle w-6"></i>Справка</button></li>
                 </ul>
 
                 <div class="mt-8 p-4 uppercase text-xs font-bold text-gray-500 tracking-widest border-t border-slate-600">Файл</div>
@@ -75,9 +77,73 @@
             <div v-if="showSidebar" @click="showSidebar = false" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
 
             <!-- Content Area -->
-            <main class="flex-1 overflow-y-auto bg-white p-4 lg:p-8 relative">
+            <main class="flex-1 overflow-y-auto bg-slate-50 p-4 lg:p-8 relative">
                 <!-- Simulation Overlay -->
                 <div v-if="isDemoMode" class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500 animate-pulse z-10"></div>
+
+                <!-- Dashboard / Console -->
+                <section v-if="currentTab === 'dashboard'" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                            <div class="bg-blue-100 p-3 rounded-xl text-blue-600"><i class="fas fa-microchip text-2xl"></i></div>
+                            <div>
+                                <div class="text-sm text-slate-500">Приборов</div>
+                                <div class="text-2xl font-bold">{{ config.devices.length }}</div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                            <div class="bg-purple-100 p-3 rounded-xl text-purple-600"><i class="fas fa-th-large text-2xl"></i></div>
+                            <div>
+                                <div class="text-sm text-slate-500">Разделов</div>
+                                <div class="text-2xl font-bold">{{ config.partitions.length }}</div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                            <div class="bg-green-100 p-3 rounded-xl text-green-600"><i class="fas fa-users text-2xl"></i></div>
+                            <div>
+                                <div class="text-sm text-slate-500">Пользователей</div>
+                                <div class="text-2xl font-bold">{{ config.users.length }}</div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex items-center space-x-4">
+                            <div class="bg-orange-100 p-3 rounded-xl text-orange-600"><i class="fas fa-project-diagram text-2xl"></i></div>
+                            <div>
+                                <div class="text-sm text-slate-500">Сценариев</div>
+                                <div class="text-2xl font-bold">{{ config.scenarios.length }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 rounded-3xl p-6 lg:p-10 text-white shadow-2xl relative overflow-hidden">
+                        <div class="absolute -right-20 -top-20 w-64 h-64 bg-blue-500 rounded-full opacity-10 blur-3xl"></div>
+                        <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-6 lg:space-y-0">
+                            <div class="space-y-2">
+                                <h2 class="text-3xl font-bold tracking-tight">Пульт С2000М</h2>
+                                <p class="text-slate-400">Статус: <span class="text-green-400 font-medium">Работа в норме</span></p>
+                                <div class="flex space-x-4 mt-6">
+                                    <div class="text-center">
+                                        <div class="text-xs uppercase text-slate-500 mb-1">Версия</div>
+                                        <div class="bg-slate-800 px-3 py-1 rounded-lg text-sm font-mono">v4.12</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-xs uppercase text-slate-500 mb-1">События</div>
+                                        <div class="bg-slate-800 px-3 py-1 rounded-lg text-sm font-mono">{{ events.length }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-auto flex flex-col space-y-3">
+                                <button @click="readFromDevice" class="w-full lg:w-64 bg-blue-600 hover:bg-blue-500 text-white py-4 px-6 rounded-2xl font-bold shadow-lg shadow-blue-900/20 transition-all flex justify-between items-center group">
+                                    <span>Считать конфигурацию</span>
+                                    <i class="fas fa-sync-alt group-hover:rotate-180 transition-transform duration-500"></i>
+                                </button>
+                                <button @click="writeToDevice" class="w-full lg:w-64 bg-slate-800 hover:bg-slate-700 text-white py-4 px-6 rounded-2xl font-bold border border-slate-700 transition-all flex justify-between items-center group">
+                                    <span>Записать изменения</span>
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- Event Log Drawer (Fixed Bottom) -->
                 <div v-if="events.length > 0" class="fixed bottom-0 right-0 w-full lg:w-96 max-h-64 bg-slate-900 text-gray-300 shadow-2xl lg:rounded-tl-xl border-l border-t border-slate-700 overflow-hidden flex flex-col z-40">
@@ -100,38 +166,58 @@
                 <!-- Devices Tab -->
                 <section v-if="currentTab === 'devices'">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold">Список подключенных приборов</h2>
-                        <button @click="showAddDeviceModal = true" class="bg-slate-800 text-white px-4 py-2 rounded shadow hover:bg-slate-900 transition">
-                            <i class="fas fa-plus mr-2"></i> Добавить прибор
+                        <h2 class="text-2xl font-bold">Список приборов</h2>
+                        <button @click="showAddDeviceModal = true" class="bg-blue-600 text-white px-4 py-2 rounded-xl shadow-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-plus mr-2"></i> <span class="hidden sm:inline">Добавить прибор</span>
                         </button>
                     </div>
 
-                    <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-x-auto">
-                        <table class="w-full text-left min-w-[600px]">
-                            <thead class="bg-gray-100 border-b border-gray-200 text-gray-600 uppercase text-xs">
+                    <!-- Desktop Table -->
+                    <div class="hidden lg:block bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase text-xs font-bold">
                                 <tr>
-                                    <th class="px-6 py-3">Адрес</th>
-                                    <th class="px-6 py-3">Тип прибора</th>
-                                    <th class="px-6 py-3">Версия</th>
-                                    <th class="px-6 py-3 text-right">Действия</th>
+                                    <th class="px-6 py-4">Адрес</th>
+                                    <th class="px-6 py-4">Тип прибора</th>
+                                    <th class="px-6 py-4">Версия</th>
+                                    <th class="px-6 py-4 text-right">Действия</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr v-for="(device, index) in config.devices" :key="index" class="hover:bg-blue-50 transition">
-                                    <td class="px-6 py-4 font-mono font-bold text-blue-600">{{ device.address }}</td>
-                                    <td class="px-6 py-4">{{ device.type }}</td>
-                                    <td class="px-6 py-4 text-gray-500">{{ device.version }}</td>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr v-for="(device, index) in config.devices" :key="index" class="hover:bg-slate-50 transition">
+                                    <td class="px-6 py-4"><span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-mono font-bold">{{ device.address }}</span></td>
+                                    <td class="px-6 py-4 font-medium text-slate-700">{{ device.type }}</td>
+                                    <td class="px-6 py-4 text-slate-500 font-mono">{{ device.version }}</td>
                                     <td class="px-6 py-4 text-right">
-                                        <button @click="removeDevice(index)" class="text-red-500 hover:text-red-700 transition">
+                                        <button @click="removeDevice(index)" class="text-slate-400 hover:text-red-500 transition p-2">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                                 <tr v-if="config.devices.length === 0">
-                                    <td colspan="4" class="px-6 py-12 text-center text-gray-400 italic">Приборы не добавлены</td>
+                                    <td colspan="4" class="px-6 py-12 text-center text-slate-400 italic">Список приборов пуст</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Cards -->
+                    <div class="lg:hidden grid grid-cols-1 gap-4">
+                        <div v-for="(device, index) in config.devices" :key="index" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-600 text-white w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl font-mono shadow-md shadow-blue-100">{{ device.address }}</div>
+                                <div>
+                                    <div class="font-bold text-slate-800">{{ device.type }}</div>
+                                    <div class="text-xs text-slate-500 font-mono">Версия: {{ device.version }}</div>
+                                </div>
+                            </div>
+                            <button @click="removeDevice(index)" class="bg-red-50 text-red-600 w-10 h-10 rounded-xl flex items-center justify-center transition hover:bg-red-100">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div v-if="config.devices.length === 0" class="text-center py-12 text-slate-400 italic bg-white rounded-2xl border border-dashed border-slate-300">
+                            Приборы не добавлены
+                        </div>
                     </div>
                 </section>
 
@@ -160,9 +246,79 @@
                     </div>
                 </section>
 
+                <!-- Help Tab -->
+                <section v-if="currentTab === 'help'" class="max-w-4xl mx-auto space-y-8 pb-20">
+                    <h2 class="text-3xl font-bold text-slate-800">Справка по работе с программой</h2>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="text-xl font-bold text-blue-600 mb-4 flex items-center">
+                            <i class="fas fa-info-circle mr-3"></i> Суть программы
+                        </h3>
+                        <p class="text-slate-600 leading-relaxed">
+                            <strong>Старовойтов tools pro</strong> — это кроссплатформенное веб-приложение, предназначенное для полноценной настройки и администрирования охранно-пожарного оборудования компании "Болид" (пультов С2000М и подключенных к ним устройств) через преобразователь интерфейса RS-485.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                                <span class="bg-slate-100 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">1</span>
+                                Подключение
+                            </h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">
+                                Подключите преобразователь RS-485 к USB-порту вашего устройства. Убедитесь, что драйверы установлены и порт COM3 (по умолчанию) доступен. В мобильной версии используйте OTG-адаптер.
+                            </p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                                <span class="bg-slate-100 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">2</span>
+                                Чтение данных
+                            </h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">
+                                Нажмите кнопку <strong>"Считать конфигурацию"</strong> на главной странице. Программа опросит пульт и загрузит текущие настройки приборов, разделов и пользователей в память приложения.
+                            </p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                                <span class="bg-slate-100 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">3</span>
+                                Редактирование
+                            </h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">
+                                Используйте боковое меню для перехода в нужные разделы. Вы можете добавлять приборы, создавать логические группы шлейфов (разделы), менять пароли и настраивать сценарии автоматизации.
+                            </p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                                <span class="bg-slate-100 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center mr-3 text-sm">4</span>
+                                Запись и экспорт
+                            </h3>
+                            <p class="text-sm text-slate-500 leading-relaxed">
+                                После внесения изменений нажмите <strong>"Записать изменения"</strong>. Также вы можете сохранить конфигурацию в файл (текстовый или зашифрованный .bin) для последующей работы без подключения к пульту.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-orange-50 p-6 rounded-2xl border border-orange-100">
+                        <h3 class="font-bold text-orange-800 mb-2 flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-3"></i> Важное замечание
+                        </h3>
+                        <p class="text-sm text-orange-700 leading-relaxed">
+                            Перед записью конфигурации в пульт С2000М убедитесь, что питание системы стабильно. Прерывание процесса записи может привести к сбросу настроек пульта до заводских значений.
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-600 p-8 rounded-3xl text-white">
+                        <h3 class="text-xl font-bold mb-4">Демо-режим</h3>
+                        <p class="text-blue-100 leading-relaxed mb-6">
+                            Для ознакомления с интерфейсом без реального оборудования используйте кнопку <strong>"ДЕМО-РЕЖИМ"</strong> в верхней панели. Это активирует эмуляцию системных событий и позволяет протестировать все функции программы.
+                        </p>
+                        <button @click="currentTab = 'dashboard'" class="bg-white text-blue-600 px-6 py-2 rounded-xl font-bold hover:bg-blue-50 transition">Попробовать сейчас</button>
+                    </div>
+                </section>
+
                 <!-- About Tab -->
-                <section v-if="currentTab === 'about'" class="flex flex-col items-center justify-center h-full text-center">
-                    <div class="bg-blue-50 p-12 rounded-2xl border border-blue-100 shadow-inner max-w-2xl">
+                <section v-if="currentTab === 'about'" class="flex flex-col items-center justify-center h-full text-center py-10 lg:py-0">
+                    <div class="bg-blue-50 p-8 lg:p-12 rounded-3xl border border-blue-100 shadow-inner max-w-2xl w-full">
                         <div class="bg-blue-600 text-white w-20 h-20 rounded-2xl flex items-center justify-center text-4xl font-bold mx-auto mb-6 shadow-lg">S</div>
                         <h2 class="text-3xl font-extrabold text-slate-800 mb-4 tracking-tight">Старовойтов tools pro</h2>
                         <p class="text-lg text-slate-600 leading-relaxed mb-8">
@@ -362,7 +518,7 @@
         </div>
 
         <!-- Notification Toast -->
-        <div v-if="toast.show" :class="toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-lg shadow-xl z-50 transition-all transform duration-300">
+        <div v-if="toast.show" :class="{'bg-green-600': toast.type === 'success', 'bg-red-600': toast.type === 'error', 'bg-blue-600': toast.type === 'info'}" class="fixed bottom-4 right-4 text-white px-6 py-3 rounded-2xl shadow-2xl z-[100] transition-all transform duration-300 flex items-center max-w-[90vw]">
             <i :class="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle'" class="mr-2"></i>
             {{ toast.message }}
         </div>
