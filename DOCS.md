@@ -32,3 +32,33 @@ Standard graphical symbols to indicate handling requirements:
 - **Barcode Generation:** `picqer/php-barcode-generator` library.
 - **Frontend:** HTML5, CSS3 (with `@media print` optimization), JavaScript for preview.
 - **Label Size:** Default recommended size is 100mm x 150mm.
+
+## Examples
+
+### Keg Marking Example (Пример маркировки кег)
+- **Consignee:** ООО "Пивоварня Север"
+- **Destination:** г. Новосибирск, ул. Промышленная, 45
+- **Package Count:** 50
+- **Item Number:** 1/50
+- **Gross Weight:** 62.5 кг (для 50л кеги с пивом)
+- **Net Weight:** 50.0 кг
+- **Dimensions:** 40x40x60 см
+- **Signs:** Keep Dry (Беречь от влаги), This Way Up (Верх)
+
+### Keg Product Label Example (Напиток "ЧИНАЗЕС")
+- **Product:** Напиток слабоалкогольный «ЧИНАЗЕС»
+- **Volume:** 30 Л
+- **ABV:** 5%
+- **Regulatory:** СТБ 1122-2010, РЦ BY 690277551.004-2026
+- **Manufacturer:** ОАО «Пищевой комбинат «Веселово»
+- **Barcode:** 4811173002809
+
+### Box Marking Example (Пример маркировки коробок)
+- **Consignee:** ИП Иванов А.В.
+- **Destination:** г. Екатеринбург, склад №3
+- **Package Count:** 10
+- **Item Number:** 5/10
+- **Gross Weight:** 12.0 кг
+- **Net Weight:** 10.5 кг
+- **Dimensions:** 30x30x30 см
+- **Signs:** Fragile (Хрупкое)
