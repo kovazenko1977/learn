@@ -1,0 +1,9 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Wine glass symbol for Fragile -->
+  <path d="M35 20 L65 20 L65 45 Q65 60 50 60 Q35 60 35 45 Z" fill="none" stroke="black" stroke-width="3"/>
+  <line x1="50" y1="60" x2="50" y2="80" stroke="black" stroke-width="3"/>
+  <line x1="40" y1="80" x2="60" y2="80" stroke="black" stroke-width="3"/>
+  <path d="M50 35 L50 35" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <!-- Crack line -->
+  <path d="M45 20 L50 30 L45 40" fill="none" stroke="black" stroke-width="2"/>
+</svg>

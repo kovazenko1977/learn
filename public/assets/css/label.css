@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.label-preview {
+    border: 2px solid black;
+    width: 100mm;
+    height: 150mm;
+    margin: 20px auto;
+    padding: 5mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    position: relative;
+    color: black;
+}
+
+.label-section {
+    border-bottom: 1px solid black;
+    padding: 2mm 0;
+}
+
+.label-section:last-child {
+    border-bottom: none;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1mm;
+}
+
+.label-label {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.label-value {
+    font-size: 12pt;
+}
+
+.barcode-container {
+    text-align: center;
+    margin-top: auto;
+    padding-top: 5mm;
+}
+
+.barcode-container svg {
+    width: 80mm;
+    height: auto;
+}
+
+.signs-container {
+    display: flex;
+    justify-content: space-around;
+    padding: 5mm 0;
+}
+
+.signs-container img, .signs-container svg {
+    width: 20mm;
+    height: 20mm;
+}
+
+@media print {
+    body {
+        background: none;
+        padding: 0;
+    }
+    .container, form, h1 {
+        display: none;
+    }
+    .label-preview {
+        margin: 0;
+        border: none;
+        page-break-after: always;
+    }
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
