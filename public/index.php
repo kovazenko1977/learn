@@ -12,7 +12,7 @@ $data = [
     'item_number' => $_POST['item_number'] ?? '1/10',
     'gross_weight' => $_POST['gross_weight'] ?? '15.5',
     'net_weight' => $_POST['net_weight'] ?? '14.0',
-    'dimensions' => $_POST['dimensions'] ?? '40x40x60 cm',
+    'dimensions' => $_POST['dimensions'] ?? '40x40x60 см',
     'barcode_data' => $_POST['barcode_data'] ?? '123456789012',
 ];
 
@@ -29,9 +29,9 @@ $this_way_up = isset($_POST['sign_this_way_up']);
 <head>
     <meta charset="UTF-8">
     <title>Печать этикеток ГОСТ 14192-96</title>
-    <link rel="stylesheet" href="/assets/css/label.css">
+    <link rel="stylesheet" href="assets/css/label.css">
     <style>
-        /* Additional grouping styles */
+        /* Дополнительные стили группировки */
         .group-header {
             font-size: 8pt;
             text-transform: uppercase;
@@ -90,9 +90,9 @@ $this_way_up = isset($_POST['sign_this_way_up']);
             <!-- Основные надписи -->
             <div class="label-section">
                 <div class="group-header">Основные надписи</div>
-                <div class="label-label">Получатель (Consignee):</div>
+                <div class="label-label">Получатель:</div>
                 <div class="label-value"><?= htmlspecialchars($formattedData['consignee']) ?></div>
-                <div class="label-label">Пункт назначения (Destination):</div>
+                <div class="label-label">Пункт назначения:</div>
                 <div class="label-value"><?= htmlspecialchars($formattedData['destination']) ?></div>
             </div>
 
@@ -127,17 +127,17 @@ $this_way_up = isset($_POST['sign_this_way_up']);
             <div class="signs-container">
                 <?php if ($fragile): ?>
                     <div class="sign-item">
-                        <?php include __DIR__ . '/../public/assets/signs/fragile.svg'; ?>
+                        <?php include __DIR__ . '/assets/signs/fragile.svg'; ?>
                     </div>
                 <?php endif; ?>
                 <?php if ($keep_dry): ?>
                     <div class="sign-item">
-                        <?php include __DIR__ . '/../public/assets/signs/keep_dry.svg'; ?>
+                        <?php include __DIR__ . '/assets/signs/keep_dry.svg'; ?>
                     </div>
                 <?php endif; ?>
                 <?php if ($this_way_up): ?>
                     <div class="sign-item">
-                        <?php include __DIR__ . '/../public/assets/signs/this_way_up.svg'; ?>
+                        <?php include __DIR__ . '/assets/signs/this_way_up.svg'; ?>
                     </div>
                 <?php endif; ?>
             </div>

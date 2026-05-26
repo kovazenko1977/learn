@@ -40,8 +40,8 @@ class LabelGenerator
             'destination' => $data['destination'] ?? '',
             'package_count' => $data['package_count'] ?? '',
             'item_number' => $data['item_number'] ?? '',
-            'gross_weight' => isset($data['gross_weight']) ? $data['gross_weight'] . ' kg' : '',
-            'net_weight' => isset($data['net_weight']) ? $data['net_weight'] . ' kg' : '',
+            'gross_weight' => isset($data['gross_weight']) ? $data['gross_weight'] . ' кг' : '',
+            'net_weight' => isset($data['net_weight']) ? $data['net_weight'] . ' кг' : '',
             'dimensions' => $data['dimensions'] ?? '',
             'barcode_data' => $data['barcode_data'] ?? $data['item_number'] ?? ''
         ];

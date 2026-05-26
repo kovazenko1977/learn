@@ -15,7 +15,7 @@ $testData = [
 ];
 $formatted = $generator->formatData($testData);
 
-if ($formatted['consignee'] === 'Test Recipient' && $formatted['gross_weight'] === '10 kg') {
+if ($formatted['consignee'] === 'Test Recipient' && $formatted['gross_weight'] === '10 кг') {
     echo "Data formatting test passed.\n";
 } else {
     echo "Data formatting test failed.\n";
