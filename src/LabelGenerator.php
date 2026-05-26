@@ -24,7 +24,9 @@ class LabelGenerator
         if (empty($data)) {
             return '';
         }
-        return $this->barcodeGenerator->getBarcode($data, $this->barcodeGenerator::TYPE_CODE_128, 2, 50);
+        $svg = $this->barcodeGenerator->getBarcode($data, $this->barcodeGenerator::TYPE_CODE_128, 2, 50);
+        // Remove XML declaration to avoid issues with short_open_tag
+        return preg_replace('/<\?xml.*\?>/i', '', $svg);
     }
 
     /**
