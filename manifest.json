@@ -1,10 +1,14 @@
 {
   "name": "Старовойтов tools pro",
   "short_name": "STools Pro",
-  "start_url": "/index.php",
+  "description": "Профессиональный конфигуратор оборудования RS-485",
+  "start_url": "./index.php",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#1e293b",
   "theme_color": "#1e293b",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3067/3067451.png",
