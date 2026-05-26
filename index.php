@@ -43,17 +43,17 @@
                     <span class="hidden lg:inline">{{ isDemoMode ? 'ДЕМО-РЕЖИМ: ВКЛ' : 'ДЕМО-РЕЖИМ: ВЫКЛ' }}</span>
                     <span class="lg:hidden">{{ isDemoMode ? 'ДЕМО' : 'ДЕМО' }}</span>
                 </button>
-            <div id="connection-status" class="hidden md:flex items-center space-x-2 text-[10px] lg:text-sm text-green-400">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0"></span>
-                <span class="hidden lg:inline">Пульт подключен (COM3)</span>
-                <span class="lg:hidden">COM3</span>
+                <div id="connection-status" class="hidden md:flex items-center space-x-2 text-[10px] lg:text-sm" :class="hwConnected ? 'text-green-400' : 'text-red-400'">
+                    <span class="w-2 h-2 rounded-full flex-shrink-0" :class="hwConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></span>
+                    <span class="hidden lg:inline">{{ hwConnected ? 'Пульт подключен (COM3)' : 'Пульт не обнаружен' }}</span>
+                    <span class="lg:hidden">{{ hwConnected ? 'COM3' : 'OFFLINE' }}</span>
                 </div>
-            <div class="flex space-x-1 lg:space-x-2">
-                <button @click="readFromDevice" class="bg-blue-600 hover:bg-blue-700 px-2 lg:px-3 py-1.5 lg:py-1 rounded-lg text-[10px] lg:text-sm transition flex items-center">
-                    <i class="fas fa-download lg:mr-1"></i> <span class="hidden lg:inline">Читать</span>
+                <div class="flex space-x-1 lg:space-x-2">
+                    <button @click="readFromDevice" class="bg-blue-600 hover:bg-blue-700 px-2 lg:px-3 py-1.5 lg:py-1 rounded-lg text-[10px] lg:text-sm transition flex items-center">
+                        <i class="fas fa-download lg:mr-1"></i> <span class="hidden lg:inline">Читать</span>
                     </button>
-                <button @click="writeToDevice" class="bg-green-600 hover:bg-green-700 px-2 lg:px-3 py-1.5 lg:py-1 rounded-lg text-[10px] lg:text-sm transition flex items-center">
-                    <i class="fas fa-upload lg:mr-1"></i> <span class="hidden lg:inline">Записать</span>
+                    <button @click="writeToDevice" class="bg-green-600 hover:bg-green-700 px-2 lg:px-3 py-1.5 lg:py-1 rounded-lg text-[10px] lg:text-sm transition flex items-center">
+                        <i class="fas fa-upload lg:mr-1"></i> <span class="hidden lg:inline">Записать</span>
                     </button>
                 </div>
             </div>
@@ -139,7 +139,10 @@
                         <div class="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-6 lg:space-y-0">
                             <div class="space-y-2">
                                 <h2 class="text-3xl font-bold tracking-tight">Пульт С2000М</h2>
-                                <p class="text-slate-400">Статус: <span class="text-green-400 font-medium">Работа в норме</span></p>
+                                <p class="text-slate-400">Статус: <span :class="hwConnected ? 'text-green-400' : 'text-red-400'" class="font-medium">{{ hwConnected ? 'Работа в норме' : 'Ожидание подключения' }}</span></p>
+                                <div v-if="integrity && !integrity.valid" class="bg-red-900/50 text-red-200 text-[10px] p-2 rounded-lg mt-2 border border-red-700">
+                                    <i class="fas fa-shield-virus mr-1"></i> Ошибка целостности файлов!
+                                </div>
                                 <div class="flex space-x-4 mt-6">
                                     <div class="text-center">
                                         <div class="text-xs uppercase text-slate-500 mb-1">Версия</div>

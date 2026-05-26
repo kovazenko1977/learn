@@ -35,11 +35,15 @@ createApp({
             isDemoMode: false,
             events: [],
             demoInterval: null,
-            deferredPrompt: null
+            deferredPrompt: null,
+            hwConnected: false,
+            integrity: null
         };
     },
     mounted() {
         this.fetchConfig();
+        this.checkSystem();
+        setInterval(() => this.checkSystem(), 5000);
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
@@ -52,6 +56,15 @@ createApp({
         }
     },
     methods: {
+        async checkSystem() {
+            try {
+                const response = await fetch('api.php?action=check_system');
+                const data = await response.json();
+                this.hwConnected = data.hardware.connected;
+                this.integrity = data.integrity;
+            } catch (e) {}
+        },
+
         async fetchConfig() {
             try {
                 const response = await fetch('api.php?action=get_config');

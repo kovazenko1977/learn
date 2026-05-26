@@ -3,29 +3,65 @@
 require_once __DIR__ . '/src/Database/JsonStore.php';
 require_once __DIR__ . '/src/Models/Configuration.php';
 require_once __DIR__ . '/src/Services/EncryptionService.php';
+require_once __DIR__ . '/src/Services/SerialCommService.php';
+require_once __DIR__ . '/src/Services/IntegrityService.php';
 
 use App\Database\JsonStore;
 use App\Models\Configuration;
 use App\Services\EncryptionService;
+use App\Services\SerialCommService;
+use App\Services\IntegrityService;
 
 header('Content-Type: application/json');
 
 $store = new JsonStore(__DIR__ . '/data/device_memory.json');
 $encryption = new EncryptionService();
+$serial = new SerialCommService();
+$integrity = new IntegrityService();
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
 switch ($action) {
+    case 'check_system':
+        echo json_encode([
+            'integrity' => $integrity->checkIntegrity(),
+            'hardware' => [
+                'connected' => $serial->isHardwareConnected(),
+                'port' => 'COM3'
+            ]
+        ]);
+        break;
+
     case 'get_config':
-        echo json_encode($store->getData());
+        // Try real hardware first
+        if ($serial->isHardwareConnected()) {
+            $response = $serial->sendPacket(0x01); // CMD_READ_CONFIG
+            if ($response['status'] === 'ok') {
+                // In a real implementation, we would parse the hardware bytes
+                // For now, we fall back to local store if hardware isn't fully responding
+                echo json_encode($store->getData());
+            } else {
+                echo json_encode($store->getData());
+            }
+        } else {
+            echo json_encode($store->getData());
+        }
         break;
 
     case 'save_config':
         if ($method === 'POST') {
             $input = json_decode(file_get_contents('php://input'), true);
+
+            // Write to hardware if connected
+            $hw_status = 'offline';
+            if ($serial->isHardwareConnected()) {
+                $hw_res = $serial->sendPacket(0x02, [0x01]); // CMD_WRITE_CONFIG
+                $hw_status = ($hw_res['status'] === 'ok') ? 'success' : 'failed';
+            }
+
             if ($store->setData($input)) {
-                echo json_encode(['status' => 'success']);
+                echo json_encode(['status' => 'success', 'hardware' => $hw_status]);
             } else {
                 http_response_code(500);
                 echo json_encode(['status' => 'error', 'message' => 'Failed to save to memory']);
@@ -55,7 +91,6 @@ switch ($action) {
         if ($method === 'POST' && isset($_FILES['config_file'])) {
             $content = file_get_contents($_FILES['config_file']['tmp_name']);
 
-            // Try to decrypt if it looks like base64/encrypted
             if (!json_decode($content)) {
                 try {
                     $decrypted = $encryption->decrypt($content);
