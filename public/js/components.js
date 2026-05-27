@@ -1,4 +1,5 @@
 const components = {
+    // ... previous methods ...
     renderDeviceCard(device) {
         return `
             <div class="device-card bg-white p-4 rounded-lg shadow hover:shadow-md cursor-pointer border-l-4 border-blue-500 animate-fadeIn">
@@ -39,9 +40,53 @@ const components = {
                     <h3 class="font-bold text-slate-800">${scenario.name}</h3>
                 </div>
                 <div class="mt-4 flex justify-between items-center text-[10px]">
-                    <span class="text-slate-400 font-bold uppercase tracking-widest italic">Scenario Active</span>
+                    <span class="text-slate-400 font-bold uppercase tracking-widest italic">Active</span>
                     <button class="text-purple-600 font-bold">Параметры</button>
                 </div>
+            </div>
+        `;
+    },
+
+    renderHardwareConnect(ports, status) {
+        return `
+            <div class="col-span-full bg-white p-6 rounded-2xl shadow-sm border animate-fadeIn">
+                <h2 class="text-lg font-bold mb-6 flex items-center text-slate-800"><svg class="w-5 h-5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg> Подключение оборудования</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Выберите порт</label>
+                        <select id="portSelect" class="w-full p-3 bg-slate-50 rounded-xl border border-slate-100 focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                            ${ports.map(p => `<option value="${p.id}" ${status.active_port===p.id?'selected':''}>${p.name}</option>`).join('')}
+                        </select>
+                        <div class="mt-4 flex space-x-2">
+                            <button id="connectBtn" class="flex-1 bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-700 transition active:scale-95 shadow-lg shadow-slate-200">
+                                ${status.is_connected ? 'Отключить' : 'Подключить'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between">
+                            <span class="text-sm font-medium text-slate-600">Статус линии:</span>
+                            <span class="flex items-center text-sm font-bold ${status.is_connected ? 'text-green-600':'text-red-400'}">
+                                <span class="w-2 h-2 rounded-full ${status.is_connected ? 'bg-green-500 animate-pulse':'bg-red-400'} mr-2"></span>
+                                ${status.is_connected ? 'ОНЛАЙН' : 'ОФФЛАЙН'}
+                            </span>
+                        </div>
+                        <button id="scanBtn" ${!status.is_connected ? 'disabled':''} class="w-full py-4 rounded-xl font-bold border-2 border-dashed border-slate-200 text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-all disabled:opacity-50">
+                            ${status.is_scanning ? 'Сканирование (адрес: ...)' : 'Начать поиск устройств'}
+                        </button>
+                    </div>
+                </div>
+
+                ${status.is_scanning ? `
+                    <div class="mt-8 bg-blue-50 rounded-xl p-4 overflow-hidden relative">
+                        <div class="h-1 bg-blue-200 absolute top-0 left-0 right-0">
+                            <div class="h-full bg-blue-600 animate-progressBar"></div>
+                        </div>
+                        <p class="text-xs font-bold text-blue-600 animate-pulse">ОПРОС АДРЕСОВ ВЕДУЩЕГО ПУЛЬТА...</p>
+                    </div>
+                ` : ''}
             </div>
         `;
     },
@@ -61,7 +106,7 @@ const components = {
                     </div>
                 </div>
                 <div class="mt-6">
-                    <h3 class="font-bold text-sm mb-3">Ручное управление (Эмуляция)</h3>
+                    <h3 class="font-bold text-sm mb-3">Эмуляция событий</h3>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="window.fireDemoEvent('ALARM')" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-red-200 transition">FIRE ALARM</button>
                         <button onclick="window.fireDemoEvent('FIRE')" class="bg-orange-100 text-orange-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-orange-200 transition">FIRE FIRE</button>

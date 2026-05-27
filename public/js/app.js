@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentSection = 'devices';
     let events = [];
 
+    // Global hooks
     window.fireDemoEvent = async (type) => {
         const event = { type, device_addr: 1, zone_id: 1 };
         await api.fireEvent(event);
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             if (currentSection === 'devices') {
                 const devices = await api.getDevices();
-                content.innerHTML = devices.length ? devices.map(d => components.renderDeviceCard(d)).join('') : components.renderEmptyState('Устройства не найдены. Выберите объект и запустите Demo Mode.');
+                content.innerHTML = devices.length ? devices.map(d => components.renderDeviceCard(d)).join('') : components.renderEmptyState('Устройства не найдены. Подключитесь и выполните поиск.');
             } else if (currentSection === 'zones') {
                 const zones = await api.getZones();
                 content.innerHTML = zones.length ? zones.map(z => components.renderZoneCard(z)).join('') : components.renderEmptyState('Разделы не найдены.');
@@ -86,10 +87,37 @@ document.addEventListener('DOMContentLoaded', async () => {
                 content.innerHTML = scenarios.length ? scenarios.map(s => components.renderScenarioCard(s)).join('') : components.renderEmptyState('Сценарии не найдены.');
             } else if (currentSection === 'diagnostics') {
                 const diag = await api.getDiagnostics();
-                content.innerHTML = components.renderDiagnostics(diag);
+                const ports = await api.getPorts();
+                const hwStatus = await api.getHardwareStatus();
+
+                content.innerHTML = `
+                    ${components.renderHardwareConnect(ports, hwStatus)}
+                    <div class="mt-8"></div>
+                    ${components.renderDiagnostics(diag)}
+                `;
+                setupHardwareListeners();
             }
         } catch (err) {
             content.innerHTML = components.renderEmptyState('Ошибка: ' + err.message);
+        }
+    }
+
+    function setupHardwareListeners() {
+        const connectBtn = document.getElementById('connectBtn');
+        if (connectBtn) {
+            connectBtn.addEventListener('click', async () => {
+                const portId = document.getElementById('portSelect').value;
+                await api.connectPort(portId);
+                renderContent();
+            });
+        }
+        const scanBtn = document.getElementById('scanBtn');
+        if (scanBtn) {
+            scanBtn.addEventListener('click', async () => {
+                api.scanDevices(); // Start async
+                renderContent(); // Show scanning UI immediately
+                setTimeout(renderContent, 5000); // Poll for completion
+            });
         }
     }
 
@@ -97,12 +125,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         events.unshift(event);
         if (events.length > 50) events.pop();
         eventCount.innerText = events.length;
-        const typeColors = { 'ALARM': 'text-red-600 font-bold', 'FIRE': 'text-orange-600 font-bold', 'RELAY_STATUS': 'text-blue-500 italic font-medium' };
+        const typeColors = { 'ALARM': 'text-red-600 font-bold', 'FIRE': 'text-orange-600 font-bold', 'RELAY_STATUS': 'text-blue-500 italic' };
         eventLog.innerHTML = events.map(e => `
             <div class="flex justify-between border-b border-slate-50 py-1">
-                <span class="text-[9px] text-gray-400 w-16 uppercase">${new Date().toLocaleTimeString()}</span>
+                <span class="text-[9px] text-gray-400 w-16">${new Date().toLocaleTimeString()}</span>
                 <span class="flex-1 px-2 ${typeColors[e.type] || 'text-slate-600'}">${e.type}</span>
-                <span class="text-[10px] text-slate-400">${e.type==='RELAY_STATUS' ? `Rel: ${e.relay_id}` : `Z: ${e.zone_id}`}</span>
+                <span class="text-[10px] text-slate-400 font-mono">${e.type==='RELAY_STATUS' ? `Rel: ${e.relay_id}` : `Z: ${e.zone_id}`}</span>
             </div>
         `).join('');
     }
@@ -113,7 +141,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (pollInterval) clearInterval(pollInterval);
         pollInterval = setInterval(async () => {
             if (currentSection === 'diagnostics') renderContent();
-            // Local simulation of receiving events for UI feedback
             if (demoActive) {
                const demoEvent = { type: ['ALARM', 'FIRE', 'RESTORE'][Math.floor(Math.random()*3)], device_addr: 1, zone_id: Math.floor(Math.random()*5)+1 };
                addEventToLog(demoEvent);
@@ -122,12 +149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     function stopPolling() { clearInterval(pollInterval); }
 
-    // Check updates
-    api.checkUpdates().then(update => {
-        if (update.update_available) console.log(`Update ${update.latest_version} available`);
-    });
-
-    // Initial State
     const status = await api.getDemoStatus();
     demoActive = status.active;
     updateDemoUI();
