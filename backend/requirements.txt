@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sqlmodel
+python-barcode
+qrcode
+treepoem
+reportlab
+pandas
+openpyxl
+python-multipart
+pillow
+python-dotenv
