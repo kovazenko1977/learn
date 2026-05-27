@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+sqlmodel
+alembic
+pydantic
+python-barcode
+treepoem
+reportlab
+python-multipart
+pandas
+openpyxl
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+pytest
+httpx
