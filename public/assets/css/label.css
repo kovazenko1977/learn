@@ -1,0 +1,180 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.label-preview {
+    border: 2px solid black;
+    width: 100mm;
+    height: 150mm;
+    margin: 20px auto;
+    padding: 5mm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    position: relative;
+    color: black;
+    overflow: hidden;
+}
+
+.label-section {
+    border-bottom: 1px solid black;
+    padding: 2mm 0;
+}
+
+.label-section:last-child {
+    border-bottom: none;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1mm;
+}
+
+.label-label {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.label-value {
+    font-size: 12pt;
+}
+
+/* Product Label Styles */
+.product-label {
+    font-size: 8pt;
+    line-height: 1.1;
+}
+
+.product-name {
+    font-size: 11pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2mm;
+    text-transform: uppercase;
+}
+
+.regulatory-docs {
+    text-align: center;
+    font-size: 9pt;
+    margin-bottom: 3mm;
+}
+
+.composition-box, .nutrition-box, .storage-box, .manufacturer-box, .warning-box, .params-box {
+    margin-bottom: 2mm;
+    text-align: justify;
+}
+
+.warning-box {
+    font-weight: bold;
+    text-align: center;
+    border: 1px solid black;
+    padding: 1mm;
+}
+
+.params-box {
+    font-size: 10pt;
+    font-weight: bold;
+    text-align: center;
+    border-top: 1px solid black;
+    padding-top: 1mm;
+}
+
+.barcode-container {
+    text-align: center;
+    margin-top: auto;
+    padding-top: 2mm;
+}
+
+.barcode-container svg {
+    width: 80mm;
+    height: auto;
+}
+
+.signs-container {
+    display: flex;
+    justify-content: center;
+    gap: 10mm;
+    padding: 2mm 0;
+}
+
+.signs-container img, .signs-container svg {
+    width: 15mm;
+    height: 15mm;
+}
+
+@media print {
+    body {
+        background: none;
+        padding: 0;
+    }
+    .container, form, h1, .example-buttons {
+        display: none;
+    }
+    .label-preview {
+        margin: 0;
+        border: none;
+        page-break-after: always;
+    }
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    height: 80px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.example-buttons {
+    margin-bottom: 20px;
+}
+.example-buttons a {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #eee;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+.example-buttons a:hover {
+    background: #ddd;
+}
