@@ -1,5 +1,4 @@
 const components = {
-    // ... previous methods ...
     renderDeviceCard(device) {
         return `
             <div class="device-card bg-white p-4 rounded-lg shadow hover:shadow-md cursor-pointer border-l-4 border-blue-500 animate-fadeIn">
@@ -18,6 +17,20 @@ const components = {
         `;
     },
 
+    renderZoneCard(zone) {
+        return `
+            <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-500 animate-fadeIn">
+                <div class="flex justify-between">
+                    <h3 class="font-bold text-slate-800">${zone.name}</h3>
+                    <span class="text-xs font-bold text-green-600">Раздел ${zone.number}</span>
+                </div>
+                <div class="mt-4 flex items-center text-[10px] text-slate-400 font-bold">
+                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div> НОРМА
+                </div>
+            </div>
+        `;
+    },
+
     renderScenarioCard(scenario) {
         return `
             <div class="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500 animate-fadeIn">
@@ -26,8 +39,8 @@ const components = {
                     <h3 class="font-bold text-slate-800">${scenario.name}</h3>
                 </div>
                 <div class="mt-4 flex justify-between items-center text-[10px]">
-                    <span class="text-slate-400 font-bold uppercase tracking-widest">Active</span>
-                    <button class="text-purple-600 font-bold">Изменить</button>
+                    <span class="text-slate-400 font-bold uppercase tracking-widest italic">Scenario Active</span>
+                    <button class="text-purple-600 font-bold">Параметры</button>
                 </div>
             </div>
         `;

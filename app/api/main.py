@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routers import devices, system, scenarios, diagnostics, updates
+from app.api.routers import devices, system, scenarios, diagnostics, updates, zones
 from app.infrastructure.database import init_db
 from contextlib import asynccontextmanager
 
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(devices.router)
+app.include_router(zones.router)
 app.include_router(system.router)
 app.include_router(scenarios.router)
 app.include_router(diagnostics.router)

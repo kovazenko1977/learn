@@ -6,6 +6,11 @@ const api = {
         return res.json();
     },
 
+    async getZones() {
+        const res = await fetch(`${API_BASE}/zones/`);
+        return res.json();
+    },
+
     async getScenarios() {
         const res = await fetch(`${API_BASE}/scenarios/`);
         return res.status === 200 ? res.json() : [];
@@ -20,8 +25,8 @@ const api = {
         }
     },
 
-    async toggleDemo(active) {
-        const res = await fetch(`${API_BASE}/system/demo/toggle?active=${active}`, {
+    async toggleDemo(active, template = "Apartment", profile = "Random") {
+        const res = await fetch(`${API_BASE}/system/demo/toggle?active=${active}&template=${template}&profile=${profile}`, {
             method: 'POST'
         });
         return res.json();
