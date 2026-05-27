@@ -1,4 +1,4 @@
-const API_BASE = window.location.origin;
+const API_BASE = "http://localhost:8000"; // Fixed to Python backend
 
 const api = {
     async getDevices() {
@@ -16,7 +16,11 @@ const api = {
     },
 
     async checkSystem() {
-        const res = await fetch(`${API_BASE}/health`);
-        return res.json();
+        try {
+            const res = await fetch(`${API_BASE}/health`);
+            return res.json();
+        } catch (e) {
+            return { status: 'offline' };
+        }
     }
 };
