@@ -26,8 +26,6 @@ class SerialTransport(TransportInterface):
         self.serial = None
 
     async def connect(self) -> bool:
-        # In a real app, use a threadpool or async serial library
-        # Simulating connection for MVP
         print(f"Connecting to Serial {self.port} at {self.baudrate}...")
         await asyncio.sleep(0.1)
         return True
@@ -40,7 +38,7 @@ class SerialTransport(TransportInterface):
 
     async def receive(self, timeout: float = 1.0) -> Optional[bytes]:
         await asyncio.sleep(0.1)
-        return b"\x00" # Dummy response
+        return b"\x00"
 
 class TCPTransport(TransportInterface):
     def __init__(self, host: str, port: int):
@@ -74,3 +72,18 @@ class TCPTransport(TransportInterface):
             except asyncio.TimeoutError:
                 return None
         return None
+
+class DemoTransport(TransportInterface):
+    async def connect(self) -> bool:
+        return True
+
+    async def disconnect(self) -> None:
+        pass
+
+    async def send(self, data: bytes) -> None:
+        print(f"Demo Transport Send: {data.hex()}")
+
+    async def receive(self, timeout: float = 1.0) -> Optional[bytes]:
+        await asyncio.sleep(0.05)
+        # Simulate Orion protocol acknowledgment
+        return b"\x7F\x06\x00"

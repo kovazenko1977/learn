@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8000"; // Fixed to Python backend
+const API_BASE = "http://localhost:8000";
 
 const api = {
     async getDevices() {
@@ -22,5 +22,17 @@ const api = {
         } catch (e) {
             return { status: 'offline' };
         }
+    },
+
+    async toggleDemo(active) {
+        const res = await fetch(`${API_BASE}/system/demo/toggle?active=${active}`, {
+            method: 'POST'
+        });
+        return res.json();
+    },
+
+    async getDemoStatus() {
+        const res = await fetch(`${API_BASE}/system/demo/status`);
+        return res.json();
     }
 };

@@ -1,0 +1,673 @@
+2026-05-27 08:03:39,835 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:39,835 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 08:03:39,836 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,839 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zone_device")
+2026-05-27 08:03:39,839 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,840 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 08:03:39,840 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,841 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("connections")
+2026-05-27 08:03:39,841 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,842 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 08:03:39,842 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,843 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("panels")
+2026-05-27 08:03:39,843 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,844 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 08:03:39,844 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,845 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("devices")
+2026-05-27 08:03:39,845 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,846 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 08:03:39,846 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,846 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zones")
+2026-05-27 08:03:39,847 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,847 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 08:03:39,847 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,848 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("input_loops")
+2026-05-27 08:03:39,848 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,849 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 08:03:39,849 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,850 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("relays")
+2026-05-27 08:03:39,850 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,851 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 08:03:39,851 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,852 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("access_levels")
+2026-05-27 08:03:39,852 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,853 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 08:03:39,853 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,854 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("keys")
+2026-05-27 08:03:39,854 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,855 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 08:03:39,855 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,856 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("scenarios")
+2026-05-27 08:03:39,856 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:03:39,858 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE connections (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	params TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:03:39,858 - sqlalchemy.engine.Engine - INFO - [no key 0.00028s] ()
+2026-05-27 08:03:39,867 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE panels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	version VARCHAR(20) NOT NULL,
+	address INTEGER NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:03:39,868 - sqlalchemy.engine.Engine - INFO - [no key 0.00018s] ()
+2026-05-27 08:03:39,872 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zones (
+	id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (number)
+)
+
+
+2026-05-27 08:03:39,872 - sqlalchemy.engine.Engine - INFO - [no key 0.00017s] ()
+2026-05-27 08:03:39,877 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE access_levels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:03:39,877 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 08:03:39,881 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE scenarios (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	definition TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:03:39,882 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 08:03:39,886 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE devices (
+	id INTEGER NOT NULL,
+	panel_id INTEGER,
+	address INTEGER NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(panel_id) REFERENCES panels (id)
+)
+
+
+2026-05-27 08:03:39,886 - sqlalchemy.engine.Engine - INFO - [no key 0.00022s] ()
+2026-05-27 08:03:39,891 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE keys (
+	id INTEGER NOT NULL,
+	code VARCHAR(50) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	user_name VARCHAR(100) NOT NULL,
+	access_level_id INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (code),
+	FOREIGN KEY(access_level_id) REFERENCES access_levels (id)
+)
+
+
+2026-05-27 08:03:39,891 - sqlalchemy.engine.Engine - INFO - [no key 0.00028s] ()
+2026-05-27 08:03:39,897 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zone_device (
+	zone_id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	PRIMARY KEY (zone_id, device_id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 08:03:39,897 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 08:03:39,902 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE input_loops (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	zone_id INTEGER,
+	type VARCHAR(50) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id)
+)
+
+
+2026-05-27 08:03:39,902 - sqlalchemy.engine.Engine - INFO - [no key 0.00022s] ()
+2026-05-27 08:03:39,906 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE relays (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	program INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 08:03:39,906 - sqlalchemy.engine.Engine - INFO - [no key 0.00021s] ()
+2026-05-27 08:03:39,910 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:03:42,705 - orion_config_pro.demo - INFO - Demo Mode activated
+2026-05-27 08:03:42,706 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:42,724 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+2026-05-27 08:03:42,724 - sqlalchemy.engine.Engine - INFO - [generated in 0.00033s] ()
+2026-05-27 08:03:42,728 - sqlalchemy.engine.Engine - INFO - INSERT INTO devices (panel_id, address, type, name, description) VALUES (?, ?, ?, ?, ?)
+2026-05-27 08:03:42,728 - sqlalchemy.engine.Engine - INFO - [generated in 0.00028s] (None, 127, 'Panel', 'S2000M (Demo)', None)
+2026-05-27 08:03:42,730 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:03:42,735 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:42,737 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+WHERE devices.id = ?
+2026-05-27 08:03:42,737 - sqlalchemy.engine.Engine - INFO - [generated in 0.00021s] (1,)
+2026-05-27 08:03:42,739 - sqlalchemy.engine.Engine - INFO - INSERT INTO devices (panel_id, address, type, name, description) VALUES (?, ?, ?, ?, ?)
+2026-05-27 08:03:42,739 - sqlalchemy.engine.Engine - INFO - [cached since 0.01056s ago] (None, 1, 'Controller', 'S2000-KDL (Demo)', None)
+2026-05-27 08:03:42,740 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:03:42,743 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:42,743 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+WHERE devices.id = ?
+2026-05-27 08:03:42,743 - sqlalchemy.engine.Engine - INFO - [cached since 0.007006s ago] (2,)
+2026-05-27 08:03:42,745 - sqlalchemy.engine.Engine - INFO - INSERT INTO devices (panel_id, address, type, name, description) VALUES (?, ?, ?, ?, ?)
+2026-05-27 08:03:42,745 - sqlalchemy.engine.Engine - INFO - [cached since 0.01691s ago] (None, 2, 'Relay Module', 'S2000-SP1 (Demo)', None)
+2026-05-27 08:03:42,746 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:03:42,749 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:42,749 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+WHERE devices.id = ?
+2026-05-27 08:03:42,749 - sqlalchemy.engine.Engine - INFO - [cached since 0.01298s ago] (3,)
+2026-05-27 08:03:42,751 - sqlalchemy.engine.Engine - INFO - INSERT INTO devices (panel_id, address, type, name, description) VALUES (?, ?, ?, ?, ?)
+2026-05-27 08:03:42,751 - sqlalchemy.engine.Engine - INFO - [cached since 0.02266s ago] (None, 3, 'Addressable Unit', 'S2000-AR2 (Demo)', None)
+2026-05-27 08:03:42,752 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:03:42,755 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:42,755 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+WHERE devices.id = ?
+2026-05-27 08:03:42,755 - sqlalchemy.engine.Engine - INFO - [cached since 0.01847s ago] (4,)
+2026-05-27 08:03:42,756 - orion_config_pro.demo - INFO - Demo devices seeded
+2026-05-27 08:03:42,757 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2026-05-27 08:03:44,776 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:03:44,777 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+2026-05-27 08:03:44,777 - sqlalchemy.engine.Engine - INFO - [cached since 2.053s ago] ()
+2026-05-27 08:03:44,781 - sqlalchemy.engine.Engine - INFO - ROLLBACK
+2026-05-27 08:03:48,757 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 1, 'zone_id': 3, 'timestamp': 3784.926810331}
+2026-05-27 08:04:03,760 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 5, 'timestamp': 3799.929071147}
+2026-05-27 08:04:16,761 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 6, 'timestamp': 3812.930551349}
+2026-05-27 08:04:31,762 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 1, 'timestamp': 3827.931789989}
+2026-05-27 08:04:40,763 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 10, 'timestamp': 3836.932613258}
+2026-05-27 08:04:52,764 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 1, 'timestamp': 3848.93378931}
+2026-05-27 08:05:06,765 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 1, 'zone_id': 1, 'timestamp': 3862.934801916}
+2026-05-27 08:05:12,767 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 2, 'zone_id': 6, 'timestamp': 3868.936925825}
+2026-05-27 08:05:24,768 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 2, 'zone_id': 3, 'timestamp': 3880.937686273}
+2026-05-27 08:05:39,769 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 7, 'timestamp': 3895.93880183}
+2026-05-27 08:05:47,771 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 3, 'zone_id': 10, 'timestamp': 3903.94034861}
+2026-05-27 08:05:58,772 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 6, 'timestamp': 3914.941803789}
+2026-05-27 08:06:12,773 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 3, 'zone_id': 6, 'timestamp': 3928.942645726}
+2026-05-27 08:06:17,775 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 3, 'zone_id': 1, 'timestamp': 3933.944250826}
+2026-05-27 08:06:27,776 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 10, 'timestamp': 3943.945193344}
+2026-05-27 08:06:33,777 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 3, 'zone_id': 10, 'timestamp': 3949.94645725}
+2026-05-27 08:06:43,779 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 2, 'zone_id': 8, 'timestamp': 3959.948197529}
+2026-05-27 08:06:58,780 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 1, 'zone_id': 8, 'timestamp': 3974.949136294}
+2026-05-27 08:07:06,780 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 8, 'timestamp': 3982.949900637}
+2026-05-27 08:07:15,781 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 7, 'timestamp': 3991.950917745}
+2026-05-27 08:07:28,783 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 9, 'timestamp': 4004.952265013}
+2026-05-27 08:07:34,400 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:07:34,400 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 08:07:34,400 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,404 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 08:07:34,404 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,405 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 08:07:34,405 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,406 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 08:07:34,406 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,407 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 08:07:34,407 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,408 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 08:07:34,408 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,409 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 08:07:34,409 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,410 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 08:07:34,410 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,411 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 08:07:34,411 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,411 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 08:07:34,412 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:07:34,413 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:07:39,784 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 4, 'timestamp': 4015.953587806}
+2026-05-27 08:07:50,785 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 3, 'zone_id': 1, 'timestamp': 4026.954542668}
+2026-05-27 08:08:03,787 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 4, 'timestamp': 4039.956156661}
+2026-05-27 08:08:08,788 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 1, 'zone_id': 10, 'timestamp': 4044.957071675}
+2026-05-27 08:08:20,789 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 2, 'zone_id': 10, 'timestamp': 4056.958160828}
+2026-05-27 08:08:34,790 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 2, 'zone_id': 4, 'timestamp': 4070.959143914}
+2026-05-27 08:08:41,790 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 1, 'zone_id': 6, 'timestamp': 4077.959929863}
+2026-05-27 08:08:43,551 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:08:43,552 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 08:08:43,552 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,553 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 08:08:43,554 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,555 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 08:08:43,555 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,555 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 08:08:43,556 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,556 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 08:08:43,557 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,557 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 08:08:43,557 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,558 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 08:08:43,558 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,559 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 08:08:43,559 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,560 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 08:08:43,560 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,561 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 08:08:43,561 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:08:43,562 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:08:50,791 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 2, 'zone_id': 8, 'timestamp': 4086.960572636}
+2026-05-27 08:09:04,792 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 4, 'timestamp': 4100.962007563}
+2026-05-27 08:09:09,794 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 2, 'zone_id': 4, 'timestamp': 4105.96349871}
+2026-05-27 08:09:16,796 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 1, 'timestamp': 4112.965051606}
+2026-05-27 08:09:31,797 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 3, 'zone_id': 1, 'timestamp': 4127.966510239}
+2026-05-27 08:09:46,798 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 3, 'zone_id': 1, 'timestamp': 4142.967304668}
+2026-05-27 08:09:54,799 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 2, 'zone_id': 8, 'timestamp': 4150.968526337}
+2026-05-27 08:10:07,800 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 3, 'zone_id': 10, 'timestamp': 4163.969711665}
+2026-05-27 08:10:15,801 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 2, 'zone_id': 3, 'timestamp': 4171.970644439}
+2026-05-27 08:10:25,803 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 1, 'timestamp': 4181.971997015}
+2026-05-27 08:10:34,804 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 7, 'timestamp': 4190.973304547}
+2026-05-27 08:10:46,805 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 8, 'timestamp': 4202.974832277}
+2026-05-27 08:10:56,807 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 9, 'timestamp': 4212.976152802}
+2026-05-27 08:11:09,808 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 9, 'timestamp': 4225.977129355}
+2026-05-27 08:11:23,808 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 2, 'zone_id': 4, 'timestamp': 4239.977887388}
+2026-05-27 08:11:37,809 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 1, 'zone_id': 3, 'timestamp': 4253.978856027}
+2026-05-27 08:11:49,810 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 1, 'zone_id': 10, 'timestamp': 4265.979524449}
+2026-05-27 08:11:56,811 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 3, 'zone_id': 4, 'timestamp': 4272.980884701}
+2026-05-27 08:12:04,814 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 2, 'zone_id': 4, 'timestamp': 4280.983495602}
+2026-05-27 08:12:12,815 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 2, 'zone_id': 4, 'timestamp': 4288.984366162}
+2026-05-27 08:12:21,816 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 3, 'timestamp': 4297.985590056}
+2026-05-27 08:12:36,818 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 4, 'timestamp': 4312.987604812}
+2026-05-27 08:12:43,819 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 1, 'timestamp': 4319.988383182}
+2026-05-27 08:12:52,820 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 2, 'zone_id': 8, 'timestamp': 4328.989110677}
+2026-05-27 08:13:03,821 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 2, 'zone_id': 6, 'timestamp': 4339.99026013}
+2026-05-27 08:13:18,822 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 3, 'zone_id': 8, 'timestamp': 4354.991485146}
+2026-05-27 08:13:25,823 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 1, 'zone_id': 9, 'timestamp': 4361.993001468}
+2026-05-27 08:13:31,825 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 9, 'timestamp': 4367.994267782}
+2026-05-27 08:13:42,826 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 2, 'zone_id': 7, 'timestamp': 4378.995257233}
+2026-05-27 08:13:50,827 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 3, 'zone_id': 1, 'timestamp': 4386.996643926}
+2026-05-27 08:14:05,828 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 2, 'timestamp': 4401.997220189}
+2026-05-27 08:14:15,829 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 2, 'zone_id': 4, 'timestamp': 4411.998522208}
+2026-05-27 08:14:25,830 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 3, 'timestamp': 4421.999846735}
+2026-05-27 08:14:36,832 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 3, 'zone_id': 6, 'timestamp': 4433.001592993}
+2026-05-27 08:14:49,834 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 1, 'zone_id': 6, 'timestamp': 4446.003052359}
+2026-05-27 08:14:58,835 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 2, 'zone_id': 1, 'timestamp': 4455.00418312}
+2026-05-27 08:15:11,836 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 8, 'timestamp': 4468.005433956}
+2026-05-27 08:15:18,837 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 2, 'zone_id': 10, 'timestamp': 4475.006505544}
+2026-05-27 08:15:33,838 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 10, 'timestamp': 4490.007903876}
+2026-05-27 08:15:42,840 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 9, 'timestamp': 4499.009673666}
+2026-05-27 08:15:48,842 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 6, 'timestamp': 4505.011346422}
+2026-05-27 08:16:02,843 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 3, 'zone_id': 9, 'timestamp': 4519.012921162}
+2026-05-27 08:16:10,844 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 3, 'zone_id': 7, 'timestamp': 4527.013664658}
+2026-05-27 08:16:24,845 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 1, 'timestamp': 4541.014384967}
+2026-05-27 08:16:32,846 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 1, 'zone_id': 5, 'timestamp': 4549.015846516}
+2026-05-27 08:16:39,847 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 3, 'zone_id': 2, 'timestamp': 4556.016887349}
+2026-05-27 08:16:45,849 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 3, 'timestamp': 4562.018771657}
+2026-05-27 08:16:52,850 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 4, 'timestamp': 4569.019890127}
+2026-05-27 08:17:00,852 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 2, 'zone_id': 2, 'timestamp': 4577.021522938}
+2026-05-27 08:17:13,854 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 6, 'timestamp': 4590.023227472}
+2026-05-27 08:17:23,855 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FAULT', 'device_addr': 3, 'zone_id': 8, 'timestamp': 4600.024067198}
+2026-05-27 08:17:34,856 - orion_config_pro.demo - INFO - Demo Event: {'type': 'ALARM', 'device_addr': 1, 'zone_id': 5, 'timestamp': 4611.025046707}
+2026-05-27 08:17:41,857 - orion_config_pro.demo - INFO - Demo Event: {'type': 'RESTORE', 'device_addr': 1, 'zone_id': 6, 'timestamp': 4618.026544967}
+2026-05-27 08:17:46,858 - orion_config_pro.demo - INFO - Demo Event: {'type': 'FIRE', 'device_addr': 1, 'zone_id': 5, 'timestamp': 4623.027465029}
+2026-05-27 08:17:53,859 - orion_config_pro.demo - INFO - Demo Event: {'type': 'TAMPER', 'device_addr': 3, 'zone_id': 2, 'timestamp': 4630.028628005}
+2026-05-27 08:18:03,910 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:18:03,910 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 08:18:03,911 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,912 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zone_device")
+2026-05-27 08:18:03,912 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,913 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 08:18:03,913 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,914 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("connections")
+2026-05-27 08:18:03,914 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,915 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 08:18:03,915 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,916 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("panels")
+2026-05-27 08:18:03,916 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,916 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 08:18:03,916 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,917 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("devices")
+2026-05-27 08:18:03,917 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,918 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 08:18:03,918 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,919 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zones")
+2026-05-27 08:18:03,919 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,920 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 08:18:03,920 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,921 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("input_loops")
+2026-05-27 08:18:03,921 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,921 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 08:18:03,921 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,922 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("relays")
+2026-05-27 08:18:03,922 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,923 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 08:18:03,924 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,924 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("access_levels")
+2026-05-27 08:18:03,925 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,926 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 08:18:03,926 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,927 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("keys")
+2026-05-27 08:18:03,927 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,928 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 08:18:03,928 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,929 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("scenarios")
+2026-05-27 08:18:03,929 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:18:03,931 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE connections (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	params TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:18:03,931 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 08:18:03,936 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE panels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	version VARCHAR(20) NOT NULL,
+	address INTEGER NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:18:03,936 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 08:18:03,939 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zones (
+	id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (number)
+)
+
+
+2026-05-27 08:18:03,939 - sqlalchemy.engine.Engine - INFO - [no key 0.00022s] ()
+2026-05-27 08:18:03,943 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE access_levels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:18:03,943 - sqlalchemy.engine.Engine - INFO - [no key 0.00012s] ()
+2026-05-27 08:18:03,946 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE scenarios (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	definition TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:18:03,946 - sqlalchemy.engine.Engine - INFO - [no key 0.00012s] ()
+2026-05-27 08:18:03,949 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE devices (
+	id INTEGER NOT NULL,
+	panel_id INTEGER,
+	address INTEGER NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(panel_id) REFERENCES panels (id)
+)
+
+
+2026-05-27 08:18:03,949 - sqlalchemy.engine.Engine - INFO - [no key 0.00014s] ()
+2026-05-27 08:18:03,953 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE keys (
+	id INTEGER NOT NULL,
+	code VARCHAR(50) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	user_name VARCHAR(100) NOT NULL,
+	access_level_id INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (code),
+	FOREIGN KEY(access_level_id) REFERENCES access_levels (id)
+)
+
+
+2026-05-27 08:18:03,953 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 08:18:03,956 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zone_device (
+	zone_id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	PRIMARY KEY (zone_id, device_id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 08:18:03,956 - sqlalchemy.engine.Engine - INFO - [no key 0.00013s] ()
+2026-05-27 08:18:03,960 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE input_loops (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	zone_id INTEGER,
+	type VARCHAR(50) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id)
+)
+
+
+2026-05-27 08:18:03,960 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 08:18:03,963 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE relays (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	program INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 08:18:03,963 - sqlalchemy.engine.Engine - INFO - [no key 0.00019s] ()
+2026-05-27 08:18:03,966 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:19:12,417 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:19:12,417 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 08:19:12,417 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,419 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 08:19:12,419 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,420 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 08:19:12,420 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,421 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 08:19:12,421 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,422 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 08:19:12,422 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,423 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 08:19:12,423 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,424 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 08:19:12,424 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,425 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 08:19:12,425 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,426 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 08:19:12,426 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,427 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 08:19:12,427 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:19:12,428 - sqlalchemy.engine.Engine - INFO - COMMIT
+2026-05-27 08:20:27,199 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 08:20:27,200 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 08:20:27,200 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,202 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zone_device")
+2026-05-27 08:20:27,202 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,203 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 08:20:27,203 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,204 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("connections")
+2026-05-27 08:20:27,205 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,205 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 08:20:27,205 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,206 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("panels")
+2026-05-27 08:20:27,206 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,207 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 08:20:27,207 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,208 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("devices")
+2026-05-27 08:20:27,208 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,209 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 08:20:27,209 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,210 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zones")
+2026-05-27 08:20:27,210 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,211 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 08:20:27,211 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,212 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("input_loops")
+2026-05-27 08:20:27,212 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,213 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 08:20:27,213 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,214 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("relays")
+2026-05-27 08:20:27,214 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,215 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 08:20:27,215 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,216 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("access_levels")
+2026-05-27 08:20:27,216 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,217 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 08:20:27,217 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,218 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("keys")
+2026-05-27 08:20:27,218 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,219 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 08:20:27,219 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,220 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("scenarios")
+2026-05-27 08:20:27,220 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 08:20:27,222 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE connections (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	params TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:20:27,222 - sqlalchemy.engine.Engine - INFO - [no key 0.00014s] ()
+2026-05-27 08:20:27,226 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE panels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	version VARCHAR(20) NOT NULL,
+	address INTEGER NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:20:27,226 - sqlalchemy.engine.Engine - INFO - [no key 0.00013s] ()
+2026-05-27 08:20:27,230 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zones (
+	id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (number)
+)
+
+
+2026-05-27 08:20:27,230 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 08:20:27,233 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE access_levels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:20:27,234 - sqlalchemy.engine.Engine - INFO - [no key 0.00024s] ()
+2026-05-27 08:20:27,237 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE scenarios (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	definition TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 08:20:27,237 - sqlalchemy.engine.Engine - INFO - [no key 0.00013s] ()
+2026-05-27 08:20:27,242 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE devices (
+	id INTEGER NOT NULL,
+	panel_id INTEGER,
+	address INTEGER NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(panel_id) REFERENCES panels (id)
+)
+
+
+2026-05-27 08:20:27,242 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 08:20:27,246 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE keys (
+	id INTEGER NOT NULL,
+	code VARCHAR(50) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	user_name VARCHAR(100) NOT NULL,
+	access_level_id INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (code),
+	FOREIGN KEY(access_level_id) REFERENCES access_levels (id)
+)
+
+
+2026-05-27 08:20:27,247 - sqlalchemy.engine.Engine - INFO - [no key 0.00032s] ()
+2026-05-27 08:20:27,251 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zone_device (
+	zone_id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	PRIMARY KEY (zone_id, device_id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 08:20:27,251 - sqlalchemy.engine.Engine - INFO - [no key 0.00013s] ()
+2026-05-27 08:20:27,255 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE input_loops (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	zone_id INTEGER,
+	type VARCHAR(50) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id)
+)
+
+
+2026-05-27 08:20:27,256 - sqlalchemy.engine.Engine - INFO - [no key 0.00022s] ()
+2026-05-27 08:20:27,260 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE relays (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	program INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 08:20:27,260 - sqlalchemy.engine.Engine - INFO - [no key 0.00014s] ()
+2026-05-27 08:20:27,264 - sqlalchemy.engine.Engine - INFO - COMMIT

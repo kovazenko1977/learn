@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routers import devices
+from app.api.routers import devices, system
 from app.infrastructure.database import init_db
 from contextlib import asynccontextmanager
 
@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Orion Config Pro API", lifespan=lifespan)
 
-# Allow CORS for PHP frontend (usually on port 80 or 8080)
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,6 +23,7 @@ app.add_middleware(
 
 # Routes
 app.include_router(devices.router)
+app.include_router(system.router)
 
 @app.get("/health")
 async def health():
