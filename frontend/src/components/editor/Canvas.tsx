@@ -8,9 +8,7 @@ const ImageElement = ({ el, commonProps }: { el: LabelElement, commonProps: any 
   return <KonvaImage {...commonProps} image={image} />;
 };
 
-const BarcodeElement = ({ el, commonProps }: { el: LabelElement, commonProps: any }) => {
-  // In a real app, we'd fetch the barcode image from the backend or generate client-side
-  // For the editor, we'll use a placeholder image
+const BarcodeElement = ({ commonProps }: { el: LabelElement, commonProps: any }) => {
   const [image] = useImage('https://cdn-icons-png.flaticon.com/512/71/71230.png');
   return <KonvaImage {...commonProps} image={image} />;
 };

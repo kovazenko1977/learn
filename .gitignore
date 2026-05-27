@@ -1,0 +1,7 @@
+/backend/labelpro.db
+/__pycache__
+/frontend/node_modules
+/frontend/dist
+/public
+/electron/node_modules
+.rnd
