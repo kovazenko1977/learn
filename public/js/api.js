@@ -6,13 +6,9 @@ const api = {
         return res.json();
     },
 
-    async createDevice(device) {
-        const res = await fetch(`${API_BASE}/devices/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(device)
-        });
-        return res.json();
+    async getScenarios() {
+        const res = await fetch(`${API_BASE}/scenarios/`); // Need to check if this route exists
+        return res.status === 200 ? res.json() : [];
     },
 
     async checkSystem() {
