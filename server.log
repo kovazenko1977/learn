@@ -1,0 +1,341 @@
+INFO:     Started server process [107929]
+INFO:     Waiting for application startup.
+2026-05-27 07:00:03,420 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-27 07:00:03,420 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 07:00:03,421 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("zone_device")
+2026-05-27 07:00:03,421 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zone_device")
+2026-05-27 07:00:03,421 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,421 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,425 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("zone_device")
+2026-05-27 07:00:03,425 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zone_device")
+2026-05-27 07:00:03,425 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,425 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,426 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("connections")
+2026-05-27 07:00:03,426 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("connections")
+2026-05-27 07:00:03,426 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,426 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,427 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("connections")
+2026-05-27 07:00:03,427 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("connections")
+2026-05-27 07:00:03,427 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,427 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,428 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("panels")
+2026-05-27 07:00:03,428 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("panels")
+2026-05-27 07:00:03,428 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,428 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,429 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("panels")
+2026-05-27 07:00:03,429 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("panels")
+2026-05-27 07:00:03,429 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,429 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,430 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("devices")
+2026-05-27 07:00:03,430 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("devices")
+2026-05-27 07:00:03,430 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,430 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,430 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("devices")
+2026-05-27 07:00:03,430 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("devices")
+2026-05-27 07:00:03,431 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,431 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,432 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("zones")
+2026-05-27 07:00:03,432 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("zones")
+2026-05-27 07:00:03,432 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,432 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,433 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("zones")
+2026-05-27 07:00:03,433 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("zones")
+2026-05-27 07:00:03,433 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,433 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,434 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("input_loops")
+2026-05-27 07:00:03,434 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("input_loops")
+2026-05-27 07:00:03,434 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,434 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,434 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("input_loops")
+2026-05-27 07:00:03,434 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("input_loops")
+2026-05-27 07:00:03,435 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,435 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,435 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("relays")
+2026-05-27 07:00:03,435 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("relays")
+2026-05-27 07:00:03,436 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,436 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,436 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("relays")
+2026-05-27 07:00:03,436 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("relays")
+2026-05-27 07:00:03,436 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,436 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,437 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("access_levels")
+2026-05-27 07:00:03,437 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("access_levels")
+2026-05-27 07:00:03,437 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,437 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,438 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("access_levels")
+2026-05-27 07:00:03,438 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("access_levels")
+2026-05-27 07:00:03,438 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,438 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,439 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("keys")
+2026-05-27 07:00:03,439 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("keys")
+2026-05-27 07:00:03,439 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,439 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,440 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("keys")
+2026-05-27 07:00:03,440 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("keys")
+2026-05-27 07:00:03,440 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,440 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,441 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("scenarios")
+2026-05-27 07:00:03,441 - sqlalchemy.engine.Engine - INFO - PRAGMA main.table_info("scenarios")
+2026-05-27 07:00:03,441 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,441 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,442 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("scenarios")
+2026-05-27 07:00:03,442 - sqlalchemy.engine.Engine - INFO - PRAGMA temp.table_info("scenarios")
+2026-05-27 07:00:03,442 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-27 07:00:03,442 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2026-05-27 07:00:03,444 INFO sqlalchemy.engine.Engine
+CREATE TABLE connections (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	params TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,444 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE connections (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	params TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,444 INFO sqlalchemy.engine.Engine [no key 0.00015s] ()
+2026-05-27 07:00:03,444 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 07:00:03,451 INFO sqlalchemy.engine.Engine
+CREATE TABLE panels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	version VARCHAR(20) NOT NULL,
+	address INTEGER NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,451 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE panels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	version VARCHAR(20) NOT NULL,
+	address INTEGER NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,451 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-05-27 07:00:03,451 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 07:00:03,455 INFO sqlalchemy.engine.Engine
+CREATE TABLE zones (
+	id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (number)
+)
+
+
+2026-05-27 07:00:03,455 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zones (
+	id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (number)
+)
+
+
+2026-05-27 07:00:03,455 INFO sqlalchemy.engine.Engine [no key 0.00020s] ()
+2026-05-27 07:00:03,455 - sqlalchemy.engine.Engine - INFO - [no key 0.00020s] ()
+2026-05-27 07:00:03,460 INFO sqlalchemy.engine.Engine
+CREATE TABLE access_levels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,460 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE access_levels (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,460 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-05-27 07:00:03,460 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 07:00:03,464 INFO sqlalchemy.engine.Engine
+CREATE TABLE scenarios (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	definition TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,464 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE scenarios (
+	id INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	definition TEXT NOT NULL,
+	PRIMARY KEY (id)
+)
+
+
+2026-05-27 07:00:03,464 INFO sqlalchemy.engine.Engine [no key 0.00015s] ()
+2026-05-27 07:00:03,464 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 07:00:03,470 INFO sqlalchemy.engine.Engine
+CREATE TABLE devices (
+	id INTEGER NOT NULL,
+	panel_id INTEGER,
+	address INTEGER NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(panel_id) REFERENCES panels (id)
+)
+
+
+2026-05-27 07:00:03,470 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE devices (
+	id INTEGER NOT NULL,
+	panel_id INTEGER,
+	address INTEGER NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	description TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(panel_id) REFERENCES panels (id)
+)
+
+
+2026-05-27 07:00:03,470 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-05-27 07:00:03,470 - sqlalchemy.engine.Engine - INFO - [no key 0.00016s] ()
+2026-05-27 07:00:03,474 INFO sqlalchemy.engine.Engine
+CREATE TABLE keys (
+	id INTEGER NOT NULL,
+	code VARCHAR(50) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	user_name VARCHAR(100) NOT NULL,
+	access_level_id INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (code),
+	FOREIGN KEY(access_level_id) REFERENCES access_levels (id)
+)
+
+
+2026-05-27 07:00:03,474 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE keys (
+	id INTEGER NOT NULL,
+	code VARCHAR(50) NOT NULL,
+	type VARCHAR(20) NOT NULL,
+	user_name VARCHAR(100) NOT NULL,
+	access_level_id INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (code),
+	FOREIGN KEY(access_level_id) REFERENCES access_levels (id)
+)
+
+
+2026-05-27 07:00:03,475 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-05-27 07:00:03,475 - sqlalchemy.engine.Engine - INFO - [no key 0.00018s] ()
+2026-05-27 07:00:03,479 INFO sqlalchemy.engine.Engine
+CREATE TABLE zone_device (
+	zone_id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	PRIMARY KEY (zone_id, device_id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 07:00:03,479 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE zone_device (
+	zone_id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	PRIMARY KEY (zone_id, device_id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 07:00:03,479 INFO sqlalchemy.engine.Engine [no key 0.00014s] ()
+2026-05-27 07:00:03,479 - sqlalchemy.engine.Engine - INFO - [no key 0.00014s] ()
+2026-05-27 07:00:03,483 INFO sqlalchemy.engine.Engine
+CREATE TABLE input_loops (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	zone_id INTEGER,
+	type VARCHAR(50) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id)
+)
+
+
+2026-05-27 07:00:03,483 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE input_loops (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	zone_id INTEGER,
+	type VARCHAR(50) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id),
+	FOREIGN KEY(zone_id) REFERENCES zones (id)
+)
+
+
+2026-05-27 07:00:03,483 INFO sqlalchemy.engine.Engine [no key 0.00015s] ()
+2026-05-27 07:00:03,483 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 07:00:03,487 INFO sqlalchemy.engine.Engine
+CREATE TABLE relays (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	program INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 07:00:03,487 - sqlalchemy.engine.Engine - INFO -
+CREATE TABLE relays (
+	id INTEGER NOT NULL,
+	device_id INTEGER NOT NULL,
+	number INTEGER NOT NULL,
+	name VARCHAR(100) NOT NULL,
+	program INTEGER NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(device_id) REFERENCES devices (id)
+)
+
+
+2026-05-27 07:00:03,487 INFO sqlalchemy.engine.Engine [no key 0.00015s] ()
+2026-05-27 07:00:03,487 - sqlalchemy.engine.Engine - INFO - [no key 0.00015s] ()
+2026-05-27 07:00:03,491 INFO sqlalchemy.engine.Engine COMMIT
+2026-05-27 07:00:03,491 - sqlalchemy.engine.Engine - INFO - COMMIT
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:33264 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46112 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46112 - "GET /css/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46122 - "GET /js/api.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46124 - "GET /js/components.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46128 - "GET /js/app.js HTTP/1.1" 200 OK
+2026-05-27 07:01:55,109 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-27 07:01:55,109 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2026-05-27 07:01:55,149 INFO sqlalchemy.engine.Engine SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+2026-05-27 07:01:55,149 - sqlalchemy.engine.Engine - INFO - SELECT devices.id, devices.panel_id, devices.address, devices.type, devices.name, devices.description
+FROM devices
+2026-05-27 07:01:55,150 INFO sqlalchemy.engine.Engine [generated in 0.00041s] ()
+2026-05-27 07:01:55,150 - sqlalchemy.engine.Engine - INFO - [generated in 0.00041s] ()
+INFO:     127.0.0.1:46122 - "GET /devices/ HTTP/1.1" 200 OK
+2026-05-27 07:01:55,153 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-05-27 07:01:55,153 - sqlalchemy.engine.Engine - INFO - ROLLBACK
