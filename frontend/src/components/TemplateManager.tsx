@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+interface Template {
+  id: number;
+  name: string;
+  width: number;
+  height: number;
+}
+
 const TemplateManager = () => {
-  const [templates, setTemplates] = useState([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [category, setCategory] = useState('all');
 
   useEffect(() => {

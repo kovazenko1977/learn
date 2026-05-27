@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+interface Product {
+  id: number;
+  name: string;
+  barcode: string;
+  volume: string;
+}
+
 const ProductCatalog = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     fetchProducts();
@@ -15,8 +21,6 @@ const ProductCatalog = () => {
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
     }
   };
 

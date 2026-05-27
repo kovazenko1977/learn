@@ -1,13 +1,28 @@
-import React, { useState, useRef } from 'react';
-import { Stage, Layer, Text, Rect, Image, Transformer } from 'react-konva';
+import { useState, useRef } from 'react';
+import { Stage, Layer, Text, Rect, Transformer } from 'react-konva';
+
+interface LabelElement {
+  id: string;
+  type: 'text' | 'barcode' | 'sign';
+  x: number;
+  y: number;
+  text?: string;
+  fontSize?: number;
+  barcodeType?: string;
+  data?: string;
+  signName?: string;
+  width?: number;
+  height?: number;
+  draggable: boolean;
+}
 
 const LabelEditor = ({ width = 400, height = 300 }) => {
-  const [elements, setElements] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
-  const transformerRef = useRef(null);
+  const [elements, setElements] = useState<LabelElement[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const transformerRef = useRef<any>(null);
 
   const handleAddText = () => {
-    const newElement = {
+    const newElement: LabelElement = {
       id: Date.now().toString(),
       type: 'text',
       x: 50,
@@ -20,7 +35,7 @@ const LabelEditor = ({ width = 400, height = 300 }) => {
   };
 
   const handleAddBarcode = () => {
-    const newElement = {
+    const newElement: LabelElement = {
       id: Date.now().toString(),
       type: 'barcode',
       x: 50,
@@ -34,8 +49,8 @@ const LabelEditor = ({ width = 400, height = 300 }) => {
     setElements([...elements, newElement]);
   };
 
-  const handleAddSign = (signName) => {
-    const newElement = {
+  const handleAddSign = (signName: string) => {
+    const newElement: LabelElement = {
       id: Date.now().toString(),
       type: 'sign',
       x: 50,
@@ -48,7 +63,7 @@ const LabelEditor = ({ width = 400, height = 300 }) => {
     setElements([...elements, newElement]);
   };
 
-  const onSelect = (id) => {
+  const onSelect = (id: string) => {
     setSelectedId(id);
   };
 
@@ -86,7 +101,7 @@ const LabelEditor = ({ width = 400, height = 300 }) => {
                     return (
                       <Rect
                         key={el.id}
-                        {...el}
+                        {...(el as any)}
                         fill="lightgray"
                         stroke={selectedId === el.id ? "blue" : "black"}
                         onClick={() => onSelect(el.id)}
