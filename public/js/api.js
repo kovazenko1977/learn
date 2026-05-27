@@ -7,7 +7,7 @@ const api = {
     },
 
     async getScenarios() {
-        const res = await fetch(`${API_BASE}/scenarios/`); // Need to check if this route exists
+        const res = await fetch(`${API_BASE}/scenarios/`);
         return res.status === 200 ? res.json() : [];
     },
 
@@ -29,6 +29,25 @@ const api = {
 
     async getDemoStatus() {
         const res = await fetch(`${API_BASE}/system/demo/status`);
+        return res.json();
+    },
+
+    async fireEvent(event) {
+        const res = await fetch(`${API_BASE}/system/fire-event`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(event)
+        });
+        return res.json();
+    },
+
+    async getDiagnostics() {
+        const res = await fetch(`${API_BASE}/diagnostics/`);
+        return res.json();
+    },
+
+    async checkUpdates() {
+        const res = await fetch(`${API_BASE}/updates/check`);
         return res.json();
     }
 };

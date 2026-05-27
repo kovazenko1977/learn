@@ -32,7 +32,7 @@
                     <li><a href="#" data-section="zones" class="nav-item flex items-center space-x-3 p-2 hover:bg-slate-600 rounded-lg opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16m-7 6h7"></path></svg> <span>Разделы</span></a></li>
                     <li><a href="#" data-section="relays" class="nav-item flex items-center space-x-3 p-2 hover:bg-slate-600 rounded-lg opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> <span>Реле</span></a></li>
                     <li><a href="#" data-section="scenarios" class="nav-item flex items-center space-x-3 p-2 hover:bg-slate-600 rounded-lg opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg> <span>Сценарии</span></a></li>
-                    <li><a href="#" data-section="log" class="nav-item flex items-center space-x-3 p-2 hover:bg-slate-600 rounded-lg opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>Журнал</span></a></li>
+                    <li><a href="#" data-section="diagnostics" class="nav-item flex items-center space-x-3 p-2 hover:bg-slate-600 rounded-lg opacity-70"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 21.48V22"></path></svg> <span>Диагностика</span></a></li>
                 </ul>
             </nav>
 
@@ -57,17 +57,17 @@
 
         <!-- Bottom Mobile Nav -->
         <div class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t flex justify-around p-3 md:hidden safe-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <button class="flex flex-col items-center text-[10px] font-medium text-blue-600">
+            <button onclick="document.querySelector('[data-section=devices]').click()" class="flex flex-col items-center text-[10px] font-medium text-blue-600">
                 <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                 <span>Устройства</span>
             </button>
-            <button class="flex flex-col items-center text-[10px] font-medium text-gray-400">
+            <button onclick="document.querySelector('[data-section=scenarios]').click()" class="flex flex-col items-center text-[10px] font-medium text-gray-400">
                 <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                <span>Разделы</span>
+                <span>Сценарии</span>
             </button>
-            <button class="flex flex-col items-center text-[10px] font-medium text-gray-400">
-                <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <span>Журнал</span>
+            <button onclick="document.querySelector('[data-section=diagnostics]').click()" class="flex flex-col items-center text-[10px] font-medium text-gray-400">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 21.48V22"></path></svg>
+                <span>Диагноз</span>
             </button>
         </div>
     </div>
