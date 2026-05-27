@@ -1,0 +1,26 @@
+[project]
+name = "orion-config-pro"
+version = "0.1.0"
+description = "Modern configuration platform for Bolid Orion security systems"
+authors = [{ name = "Jules", email = "jules@example.com" }]
+dependencies = [
+    "pyside6>=6.6.0",
+    "fastapi>=0.100.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.0.0",
+    "uvicorn>=0.23.0",
+    "pyserial>=3.5",
+    "python-multipart>=0.0.6",
+    "aiosqlite>=0.19.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
