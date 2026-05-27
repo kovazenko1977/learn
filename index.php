@@ -4,5 +4,10 @@
  * Перенаправляет на основной интерфейс в папке public.
  */
 
-header('Location: public/index.php');
+$target = 'public/index.php';
+if (file_exists($target)) {
+    header('Location: ' . $target);
+} else {
+    echo "Ошибка: Файл $target не найден.";
+}
 exit;
