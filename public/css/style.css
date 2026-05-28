@@ -1,0 +1,30 @@
+:root {
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+    padding-top: calc(1rem + var(--safe-area-inset-top));
+}
+
+.safe-bottom {
+    padding-bottom: calc(0.5rem + var(--safe-area-inset-bottom));
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+#sidebar.active {
+    transform: translateX(0);
+}
+
+/* Touch-friendly card styles */
+.device-card {
+    transition: transform 0.1s;
+}
+
+.device-card:active {
+    transform: scale(0.98);
+}

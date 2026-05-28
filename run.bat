@@ -1,0 +1,6 @@
+@echo off
+echo Starting Orion Config Pro...
+start python main.py
+echo Starting PHP Development Server...
+php -S localhost:8080 -t .
+pause
