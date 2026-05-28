@@ -1,6 +1,1 @@
-<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <path d="M30 20 L70 20 L70 60 C70 80 30 80 30 60 Z" fill="none" stroke="black" stroke-width="2"/>
-  <line x1="50" y1="70" x2="50" y2="90" stroke="black" stroke-width="2"/>
-  <line x1="40" y1="90" x2="60" y2="90" stroke="black" stroke-width="2"/>
-  <path d="M40 30 L45 35 M60 30 L55 35" stroke="black" stroke-width="2"/>
-</svg>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M30 20 L70 20 L70 60 C70 80 30 80 30 60 Z" fill="none" stroke="black" stroke-width="2"/><line x1="50" y1="70" x2="50" y2="90" stroke="black" stroke-width="2"/><line x1="40" y1="90" x2="60" y2="90" stroke="black" stroke-width="2"/><path d="M40 30 L45 35 M60 30 L55 35" stroke="black" stroke-width="2"/></svg>
