@@ -1,0 +1,9 @@
+vendor/
+node_modules/
+.env
+data/*.sqlite
+public/assets/index-*.js
+public/assets/index-*.css
+frontend/dist/
+*.log
+/home/jules/verification/
