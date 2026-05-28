@@ -1,0 +1,7 @@
+/vendor/
+/data/*.sqlite
+/data/*.db
+/frontend/node_modules/
+/frontend/dist/
+.env
+.rnd
