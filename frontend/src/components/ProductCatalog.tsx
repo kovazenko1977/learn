@@ -12,7 +12,10 @@ const ProductCatalog = () => {
 
   const fetchProducts = async () => {
     try {
-      const resp = await axios.get('/api/products');
+      const token = localStorage.getItem('token');
+      const resp = await axios.get('/api/products', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
       setProducts(resp.data);
     } catch (e) {
       console.error(e);

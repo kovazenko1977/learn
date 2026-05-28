@@ -42,6 +42,15 @@ const Canvas: React.FC<CanvasProps> = ({ elements, width, height, zoom, selected
     onSelect(id);
   };
 
+  const handleDragEnd = (e: any, id: string) => {
+    const node = e.target;
+    // Basic snapping to 5px grid
+    const snap = 5;
+    const x = Math.round(node.x() / snap) * snap;
+    const y = Math.round(node.y() / snap) * snap;
+    onUpdate(id, { x, y });
+  };
+
   return (
     <Stage
       width={width * zoom}
@@ -63,9 +72,7 @@ const Canvas: React.FC<CanvasProps> = ({ elements, width, height, zoom, selected
             height: el.height,
             rotation: el.rotation,
             draggable: true,
-            onDragEnd: (e: any) => {
-              onUpdate(el.id, { x: e.target.x(), y: e.target.y() });
-            },
+            onDragEnd: (e: any) => handleDragEnd(e, el.id),
             onTransformEnd: (e: any) => {
               const node = e.target;
               onUpdate(el.id, {
@@ -132,7 +139,7 @@ const Canvas: React.FC<CanvasProps> = ({ elements, width, height, zoom, selected
               return (
                 <KonvaImage
                   {...commonProps}
-                  image={undefined} // Logo support to be added
+                  image={undefined}
                 />
               )
           }

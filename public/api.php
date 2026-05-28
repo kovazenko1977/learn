@@ -1,7 +1,11 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Models\Database;
+use App\Controllers\AuthController;
+use App\Controllers\ProductController;
+use App\Controllers\TemplateController;
+use App\Services\BarcodeService;
+use App\Services\PDFService;
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -12,66 +16,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Simple Authorization Check (Simplified for MVP)
-$auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-$is_authenticated = (strpos($auth_header, 'Bearer ') === 0);
-
-$db = Database::getInstance();
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $path = str_replace('/api', '', $path);
 
-// Simple Router
+// Simple token verification
+function checkAuth() {
+    $headers = getallheaders();
+    $auth = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    if (strpos($auth, 'Bearer vsprint_token_') !== 0) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized']);
+        exit;
+    }
+}
+
 try {
-    // Public routes
     if ($path === '/auth/login' && $method === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
-        $controller = new \App\Controllers\AuthController();
-        echo json_encode($controller->login($data));
+        echo json_encode((new AuthController())->login($data));
         exit;
     }
 
     if ($path === '/barcode' && $method === 'GET') {
         $text = $_GET['text'] ?? '12345678';
         $type = $_GET['type'] ?? 'CODE128';
-        $service = new \App\Services\BarcodeService();
         header('Content-Type: image/svg+xml');
-        echo $service->generate($text, $type);
+        echo (new BarcodeService())->generate($text, $type);
         exit;
     }
 
-    // Protected routes (simple check for demo/MVP)
-    // In real app, verify JWT here
+    // Protected Routes
+    checkAuth();
 
     if ($path === '/print' && $method === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
-        $template = $data['template'];
-        $product = $data['product'] ?? ['name' => 'Демо продукт'];
-        $service = new \App\Services\PDFService();
-        $pdf = $service->generateLabel($template, $product);
+        $pdf = (new PDFService())->generateLabel($data['template'], $data['product'] ?? []);
         header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename="label.pdf"');
         echo $pdf;
         exit;
     }
 
     if ($path === '/products' && $method === 'GET') {
-        $controller = new \App\Controllers\ProductController();
-        echo json_encode($controller->index());
+        echo json_encode((new ProductController())->index());
     } elseif ($path === '/products' && $method === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
-        $controller = new \App\Controllers\ProductController();
-        echo json_encode($controller->store($data));
+        echo json_encode((new ProductController())->store($data));
     } elseif ($path === '/templates' && $method === 'GET') {
-        $controller = new \App\Controllers\TemplateController();
-        echo json_encode($controller->index());
+        echo json_encode((new TemplateController())->index());
     } elseif ($path === '/templates' && $method === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
-        $controller = new \App\Controllers\TemplateController();
-        echo json_encode($controller->store($data));
+        echo json_encode((new TemplateController())->store($data));
     } else {
         http_response_code(404);
-        echo json_encode(['error' => 'Not Found', 'path' => $path]);
+        echo json_encode(['error' => 'Not Found']);
     }
 } catch (\Exception $e) {
     http_response_code(500);

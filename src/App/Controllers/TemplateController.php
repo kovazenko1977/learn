@@ -1,21 +1,21 @@
 <?php
 namespace App\Controllers;
 
-use App\Models\Database;
+use App\Models\JsonStore;
 
 class TemplateController {
+    private $store;
+
+    public function __construct() {
+        $this->store = new JsonStore('templates');
+    }
+
     public function index() {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->query("SELECT * FROM templates ORDER BY id DESC");
-        return $stmt->fetchAll();
+        return $this->store->getAll();
     }
 
     public function store($data) {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->prepare("INSERT INTO templates (name, category, width, height, data) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([
-            $data['name'], $data['category'], $data['width'], $data['height'], json_encode($data['data'])
-        ]);
-        return ['status' => 'success', 'id' => $db->lastInsertId()];
+        $id = $this->store->add($data);
+        return ['status' => 'success', 'id' => $id];
     }
 }

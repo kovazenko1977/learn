@@ -1,34 +1,44 @@
 <?php
-// Root router for dev/prod
+// Root router for VSPRINT
 $request_uri = $_SERVER['REQUEST_URI'];
+$path_only = explode('?', $request_uri)[0];
 
-// Serve static files from public/
-if (preg_match('/\.(?:png|jpg|jpeg|gif|css|js|svg|ico|woff|woff2)$/', $request_uri)) {
-    $file = __DIR__ . '/public' . explode('?', $request_uri)[0];
-    if (file_exists($file)) {
-        if (str_ends_with($file, '.js')) {
-            header("Content-Type: application/javascript");
-        } elseif (str_ends_with($file, '.css')) {
-            header("Content-Type: text/css");
-        } else {
-            $mime = mime_content_type($file);
-            header("Content-Type: $mime");
-        }
-        readfile($file);
-        exit;
-    }
-}
-
-// Route API requests
+// Handle API
 if (strpos($request_uri, '/api') === 0) {
     require_once __DIR__ . '/public/api.php';
     exit;
 }
 
-// Default to frontend index
+// Serve static files from public/
+$file = __DIR__ . '/public' . $path_only;
+if ($path_only !== '/' && file_exists($file) && !is_dir($file)) {
+    $ext = pathinfo($file, PATHINFO_EXTENSION);
+    $mimes = [
+        'js'   => 'application/javascript',
+        'css'  => 'text/css',
+        'svg'  => 'image/svg+xml',
+        'png'  => 'image/png',
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'ico'  => 'image/x-icon',
+        'woff' => 'font/woff',
+        'woff2'=> 'font/woff2',
+    ];
+
+    if (isset($mimes[$ext])) {
+        header("Content-Type: " . $mimes[$ext]);
+    } else {
+        header("Content-Type: " . mime_content_type($file));
+    }
+    readfile($file);
+    exit;
+}
+
+// Fallback to index.html for SPA
 $index = __DIR__ . '/public/index.html';
 if (file_exists($index)) {
+    header("Content-Type: text/html");
     readfile($index);
 } else {
-    echo "VSPRINT Backend is running. Frontend not built.";
+    echo "<h1>VSPRINT Backend is running</h1><p>Frontend assets not found in /public. Please run 'npm run build' in /frontend.</p>";
 }

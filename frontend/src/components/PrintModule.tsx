@@ -13,9 +13,10 @@ const PrintModule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem('token');
         const [prodResp, tempResp] = await Promise.all([
-          axios.get('/api/products'),
-          axios.get('/api/templates')
+          axios.get('/api/products', { headers: { Authorization: 'Bearer ' + token } }),
+          axios.get('/api/templates', { headers: { Authorization: 'Bearer ' + token } })
         ]);
         setProducts(prodResp.data);
         setTemplates(tempResp.data);
@@ -44,7 +45,10 @@ const PrintModule = () => {
           elements: JSON.parse(template.data)
         },
         product: product
-      }, { responseType: 'blob' });
+      }, {
+        responseType: 'blob',
+        headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+      });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');

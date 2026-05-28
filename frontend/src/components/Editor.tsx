@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Type, Square, Minus, Barcode, Image as ImageIcon, ShieldAlert, ZoomIn, ZoomOut, Save, FilePlus, Download, Grid } from 'lucide-react';
+import { Type, Square, Minus, Barcode, Image as ImageIcon, ShieldAlert, ZoomIn, ZoomOut, Save, FilePlus, Download, Grid, Layers as LayersIcon, Trash2, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import Canvas from './Canvas';
 import PropertiesPanel from './PropertiesPanel';
@@ -12,6 +12,7 @@ const Editor = () => {
   const [canvasSize, setCanvasSize] = useState({ width: 400, height: 600 });
   const [isPrinting, setIsPrinting] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
+  const [showLayers, setShowLayers] = useState(true);
 
   const addElement = (type: LabelElement['type']) => {
     const newEl: LabelElement = {
@@ -34,6 +35,11 @@ const Editor = () => {
 
   const updateElement = (id: string, attrs: Partial<LabelElement>) => {
     setElements(elements.map(el => el.id === id ? { ...el, ...attrs } : el));
+  };
+
+  const deleteElement = (id: string) => {
+    setElements(elements.filter(el => el.id !== id));
+    if (selectedId === id) setSelectedId(null);
   };
 
   const saveTemplate = async () => {
@@ -116,6 +122,13 @@ const Editor = () => {
           >
             <Grid size={18}/>
           </button>
+          <button
+            onClick={() => setShowLayers(!showLayers)}
+            className={`p-1 rounded ${showLayers ? 'text-industrial-primary bg-industrial-900' : 'text-gray-500 hover:bg-industrial-700'}`}
+            title="Слои"
+          >
+            <LayersIcon size={18}/>
+          </button>
         </div>
 
         <button
@@ -128,16 +141,47 @@ const Editor = () => {
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className="w-64 bg-industrial-800 border-r border-industrial-700 p-4 flex flex-col">
-           <h3 className="text-xs font-bold uppercase text-gray-500 mb-4 tracking-wider">Элементы</h3>
-           <div className="grid grid-cols-2 gap-2">
-              <ElementButton icon={<Type size={18}/>} label="Текст" onClick={() => addElement('text')} />
-              <ElementButton icon={<Barcode size={18}/>} label="Штрихкод" onClick={() => addElement('barcode')} />
-              <ElementButton icon={<ShieldAlert size={18}/>} label="Знак ГОСТ" onClick={() => addElement('sign')} />
-              <ElementButton icon={<Minus size={18}/>} label="Линия" onClick={() => addElement('line')} />
-              <ElementButton icon={<Square size={18}/>} label="Рамка" onClick={() => addElement('rect')} />
-              <ElementButton icon={<ImageIcon size={18}/>} label="Картинка" onClick={() => addElement('image')} />
+        <div className="w-64 bg-industrial-800 border-r border-industrial-700 p-4 flex flex-col gap-6">
+           <div>
+             <h3 className="text-xs font-bold uppercase text-gray-500 mb-4 tracking-wider">Элементы</h3>
+             <div className="grid grid-cols-2 gap-2">
+                <ElementButton icon={<Type size={18}/>} label="Текст" onClick={() => addElement('text')} />
+                <ElementButton icon={<Barcode size={18}/>} label="Штрихкод" onClick={() => addElement('barcode')} />
+                <ElementButton icon={<ShieldAlert size={18}/>} label="Знак ГОСТ" onClick={() => addElement('sign')} />
+                <ElementButton icon={<Minus size={18}/>} label="Линия" onClick={() => addElement('line')} />
+                <ElementButton icon={<Square size={18}/>} label="Рамка" onClick={() => addElement('rect')} />
+                <ElementButton icon={<ImageIcon size={18}/>} label="Картинка" onClick={() => addElement('image')} />
+             </div>
            </div>
+
+           {showLayers && (
+             <div className="flex-1 flex flex-col min-h-0">
+                <h3 className="text-xs font-bold uppercase text-gray-500 mb-4 tracking-wider">Слои</h3>
+                <div className="flex-1 overflow-y-auto space-y-1 pr-2">
+                   {elements.slice().reverse().map(el => (
+                     <div
+                       key={el.id}
+                       onClick={() => setSelectedId(el.id)}
+                       className={`flex items-center justify-between p-2 rounded text-xs cursor-pointer transition-colors ${
+                         selectedId === el.id ? 'bg-industrial-primary text-black font-bold' : 'bg-industrial-900 hover:bg-industrial-700 text-gray-400'
+                       }`}
+                     >
+                        <div className="flex items-center gap-2 overflow-hidden">
+                           <span className="opacity-50">{el.type === 'text' ? <Type size={12}/> : <Square size={12}/>}</span>
+                           <span className="truncate">{el.content || el.type}</span>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteElement(el.id); }}
+                          className="hover:text-red-500"
+                        >
+                          <Trash2 size={12}/>
+                        </button>
+                     </div>
+                   ))}
+                   {elements.length === 0 && <div className="text-[10px] text-gray-600 italic">Нет элементов</div>}
+                </div>
+             </div>
+           )}
         </div>
 
         <div className={`flex-1 bg-industrial-900 relative ${showGrid ? 'canvas-container' : ''} overflow-auto flex items-center justify-center p-10`}>
