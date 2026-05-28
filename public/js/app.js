@@ -14,14 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentSection = 'devices';
     let events = [];
 
-    // Global hooks
-    window.fireDemoEvent = async (type) => {
-        const event = { type, device_addr: 1, zone_id: 1 };
-        await api.fireEvent(event);
-        addEventToLog(event);
-    };
-
-    // Navigation
+    // Navigation Logic
     navItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
@@ -36,7 +29,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     menuBtn.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
 
-    // Start Demo
+    // Trigger Demo Scenario
+    window.triggerScenario = async (type) => {
+        await fetch(`${API_BASE}/system/demo/trigger?scenario=${type}`, { method: 'POST' });
+        // Immediate UI feedback loop
+        if (type === 'RESET') events = [];
+        renderContent();
+    };
+
     startDemoBtn.addEventListener('click', async () => {
         const template = document.getElementById('demoTemplate').value;
         const profile = document.getElementById('demoProfile').value;
@@ -46,12 +46,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         startPolling();
     });
 
-    // Stop Demo
     demoToggleBtn.addEventListener('click', async () => {
-        if (!demoActive) {
-            demoConfig.scrollIntoView({ behavior: 'smooth' });
-            return;
-        }
+        if (!demoActive) { demoConfig.scrollIntoView({ behavior: 'smooth' }); return; }
         const status = await api.toggleDemo(false);
         demoActive = status.active;
         updateDemoUI();
@@ -74,31 +70,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function renderContent() {
-        content.innerHTML = components.renderEmptyState('Загрузка...');
+        content.innerHTML = components.renderEmptyState('Опрос системы...');
+        let html = '';
+
+        if (demoActive) {
+            html += components.renderLiveControl();
+        }
+
         try {
             if (currentSection === 'devices') {
                 const devices = await api.getDevices();
-                content.innerHTML = devices.length ? devices.map(d => components.renderDeviceCard(d)).join('') : components.renderEmptyState('Устройства не найдены. Подключитесь и выполните поиск.');
-            } else if (currentSection === 'zones') {
-                const zones = await api.getZones();
-                content.innerHTML = zones.length ? zones.map(z => components.renderZoneCard(z)).join('') : components.renderEmptyState('Разделы не найдены.');
+                html += devices.length ? devices.map(d => components.renderDeviceCard(d)).join('') : components.renderEmptyState('Устройства не найдены.');
             } else if (currentSection === 'scenarios') {
                 const scenarios = await api.getScenarios();
-                content.innerHTML = scenarios.length ? scenarios.map(s => components.renderScenarioCard(s)).join('') : components.renderEmptyState('Сценарии не найдены.');
+                html += scenarios.length ? scenarios.map(s => components.renderScenarioCard(s)).join('') : components.renderEmptyState('Сценарии не найдены.');
             } else if (currentSection === 'diagnostics') {
-                const diag = await api.getDiagnostics();
                 const ports = await api.getPorts();
                 const hwStatus = await api.getHardwareStatus();
-
-                content.innerHTML = `
-                    ${components.renderHardwareConnect(ports, hwStatus)}
-                    <div class="mt-8"></div>
-                    ${components.renderDiagnostics(diag)}
-                `;
-                setupHardwareListeners();
+                html += components.renderHardwareConnect(ports, hwStatus);
+                const diag = await api.getDiagnostics();
+                html += components.renderDiagnostics(diag);
             }
+            content.innerHTML = html;
+            if (currentSection === 'diagnostics') setupHardwareListeners();
         } catch (err) {
-            content.innerHTML = components.renderEmptyState('Ошибка: ' + err.message);
+            content.innerHTML = components.renderEmptyState('Ошибка связи: ' + err.message);
         }
     }
 
@@ -106,17 +102,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const connectBtn = document.getElementById('connectBtn');
         if (connectBtn) {
             connectBtn.addEventListener('click', async () => {
-                const portId = document.getElementById('portSelect').value;
-                await api.connectPort(portId);
+                await api.connectPort(document.getElementById('portSelect').value);
                 renderContent();
             });
         }
         const scanBtn = document.getElementById('scanBtn');
         if (scanBtn) {
             scanBtn.addEventListener('click', async () => {
-                api.scanDevices(); // Start async
-                renderContent(); // Show scanning UI immediately
-                setTimeout(renderContent, 5000); // Poll for completion
+                api.scanDevices();
+                renderContent();
+                setTimeout(renderContent, 3000);
             });
         }
     }
@@ -125,10 +120,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         events.unshift(event);
         if (events.length > 50) events.pop();
         eventCount.innerText = events.length;
-        const typeColors = { 'ALARM': 'text-red-600 font-bold', 'FIRE': 'text-orange-600 font-bold', 'RELAY_STATUS': 'text-blue-500 italic' };
+        const typeColors = { 'ALARM': 'text-red-600 font-bold', 'FIRE': 'text-orange-600 font-bold', 'RELAY_STATUS': 'text-blue-500 italic font-medium' };
         eventLog.innerHTML = events.map(e => `
             <div class="flex justify-between border-b border-slate-50 py-1">
-                <span class="text-[9px] text-gray-400 w-16">${new Date().toLocaleTimeString()}</span>
+                <span class="text-[9px] text-gray-400 w-16 uppercase">${new Date().toLocaleTimeString()}</span>
                 <span class="flex-1 px-2 ${typeColors[e.type] || 'text-slate-600'}">${e.type}</span>
                 <span class="text-[10px] text-slate-400 font-mono">${e.type==='RELAY_STATUS' ? `Rel: ${e.relay_id}` : `Z: ${e.zone_id}`}</span>
             </div>
@@ -140,10 +135,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderContent();
         if (pollInterval) clearInterval(pollInterval);
         pollInterval = setInterval(async () => {
-            if (currentSection === 'diagnostics') renderContent();
             if (demoActive) {
                const demoEvent = { type: ['ALARM', 'FIRE', 'RESTORE'][Math.floor(Math.random()*3)], device_addr: 1, zone_id: Math.floor(Math.random()*5)+1 };
                addEventToLog(demoEvent);
+               if (currentSection !== 'diagnostics') renderContent();
             }
         }, 5000);
     }

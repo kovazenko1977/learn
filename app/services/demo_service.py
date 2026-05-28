@@ -26,13 +26,18 @@ TEMPLATES = {
         "desc": "Средняя система: Больница"
     },
     "Large Building": {
-        "panels": 10,
-        "controllers": 50,
+        "panels": 12,
+        "controllers": 60,
         "relays": 100,
-        "zones": 200,
-        "desc": "Крупный объект: Бизнес-центр"
+        "zones": 300,
+        "desc": "Крупный объект: Бизнес-центр (1000+ датчиков)"
     }
 }
+
+DEVICE_MODELS = [
+    "S2000-KDL", "S2000-SP1", "S2000-ASPT", "S2000-BI",
+    "S2000-Ethernet", "S2000-PGE", "S2000-BRS2", "S2000-AR2"
+]
 
 class DemoService:
     def __init__(self):
@@ -43,38 +48,44 @@ class DemoService:
         self._active_scenarios: List[Dict] = []
 
     async def start(self, db: AsyncSession, template: str = "Apartment", profile: str = "Random"):
-        if self.is_active:
-            await self.stop()
+        if self.is_active: await self.stop()
 
         self.is_active = True
         self.template = template
         self.profile = profile
         logger.info(f"DEMO START: {template} ({profile})")
 
-        # 1. Clear database
         await self._clear_db(db)
-
-        # 2. Seed data
         await self._seed_template(db, template)
 
-        # 3. Cache scenarios for logic execution
         result = await db.execute(select(Scenario))
         self._active_scenarios = [json.loads(s.definition) for s in result.scalars().all()]
 
-        # 4. Start background tasks
         self._simulation_task = asyncio.create_task(self._run_simulation())
-        # Note: Event bus subscription should only happen once or be managed
-        # For simplicity in MVP, we just check is_active in _on_event
 
     async def stop(self):
         self.is_active = False
         if self._simulation_task:
             self._simulation_task.cancel()
-            try:
-                await self._simulation_task
-            except asyncio.CancelledError:
-                pass
         logger.info("DEMO STOP")
+
+    async def trigger_scenario(self, scenario_type: str):
+        """Dynamic event bursts for specific simulation scenarios"""
+        if not self.is_active: return
+
+        logger.info(f"DEMO SCENARIO TRIGGER: {scenario_type}")
+        if scenario_type == "MASSIVE_FIRE":
+            # Fire in multiple zones simultaneously
+            for i in range(1, 6):
+                await event_bus.publish("system_event", {"type": "FIRE", "device_addr": i, "zone_id": i})
+                await asyncio.sleep(0.1)
+        elif scenario_type == "SYSTEM_FAULT":
+            # Multiple devices go offline/fault
+            for i in range(10, 15):
+                await event_bus.publish("system_event", {"type": "FAULT", "device_addr": i, "zone_id": 0})
+        elif scenario_type == "RESET":
+            # Restore all to normal
+            await event_bus.publish("system_event", {"type": "RESTORE_ALL"})
 
     async def _on_event(self, event_data: Dict):
         if not self.is_active: return
@@ -103,66 +114,47 @@ class DemoService:
 
     async def _seed_template(self, db: AsyncSession, template: str):
         cfg = TEMPLATES.get(template, TEMPLATES["Apartment"])
-
-        # Access Levels
         al = AccessLevel(name="Администратор")
         db.add(al); await db.flush()
 
-        # Panels
         for i in range(cfg["panels"]):
             db.add(Device(name=f"С2000М v4.12 #{i+1}", type="Panel", address=127-i))
 
-        # Controllers
         controllers = []
         for i in range(cfg["controllers"]):
-            c = Device(name=f"С2000-КДЛ #{i+1}", type="Controller", address=i+1)
+            model = random.choice(DEVICE_MODELS)
+            c = Device(name=f"{model} #{i+1}", type=model, address=(i % 110) + 1)
             db.add(c); controllers.append(c)
-        await db.flush() # Get IDs
+        await db.flush()
 
-        # Relays
         for i in range(cfg["relays"]):
-            r_dev = Device(name=f"С2000-СП1 #{i+1}", type="Relay Module", address=80+i)
+            r_dev = Device(name=f"С2000-СП1 #{i+1}", type="Relay Module", address=80+(i%30))
             db.add(r_dev); await db.flush()
             db.add(Relay(device_id=r_dev.id, number=1, name=f"Выход {i+1}", program=1))
 
-        # Zones & Loops
         for i in range(cfg["zones"]):
             z = Zone(number=i+1, name=f"Помещение {i+101}")
             db.add(z); await db.flush()
-
-            # Attach to a random controller
             ctrl = random.choice(controllers)
             db.add(InputLoop(device_id=ctrl.id, number=(i%127)+1, zone_id=z.id, type=random.choice(["Fire", "Smoke", "Intrusion"])))
 
-        # Scenarios
         db.add(Scenario(
-            name="Пожарная тревога: Оповещение",
+            name="Автоматическое пожаротушение",
             definition=json.dumps({
                 "trigger": {"event_type": "FIRE"},
                 "actions": [
                     {"type": "relay_control", "relay_id": 1, "state": "ON"},
-                    {"type": "delay", "seconds": 10},
+                    {"type": "delay", "seconds": 3},
                     {"type": "relay_control", "relay_id": 1, "state": "OFF"}
                 ]
             })
         ))
-        db.add(Scenario(
-            name="Проникновение: Блокировка",
-            definition=json.dumps({
-                "trigger": {"event_type": "ALARM"},
-                "actions": [{"type": "relay_control", "relay_id": 2, "state": "ON"}]
-            })
-        ))
-
         await db.commit()
-        logger.info(f"Seeding completed for {template}: {cfg}")
 
     async def _run_simulation(self):
         while self.is_active:
-            # Wait time based on template size
-            wait = 2 if self.template == "Large Building" else 5
-            await asyncio.sleep(random.randint(wait, wait*3))
-
+            wait = 1 if self.template == "Large Building" else 5
+            await asyncio.sleep(random.randint(wait, wait*5))
             etype = "ALARM"
             if self.profile == "Fire": etype = "FIRE"
             elif self.profile == "Fault": etype = "FAULT"
@@ -170,11 +162,10 @@ class DemoService:
 
             await event_bus.publish("system_event", {
                 "type": etype,
-                "device_addr": random.randint(1, 10),
-                "zone_id": random.randint(1, 20),
+                "device_addr": random.randint(1, 127),
+                "zone_id": random.randint(1, 100),
                 "timestamp": asyncio.get_event_loop().time()
             })
 
 demo_service = DemoService()
-# Subscribe once
 event_bus.subscribe("system_event", demo_service._on_event)

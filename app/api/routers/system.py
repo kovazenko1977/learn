@@ -28,6 +28,12 @@ async def toggle_demo(
         await demo_service.stop()
     return await get_demo_status()
 
+@router.post("/demo/trigger")
+async def trigger_demo_scenario(scenario: str):
+    """Trigger a specific emulated scenario (e.g. MASSIVE_FIRE)"""
+    await demo_service.trigger_scenario(scenario)
+    return {"status": "triggered", "scenario": scenario}
+
 @router.post("/fire-event")
 async def fire_event(payload: Dict[str, Any] = Body(...)):
     await event_bus.publish("system_event", payload)
