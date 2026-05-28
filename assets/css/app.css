@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary: #0f172a; /* Slate 900 */
+    --accent: #3b82f6;
+}
+
+body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+}
+
+.glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.card {
+    @apply glass rounded-2xl p-6;
+}
+
+.btn-primary {
+    @apply bg-slate-900 text-white px-6 py-2 rounded-xl hover:bg-slate-800 transition-all shadow-lg active:scale-95;
+}
+
+.input-field {
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition-all;
+}
+
+.badge {
+    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+}
+
+.status-new { @apply bg-blue-100 text-blue-600; }
+.status-assigned { @apply bg-purple-100 text-purple-600; }
+.status-in_work { @apply bg-amber-100 text-amber-600; }
+.status-completed { @apply bg-green-100 text-green-600; }
+.status-rejected { @apply bg-red-100 text-red-600; }
