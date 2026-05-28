@@ -1,0 +1,9 @@
+[
+    {
+        "id": "gost_14192_trans",
+        "name": "ГОСТ 14192-96 Транспортная (100x150)",
+        "width": 100,
+        "height": 150,
+        "elements": "[{\"attrs\":{\"x\":20,\"y\":20,\"text\":\"ПОЛУЧАТЕЛЬ:\",\"fontSize\":16,\"fontFamily\":\"Arial\",\"draggable\":true},\"className\":\"Text\"},{\"attrs\":{\"x\":20,\"y\":45,\"text\":\"{CUSTOMER}\",\"fontSize\":24,\"fontFamily\":\"Arial\",\"fontStyle\":\"bold\",\"draggable\":true},\"className\":\"Text\"},{\"attrs\":{\"x\":20,\"y\":100,\"text\":\"ПУНКТ НАЗНАЧЕНИЯ:\",\"fontSize\":16,\"fontFamily\":\"Arial\",\"draggable\":true},\"className\":\"Text\"},{\"attrs\":{\"x\":20,\"y\":125,\"text\":\"{CITY}\",\"fontSize\":22,\"fontFamily\":\"Arial\",\"draggable\":true},\"className\":\"Text\"}]"
+    }
+]
