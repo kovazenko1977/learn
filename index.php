@@ -20,6 +20,8 @@
             <h1 class="text-xl font-bold tracking-tight">LabelPro Professional</h1>
         </div>
         <div class="flex space-x-2">
+            <button onclick="undo()" title="Назад" class="bg-indigo-700 hover:bg-indigo-600 p-2 rounded-lg text-sm">↩️</button>
+            <button onclick="redo()" title="Вперед" class="bg-indigo-700 hover:bg-indigo-600 p-2 rounded-lg text-sm">↪️</button>
             <button onclick="saveTemplate()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Сохранить шаблон</button>
             <button onclick="printLabel()" class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold transition">Печать (PDF)</button>
         </div>
@@ -36,6 +38,12 @@
                 <button onclick="addBarcode()" class="tool-btn">
                     <span class="text-sm font-medium">Штрихкод</span>
                 </button>
+                <button onclick="addRect()" class="tool-btn">
+                    <span class="text-sm font-medium">Рамка</span>
+                </button>
+                <button onclick="addQR()" class="tool-btn">
+                    <span class="text-sm font-medium">QR-код</span>
+                </button>
             </div>
 
             <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Знаки ГОСТ 14192-96</h2>
@@ -49,6 +57,14 @@
                 <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Свойства</h2>
                 <div id="properties-panel" class="space-y-4">
                     <p class="text-sm text-gray-400 italic">Элемент не выбран</p>
+                </div>
+                <div class="mt-6 border-t pt-4">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Выравнивание</h2>
+                    <div class="flex space-x-2">
+                        <button onclick="align('left')" class="flex-1 py-2 border rounded hover:bg-gray-50 font-bold text-xs">L</button>
+                        <button onclick="align('center')" class="flex-1 py-2 border rounded hover:bg-gray-50 font-bold text-xs">C</button>
+                        <button onclick="align('right')" class="flex-1 py-2 border rounded hover:bg-gray-50 font-bold text-xs">R</button>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -70,6 +86,34 @@
     <script>
         let stage, layer, tr;
         const SCALE = 4; // px per mm
+        let history = [];
+        let historyStep = -1;
+
+        function saveHistory() {
+            history = history.slice(0, historyStep + 1);
+            history.push(layer.toJSON());
+            historyStep++;
+        }
+
+        function undo() {
+            if (historyStep > 0) {
+                historyStep--;
+                layer.destroyChildren();
+                Konva.Node.create(history[historyStep], layer);
+                layer.add(tr);
+                layer.draw();
+            }
+        }
+
+        function redo() {
+            if (historyStep < history.length - 1) {
+                historyStep++;
+                layer.destroyChildren();
+                Konva.Node.create(history[historyStep], layer);
+                layer.add(tr);
+                layer.draw();
+            }
+        }
 
         function init() {
             const holder = document.getElementById('konva-holder');
@@ -133,6 +177,7 @@
             if (nodes.length) {
                 nodes[0][prop](val);
                 layer.draw();
+                saveHistory();
             }
         }
 
@@ -154,6 +199,30 @@
             });
             layer.add(text);
             select(text);
+            saveHistory();
+        }
+
+        function addRect() {
+            const rect = new Konva.Rect({
+                x: 50, y: 50,
+                width: 100, height: 100,
+                stroke: 'black',
+                strokeWidth: 2,
+                draggable: true
+            });
+            layer.add(rect);
+            select(rect);
+            saveHistory();
+        }
+
+        function addQR() {
+            const group = new Konva.Group({ draggable: true, x: 50, y: 50 });
+            const rect = new Konva.Rect({ width: 60, height: 60, fill: 'white', stroke: 'black' });
+            const text = new Konva.Text({ text: 'QR', fontSize: 10, padding: 25 });
+            group.add(rect).add(text);
+            layer.add(group);
+            select(group);
+            saveHistory();
         }
 
         function addBarcode() {
@@ -184,6 +253,17 @@
             });
             layer.add(text);
             select(text);
+            saveHistory();
+        }
+
+        function align(dir) {
+            const node = tr.nodes()[0];
+            if (!node) return;
+            if (dir === 'left') node.x(0);
+            if (dir === 'center') node.x((stage.width() - node.width() * node.scaleX()) / 2);
+            if (dir === 'right') node.x(stage.width() - node.width() * node.scaleX());
+            layer.draw();
+            saveHistory();
         }
 
         function updateSize() {

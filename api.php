@@ -75,6 +75,36 @@ switch ($action) {
         saveStore('templates', $items);
         echo json_encode($new);
         break;
+
+    case 'import_csv':
+        if (!isset($_FILES['file'])) { echo json_encode(['error' => 'No file']); exit; }
+        $handle = fopen($_FILES['file']['tmp_name'], "r");
+        $items = getStore('products');
+        $headers = fgetcsv($handle, 1000, ",");
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            $item = array_combine($headers, $data);
+            $id = uniqid();
+            $item['id'] = $id;
+            $items[$id] = $item;
+        }
+        fclose($handle);
+        saveStore('products', $items);
+        echo json_encode(['status' => 'ok', 'count' => count($items)]);
+        break;
+
+    case 'get_history':
+        echo json_encode(getStore('history'));
+        break;
+
+    case 'log_print':
+        $history = getStore('history');
+        $log = json_decode(file_get_contents('php://input'), true);
+        $log['date'] = date('Y-m-d H:i:s');
+        $history[] = $log;
+        saveStore('history', array_slice($history, -100)); // Keep last 100
+        echo json_encode(['status' => 'ok']);
+        break;
+
     default:
         echo json_encode(['status' => 'ready', 'version' => '2.0.0']);
 }
