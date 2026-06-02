@@ -1,0 +1,441 @@
+[
+    {
+        "id": 1,
+        "room_number": "101",
+        "room_class_id": 1,
+        "price_per_day": 1600,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 2,
+        "room_number": "102",
+        "room_class_id": 1,
+        "price_per_day": 1600,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 3,
+        "room_number": "103",
+        "room_class_id": 1,
+        "price_per_day": 1600,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 4,
+        "room_number": "104",
+        "room_class_id": 2,
+        "price_per_day": 3100,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 5,
+        "room_number": "105",
+        "room_class_id": 2,
+        "price_per_day": 3200,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 6,
+        "room_number": "106",
+        "room_class_id": 2,
+        "price_per_day": 2800,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 7,
+        "room_number": "107",
+        "room_class_id": 3,
+        "price_per_day": 4100,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 8,
+        "room_number": "108",
+        "room_class_id": 3,
+        "price_per_day": 4200,
+        "price_per_hour": 0,
+        "capacity": 2,
+        "status": "free"
+    },
+    {
+        "id": 9,
+        "room_number": "109",
+        "room_class_id": 4,
+        "price_per_day": 5200,
+        "price_per_hour": 0,
+        "capacity": 4,
+        "status": "free"
+    },
+    {
+        "id": 10,
+        "room_number": "110",
+        "room_class_id": 4,
+        "price_per_day": 5200,
+        "price_per_hour": 0,
+        "capacity": 4,
+        "status": "free"
+    },
+    {
+        "id": 11,
+        "room_number": "Сауна-1",
+        "room_class_id": 5,
+        "price_per_day": 10000,
+        "price_per_hour": 1500,
+        "capacity": 10,
+        "status": "free"
+    },
+    {
+        "0": {
+            "id": 1,
+            "room_number": "101",
+            "room_class_id": 1,
+            "price_per_day": 1600,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "1": {
+            "id": 2,
+            "room_number": "102",
+            "room_class_id": 1,
+            "price_per_day": 1600,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "2": {
+            "id": 3,
+            "room_number": "103",
+            "room_class_id": 1,
+            "price_per_day": 1600,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "3": {
+            "id": 4,
+            "room_number": "104",
+            "room_class_id": 2,
+            "price_per_day": 3100,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "4": {
+            "id": 5,
+            "room_number": "105",
+            "room_class_id": 2,
+            "price_per_day": 3200,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "5": {
+            "id": 6,
+            "room_number": "106",
+            "room_class_id": 2,
+            "price_per_day": 2800,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "6": {
+            "id": 7,
+            "room_number": "107",
+            "room_class_id": 3,
+            "price_per_day": 4100,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "7": {
+            "id": 8,
+            "room_number": "108",
+            "room_class_id": 3,
+            "price_per_day": 4200,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "8": {
+            "id": 9,
+            "room_number": "109",
+            "room_class_id": 4,
+            "price_per_day": 5200,
+            "price_per_hour": 0,
+            "capacity": 4,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "9": {
+            "id": 10,
+            "room_number": "110",
+            "room_class_id": 4,
+            "price_per_day": 5200,
+            "price_per_hour": 0,
+            "capacity": 4,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "10": {
+            "id": 11,
+            "room_number": "Сауна-1",
+            "room_class_id": 5,
+            "price_per_day": 10000,
+            "price_per_hour": 1500,
+            "capacity": 10,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "id": 12
+    },
+    {
+        "0": {
+            "id": 1,
+            "room_number": "101",
+            "room_class_id": 1,
+            "price_per_day": 1600,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "1": {
+            "id": 2,
+            "room_number": "102",
+            "room_class_id": 1,
+            "price_per_day": 1600,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "2": {
+            "id": 3,
+            "room_number": "103",
+            "room_class_id": 1,
+            "price_per_day": 1600,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "3": {
+            "id": 4,
+            "room_number": "104",
+            "room_class_id": 2,
+            "price_per_day": 3100,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "4": {
+            "id": 5,
+            "room_number": "105",
+            "room_class_id": 2,
+            "price_per_day": 3200,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "5": {
+            "id": 6,
+            "room_number": "106",
+            "room_class_id": 2,
+            "price_per_day": 2800,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "6": {
+            "id": 7,
+            "room_number": "107",
+            "room_class_id": 3,
+            "price_per_day": 4100,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "7": {
+            "id": 8,
+            "room_number": "108",
+            "room_class_id": 3,
+            "price_per_day": 4200,
+            "price_per_hour": 0,
+            "capacity": 2,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "8": {
+            "id": 9,
+            "room_number": "109",
+            "room_class_id": 4,
+            "price_per_day": 5200,
+            "price_per_hour": 0,
+            "capacity": 4,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "9": {
+            "id": 10,
+            "room_number": "110",
+            "room_class_id": 4,
+            "price_per_day": 5200,
+            "price_per_hour": 0,
+            "capacity": 4,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "10": {
+            "id": 11,
+            "room_number": "Сауна-1",
+            "room_class_id": 5,
+            "price_per_day": 10000,
+            "price_per_hour": 1500,
+            "capacity": 10,
+            "status": "free",
+            "housekeeping": "clean"
+        },
+        "11": {
+            "0": {
+                "id": 1,
+                "room_number": "101",
+                "room_class_id": 1,
+                "price_per_day": 1600,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "1": {
+                "id": 2,
+                "room_number": "102",
+                "room_class_id": 1,
+                "price_per_day": 1600,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "2": {
+                "id": 3,
+                "room_number": "103",
+                "room_class_id": 1,
+                "price_per_day": 1600,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "3": {
+                "id": 4,
+                "room_number": "104",
+                "room_class_id": 2,
+                "price_per_day": 3100,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "4": {
+                "id": 5,
+                "room_number": "105",
+                "room_class_id": 2,
+                "price_per_day": 3200,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "5": {
+                "id": 6,
+                "room_number": "106",
+                "room_class_id": 2,
+                "price_per_day": 2800,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "6": {
+                "id": 7,
+                "room_number": "107",
+                "room_class_id": 3,
+                "price_per_day": 4100,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "7": {
+                "id": 8,
+                "room_number": "108",
+                "room_class_id": 3,
+                "price_per_day": 4200,
+                "price_per_hour": 0,
+                "capacity": 2,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "8": {
+                "id": 9,
+                "room_number": "109",
+                "room_class_id": 4,
+                "price_per_day": 5200,
+                "price_per_hour": 0,
+                "capacity": 4,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "9": {
+                "id": 10,
+                "room_number": "110",
+                "room_class_id": 4,
+                "price_per_day": 5200,
+                "price_per_hour": 0,
+                "capacity": 4,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "10": {
+                "id": 11,
+                "room_number": "Сауна-1",
+                "room_class_id": 5,
+                "price_per_day": 10000,
+                "price_per_hour": 1500,
+                "capacity": 10,
+                "status": "free",
+                "housekeeping": "clean"
+            },
+            "id": 12,
+            "housekeeping": "clean"
+        },
+        "id": 13
+    }
+]
