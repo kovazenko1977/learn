@@ -605,18 +605,23 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
 
             document.getElementById('toggle-html').onclick = function() {
                 const container = document.getElementById('editor-container');
+                const toolbar = document.querySelector('.ql-toolbar');
                 if (container.style.display !== 'none') {
+                    // Switch to HTML
                     htmlEditor.value = quill.root.innerHTML;
                     container.style.display = 'none';
-                    document.querySelector('.ql-toolbar').style.display = 'none';
+                    if (toolbar) toolbar.style.display = 'none';
                     htmlEditor.style.display = 'block';
-                    this.textContent = 'Режим Визуальный';
+                    this.innerHTML = '<i class="bi bi-eye"></i> Режим Визуальный';
+                    this.classList.replace('btn-outline-secondary', 'btn-outline-primary');
                 } else {
+                    // Switch to Visual
                     quill.root.innerHTML = htmlEditor.value;
                     container.style.display = 'block';
-                    document.querySelector('.ql-toolbar').style.display = 'block';
+                    if (toolbar) toolbar.style.display = 'block';
                     htmlEditor.style.display = 'none';
-                    this.textContent = 'Режим HTML';
+                    this.innerHTML = '<i class="bi bi-code-slash"></i> Режим HTML';
+                    this.classList.replace('btn-outline-primary', 'btn-outline-secondary');
                 }
             };
 

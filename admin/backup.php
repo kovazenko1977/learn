@@ -5,6 +5,8 @@ use App\Helpers\Auth;
 Auth::requireAuth();
 
 $success = '';
+$error = '';
+
 if (isset($_POST['create_backup'])) {
     $zip = new ZipArchive();
     $filename = 'backup_' . date('Y-m-d_H-i-s') . '.zip';
@@ -43,6 +45,29 @@ if (isset($_GET['download'])) {
         header('Content-Disposition: attachment; filename=' . basename($file));
         readfile($file);
         exit;
+    }
+}
+
+if (isset($_GET['delete'])) {
+    $file = __DIR__ . '/../data/backups/' . $_GET['delete'];
+    if (file_exists($file) && strpos(realpath($file), realpath(__DIR__ . '/../data/backups/')) === 0) {
+        unlink($file);
+        $success = 'Резервная копия удалена';
+    }
+}
+
+if (isset($_GET['restore'])) {
+    $file = __DIR__ . '/../data/backups/' . $_GET['restore'];
+    if (file_exists($file) && strpos(realpath($file), realpath(__DIR__ . '/../data/backups/')) === 0) {
+        $zip = new ZipArchive();
+        if ($zip->open($file) === TRUE) {
+            // Restore to data folder
+            $zip->extractTo(__DIR__ . '/../data/');
+            $zip->close();
+            $success = 'Данные успешно восстановлены из резервной копии: ' . $_GET['restore'];
+        } else {
+            $error = 'Ошибка при открытии архива';
+        }
     }
 }
 
@@ -141,6 +166,13 @@ $backups = array_diff(scandir($backupDir), ['.', '..']);
             </div>
         <?php endif; ?>
 
+        <?php if ($error): ?>
+            <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert">
+                <?php echo $error; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="glass-card mb-4 text-center py-5">
             <i class="bi bi-cloud-upload text-primary" style="font-size: 4rem;"></i>
             <h4 class="mt-3">Создать новую копию</h4>
@@ -167,7 +199,9 @@ $backups = array_diff(scandir($backupDir), ['.', '..']);
                             <td><strong><?php echo htmlspecialchars($file); ?></strong></td>
                             <td><?php echo date('d.m.Y H:i', filemtime(__DIR__ . '/../data/backups/' . $file)); ?></td>
                             <td class="text-end">
-                                <a href="?download=<?php echo urlencode($file); ?>" class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-download"></i> Скачать</a>
+                                <a href="?restore=<?php echo urlencode($file); ?>" class="btn btn-sm btn-outline-warning rounded-pill me-1" onclick="return confirm('Внимание! Все текущие данные будут перезаписаны данными из архива. Продолжить?')"><i class="bi bi-arrow-counterclockwise"></i> Восстановить</a>
+                                <a href="?download=<?php echo urlencode($file); ?>" class="btn btn-sm btn-outline-primary rounded-pill me-1"><i class="bi bi-download"></i> Скачать</a>
+                                <a href="?delete=<?php echo urlencode($file); ?>" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Удалить этот архив?')"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

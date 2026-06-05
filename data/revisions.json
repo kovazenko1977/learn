@@ -86,5 +86,45 @@
         "title": "Meta Test",
         "timestamp": "2026-06-05 08:08:05",
         "user": "System"
+    },
+    {
+        "id": "6a2309fdcb5db",
+        "news_id": "meta_test_6a2309fdca8bb",
+        "content": "Content",
+        "title": "Meta Test",
+        "timestamp": "2026-06-05 17:40:13",
+        "user": "System"
+    },
+    {
+        "id": "6a2309fdd69ad",
+        "news_id": "n1",
+        "content": "...",
+        "title": "Past",
+        "timestamp": "2026-06-05 17:40:13",
+        "user": "System"
+    },
+    {
+        "id": "6a2309fdd6e70",
+        "news_id": "n2",
+        "content": "...",
+        "title": "Future",
+        "timestamp": "2026-06-05 17:40:13",
+        "user": "System"
+    },
+    {
+        "id": "6a2309fe26b5c",
+        "news_id": "n1",
+        "content": "",
+        "title": "News 1",
+        "timestamp": "2026-06-05 17:40:14",
+        "user": "admin"
+    },
+    {
+        "id": "6a2309fe26cf9",
+        "news_id": "n2",
+        "content": "",
+        "title": "News 2",
+        "timestamp": "2026-06-05 17:40:14",
+        "user": "admin"
     }
 ]

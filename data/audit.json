@@ -1,5 +1,53 @@
 [
     {
+        "id": "6a230c0dcdddb",
+        "timestamp": "2026-06-05 17:49:01",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a230b14772dc",
+        "timestamp": "2026-06-05 17:44:52",
+        "user": "Guest",
+        "action": "Неудачная попытка входа",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a230a7b76b34",
+        "timestamp": "2026-06-05 17:42:19",
+        "user": "Guest",
+        "action": "Неудачная попытка входа",
+        "ip": "127.0.0.1",
+        "ua": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36"
+    },
+    {
+        "id": "6a2309fe26490",
+        "timestamp": "2026-06-05 17:40:14",
+        "user": "Guest",
+        "action": "Неудачная попытка входа",
+        "ip": "CLI",
+        "ua": "CLI"
+    },
+    {
+        "id": "6a2309fe14b9c",
+        "timestamp": "2026-06-05 17:40:14",
+        "user": "admin",
+        "action": "Вход в систему",
+        "ip": "CLI",
+        "ua": "CLI"
+    },
+    {
+        "id": "6a2309fe02b14",
+        "timestamp": "2026-06-05 17:40:14",
+        "user": "System",
+        "action": "Обновление PIN-кода",
+        "ip": "CLI",
+        "ua": "CLI"
+    },
+    {
         "id": "6a2282955b107",
         "timestamp": "2026-06-05 08:02:29",
         "user": "Guest",
