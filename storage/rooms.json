@@ -1,0 +1,42 @@
+[
+    {
+        "id": "r1",
+        "number": "101",
+        "floor": 1,
+        "type": "Стандарт",
+        "status": "свободен",
+        "price": 3500
+    },
+    {
+        "id": "r2",
+        "number": "102",
+        "floor": 1,
+        "type": "Стандарт",
+        "status": "занят",
+        "price": 3500
+    },
+    {
+        "id": "r3",
+        "number": "201",
+        "floor": 2,
+        "type": "Люкс",
+        "status": "свободен",
+        "price": 7000
+    },
+    {
+        "id": "r4",
+        "number": "202",
+        "floor": 2,
+        "type": "Люкс",
+        "status": "бронь",
+        "price": 7000
+    },
+    {
+        "id": "r5",
+        "number": "103",
+        "floor": 1,
+        "type": "Стандарт",
+        "status": "уборка",
+        "price": 3500
+    }
+]

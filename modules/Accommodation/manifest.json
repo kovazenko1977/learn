@@ -1,0 +1,7 @@
+{
+    "name": "Accommodation",
+    "version": "1.0.0",
+    "description": "Room and bed management",
+    "class": "App\\Modules\\Accommodation\\Module",
+    "permissions": ["manage_rooms"]
+}

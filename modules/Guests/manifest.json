@@ -1,0 +1,7 @@
+{
+    "name": "Guests",
+    "version": "1.0.0",
+    "description": "Guest and patient management",
+    "class": "App\\Modules\\Guests\\Module",
+    "permissions": ["manage_guests"]
+}
