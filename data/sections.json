@@ -75,5 +75,13 @@
         "related_count": 0,
         "webhook_url": "",
         "lazy_load": true
+    },
+    {
+        "id": "s1",
+        "name": "Section 1"
+    },
+    {
+        "id": "s2",
+        "name": "Section 2"
     }
 ]

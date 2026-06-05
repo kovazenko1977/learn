@@ -28,6 +28,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                 }
             }
             $success = 'Выбранные новости опубликованы';
+        } elseif ($_POST['bulk_action'] === 'draft') {
+            foreach ($selectedIds as $id) {
+                $item = NewsItem::find($id);
+                if ($item) {
+                    $item['status'] = 'draft';
+                    NewsItem::save($item);
+                }
+            }
+            $success = 'Выбранные новости переведены в черновики';
+        } elseif ($_POST['bulk_action'] === 'move' && !empty($_POST['target_section'])) {
+            $targetSecId = $_POST['target_section'];
+            foreach ($selectedIds as $id) {
+                $item = NewsItem::find($id);
+                if ($item) {
+                    $item['section_id'] = $targetSecId;
+                    NewsItem::save($item);
+                }
+            }
+            $success = 'Выбранные новости перемещены';
         }
     }
 }
@@ -47,6 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        $existing = $id ? NewsItem::find($id) : null;
+
         $data = [
             'id' => $id ?: uniqid(),
             'section_id' => $_POST['section_id'] ?? '',
@@ -63,7 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'author' => $_POST['author'] ?? '',
             'updated_at' => date('Y-m-d H:i:s'),
             'views' => (int)($_POST['views'] ?? 0),
-            'reaction_count' => (int)($_POST['reaction_count'] ?? 0)
+            'reaction_count' => (int)($_POST['reaction_count'] ?? 0),
+            'reactions' => $existing['reactions'] ?? [],
+            'view_logs' => $existing['view_logs'] ?? []
         ];
 
         if ($data['title'] && $data['section_id']) {
@@ -211,6 +234,7 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                     <input type="hidden" name="content" id="content-input">
                     <input type="hidden" name="old_thumbnail" value="<?php echo $editItem['thumbnail'] ?? ''; ?>">
                     <input type="hidden" name="views" value="<?php echo $editItem['views'] ?? 0; ?>">
+                    <input type="hidden" name="reaction_count" value="<?php echo $editItem['reaction_count'] ?? 0; ?>">
 
                     <div class="row">
                         <div class="col-md-7 mb-3">
@@ -355,10 +379,17 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
                         <input class="form-check-input" type="checkbox" id="selectAll">
                         <label class="form-check-label small" for="selectAll">Выбрать все</label>
                     </div>
-                    <select name="bulk_action" class="form-select form-select-sm rounded-pill w-auto">
+                    <select name="bulk_action" id="bulkAction" class="form-select form-select-sm rounded-pill w-auto">
                         <option value="">Массовые действия</option>
                         <option value="publish">Опубликовать</option>
+                        <option value="draft">В черновики</option>
+                        <option value="move">Переместить в раздел</option>
                         <option value="delete">Удалить</option>
+                    </select>
+                    <select name="target_section" id="targetSection" class="form-select form-select-sm rounded-pill w-auto d-none">
+                        <?php foreach ($sections as $sec): ?>
+                            <option value="<?php echo $sec['id']; ?>"><?php echo htmlspecialchars($sec['name']); ?></option>
+                        <?php endforeach; ?>
                     </select>
                     <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-3">Выполнить</button>
                 </div>
@@ -648,6 +679,17 @@ if (($action === 'edit' || $action === 'add') && isset($_GET['id'])) {
         if (document.getElementById('selectAll')) {
             document.getElementById('selectAll').onclick = function() {
                 document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = this.checked);
+            };
+        }
+
+        if (document.getElementById('bulkAction')) {
+            document.getElementById('bulkAction').onchange = function() {
+                const targetSection = document.getElementById('targetSection');
+                if (this.value === 'move') {
+                    targetSection.classList.remove('d-none');
+                } else {
+                    targetSection.classList.add('d-none');
+                }
             };
         }
     </script>

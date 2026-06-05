@@ -567,9 +567,11 @@ function calculateReadingTime($content) {
     .news-tag { background: #f0f2f5; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; color: #555; cursor: pointer; transition: background 0.2s; }
     .news-tag:hover { background: #e2e5e9; color: #4facfe; }
 
-    .news-reaction-btn { background: #fff; border: 1px solid #eee; padding: 8px 18px; border-radius: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-    .news-reaction-btn:hover { background: #fff0f0; border-color: #ffbaba; }
-    .news-reaction-btn.active { background: #fff0f0; border-color: #ffbaba; color: #f44336; }
+    .news-reaction-btn { background: #fff !important; border: 1px solid #ddd !important; padding: 8px 18px !important; border-radius: 20px !important; cursor: pointer !important; transition: all 0.2s !important; display: flex !important; align-items: center !important; gap: 8px !important; color: #444 !important; }
+    .news-reaction-btn:hover { background: #f8f8f8 !important; border-color: #ccc !important; }
+    .news-reaction-btn.active { background: #fff0f0 !important; border-color: #ffbaba !important; color: #f44336 !important; }
+    .news-reaction-btn.active i { color: #f44336 !important; }
+    .news-reaction-btn i { color: #666; }
     .news-reaction-btn.active i { color: #f44336; }
 
     .news-share-btns { display: flex; gap: 10px; }
