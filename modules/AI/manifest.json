@@ -1,0 +1,6 @@
+{
+    "name": "AI Assistant",
+    "version": "1.0.0",
+    "description": "Voice and text command processor",
+    "class": "App\\Modules\\AI\\Module"
+}

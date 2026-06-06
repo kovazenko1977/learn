@@ -5,60 +5,176 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Sanatorium 2.0' ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .sidebar-link.active { background-color: #f3f4f6; border-right: 4px solid #3b82f6; color: #1e40af; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-    <!-- Navbar -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <span class="text-2xl font-bold text-blue-600">Sanatorium 2.0</span>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="<?= $this->url('/') ?>" class="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Дашборд</a>
-                        <a href="<?= $this->url('/accommodation') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Размещение</a>
-                        <a href="<?= $this->url('/guests') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Гости</a>
-                        <a href="<?= $this->url('/booking') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Бронирование</a>
-                        <a href="<?= $this->url('/help') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Справка</a>
-                    </div>
+<body class="bg-gray-50 min-h-screen flex overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r flex flex-col hidden md:flex">
+        <div class="p-6 flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                <i class="fas fa-hospital-user text-xl"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight text-gray-800">VSPRINT <span class="text-blue-600">2.0</span></span>
+        </div>
+
+        <nav class="flex-grow px-4 space-y-1 py-4 overflow-y-auto">
+            <a href="<?= $this->url('/') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-th-large w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Дашборд</span>
+            </a>
+            <a href="<?= $this->url('/accommodation') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-door-open w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Размещение</span>
+            </a>
+            <a href="<?= $this->url('/booking') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-calendar-check w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Бронирование</span>
+            </a>
+            <a href="<?= $this->url('/guests') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-users w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Гости</span>
+            </a>
+            <a href="<?= $this->url('/medical') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-user-md w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Медицина</span>
+            </a>
+            <a href="<?= $this->url('/finance') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-wallet w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Финансы</span>
+            </a>
+            <div class="pt-4 pb-2 text-xs font-semibold text-gray-400 uppercase px-4">Система</div>
+            <a href="<?= $this->url('/help') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-question-circle w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Справка</span>
+            </a>
+            <a href="<?= $this->url('/settings') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-cog w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Настройки</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t bg-gray-50">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-sm">
+                    <?= substr($user['username'] ?? 'A', 0, 1) ?>
                 </div>
-                <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                    <div class="ml-3 relative">
-                        <div>
-                            <button type="button" class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                                <span class="sr-only">Open user menu</span>
-                                <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-bold">
-                                    <?= substr($user['username'] ?? 'A', 0, 1) ?>
-                                </div>
-                            </button>
-                        </div>
-                    </div>
+                <div>
+                    <p class="text-sm font-bold text-gray-800 leading-none"><?= $user['username'] ?? 'Администратор' ?></p>
+                    <p class="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Главный врач</p>
                 </div>
             </div>
         </div>
-    </nav>
+    </aside>
 
-    <main class="flex-grow">
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Main Content -->
+    <div class="flex-grow flex flex-col overflow-hidden">
+        <!-- Top Bar -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 z-10 shadow-sm">
+            <div class="flex items-center">
+                <button class="md:hidden mr-4 text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h1 class="text-xl font-semibold text-gray-800"><?= $title ?></h1>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <div class="relative hidden sm:block">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" class="bg-gray-100 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 rounded-full pl-10 pr-4 py-2 text-sm w-64 transition-all" placeholder="Поиск гостей, броней...">
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button class="p-2 text-gray-400 hover:text-blue-500 transition-colors relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    <button onclick="toggleAI()" class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                        <i class="fas fa-robot"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow overflow-y-auto p-8">
             <?= $content ?>
-        </div>
-    </main>
+        </main>
+    </div>
 
-    <footer class="bg-white border-t py-4">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-xs">
-            &copy; <?= date('Y') ?> Sanatorium 2.0 - ERP System
+    <!-- AI Panel -->
+    <div id="aiPanel" class="fixed bottom-6 right-6 w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 hidden z-50 overflow-hidden transform transition-all translate-y-4">
+        <div class="bg-blue-600 p-6 text-white flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-robot text-2xl"></i>
+                <span class="font-bold">AI Помощник VSPRINT</span>
+            </div>
+            <button onclick="toggleAI()"><i class="fas fa-times"></i></button>
         </div>
-    </footer>
+        <div id="aiChat" class="h-80 overflow-y-auto p-6 space-y-4 text-sm scroll-smooth">
+            <div class="bg-blue-50 p-4 rounded-2xl rounded-tl-none text-blue-800">
+                Здравствуйте! Я ваш AI-ассистент. Чем я могу помочь сегодня?
+            </div>
+        </div>
+        <div class="p-4 bg-gray-50 border-t flex space-x-2">
+            <input id="aiInput" type="text" class="flex-grow border-none bg-white rounded-xl text-sm focus:ring-2 focus:ring-blue-500" placeholder="Ваша команда...">
+            <button onclick="sendAI()" class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-100">
+                <i class="fas fa-paper-plane text-xs"></i>
+            </button>
+        </div>
+    </div>
 
     <script>
-        // Basic app logic
+        function toggleAI() {
+            const panel = document.getElementById('aiPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        async function sendAI() {
+            const input = document.getElementById('aiInput');
+            const chat = document.getElementById('aiChat');
+            const command = input.value;
+            if(!command) return;
+
+            chat.innerHTML += `<div class="bg-gray-100 p-4 rounded-2xl rounded-tr-none text-gray-800 self-end text-right ml-12">${command}</div>`;
+            input.value = '';
+
+            const res = await fetch('<?= $this->url('/api/ai/command') ?>', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({command})
+            });
+            const data = await res.json();
+
+            chat.innerHTML += `<div class="bg-blue-50 p-4 rounded-2xl rounded-tl-none text-blue-800 mr-12 animate-pulse">Думаю...</div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            setTimeout(() => {
+                chat.lastChild.remove();
+                chat.innerHTML += `<div class="bg-blue-50 p-4 rounded-2xl rounded-tl-none text-blue-800 mr-12">${data.answer}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+                if(data.action) {
+                    // Logic for navigation can be added here
+                }
+            }, 800);
+        }
+
+        document.getElementById('aiInput')?.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendAI();
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Sanatorium 2.0 UI Initialized');
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
         });
     </script>
 </body>

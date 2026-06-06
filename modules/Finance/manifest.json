@@ -1,0 +1,6 @@
+{
+    "name": "Finance",
+    "version": "1.0.0",
+    "description": "Financial and billing management",
+    "class": "App\\Modules\\Finance\\Module"
+}

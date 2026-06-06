@@ -124,8 +124,12 @@ class Module extends BaseModule
         $content = "
         <div class='max-w-2xl mx-auto bg-white p-8 rounded-lg shadow text-center'>
             <div class='mb-6'>
-                <span class='text-5xl font-bold text-blue-600'>Sanatorium 2.0</span>
-                <p class='text-gray-400 mt-2'>Версия 2.0.0 (Core Engine v1.0)</p>
+                <div class='w-20 h-20 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-4xl shadow-xl shadow-blue-200 mx-auto mb-6'>
+                    <i class='fas fa-hospital-user'></i>
+                </div>
+                <span class='text-5xl font-bold text-gray-800 tracking-tighter'>VSPRINT <span class='text-blue-600'>2.0</span></span>
+                <p class='text-gray-400 mt-4 font-medium uppercase tracking-widest text-xs'>Профессиональная ERP/PMS система</p>
+                <p class='text-gray-300 mt-1 text-[10px]'>Build 2024.06.12 • Engine v2.4.8-LTS</p>
             </div>
 
             <div class='border-t border-b py-8 my-8 space-y-4'>
