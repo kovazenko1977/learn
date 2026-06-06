@@ -1,0 +1,131 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Medical;
+
+use App\Module\BaseModule;
+use App\Core\Router;
+
+class Module extends BaseModule
+{
+    public function boot(): void
+    {
+        $router = $this->container->get(Router::class);
+        $router->addRoute('GET', '/medical', [$this, 'index']);
+    }
+
+    public function index($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $content = "
+        <div class='mb-8 flex justify-between items-center'>
+            <div>
+                <h2 class='text-3xl font-bold text-gray-800'>Медицинский центр</h2>
+                <p class='text-gray-500 mt-1'>Назначения, процедуры и медицинские карты пациентов.</p>
+            </div>
+            <button class='bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 flex items-center hover:bg-blue-700'>
+                <i class='fas fa-plus mr-2'></i> Новое назначение
+            </button>
+        </div>
+
+        <div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+            <div class='lg:col-span-2 space-y-6'>
+                <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                    <h3 class='font-bold text-gray-800 mb-6 flex items-center'>
+                        <i class='fas fa-clock text-blue-500 mr-2'></i> Ближайшие процедуры
+                    </h3>
+                    <div class='space-y-4'>
+                        <div class='flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-100'>
+                            <div class='flex items-center space-x-4'>
+                                <div class='text-center'>
+                                    <p class='text-xs font-bold text-blue-600 uppercase'>10:30</p>
+                                    <p class='text-[10px] text-blue-400'>Каб. 204</p>
+                                </div>
+                                <div class='w-px h-8 bg-blue-200'></div>
+                                <div>
+                                    <p class='font-bold text-gray-800'>Грязелечение общее</p>
+                                    <p class='text-xs text-gray-500'>Пациент: Николаев А.С.</p>
+                                </div>
+                            </div>
+                            <button class='w-8 h-8 rounded-lg bg-white text-green-500 flex items-center justify-center shadow-sm'>
+                                <i class='fas fa-check'></i>
+                            </button>
+                        </div>
+                        <div class='flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 opacity-60'>
+                            <div class='flex items-center space-x-4'>
+                                <div class='text-center'>
+                                    <p class='text-xs font-bold text-gray-400 uppercase'>11:15</p>
+                                    <p class='text-[10px] text-gray-300'>Каб. 102</p>
+                                </div>
+                                <div class='w-px h-8 bg-gray-200'></div>
+                                <div>
+                                    <p class='font-bold text-gray-800'>Массаж шейно-воротниковой зоны</p>
+                                    <p class='text-xs text-gray-500'>Пациент: Васильева Е.М.</p>
+                                </div>
+                            </div>
+                            <button class='w-8 h-8 rounded-lg bg-white text-gray-300 flex items-center justify-center'>
+                                <i class='fas fa-ellipsis-h'></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                    <h3 class='font-bold text-gray-800 mb-6'>Аналитика здоровья (общая)</h3>
+                    <div class='h-64 flex items-end justify-between space-x-4 px-4'>
+                        <div class='w-full bg-blue-100 rounded-t-lg' style='height: 45%' title='Гипертония'></div>
+                        <div class='w-full bg-green-100 rounded-t-lg' style='height: 85%' title='Опорно-двигательный'></div>
+                        <div class='w-full bg-orange-100 rounded-t-lg' style='height: 30%' title='ЖКТ'></div>
+                        <div class='w-full bg-purple-100 rounded-t-lg' style='height: 60%' title='Нервная система'></div>
+                        <div class='w-full bg-red-100 rounded-t-lg' style='height: 15%' title='Прочее'></div>
+                    </div>
+                    <div class='flex justify-between mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-tighter text-center'>
+                        <div class='w-full'>Сердце</div>
+                        <div class='w-full'>Спина</div>
+                        <div class='w-full'>Желудок</div>
+                        <div class='w-full'>Стресс</div>
+                        <div class='w-full'>Другое</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='space-y-6'>
+                <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                    <h3 class='font-bold text-gray-800 mb-4'>Статистика кабинетов</h3>
+                    <div class='space-y-3'>
+                        <div class='flex justify-between text-xs mb-1'>
+                            <span class='text-gray-500'>Водолечебница</span>
+                            <span class='font-bold'>92%</span>
+                        </div>
+                        <div class='w-full h-1.5 bg-gray-100 rounded-full overflow-hidden'>
+                            <div class='bg-blue-500 h-full' style='width: 92%'></div>
+                        </div>
+
+                        <div class='flex justify-between text-xs mb-1 mt-4'>
+                            <span class='text-gray-500'>Грязелечебница</span>
+                            <span class='font-bold'>78%</span>
+                        </div>
+                        <div class='w-full h-1.5 bg-gray-100 rounded-full overflow-hidden'>
+                            <div class='bg-green-500 h-full' style='width: 78%'></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='bg-gradient-to-br from-purple-600 to-indigo-700 p-6 rounded-2xl text-white shadow-xl shadow-indigo-100'>
+                    <i class='fas fa-info-circle text-2xl mb-4 opacity-50'></i>
+                    <h4 class='font-bold mb-2'>Система назначений</h4>
+                    <p class='text-xs opacity-80 leading-relaxed'>Автоматический учет противопоказаний и совместимости процедур включен. При назначении учитывайте аллергический статус пациента.</p>
+                </div>
+            </div>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Медицинский блок - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
+    }
+}

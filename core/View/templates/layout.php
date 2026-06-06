@@ -48,6 +48,22 @@
                 <i class="fas fa-wallet w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Финансы</span>
             </a>
+            <a href="<?= $this->url('/inventory') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-boxes w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Склад</span>
+            </a>
+            <a href="<?= $this->url('/reports') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-chart-pie w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Отчеты</span>
+            </a>
+            <a href="<?= $this->url('/loyalty') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-gem w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Лояльность</span>
+            </a>
+            <a href="<?= $this->url('/transport') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-bus w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Транспорт</span>
+            </a>
             <div class="pt-4 pb-2 text-xs font-semibold text-gray-400 uppercase px-4">Система</div>
             <a href="<?= $this->url('/help') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
                 <i class="fas fa-question-circle w-6 text-gray-400 group-hover:text-blue-500"></i>
@@ -84,6 +100,9 @@
             </div>
 
             <div class="flex items-center space-x-6">
+                    <button onclick="toggleDarkMode()" class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                        <i class="fas fa-moon"></i>
+                    </button>
                 <div class="relative hidden sm:block">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                         <i class="fas fa-search"></i>
@@ -130,6 +149,16 @@
     </div>
 
     <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+            document.querySelectorAll('.bg-white').forEach(el => {
+                el.classList.toggle('bg-gray-800');
+                el.classList.toggle('border-gray-700');
+            });
+            document.querySelectorAll('.text-gray-800').forEach(el => el.classList.toggle('text-gray-100'));
+        }
+
         function toggleAI() {
             const panel = document.getElementById('aiPanel');
             panel.classList.toggle('hidden');

@@ -1,0 +1,6 @@
+{
+    "name": "Loyalty Program",
+    "version": "1.0.0",
+    "description": "Bonus points and guest levels",
+    "class": "App\\Modules\\Loyalty\\Module"
+}

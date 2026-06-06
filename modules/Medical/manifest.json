@@ -1,0 +1,6 @@
+{
+    "name": "Medical Center",
+    "version": "1.0.0",
+    "description": "Patient cards and medical services",
+    "class": "App\\Modules\\Medical\\Module"
+}

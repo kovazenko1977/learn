@@ -1,0 +1,6 @@
+{
+    "name": "Warehouse & Inventory",
+    "version": "1.0.0",
+    "description": "Stock and supply management",
+    "class": "App\\Modules\\Inventory\\Module"
+}
