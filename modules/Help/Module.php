@@ -104,7 +104,7 @@ class Module extends BaseModule
 
                 <div class='mt-12 p-6 bg-blue-50 border-l-4 border-blue-500 rounded'>
                     <h3 class='font-bold'>Нужна помощь?</h3>
-                    <p>Перейдите в раздел <a href='/help/about' class='text-blue-700 underline font-bold'>О программе</a> для связи с разработчиком.</p>
+                    <p>Перейдите в раздел <a href='{$renderer->url('/help/about')}' class='text-blue-700 underline font-bold'>О программе</a> для связи с разработчиком.</p>
                 </div>
             </div>
         </div>

@@ -40,7 +40,11 @@ class App
         $this->container->set(RBAC::class, fn() => new RBAC());
 
         // 4. View Renderer
-        $this->container->set(Renderer::class, fn() => new Renderer(__DIR__ . '/../View/templates'));
+        $this->container->set(Renderer::class, function($c) {
+            $renderer = new Renderer(__DIR__ . '/../View/templates');
+            $renderer->setGlobal('basePath', $c->get(Request::class)->getBasePath());
+            return $renderer;
+        });
 
         // 5. Security
         $this->container->set(Security::class, fn($c) => new Security($c->get(Session::class)));
@@ -81,8 +85,8 @@ class App
                     <div class="mt-8 bg-white p-6 rounded-lg shadow">
                         <h3 class="text-lg font-bold mb-4">Быстрые действия</h3>
                         <div class="flex space-x-4">
-                            <a href="/booking" class="bg-blue-600 text-white px-4 py-2 rounded">Забронировать</a>
-                            <a href="/guests" class="bg-gray-100 text-gray-700 px-4 py-2 rounded">Список гостей</a>
+                            <a href="' . $renderer->url('/booking') . '" class="bg-blue-600 text-white px-4 py-2 rounded">Забронировать</a>
+                            <a href="' . $renderer->url('/guests') . '" class="bg-gray-100 text-gray-700 px-4 py-2 rounded">Список гостей</a>
                         </div>
                     </div>
                 ',

@@ -19,6 +19,12 @@ class Renderer
         $this->globals[$key] = $value;
     }
 
+    public function url(string $path): string
+    {
+        $basePath = $this->globals['basePath'] ?? '';
+        return $basePath . '/' . ltrim($path, '/');
+    }
+
     public function render(string $template, array $data = []): string
     {
         $data = array_merge($this->globals, $data);
@@ -26,7 +32,6 @@ class Renderer
 
         $templatePath = $this->viewsPath . $template . '.php';
         if (!file_exists($templatePath)) {
-            // Fallback for modules? For now just throw error
             throw new \Exception("Template not found: $templatePath");
         }
 
