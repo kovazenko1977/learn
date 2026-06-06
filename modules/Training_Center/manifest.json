@@ -1,0 +1,6 @@
+{
+    "name": "Training_Center",
+    "description": "Обучение персонала",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Training_Center\\Module"
+}

@@ -1,0 +1,6 @@
+{
+    "name": "Garden",
+    "description": "Озеленение и территория",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Garden\\Module"
+}

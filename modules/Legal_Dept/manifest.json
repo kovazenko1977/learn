@@ -1,0 +1,6 @@
+{
+    "name": "Legal_Dept",
+    "description": "Юридический отдел",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Legal_Dept\\Module"
+}

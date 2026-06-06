@@ -1,0 +1,6 @@
+{
+    "name": "Events_Hall",
+    "description": "Конференц-залы",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Events_Hall\\Module"
+}

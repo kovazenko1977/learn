@@ -1,0 +1,6 @@
+{
+    "name": "Waste_Management",
+    "description": "Утилизация отходов",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Waste_Management\\Module"
+}

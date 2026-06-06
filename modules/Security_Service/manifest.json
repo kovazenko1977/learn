@@ -1,0 +1,6 @@
+{
+    "name": "Security_Service",
+    "description": "Служба безопасности",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Security_Service\\Module"
+}

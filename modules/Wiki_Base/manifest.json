@@ -1,0 +1,6 @@
+{
+    "name": "Wiki_Base",
+    "description": "База знаний (Wiki)",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Wiki_Base\\Module"
+}

@@ -1,0 +1,6 @@
+{
+    "name": "Surveys",
+    "description": "Опросы гостей",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Surveys\\Module"
+}

@@ -1,0 +1,6 @@
+{
+    "name": "Cinema",
+    "description": "Кинотеатр и анимация",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Cinema\\Module"
+}

@@ -1,0 +1,6 @@
+{
+    "name": "Gifts_Shop",
+    "description": "Сувенирный магазин",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Gifts_Shop\\Module"
+}

@@ -1,0 +1,6 @@
+{
+    "name": "News_Feed",
+    "description": "Новости санатория",
+    "version": "1.0.0",
+    "class": "App\\Modules\\News_Feed\\Module"
+}

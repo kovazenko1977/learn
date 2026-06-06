@@ -49,4 +49,15 @@ class EntityBuilder
         $entity['fields'][] = $field;
         $this->storage->update('meta_entities', $entity['id'], ['fields' => $entity['fields']]);
     }
+
+    public function createDynamicEntity(string $entityName, array $data): string
+    {
+        // Simple dynamic storage based on meta definitions
+        return $this->storage->insert('dyn_' . strtolower($entityName), $data);
+    }
+
+    public function getDynamicData(string $entityName, array $criteria = []): array
+    {
+        return $this->storage->find('dyn_' . strtolower($entityName), $criteria);
+    }
 }

@@ -1,0 +1,6 @@
+{
+    "name": "Polls",
+    "description": "Голосования",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Polls\\Module"
+}

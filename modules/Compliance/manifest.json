@@ -1,0 +1,6 @@
+{
+    "name": "Compliance",
+    "description": "Комплаенс и стандарты",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Compliance\\Module"
+}

@@ -99,8 +99,16 @@ class Module extends BaseModule
     public function create($request, $response): string
     {
         $renderer = $this->container->get(\App\View\Renderer::class);
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
         $params = $request->getBody();
         $selectedRoom = $params['room'] ?? '';
+
+        $rooms = $storage->find('rooms');
+        $roomsOptions = "";
+        foreach($rooms as $r) {
+            $sel = ($selectedRoom == $r['number']) ? 'selected' : '';
+            $roomsOptions .= "<option value='{$r['number']}' $sel>№{$r['number']} ({$r['type']})</option>";
+        }
 
         $content = "
         <div class='max-w-4xl mx-auto'>
@@ -109,7 +117,7 @@ class Module extends BaseModule
                     <i class='fas fa-arrow-left mr-2'></i> Назад к шахматке
                 </a>
                 <h2 class='text-3xl font-bold text-gray-800'>Новое бронирование</h2>
-                <p class='text-gray-500'>Заполните данные для регистрации гостя в системе.</p>
+                <p class='text-gray-500'>Заполните данные для регистрации гостя и проверки правил размещения.</p>
             </div>
 
             <form action='" . $renderer->url('/booking/save') . "' method='POST' class='space-y-8'>
@@ -122,9 +130,7 @@ class Module extends BaseModule
                             <label class='block text-xs font-bold text-gray-400 uppercase mb-2'>Выбор номера</label>
                             <select name='room_number' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3'>
                                 <option value=''>Выберите номер...</option>
-                                <option value='101' " . ($selectedRoom == '101' ? 'selected' : '') . ">№101 (Стандарт)</option>
-                                <option value='102' " . ($selectedRoom == '102' ? 'selected' : '') . ">№102 (Стандарт)</option>
-                                <option value='302' " . ($selectedRoom == '302' ? 'selected' : '') . ">№302 (Люкс)</option>
+                                $roomsOptions
                             </select>
                         </div>
                         <div>
@@ -155,12 +161,26 @@ class Module extends BaseModule
                             <input type='text' name='guest_name' placeholder='Иванов Иван Иванович' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3' required>
                         </div>
                         <div>
+                            <label class='block text-xs font-bold text-gray-400 uppercase mb-2'>Пол</label>
+                            <select name='guest_gender' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3'>
+                                <option value='male'>Мужской</option>
+                                <option value='female'>Женский</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class='block text-xs font-bold text-gray-400 uppercase mb-2'>Возраст</label>
+                            <input type='number' name='guest_age' value='30' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3'>
+                        </div>
+                        <div>
                             <label class='block text-xs font-bold text-gray-400 uppercase mb-2'>Телефон</label>
                             <input type='tel' name='guest_phone' placeholder='+7 (___) ___-__-__' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3'>
                         </div>
                         <div>
-                            <label class='block text-xs font-bold text-gray-400 uppercase mb-2'>Паспортные данные</label>
-                            <input type='text' name='guest_passport' placeholder='Серия и номер' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3'>
+                            <label class='block text-xs font-bold text-gray-400 uppercase mb-2'>Семейное размещение</label>
+                            <select name='is_family' class='w-full border-gray-200 rounded-xl focus:ring-blue-500 p-3'>
+                                <option value='no'>Нет</option>
+                                <option value='yes'>Да</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -189,29 +209,64 @@ class Module extends BaseModule
     {
         $data = $request->getBody();
         $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $room = $storage->findOne('rooms', ['number' => $data['room_number']]);
+        if (!$room) {
+             $response->redirect($renderer->url('/booking'));
+             return;
+        }
+
+        // Validate placement rules
+        $existingBookings = $storage->find('bookings', ['room_number' => $data['room_number'], 'status' => 'confirmed']);
+        $existingGuests = [];
+        foreach($existingBookings as $eb) {
+            $existingGuests[] = [
+                'gender' => $eb['guest_gender'] ?? 'unknown',
+                'age' => $eb['guest_age'] ?? 30
+            ];
+        }
+
+        $newGuest = [
+            'gender' => $data['guest_gender'],
+            'age' => (int)$data['guest_age'],
+            'is_family' => $data['is_family']
+        ];
+
+        $errors = \App\Utils\RulesEngine::validatePlacement($room, $newGuest, $existingGuests);
+
+        if (!empty($errors)) {
+            // For demo, we just echo errors and die. In real app, we would flash back to form.
+            echo "<div style='padding: 50px; font-family: sans-serif;'>
+                <h1 style='color: #ef4444;'>Ошибка размещения!</h1>
+                <ul><li>" . implode("</li><li>", $errors) . "</li></ul>
+                <br><a href='javascript:history.back()' style='color: #2563eb; font-weight: bold;'>Вернуться назад</a>
+            </div>";
+            return;
+        }
 
         $bookingId = uniqid('BK_');
         $storage->insert('bookings', [
             'id' => $bookingId,
             'room_number' => $data['room_number'],
             'guest_name' => $data['guest_name'],
+            'guest_gender' => $data['guest_gender'],
+            'guest_age' => $data['guest_age'],
+            'is_family' => $data['is_family'],
             'date_from' => $data['date_from'],
             'date_to' => $data['date_to'],
             'status' => 'confirmed',
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
-        // Update room occupancy for demo
-        $room = $storage->findOne('rooms', ['number' => $data['room_number']]);
-        if ($room) {
-            $room['occupied_places'] = ($room['occupied_places'] ?? 0) + 1;
-            if ($room['occupied_places'] >= $room['places']) {
-                $room['status'] = 'занят';
-            }
-            $storage->update('rooms', $room['id'] ?? $room['number'], $room);
+        // Update room occupancy
+        $room['occupied_places'] = ($room['occupied_places'] ?? 0) + 1;
+        if ($room['occupied_places'] >= $room['places']) {
+            $room['status'] = 'занят';
         }
+        $storage->update('rooms', $room['id'], $room);
 
-        $response->redirect($this->container->get(\App\View\Renderer::class)->url('/booking'));
+        $response->redirect($renderer->url('/booking'));
     }
 
     public function getAvailableRooms($request, $response): void

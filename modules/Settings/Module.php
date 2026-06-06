@@ -15,6 +15,7 @@ class Module extends BaseModule
         $router->addRoute('GET', '/settings', [$this, 'index']);
         $router->addRoute('GET', '/settings/audit', [$this, 'audit']);
         $router->addRoute('GET', '/settings/backup', [$this, 'backup']);
+        $router->addRoute('POST', '/api/settings/toggle-module', [$this, 'toggleModule']);
     }
 
     public function audit($request, $response): string
@@ -94,9 +95,50 @@ class Module extends BaseModule
         ]);
     }
 
+    public function toggleModule($request, $response): void
+    {
+        $data = $request->getBody();
+        $config = $this->container->get(\App\Core\Config::class);
+
+        $modules = $config->get('modules', []);
+        $modules[$data['module']] = (bool)$data['enabled'];
+
+        $config->set('modules', $modules);
+        $response->json(['success' => true]);
+    }
+
     public function index($request, $response): string
     {
         $renderer = $this->container->get(\App\View\Renderer::class);
+        $config = $this->container->get(\App\Core\Config::class);
+        $modulesConfig = $config->get('modules', []);
+
+        $moduleManager = $this->container->get(\App\Module\ModuleManager::class);
+        // We need to list all physical module directories
+        $modulesPath = __DIR__ . '/../../modules';
+        $allModules = array_diff(scandir($modulesPath), ['.', '..']);
+
+        $modulesHtml = "";
+        foreach ($allModules as $mod) {
+            $isEnabled = !isset($modulesConfig[$mod]) || $modulesConfig[$mod] === true;
+            $checked = $isEnabled ? 'checked' : '';
+            $modulesHtml .= "
+            <div class='flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100'>
+                <div class='flex items-center space-x-3'>
+                    <div class='w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm'>
+                        <i class='fas fa-cube text-blue-500'></i>
+                    </div>
+                    <div>
+                        <p class='font-bold text-gray-800'>$mod</p>
+                        <p class='text-[10px] text-gray-400 font-bold uppercase tracking-widest'>System Module</p>
+                    </div>
+                </div>
+                <label class='relative inline-flex items-center cursor-pointer'>
+                    <input type='checkbox' value='' class='sr-only peer' $checked onchange='toggleModule(\"$mod\", this.checked)'>
+                    <div class=\"w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600\"></div>
+                </label>
+            </div>";
+        }
 
         $content = "
         <div class='mb-8'>
@@ -104,10 +146,10 @@ class Module extends BaseModule
             <p class='text-gray-500 mt-1'>Конфигурация ядра, безопасность и управление доступом.</p>
         </div>
 
-        <div class='grid grid-cols-1 lg:grid-cols-4 gap-8'>
-            <aside class='lg:col-span-1 space-y-2'>
-                <button class='w-full text-left px-4 py-3 bg-white border border-blue-100 rounded-xl text-blue-600 font-bold shadow-sm shadow-blue-50'>
-                    <i class='fas fa-sliders-h mr-3'></i> Общие
+        <div class='grid grid-cols-1 lg:grid-cols-4 gap-10'>
+            <aside class='lg:col-span-1 space-y-3'>
+                <button class='w-full text-left px-6 py-4 bg-white border border-blue-100 rounded-2xl text-blue-600 font-bold shadow-sm shadow-blue-50 flex items-center transition-all hover:translate-x-1'>
+                    <i class='fas fa-sliders-h mr-4 text-xl'></i> Общие
                 </button>
                 <button class='w-full text-left px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-all'>
                     <i class='fas fa-user-lock mr-3'></i> Пользователи
@@ -123,9 +165,9 @@ class Module extends BaseModule
                 </button>
             </aside>
 
-            <div class='lg:col-span-3 space-y-6'>
-                <div class='bg-white p-8 rounded-2xl border border-gray-100 shadow-sm'>
-                    <h3 class='text-xl font-bold text-gray-800 mb-6 border-b pb-4'>Глобальные параметры</h3>
+            <div class='lg:col-span-3 space-y-10'>
+                <div class='bg-white p-10 rounded-[40px] border border-gray-100 shadow-xl shadow-blue-50/20'>
+                    <h3 class='text-2xl font-extrabold text-gray-900 mb-8 border-b border-gray-50 pb-6'>Глобальные параметры</h3>
 
                     <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         <div>
@@ -161,13 +203,23 @@ class Module extends BaseModule
                     </div>
                 </div>
 
-                <div class='bg-orange-50 border border-orange-100 p-6 rounded-2xl flex items-start space-x-4'>
-                    <div class='w-10 h-10 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center flex-shrink-0'>
-                        <i class='fas fa-exclamation-triangle'></i>
+                <div class='bg-white p-10 rounded-[40px] border border-gray-100 shadow-xl shadow-purple-50/20'>
+                    <div class='flex items-center justify-between mb-8'>
+                        <h3 class='text-2xl font-extrabold text-gray-900'>Управление модулями</h3>
+                        <span class='px-4 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold'>Dynamic Core</span>
+                    </div>
+                    <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                        $modulesHtml
+                    </div>
+                </div>
+
+                <div class='bg-gradient-to-br from-orange-50 to-white border border-orange-100 p-8 rounded-[40px] flex items-start space-x-6'>
+                    <div class='w-16 h-16 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-100'>
+                        <i class='fas fa-exclamation-triangle text-2xl'></i>
                     </div>
                     <div>
-                        <h4 class='font-bold text-orange-800 mb-1'>Внимание: Режим отладки</h4>
-                        <p class='text-sm text-orange-700 opacity-80'>В данный момент включен расширенный режим логирования. Это может замедлить работу системы при большом количестве одновременных пользователей.</p>
+                        <h4 class='text-xl font-extrabold text-orange-900 mb-2'>Внимание: Режим отладки</h4>
+                        <p class='text-sm text-orange-800 opacity-70 leading-relaxed'>В данный момент включен расширенный режим логирования. Это может замедлить работу системы при большом количестве одновременных пользователей. Рекомендуется отключать в промышленной эксплуатации.</p>
                     </div>
                 </div>
             </div>

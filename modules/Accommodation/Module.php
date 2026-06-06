@@ -32,7 +32,9 @@ class Module extends BaseModule
                 'floor' => $data['floor'] ?? 1,
                 'status' => 'свободен',
                 'price' => $data['price'] ?? 3500,
-                'places' => $data['places'] ?? 1
+                'places' => $data['places'] ?? 1,
+                'min_age' => $data['min_age'] ?? 0,
+                'required_status' => $data['required_status'] ?? 'any'
             ]);
         }
 
@@ -92,6 +94,20 @@ class Module extends BaseModule
                         <div>
                             <label class='block text-xs font-bold text-gray-400 uppercase mb-1'>Цена (₽)</label>
                             <input type='number' name='price' value='3500' class='w-full border-gray-200 rounded-lg'>
+                        </div>
+                    </div>
+                    <div class='grid grid-cols-2 gap-4'>
+                        <div>
+                            <label class='block text-xs font-bold text-gray-400 uppercase mb-1'>Мин. возраст</label>
+                            <input type='number' name='min_age' value='0' class='w-full border-gray-200 rounded-lg'>
+                        </div>
+                        <div>
+                            <label class='block text-xs font-bold text-gray-400 uppercase mb-1'>Огр. статуса</label>
+                            <select name='required_status' class='w-full border-gray-200 rounded-lg'>
+                                <option value='any'>Любой</option>
+                                <option value='ветеран'>Ветеран</option>
+                                <option value='сотрудник'>Сотрудник</option>
+                            </select>
                         </div>
                     </div>
                     <div class='flex justify-end space-x-3 pt-4 border-t'>
@@ -238,7 +254,7 @@ class Module extends BaseModule
         $room = $storage->findOne('rooms', ['number' => $data['number']]);
         if ($room) {
             $room['status'] = $data['status'];
-            $storage->save('rooms', $room);
+            $storage->update('rooms', $room['id'], $room);
         }
 
         $response->json(['success' => true]);

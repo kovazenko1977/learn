@@ -24,9 +24,15 @@ class ModuleManager
             return;
         }
 
+        $config = $this->container->get(\App\Core\Config::class);
         $dirs = scandir($this->modulesPath);
         foreach ($dirs as $dir) {
             if ($dir === '.' || $dir === '..') continue;
+
+            // Check if module is disabled in config
+            if (!$config->isModuleEnabled($dir)) {
+                continue;
+            }
 
             $moduleDir = $this->modulesPath . '/' . $dir;
             $manifestPath = $moduleDir . '/manifest.json';

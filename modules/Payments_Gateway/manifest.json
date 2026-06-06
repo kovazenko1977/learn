@@ -1,0 +1,6 @@
+{
+    "name": "Payments_Gateway",
+    "description": "Платежный шлюз",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Payments_Gateway\\Module"
+}

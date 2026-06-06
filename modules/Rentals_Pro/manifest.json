@@ -1,0 +1,6 @@
+{
+    "name": "Rentals_Pro",
+    "description": "Прокат инвентаря",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Rentals_Pro\\Module"
+}

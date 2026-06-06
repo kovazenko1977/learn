@@ -1,0 +1,6 @@
+{
+    "name": "Pool",
+    "description": "Бассейн и водные зоны",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Pool\\Module"
+}

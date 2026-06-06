@@ -1,0 +1,6 @@
+{
+    "name": "Project_Pro",
+    "description": "Проекты развития",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Project_Pro\\Module"
+}

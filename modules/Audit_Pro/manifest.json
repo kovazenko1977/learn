@@ -1,0 +1,6 @@
+{
+    "name": "Audit_Pro",
+    "description": "Профессиональный аудит",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Audit_Pro\\Module"
+}

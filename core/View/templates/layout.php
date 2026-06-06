@@ -10,9 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .sidebar-link.active { background-color: #f3f4f6; border-right: 4px solid #3b82f6; color: #1e40af; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar-link.active { background: linear-gradient(to right, #eff6ff, #ffffff); border-right: 4px solid #2563eb; color: #1e40af; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .vibrant-gradient { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
         @media (max-width: 768px) {
             .sidebar-open { transform: translateX(0) !important; }
             .sidebar-closed { transform: translateX(-100%) !important; }
@@ -21,87 +23,71 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex overflow-hidden">
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 bg-white border-r flex flex-col fixed md:relative h-full z-40 transition-transform duration-300 sidebar-closed md:transform-none">
-        <div class="p-6 flex items-center space-x-3">
-            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                <i class="fas fa-hospital-user text-xl"></i>
+    <aside id="sidebar" class="w-72 bg-white border-r flex flex-col fixed md:relative h-full z-40 transition-transform duration-300 sidebar-closed md:transform-none shadow-2xl md:shadow-none">
+        <div class="p-8 flex items-center space-x-4">
+            <div class="w-12 h-12 vibrant-gradient rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200">
+                <i class="fas fa-microchip text-2xl"></i>
             </div>
-            <span class="text-xl font-bold tracking-tight text-gray-800">VSPRINT <span class="text-blue-600">2.0</span></span>
+            <span class="text-2xl font-extrabold tracking-tight text-gray-900">VSPRINT <span class="text-blue-600">2.0</span></span>
         </div>
 
-        <nav class="flex-grow px-4 space-y-1 py-4 overflow-y-auto">
-            <a href="<?= $this->url('/') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+        <div class="px-8 mb-6">
+            <div class="relative">
+                <input type="text" id="moduleSearch" onkeyup="filterModules()" class="w-full bg-gray-50 border-none rounded-2xl py-3 pl-10 text-xs focus:ring-2 focus:ring-blue-500" placeholder="Поиск модулей...">
+                <i class="fas fa-search absolute left-4 top-3.5 text-gray-400 text-[10px]"></i>
+            </div>
+        </div>
+
+        <nav id="moduleList" class="flex-grow px-6 space-y-1 py-2 overflow-y-auto custom-scrollbar">
+            <a href="<?= $this->url('/') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
                 <i class="fas fa-th-large w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Дашборд</span>
+                <span class="ml-3 font-bold text-sm">Дашборд</span>
             </a>
-            <a href="<?= $this->url('/accommodation') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+            <div class="pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase px-4 tracking-[0.2em]">Основные</div>
+            <a href="<?= $this->url('/accommodation') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
                 <i class="fas fa-door-open w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Размещение</span>
+                <span class="ml-3 font-bold text-sm">Размещение</span>
             </a>
-            <a href="<?= $this->url('/accommodation/housekeeping') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-broom w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Уборка</span>
-            </a>
-            <a href="<?= $this->url('/booking') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+            <a href="<?= $this->url('/booking') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
                 <i class="fas fa-calendar-check w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Бронирование</span>
+                <span class="ml-3 font-bold text-sm">Бронирование</span>
             </a>
-            <a href="<?= $this->url('/guests') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-users w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Гости</span>
-            </a>
-            <a href="<?= $this->url('/medical/patients') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-user-md w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Пациенты</span>
-            </a>
-            <a href="<?= $this->url('/medical') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+            <a href="<?= $this->url('/medical') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
                 <i class="fas fa-notes-medical w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Медицина</span>
+                <span class="ml-3 font-bold text-sm">Медицина</span>
             </a>
-            <a href="<?= $this->url('/finance') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+            <a href="<?= $this->url('/finance') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
                 <i class="fas fa-wallet w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Финансы</span>
+                <span class="ml-3 font-bold text-sm">Финансы</span>
             </a>
-            <a href="<?= $this->url('/finance/transactions') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-exchange-alt w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Транзакции</span>
-            </a>
-            <a href="<?= $this->url('/inventory') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-boxes w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Склад</span>
-            </a>
-            <a href="<?= $this->url('/inventory/labels') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-barcode w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Этикетки</span>
-            </a>
-            <a href="<?= $this->url('/reports') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-chart-pie w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Отчеты</span>
-            </a>
-            <a href="<?= $this->url('/loyalty') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-gem w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Лояльность</span>
-            </a>
-            <a href="<?= $this->url('/transport') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-bus w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Транспорт</span>
-            </a>
-            <div class="pt-4 pb-2 text-xs font-semibold text-gray-400 uppercase px-4">Система</div>
-            <a href="<?= $this->url('/help') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-question-circle w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Справка</span>
-            </a>
-            <a href="<?= $this->url('/settings') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+
+            <div class="pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase px-4 tracking-[0.2em]">Все модули</div>
+            <div class="space-y-1" id="dynamicModules">
+                <?php
+                    $modulesConfig = $config->get('modules', []);
+                    $modulesPath = __DIR__ . '/../../../modules';
+                    $essential = ['Accommodation', 'Booking', 'Medical', 'Finance', 'Settings', 'AI', 'Reports', 'Guests', 'Notifications', 'Help', 'Loyalty', 'Transport', 'Inventory'];
+                    $dirs = array_diff(scandir($modulesPath), ['.', '..']);
+                    foreach ($dirs as $dir) {
+                        if (in_array($dir, $essential)) continue;
+                        $isEnabled = !isset($modulesConfig[$dir]) || $modulesConfig[$dir] === true;
+                        if (!$isEnabled) continue;
+                        echo "<a href='{$this->url('/' . strtolower($dir))}' class='sidebar-link flex items-center px-4 py-2 text-gray-500 rounded-xl hover:bg-gray-50 transition-all group module-item' data-name='".strtolower($dir)."'>
+                            <i class='fas fa-cube w-6 text-gray-300 group-hover:text-blue-400 text-xs'></i>
+                            <span class='ml-3 text-xs font-semibold'>$dir</span>
+                        </a>";
+                    }
+                ?>
+            </div>
+
+            <div class="pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase px-4 tracking-[0.2em]">Система</div>
+            <a href="<?= $this->url('/settings') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
                 <i class="fas fa-cog w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Настройки</span>
+                <span class="ml-3 font-bold text-sm">Настройки</span>
             </a>
-            <a href="<?= $this->url('/settings/audit') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-history w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Аудит</span>
-            </a>
-            <a href="<?= $this->url('/settings/backup') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
-                <i class="fas fa-database w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-medium">Бэкап</span>
+            <a href="<?= $this->url('/help') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
+                <i class="fas fa-question-circle w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-bold text-sm">Справка</span>
             </a>
         </nav>
 
@@ -121,12 +107,17 @@
     <!-- Main Content -->
     <div class="flex-grow flex flex-col overflow-hidden">
         <!-- Top Bar -->
-        <header class="h-16 bg-white border-b flex items-center justify-between px-4 md:px-8 z-10 shadow-sm">
+        <header class="h-20 bg-white border-b flex items-center justify-between px-4 md:px-10 z-10 shadow-sm glass">
             <div class="flex items-center">
-                <button onclick="toggleSidebar()" class="md:hidden mr-4 text-gray-600">
-                    <i class="fas fa-bars text-xl"></i>
+                <button onclick="toggleSidebar()" class="md:hidden mr-4 w-10 h-10 flex items-center justify-center bg-gray-100 rounded-xl text-gray-600">
+                    <i class="fas fa-bars text-lg"></i>
                 </button>
-                <h1 class="text-xl font-semibold text-gray-800"><?= $title ?></h1>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 leading-none"><?= $title ?></h1>
+                    <div class="flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                        <i class="fas fa-map-marker-alt text-blue-500 mr-1"></i> Санаторий "Солнечный" <span class="mx-2">•</span> <i class="fas fa-calendar-alt text-purple-500 mr-1"></i> <?= date('d M Y') ?>
+                    </div>
+                </div>
             </div>
 
             <div class="flex items-center space-x-6">
@@ -151,7 +142,7 @@
             </div>
         </header>
 
-        <main class="flex-grow overflow-y-auto p-4 md:p-8">
+        <main class="flex-grow overflow-y-auto p-4 md:p-10 custom-scrollbar">
             <?= $content ?>
         </main>
     </div>
@@ -179,6 +170,30 @@
     </div>
 
     <script>
+        function filterModules() {
+            const input = document.getElementById('moduleSearch');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.module-item');
+
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                if (name.includes(filter)) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        // Module Toggler Logic
+        function toggleModule(moduleName, isEnabled) {
+            fetch('<?= $this->url('/api/settings/toggle-module') ?>', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({module: moduleName, enabled: isEnabled})
+            }).then(() => window.location.reload());
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('sidebar-open');

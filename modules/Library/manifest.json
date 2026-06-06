@@ -1,0 +1,6 @@
+{
+    "name": "Library",
+    "description": "Библиотека и читальный зал",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Library\\Module"
+}

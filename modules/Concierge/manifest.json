@@ -1,0 +1,6 @@
+{
+    "name": "Concierge",
+    "description": "Консьерж-сервис",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Concierge\\Module"
+}

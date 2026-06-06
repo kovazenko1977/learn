@@ -1,0 +1,6 @@
+{
+    "name": "Payroll_System",
+    "description": "Расчет зарплаты",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Payroll_System\\Module"
+}

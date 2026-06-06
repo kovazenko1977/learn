@@ -1,0 +1,6 @@
+{
+    "name": "SPA_Center",
+    "description": "SPA и велнес",
+    "version": "1.0.0",
+    "class": "App\\Modules\\SPA_Center\\Module"
+}

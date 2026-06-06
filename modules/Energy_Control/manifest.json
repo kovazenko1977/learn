@@ -1,0 +1,6 @@
+{
+    "name": "Energy_Control",
+    "description": "Энергоучет",
+    "version": "1.0.0",
+    "class": "App\\Modules\\Energy_Control\\Module"
+}
