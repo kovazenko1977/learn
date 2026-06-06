@@ -30,6 +30,14 @@ class Router
         $method = $this->request->getMethod();
         $uri = $this->request->getUri();
 
+        // Standardize URI for matching (ensure leading slash, no trailing slash unless it's root)
+        if ($uri !== '/' && str_ends_with($uri, '/')) {
+            $uri = rtrim($uri, '/');
+        }
+        if (!str_starts_with($uri, '/')) {
+            $uri = '/' . $uri;
+        }
+
         foreach ($this->routes as $route) {
             if ($route['method'] === $method && $this->matchPath($route['path'], $uri, $params)) {
                 $handler = $route['handler'];

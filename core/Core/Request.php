@@ -6,6 +6,22 @@ namespace App\Core;
 
 class Request
 {
+    private string $basePath = '';
+
+    public function __construct()
+    {
+        $this->detectBasePath();
+    }
+
+    private function detectBasePath(): void
+    {
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $this->basePath = str_replace('\\', '/', dirname($scriptName));
+        if ($this->basePath === '/') {
+            $this->basePath = '';
+        }
+    }
+
     public function getMethod(): string
     {
         return $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -14,10 +30,25 @@ class Request
     public function getUri(): string
     {
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+        // Remove query string
         if (false !== $pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);
         }
-        return rawurldecode($uri);
+
+        $uri = rawurldecode($uri);
+
+        // Strip base path
+        if ($this->basePath !== '' && strpos($uri, $this->basePath) === 0) {
+            $uri = substr($uri, strlen($this->basePath));
+        }
+
+        return $uri === '' ? '/' : $uri;
+    }
+
+    public function getBasePath(): string
+    {
+        return $this->basePath;
     }
 
     public function getBody(): array
