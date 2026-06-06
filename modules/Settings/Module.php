@@ -13,6 +13,85 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/settings', [$this, 'index']);
+        $router->addRoute('GET', '/settings/audit', [$this, 'audit']);
+        $router->addRoute('GET', '/settings/backup', [$this, 'backup']);
+    }
+
+    public function audit($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $content = "
+        <div class='mb-8'>
+            <h2 class='text-3xl font-bold text-gray-800'>Журнал аудита</h2>
+            <p class='text-gray-500 mt-1'>Полный контроль всех действий пользователей в системе.</p>
+        </div>
+
+        <div class='bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden'>
+            <table class='w-full text-left'>
+                <thead class='bg-gray-50 border-b'>
+                    <tr class='text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
+                        <th class='px-8 py-4'>Кто</th>
+                        <th class='px-8 py-4'>Действие</th>
+                        <th class='px-8 py-4'>Модуль</th>
+                        <th class='px-8 py-4'>Когда</th>
+                        <th class='px-8 py-4'>IP</th>
+                    </tr>
+                </thead>
+                <tbody class='divide-y'>
+                    <tr class='hover:bg-gray-50 transition-colors'>
+                        <td class='px-8 py-4 font-bold'>Admin</td>
+                        <td class='px-8 py-4 text-sm'>Создание брони #BK_64a2b</td>
+                        <td class='px-8 py-4'><span class='text-blue-600 font-bold text-xs'>Booking</span></td>
+                        <td class='px-8 py-4 text-gray-400 text-xs'>10.06.2024 14:02:12</td>
+                        <td class='px-8 py-4 text-gray-400 text-xs'>192.168.1.15</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Аудит - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
+    }
+
+    public function backup($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $content = "
+        <div class='mb-8'>
+            <h2 class='text-3xl font-bold text-gray-800'>Резервное копирование</h2>
+            <p class='text-gray-500 mt-1'>Управление архивами данных и восстановление системы.</p>
+        </div>
+
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
+            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm'>
+                <h3 class='font-bold text-lg mb-4'>Создать копию</h3>
+                <p class='text-sm text-gray-500 mb-6'>Система упакует папку storage/ в ZIP-архив и сохранит в backup/.</p>
+                <button class='bg-blue-600 text-white px-8 py-3 rounded-xl font-bold w-full'>Запустить бэкап сейчас</button>
+            </div>
+
+            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm'>
+                <h3 class='font-bold text-lg mb-4'>Последние копии</h3>
+                <div class='space-y-3'>
+                    <div class='flex items-center justify-between p-4 bg-gray-50 rounded-2xl'>
+                        <span class='text-sm font-medium'>backup_2024-06-10.zip</span>
+                        <span class='text-xs text-gray-400 font-bold'>1.2 MB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Бэкапы - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
     }
 
     public function index($request, $response): string

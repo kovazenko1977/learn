@@ -13,6 +13,8 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/medical', [$this, 'index']);
+        $router->addRoute('GET', '/medical/patients', [$this, 'patients']);
+        $router->addRoute('GET', '/medical/history/{id}', [$this, 'history']);
     }
 
     public function index($request, $response): string
@@ -124,6 +126,93 @@ class Module extends BaseModule
 
         return $renderer->render('layout', [
             'title' => 'Медицинский блок - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
+    }
+
+    public function patients($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $guests = $storage->find('guests');
+
+        $content = "
+        <div class='mb-8 flex justify-between items-center'>
+            <div>
+                <h2 class='text-3xl font-bold text-gray-800'>Картотека пациентов</h2>
+                <p class='text-gray-500 mt-1'>История лечения и текущие назначения.</p>
+            </div>
+        </div>
+
+        <div class='bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden'>
+            <table class='w-full text-left'>
+                <thead class='bg-gray-50 border-b'>
+                    <tr class='text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
+                        <th class='px-8 py-4'>ФИО</th>
+                        <th class='px-8 py-4'>Диагноз</th>
+                        <th class='px-8 py-4'>Лечащий врач</th>
+                        <th class='px-8 py-4 text-right'>Действия</th>
+                    </tr>
+                </thead>
+                <tbody class='divide-y'>
+                    <tr class='hover:bg-gray-50 transition-colors'>
+                        <td class='px-8 py-4 font-bold text-gray-800'>Николаев Александр Сергеевич</td>
+                        <td class='px-8 py-4 text-gray-500 text-sm'>Остеохондроз позвоночника</td>
+                        <td class='px-8 py-4 text-gray-500 text-sm'>Иванов И.И.</td>
+                        <td class='px-8 py-4 text-right'>
+                            <a href='{$renderer->url('/medical/history/1')}' class='text-blue-600 font-bold text-xs'>История болезни</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Пациенты - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
+    }
+
+    public function history($request, $response, $id): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $content = "
+        <div class='mb-8'>
+            <a href='{$renderer->url('/medical/patients')}' class='text-blue-600 font-bold mb-4 flex items-center'>
+                <i class='fas fa-arrow-left mr-2'></i> К списку пациентов
+            </a>
+            <h2 class='text-3xl font-bold text-gray-800'>История болезни #{$id}</h2>
+            <p class='text-gray-500'>Пациент: Николаев Александр Сергеевич</p>
+        </div>
+
+        <div class='space-y-6'>
+            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm'>
+                <h3 class='font-bold text-gray-800 mb-4'>Анамнез</h3>
+                <p class='text-gray-600 leading-relaxed text-sm'>Жалобы на боли в поясничном отделе позвоночника в течение 2-х недель. Ранее проходил лечение в 2022 году. Аллергических реакций на грязелечение не выявлено.</p>
+            </div>
+
+            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm'>
+                <h3 class='font-bold text-gray-800 mb-4'>Назначенные процедуры</h3>
+                <ul class='space-y-3'>
+                    <li class='flex items-center justify-between p-4 bg-blue-50 rounded-2xl'>
+                        <span class='font-medium text-blue-800'>Подводный душ-массаж</span>
+                        <span class='text-xs font-bold text-blue-500'>10 сеансов</span>
+                    </li>
+                    <li class='flex items-center justify-between p-4 bg-green-50 rounded-2xl'>
+                        <span class='font-medium text-green-800'>Электрофорез с новокаином</span>
+                        <span class='text-xs font-bold text-green-500'>5 сеансов</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Медицинская карта - VSPRINT 2.0',
             'content' => $content,
             'user' => ['username' => 'Admin']
         ]);

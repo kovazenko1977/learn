@@ -15,6 +15,8 @@ class Module extends BaseModule
 
         $router->addRoute('GET', '/accommodation', [$this, 'index']);
         $router->addRoute('POST', '/accommodation/add', [$this, 'addRoom']);
+        $router->addRoute('GET', '/accommodation/housekeeping', [$this, 'housekeeping']);
+        $router->addRoute('POST', '/api/accommodation/status', [$this, 'updateStatus']);
         $router->addRoute('GET', '/api/accommodation/rooms', [$this, 'getRooms']);
     }
 
@@ -154,5 +156,91 @@ class Module extends BaseModule
     {
         $storage = $this->container->get(\App\Storage\StorageManager::class);
         $response->json($storage->find('rooms'));
+    }
+
+    public function housekeeping($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $rooms = $storage->find('rooms');
+
+        $content = "
+        <div class='mb-8'>
+            <h2 class='text-3xl font-bold text-gray-800'>Служба Housekeeping</h2>
+            <p class='text-gray-500'>Мониторинг чистоты и технического состояния номеров.</p>
+        </div>
+
+        <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+            <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                <p class='text-xs font-bold text-gray-400 uppercase mb-2'>Требует уборки</p>
+                <p class='text-3xl font-bold text-orange-500'>8</p>
+            </div>
+            <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                <p class='text-xs font-bold text-gray-400 uppercase mb-2'>В процессе</p>
+                <p class='text-3xl font-bold text-blue-500'>3</p>
+            </div>
+            <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                <p class='text-xs font-bold text-gray-400 uppercase mb-2'>Проверено</p>
+                <p class='text-3xl font-bold text-green-500'>24</p>
+            </div>
+            <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
+                <p class='text-xs font-bold text-gray-400 uppercase mb-2'>Тех. неисправность</p>
+                <p class='text-3xl font-bold text-red-500'>2</p>
+            </div>
+        </div>
+
+        <div class='bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden'>
+            <table class='w-full text-left'>
+                <thead class='bg-gray-50 border-b'>
+                    <tr class='text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
+                        <th class='px-8 py-4'>Номер</th>
+                        <th class='px-8 py-4'>Тип</th>
+                        <th class='px-8 py-4'>Статус чистоты</th>
+                        <th class='px-8 py-4'>Последняя уборка</th>
+                        <th class='px-8 py-4 text-right'>Действия</th>
+                    </tr>
+                </thead>
+                <tbody class='divide-y'>";
+
+        foreach ($rooms as $room) {
+            $content .= "
+                    <tr class='hover:bg-gray-50 transition-colors'>
+                        <td class='px-8 py-4 font-bold text-gray-800'>№ {$room['number']}</td>
+                        <td class='px-8 py-4 text-gray-500 text-sm'>{$room['type']}</td>
+                        <td class='px-8 py-4'>
+                            <span class='px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase'>Чисто</span>
+                        </td>
+                        <td class='px-8 py-4 text-gray-400 text-sm'>Сегодня, 09:15</td>
+                        <td class='px-8 py-4 text-right'>
+                            <button class='text-blue-600 hover:text-blue-800 font-bold text-xs'>Назначить уборку</button>
+                        </td>
+                    </tr>";
+        }
+
+        $content .= "
+                </tbody>
+            </table>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Housekeeping - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
+    }
+
+    public function updateStatus($request, $response): void
+    {
+        $data = $request->getBody();
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+
+        $room = $storage->findOne('rooms', ['number' => $data['number']]);
+        if ($room) {
+            $room['status'] = $data['status'];
+            $storage->save('rooms', $room);
+        }
+
+        $response->json(['success' => true]);
     }
 }

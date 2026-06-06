@@ -13,6 +13,45 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/inventory', [$this, 'index']);
+        $router->addRoute('GET', '/inventory/labels', [$this, 'labels']);
+    }
+
+    public function labels($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $content = "
+        <div class='mb-8'>
+            <h2 class='text-3xl font-bold text-gray-800'>Печать этикеток</h2>
+            <p class='text-gray-500 mt-1'>Генерация штрих-кодов для оборудования и ТМЦ.</p>
+        </div>
+
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-8'>
+            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center'>
+                <div class='w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+                    <i class='fas fa-barcode text-4xl text-gray-400'></i>
+                </div>
+                <h3 class='font-bold text-lg mb-2'>Оборудование</h3>
+                <p class='text-sm text-gray-400 mb-6'>Этикетки 58x40мм для инвентаризации ОС.</p>
+                <button class='w-full py-3 bg-blue-600 text-white font-bold rounded-xl'>Печатать пакет (42 шт)</button>
+            </div>
+
+            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center'>
+                <div class='w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6'>
+                    <i class='fas fa-qrcode text-4xl text-gray-400'></i>
+                </div>
+                <h3 class='font-bold text-lg mb-2'>Медикаменты</h3>
+                <p class='text-sm text-gray-400 mb-6'>QR-коды для быстрого списания через мобильное приложение.</p>
+                <button class='w-full py-3 bg-blue-600 text-white font-bold rounded-xl'>Печатать пакет (120 шт)</button>
+            </div>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Этикетки - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
     }
 
     public function index($request, $response): string

@@ -13,6 +13,69 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/finance', [$this, 'index']);
+        $router->addRoute('GET', '/finance/transactions', [$this, 'transactions']);
+        $router->addRoute('GET', '/finance/stats', [$this, 'stats']);
+    }
+
+    public function transactions($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $content = "
+        <div class='mb-8 flex justify-between items-center'>
+            <div>
+                <h2 class='text-3xl font-bold text-gray-800'>Движение средств</h2>
+                <p class='text-gray-500 mt-1'>История всех оплат, возвратов и начислений бонусов.</p>
+            </div>
+            <div class='flex space-x-3'>
+                <button class='bg-green-600 text-white px-6 py-2 rounded-xl font-bold'>+ Приход</button>
+                <button class='bg-red-500 text-white px-6 py-2 rounded-xl font-bold'>- Расход</button>
+            </div>
+        </div>
+
+        <div class='bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden'>
+            <table class='w-full text-left'>
+                <thead class='bg-gray-50 border-b'>
+                    <tr class='text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
+                        <th class='px-8 py-4'>Дата</th>
+                        <th class='px-8 py-4'>Категория</th>
+                        <th class='px-8 py-4'>Гость / Контрагент</th>
+                        <th class='px-8 py-4 text-right'>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody class='divide-y'>
+                    <tr class='hover:bg-gray-50 transition-colors'>
+                        <td class='px-8 py-4 text-gray-500 text-sm'>Сегодня, 11:45</td>
+                        <td class='px-8 py-4'><span class='px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold'>Проживание</span></td>
+                        <td class='px-8 py-4 font-bold text-gray-800'>Николаев А.С.</td>
+                        <td class='px-8 py-4 text-right font-bold text-green-600'>+ 48,000 ₽</td>
+                    </tr>
+                    <tr class='hover:bg-gray-50 transition-colors'>
+                        <td class='px-8 py-4 text-gray-500 text-sm'>Вчера, 16:20</td>
+                        <td class='px-8 py-4'><span class='px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-[10px] font-bold'>Хоз. расходы</span></td>
+                        <td class='px-8 py-4 font-bold text-gray-800'>ООО \"Чистый Мир\"</td>
+                        <td class='px-8 py-4 text-right font-bold text-red-600'>- 12,500 ₽</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        ";
+
+        return $renderer->render('layout', [
+            'title' => 'Транзакции - VSPRINT 2.0',
+            'content' => $content,
+            'user' => ['username' => 'Admin']
+        ]);
+    }
+
+    public function stats($request, $response): void
+    {
+        $response->json([
+            'monthly_revenue' => 12840000,
+            'daily_revenue' => 450000,
+            'expenses' => 3200000,
+            'net_profit' => 9640000
+        ]);
     }
 
     public function index($request, $response): string

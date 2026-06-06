@@ -4,8 +4,10 @@
         "number": "101",
         "floor": 1,
         "type": "Стандарт",
-        "status": "свободен",
-        "price": 3500
+        "status": "занят",
+        "price": 3500,
+        "occupied_places": 1,
+        "updated_at": "2026-06-06 13:55:21"
     },
     {
         "id": "r2",

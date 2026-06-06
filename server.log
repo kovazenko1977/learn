@@ -9,3 +9,68 @@
 [Sat Jun  6 12:14:52 2026] [::1]:41410 Closing
 [Sat Jun  6 12:14:52 2026] [::1]:41422 Accepted
 [Sat Jun  6 12:14:52 2026] [::1]:41422 Closing
+[Sat Jun  6 13:51:06 2026] [::1]:56398 Accepted
+[Sat Jun  6 13:51:06 2026] [::1]:56398 Closing
+[Sat Jun  6 13:51:07 2026] [::1]:56406 Accepted
+[Sat Jun  6 13:51:07 2026] [::1]:56406 Closing
+[Sat Jun  6 13:51:08 2026] [::1]:56422 Accepted
+[Sat Jun  6 13:51:08 2026] [::1]:56422 Closing
+[Sat Jun  6 13:51:08 2026] [::1]:56436 Accepted
+[Sat Jun  6 13:51:08 2026] [::1]:56436 Closing
+[Sat Jun  6 13:51:08 2026] [::1]:56448 Accepted
+[Sat Jun  6 13:51:08 2026] [::1]:56448 Closing
+[Sat Jun  6 13:51:09 2026] [::1]:56460 Accepted
+[Sat Jun  6 13:51:09 2026] [::1]:56460 Closing
+[Sat Jun  6 13:51:09 2026] [::1]:56472 Accepted
+[Sat Jun  6 13:51:09 2026] [::1]:56472 Closing
+[Sat Jun  6 13:51:09 2026] [::1]:56486 Accepted
+[Sat Jun  6 13:51:09 2026] [::1]:56486 Closing
+[Sat Jun  6 13:51:10 2026] [::1]:56492 Accepted
+[Sat Jun  6 13:51:10 2026] [::1]:56492 Closing
+[Sat Jun  6 13:51:57 2026] [::1]:43406 Accepted
+[Sat Jun  6 13:51:57 2026] [::1]:43406 Closing
+[Sat Jun  6 13:51:58 2026] [::1]:43420 Accepted
+[Sat Jun  6 13:51:58 2026] [::1]:43420 Closing
+[Sat Jun  6 13:51:58 2026] [::1]:43422 Accepted
+[Sat Jun  6 13:51:58 2026] [::1]:43422 Closing
+[Sat Jun  6 13:51:58 2026] [::1]:43434 Accepted
+[Sat Jun  6 13:51:58 2026] [::1]:43434 Closing
+[Sat Jun  6 13:51:58 2026] [::1]:43442 Accepted
+[Sat Jun  6 13:51:58 2026] PHP Fatal error:  Uncaught Error: Call to undefined method App\Storage\StorageManager::save() in /app/modules/Booking/Module.php:194
+Stack trace:
+#0 [internal function]: App\Modules\Booking\Module->save()
+#1 /app/core/Core/Router.php(46): call_user_func_array()
+#2 /app/core/Core/App.php(202): App\Core\Router->dispatch()
+#3 /app/index.php(43): App\Core\App->run()
+#4 {main}
+  thrown in /app/modules/Booking/Module.php on line 194
+[Sat Jun  6 13:51:58 2026] [::1]:43442 Closing
+[Sat Jun  6 13:53:45 2026] [::1]:46512 Accepted
+[Sat Jun  6 13:53:45 2026] [::1]:46512 Closing
+[Sat Jun  6 13:53:46 2026] [::1]:46520 Accepted
+[Sat Jun  6 13:53:46 2026] [::1]:46520 Closing
+[Sat Jun  6 13:53:46 2026] [::1]:46532 Accepted
+[Sat Jun  6 13:53:46 2026] [::1]:46532 Closing
+[Sat Jun  6 13:53:46 2026] [::1]:46542 Accepted
+[Sat Jun  6 13:53:46 2026] [::1]:46542 Closing
+[Sat Jun  6 13:53:47 2026] [::1]:46546 Accepted
+[Sat Jun  6 13:53:47 2026] [::1]:46546 Closing
+[Sat Jun  6 13:53:47 2026] [::1]:46562 Accepted
+[Sat Jun  6 13:53:47 2026] [::1]:46562 Closing
+[Sat Jun  6 13:53:47 2026] [::1]:46574 Accepted
+[Sat Jun  6 13:53:47 2026] [::1]:46574 Closing
+[Sat Jun  6 13:55:20 2026] [::1]:38142 Accepted
+[Sat Jun  6 13:55:20 2026] [::1]:38142 Closing
+[Sat Jun  6 13:55:20 2026] [::1]:38148 Accepted
+[Sat Jun  6 13:55:20 2026] [::1]:38148 Closing
+[Sat Jun  6 13:55:20 2026] [::1]:38152 Accepted
+[Sat Jun  6 13:55:20 2026] [::1]:38152 Closing
+[Sat Jun  6 13:55:20 2026] [::1]:38166 Accepted
+[Sat Jun  6 13:55:20 2026] [::1]:38166 Closing
+[Sat Jun  6 13:55:21 2026] [::1]:38174 Accepted
+[Sat Jun  6 13:55:21 2026] PHP Warning:  Undefined array key "places" in /app/modules/Booking/Module.php on line 208
+[Sat Jun  6 13:55:21 2026] [::1]:38174 Closing
+[Sat Jun  6 13:55:21 2026] [::1]:38184 Accepted
+[Sat Jun  6 13:55:21 2026] [::1]:38184 Closing
+[Sat Jun  6 13:55:21 2026] [::1]:38196 Accepted
+[Sat Jun  6 13:55:21 2026] [::1]:38196 Closing

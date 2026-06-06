@@ -1,0 +1,20 @@
+[
+    {
+        "id": "BK_6a24266b0b4e9",
+        "room_number": "101",
+        "guest_name": "Тестовый Гость",
+        "date_from": "2024-07-01",
+        "date_to": "2024-07-10",
+        "status": "confirmed",
+        "created_at": "2026-06-06 13:53:47"
+    },
+    {
+        "id": "BK_6a2426c912d60",
+        "room_number": "101",
+        "guest_name": "Тестовый Гость",
+        "date_from": "2024-07-01",
+        "date_to": "2024-07-10",
+        "status": "confirmed",
+        "created_at": "2026-06-06 13:55:21"
+    }
+]

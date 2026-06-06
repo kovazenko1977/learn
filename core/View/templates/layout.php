@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
+    <meta name="theme-color" content="#2563eb">
     <title><?= $title ?? 'Sanatorium 2.0' ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,11 +13,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .sidebar-link.active { background-color: #f3f4f6; border-right: 4px solid #3b82f6; color: #1e40af; }
+        @media (max-width: 768px) {
+            .sidebar-open { transform: translateX(0) !important; }
+            .sidebar-closed { transform: translateX(-100%) !important; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r flex flex-col hidden md:flex">
+    <aside id="sidebar" class="w-64 bg-white border-r flex flex-col fixed md:relative h-full z-40 transition-transform duration-300 sidebar-closed md:transform-none">
         <div class="p-6 flex items-center space-x-3">
             <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-200">
                 <i class="fas fa-hospital-user text-xl"></i>
@@ -32,6 +38,10 @@
                 <i class="fas fa-door-open w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Размещение</span>
             </a>
+            <a href="<?= $this->url('/accommodation/housekeeping') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-broom w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Уборка</span>
+            </a>
             <a href="<?= $this->url('/booking') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
                 <i class="fas fa-calendar-check w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Бронирование</span>
@@ -40,17 +50,29 @@
                 <i class="fas fa-users w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Гости</span>
             </a>
-            <a href="<?= $this->url('/medical') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+            <a href="<?= $this->url('/medical/patients') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
                 <i class="fas fa-user-md w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Пациенты</span>
+            </a>
+            <a href="<?= $this->url('/medical') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-notes-medical w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Медицина</span>
             </a>
             <a href="<?= $this->url('/finance') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
                 <i class="fas fa-wallet w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Финансы</span>
             </a>
+            <a href="<?= $this->url('/finance/transactions') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-exchange-alt w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Транзакции</span>
+            </a>
             <a href="<?= $this->url('/inventory') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
                 <i class="fas fa-boxes w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Склад</span>
+            </a>
+            <a href="<?= $this->url('/inventory/labels') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-barcode w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Этикетки</span>
             </a>
             <a href="<?= $this->url('/reports') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
                 <i class="fas fa-chart-pie w-6 text-gray-400 group-hover:text-blue-500"></i>
@@ -73,6 +95,14 @@
                 <i class="fas fa-cog w-6 text-gray-400 group-hover:text-blue-500"></i>
                 <span class="ml-3 font-medium">Настройки</span>
             </a>
+            <a href="<?= $this->url('/settings/audit') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-history w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Аудит</span>
+            </a>
+            <a href="<?= $this->url('/settings/backup') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors group">
+                <i class="fas fa-database w-6 text-gray-400 group-hover:text-blue-500"></i>
+                <span class="ml-3 font-medium">Бэкап</span>
+            </a>
         </nav>
 
         <div class="p-4 border-t bg-gray-50">
@@ -91,9 +121,9 @@
     <!-- Main Content -->
     <div class="flex-grow flex flex-col overflow-hidden">
         <!-- Top Bar -->
-        <header class="h-16 bg-white border-b flex items-center justify-between px-8 z-10 shadow-sm">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-4 md:px-8 z-10 shadow-sm">
             <div class="flex items-center">
-                <button class="md:hidden mr-4 text-gray-600">
+                <button onclick="toggleSidebar()" class="md:hidden mr-4 text-gray-600">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 <h1 class="text-xl font-semibold text-gray-800"><?= $title ?></h1>
@@ -121,7 +151,7 @@
             </div>
         </header>
 
-        <main class="flex-grow overflow-y-auto p-8">
+        <main class="flex-grow overflow-y-auto p-4 md:p-8">
             <?= $content ?>
         </main>
     </div>
@@ -149,6 +179,16 @@
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('sidebar-open');
+            sidebar.classList.toggle('sidebar-closed');
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('<?= $this->url('/sw.js') ?>');
+        }
+
         function toggleDarkMode() {
             document.body.classList.toggle('bg-gray-900');
             document.body.classList.toggle('text-white');
