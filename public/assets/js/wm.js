@@ -12,6 +12,67 @@ class WindowManager {
         window.addEventListener('resize', () => {
             this.isMobile = window.innerWidth <= 640;
         });
+
+        // Глобальный перехват кликов для навигации внутри окон
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link && link.closest('.window-content')) {
+                const url = link.getAttribute('href');
+                if (url && !url.startsWith('http') && !url.startsWith('javascript') && !url.startsWith('#')) {
+                    e.preventDefault();
+                    const win = link.closest('.window');
+                    this.loadContent(win, url);
+                }
+            }
+        });
+
+        // Глобальный перехват отправки форм внутри окон
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            if (form.closest('.window-content')) {
+                e.preventDefault();
+                const win = form.closest('.window');
+                this.submitForm(win, form);
+            }
+        });
+    }
+
+    async submitForm(win, form) {
+        const url = form.getAttribute('action');
+        const method = form.getAttribute('method') || 'POST';
+        const formData = new FormData(form);
+
+        const contentArea = win.querySelector('.window-content');
+        contentArea.innerHTML = `
+            <div class="flex items-center justify-center h-full">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        `;
+
+        try {
+            const options = {
+                method: method.toUpperCase(),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            };
+
+            if (options.method === 'GET') {
+                const params = new URLSearchParams(formData).toString();
+                const fullUrl = url.includes('?') ? `${url}&${params}` : `${url}?${params}`;
+                return this.loadContent(win, fullUrl);
+            } else {
+                options.body = formData;
+            }
+
+            const response = await fetch(url, options);
+            if (response.redirected) {
+                return this.loadContent(win, response.url);
+            }
+
+            const html = await response.text();
+            this.updateWindowContent(win, html);
+        } catch (e) {
+            this.showError(win, e.message);
+        }
     }
 
     createWindow(title, url, icon = 'fa-window-maximize', iconClass = 'text-blue-500') {
@@ -19,7 +80,6 @@ class WindowManager {
         const win = document.createElement('div');
         win.id = id;
 
-        // Базовые классы окна
         win.className = 'window absolute bg-[#f8fafc] border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 transform scale-95 opacity-0';
 
         if (this.isMobile) {
@@ -93,27 +153,37 @@ class WindowManager {
             const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
             if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
             const html = await response.text();
-            contentArea.innerHTML = html;
-
-            const scripts = contentArea.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement('script');
-                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
+            this.updateWindowContent(win, html);
         } catch (e) {
-            contentArea.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full text-center p-4">
-                    <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-4">
-                        <i class="fas fa-exclamation-triangle text-2xl"></i>
-                    </div>
-                    <h3 class="text-base font-bold text-slate-800">Ошибка модуля</h3>
-                    <p class="text-xs text-slate-500 mt-2">${e.message}</p>
-                    <button onclick="location.reload()" class="mt-6 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">Перезагрузить</button>
-                </div>
-            `;
+            this.showError(win, e.message);
         }
+    }
+
+    updateWindowContent(win, html) {
+        const contentArea = win.querySelector('.window-content');
+        contentArea.innerHTML = html;
+
+        const scripts = contentArea.querySelectorAll('script');
+        scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+    }
+
+    showError(win, message) {
+        const contentArea = win.querySelector('.window-content');
+        contentArea.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-full text-center p-4">
+                <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">Ошибка модуля</h3>
+                <p class="text-xs text-slate-500 mt-2">${message}</p>
+                <button onclick="location.reload()" class="mt-6 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">Перезагрузить</button>
+            </div>
+        `;
     }
 
     addTaskbarIcon(id, title, icon, iconClass) {
