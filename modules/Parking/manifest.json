@@ -1,6 +1,0 @@
-{
-    "name": "Parking",
-    "description": "Автопарковка",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Parking\\Module"
-}

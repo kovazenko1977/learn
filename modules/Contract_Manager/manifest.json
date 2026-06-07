@@ -1,6 +1,0 @@
-{
-    "name": "Contract_Manager",
-    "description": "Договорной отдел",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Contract_Manager\\Module"
-}

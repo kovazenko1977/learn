@@ -1,6 +1,0 @@
-{
-    "name": "Water_Supply",
-    "description": "Водоснабжение",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Water_Supply\\Module"
-}

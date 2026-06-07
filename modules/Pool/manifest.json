@@ -1,6 +1,1 @@
-{
-    "name": "Pool",
-    "description": "Бассейн и водные зоны",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Pool\\Module"
-}
+{ "name": "Бассейн", "icon": "fa-droplet", "color": "text-cyan-500" }

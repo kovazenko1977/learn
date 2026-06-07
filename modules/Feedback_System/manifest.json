@@ -1,6 +1,0 @@
-{
-    "name": "Feedback_System",
-    "description": "Отзывы и предложения",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Feedback_System\\Module"
-}

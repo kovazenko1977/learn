@@ -1,6 +1,0 @@
-{
-    "name": "Asset_Tracking",
-    "description": "Учет активов",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Asset_Tracking\\Module"
-}

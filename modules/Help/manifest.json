@@ -1,6 +1,0 @@
-{
-    "name": "Help",
-    "version": "1.0.0",
-    "description": "System documentation and Help center",
-    "class": "App\\Modules\\Help\\Module"
-}

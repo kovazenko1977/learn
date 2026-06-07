@@ -13,35 +13,41 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/ai-chat', [$this, 'index']);
-        $router->addRoute('POST', '/api/ai/ask', [$this, 'ask']);
     }
 
     public function index($request, $response): string
     {
         return "
         <div class='flex flex-col h-full max-w-2xl mx-auto'>
-            <div class='mb-8 text-center'>
-                <div class='w-20 h-20 rounded-[2rem] bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white text-3xl shadow-xl mx-auto mb-4'>
+            <div class='mb-10 text-center'>
+                <div class='w-24 h-24 rounded-[2.5rem] bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-white text-4xl shadow-2xl mx-auto mb-6 border-4 border-white'>
                     <i class='fas fa-brain'></i>
                 </div>
-                <h2 class='text-2xl font-bold text-slate-800 tracking-tight'>AI Ассистент</h2>
-                <p class='text-slate-500 text-sm'>Задайте вопрос о загрузке, финансах или гостях.</p>
+                <h2 class='text-3xl font-black text-slate-800 tracking-tighter'>AI Ассистент руководителя</h2>
+                <p class='text-slate-500 font-medium'>Интеллектуальный анализ данных санатория в режиме реального времени.</p>
             </div>
 
-            <div id='chat-history' class='flex-grow overflow-y-auto space-y-4 p-6 bg-slate-50 rounded-[2.5rem] mb-6 custom-scrollbar h-[400px]'>
-                <div class='flex items-start space-x-3'>
-                    <div class='w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xs'><i class='fas fa-robot'></i></div>
-                    <div class='bg-white p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[80%]'>
-                        <p class='text-sm text-slate-700 font-medium'>Здравствуйте! Я помогу вам проанализировать работу санатория. Что вас интересует?</p>
+            <div id='chat-history' class='flex-grow overflow-y-auto space-y-6 p-8 bg-slate-50 rounded-[3rem] mb-8 custom-scrollbar h-[420px] shadow-inner border border-slate-100'>
+                <div class='flex items-start space-x-4'>
+                    <div class='w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg'><i class='fas fa-robot text-sm'></i></div>
+                    <div class='bg-white p-5 rounded-[1.5rem] rounded-tl-none shadow-sm border border-slate-100 max-w-[85%]'>
+                        <p class='text-sm text-slate-700 font-bold leading-relaxed'>Добро пожаловать в систему Sanatorium AI. Я проанализировал текущие показатели: заезд сегодня составляет 12 человек, выручка в норме. Какой отчет вас интересует?</p>
+                        <div class='mt-4 flex flex-wrap gap-2'>
+                            <button onclick=\"document.getElementById('ai-input').value='Выручка за неделю'; askAI()\" class='px-3 py-1.5 bg-slate-50 hover:bg-blue-50 text-[10px] font-black text-slate-500 hover:text-blue-600 rounded-lg border border-slate-200 transition-all uppercase'>Выручка</button>
+                            <button onclick=\"document.getElementById('ai-input').value='Свободные номера'; askAI()\" class='px-3 py-1.5 bg-slate-50 hover:bg-blue-50 text-[10px] font-black text-slate-500 hover:text-blue-600 rounded-lg border border-slate-200 transition-all uppercase'>Свободные места</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class='relative'>
-                <input type='text' id='ai-input' placeholder='Например: какая выручка за месяц?' class='w-full bg-white border border-slate-100 rounded-3xl pl-6 pr-16 py-4 text-sm font-semibold shadow-xl focus:ring-4 focus:ring-blue-500/10 outline-none'>
-                <button onclick='askAI()' class='absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center hover:bg-blue-500 transition-all'>
-                    <i class='fas fa-paper-plane text-xs'></i>
-                </button>
+            <div class='relative group'>
+                <div class='absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[2rem] blur opacity-20 group-focus-within:opacity-40 transition duration-500'></div>
+                <div class='relative bg-white rounded-[2rem] shadow-2xl flex items-center p-2 border border-slate-100'>
+                    <input type='text' id='ai-input' placeholder='Напишите запрос (напр. \"создай отчет по питанию\")' class='flex-grow bg-transparent pl-6 pr-4 py-4 text-sm font-black text-slate-800 outline-none'>
+                    <button onclick='askAI()' class='w-14 h-14 bg-slate-900 text-white rounded-[1.5rem] flex items-center justify-center hover:bg-blue-600 transition-all shadow-xl active:scale-95'>
+                        <i class='fas fa-paper-plane text-xs'></i>
+                    </button>
+                </div>
             </div>
 
             <script>
@@ -53,26 +59,25 @@ class Module extends BaseModule
                     const userMsg = input.value;
                     input.value = '';
 
-                    // Add user message
                     history.innerHTML += `
-                        <div class='flex items-start space-x-3 justify-end'>
-                            <div class='bg-blue-600 p-4 rounded-2xl rounded-tr-none shadow-sm max-w-[80%] text-white'>
-                                <p class='text-sm font-medium'>\${userMsg}</p>
+                        <div class='flex items-start space-x-4 justify-end'>
+                            <div class='bg-slate-900 p-5 rounded-[1.5rem] rounded-tr-none shadow-xl max-w-[85%] text-white'>
+                                <p class='text-sm font-bold leading-relaxed'>\${userMsg}</p>
                             </div>
                         </div>
                     `;
 
-                    // Mock API call
                     setTimeout(() => {
-                        let response = 'Я анализирую данные...';
-                        if (userMsg.toLowerCase().includes('выручка')) response = 'Общая выручка на текущий момент составляет около 2.4 млн рублей. Это на 12% больше плана.';
-                        if (userMsg.toLowerCase().includes('номера')) response = 'На данный момент свободно 14 номеров категории Стандарт и 2 номера Люкс.';
+                        let response = 'К сожалению, я не смог обработать этот запрос в текущей версии. Попробуйте запросить данные по выручке или номерному фонду.';
+                        const text = userMsg.toLowerCase();
+                        if (text.includes('выручка')) response = 'Валовая выручка за последние 7 дней составила **480 200 ₽**. Прогноз до конца месяца: **2.1 млн ₽**.';
+                        if (text.includes('номера') || text.includes('места')) response = 'На данный момент в Реестре **4 свободных номера** (2 Стандарта, 1 Люкс и 1 Апартаменты).';
 
                         history.innerHTML += `
-                            <div class='flex items-start space-x-3'>
-                                <div class='w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xs'><i class='fas fa-robot'></i></div>
-                                <div class='bg-white p-4 rounded-2xl rounded-tl-none shadow-sm max-w-[80%]'>
-                                    <p class='text-sm text-slate-700 font-medium'>\${response}</p>
+                            <div class='flex items-start space-x-4'>
+                                <div class='w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg'><i class='fas fa-robot text-sm'></i></div>
+                                <div class='bg-white p-5 rounded-[1.5rem] rounded-tl-none shadow-sm border border-slate-100 max-w-[85%]'>
+                                    <p class='text-sm text-slate-700 font-bold leading-relaxed'>\${response}</p>
                                 </div>
                             </div>
                         `;

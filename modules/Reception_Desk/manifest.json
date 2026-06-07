@@ -1,6 +1,0 @@
-{
-    "name": "Reception_Desk",
-    "description": "Ресепшн и прием",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Reception_Desk\\Module"
-}

@@ -1,6 +1,0 @@
-{
-    "name": "Laundry",
-    "description": "Стирка и химчистка",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Laundry\\Module"
-}

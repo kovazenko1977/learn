@@ -1,6 +1,0 @@
-{
-    "name": "Maintenance",
-    "description": "Техническая служба",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Maintenance\\Module"
-}

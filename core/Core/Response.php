@@ -34,6 +34,13 @@ class Response
 
     public function redirect(string $url): void
     {
+        // Специальная обработка для AJAX-запросов из окон
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+            $this->setHeader('X-Redirect', $url);
+            $this->send();
+            return;
+        }
+
         header('Location: ' . $url);
         exit;
     }
@@ -45,6 +52,6 @@ class Response
             header("$name: $value");
         }
         echo $this->content;
-        exit; // Important: terminate after sending
+        exit;
     }
 }

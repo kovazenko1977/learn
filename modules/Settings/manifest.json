@@ -1,6 +1,1 @@
-{
-    "name": "Settings & Security",
-    "version": "1.0.0",
-    "description": "System configuration and logs",
-    "class": "App\\Modules\\Settings\\Module"
-}
+{ "name": "Настройки" }

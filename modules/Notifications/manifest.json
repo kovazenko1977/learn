@@ -1,6 +1,0 @@
-{
-    "name": "Notifications",
-    "version": "1.0.0",
-    "description": "System alerts and user notifications",
-    "class": "App\\Modules\\Notifications\\Module"
-}

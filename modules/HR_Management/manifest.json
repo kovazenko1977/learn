@@ -1,6 +1,0 @@
-{
-    "name": "HR_Management",
-    "description": "Управление персоналом",
-    "version": "1.0.0",
-    "class": "App\\Modules\\HR_Management\\Module"
-}

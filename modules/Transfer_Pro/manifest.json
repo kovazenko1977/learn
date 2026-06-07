@@ -1,6 +1,0 @@
-{
-    "name": "Transfer_Pro",
-    "description": "Трансферы и логистика",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Transfer_Pro\\Module"
-}

@@ -1,7 +1,1 @@
-{
-    "name": "Booking",
-    "version": "1.0.0",
-    "description": "Reservation and booking management",
-    "class": "App\\Modules\\Booking\\Module",
-    "permissions": ["manage_bookings"]
-}
+{ "name": "Бронирование" }

@@ -1,6 +1,0 @@
-{
-    "name": "Beach_Zone",
-    "description": "Пляжная зона",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Beach_Zone\\Module"
-}

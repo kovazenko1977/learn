@@ -1,6 +1,0 @@
-{
-    "name": "Kids_Club",
-    "description": "Детский клуб",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Kids_Club\\Module"
-}

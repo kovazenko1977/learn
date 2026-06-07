@@ -1,6 +1,1 @@
-{
-    "name": "Reports & Analytics",
-    "version": "1.0.0",
-    "description": "Business intelligence and exports",
-    "class": "App\\Modules\\Reports\\Module"
-}
+{ "name": "Аналитика", "icon": "fa-chart-line", "color": "text-blue-500" }

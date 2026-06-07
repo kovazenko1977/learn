@@ -1,6 +1,0 @@
-{
-    "name": "Insurance",
-    "description": "Страхование",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Insurance\\Module"
-}

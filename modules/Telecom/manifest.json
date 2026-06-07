@@ -1,6 +1,0 @@
-{
-    "name": "Telecom",
-    "description": "Связь и интернет",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Telecom\\Module"
-}

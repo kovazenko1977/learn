@@ -1,6 +1,0 @@
-{
-    "name": "CRM_System",
-    "description": "Взаимоотношения с клиентами",
-    "version": "1.0.0",
-    "class": "App\\Modules\\CRM_System\\Module"
-}

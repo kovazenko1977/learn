@@ -1,6 +1,0 @@
-{
-    "name": "Procurement",
-    "description": "Закупки и снабжение",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Procurement\\Module"
-}

@@ -19,54 +19,45 @@ class Module extends BaseModule
     {
         return "
         <div class='mb-10'>
-            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Центр отчетов</h2>
-            <p class='text-slate-500 mt-2'>Генерация аналитических и финансовых документов.</p>
+            <h2 class='text-3xl font-black text-slate-800 tracking-tighter'>Аналитика и Отчетность</h2>
+            <p class='text-slate-500 mt-2 font-medium'>Формирование сводных ведомостей и статистических данных.</p>
         </div>
 
         <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
-            <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
-                 <h4 class='text-lg font-bold text-slate-800 mb-6'>Популярные отчеты</h4>
-                 <div class='space-y-4'>
-                    <button class='w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group text-left'>
+            <div class='bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm'>
+                <h3 class='font-black text-slate-800 uppercase text-xs tracking-widest mb-10'>Шаблоны отчетов</h3>
+                <div class='space-y-4'>
+                    <button class='w-full p-6 bg-slate-50 border border-slate-100 rounded-[1.5rem] flex items-center justify-between hover:bg-blue-50 hover:border-blue-200 transition-all group'>
                         <div class='flex items-center'>
-                            <div class='w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-blue-500 mr-4 shadow-sm'><i class='fas fa-file-invoice-dollar'></i></div>
-                            <div>
-                                <p class='text-sm font-bold text-slate-700'>Отчет по выручке</p>
-                                <p class='text-[10px] text-slate-400 font-bold uppercase'>За период (неделя/месяц)</p>
+                            <i class='fas fa-file-invoice-dollar text-slate-400 group-hover:text-blue-600 mr-5 text-xl'></i>
+                            <div class='text-left'>
+                                <p class='text-sm font-black text-slate-800'>Финансовая ведомость</p>
+                                <p class='text-[10px] text-slate-400 font-bold uppercase'>Выручка и затраты за период</p>
                             </div>
                         </div>
-                        <i class='fas fa-chevron-right text-[10px] text-slate-300'></i>
+                        <i class='fas fa-chevron-right text-slate-300 group-hover:text-blue-600'></i>
                     </button>
-                    <button class='w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group text-left'>
+                    <button class='w-full p-6 bg-slate-50 border border-slate-100 rounded-[1.5rem] flex items-center justify-between hover:bg-emerald-50 hover:border-emerald-200 transition-all group'>
                         <div class='flex items-center'>
-                            <div class='w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-blue-500 mr-4 shadow-sm'><i class='fas fa-users-viewfinder'></i></div>
-                            <div>
-                                <p class='text-sm font-bold text-slate-700'>Загрузка номерного фонда</p>
-                                <p class='text-[10px] text-slate-400 font-bold uppercase'>Прогноз на 14 дней</p>
+                            <i class='fas fa-user-check text-slate-400 group-hover:text-emerald-600 mr-5 text-xl'></i>
+                            <div class='text-left'>
+                                <p class='text-sm font-black text-slate-800'>Загрузка номерного фонда</p>
+                                <p class='text-[10px] text-slate-400 font-bold uppercase'>Анализ заселяемости по корпусам</p>
                             </div>
                         </div>
-                        <i class='fas fa-chevron-right text-[10px] text-slate-300'></i>
+                        <i class='fas fa-chevron-right text-slate-300 group-hover:text-emerald-600'></i>
                     </button>
-                    <button class='w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group text-left'>
-                        <div class='flex items-center'>
-                            <div class='w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-blue-500 mr-4 shadow-sm'><i class='fas fa-notes-medical'></i></div>
-                            <div>
-                                <p class='text-sm font-bold text-slate-700'>Медицинская статистика</p>
-                                <p class='text-[10px] text-slate-400 font-bold uppercase'>По видам процедур</p>
-                            </div>
-                        </div>
-                        <i class='fas fa-chevron-right text-[10px] text-slate-300'></i>
-                    </button>
-                 </div>
+                </div>
             </div>
 
-            <div class='bg-slate-900 p-10 rounded-[2.5rem] text-white flex flex-col justify-center items-center text-center shadow-2xl shadow-slate-900/20'>
-                <div class='w-20 h-20 rounded-[2rem] bg-white/10 flex items-center justify-center text-blue-400 text-3xl mb-6'>
-                    <i class='fas fa-chart-pie'></i>
+            <div class='bg-slate-900 p-12 rounded-[3.5rem] text-white flex flex-col items-center justify-center text-center shadow-3xl shadow-slate-900/30 relative overflow-hidden'>
+                <div class='relative z-10'>
+                    <div class='w-24 h-24 bg-white/10 rounded-[2.5rem] flex items-center justify-center text-blue-400 text-4xl mb-8 mx-auto'><i class='fas fa-chart-pie'></i></div>
+                    <h3 class='text-2xl font-black mb-4'>Конструктор отчетов</h3>
+                    <p class='text-slate-400 text-sm mb-10 leading-relaxed'>Создавайте произвольные выборки данных по любым параметрам системы без программирования.</p>
+                    <button class='px-12 py-5 bg-blue-600 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] shadow-2xl shadow-blue-600/30 hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all'>Запустить конструктор</button>
                 </div>
-                <h4 class='text-xl font-bold mb-2'>Конструктор отчетов</h4>
-                <p class='text-slate-400 text-sm mb-8'>Создайте собственный шаблон отчета с произвольными полями и фильтрами.</p>
-                <button class='px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold text-xs hover:bg-blue-500 transition-all'>Запустить конструктор</button>
+                <i class='fas fa-rocket absolute -right-10 -bottom-10 text-[15rem] opacity-5 -rotate-12'></i>
             </div>
         </div>
         ";

@@ -1,6 +1,0 @@
-{
-    "name": "PDF",
-    "version": "1.0.0",
-    "description": "Генерация печатных форм и PDF",
-    "class": "App\\Modules\\PDF\\Module"
-}

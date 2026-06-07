@@ -1,6 +1,0 @@
-{
-    "name": "Warehouse_Pro",
-    "description": "Профессиональный склад",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Warehouse_Pro\\Module"
-}

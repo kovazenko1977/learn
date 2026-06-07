@@ -1,6 +1,0 @@
-{
-    "name": "Bicycles",
-    "description": "Велопрокат",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Bicycles\\Module"
-}

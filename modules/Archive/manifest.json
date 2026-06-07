@@ -1,6 +1,0 @@
-{
-    "name": "Archive",
-    "description": "Архив документов",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Archive\\Module"
-}

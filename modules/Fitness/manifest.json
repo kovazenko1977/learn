@@ -1,6 +1,1 @@
-{
-    "name": "Fitness",
-    "description": "Тренажерный зал",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Fitness\\Module"
-}
+{ "name": "Фитнес" }

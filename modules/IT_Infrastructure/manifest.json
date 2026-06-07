@@ -1,6 +1,0 @@
-{
-    "name": "IT_Infrastructure",
-    "description": "ИТ Инфраструктура",
-    "version": "1.0.0",
-    "class": "App\\Modules\\IT_Infrastructure\\Module"
-}

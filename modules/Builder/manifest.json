@@ -1,6 +1,0 @@
-{
-    "name": "Builder",
-    "version": "1.0.0",
-    "description": "Конструктор сущностей и интерфейсов",
-    "class": "App\\Modules\\Builder\\Module"
-}

@@ -1,6 +1,1 @@
-{
-    "name": "Transport & Logistics",
-    "version": "1.0.0",
-    "description": "Transfers, excursions, and fleet management",
-    "class": "App\\Modules\\Transport\\Module"
-}
+{ "name": "Транспорт" }

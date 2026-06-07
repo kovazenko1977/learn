@@ -1,6 +1,1 @@
-{
-    "name": "Kitchen",
-    "description": "Управление питанием и меню",
-    "version": "1.0.0",
-    "class": "App\\Modules\\Kitchen\\Module"
-}
+{ "name": "Питание", "icon": "fa-utensils", "color": "text-orange-400" }

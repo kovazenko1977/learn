@@ -19,43 +19,32 @@ class Module extends BaseModule
     {
         return "
         <div class='mb-10'>
-            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Библиотечный фонд</h2>
-            <p class='text-slate-500 mt-2'>Каталог книг, периодических изданий и учет выдачи литературы.</p>
+            <h2 class='text-3xl font-black text-slate-800 tracking-tighter'>Библиотечный фонд</h2>
+            <p class='text-slate-500 mt-2 font-medium'>Учет книжного фонда и регистрации выдачи литературы гостям.</p>
         </div>
 
-        <div class='grid grid-cols-1 md:grid-cols-4 gap-6'>
-            <div class='md:col-span-1 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm'>
-                 <h4 class='font-bold text-slate-800 mb-4'>Категории</h4>
-                 <div class='space-y-1'>
-                    <button class='w-full text-left p-2 rounded-xl bg-blue-50 text-blue-600 text-xs font-bold'>Классика</button>
-                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>Детективы</button>
-                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>История</button>
-                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>Детское</button>
-                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>Журналы</button>
-                 </div>
+        <div class='bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm'>
+            <div class='flex justify-between items-center mb-10'>
+                <h3 class='font-black text-slate-800 uppercase text-xs tracking-widest'>Популярное сейчас</h3>
+                <button class='px-6 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest'>Весь каталог</button>
             </div>
-
-            <div class='md:col-span-3 space-y-6'>
-                 <div class='bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between'>
-                    <div class='flex items-center space-x-6'>
-                        <div class='w-16 h-20 bg-slate-200 rounded shadow-inner flex items-center justify-center text-slate-400'><i class='fas fa-book-open'></i></div>
-                        <div>
-                            <p class='font-bold text-slate-800 italic'>«Война и Мир»</p>
-                            <p class='text-xs text-slate-500 font-medium'>Л.Н. Толстой • 1867</p>
-                        </div>
+            <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
+                <div class='flex items-center space-x-6 p-6 bg-slate-50 rounded-[2rem] border border-slate-100'>
+                    <div class='w-16 h-24 bg-slate-300 rounded shadow-2xl flex-shrink-0 flex items-center justify-center text-white'><i class='fas fa-book-open text-2xl'></i></div>
+                    <div>
+                        <p class='font-black text-slate-800 italic'>«Война и Мир»</p>
+                        <p class='text-xs text-slate-500 font-bold'>Л.Н. Толстой</p>
+                        <span class='inline-block mt-4 px-3 py-1 bg-emerald-100 text-emerald-600 text-[9px] font-black uppercase rounded-full'>В наличии</span>
                     </div>
-                    <span class='text-[10px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full'>В наличии</span>
-                 </div>
-                 <div class='bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between'>
-                    <div class='flex items-center space-x-6'>
-                        <div class='w-16 h-20 bg-slate-200 rounded shadow-inner flex items-center justify-center text-slate-400'><i class='fas fa-book-open'></i></div>
-                        <div>
-                            <p class='font-bold text-slate-800 italic'>«Мастер и Маргарита»</p>
-                            <p class='text-xs text-slate-500 font-medium'>М.А. Булгаков • 1966</p>
-                        </div>
+                </div>
+                <div class='flex items-center space-x-6 p-6 bg-slate-50 rounded-[2rem] border border-slate-100 opacity-60'>
+                    <div class='w-16 h-24 bg-slate-300 rounded shadow-2xl flex-shrink-0 flex items-center justify-center text-white'><i class='fas fa-book-open text-2xl'></i></div>
+                    <div>
+                        <p class='font-black text-slate-800 italic'>«Мастер и Маргарита»</p>
+                        <p class='text-xs text-slate-500 font-bold'>М.А. Булгаков</p>
+                        <span class='inline-block mt-4 px-3 py-1 bg-rose-100 text-rose-600 text-[9px] font-black uppercase rounded-full'>Выдано (к. 201)</span>
                     </div>
-                    <span class='text-[10px] font-bold text-rose-400 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full'>На руках (возврат 15.01)</span>
-                 </div>
+                </div>
             </div>
         </div>
         ";

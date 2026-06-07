@@ -23,10 +23,7 @@ class Module extends BaseModule
         $renderer = $this->container->get(\App\View\Renderer::class);
         $storage = $this->container->get(\App\Storage\StorageManager::class);
         $rooms = $storage->find('rooms');
-
-        return $renderer->render('Booking/index', [
-            'rooms' => $rooms
-        ]);
+        return $renderer->render('Booking/index', ['rooms' => $rooms]);
     }
 
     public function create($request, $response): string
@@ -35,7 +32,6 @@ class Module extends BaseModule
         $storage = $this->container->get(\App\Storage\StorageManager::class);
         $params = $request->getBody();
         $selectedRoom = $params['room'] ?? '';
-
         $rooms = $storage->find('rooms');
 
         return $renderer->render('Booking/create', [
@@ -62,13 +58,13 @@ class Module extends BaseModule
         foreach($existingBookings as $eb) {
             $existingGuests[] = [
                 'gender' => $eb['guest_gender'] ?? 'unknown',
-                'age' => (int)($eb['guest_age'] ?? 30)
+                'age' => (int)($eb['guest_age'] ?? 35)
             ];
         }
 
         $newGuest = [
             'gender' => $data['guest_gender'],
-            'age' => (int)$data['guest_age'],
+            'age' => (int)($data['guest_age'] ?? 35),
             'is_family' => $data['is_family']
         ];
 
@@ -85,6 +81,8 @@ class Module extends BaseModule
             'guest_name' => $data['guest_name'],
             'guest_gender' => $data['guest_gender'],
             'guest_age' => $data['guest_age'],
+            'guest_address' => $data['guest_address'] ?? '',
+            'passport' => ($data['passport_series'] ?? '') . ' ' . ($data['passport_number'] ?? ''),
             'is_family' => $data['is_family'],
             'date_from' => $data['date_from'],
             'date_to' => $data['date_to'],
@@ -95,6 +93,8 @@ class Module extends BaseModule
         $room['occupied_places'] = ($room['occupied_places'] ?? 0) + 1;
         if ($room['occupied_places'] >= $room['places']) {
             $room['status'] = 'занят';
+        } else {
+            $room['status'] = 'бронь';
         }
         $storage->update('rooms', $room['id'], $room);
 

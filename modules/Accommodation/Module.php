@@ -12,7 +12,6 @@ class Module extends BaseModule
     public function boot(): void
     {
         $router = $this->container->get(Router::class);
-
         $router->addRoute('GET', '/accommodation', [$this, 'index']);
         $router->addRoute('POST', '/accommodation/add', [$this, 'addRoom']);
     }
@@ -21,12 +20,8 @@ class Module extends BaseModule
     {
         $renderer = $this->container->get(\App\View\Renderer::class);
         $storage = $this->container->get(\App\Storage\StorageManager::class);
-
         $rooms = $storage->find('rooms');
-
-        return $renderer->render('Accommodation/index', [
-            'rooms' => $rooms
-        ]);
+        return $renderer->render('Accommodation/index', ['rooms' => $rooms]);
     }
 
     public function addRoom($request, $response): void
@@ -36,6 +31,7 @@ class Module extends BaseModule
 
         if (!empty($data['number'])) {
             $storage->insert('rooms', [
+                'building' => $data['building'] ?? '1',
                 'number' => $data['number'],
                 'type' => $data['type'] ?? 'Стандарт',
                 'floor' => (int)($data['floor'] ?? 1),
@@ -50,7 +46,6 @@ class Module extends BaseModule
         }
 
         $renderer = $this->container->get(\App\View\Renderer::class);
-        header('Location: ' . $renderer->url('/accommodation'));
-        exit;
+        $response->redirect($renderer->url('/accommodation'));
     }
 }
