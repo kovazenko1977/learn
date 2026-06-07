@@ -17,65 +17,58 @@ class Module extends BaseModule
 
     public function index($request, $response): string
     {
-        $renderer = $this->container->get(\App\View\Renderer::class);
-
-        $content = "
-        <div class='mb-8'>
-            <h2 class='text-3xl font-bold text-gray-800'>Отчетность и Аналитика</h2>
-            <p class='text-gray-500 mt-1'>Генерация документов, графики эффективности и экспорт данных.</p>
+        return "
+        <div class='mb-10'>
+            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Центр отчетов</h2>
+            <p class='text-slate-500 mt-2'>Генерация аналитических и финансовых документов.</p>
         </div>
 
-        <div class='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            <div class='bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group'>
-                <div class='w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all'>
-                    <i class='fas fa-file-invoice-dollar text-2xl'></i>
-                </div>
-                <h3 class='text-xl font-bold text-gray-800 mb-2'>Финансовый отчет</h3>
-                <p class='text-sm text-gray-500 mb-6'>Доходы, расходы, средний чек и дебиторская задолженность за выбранный период.</p>
-                <button class='text-blue-600 font-bold text-sm flex items-center'>
-                    Сформировать <i class='fas fa-chevron-right ml-2'></i>
-                </button>
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
+            <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
+                 <h4 class='text-lg font-bold text-slate-800 mb-6'>Популярные отчеты</h4>
+                 <div class='space-y-4'>
+                    <button class='w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group text-left'>
+                        <div class='flex items-center'>
+                            <div class='w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-blue-500 mr-4 shadow-sm'><i class='fas fa-file-invoice-dollar'></i></div>
+                            <div>
+                                <p class='text-sm font-bold text-slate-700'>Отчет по выручке</p>
+                                <p class='text-[10px] text-slate-400 font-bold uppercase'>За период (неделя/месяц)</p>
+                            </div>
+                        </div>
+                        <i class='fas fa-chevron-right text-[10px] text-slate-300'></i>
+                    </button>
+                    <button class='w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group text-left'>
+                        <div class='flex items-center'>
+                            <div class='w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-blue-500 mr-4 shadow-sm'><i class='fas fa-users-viewfinder'></i></div>
+                            <div>
+                                <p class='text-sm font-bold text-slate-700'>Загрузка номерного фонда</p>
+                                <p class='text-[10px] text-slate-400 font-bold uppercase'>Прогноз на 14 дней</p>
+                            </div>
+                        </div>
+                        <i class='fas fa-chevron-right text-[10px] text-slate-300'></i>
+                    </button>
+                    <button class='w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-blue-50 transition-colors group text-left'>
+                        <div class='flex items-center'>
+                            <div class='w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-400 group-hover:text-blue-500 mr-4 shadow-sm'><i class='fas fa-notes-medical'></i></div>
+                            <div>
+                                <p class='text-sm font-bold text-slate-700'>Медицинская статистика</p>
+                                <p class='text-[10px] text-slate-400 font-bold uppercase'>По видам процедур</p>
+                            </div>
+                        </div>
+                        <i class='fas fa-chevron-right text-[10px] text-slate-300'></i>
+                    </button>
+                 </div>
             </div>
 
-            <div class='bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group'>
-                <div class='w-14 h-14 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6 group-hover:bg-green-600 group-hover:text-white transition-all'>
-                    <i class='fas fa-bed text-2xl'></i>
+            <div class='bg-slate-900 p-10 rounded-[2.5rem] text-white flex flex-col justify-center items-center text-center shadow-2xl shadow-slate-900/20'>
+                <div class='w-20 h-20 rounded-[2rem] bg-white/10 flex items-center justify-center text-blue-400 text-3xl mb-6'>
+                    <i class='fas fa-chart-pie'></i>
                 </div>
-                <h3 class='text-xl font-bold text-gray-800 mb-2'>Загрузка фонда</h3>
-                <p class='text-sm text-gray-500 mb-6'>Анализ занятости номеров, прогноз на месяц и статистика по категориям размещения.</p>
-                <button class='text-green-600 font-bold text-sm flex items-center'>
-                    Сформировать <i class='fas fa-chevron-right ml-2'></i>
-                </button>
-            </div>
-
-            <div class='bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group'>
-                <div class='w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-all'>
-                    <i class='fas fa-notes-medical text-2xl'></i>
-                </div>
-                <h3 class='text-xl font-bold text-gray-800 mb-2'>Медицинская активность</h3>
-                <p class='text-sm text-gray-500 mb-6'>Популярность процедур, загрузка кабинетов и статистика по заболеваниям.</p>
-                <button class='text-purple-600 font-bold text-sm flex items-center'>
-                    Сформировать <i class='fas fa-chevron-right ml-2'></i>
-                </button>
-            </div>
-        </div>
-
-        <div class='mt-12 bg-white p-8 rounded-2xl border border-gray-100'>
-            <h3 class='text-lg font-bold text-gray-800 mb-6'>Настройка параметров экспорта</h3>
-            <div class='grid grid-cols-1 md:grid-cols-4 gap-4'>
-                <select class='border-gray-200 rounded-xl'><option>За неделю</option><option>За месяц</option></select>
-                <select class='border-gray-200 rounded-xl'><option>PDF Document</option><option>Excel (XLSX)</option><option>CSV</option></select>
-                <button class='md:col-span-2 bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-black transition-all'>
-                    Скачать пакетный архив отчетов
-                </button>
+                <h4 class='text-xl font-bold mb-2'>Конструктор отчетов</h4>
+                <p class='text-slate-400 text-sm mb-8'>Создайте собственный шаблон отчета с произвольными полями и фильтрами.</p>
+                <button class='px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold text-xs hover:bg-blue-500 transition-all'>Запустить конструктор</button>
             </div>
         </div>
         ";
-
-        return $renderer->render('layout', [
-            'title' => 'Отчеты - VSPRINT 2.0',
-            'content' => $content,
-            'user' => ['username' => 'Admin']
-        ]);
     }
 }

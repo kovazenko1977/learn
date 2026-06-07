@@ -12,7 +12,6 @@ class Module extends BaseModule
     public function boot(): void
     {
         $router = $this->container->get(Router::class);
-
         $router->addRoute('GET', '/guests', [$this, 'index']);
     }
 
@@ -20,89 +19,62 @@ class Module extends BaseModule
     {
         $renderer = $this->container->get(\App\View\Renderer::class);
         $storage = $this->container->get(\App\Storage\StorageManager::class);
-
-        $guests = $storage->find('guests');
+        $bookings = $storage->find('bookings');
 
         $content = "
-        <div class='mb-8 flex justify-between items-center'>
-            <div>
-                <h2 class='text-3xl font-bold text-gray-800'>Картотека гостей</h2>
-                <p class='text-gray-500 mt-1'>Централизованная база данных пациентов и отдыхающих.</p>
-            </div>
-            <div class='flex space-x-3'>
-                <button class='bg-white border text-gray-700 px-4 py-2 rounded-xl font-bold flex items-center hover:bg-gray-50'>
-                    <i class='fas fa-file-export mr-2'></i> Экспорт
-                </button>
-                <button class='bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 flex items-center hover:bg-blue-700'>
-                    <i class='fas fa-user-plus mr-2'></i> Регистрация
-                </button>
-            </div>
+        <div class='mb-10'>
+            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Картотека гостей</h2>
+            <p class='text-slate-500 mt-2'>Централизованная база данных всех отдыхающих санатория.</p>
         </div>
 
-        <div class='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-            <div class='bg-blue-600 p-6 rounded-2xl text-white'>
-                <h4 class='text-blue-200 text-xs font-bold uppercase mb-2'>Всего в базе</h4>
-                <p class='text-4xl font-bold'>" . count($guests) . "</p>
+        <div class='bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden'>
+            <div class='p-6 sm:p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/30'>
+                <div class='relative w-full sm:w-96'>
+                    <i class='fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300'></i>
+                    <input type='text' placeholder='Поиск по ФИО или телефону...' class='w-full bg-white border border-slate-100 rounded-2xl pl-12 pr-4 py-3 text-sm font-bold outline-none focus:ring-4 focus:ring-blue-500/10'>
+                </div>
+                <button class='w-full sm:w-auto px-8 py-3 bg-slate-900 text-white rounded-2xl text-xs font-bold hover:bg-blue-600 transition-all'>
+                    Добавить гостя
+                </button>
             </div>
-            <div class='bg-white p-6 rounded-2xl border border-gray-100'>
-                <h4 class='text-gray-400 text-xs font-bold uppercase mb-2'>Новых за неделю</h4>
-                <p class='text-4xl font-bold text-gray-800'>24</p>
-            </div>
-            <div class='bg-white p-6 rounded-2xl border border-gray-100'>
-                <h4 class='text-gray-400 text-xs font-bold uppercase mb-2'>Активные пациенты</h4>
-                <p class='text-4xl font-bold text-gray-800'>86</p>
-            </div>
-        </div>
+            <div class='overflow-x-auto'>
+                <table class='w-full text-left'>
+                    <thead>
+                        <tr class='text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border-b border-slate-50'>
+                            <th class='px-8 py-5'>Гость</th>
+                            <th class='px-8 py-5'>Контакты</th>
+                            <th class='px-8 py-5'>Статус</th>
+                            <th class='px-8 py-5 text-right'>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody class='divide-y divide-slate-50'>";
 
-        <div class='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden'>
-            <table class='w-full text-left'>
-                <thead class='bg-gray-50 border-b'>
-                    <tr class='text-gray-400 text-xs uppercase tracking-wider'>
-                        <th class='px-6 py-4 font-medium'>Гость</th>
-                        <th class='px-6 py-4 font-medium'>Статус</th>
-                        <th class='px-6 py-4 font-medium'>Баланс</th>
-                        <th class='px-6 py-4 font-medium'>Действия</th>
-                    </tr>
-                </thead>
-                <tbody class='divide-y'>
-        ";
-
-        if (empty($guests)) {
-            $content .= "<tr><td colspan='4' class='px-6 py-12 text-center text-gray-500'>Гости не найдены.</td></tr>";
+        if (empty($bookings)) {
+            $content .= "<tr><td colspan='4' class='px-8 py-20 text-center text-slate-400 font-medium'>База гостей пуста</td></tr>";
         } else {
-            foreach ($guests as $guest) {
+            foreach ($bookings as $b) {
                 $content .= "
-                <tr class='hover:bg-gray-50 transition-colors'>
-                    <td class='px-6 py-4'>
-                        <div class='flex items-center space-x-3'>
-                            <div class='w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-bold'>
-                                " . substr($guest['name'], 0, 1) . "
-                            </div>
-                            <div>
-                                <p class='font-bold text-gray-800'>{$guest['name']}</p>
-                                <p class='text-xs text-gray-500'>{$guest['phone']} • {$guest['birthdate']}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class='px-6 py-4'>
-                        <span class='px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase'>Лечение</span>
-                    </td>
-                    <td class='px-6 py-4 font-bold text-gray-800'>0 ₽</td>
-                    <td class='px-6 py-4'>
-                        <div class='flex space-x-2'>
-                            <button class='w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all'>
-                                <i class='fas fa-eye text-xs'></i>
-                            </button>
-                            <button class='w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all'>
-                                <i class='fas fa-pen text-xs'></i>
-                            </button>
-                            <button class='w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-orange-600 hover:text-white transition-all'>
-                                <i class='fas fa-notes-medical text-xs'></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                ";
+                        <tr class='hover:bg-slate-50/80 transition-colors'>
+                            <td class='px-8 py-6'>
+                                <div class='flex items-center space-x-4'>
+                                    <div class='w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 font-bold'>" . substr($b['guest_name'], 0, 1) . "</div>
+                                    <div>
+                                        <p class='font-bold text-slate-800'>{$b['guest_name']}</p>
+                                        <p class='text-[10px] text-slate-400 font-bold uppercase tracking-tighter'>{$b['guest_age']} лет • " . ($b['guest_gender'] == 'male' ? 'Мужской' : 'Женский') . "</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class='px-8 py-6'>
+                                <p class='text-sm font-bold text-slate-600'>+7 (999) 000-00-00</p>
+                                <p class='text-[10px] text-slate-400'>example@mail.ru</p>
+                            </td>
+                            <td class='px-8 py-6'>
+                                <span class='px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-widest rounded-full'>Постоянный</span>
+                            </td>
+                            <td class='px-8 py-6 text-right'>
+                                <button class='w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-300 hover:text-blue-500 transition-all'><i class='fas fa-id-card'></i></button>
+                            </td>
+                        </tr>";
             }
         }
 
@@ -110,8 +82,7 @@ class Module extends BaseModule
                     </tbody>
                 </table>
             </div>
-        </div>
-        ";
+        </div>";
 
         return $renderer->render('layout', [
             'title' => 'Гости - Sanatorium 2.0',

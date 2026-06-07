@@ -38,10 +38,14 @@ class Module extends BaseModule
             $storage->insert('rooms', [
                 'number' => $data['number'],
                 'type' => $data['type'] ?? 'Стандарт',
-                'floor' => $data['floor'] ?? 1,
+                'floor' => (int)($data['floor'] ?? 1),
                 'status' => 'свободен',
-                'price' => $data['price'] ?? 3500,
-                'places' => $data['places'] ?? 1
+                'price' => (float)($data['price'] ?? 3500),
+                'places' => (int)($data['places'] ?? 1),
+                'amenities' => $data['amenities'] ?? [],
+                'image' => $data['image'] ?? '',
+                'description' => $data['description'] ?? '',
+                'occupied_places' => 0
             ]);
         }
 

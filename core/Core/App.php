@@ -72,27 +72,42 @@ class App
         $storage = $this->container->get(StorageManager::class);
 
         $storage->seed('rooms', [
-            ['number' => '101', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'свободен', 'price' => 3500, 'places' => 1, 'occupied_places' => 0],
-            ['number' => '102', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'занят', 'price' => 3500, 'places' => 1, 'occupied_places' => 1],
-            ['number' => '103', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'свободен', 'price' => 3500, 'places' => 2, 'occupied_places' => 0],
-            ['number' => '104', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'свободен', 'price' => 3500, 'places' => 2, 'occupied_places' => 0],
-            ['number' => '201', 'type' => 'Люкс', 'floor' => 2, 'status' => 'свободен', 'price' => 7500, 'places' => 2, 'occupied_places' => 0],
-            ['number' => '202', 'type' => 'Полулюкс', 'floor' => 2, 'status' => 'уборка', 'price' => 5500, 'places' => 1, 'occupied_places' => 0],
-            ['number' => '301', 'type' => 'Апартаменты', 'floor' => 3, 'status' => 'свободен', 'price' => 12000, 'places' => 4, 'occupied_places' => 0],
-        ]);
-
-        $storage->seed('bookings', [
             [
-                'id' => 'BK_DEMO_1',
-                'room_number' => '102',
-                'guest_name' => 'Петров Петр Петрович',
-                'guest_gender' => 'male',
-                'guest_age' => 45,
-                'is_family' => 'no',
-                'date_from' => date('Y-m-d', strtotime('-3 days')),
-                'date_to' => date('Y-m-d', strtotime('+4 days')),
-                'status' => 'confirmed'
-            ]
+                'number' => '101',
+                'type' => 'Стандарт',
+                'floor' => 1,
+                'status' => 'свободен',
+                'price' => 3500,
+                'places' => 1,
+                'occupied_places' => 0,
+                'amenities' => ['wifi', 'tv', 'shower'],
+                'image' => 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800',
+                'description' => 'Уютный одноместный номер со всеми удобствами и быстрым Wi-Fi.'
+            ],
+            [
+                'number' => '201',
+                'type' => 'Люкс',
+                'floor' => 2,
+                'status' => 'свободен',
+                'price' => 8500,
+                'places' => 2,
+                'occupied_places' => 0,
+                'amenities' => ['wifi', 'tv', 'fridge', 'ac', 'shower', 'safe', 'balcony'],
+                'image' => 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800',
+                'description' => 'Просторный двухкомнатный люкс с панорамным видом на парк и полным оснащением.'
+            ],
+            [
+                'number' => '305',
+                'type' => 'Апартаменты',
+                'floor' => 3,
+                'status' => 'свободен',
+                'price' => 12500,
+                'places' => 4,
+                'occupied_places' => 0,
+                'amenities' => ['wifi', 'tv', 'fridge', 'ac', 'shower', 'safe', 'microwave', 'balcony'],
+                'image' => 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800',
+                'description' => 'Семейные апартаменты с собственной кухней и двумя спальнями.'
+            ],
         ]);
     }
 
