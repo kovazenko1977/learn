@@ -95,7 +95,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 
-        /* Mobile fixes */
         .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
@@ -159,36 +158,32 @@
 
         <div class="flex-grow grid grid-cols-2 p-4 gap-1 overflow-y-auto custom-scrollbar">
             <?php
-                $translations = [
-                    'Accommodation' => 'Размещение',
-                    'Booking' => 'Бронирование',
-                    'Medical' => 'Медицина',
-                    'Finance' => 'Финансы',
-                    'AI' => 'AI Помощник',
-                    'Settings' => 'Настройки',
-                    'Guests' => 'База гостей',
-                    'Reports' => 'Отчетность',
-                    'Analytics' => 'Аналитика',
-                    'Services' => 'Доп. услуги',
-                    'Kitchen' => 'Питание/Меню',
-                    'Cleaning' => 'Уборка номеров',
-                    'Warehouse' => 'Складской учет',
-                    'HR' => 'Кадры'
+                // Список разрешенных и переведенных модулей
+                $allowedModules = [
+                    'Accommodation' => ['name' => 'Размещение', 'icon' => 'fa-door-open', 'color' => 'text-amber-400'],
+                    'Booking' => ['name' => 'Бронирование', 'icon' => 'fa-calendar-check', 'color' => 'text-emerald-400'],
+                    'Guests' => ['name' => 'База гостей', 'icon' => 'fa-users', 'color' => 'text-blue-400'],
+                    'Medical' => ['name' => 'Медицина', 'icon' => 'fa-heart-pulse', 'color' => 'text-rose-400'],
+                    'Finance' => ['name' => 'Финансы', 'icon' => 'fa-vault', 'color' => 'text-indigo-400'],
+                    'AI' => ['name' => 'AI Помощник', 'icon' => 'fa-brain', 'color' => 'text-purple-400'],
+                    'Cleaning' => ['name' => 'Уборка', 'icon' => 'fa-broom', 'color' => 'text-sky-400'],
+                    'Kitchen' => ['name' => 'Питание', 'icon' => 'fa-utensils', 'color' => 'text-orange-400'],
+                    'Warehouse' => ['name' => 'Склад', 'icon' => 'fa-boxes-stacked', 'color' => 'text-slate-400'],
+                    'Reports' => ['name' => 'Отчеты', 'icon' => 'fa-file-chart-pie', 'color' => 'text-blue-500'],
+                    'Settings' => ['name' => 'Настройки', 'icon' => 'fa-gear', 'color' => 'text-slate-500'],
+                    'Transport' => ['name' => 'Транспорт', 'icon' => 'fa-bus', 'color' => 'text-blue-600'],
+                    'Pool' => ['name' => 'Бассейн', 'icon' => 'fa-water', 'color' => 'text-cyan-500'],
+                    'Fitness' => ['name' => 'Фитнес-зал', 'icon' => 'fa-dumbbell', 'color' => 'text-red-500'],
+                    'Library' => ['name' => 'Библиотека', 'icon' => 'fa-book', 'color' => 'text-brown-500'],
+                    'Security' => ['name' => 'Безопасность', 'icon' => 'fa-shield-halved', 'color' => 'text-indigo-600']
                 ];
 
-                $modulesPath = __DIR__ . '/../../../modules';
-                $dirs = array_diff(scandir($modulesPath), ['.', '..']);
-                sort($dirs);
-                foreach ($dirs as $dir) {
-                    $displayName = $translations[$dir] ?? $dir;
-                    // Skip technical/redundant folders for cleaner UI
-                    if (str_starts_with($dir, 'V') || strlen($dir) < 3) continue;
-
-                    echo "<button onclick=\"wm.createWindow('$displayName', '{$this->url('/' . strtolower($dir))}', 'fa-cube', 'text-blue-400'); toggleStart()\" class='flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 text-slate-300 transition-all text-left'>
-                        <div class='w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0'>
-                            <i class='fas fa-cube text-blue-400 text-xs'></i>
+                foreach ($allowedModules as $dir => $meta) {
+                    echo "<button onclick=\"wm.createWindow('{$meta['name']}', '{$this->url('/' . strtolower($dir))}', '{$meta['icon']}', '{$meta['color']}'); toggleStart()\" class='flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 text-slate-300 transition-all text-left'>
+                        <div class='w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0'>
+                            <i class='fas {$meta['icon']} {$meta['color']} text-xs'></i>
                         </div>
-                        <span class='text-xs font-medium truncate'>$displayName</span>
+                        <span class='text-xs font-medium truncate'>{$meta['name']}</span>
                     </button>";
                 }
             ?>
@@ -196,7 +191,7 @@
 
         <div class="p-4 bg-black/20 border-t border-white/5 flex items-center justify-between sm:rounded-b-12">
             <div class="flex space-x-1">
-                <button class="p-2 text-slate-400 hover:text-white transition-colors"><i class="fas fa-gear text-sm"></i></button>
+                <button onclick="wm.createWindow('Настройки', '<?= $this->url('/settings') ?>', 'fa-gear', 'text-slate-400'); toggleStart()" class="p-2 text-slate-400 hover:text-white transition-colors"><i class="fas fa-gear text-sm"></i></button>
                 <button class="p-2 text-slate-400 hover:text-white transition-colors"><i class="fas fa-folder text-sm"></i></button>
             </div>
             <div class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Build 2024.1.2-stable</div>
@@ -244,7 +239,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Prevent double tap zoom on mobile
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length > 1) e.preventDefault();
         }, { passive: false });
