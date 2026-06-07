@@ -28,7 +28,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
             border-radius: 12px;
-            display: none;
             z-index: 5000;
         }
         @media (max-width: 640px) {
@@ -140,7 +139,7 @@
     </div>
 
     <!-- Start Menu -->
-    <div id="start-menu" class="start-menu fixed bottom-16 sm:left-4 sm:w-[480px] sm:h-[600px] flex flex-col overflow-hidden">
+    <div id="start-menu" class="start-menu fixed bottom-16 sm:left-4 sm:w-[480px] sm:h-[600px] hidden flex-col overflow-hidden">
         <div class="p-6 border-b border-white/10 flex items-center justify-between">
             <div class="flex items-center space-x-4">
                 <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
@@ -219,13 +218,20 @@
     <script>
         function toggleStart() {
             const menu = document.getElementById('start-menu');
-            const isVisible = menu.style.display === 'flex';
-            menu.style.display = isVisible ? 'none' : 'flex';
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('flex');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
+            }
         }
 
         document.addEventListener('click', (e) => {
+            const menu = document.getElementById('start-menu');
             if (!e.target.closest('#start-menu') && !e.target.closest('#start-btn')) {
-                document.getElementById('start-menu').style.display = 'none';
+                menu.classList.add('hidden');
+                menu.classList.remove('flex');
             }
         });
 
