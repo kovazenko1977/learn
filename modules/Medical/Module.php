@@ -13,208 +13,193 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/medical', [$this, 'index']);
-        $router->addRoute('GET', '/medical/patients', [$this, 'patients']);
-        $router->addRoute('GET', '/medical/history/{id}', [$this, 'history']);
+        $router->addRoute('GET', '/medical/patient/{id}', [$this, 'patientCard']);
     }
 
     public function index($request, $response): string
     {
         $renderer = $this->container->get(\App\View\Renderer::class);
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+
+        $bookings = $storage->find('bookings', ['status' => 'confirmed']);
 
         $content = "
-        <div class='mb-8 flex justify-between items-center'>
-            <div>
-                <h2 class='text-3xl font-bold text-gray-800'>Медицинский центр</h2>
-                <p class='text-gray-500 mt-1'>Назначения, процедуры и медицинские карты пациентов.</p>
-            </div>
-            <button class='bg-blue-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 flex items-center hover:bg-blue-700'>
-                <i class='fas fa-plus mr-2'></i> Новое назначение
-            </button>
+        <div class='mb-10'>
+            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Медицинский центр</h2>
+            <p class='text-slate-500 mt-2'>Управление назначениями, процедурами и электронными медицинскими картами.</p>
         </div>
 
-        <div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
-            <div class='lg:col-span-2 space-y-6'>
-                <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
-                    <h3 class='font-bold text-gray-800 mb-6 flex items-center'>
-                        <i class='fas fa-clock text-blue-500 mr-2'></i> Ближайшие процедуры
-                    </h3>
-                    <div class='space-y-4'>
-                        <div class='flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-100'>
-                            <div class='flex items-center space-x-4'>
-                                <div class='text-center'>
-                                    <p class='text-xs font-bold text-blue-600 uppercase'>10:30</p>
-                                    <p class='text-[10px] text-blue-400'>Каб. 204</p>
-                                </div>
-                                <div class='w-px h-8 bg-blue-200'></div>
-                                <div>
-                                    <p class='font-bold text-gray-800'>Грязелечение общее</p>
-                                    <p class='text-xs text-gray-500'>Пациент: Николаев А.С.</p>
-                                </div>
-                            </div>
-                            <button class='w-8 h-8 rounded-lg bg-white text-green-500 flex items-center justify-center shadow-sm'>
-                                <i class='fas fa-check'></i>
-                            </button>
-                        </div>
-                        <div class='flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 opacity-60'>
-                            <div class='flex items-center space-x-4'>
-                                <div class='text-center'>
-                                    <p class='text-xs font-bold text-gray-400 uppercase'>11:15</p>
-                                    <p class='text-[10px] text-gray-300'>Каб. 102</p>
-                                </div>
-                                <div class='w-px h-8 bg-gray-200'></div>
-                                <div>
-                                    <p class='font-bold text-gray-800'>Массаж шейно-воротниковой зоны</p>
-                                    <p class='text-xs text-gray-500'>Пациент: Васильева Е.М.</p>
-                                </div>
-                            </div>
-                            <button class='w-8 h-8 rounded-lg bg-white text-gray-300 flex items-center justify-center'>
-                                <i class='fas fa-ellipsis-h'></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
-                    <h3 class='font-bold text-gray-800 mb-6'>Аналитика здоровья (общая)</h3>
-                    <div class='h-64 flex items-end justify-between space-x-4 px-4'>
-                        <div class='w-full bg-blue-100 rounded-t-lg' style='height: 45%' title='Гипертония'></div>
-                        <div class='w-full bg-green-100 rounded-t-lg' style='height: 85%' title='Опорно-двигательный'></div>
-                        <div class='w-full bg-orange-100 rounded-t-lg' style='height: 30%' title='ЖКТ'></div>
-                        <div class='w-full bg-purple-100 rounded-t-lg' style='height: 60%' title='Нервная система'></div>
-                        <div class='w-full bg-red-100 rounded-t-lg' style='height: 15%' title='Прочее'></div>
-                    </div>
-                    <div class='flex justify-between mt-4 text-[10px] font-bold text-gray-400 uppercase tracking-tighter text-center'>
-                        <div class='w-full'>Сердце</div>
-                        <div class='w-full'>Спина</div>
-                        <div class='w-full'>Желудок</div>
-                        <div class='w-full'>Стресс</div>
-                        <div class='w-full'>Другое</div>
-                    </div>
+        <div class='grid grid-cols-1 md:grid-cols-3 gap-8 mb-12'>
+            <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
+                <p class='text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2'>Пациентов сегодня</p>
+                <p class='text-4xl font-bold text-slate-900'>" . count($bookings) . "</p>
+                <div class='mt-4 h-1.5 w-full bg-slate-50 rounded-full overflow-hidden'>
+                    <div class='h-full bg-blue-500 w-2/3'></div>
                 </div>
             </div>
-
-            <div class='space-y-6'>
-                <div class='bg-white p-6 rounded-2xl border border-gray-100 shadow-sm'>
-                    <h3 class='font-bold text-gray-800 mb-4'>Статистика кабинетов</h3>
-                    <div class='space-y-3'>
-                        <div class='flex justify-between text-xs mb-1'>
-                            <span class='text-gray-500'>Водолечебница</span>
-                            <span class='font-bold'>92%</span>
-                        </div>
-                        <div class='w-full h-1.5 bg-gray-100 rounded-full overflow-hidden'>
-                            <div class='bg-blue-500 h-full' style='width: 92%'></div>
-                        </div>
-
-                        <div class='flex justify-between text-xs mb-1 mt-4'>
-                            <span class='text-gray-500'>Грязелечебница</span>
-                            <span class='font-bold'>78%</span>
-                        </div>
-                        <div class='w-full h-1.5 bg-gray-100 rounded-full overflow-hidden'>
-                            <div class='bg-green-500 h-full' style='width: 78%'></div>
-                        </div>
-                    </div>
+            <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
+                <p class='text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2'>Процедур выполнено</p>
+                <p class='text-4xl font-bold text-emerald-500'>142</p>
+                <div class='mt-4 h-1.5 w-full bg-slate-50 rounded-full overflow-hidden'>
+                    <div class='h-full bg-emerald-500 w-full'></div>
                 </div>
-
-                <div class='bg-gradient-to-br from-purple-600 to-indigo-700 p-6 rounded-2xl text-white shadow-xl shadow-indigo-100'>
-                    <i class='fas fa-info-circle text-2xl mb-4 opacity-50'></i>
-                    <h4 class='font-bold mb-2'>Система назначений</h4>
-                    <p class='text-xs opacity-80 leading-relaxed'>Автоматический учет противопоказаний и совместимости процедур включен. При назначении учитывайте аллергический статус пациента.</p>
+            </div>
+            <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
+                <p class='text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2'>Критиков</p>
+                <p class='text-4xl font-bold text-rose-500'>0</p>
+                <div class='mt-4 h-1.5 w-full bg-slate-50 rounded-full overflow-hidden'>
+                    <div class='h-full bg-rose-500 w-0'></div>
                 </div>
             </div>
         </div>
-        ";
+
+        <div class='bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden'>
+            <div class='p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50'>
+                <h3 class='font-bold text-slate-800'>Активные пациенты</h3>
+                <div class='flex space-x-2'>
+                    <div class='relative'>
+                        <i class='fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 text-xs'></i>
+                        <input type='text' placeholder='Поиск по ФИО...' class='bg-white border-slate-100 rounded-xl pl-10 pr-4 py-2 text-xs font-semibold focus:ring-2 focus:ring-blue-500/10 outline-none'>
+                    </div>
+                </div>
+            </div>
+            <table class='w-full text-left'>
+                <thead>
+                    <tr class='text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-white border-b border-slate-50'>
+                        <th class='px-8 py-5'>Пациент</th>
+                        <th class='px-8 py-5'>Номер</th>
+                        <th class='px-8 py-5'>Назначения</th>
+                        <th class='px-8 py-5'>Статус</th>
+                        <th class='px-8 py-5 text-right'>Действия</th>
+                    </tr>
+                </thead>
+                <tbody class='divide-y divide-slate-50'>";
+
+        foreach ($bookings as $b) {
+            $content .= "
+                    <tr class='hover:bg-blue-50/30 transition-colors group'>
+                        <td class='px-8 py-6'>
+                            <div class='flex items-center space-x-4'>
+                                <div class='w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-bold text-slate-400 group-hover:bg-blue-500 group-hover:text-white transition-all'>
+                                    " . substr($b['guest_name'], 0, 1) . "
+                                </div>
+                                <div>
+                                    <p class='font-bold text-slate-800 text-sm'>{$b['guest_name']}</p>
+                                    <p class='text-[10px] text-slate-400 font-bold uppercase'>" . ($b['guest_gender'] == 'male' ? 'Мужчина' : 'Женщина') . ", {$b['guest_age']} лет</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class='px-8 py-6'>
+                            <span class='px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold'>№ {$b['room_number']}</span>
+                        </td>
+                        <td class='px-8 py-6'>
+                            <div class='flex -space-x-2'>
+                                <div class='w-7 h-7 rounded-full bg-blue-100 border-2 border-white flex items-center justify-center' title='ЛФК'><i class='fas fa-person-walking text-[10px] text-blue-500'></i></div>
+                                <div class='w-7 h-7 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center' title='Массаж'><i class='fas fa-hands-holding text-[10px] text-emerald-500'></i></div>
+                                <div class='w-7 h-7 rounded-full bg-purple-100 border-2 border-white flex items-center justify-center' title='Ванны'><i class='fas fa-water text-[10px] text-purple-500'></i></div>
+                            </div>
+                        </td>
+                        <td class='px-8 py-6'>
+                            <span class='flex items-center text-[10px] font-bold text-emerald-500 uppercase tracking-tighter'>
+                                <span class='w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse'></span>
+                                На лечении
+                            </span>
+                        </td>
+                        <td class='px-8 py-6 text-right'>
+                            <button onclick=\"wm.createWindow('Карта: {$b['guest_name']}', '{$renderer->url('/medical/patient/'.$b['id'])}', 'fa-file-medical')\" class='px-4 py-2 bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-600 text-[10px] font-bold rounded-xl transition-all'>Открыть карту</button>
+                        </td>
+                    </tr>";
+        }
+
+        $content .= "
+                </tbody>
+            </table>
+        </div>";
 
         return $renderer->render('layout', [
-            'title' => 'Медицинский блок - VSPRINT 2.0',
+            'title' => 'Медицина - Sanatorium 2.0',
             'content' => $content,
             'user' => ['username' => 'Admin']
         ]);
     }
 
-    public function patients($request, $response): string
+    public function patientCard($request, $response, $id): string
     {
         $renderer = $this->container->get(\App\View\Renderer::class);
         $storage = $this->container->get(\App\Storage\StorageManager::class);
-        $guests = $storage->find('guests');
+        $patient = $storage->findOne('bookings', ['id' => $id]);
 
-        $content = "
-        <div class='mb-8 flex justify-between items-center'>
-            <div>
-                <h2 class='text-3xl font-bold text-gray-800'>Картотека пациентов</h2>
-                <p class='text-gray-500 mt-1'>История лечения и текущие назначения.</p>
+        if (!$patient) return "Пациент не найден";
+
+        return "
+        <div class='flex flex-col space-y-8'>
+            <div class='flex items-start space-x-8'>
+                <div class='w-32 h-32 rounded-[2.5rem] bg-slate-100 flex items-center justify-center text-4xl text-slate-300 border-4 border-white shadow-xl'>
+                    <i class='fas fa-user-injured'></i>
+                </div>
+                <div class='flex-grow'>
+                    <h2 class='text-3xl font-bold text-slate-800'>{$patient['guest_name']}</h2>
+                    <p class='text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-1'>ID: $id • " . ($patient['guest_gender'] == 'male' ? 'Мужчина' : 'Женщина') . ", {$patient['guest_age']} лет</p>
+
+                    <div class='mt-6 grid grid-cols-3 gap-4'>
+                        <div class='p-4 bg-blue-50 rounded-2xl'>
+                            <p class='text-[10px] font-bold text-blue-400 uppercase mb-1'>Диагноз</p>
+                            <p class='text-sm font-bold text-blue-900'>Общее оздоровление</p>
+                        </div>
+                        <div class='p-4 bg-emerald-50 rounded-2xl'>
+                            <p class='text-[10px] font-bold text-emerald-400 uppercase mb-1'>Аллергии</p>
+                            <p class='text-sm font-bold text-emerald-900'>Не выявлено</p>
+                        </div>
+                        <div class='p-4 bg-rose-50 rounded-2xl'>
+                            <p class='text-[10px] font-bold text-rose-400 uppercase mb-1'>Ограничения</p>
+                            <p class='text-sm font-bold text-rose-900'>Без нагрузок</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class='bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden'>
-            <table class='w-full text-left'>
-                <thead class='bg-gray-50 border-b'>
-                    <tr class='text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
-                        <th class='px-8 py-4'>ФИО</th>
-                        <th class='px-8 py-4'>Диагноз</th>
-                        <th class='px-8 py-4'>Лечащий врач</th>
-                        <th class='px-8 py-4 text-right'>Действия</th>
-                    </tr>
-                </thead>
-                <tbody class='divide-y'>
-                    <tr class='hover:bg-gray-50 transition-colors'>
-                        <td class='px-8 py-4 font-bold text-gray-800'>Николаев Александр Сергеевич</td>
-                        <td class='px-8 py-4 text-gray-500 text-sm'>Остеохондроз позвоночника</td>
-                        <td class='px-8 py-4 text-gray-500 text-sm'>Иванов И.И.</td>
-                        <td class='px-8 py-4 text-right'>
-                            <a href='{$renderer->url('/medical/history/1')}' class='text-blue-600 font-bold text-xs'>История болезни</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class='grid grid-cols-2 gap-8'>
+                <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
+                    <h3 class='font-bold text-slate-800 mb-6 flex justify-between items-center'>
+                        Лист назначений
+                        <button class='text-blue-500 text-xs'><i class='fas fa-plus'></i></button>
+                    </h3>
+                    <div class='space-y-4'>
+                        <div class='flex items-center p-4 bg-slate-50 rounded-2xl border border-slate-100'>
+                            <div class='w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center mr-4'><i class='fas fa-person-swimming'></i></div>
+                            <div class='flex-grow'>
+                                <p class='text-sm font-bold text-slate-800'>Бассейн</p>
+                                <p class='text-[10px] text-slate-400'>Ежедневно, 10:00</p>
+                            </div>
+                            <span class='text-[10px] font-bold text-blue-500 uppercase'>7 / 10</span>
+                        </div>
+                         <div class='flex items-center p-4 bg-slate-50 rounded-2xl border border-slate-100'>
+                            <div class='w-10 h-10 rounded-xl bg-purple-500 text-white flex items-center justify-center mr-4'><i class='fas fa-spa'></i></div>
+                            <div class='flex-grow'>
+                                <p class='text-sm font-bold text-slate-800'>Грязевые ванны</p>
+                                <p class='text-[10px] text-slate-400'>Пн, Ср, Пт, 14:00</p>
+                            </div>
+                            <span class='text-[10px] font-bold text-purple-500 uppercase'>3 / 5</span>
+                        </div>
+                    </div>
+                </div>
+                <div class='bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm'>
+                    <h3 class='font-bold text-slate-800 mb-6'>Дневник здоровья</h3>
+                    <div class='relative pl-8 border-l-2 border-slate-100 space-y-8'>
+                        <div class='relative'>
+                            <div class='absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-blue-500 border-4 border-white'></div>
+                            <p class='text-[10px] font-bold text-slate-400 uppercase'>Сегодня, 08:30</p>
+                            <p class='text-sm font-bold text-slate-700 mt-1'>Осмотр терапевта. Состояние стабильное. Жалоб нет.</p>
+                        </div>
+                        <div class='relative opacity-50'>
+                            <div class='absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white'></div>
+                            <p class='text-[10px] font-bold text-slate-400 uppercase'>Вчера, 16:20</p>
+                            <p class='text-sm font-bold text-slate-700 mt-1'>Процедура электрофореза пройдена.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         ";
-
-        return $renderer->render('layout', [
-            'title' => 'Пациенты - VSPRINT 2.0',
-            'content' => $content,
-            'user' => ['username' => 'Admin']
-        ]);
-    }
-
-    public function history($request, $response, $id): string
-    {
-        $renderer = $this->container->get(\App\View\Renderer::class);
-
-        $content = "
-        <div class='mb-8'>
-            <a href='{$renderer->url('/medical/patients')}' class='text-blue-600 font-bold mb-4 flex items-center'>
-                <i class='fas fa-arrow-left mr-2'></i> К списку пациентов
-            </a>
-            <h2 class='text-3xl font-bold text-gray-800'>История болезни #{$id}</h2>
-            <p class='text-gray-500'>Пациент: Николаев Александр Сергеевич</p>
-        </div>
-
-        <div class='space-y-6'>
-            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm'>
-                <h3 class='font-bold text-gray-800 mb-4'>Анамнез</h3>
-                <p class='text-gray-600 leading-relaxed text-sm'>Жалобы на боли в поясничном отделе позвоночника в течение 2-х недель. Ранее проходил лечение в 2022 году. Аллергических реакций на грязелечение не выявлено.</p>
-            </div>
-
-            <div class='bg-white p-8 rounded-3xl border border-gray-100 shadow-sm'>
-                <h3 class='font-bold text-gray-800 mb-4'>Назначенные процедуры</h3>
-                <ul class='space-y-3'>
-                    <li class='flex items-center justify-between p-4 bg-blue-50 rounded-2xl'>
-                        <span class='font-medium text-blue-800'>Подводный душ-массаж</span>
-                        <span class='text-xs font-bold text-blue-500'>10 сеансов</span>
-                    </li>
-                    <li class='flex items-center justify-between p-4 bg-green-50 rounded-2xl'>
-                        <span class='font-medium text-green-800'>Электрофорез с новокаином</span>
-                        <span class='text-xs font-bold text-green-500'>5 сеансов</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        ";
-
-        return $renderer->render('layout', [
-            'title' => 'Медицинская карта - VSPRINT 2.0',
-            'content' => $content,
-            'user' => ['username' => 'Admin']
-        ]);
     }
 }

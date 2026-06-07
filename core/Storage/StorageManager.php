@@ -13,12 +13,6 @@ class StorageManager
         $this->driver = $driver;
     }
 
-    public function getDriver(): StorageInterface
-    {
-        return $this->driver;
-    }
-
-    // Proxy methods to driver
     public function find(string $collection, array $criteria = []): array
     {
         return $this->driver->find($collection, $criteria);
@@ -42,5 +36,15 @@ class StorageManager
     public function delete(string $collection, string $id): bool
     {
         return $this->driver->delete($collection, $id);
+    }
+
+    public function seed(string $collection, array $data): void
+    {
+        $existing = $this->find($collection);
+        if (empty($existing)) {
+            foreach ($data as $item) {
+                $this->insert($collection, $item);
+            }
+        }
     }
 }

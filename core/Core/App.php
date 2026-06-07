@@ -56,6 +56,9 @@ class App
         // 6. Module Manager
         $this->container->set(ModuleManager::class, fn($c) => new ModuleManager($c, __DIR__ . '/../../modules'));
 
+        // Seed demo data
+        $this->seedDemoData();
+
         // Load Modules
         $moduleManager = $this->container->get(ModuleManager::class);
         $moduleManager->loadModules();
@@ -64,22 +67,43 @@ class App
         $this->registerDefaultRoutes();
     }
 
+    private function seedDemoData(): void
+    {
+        $storage = $this->container->get(StorageManager::class);
+
+        $storage->seed('rooms', [
+            ['number' => '101', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'свободен', 'price' => 3500, 'places' => 1, 'occupied_places' => 0],
+            ['number' => '102', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'занят', 'price' => 3500, 'places' => 1, 'occupied_places' => 1],
+            ['number' => '103', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'свободен', 'price' => 3500, 'places' => 2, 'occupied_places' => 0],
+            ['number' => '104', 'type' => 'Стандарт', 'floor' => 1, 'status' => 'свободен', 'price' => 3500, 'places' => 2, 'occupied_places' => 0],
+            ['number' => '201', 'type' => 'Люкс', 'floor' => 2, 'status' => 'свободен', 'price' => 7500, 'places' => 2, 'occupied_places' => 0],
+            ['number' => '202', 'type' => 'Полулюкс', 'floor' => 2, 'status' => 'уборка', 'price' => 5500, 'places' => 1, 'occupied_places' => 0],
+            ['number' => '301', 'type' => 'Апартаменты', 'floor' => 3, 'status' => 'свободен', 'price' => 12000, 'places' => 4, 'occupied_places' => 0],
+        ]);
+
+        $storage->seed('bookings', [
+            [
+                'id' => 'BK_DEMO_1',
+                'room_number' => '102',
+                'guest_name' => 'Петров Петр Петрович',
+                'guest_gender' => 'male',
+                'guest_age' => 45,
+                'is_family' => 'no',
+                'date_from' => date('Y-m-d', strtotime('-3 days')),
+                'date_to' => date('Y-m-d', strtotime('+4 days')),
+                'status' => 'confirmed'
+            ]
+        ]);
+    }
+
     private function registerDefaultRoutes(): void
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/', function($req, $res) {
             $renderer = $this->container->get(Renderer::class);
             return $renderer->render('layout', [
-                'title' => 'Рабочий стол',
-                'content' => '',
-                'user' => ['username' => 'Admin']
-            ]);
-        });
-
-        $router->addRoute('GET', '/dashboard-api', function($req, $res) {
-            $renderer = $this->container->get(Renderer::class);
-            return $renderer->render('dashboard', [
-                'user' => ['username' => 'Admin']
+                'title' => 'Рабочий стол - Sanatorium 2.0',
+                'user' => ['username' => 'Администратор']
             ]);
         });
     }
@@ -92,7 +116,7 @@ class App
         } catch (\Exception $e) {
             $response = $this->container->get(Response::class);
             $response->setStatusCode(500);
-            $response->setContent("Error: " . $e->getMessage());
+            $response->setContent("Ошибка системы: " . $e->getMessage());
             $response->send();
         }
     }

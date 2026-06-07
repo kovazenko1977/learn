@@ -7,17 +7,12 @@ namespace App\Core;
 class Response
 {
     private int $statusCode = 200;
-    private array $headers = [];
     private string $content = '';
+    private array $headers = [];
 
     public function setStatusCode(int $code): void
     {
         $this->statusCode = $code;
-    }
-
-    public function setHeader(string $name, string $value): void
-    {
-        $this->headers[$name] = $value;
     }
 
     public function setContent(string $content): void
@@ -25,10 +20,22 @@ class Response
         $this->content = $content;
     }
 
-    public function json(array $data): void
+    public function setHeader(string $name, string $value): void
+    {
+        $this->headers[$name] = $value;
+    }
+
+    public function json(mixed $data): void
     {
         $this->setHeader('Content-Type', 'application/json');
         $this->setContent(json_encode($data));
+        $this->send();
+    }
+
+    public function redirect(string $url): void
+    {
+        header('Location: ' . $url);
+        exit;
     }
 
     public function send(): void
@@ -38,11 +45,6 @@ class Response
             header("$name: $value");
         }
         echo $this->content;
-    }
-
-    public function redirect(string $url): void
-    {
-        header("Location: $url");
-        exit;
+        exit; // Important: terminate after sending
     }
 }

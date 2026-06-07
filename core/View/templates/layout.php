@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
-    <title>VSPRINT 2.0 - Рабочий стол</title>
+    <title><?= $title ?? 'Sanatorium 2.0' ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,160 +12,181 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3') center/cover no-repeat;
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3') center/cover no-repeat;
             overflow: hidden;
             height: 100vh;
         }
         .glass-taskbar {
-            background: rgba(45, 108, 191, 0.4);
-            backdrop-filter: blur(25px) saturate(180%);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         .start-menu {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid #71a3d9;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
-            border-radius: 8px 8px 0 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
             display: none;
             z-index: 1000;
         }
-        .start-button {
-            background: radial-gradient(circle, #5ca9fb 0%, #2d6cbf 100%);
-            box-shadow: 0 0 10px rgba(92, 169, 251, 0.5);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .start-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(92, 169, 251, 0.8);
-        }
         .desktop-icon {
-            width: 90px;
-            height: 100px;
+            width: 100px;
+            height: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s;
-            margin: 10px;
+            transition: all 0.3s;
+            margin: 8px;
         }
         .desktop-icon:hover {
-            background: rgba(255, 255, 255, 0.2);
-            outline: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transform: translateY(-2px);
         }
         .desktop-icon i {
-            font-size: 42px;
-            margin-bottom: 8px;
-            color: white;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            font-size: 48px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
         .desktop-icon span {
             color: white;
-            font-size: 11px;
+            font-size: 12px;
             text-align: center;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-weight: 600;
+        }
+        .window {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
     </style>
 </head>
-<body class="select-none">
+<body class="select-none text-slate-900">
 
     <!-- Desktop Area -->
-    <div id="desktop" class="relative w-full h-[calc(100vh-48px)] p-4 flex flex-col flex-wrap content-start">
-        <!-- System Icons -->
-        <div class="desktop-icon" onclick="wm.createWindow('Размещение', '<?= $this->url('/accommodation') ?>', 'fa-door-open')">
-            <i class="fas fa-door-open"></i>
+    <div id="desktop" class="relative w-full h-[calc(100vh-56px)] p-6 flex flex-col flex-wrap content-start">
+
+        <div class="desktop-icon" onclick="wm.createWindow('Размещение', '<?= $this->url('/accommodation') ?>', 'fa-door-open', 'text-amber-400')">
+            <i class="fas fa-door-open text-amber-400"></i>
             <span>Размещение</span>
         </div>
-        <div class="desktop-icon" onclick="wm.createWindow('Бронирование', '<?= $this->url('/booking') ?>', 'fa-calendar-check')">
-            <i class="fas fa-calendar-check"></i>
+
+        <div class="desktop-icon" onclick="wm.createWindow('Бронирование', '<?= $this->url('/booking') ?>', 'fa-calendar-check', 'text-emerald-400')">
+            <i class="fas fa-calendar-check text-emerald-400"></i>
             <span>Бронирование</span>
         </div>
-        <div class="desktop-icon" onclick="wm.createWindow('Медицина', '<?= $this->url('/medical') ?>', 'fa-notes-medical')">
-            <i class="fas fa-notes-medical"></i>
+
+        <div class="desktop-icon" onclick="wm.createWindow('Пациенты', '<?= $this->url('/guests') ?>', 'fa-users', 'text-blue-400')">
+            <i class="fas fa-users text-blue-400"></i>
+            <span>Гости</span>
+        </div>
+
+        <div class="desktop-icon" onclick="wm.createWindow('Медицина', '<?= $this->url('/medical') ?>', 'fa-heart-pulse', 'text-rose-400')">
+            <i class="fas fa-heart-pulse text-rose-400"></i>
             <span>Медицина</span>
         </div>
-        <div class="desktop-icon" onclick="wm.createWindow('Финансы', '<?= $this->url('/finance') ?>', 'fa-wallet')">
-            <i class="fas fa-wallet"></i>
+
+        <div class="desktop-icon" onclick="wm.createWindow('Финансы', '<?= $this->url('/finance') ?>', 'fa-vault', 'text-indigo-400')">
+            <i class="fas fa-vault text-indigo-400"></i>
             <span>Финансы</span>
         </div>
-        <div class="desktop-icon" onclick="wm.createWindow('Помощник AI', '<?= $this->url('/ai-chat') ?>', 'fa-robot')">
-            <i class="fas fa-robot text-blue-300"></i>
-            <span>AI Ассистент</span>
+
+        <div class="desktop-icon" onclick="wm.createWindow('AI Ассистент', '<?= $this->url('/ai-chat') ?>', 'fa-brain', 'text-purple-400')">
+            <i class="fas fa-brain text-purple-400"></i>
+            <span>AI Центр</span>
         </div>
-        <div class="desktop-icon" onclick="wm.createWindow('Настройки', '<?= $this->url('/settings') ?>', 'fa-cog')">
-            <i class="fas fa-cog text-gray-300"></i>
+
+        <div class="desktop-icon" onclick="wm.createWindow('Настройки', '<?= $this->url('/settings') ?>', 'fa-sliders', 'text-slate-400')">
+            <i class="fas fa-sliders text-slate-400"></i>
             <span>Настройки</span>
         </div>
     </div>
 
     <!-- Start Menu -->
-    <div id="start-menu" class="start-menu fixed bottom-12 left-0 w-[420px] h-[550px] grid grid-cols-5 overflow-hidden">
-        <div class="col-span-3 p-4 bg-white">
-            <div class="flex items-center space-x-3 mb-6 p-2">
-                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-gray-200">
+    <div id="start-menu" class="start-menu fixed bottom-16 left-4 w-[480px] h-[600px] flex flex-col overflow-hidden">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
                     <?= substr($user['username'] ?? 'A', 0, 1) ?>
                 </div>
                 <div>
-                    <p class="text-sm font-bold text-gray-800"><?= $user['username'] ?? 'Администратор' ?></p>
-                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Главный врач</p>
+                    <h3 class="text-white font-bold"><?= $user['username'] ?? 'Администратор' ?></h3>
+                    <p class="text-xs text-slate-400">Sanatorium 2.0 Professional</p>
                 </div>
             </div>
-            <div class="space-y-1 overflow-y-auto h-[400px] custom-scrollbar">
-                <?php
-                    $modulesPath = __DIR__ . '/../../../modules';
-                    $dirs = array_diff(scandir($modulesPath), ['.', '..']);
-                    foreach ($dirs as $dir) {
-                        echo "<button onclick=\"wm.createWindow('$dir', '{$this->url('/' . strtolower($dir))}', 'fa-cube'); toggleStart()\" class='w-full text-left px-3 py-2 hover:bg-blue-50 rounded flex items-center space-x-3 group transition-colors'>
-                            <i class='fas fa-cube text-gray-400 group-hover:text-blue-500 text-xs'></i>
-                            <span class='text-xs font-medium text-gray-700'>$dir</span>
-                        </button>";
-                    }
-                ?>
-            </div>
+            <button onclick="window.location.reload()" class="p-3 rounded-xl hover:bg-white/10 text-rose-400 transition-colors" title="Выйти">
+                <i class="fas fa-power-off text-lg"></i>
+            </button>
         </div>
-        <div class="col-span-2 bg-[#d9e7f9] border-l border-[#b1cbe5] p-4 flex flex-col">
-            <div class="flex-grow space-y-4">
-                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Документы</button>
-                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Изображения</button>
-                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Музыка</button>
-                <div class="h-px bg-blue-200 my-2"></div>
-                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Панель управления</button>
-                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Устройства и принтеры</button>
-                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Справка и поддержка</button>
+
+        <div class="flex-grow grid grid-cols-2 p-4 gap-2 overflow-y-auto custom-scrollbar">
+            <?php
+                $translations = [
+                    'Accommodation' => 'Размещение',
+                    'Booking' => 'Бронирование',
+                    'Medical' => 'Медицина',
+                    'Finance' => 'Финансы',
+                    'AI' => 'AI Центр',
+                    'Settings' => 'Настройки',
+                    'Guests' => 'Гости',
+                    'Reports' => 'Отчеты',
+                    'Analytics' => 'Аналитика',
+                    'Services' => 'Услуги',
+                    'Notifications' => 'Уведомления',
+                    'Transport' => 'Транспорт',
+                    'Kitchen' => 'Питание',
+                    'Inventory' => 'Склад',
+                    'Laundry' => 'Прачечная',
+                    'Cleaning' => 'Уборка',
+                    'Pool' => 'Бассейн',
+                    'Fitness' => 'Фитнес',
+                    'Excursions' => 'Экскурсии'
+                ];
+
+                $modulesPath = __DIR__ . '/../../../modules';
+                $dirs = array_diff(scandir($modulesPath), ['.', '..']);
+                foreach ($dirs as $dir) {
+                    $displayName = $translations[$dir] ?? $dir;
+                    echo "<button onclick=\"wm.createWindow('$displayName', '{$this->url('/' . strtolower($dir))}', 'fa-cube', 'text-blue-400'); toggleStart()\" class='flex items-center space-x-3 p-3 rounded-xl hover:bg-white/5 text-slate-300 transition-all text-left'>
+                        <div class='w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center'>
+                            <i class='fas fa-cube text-blue-400 text-sm'></i>
+                        </div>
+                        <span class='text-sm font-medium'>$displayName</span>
+                    </button>";
+                }
+            ?>
+        </div>
+
+        <div class="p-4 bg-black/20 border-t border-white/5 flex items-center justify-between">
+            <div class="flex space-x-2">
+                <button class="p-2 text-slate-400 hover:text-white transition-colors" title="Настройки"><i class="fas fa-gear"></i></button>
+                <button class="p-2 text-slate-400 hover:text-white transition-colors" title="Проводник"><i class="fas fa-folder"></i></button>
             </div>
-            <div class="mt-auto pt-4 border-t border-blue-200">
-                <button onclick="window.location.reload()" class="w-full bg-gradient-to-b from-[#ebf3fe] to-[#cfe3ff] border border-[#a1c1e8] py-1.5 rounded text-[10px] font-bold text-[#1e395b] flex items-center justify-center space-x-2 shadow-sm">
-                    <i class="fas fa-power-off text-red-500"></i>
-                    <span>Завершение сеанса</span>
-                </button>
-            </div>
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Сборка 2024.1.0</div>
         </div>
     </div>
 
     <!-- Taskbar -->
-    <footer class="h-12 w-full glass-taskbar fixed bottom-0 left-0 flex items-center px-1 z-[2000]">
-        <button id="start-btn" onclick="toggleStart()" class="start-button w-10 h-10 rounded-full flex items-center justify-center text-white text-xl mr-2">
-            <i class="fab fa-windows"></i>
+    <footer class="h-14 w-full glass-taskbar fixed bottom-0 left-0 flex items-center px-4 z-[2000]">
+        <button id="start-btn" onclick="toggleStart()" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 flex items-center justify-center text-white text-xl transition-all shadow-lg shadow-blue-500/20 mr-4">
+            <i class="fas fa-shapes"></i>
         </button>
 
-        <div id="taskbar-icons" class="flex items-center space-x-1 flex-grow overflow-x-auto h-full px-2">
-            <!-- Active windows will appear here -->
-        </div>
+        <div id="taskbar-icons" class="flex items-center space-x-2 flex-grow overflow-x-auto h-full py-2"></div>
 
-        <div class="h-full flex items-center px-4 border-l border-white/10 space-x-4">
-            <div class="flex flex-col items-center justify-center text-white">
-                <span id="taskbar-time" class="text-[11px] font-bold leading-none">00:00</span>
-                <span id="taskbar-date" class="text-[9px] opacity-70 leading-tight">01.01.2024</span>
+        <div class="flex items-center space-x-4 pl-4 border-l border-white/10 ml-4">
+            <div class="flex flex-col items-end justify-center text-white">
+                <span id="taskbar-time" class="text-sm font-bold">00:00</span>
+                <span id="taskbar-date" class="text-[10px] text-slate-400">01.01.2024</span>
             </div>
-            <div class="w-2 h-10 border-l border-white/20"></div>
+            <div class="w-1.5 h-10 bg-white/5 rounded-full"></div>
         </div>
     </footer>
 
@@ -173,22 +194,15 @@
     <script>
         function toggleStart() {
             const menu = document.getElementById('start-menu');
-            const btn = document.getElementById('start-btn');
-            if (menu.style.display === 'grid') {
-                menu.style.display = 'none';
-            } else {
-                menu.style.display = 'grid';
-            }
+            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
         }
 
-        // Close start menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#start-menu') && !e.target.closest('#start-btn')) {
                 document.getElementById('start-menu').style.display = 'none';
             }
         });
 
-        // Clock Update
         function updateClock() {
             const now = new Date();
             document.getElementById('taskbar-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -196,12 +210,6 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
-
-        // Handle initial load
-        window.addEventListener('load', () => {
-             // Optional: open dashboard on start
-             // wm.createWindow('Центр управления', '<?= $this->url('/dashboard-api') ?>', 'fa-chart-line');
-        });
     </script>
 </body>
 </html>

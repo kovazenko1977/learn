@@ -30,7 +30,7 @@ class Router
         $method = $this->request->getMethod();
         $uri = $this->request->getUri();
 
-        // Standardize URI for matching (ensure leading slash, no trailing slash unless it's root)
+        // Standardize URI for matching
         if ($uri !== '/' && str_ends_with($uri, '/')) {
             $uri = rtrim($uri, '/');
         }
@@ -46,23 +46,23 @@ class Router
                     $result = call_user_func_array($handler, [$this->request, $this->response, ...$params]);
                 } elseif (is_array($handler)) {
                     [$controllerClass, $methodName] = $handler;
-                    $controller = new $controllerClass();
+                    $controller = is_object($controllerClass) ? $controllerClass : new $controllerClass();
                     $result = call_user_func_array([$controller, $methodName], [$this->request, $this->response, ...$params]);
                 } else {
-                    throw new \Exception("Invalid route handler");
+                    throw new \Exception("Некорректный обработчик маршрута");
                 }
 
                 if ($result !== null) {
                     $this->response->setContent((string)$result);
+                    $this->response->send();
                 }
 
-                $this->response->send();
                 return;
             }
         }
 
         $this->response->setStatusCode(404);
-        $this->response->setContent("404 Not Found");
+        $this->response->setContent("404 Страница не найдена");
         $this->response->send();
     }
 
