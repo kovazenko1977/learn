@@ -37,6 +37,13 @@ class Renderer
 
         ob_start();
         include $templatePath;
-        return ob_get_clean();
+        $content = ob_get_clean();
+
+        // If AJAX request, return only the template content without the layout
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+            return $content;
+        }
+
+        return $content;
     }
 }

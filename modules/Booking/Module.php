@@ -28,8 +28,8 @@ class Module extends BaseModule
 
         $content = "
         <div class='mb-8'>
-             <h2 class='text-3xl font-bold text-gray-800'>Шахматка размещения</h2>
-             <p class='text-gray-500 mt-1'>Визуальный контроль занятости по местам.</p>
+             <h2 class='text-xl font-bold text-gray-800'>Шахматка размещения</h2>
+             <p class='text-xs text-gray-500 mt-1'>Визуальный контроль занятости по местам.</p>
         </div>
 
         <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>

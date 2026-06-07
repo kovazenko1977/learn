@@ -53,10 +53,10 @@ class Module extends BaseModule
         $content = "
         <div class='mb-8 flex justify-between items-end'>
             <div>
-                <h2 class='text-3xl font-bold text-gray-800'>Управление номерным фондом</h2>
-                <p class='text-gray-500 mt-1'>Конфигурация корпусов, категорий и мест.</p>
+                <h2 class='text-xl font-bold text-gray-800'>Управление номерным фондом</h2>
+                <p class='text-xs text-gray-500 mt-1'>Конфигурация корпусов, категорий и мест.</p>
             </div>
-            <button onclick=\"document.getElementById('addRoomModal').classList.remove('hidden')\" class='bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center'>
+            <button onclick=\"document.getElementById('addRoomModal').classList.remove('hidden')\" class='bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow-lg shadow-blue-200 transition-all flex items-center'>
                 <i class='fas fa-plus mr-2'></i> Добавить номер
             </button>
         </div>

@@ -70,10 +70,15 @@ class App
         $router->addRoute('GET', '/', function($req, $res) {
             $renderer = $this->container->get(Renderer::class);
             return $renderer->render('layout', [
-                'title' => 'Центр управления',
-                'content' => $renderer->render('dashboard', [
-                    'user' => ['username' => 'Admin']
-                ]),
+                'title' => 'Рабочий стол',
+                'content' => '',
+                'user' => ['username' => 'Admin']
+            ]);
+        });
+
+        $router->addRoute('GET', '/dashboard-api', function($req, $res) {
+            $renderer = $this->container->get(Renderer::class);
+            return $renderer->render('dashboard', [
                 'user' => ['username' => 'Admin']
             ]);
         });

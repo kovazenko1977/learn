@@ -1,0 +1,5 @@
+--- START SMOKE TEST ---
+[OK] Room inserted
+[OK] Rules Engine detected gender mismatch: Нарушение правила пола: в данном номере уже проживает гость другого пола (Женщина).
+[OK] Rules Engine detected age restriction: Возрастное ограничение: минимальный возраст для этого номера — 18 лет.
+--- SMOKE TEST PASSED ---

@@ -4,261 +4,203 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
-    <meta name="theme-color" content="#2563eb">
-    <title><?= $title ?? 'Sanatorium 2.0' ?></title>
+    <title>VSPRINT 2.0 - Рабочий стол</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .sidebar-link.active { background: linear-gradient(to right, #eff6ff, #ffffff); border-right: 4px solid #2563eb; color: #1e40af; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-        .vibrant-gradient { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
-        @media (max-width: 768px) {
-            .sidebar-open { transform: translateX(0) !important; }
-            .sidebar-closed { transform: translateX(-100%) !important; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=3540&ixlib=rb-4.0.3') center/cover no-repeat;
+            overflow: hidden;
+            height: 100vh;
         }
+        .glass-taskbar {
+            background: rgba(45, 108, 191, 0.4);
+            backdrop-filter: blur(25px) saturate(180%);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .start-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid #71a3d9;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            border-radius: 8px 8px 0 0;
+            display: none;
+            z-index: 1000;
+        }
+        .start-button {
+            background: radial-gradient(circle, #5ca9fb 0%, #2d6cbf 100%);
+            box-shadow: 0 0 10px rgba(92, 169, 251, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(92, 169, 251, 0.8);
+        }
+        .desktop-icon {
+            width: 90px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 10px;
+        }
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            outline: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .desktop-icon i {
+            font-size: 42px;
+            margin-bottom: 8px;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        .desktop-icon span {
+            color: white;
+            font-size: 11px;
+            text-align: center;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            font-weight: 500;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex overflow-hidden">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="w-72 bg-white border-r flex flex-col fixed md:relative h-full z-40 transition-transform duration-300 sidebar-closed md:transform-none shadow-2xl md:shadow-none">
-        <div class="p-8 flex items-center space-x-4">
-            <div class="w-12 h-12 vibrant-gradient rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200">
-                <i class="fas fa-microchip text-2xl"></i>
-            </div>
-            <span class="text-2xl font-extrabold tracking-tight text-gray-900">VSPRINT <span class="text-blue-600">2.0</span></span>
+<body class="select-none">
+
+    <!-- Desktop Area -->
+    <div id="desktop" class="relative w-full h-[calc(100vh-48px)] p-4 flex flex-col flex-wrap content-start">
+        <!-- System Icons -->
+        <div class="desktop-icon" onclick="wm.createWindow('Размещение', '<?= $this->url('/accommodation') ?>', 'fa-door-open')">
+            <i class="fas fa-door-open"></i>
+            <span>Размещение</span>
         </div>
-
-        <div class="px-8 mb-6">
-            <div class="relative">
-                <input type="text" id="moduleSearch" onkeyup="filterModules()" class="w-full bg-gray-50 border-none rounded-2xl py-3 pl-10 text-xs focus:ring-2 focus:ring-blue-500" placeholder="Поиск модулей...">
-                <i class="fas fa-search absolute left-4 top-3.5 text-gray-400 text-[10px]"></i>
-            </div>
+        <div class="desktop-icon" onclick="wm.createWindow('Бронирование', '<?= $this->url('/booking') ?>', 'fa-calendar-check')">
+            <i class="fas fa-calendar-check"></i>
+            <span>Бронирование</span>
         </div>
+        <div class="desktop-icon" onclick="wm.createWindow('Медицина', '<?= $this->url('/medical') ?>', 'fa-notes-medical')">
+            <i class="fas fa-notes-medical"></i>
+            <span>Медицина</span>
+        </div>
+        <div class="desktop-icon" onclick="wm.createWindow('Финансы', '<?= $this->url('/finance') ?>', 'fa-wallet')">
+            <i class="fas fa-wallet"></i>
+            <span>Финансы</span>
+        </div>
+        <div class="desktop-icon" onclick="wm.createWindow('Помощник AI', '<?= $this->url('/ai-chat') ?>', 'fa-robot')">
+            <i class="fas fa-robot text-blue-300"></i>
+            <span>AI Ассистент</span>
+        </div>
+        <div class="desktop-icon" onclick="wm.createWindow('Настройки', '<?= $this->url('/settings') ?>', 'fa-cog')">
+            <i class="fas fa-cog text-gray-300"></i>
+            <span>Настройки</span>
+        </div>
+    </div>
 
-        <nav id="moduleList" class="flex-grow px-6 space-y-1 py-2 overflow-y-auto custom-scrollbar">
-            <a href="<?= $this->url('/') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-th-large w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Дашборд</span>
-            </a>
-            <div class="pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase px-4 tracking-[0.2em]">Основные</div>
-            <a href="<?= $this->url('/accommodation') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-door-open w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Размещение</span>
-            </a>
-            <a href="<?= $this->url('/booking') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-calendar-check w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Бронирование</span>
-            </a>
-            <a href="<?= $this->url('/medical') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-notes-medical w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Медицина</span>
-            </a>
-            <a href="<?= $this->url('/finance') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-wallet w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Финансы</span>
-            </a>
-
-            <div class="pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase px-4 tracking-[0.2em]">Все модули</div>
-            <div class="space-y-1" id="dynamicModules">
-                <?php
-                    $modulesConfig = $config->get('modules', []);
-                    $modulesPath = __DIR__ . '/../../../modules';
-                    $essential = ['Accommodation', 'Booking', 'Medical', 'Finance', 'Settings', 'AI', 'Reports', 'Guests', 'Notifications', 'Help', 'Loyalty', 'Transport', 'Inventory'];
-                    $dirs = array_diff(scandir($modulesPath), ['.', '..']);
-                    foreach ($dirs as $dir) {
-                        if (in_array($dir, $essential)) continue;
-                        $isEnabled = !isset($modulesConfig[$dir]) || $modulesConfig[$dir] === true;
-                        if (!$isEnabled) continue;
-                        echo "<a href='{$this->url('/' . strtolower($dir))}' class='sidebar-link flex items-center px-4 py-2 text-gray-500 rounded-xl hover:bg-gray-50 transition-all group module-item' data-name='".strtolower($dir)."'>
-                            <i class='fas fa-cube w-6 text-gray-300 group-hover:text-blue-400 text-xs'></i>
-                            <span class='ml-3 text-xs font-semibold'>$dir</span>
-                        </a>";
-                    }
-                ?>
-            </div>
-
-            <div class="pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase px-4 tracking-[0.2em]">Система</div>
-            <a href="<?= $this->url('/settings') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-cog w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Настройки</span>
-            </a>
-            <a href="<?= $this->url('/help') ?>" class="sidebar-link flex items-center px-4 py-3 text-gray-600 rounded-xl hover:bg-gray-50 transition-all group">
-                <i class="fas fa-question-circle w-6 text-gray-400 group-hover:text-blue-500"></i>
-                <span class="ml-3 font-bold text-sm">Справка</span>
-            </a>
-        </nav>
-
-        <div class="p-4 border-t bg-gray-50">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-white shadow-sm">
+    <!-- Start Menu -->
+    <div id="start-menu" class="start-menu fixed bottom-12 left-0 w-[420px] h-[550px] grid grid-cols-5 overflow-hidden">
+        <div class="col-span-3 p-4 bg-white">
+            <div class="flex items-center space-x-3 mb-6 p-2">
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-gray-200">
                     <?= substr($user['username'] ?? 'A', 0, 1) ?>
                 </div>
                 <div>
-                    <p class="text-sm font-bold text-gray-800 leading-none"><?= $user['username'] ?? 'Администратор' ?></p>
-                    <p class="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Главный врач</p>
+                    <p class="text-sm font-bold text-gray-800"><?= $user['username'] ?? 'Администратор' ?></p>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Главный врач</p>
                 </div>
             </div>
+            <div class="space-y-1 overflow-y-auto h-[400px] custom-scrollbar">
+                <?php
+                    $modulesPath = __DIR__ . '/../../../modules';
+                    $dirs = array_diff(scandir($modulesPath), ['.', '..']);
+                    foreach ($dirs as $dir) {
+                        echo "<button onclick=\"wm.createWindow('$dir', '{$this->url('/' . strtolower($dir))}', 'fa-cube'); toggleStart()\" class='w-full text-left px-3 py-2 hover:bg-blue-50 rounded flex items-center space-x-3 group transition-colors'>
+                            <i class='fas fa-cube text-gray-400 group-hover:text-blue-500 text-xs'></i>
+                            <span class='text-xs font-medium text-gray-700'>$dir</span>
+                        </button>";
+                    }
+                ?>
+            </div>
         </div>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="flex-grow flex flex-col overflow-hidden">
-        <!-- Top Bar -->
-        <header class="h-20 bg-white border-b flex items-center justify-between px-4 md:px-10 z-10 shadow-sm glass">
-            <div class="flex items-center">
-                <button onclick="toggleSidebar()" class="md:hidden mr-4 w-10 h-10 flex items-center justify-center bg-gray-100 rounded-xl text-gray-600">
-                    <i class="fas fa-bars text-lg"></i>
+        <div class="col-span-2 bg-[#d9e7f9] border-l border-[#b1cbe5] p-4 flex flex-col">
+            <div class="flex-grow space-y-4">
+                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Документы</button>
+                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Изображения</button>
+                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Музыка</button>
+                <div class="h-px bg-blue-200 my-2"></div>
+                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Панель управления</button>
+                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Устройства и принтеры</button>
+                <button class="w-full text-left text-xs font-semibold text-[#1e395b] hover:underline">Справка и поддержка</button>
+            </div>
+            <div class="mt-auto pt-4 border-t border-blue-200">
+                <button onclick="window.location.reload()" class="w-full bg-gradient-to-b from-[#ebf3fe] to-[#cfe3ff] border border-[#a1c1e8] py-1.5 rounded text-[10px] font-bold text-[#1e395b] flex items-center justify-center space-x-2 shadow-sm">
+                    <i class="fas fa-power-off text-red-500"></i>
+                    <span>Завершение сеанса</span>
                 </button>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900 leading-none"><?= $title ?></h1>
-                    <div class="flex items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
-                        <i class="fas fa-map-marker-alt text-blue-500 mr-1"></i> Санаторий "Солнечный" <span class="mx-2">•</span> <i class="fas fa-calendar-alt text-purple-500 mr-1"></i> <?= date('d M Y') ?>
-                    </div>
-                </div>
             </div>
-
-            <div class="flex items-center space-x-6">
-                    <button onclick="toggleDarkMode()" class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                <div class="relative hidden sm:block">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text" class="bg-gray-100 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 rounded-full pl-10 pr-4 py-2 text-sm w-64 transition-all" placeholder="Поиск гостей, броней...">
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button class="p-2 text-gray-400 hover:text-blue-500 transition-colors relative">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    <button onclick="toggleAI()" class="p-2 text-gray-400 hover:text-blue-500 transition-colors">
-                        <i class="fas fa-robot"></i>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <main class="flex-grow overflow-y-auto p-4 md:p-10 custom-scrollbar">
-            <?= $content ?>
-        </main>
-    </div>
-
-    <!-- AI Panel -->
-    <div id="aiPanel" class="fixed bottom-6 right-6 w-96 bg-white rounded-3xl shadow-2xl border border-gray-100 hidden z-50 overflow-hidden transform transition-all translate-y-4">
-        <div class="bg-blue-600 p-6 text-white flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fas fa-robot text-2xl"></i>
-                <span class="font-bold">AI Помощник VSPRINT</span>
-            </div>
-            <button onclick="toggleAI()"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="aiChat" class="h-80 overflow-y-auto p-6 space-y-4 text-sm scroll-smooth">
-            <div class="bg-blue-50 p-4 rounded-2xl rounded-tl-none text-blue-800">
-                Здравствуйте! Я ваш AI-ассистент. Чем я могу помочь сегодня?
-            </div>
-        </div>
-        <div class="p-4 bg-gray-50 border-t flex space-x-2">
-            <input id="aiInput" type="text" class="flex-grow border-none bg-white rounded-xl text-sm focus:ring-2 focus:ring-blue-500" placeholder="Ваша команда...">
-            <button onclick="sendAI()" class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-100">
-                <i class="fas fa-paper-plane text-xs"></i>
-            </button>
         </div>
     </div>
 
+    <!-- Taskbar -->
+    <footer class="h-12 w-full glass-taskbar fixed bottom-0 left-0 flex items-center px-1 z-[2000]">
+        <button id="start-btn" onclick="toggleStart()" class="start-button w-10 h-10 rounded-full flex items-center justify-center text-white text-xl mr-2">
+            <i class="fab fa-windows"></i>
+        </button>
+
+        <div id="taskbar-icons" class="flex items-center space-x-1 flex-grow overflow-x-auto h-full px-2">
+            <!-- Active windows will appear here -->
+        </div>
+
+        <div class="h-full flex items-center px-4 border-l border-white/10 space-x-4">
+            <div class="flex flex-col items-center justify-center text-white">
+                <span id="taskbar-time" class="text-[11px] font-bold leading-none">00:00</span>
+                <span id="taskbar-date" class="text-[9px] opacity-70 leading-tight">01.01.2024</span>
+            </div>
+            <div class="w-2 h-10 border-l border-white/20"></div>
+        </div>
+    </footer>
+
+    <script src="<?= $this->url('/public/assets/js/wm.js') ?>"></script>
     <script>
-        function filterModules() {
-            const input = document.getElementById('moduleSearch');
-            const filter = input.value.toLowerCase();
-            const items = document.querySelectorAll('.module-item');
-
-            items.forEach(item => {
-                const name = item.getAttribute('data-name');
-                if (name.includes(filter)) {
-                    item.style.display = "";
-                } else {
-                    item.style.display = "none";
-                }
-            });
+        function toggleStart() {
+            const menu = document.getElementById('start-menu');
+            const btn = document.getElementById('start-btn');
+            if (menu.style.display === 'grid') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'grid';
+            }
         }
 
-        // Module Toggler Logic
-        function toggleModule(moduleName, isEnabled) {
-            fetch('<?= $this->url('/api/settings/toggle-module') ?>', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({module: moduleName, enabled: isEnabled})
-            }).then(() => window.location.reload());
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('sidebar-open');
-            sidebar.classList.toggle('sidebar-closed');
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('<?= $this->url('/sw.js') ?>');
-        }
-
-        function toggleDarkMode() {
-            document.body.classList.toggle('bg-gray-900');
-            document.body.classList.toggle('text-white');
-            document.querySelectorAll('.bg-white').forEach(el => {
-                el.classList.toggle('bg-gray-800');
-                el.classList.toggle('border-gray-700');
-            });
-            document.querySelectorAll('.text-gray-800').forEach(el => el.classList.toggle('text-gray-100'));
-        }
-
-        function toggleAI() {
-            const panel = document.getElementById('aiPanel');
-            panel.classList.toggle('hidden');
-        }
-
-        async function sendAI() {
-            const input = document.getElementById('aiInput');
-            const chat = document.getElementById('aiChat');
-            const command = input.value;
-            if(!command) return;
-
-            chat.innerHTML += `<div class="bg-gray-100 p-4 rounded-2xl rounded-tr-none text-gray-800 self-end text-right ml-12">${command}</div>`;
-            input.value = '';
-
-            const res = await fetch('<?= $this->url('/api/ai/command') ?>', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({command})
-            });
-            const data = await res.json();
-
-            chat.innerHTML += `<div class="bg-blue-50 p-4 rounded-2xl rounded-tl-none text-blue-800 mr-12 animate-pulse">Думаю...</div>`;
-            chat.scrollTop = chat.scrollHeight;
-
-            setTimeout(() => {
-                chat.lastChild.remove();
-                chat.innerHTML += `<div class="bg-blue-50 p-4 rounded-2xl rounded-tl-none text-blue-800 mr-12">${data.answer}</div>`;
-                chat.scrollTop = chat.scrollHeight;
-                if(data.action) {
-                    // Logic for navigation can be added here
-                }
-            }, 800);
-        }
-
-        document.getElementById('aiInput')?.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') sendAI();
+        // Close start menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#start-menu') && !e.target.closest('#start-btn')) {
+                document.getElementById('start-menu').style.display = 'none';
+            }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const currentPath = window.location.pathname;
-            document.querySelectorAll('.sidebar-link').forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
-                }
-            });
+        // Clock Update
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('taskbar-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('taskbar-date').innerText = now.toLocaleDateString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Handle initial load
+        window.addEventListener('load', () => {
+             // Optional: open dashboard on start
+             // wm.createWindow('Центр управления', '<?= $this->url('/dashboard-api') ?>', 'fa-chart-line');
         });
     </script>
 </body>

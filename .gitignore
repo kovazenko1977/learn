@@ -1,0 +1,7 @@
+/vendor/
+/runtime/
+/storage/data/
+/logs/
+/*.png
+/verify_final.py
+/tests/smoke_test.php

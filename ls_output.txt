@@ -1,0 +1,24 @@
+total 8160
+-rw-rw-r-- 1 jules jules   79250 Jun  6 13:51 accommodation.png
+-rw-rw-r-- 1 jules jules  101518 Jun  6 13:51 ai_assistant.png
+-rw-rw-r-- 1 jules jules   71531 Jun  6 13:51 booking.png
+-rw-rw-r-- 1 jules jules    4253 Jun  6 13:52 booking_error.png
+-rw-rw-r-- 1 jules jules   71446 Jun  6 13:55 booking_form_filled.png
+-rw-rw-r-- 1 jules jules   72087 Jun  6 13:55 booking_success.png
+-rw-rw-r-- 1 jules jules   83051 Jun  6 13:51 dashboard.png
+-rw-rw-r-- 1 jules jules   26842 Jun  6 14:21 dashboard_v3.png
+-rw-rw-r-- 1 jules jules  946304 Jun  7 05:31 desktop.png
+-rw-rw-r-- 1 jules jules  946356 Jun  7 05:35 error.png
+-rw-rw-r-- 1 jules jules  702404 Jun  6 14:30 final_dashboard.png
+-rw-rw-r-- 1 jules jules 1498322 Jun  6 14:30 final_settings.png
+-rw-rw-r-- 1 jules jules  136366 Jun  6 13:51 medical.png
+-rw-rw-r-- 1 jules jules  946805 Jun  7 05:31 start_menu.png
+-rw-rw-r-- 1 jules jules    1509 Jun  6 13:51 verify_booking.py
+-rw-rw-r-- 1 jules jules    1193 Jun  7 05:31 verify_desktop.py
+-rw-rw-r-- 1 jules jules    1524 Jun  7 05:35 verify_desktop_v2.py
+-rw-rw-r-- 1 jules jules    1010 Jun  6 14:22 verify_final.py
+-rw-rw-r-- 1 jules jules     156 Jun  6 14:12 verify_output.log
+-rw-rw-r-- 1 jules jules    2045 Jun  6 12:14 verify_sanatorium.py
+-rw-rw-r-- 1 jules jules    1211 Jun  6 14:12 verify_v3.py
+-rw-rw-r-- 1 jules jules 1301379 Jun  7 05:31 window_accommodation.png
+-rw-rw-r-- 1 jules jules 1300677 Jun  7 05:31 window_booking.png
