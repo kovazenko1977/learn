@@ -13,6 +13,7 @@ class Module extends BaseModule
     {
         $router = $this->container->get(Router::class);
         $router->addRoute('GET', '/cleaning', [$this, 'index']);
+        $router->addRoute('POST', '/cleaning/complete', [$this, 'markClean']);
     }
 
     public function index($request, $response): string
@@ -29,26 +30,25 @@ class Module extends BaseModule
         <div class='grid grid-cols-2 md:grid-cols-4 gap-6 mb-10'>
             <div class='bg-rose-50 p-8 rounded-[2rem] border border-rose-100 shadow-sm'>
                 <p class='text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2'>Требует уборки</p>
-                <p class='text-3xl font-black text-rose-600 tabular-nums'>12</p>
+                <p class='text-3xl font-black text-rose-600 tabular-nums'>" . count($storage->find('rooms', ['needs_cleaning' => true])) . "</p>
             </div>
             <div class='bg-blue-50 p-8 rounded-[2rem] border border-blue-100 shadow-sm'>
                 <p class='text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2'>В процессе</p>
-                <p class='text-3xl font-black text-blue-600 tabular-nums'>3</p>
+                <p class='text-3xl font-black text-blue-600 tabular-nums'>0</p>
             </div>
             <div class='bg-emerald-50 p-8 rounded-[2rem] border border-emerald-100 shadow-sm'>
                 <p class='text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2'>Проверено</p>
-                <p class='text-3xl font-black text-emerald-600 tabular-nums'>45</p>
+                <p class='text-3xl font-black text-emerald-600 tabular-nums'>" . count($storage->find('rooms', ['needs_cleaning' => false])) . "</p>
             </div>
             <div class='bg-amber-50 p-8 rounded-[2rem] border border-amber-100 shadow-sm'>
                 <p class='text-[10px] font-black text-amber-400 uppercase tracking-widest mb-2'>Тех. работы</p>
-                <p class='text-3xl font-black text-amber-600 tabular-nums'>2</p>
+                <p class='text-3xl font-black text-amber-600 tabular-nums'>" . count($storage->find('rooms', ['status' => 'ремонт'])) . "</p>
             </div>
         </div>
 
         <div class='bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden'>
             <div class='p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center'>
                  <h3 class='font-black text-slate-800 uppercase text-xs tracking-widest'>План-график работ</h3>
-                 <button class='px-6 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest'>Сформировать наряд</button>
             </div>
             <div class='overflow-x-auto'>
             <table class='w-full text-left'>
@@ -63,6 +63,10 @@ class Module extends BaseModule
                 <tbody class='divide-y divide-slate-50'>";
 
         foreach ($rooms as $r) {
+            $needsCleaning = $r['needs_cleaning'] ?? false;
+            $statusText = $needsCleaning ? 'Требуется уборка' : 'Санобработка пройдена';
+            $statusColor = $needsCleaning ? 'rose' : 'emerald';
+
             $content .= "
                     <tr class='hover:bg-slate-50/50 transition-colors'>
                         <td class='px-8 py-7'>
@@ -70,15 +74,25 @@ class Module extends BaseModule
                             <p class='text-[10px] text-slate-400 font-bold uppercase tracking-tighter'>{$r['type']}</p>
                         </td>
                         <td class='px-8 py-7'>
-                            <p class='text-sm font-bold text-slate-600'>Текущая влажная уборка</p>
-                            <p class='text-[10px] text-slate-400'>Норматив: 20 мин.</p>
+                            <p class='text-sm font-bold text-slate-600'>" . ($needsCleaning ? "Генеральная (после выезда)" : "Текущая влажная") . "</p>
+                            <p class='text-[10px] text-slate-400'>Норматив: 40 мин.</p>
                         </td>
                         <td class='px-8 py-7'>
-                            <span class='px-4 py-1.5 bg-emerald-50 text-emerald-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-emerald-100'>Санобработка пройдена</span>
+                            <span class='px-4 py-1.5 bg-{$statusColor}-50 text-{$statusColor}-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-{$statusColor}-100'>$statusText</span>
                         </td>
-                        <td class='px-8 py-7 text-right'>
-                            <button class='px-5 py-2.5 bg-slate-100 hover:bg-blue-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all'>Назначить</button>
-                        </td>
+                        <td class='px-8 py-7 text-right'>";
+
+            if ($needsCleaning) {
+                $content .= "
+                            <form action='" . $this->container->get(\App\View\Renderer::class)->url('/cleaning/complete') . "' method='POST'>
+                                <input type='hidden' name='id' value='{$r['id']}'>
+                                <button type='submit' class='px-5 py-2.5 bg-slate-900 text-white hover:bg-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all'>Завершить</button>
+                            </form>";
+            } else {
+                $content .= "<button disabled class='px-5 py-2.5 bg-slate-50 text-slate-300 rounded-xl text-[10px] font-black uppercase tracking-widest'>В графике</button>";
+            }
+
+            $content .= "</td>
                     </tr>";
         }
 
@@ -89,5 +103,20 @@ class Module extends BaseModule
         </div>";
 
         return $content;
+    }
+
+    public function markClean($request, $response): void
+    {
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $data = $request->getBody();
+        if (!empty($data['id'])) {
+            $room = $storage->findOne('rooms', ['id' => $data['id']]);
+            if ($room) {
+                $room['needs_cleaning'] = false;
+                $storage->update('rooms', $room['id'], $room);
+            }
+        }
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $response->redirect($renderer->url('/cleaning'));
     }
 }

@@ -24,9 +24,20 @@ class App
     public function boot(): void
     {
         // 1. Core Services
+        $this->container->set(Session::class, fn() => new Session());
+        $this->container->set(Security::class, fn($c) => new Security($c->get(Session::class)));
+        $this->container->set(RBAC::class, fn() => new RBAC());
         $this->container->set(Request::class, fn() => new Request());
         $this->container->set(Response::class, fn() => new Response());
-        $this->container->set(Router::class, fn($c) => new Router($c->get(Request::class), $c->get(Response::class)));
+
+        $this->container->set(Router::class, function($c) {
+             return new Router(
+                 $c->get(Request::class),
+                 $c->get(Response::class),
+                 $c->get(Security::class),
+                 $c->get(RBAC::class)
+             );
+        });
 
         // 2. Storage
         $this->container->set(StorageManager::class, function() {
@@ -38,22 +49,18 @@ class App
         $this->container->set(Config::class, fn($c) => new Config($c->get(StorageManager::class)));
 
         // 3. Auth & RBAC
-        $this->container->set(Session::class, fn() => new Session());
         $this->container->set(AuthManager::class, fn($c) => new AuthManager($c->get(Session::class), $c->get(StorageManager::class)));
-        $this->container->set(RBAC::class, fn() => new RBAC());
 
         // 4. View Renderer
         $this->container->set(Renderer::class, function($c) {
             $renderer = new Renderer(__DIR__ . '/../View/templates');
             $renderer->setGlobal('basePath', $c->get(Request::class)->getBasePath());
             $renderer->setGlobal('config', $c->get(Config::class));
+            $renderer->setGlobal('security', $c->get(Security::class));
             return $renderer;
         });
 
-        // 5. Security
-        $this->container->set(Security::class, fn($c) => new Security($c->get(Session::class)));
-
-        // 6. Module Manager
+        // 5. Module Manager
         $this->container->set(ModuleManager::class, fn($c) => new ModuleManager($c, __DIR__ . '/../../modules'));
 
         // Seed demo data
@@ -96,18 +103,16 @@ class App
                 'image' => 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800',
                 'description' => 'Просторный двухкомнатный люкс с панорамным видом на парк и полным оснащением.'
             ],
+        ]);
+
+        $storage->seed('users', [
             [
-                'number' => '305',
-                'type' => 'Апартаменты',
-                'floor' => 3,
-                'status' => 'свободен',
-                'price' => 12500,
-                'places' => 4,
-                'occupied_places' => 0,
-                'amenities' => ['wifi', 'tv', 'fridge', 'ac', 'shower', 'safe', 'microwave', 'balcony'],
-                'image' => 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=800',
-                'description' => 'Семейные апартаменты с собственной кухней и двумя спальнями.'
-            ],
+                'id' => '6500000000000',
+                'username' => 'admin',
+                'password' => password_hash('admin123', PASSWORD_BCRYPT),
+                'role' => 'admin',
+                'created_at' => date('Y-m-d 00:00:00')
+            ]
         ]);
     }
 

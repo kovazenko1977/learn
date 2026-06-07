@@ -16,6 +16,7 @@ class Module extends BaseModule
         $router->addRoute('GET', '/booking', [$this, 'index']);
         $router->addRoute('GET', '/booking/create', [$this, 'create']);
         $router->addRoute('POST', '/booking/save', [$this, 'save']);
+        $router->addRoute('POST', '/booking/checkout', [$this, 'checkout']);
     }
 
     public function index($request, $response): string
@@ -64,7 +65,7 @@ class Module extends BaseModule
 
         $newGuest = [
             'gender' => $data['guest_gender'],
-            'age' => (int)($data['guest_age'] ?? 35),
+            'age' => (int)$data['guest_age'] ?? 35,
             'is_family' => $data['is_family']
         ];
 
@@ -98,6 +99,25 @@ class Module extends BaseModule
         }
         $storage->update('rooms', $room['id'], $room);
 
+        $response->redirect($renderer->url('/booking'));
+    }
+
+    public function checkout($request, $response): void
+    {
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $data = $request->getBody();
+
+        if (!empty($data['room_number'])) {
+            $room = $storage->findOne('rooms', ['number' => $data['room_number']]);
+            if ($room) {
+                $room['occupied_places'] = 0;
+                $room['status'] = 'свободен';
+                $room['needs_cleaning'] = true; // Триггер для модуля уборки
+                $storage->update('rooms', $room['id'], $room);
+            }
+        }
+
+        $renderer = $this->container->get(\App\View\Renderer::class);
         $response->redirect($renderer->url('/booking'));
     }
 }

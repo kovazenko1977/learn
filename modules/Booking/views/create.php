@@ -5,7 +5,7 @@
         <p class='text-slate-500 mt-3 font-medium text-lg'>Внесение данных гостя и автоматическая проверка условий проживания.</p>
     </div>
 
-    <form action='<?= $this->url('/booking/save') ?>' method='POST' class='space-y-10'>
+    <form action='<?= $this->url('/booking/save') ?>' method='POST' class='space-y-10' id='bookingForm'>
         <div class='bg-white p-12 rounded-[3rem] border border-slate-100 shadow-sm'>
             <h3 class='text-xl font-bold mb-10 text-slate-800 flex items-center'>
                 <div class='w-12 h-12 rounded-[1.2rem] bg-blue-50 flex items-center justify-center mr-5 shadow-inner'>
@@ -16,9 +16,9 @@
             <div class='grid grid-cols-1 md:grid-cols-2 gap-10'>
                 <div class='md:col-span-2'>
                     <label class='block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4'>Выбранный номер в реестре</label>
-                    <select name='room_number' class='w-full border-slate-100 bg-slate-50 rounded-2xl p-5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 transition-all outline-none'>
+                    <select name='room_number' id='room_select' class='w-full border-slate-100 bg-slate-50 rounded-2xl p-5 text-sm font-bold focus:ring-4 focus:ring-blue-500/10 transition-all outline-none'>
                         <?php foreach($rooms as $r): ?>
-                            <option value='<?= $r['number'] ?>' <?= ($selectedRoom == $r['number']) ? 'selected' : '' ?>>
+                            <option value='<?= $r['number'] ?>' data-price='<?= $r['price'] ?>' <?= ($selectedRoom == $r['number']) ? 'selected' : '' ?>>
                                 №<?= $r['number'] ?> (<?= $r['type'] ?>) — Корпус <?= $r['building'] ?? '1' ?> — <?= $r['price'] ?> ₽
                             </option>
                         <?php endforeach; ?>
@@ -26,11 +26,11 @@
                 </div>
                 <div>
                     <label class='block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4'>Дата заезда (Check-in)</label>
-                    <input type='date' name='date_from' value='<?= date('Y-m-d') ?>' class='w-full border-slate-100 bg-slate-50 rounded-2xl p-5 text-sm font-bold' required>
+                    <input type='date' name='date_from' id='date_from' value='<?= date('Y-m-d') ?>' class='w-full border-slate-100 bg-slate-50 rounded-2xl p-5 text-sm font-bold' required>
                 </div>
                 <div>
                     <label class='block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4'>Дата выезда (Check-out)</label>
-                    <input type='date' name='date_to' value='<?= date('Y-m-d', strtotime('+12 days')) ?>' class='w-full border-slate-100 bg-slate-50 rounded-2xl p-5 text-sm font-bold' required>
+                    <input type='date' name='date_to' id='date_to' value='<?= date('Y-m-d', strtotime('+12 days')) ?>' class='w-full border-slate-100 bg-slate-50 rounded-2xl p-5 text-sm font-bold' required>
                 </div>
             </div>
         </div>
@@ -85,7 +85,7 @@
         <div class='flex flex-col sm:flex-row items-center justify-between p-10 bg-slate-900 rounded-[3rem] shadow-2xl shadow-slate-900/30 gap-8'>
             <div class='text-white text-center sm:text-left'>
                 <p class='text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1'>Предварительный расчет</p>
-                <p class='text-3xl font-black tracking-tight'>Ожидание данных...</p>
+                <p class='text-3xl font-black tracking-tight' id='total_price'>0 ₽</p>
             </div>
             <button type='submit' class='w-full sm:w-auto px-16 py-6 bg-blue-600 text-white font-black rounded-3xl shadow-xl shadow-blue-600/20 hover:bg-blue-500 hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-xs'>
                 Подтвердить и заселить
@@ -93,3 +93,30 @@
         </div>
     </form>
 </div>
+
+<script>
+    function calculatePrice() {
+        const roomSelect = document.getElementById('room_select');
+        const dateFrom = new Date(document.getElementById('date_from').value);
+        const dateTo = new Date(document.getElementById('date_to').value);
+        const priceDisplay = document.getElementById('total_price');
+
+        if (!roomSelect || !dateFrom || !dateTo || isNaN(dateFrom) || isNaN(dateTo)) return;
+
+        const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+        const dayPrice = parseFloat(selectedOption.getAttribute('data-price') || 0);
+
+        const diffTime = Math.abs(dateTo - dateFrom);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        const total = (diffDays > 0 ? diffDays : 1) * dayPrice;
+        priceDisplay.innerText = total.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    document.getElementById('room_select').addEventListener('change', calculatePrice);
+    document.getElementById('date_from').addEventListener('change', calculatePrice);
+    document.getElementById('date_to').addEventListener('change', calculatePrice);
+
+    // Initial calc
+    calculatePrice();
+</script>

@@ -12,8 +12,10 @@ class Module extends BaseModule
     public function boot(): void
     {
         $router = $this->container->get(Router::class);
+
         $router->addRoute('GET', '/accommodation', [$this, 'index']);
         $router->addRoute('POST', '/accommodation/add', [$this, 'addRoom']);
+        $router->addRoute('POST', '/accommodation/status', [$this, 'updateStatus']);
     }
 
     public function index($request, $response): string
@@ -43,6 +45,28 @@ class Module extends BaseModule
                 'description' => $data['description'] ?? '',
                 'occupied_places' => 0
             ]);
+        }
+
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $response->redirect($renderer->url('/accommodation'));
+    }
+
+    public function updateStatus($request, $response): void
+    {
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $data = $request->getBody();
+
+        if (!empty($data['id'])) {
+            $room = $storage->findOne('rooms', ['id' => $data['id']]);
+            if ($room) {
+                $room['status'] = $data['status'];
+                if ($data['status'] === 'ремонт') {
+                    $room['maintenance_reason'] = $data['reason'] ?? 'Технические работы';
+                } else {
+                    unset($room['maintenance_reason']);
+                }
+                $storage->update('rooms', $room['id'], $room);
+            }
         }
 
         $renderer = $this->container->get(\App\View\Renderer::class);

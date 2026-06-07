@@ -8,8 +8,8 @@ class WindowManager {
         this.desktop = null;
         this.taskbarIcons = null;
         this.isMobile = window.innerWidth <= 640;
+        this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Инициализация после загрузки DOM
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.init());
         } else {
@@ -25,7 +25,6 @@ class WindowManager {
             this.isMobile = window.innerWidth <= 640;
         });
 
-        // Перехват кликов по ссылкам внутри окон
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
             if (link && link.closest('.window-content')) {
@@ -38,7 +37,6 @@ class WindowManager {
             }
         });
 
-        // Перехват отправки форм внутри окон
         document.addEventListener('submit', (e) => {
             const form = e.target;
             if (form.closest('.window-content')) {
@@ -59,7 +57,10 @@ class WindowManager {
         try {
             const options = {
                 method: method,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': this.csrfToken
+                }
             };
 
             if (method === 'GET') {
@@ -71,8 +72,6 @@ class WindowManager {
             }
 
             const response = await fetch(url, options);
-
-            // Обработка кастомного заголовка редиректа
             const xRedirect = response.headers.get('X-Redirect');
             if (xRedirect) {
                 return this.loadContent(win, xRedirect);
@@ -81,7 +80,7 @@ class WindowManager {
             const html = await response.text();
             this.updateWindowContent(win, html);
         } catch (e) {
-            this.showError(win, 'Ошибка отправки формы: ' + e.message);
+            this.showError(win, 'Ошибка отправки данных: ' + e.message);
         } finally {
             this.setLoading(win, false);
         }
@@ -91,7 +90,6 @@ class WindowManager {
         const id = 'win-' + Math.random().toString(36).substr(2, 9);
         const win = document.createElement('div');
         win.id = id;
-
         win.className = 'window absolute bg-white border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 transform scale-95 opacity-0';
 
         if (this.isMobile) {
@@ -100,10 +98,10 @@ class WindowManager {
             win.style.left = '0';
             win.style.top = '0';
         } else {
-            win.style.width = '1000px';
-            win.style.height = '750px';
-            win.style.left = (80 + (this.windows.length * 40)) + 'px';
-            win.style.top = (60 + (this.windows.length * 40)) + 'px';
+            win.style.width = '1100px';
+            win.style.height = '800px';
+            win.style.left = (60 + (this.windows.length * 40)) + 'px';
+            win.style.top = (40 + (this.windows.length * 40)) + 'px';
             win.classList.add('rounded-2xl');
         }
 
@@ -115,7 +113,7 @@ class WindowManager {
                     <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 border border-slate-100">
                         <i class="fas ${icon} ${iconClass} text-sm"></i>
                     </div>
-                    <span class="text-sm font-black text-slate-800 truncate tracking-tight">${title}</span>
+                    <span class="text-sm font-black text-slate-800 truncate tracking-tight uppercase">${title}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     ${!this.isMobile ? `
@@ -129,11 +127,11 @@ class WindowManager {
             </div>
             <div class="window-content flex-grow bg-white overflow-auto p-6 sm:p-10 custom-scrollbar">
                 <div class="flex items-center justify-center h-full">
-                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 shadow-xl"></div>
                 </div>
             </div>
-            <div class="window-footer h-10 bg-slate-50 border-t border-slate-100 flex items-center px-6 text-[10px] text-slate-400 font-black uppercase tracking-[0.2em] flex-shrink-0">
-                Система активна • ${title}
+            <div class="window-footer h-10 bg-slate-50 border-t border-slate-100 flex items-center px-6 text-[9px] text-slate-400 font-black uppercase tracking-[0.3em] flex-shrink-0">
+                <i class="fas fa-shield-check text-emerald-500 mr-2"></i> Защищенное соединение • ${title}
             </div>
         `;
 
@@ -162,14 +160,19 @@ class WindowManager {
     async loadContent(win, url) {
         this.setLoading(win, true);
         try {
-            const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+            const response = await fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': this.csrfToken
+                }
+            });
 
             const xRedirect = response.headers.get('X-Redirect');
             if (xRedirect) {
                 return this.loadContent(win, xRedirect);
             }
 
-            if (!response.ok) throw new Error('Сетевая ошибка: ' + response.status);
+            if (!response.ok) throw new Error('Ошибка сервера: ' + response.status);
             const html = await response.text();
             this.updateWindowContent(win, html);
         } catch (e) {
@@ -195,10 +198,10 @@ class WindowManager {
     setLoading(win, isLoading) {
         const footer = win.querySelector('.window-footer');
         if (isLoading) {
-            footer.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Загрузка данных...';
+            footer.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2 text-blue-500"></i> Синхронизация данных...';
         } else {
             const title = this.windows.find(w => w.id === win.id)?.title || '';
-            footer.innerHTML = `Система активна • ${title}`;
+            footer.innerHTML = `<i class="fas fa-shield-check text-emerald-500 mr-2"></i> Защищенное соединение • ${title}`;
         }
     }
 
@@ -206,12 +209,12 @@ class WindowManager {
         const contentArea = win.querySelector('.window-content');
         contentArea.innerHTML = `
             <div class="flex flex-col items-center justify-center h-full text-center p-10">
-                <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner">
-                    <i class="fas fa-triangle-exclamation text-3xl"></i>
+                <div class="w-24 h-24 bg-rose-50 text-rose-500 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-inner">
+                    <i class="fas fa-exclamation-triangle text-4xl"></i>
                 </div>
-                <h3 class="text-xl font-black text-slate-800 tracking-tight">Ошибка модуля</h3>
-                <p class="text-sm text-slate-500 mt-4 leading-relaxed max-w-sm">${message}</p>
-                <button onclick="location.reload()" class="mt-10 px-8 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl">Перезагрузить систему</button>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Системная ошибка</h3>
+                <p class="text-sm text-slate-500 mt-4 leading-relaxed max-w-sm font-medium">${message}</p>
+                <button onclick="location.reload()" class="mt-12 px-10 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-slate-900/20 active:scale-95 transition-all">Перезагрузить Sanatorium ERP</button>
             </div>
         `;
     }
@@ -219,13 +222,13 @@ class WindowManager {
     addTaskbarIcon(id, title, icon, iconClass) {
         const btn = document.createElement('button');
         btn.id = 'task-' + id;
-        btn.className = 'w-11 h-11 flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all rounded-2xl relative group border border-white/5 flex-shrink-0 active:scale-90';
+        btn.className = 'w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all rounded-2xl relative group border border-white/5 flex-shrink-0 active:scale-90';
         btn.innerHTML = `
-            <i class="fas ${icon} ${iconClass} text-lg"></i>
-            <div class="hidden sm:group-hover:block absolute -top-14 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-4 py-2 rounded-xl whitespace-nowrap z-[7000] shadow-2xl font-black uppercase tracking-widest border border-white/10">
+            <i class="fas ${icon} ${iconClass} text-xl"></i>
+            <div class="hidden sm:group-hover:block absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-5 py-2.5 rounded-[1rem] whitespace-nowrap z-[7000] shadow-2xl font-black uppercase tracking-widest border border-white/10">
                 ${title}
             </div>
-            <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_8px_#60a5fa]"></div>
+            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-2 h-1 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
         `;
         btn.onclick = () => this.toggleWindow(id);
         this.taskbarIcons.appendChild(btn);
@@ -238,8 +241,8 @@ class WindowManager {
             this.windows.forEach(w => {
                 const icon = document.getElementById('task-' + w.id);
                 if (icon) {
-                    if (w.id === id) icon.classList.add('bg-white/40', 'border-white/20', 'scale-110');
-                    else icon.classList.remove('bg-white/40', 'border-white/20', 'scale-110');
+                    if (w.id === id) icon.classList.add('bg-white/40', 'border-white/20', 'scale-110', 'shadow-2xl');
+                    else icon.classList.remove('bg-white/40', 'border-white/20', 'scale-110', 'shadow-2xl');
                 }
             });
         }
@@ -272,8 +275,8 @@ class WindowManager {
     maximizeWindow(id) {
         const win = document.getElementById(id);
         if (win.style.width === '100%') {
-            win.style.width = '1000px';
-            win.style.height = '750px';
+            win.style.width = '1100px';
+            win.style.height = '800px';
             win.style.top = '60px';
             win.style.left = '80px';
             win.classList.add('rounded-2xl');

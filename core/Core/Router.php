@@ -9,19 +9,24 @@ class Router
     private array $routes = [];
     private Request $request;
     private Response $response;
+    private ?Security $security;
+    private ?\App\Auth\RBAC $rbac;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ?Security $security = null, ?\App\Auth\RBAC $rbac = null)
     {
         $this->request = $request;
         $this->response = $response;
+        $this->security = $security;
+        $this->rbac = $rbac;
     }
 
-    public function addRoute(string $method, string $path, callable|array $handler): void
+    public function addRoute(string $method, string $path, callable|array $handler, array $roles = []): void
     {
         $this->routes[] = [
             'method' => strtoupper($method),
             'path' => $path,
-            'handler' => $handler
+            'handler' => $handler,
+            'roles' => $roles
         ];
     }
 
@@ -30,7 +35,18 @@ class Router
         $method = $this->request->getMethod();
         $uri = $this->request->getUri();
 
-        // Standardize URI for matching
+        // 1. CSRF Protection for POST/PUT/DELETE
+        if ($method !== 'GET' && $this->security) {
+            $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_POST['_csrf'] ?? null;
+            if (!$this->security->validateCsrfToken($token)) {
+                $this->response->setStatusCode(403);
+                $this->response->setContent("Ошибка безопасности: Некорректный CSRF токен.");
+                $this->response->send();
+                return;
+            }
+        }
+
+        // Standardize URI
         if ($uri !== '/' && str_ends_with($uri, '/')) {
             $uri = rtrim($uri, '/');
         }
@@ -40,6 +56,29 @@ class Router
 
         foreach ($this->routes as $route) {
             if ($route['method'] === $method && $this->matchPath($route['path'], $uri, $params)) {
+
+                // 2. RBAC Check
+                if (!empty($route['roles']) && $this->rbac) {
+                    $session = new \App\Auth\Session();
+                    $user = $session->get('user');
+                    $userRole = $user['role'] ?? 'guest';
+
+                    $hasPermission = false;
+                    foreach ($route['roles'] as $requiredRole) {
+                        if ($this->rbac->hasRole($userRole, $requiredRole)) {
+                            $hasPermission = true;
+                            break;
+                        }
+                    }
+
+                    if (!$hasPermission) {
+                        $this->response->setStatusCode(403);
+                        $this->response->setContent("Доступ запрещен: недостаточно прав для выполнения операции.");
+                        $this->response->send();
+                        return;
+                    }
+                }
+
                 $handler = $route['handler'];
 
                 if (is_callable($handler)) {

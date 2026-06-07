@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="<?= $this->globals['security']->generateCsrfToken() ?>">
     <link rel="manifest" href="<?= $this->url('/manifest.json') ?>">
     <title>Sanatorium 2.0 ERP - Профессиональная система управления</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -105,9 +106,9 @@
     <!-- Desktop Area -->
     <div id="desktop" class="relative w-full h-[calc(100vh-56px)] p-6 flex flex-col flex-wrap content-start items-start overflow-hidden">
 
-        <div class="desktop-icon" onclick="wm.createWindow('Реестр номеров', '<?= $this->url('/accommodation') ?>', 'fa-door-open', 'text-amber-400')">
+        <div class="desktop-icon" onclick="wm.createWindow('Номерной фонд', '<?= $this->url('/accommodation') ?>', 'fa-door-open', 'text-amber-400')">
             <i class="fas fa-door-open text-amber-400"></i>
-            <span>Реестр номеров</span>
+            <span>Номерной фонд</span>
         </div>
 
         <div class="desktop-icon" onclick="wm.createWindow('Шахматка заездов', '<?= $this->url('/booking') ?>', 'fa-calendar-check', 'text-emerald-400')">
@@ -125,7 +126,7 @@
             <span>Лечебный корпус</span>
         </div>
 
-        <div class="desktop-icon" onclick="wm.createWindow('Кассовая книга', '<?= $this->url('/finance') ?>', 'fa-vault', 'text-indigo-400')">
+        <div class="desktop-icon" onclick="wm.createWindow('Финансовый отдел', '<?= $this->url('/finance') ?>', 'fa-vault', 'text-indigo-400')">
             <i class="fas fa-vault text-indigo-400"></i>
             <span>Финансы</span>
         </div>

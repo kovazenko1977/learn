@@ -133,7 +133,16 @@
     <?php else: ?>
         <?php foreach ($rooms as $room): ?>
             <?php
-                $statusColor = $room['status'] === 'свободен' ? 'emerald' : ($room['status'] === 'занят' ? 'rose' : 'amber');
+                $statusMap = [
+                    'свободен' => ['color' => 'emerald', 'label' => 'Свободен'],
+                    'занят' => ['color' => 'rose', 'label' => 'Занят'],
+                    'бронь' => ['color' => 'blue', 'label' => 'Бронирование'],
+                    'ремонт' => ['color' => 'slate', 'label' => 'Тех. обслуживание']
+                ];
+                $s = $statusMap[$room['status'] ?? 'свободен'] ?? ['color' => 'amber', 'label' => 'Неизвестно'];
+                $statusColor = $s['color'];
+                $statusLabel = $s['label'];
+
                 $image = !empty($room['image']) ? $room['image'] : 'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800';
                 $building = $room['building'] ?? '1';
                 $buildingName = "Корпус №$building";
@@ -144,7 +153,7 @@
                     <img src='<?= $image ?>' class='w-full h-full object-cover group-hover:scale-110 transition-all duration-700' alt='Фото номера'>
                     <div class='absolute top-6 right-6'>
                          <span class='px-4 py-2 bg-white/95 backdrop-blur-xl shadow-xl text-<?= $statusColor ?>-600 text-[10px] font-extrabold uppercase tracking-widest rounded-2xl border border-<?= $statusColor ?>-100'>
-                            <?= $room['status'] ?>
+                            <?= $statusLabel ?>
                         </span>
                     </div>
                     <div class='absolute bottom-6 left-6'>
@@ -187,10 +196,34 @@
                         <?= $room['description'] ?? 'Уютный номер, подготовленный к приему гостей. Оснащен всем необходимым для длительного проживания.' ?>
                     </p>
 
+                    <?php if ($room['status'] === 'ремонт'): ?>
+                        <div class='mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100'>
+                            <p class='text-[10px] font-bold text-slate-400 uppercase mb-1'>Причина тех. работ:</p>
+                            <p class='text-xs font-bold text-slate-700'><?= $room['maintenance_reason'] ?? 'Плановая профилактика' ?></p>
+                        </div>
+                    <?php endif; ?>
+
                     <div class='mt-8 pt-8 border-t border-slate-50 flex justify-between items-center'>
-                         <button class='text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors flex items-center'>
-                            <i class='fas fa-edit mr-2'></i> Изменить карту
-                         </button>
+                         <div class='flex space-x-2'>
+                             <?php if ($room['status'] !== 'ремонт'): ?>
+                                <form action='<?= $this->url('/accommodation/status') ?>' method='POST' class='inline'>
+                                    <input type='hidden' name='id' value='<?= $room['id'] ?>'>
+                                    <input type='hidden' name='status' value='ремонт'>
+                                    <input type='hidden' name='reason' value='Протечка сантехники'>
+                                    <button type='submit' class='text-[10px] font-bold text-rose-500 uppercase tracking-widest hover:text-rose-700 transition-colors flex items-center'>
+                                        <i class='fas fa-wrench mr-2'></i> В ремонт
+                                    </button>
+                                </form>
+                             <?php else: ?>
+                                <form action='<?= $this->url('/accommodation/status') ?>' method='POST' class='inline'>
+                                    <input type='hidden' name='id' value='<?= $room['id'] ?>'>
+                                    <input type='hidden' name='status' value='свободен'>
+                                    <button type='submit' class='text-[10px] font-bold text-emerald-500 uppercase tracking-widest hover:text-emerald-700 transition-colors flex items-center'>
+                                        <i class='fas fa-check mr-2'></i> Готов
+                                    </button>
+                                </form>
+                             <?php endif; ?>
+                         </div>
                          <div class='flex items-center text-slate-300 space-x-4'>
                              <div class='flex items-center'><i class='fas fa-stairs text-xs mr-2'></i> <span class='text-xs font-bold tabular-nums'><?= $room['floor'] ?></span></div>
                              <div class='flex items-center'><i class='fas fa-user-group text-xs mr-2'></i> <span class='text-xs font-bold tabular-nums'><?= $room['places'] ?></span></div>
