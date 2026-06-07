@@ -1,46 +1,65 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Modules\Fitness;
+
 use App\Module\BaseModule;
 use App\Core\Router;
-class Module extends BaseModule {
-    public function boot(): void {
+
+class Module extends BaseModule
+{
+    public function boot(): void
+    {
         $router = $this->container->get(Router::class);
-        $router->addRoute('GET', '/' . strtolower('Fitness'), [$this, 'index']);
+        $router->addRoute('GET', '/fitness', [$this, 'index']);
     }
-    public function index($request, $response): string {
-        $renderer = $this->container->get(\App\View\Renderer::class);
-        $content = "<div class='mb-8'>
-            <h2 class='text-4xl font-extrabold text-gray-900'>Fitness</h2>
-            <p class='text-gray-500 mt-2'>Тренажерный зал. Модуль готов к работе.</p>
+
+    public function index($request, $response): string
+    {
+        return "
+        <div class='mb-10'>
+            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Фитнес и Спорт</h2>
+            <p class='text-slate-500 mt-2'>Тренажерный зал, йога и персональные тренировки.</p>
         </div>
-        <div class='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            <div class='bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-blue-50/20 text-center'>
-                <div class='w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-lg shadow-blue-100'>
-                    <i class='fas fa-chart-line'></i>
+
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
+            <div class='bg-rose-600 p-10 rounded-[3rem] text-white shadow-2xl shadow-rose-600/20 relative overflow-hidden'>
+                <div class='relative z-10'>
+                    <h3 class='text-2xl font-bold mb-2'>Тренажерный зал</h3>
+                    <p class='text-rose-100 text-sm mb-8'>Открыт с 07:00 до 22:00</p>
+                    <div class='flex items-center space-x-4'>
+                        <div class='px-4 py-2 bg-white/20 rounded-xl text-xs font-bold uppercase'>8 человек сейчас</div>
+                        <div class='px-4 py-2 bg-emerald-500 rounded-xl text-xs font-bold uppercase tracking-widest'>Открыто</div>
+                    </div>
                 </div>
-                <h3 class='font-bold text-xl mb-2 text-gray-800'>Статистика</h3>
-                <p class='text-sm text-gray-400'>Оперативные данные модуля в реальном времени.</p>
+                <i class='fas fa-dumbbell absolute -right-10 -bottom-10 text-[12rem] opacity-10 rotate-12'></i>
             </div>
-            <div class='bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-purple-50/20 text-center'>
-                <div class='w-20 h-20 bg-purple-50 text-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-lg shadow-purple-100'>
-                    <i class='fas fa-tasks'></i>
+
+            <div class='bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm'>
+                <h3 class='text-xl font-bold text-slate-800 mb-6'>Занятия по расписанию</h3>
+                <div class='space-y-6'>
+                    <div class='flex items-start'>
+                        <div class='w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mr-4 flex-shrink-0'>
+                            <i class='fas fa-child-reaching'></i>
+                        </div>
+                        <div>
+                            <p class='text-sm font-bold text-slate-800'>Йога (Утренняя)</p>
+                            <p class='text-[10px] text-slate-400 font-bold uppercase'>Зал №2 • 08:30</p>
+                        </div>
+                    </div>
+                    <div class='flex items-start'>
+                        <div class='w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mr-4 flex-shrink-0'>
+                            <i class='fas fa-person-running'></i>
+                        </div>
+                        <div>
+                            <p class='text-sm font-bold text-slate-800'>Скандинавская ходьба</p>
+                            <p class='text-[10px] text-slate-400 font-bold uppercase'>Сбор у главного входа • 10:00</p>
+                        </div>
+                    </div>
                 </div>
-                <h3 class='font-bold text-xl mb-2 text-gray-800'>Задачи</h3>
-                <p class='text-sm text-gray-400'>Управление текущими процессами и планами.</p>
             </div>
-            <div class='bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-orange-50/20 text-center'>
-                <div class='w-20 h-20 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-lg shadow-orange-100'>
-                    <i class='fas fa-file-alt'></i>
-                </div>
-                <h3 class='font-bold text-xl mb-2 text-gray-800'>Отчеты</h3>
-                <p class='text-sm text-gray-400'>Генерация аналитики и выгрузка документов.</p>
-            </div>
-        </div>";
-        return $renderer->render('layout', [
-            'title' => 'Fitness - VSPRINT 2.0',
-            'content' => $content,
-            'user' => ['username' => 'Admin']
-        ]);
+        </div>
+        ";
     }
 }

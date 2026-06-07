@@ -1,46 +1,63 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Modules\Library;
+
 use App\Module\BaseModule;
 use App\Core\Router;
-class Module extends BaseModule {
-    public function boot(): void {
+
+class Module extends BaseModule
+{
+    public function boot(): void
+    {
         $router = $this->container->get(Router::class);
-        $router->addRoute('GET', '/' . strtolower('Library'), [$this, 'index']);
+        $router->addRoute('GET', '/library', [$this, 'index']);
     }
-    public function index($request, $response): string {
-        $renderer = $this->container->get(\App\View\Renderer::class);
-        $content = "<div class='mb-8'>
-            <h2 class='text-4xl font-extrabold text-gray-900'>Library</h2>
-            <p class='text-gray-500 mt-2'>Библиотека и читальный зал. Модуль готов к работе.</p>
+
+    public function index($request, $response): string
+    {
+        return "
+        <div class='mb-10'>
+            <h2 class='text-3xl font-bold text-slate-800 tracking-tight'>Библиотечный фонд</h2>
+            <p class='text-slate-500 mt-2'>Каталог книг, периодических изданий и учет выдачи литературы.</p>
         </div>
-        <div class='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            <div class='bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-blue-50/20 text-center'>
-                <div class='w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-lg shadow-blue-100'>
-                    <i class='fas fa-chart-line'></i>
-                </div>
-                <h3 class='font-bold text-xl mb-2 text-gray-800'>Статистика</h3>
-                <p class='text-sm text-gray-400'>Оперативные данные модуля в реальном времени.</p>
+
+        <div class='grid grid-cols-1 md:grid-cols-4 gap-6'>
+            <div class='md:col-span-1 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm'>
+                 <h4 class='font-bold text-slate-800 mb-4'>Категории</h4>
+                 <div class='space-y-1'>
+                    <button class='w-full text-left p-2 rounded-xl bg-blue-50 text-blue-600 text-xs font-bold'>Классика</button>
+                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>Детективы</button>
+                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>История</button>
+                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>Детское</button>
+                    <button class='w-full text-left p-2 rounded-xl hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all'>Журналы</button>
+                 </div>
             </div>
-            <div class='bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-purple-50/20 text-center'>
-                <div class='w-20 h-20 bg-purple-50 text-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-lg shadow-purple-100'>
-                    <i class='fas fa-tasks'></i>
-                </div>
-                <h3 class='font-bold text-xl mb-2 text-gray-800'>Задачи</h3>
-                <p class='text-sm text-gray-400'>Управление текущими процессами и планами.</p>
+
+            <div class='md:col-span-3 space-y-6'>
+                 <div class='bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between'>
+                    <div class='flex items-center space-x-6'>
+                        <div class='w-16 h-20 bg-slate-200 rounded shadow-inner flex items-center justify-center text-slate-400'><i class='fas fa-book-open'></i></div>
+                        <div>
+                            <p class='font-bold text-slate-800 italic'>«Война и Мир»</p>
+                            <p class='text-xs text-slate-500 font-medium'>Л.Н. Толстой • 1867</p>
+                        </div>
+                    </div>
+                    <span class='text-[10px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full'>В наличии</span>
+                 </div>
+                 <div class='bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between'>
+                    <div class='flex items-center space-x-6'>
+                        <div class='w-16 h-20 bg-slate-200 rounded shadow-inner flex items-center justify-center text-slate-400'><i class='fas fa-book-open'></i></div>
+                        <div>
+                            <p class='font-bold text-slate-800 italic'>«Мастер и Маргарита»</p>
+                            <p class='text-xs text-slate-500 font-medium'>М.А. Булгаков • 1966</p>
+                        </div>
+                    </div>
+                    <span class='text-[10px] font-bold text-rose-400 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full'>На руках (возврат 15.01)</span>
+                 </div>
             </div>
-            <div class='bg-white p-8 rounded-[40px] border border-gray-100 shadow-xl shadow-orange-50/20 text-center'>
-                <div class='w-20 h-20 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-lg shadow-orange-100'>
-                    <i class='fas fa-file-alt'></i>
-                </div>
-                <h3 class='font-bold text-xl mb-2 text-gray-800'>Отчеты</h3>
-                <p class='text-sm text-gray-400'>Генерация аналитики и выгрузка документов.</p>
-            </div>
-        </div>";
-        return $renderer->render('layout', [
-            'title' => 'Library - VSPRINT 2.0',
-            'content' => $content,
-            'user' => ['username' => 'Admin']
-        ]);
+        </div>
+        ";
     }
 }
