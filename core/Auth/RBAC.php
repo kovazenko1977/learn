@@ -26,4 +26,13 @@ class RBAC
 
         return in_array($permission, $this->roles[$role]);
     }
+
+    public function hasRole(string $currentRole, string $requiredRole): bool
+    {
+        if ($currentRole === 'admin') {
+            return true;
+        }
+
+        return $currentRole === $requiredRole;
+    }
 }

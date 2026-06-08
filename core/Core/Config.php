@@ -22,7 +22,7 @@ class Config
         $config = $this->storage->findOne('config', ['id' => 'system']);
         $this->data = $config ?: [
             'id' => 'system',
-            'app_name' => 'VSPRINT 2.0',
+            'app_name' => 'Sanatorium 2.0',
             'theme' => [
                 'primary_color' => '#2563eb',
                 'accent_color' => '#8b5cf6',

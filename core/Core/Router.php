@@ -60,8 +60,7 @@ class Router
                 // 2. RBAC Check
                 if (!empty($route['roles']) && $this->rbac) {
                     $session = new \App\Auth\Session();
-                    $user = $session->get('user');
-                    $userRole = $user['role'] ?? 'guest';
+                    $userRole = $session->get('role') ?? 'guest';
 
                     $hasPermission = false;
                     foreach ($route['roles'] as $requiredRole) {

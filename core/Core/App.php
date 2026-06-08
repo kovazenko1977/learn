@@ -57,6 +57,14 @@ class App
             $renderer->setGlobal('basePath', $c->get(Request::class)->getBasePath());
             $renderer->setGlobal('config', $c->get(Config::class));
             $renderer->setGlobal('security', $c->get(Security::class));
+
+            $auth = $c->get(AuthManager::class);
+            if ($auth->isLoggedIn()) {
+                $renderer->setGlobal('user', $auth->getCurrentUser());
+            } else {
+                $renderer->setGlobal('user', ['username' => 'Гость', 'role' => 'guest']);
+            }
+
             return $renderer;
         });
 
@@ -80,6 +88,7 @@ class App
 
         $storage->seed('rooms', [
             [
+                'id' => 'room_101',
                 'number' => '101',
                 'type' => 'Стандарт',
                 'floor' => 1,
@@ -92,6 +101,7 @@ class App
                 'description' => 'Уютный одноместный номер со всеми удобствами и быстрым Wi-Fi.'
             ],
             [
+                'id' => 'room_201',
                 'number' => '201',
                 'type' => 'Люкс',
                 'floor' => 2,
@@ -103,6 +113,15 @@ class App
                 'image' => 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800',
                 'description' => 'Просторный двухкомнатный люкс с панорамным видом на парк и полным оснащением.'
             ],
+        ]);
+
+        $storage->seed('payments', [
+            ['id' => 'p1', 'amount' => 15000, 'date' => date('Y-m-d', strtotime('-5 days')), 'category' => 'Проживание'],
+            ['id' => 'p2', 'amount' => 12000, 'date' => date('Y-m-d', strtotime('-4 days')), 'category' => 'Медицина'],
+            ['id' => 'p3', 'amount' => 18000, 'date' => date('Y-m-d', strtotime('-3 days')), 'category' => 'Проживание'],
+            ['id' => 'p4', 'amount' => 8000, 'date' => date('Y-m-d', strtotime('-2 days')), 'category' => 'Доп. услуги'],
+            ['id' => 'p5', 'amount' => 22000, 'date' => date('Y-m-d', strtotime('-1 day')), 'category' => 'Проживание'],
+            ['id' => 'p6', 'amount' => 14000, 'date' => date('Y-m-d'), 'category' => 'Медицина'],
         ]);
 
         $storage->seed('users', [
