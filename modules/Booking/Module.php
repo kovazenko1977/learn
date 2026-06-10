@@ -1,0 +1,123 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Booking;
+
+use App\Module\BaseModule;
+use App\Core\Router;
+
+class Module extends BaseModule
+{
+    public function boot(): void
+    {
+        $router = $this->container->get(Router::class);
+
+        $router->addRoute('GET', '/booking', [$this, 'index']);
+        $router->addRoute('GET', '/booking/create', [$this, 'create']);
+        $router->addRoute('POST', '/booking/save', [$this, 'save']);
+        $router->addRoute('POST', '/booking/checkout', [$this, 'checkout']);
+    }
+
+    public function index($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $rooms = $storage->find('rooms');
+        return $renderer->render('Booking/index', ['rooms' => $rooms]);
+    }
+
+    public function create($request, $response): string
+    {
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $params = $request->getBody();
+        $selectedRoom = $params['room'] ?? '';
+        $rooms = $storage->find('rooms');
+
+        return $renderer->render('Booking/create', [
+            'rooms' => $rooms,
+            'selectedRoom' => $selectedRoom
+        ]);
+    }
+
+    public function save($request, $response): void
+    {
+        $data = $request->getBody();
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $renderer = $this->container->get(\App\View\Renderer::class);
+
+        $room = $storage->findOne('rooms', ['number' => $data['room_number']]);
+        if (!$room) {
+             $response->redirect($renderer->url('/booking'));
+             return;
+        }
+
+        // Validate placement rules
+        $existingBookings = $storage->find('bookings', ['room_number' => $data['room_number'], 'status' => 'confirmed']);
+        $existingGuests = [];
+        foreach($existingBookings as $eb) {
+            $existingGuests[] = [
+                'gender' => $eb['guest_gender'] ?? 'unknown',
+                'age' => (int)($eb['guest_age'] ?? 35)
+            ];
+        }
+
+        $newGuest = [
+            'gender' => $data['guest_gender'],
+            'age' => (int)$data['guest_age'] ?? 35,
+            'is_family' => $data['is_family']
+        ];
+
+        $errors = \App\Utils\RulesEngine::validatePlacement($room, $newGuest, $existingGuests);
+
+        if (!empty($errors)) {
+            $response->setContent($renderer->render('Booking/error', ['errors' => $errors]));
+            $response->send();
+            return;
+        }
+
+        $storage->insert('bookings', [
+            'room_number' => $data['room_number'],
+            'guest_name' => $data['guest_name'],
+            'guest_gender' => $data['guest_gender'],
+            'guest_age' => $data['guest_age'],
+            'guest_address' => $data['guest_address'] ?? '',
+            'passport' => ($data['passport_series'] ?? '') . ' ' . ($data['passport_number'] ?? ''),
+            'is_family' => $data['is_family'],
+            'date_from' => $data['date_from'],
+            'date_to' => $data['date_to'],
+            'status' => 'confirmed'
+        ]);
+
+        // Update room occupancy
+        $room['occupied_places'] = ($room['occupied_places'] ?? 0) + 1;
+        if ($room['occupied_places'] >= $room['places']) {
+            $room['status'] = 'занят';
+        } else {
+            $room['status'] = 'бронь';
+        }
+        $storage->update('rooms', $room['id'], $room);
+
+        $response->redirect($renderer->url('/booking'));
+    }
+
+    public function checkout($request, $response): void
+    {
+        $storage = $this->container->get(\App\Storage\StorageManager::class);
+        $data = $request->getBody();
+
+        if (!empty($data['room_number'])) {
+            $room = $storage->findOne('rooms', ['number' => $data['room_number']]);
+            if ($room) {
+                $room['occupied_places'] = 0;
+                $room['status'] = 'свободен';
+                $room['needs_cleaning'] = true; // Триггер для модуля уборки
+                $storage->update('rooms', $room['id'], $room);
+            }
+        }
+
+        $renderer = $this->container->get(\App\View\Renderer::class);
+        $response->redirect($renderer->url('/booking'));
+    }
+}

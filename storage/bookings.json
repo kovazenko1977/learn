@@ -1,0 +1,14 @@
+[
+    {
+        "id": "BK_DEMO_1",
+        "room_number": "102",
+        "guest_name": "Петров Петр Петрович",
+        "guest_gender": "male",
+        "guest_age": 45,
+        "is_family": "no",
+        "date_from": "2026-06-04",
+        "date_to": "2026-06-11",
+        "status": "confirmed",
+        "created_at": "2026-06-07 06:50:12"
+    }
+]

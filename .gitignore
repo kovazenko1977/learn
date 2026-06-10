@@ -1,0 +1,9 @@
+/vendor/
+/runtime/
+/storage/
+/logs/
+/*.png
+/verification/
+/__pycache__/
+server.log
+.DS_Store
