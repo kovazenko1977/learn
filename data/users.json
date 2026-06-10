@@ -1,0 +1,9 @@
+[
+    {
+        "id": "admin_1",
+        "username": "admin",
+        "pin": "$2y$10$oMKjU1TaANGmLPLtmPzEheejxhR6884J84OlGnqUoJzGGpKgOxbay",
+        "role": "admin",
+        "created_at": "2026-05-19 05:44:39"
+    }
+]

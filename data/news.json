@@ -1,0 +1,158 @@
+[
+    {
+        "title": "Тестовая новость",
+        "section_id": "test-sec",
+        "id": "6a08b488380e6",
+        "created_at": "2026-05-16 18:16:40"
+    },
+    {
+        "title": "Future",
+        "section_id": "sec1",
+        "publish_at": "2026-05-16 19:17:53",
+        "id": "6a08b4d12f8f9",
+        "created_at": "2026-05-16 18:17:53"
+    },
+    {
+        "title": "Now",
+        "section_id": "sec1",
+        "publish_at": "2026-05-16 17:17:53",
+        "id": "6a08b4d12fa9e",
+        "created_at": "2026-05-16 18:17:53"
+    },
+    {
+        "title": "Test News",
+        "section_id": "render-test",
+        "content": "<p>Hello World<\/p>",
+        "id": "6a08b4e443fe6",
+        "created_at": "2026-05-16 18:18:12"
+    },
+    {
+        "id": "n1",
+        "section_id": "news-test",
+        "title": "Past",
+        "content": "...",
+        "publish_at": "2026-06-05 16:40:14",
+        "created_at": "2026-06-05 17:40:14"
+    },
+    {
+        "id": "n2",
+        "section_id": "news-test",
+        "title": "Future",
+        "content": "...",
+        "publish_at": "2026-06-05 18:40:14",
+        "created_at": "2026-06-05 17:40:14"
+    },
+    {
+        "id": "6a08b593c5478",
+        "section_id": "6a08b46dcfc39",
+        "title": "Breaking News",
+        "content": "<p>This is a <strong>professional<\/strong> news item with an image.<\/p>",
+        "publish_at": null,
+        "expire_at": null,
+        "updated_at": "2026-05-16 18:21:07",
+        "created_at": "2026-05-16 18:21:07"
+    },
+    {
+        "id": "6a08b5b6dd7ea",
+        "section_id": "6a08b46dcfc39",
+        "title": "Breaking News",
+        "content": "<p>This is a <strong>professional<\/strong> news item with an image.<\/p>",
+        "publish_at": null,
+        "expire_at": null,
+        "updated_at": "2026-05-16 18:21:42",
+        "created_at": "2026-05-16 18:21:42",
+        "views": 1,
+        "view_logs": {
+            "679aa56b2357b3e4c17ae62aa9abf10f": "2026-06-05"
+        }
+    },
+    {
+        "id": "6a09ff1dce78d",
+        "section_id": "6a09ff1be789f",
+        "title": "New Feature Highlight",
+        "content": "<p>This is a <strong>test<\/strong> news item with deep settings.<\/p><p><img src=\"assets\/img\/no-image.jpg\"><\/p>",
+        "thumbnail": "",
+        "status": "published",
+        "is_pinned": false,
+        "publish_at": null,
+        "expire_at": null,
+        "seo_title": "",
+        "seo_description": "",
+        "tags": [
+            "ai",
+            "news",
+            "upgrade"
+        ],
+        "author": "Jules Developer",
+        "updated_at": "2026-05-17 17:47:09",
+        "views": 1,
+        "reaction_count": 1,
+        "created_at": "2026-05-17 17:47:09",
+        "view_logs": {
+            "679aa56b2357b3e4c17ae62aa9abf10f": "2026-05-17"
+        },
+        "reactions": [
+            "679aa56b2357b3e4c17ae62aa9abf10f"
+        ]
+    },
+    {
+        "id": "6a0af55915a1b",
+        "section_id": "6a0af5587671f",
+        "title": "User Manual",
+        "content": "<h2>Getting Started<\/h2><p>Step 1...<\/p><h2>Advanced<\/h2><p>Step 2...<\/p>",
+        "thumbnail": "",
+        "status": "published",
+        "is_pinned": false,
+        "publish_at": null,
+        "expire_at": null,
+        "seo_title": "",
+        "seo_description": "",
+        "tags": [],
+        "author": "",
+        "updated_at": "2026-05-18 11:17:45",
+        "views": 1,
+        "reaction_count": 0,
+        "created_at": "2026-05-18 11:17:45",
+        "view_logs": {
+            "679aa56b2357b3e4c17ae62aa9abf10f": "2026-05-18"
+        }
+    },
+    {
+        "id": "meta_test_6a2283e52ba1a",
+        "section_id": "s1",
+        "title": "Meta Test Edited",
+        "content": "Content Edited",
+        "status": "published",
+        "updated_at": "2026-06-05 08:08:05",
+        "views": 2,
+        "reaction_count": 2,
+        "reactions": [
+            "user1",
+            "user2"
+        ],
+        "view_logs": [
+            "ip1",
+            "ip2"
+        ],
+        "created_at": "2026-06-05 08:08:05"
+    },
+    {
+        "id": "meta_test_6a2309fdca8bb",
+        "section_id": "s1",
+        "title": "Meta Test Edited",
+        "content": "Content Edited",
+        "status": "published",
+        "updated_at": "2026-06-05 17:40:13",
+        "views": 2,
+        "reaction_count": 2,
+        "reactions": [
+            "user1",
+            "user2"
+        ],
+        "view_logs": [
+            "ip1",
+            "ip2"
+        ],
+        "created_at": "2026-06-05 17:40:13"
+    }
+]
