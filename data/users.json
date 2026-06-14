@@ -1,0 +1,29 @@
+[
+    {
+        "id": "1000",
+        "username": "admin",
+        "password_hash": "$2y$10$MllEVysPf\/\/ywRQuWMlcH.LN3dixCmHVbom.sRmfp\/Ompxqxrl\/Ze",
+        "role": "admin",
+        "full_name": "Администратор Системы",
+        "phone": "+7 (999) 000-00-00",
+        "created_at": "2026-06-14 01:26:01"
+    },
+    {
+        "id": "1001",
+        "username": "head",
+        "password_hash": "$2y$10$yO\/3BzsuaR4CyQIl.qgXEuppuieyNRkdQhBm.Y9fP7tJiHAoMyZpi",
+        "role": "head",
+        "full_name": "Иванов Иван Иванович",
+        "phone": "+7 (999) 111-22-33",
+        "created_at": "2026-06-14 01:26:01"
+    },
+    {
+        "id": "1002",
+        "username": "tech",
+        "password_hash": "$2y$10$HwE.0T5OfJcVusgpCY.b6efOeCQfkPWh7dQNIgRPOJoxoH1ffUhwu",
+        "role": "executor",
+        "full_name": "Петров Петр Петрович",
+        "phone": "+7 (999) 444-55-66",
+        "created_at": "2026-06-14 01:26:01"
+    }
+]

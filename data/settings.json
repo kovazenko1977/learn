@@ -1,0 +1,36 @@
+{
+    "storage_mode": "json",
+    "form_fields": [
+        {
+            "id": "room",
+            "label": "Номер кабинета",
+            "type": "text",
+            "required": true
+        },
+        {
+            "id": "inventory_id",
+            "label": "Инвентарный номер",
+            "type": "text",
+            "required": false
+        }
+    ],
+    "categories": [
+        "IT",
+        "Ремонт",
+        "Уборка",
+        "Хознужды"
+    ],
+    "priorities": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+    ],
+    "sla_rules": {
+        "low": 72,
+        "medium": 48,
+        "high": 24,
+        "urgent": 4
+    },
+    "JWT_SECRET": "853f4c002ed5ac933f2d9b7cf098953bcb89e5074ebdf834ead2484ce9b0a1b6"
+}
