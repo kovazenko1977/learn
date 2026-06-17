@@ -1,0 +1,55 @@
+[Wed Jun 17 01:35:27 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Wed Jun 17 01:35:59 2026] [::1]:51474 Accepted
+[Wed Jun 17 01:35:59 2026] [::1]:51474 [200]: GET /admin.php
+[Wed Jun 17 01:35:59 2026] [::1]:51474 Closing
+[Wed Jun 17 01:36:00 2026] [::1]:51484 Accepted
+[Wed Jun 17 01:36:00 2026] [::1]:51490 Accepted
+[Wed Jun 17 01:36:00 2026] [::1]:51484 [200]: GET /assets/css/app.css
+[Wed Jun 17 01:36:00 2026] [::1]:51490 [200]: GET /assets/js/admin.js
+[Wed Jun 17 01:36:00 2026] [::1]:51484 Closing
+[Wed Jun 17 01:36:00 2026] [::1]:51490 Closing
+[Wed Jun 17 01:36:01 2026] [::1]:51492 Accepted
+[Wed Jun 17 01:36:01 2026] [::1]:51492 [200]: GET /api/auth.php?action=me
+[Wed Jun 17 01:36:01 2026] [::1]:51492 Closing
+[Wed Jun 17 01:36:03 2026] [::1]:51500 Accepted
+[Wed Jun 17 01:36:03 2026] [::1]:51500 [200]: POST /api/auth.php?action=login
+[Wed Jun 17 01:36:03 2026] [::1]:51500 Closing
+[Wed Jun 17 01:36:04 2026] [::1]:51516 Accepted
+[Wed Jun 17 01:36:04 2026] [::1]:51524 Accepted
+[Wed Jun 17 01:36:04 2026] [::1]:51538 Accepted
+[Wed Jun 17 01:36:04 2026] [::1]:51546 Accepted
+[Wed Jun 17 01:36:04 2026] [::1]:51516 [200]: GET /api/tasks.php
+[Wed Jun 17 01:36:04 2026] [::1]:51516 Closing
+[Wed Jun 17 01:36:04 2026] [::1]:51524 [200]: GET /api/settings.php
+[Wed Jun 17 01:36:04 2026] [::1]:51524 Closing
+[Wed Jun 17 01:36:04 2026] [::1]:51538 [200]: GET /api/auth.php?action=users
+[Wed Jun 17 01:36:04 2026] [::1]:51538 Closing
+[Wed Jun 17 01:36:04 2026] [::1]:51546 [200]: GET /api/analytics.php
+[Wed Jun 17 01:36:04 2026] [::1]:51546 Closing
+[Wed Jun 17 01:36:46 2026] [::1]:37762 Accepted
+[Wed Jun 17 01:36:46 2026] [::1]:37762 [200]: GET /admin.php
+[Wed Jun 17 01:36:46 2026] [::1]:37762 Closing
+[Wed Jun 17 01:36:46 2026] [::1]:37778 Accepted
+[Wed Jun 17 01:36:46 2026] [::1]:37794 Accepted
+[Wed Jun 17 01:36:46 2026] [::1]:37778 [200]: GET /assets/css/app.css
+[Wed Jun 17 01:36:46 2026] [::1]:37794 [200]: GET /assets/js/admin.js
+[Wed Jun 17 01:36:46 2026] [::1]:37778 Closing
+[Wed Jun 17 01:36:46 2026] [::1]:37794 Closing
+[Wed Jun 17 01:36:46 2026] [::1]:37798 Accepted
+[Wed Jun 17 01:36:46 2026] [::1]:37798 [200]: GET /api/auth.php?action=me
+[Wed Jun 17 01:36:46 2026] [::1]:37798 Closing
+[Wed Jun 17 01:36:48 2026] [::1]:37810 Accepted
+[Wed Jun 17 01:36:48 2026] [::1]:37810 [200]: POST /api/auth.php?action=login
+[Wed Jun 17 01:36:48 2026] [::1]:37810 Closing
+[Wed Jun 17 01:36:48 2026] [::1]:37826 Accepted
+[Wed Jun 17 01:36:48 2026] [::1]:37842 Accepted
+[Wed Jun 17 01:36:48 2026] [::1]:37848 Accepted
+[Wed Jun 17 01:36:48 2026] [::1]:37864 Accepted
+[Wed Jun 17 01:36:48 2026] [::1]:37826 [200]: GET /api/tasks.php
+[Wed Jun 17 01:36:48 2026] [::1]:37826 Closing
+[Wed Jun 17 01:36:48 2026] [::1]:37842 [200]: GET /api/settings.php
+[Wed Jun 17 01:36:48 2026] [::1]:37842 Closing
+[Wed Jun 17 01:36:48 2026] [::1]:37848 [200]: GET /api/auth.php?action=users
+[Wed Jun 17 01:36:48 2026] [::1]:37848 Closing
+[Wed Jun 17 01:36:48 2026] [::1]:37864 [200]: GET /api/analytics.php
+[Wed Jun 17 01:36:48 2026] [::1]:37864 Closing
