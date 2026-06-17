@@ -1,0 +1,31 @@
+[
+    {
+        "id": "1",
+        "username": "admin",
+        "password_hash": "$2y$10$303Jhuvbe7BLS0ki50aXj.YaZJ13TNUOGDXPNK8ee9ChIFflkFGjS",
+        "role": "admin",
+        "full_name": "Администратор",
+        "created_at": "2024-01-01 00:00:00"
+    },
+    {
+        "username": "head1",
+        "full_name": "Head User",
+        "role": "head",
+        "password_hash": "$2y$10$EyCSFBrGemYhGTEp6reThesW8OU32efBRLYmNHRMi3jkm9VYVKQMW",
+        "id": "1781660092668"
+    },
+    {
+        "username": "tech1",
+        "full_name": "Technician One",
+        "role": "executor",
+        "password_hash": "$2y$10$\/LXjVLZZ79qVuOi2Nyckguvon4a7W96H6SMIqM69Zrcod9T\/qSLCi",
+        "id": "1781660092845"
+    },
+    {
+        "username": "user1",
+        "full_name": "Regular User",
+        "role": "responsible",
+        "password_hash": "$2y$10$H8uhhgeziBsjJ5u04QwprOTC\/WlGStXEF5Lt6deGPUHsCcjehl7qu",
+        "id": "1781660092830"
+    }
+]
