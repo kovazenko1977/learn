@@ -1,0 +1,25 @@
+{
+    "categories": [
+        "Сантехника",
+        "Электрика"
+    ],
+    "priorities": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+    ],
+    "storage_mode": "json",
+    "sla_rules": {
+        "low": 72,
+        "medium": 48,
+        "high": 24,
+        "urgent": 4
+    },
+    "form_fields": [],
+    "admin_email": "test@example.com",
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "notifications_email": true,
+    "notifications_telegram": false
+}
