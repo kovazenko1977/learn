@@ -1,0 +1,225 @@
+[Fri Jun 19 01:35:02 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Fri Jun 19 01:35:31 2026] [::1]:44722 Accepted
+[Fri Jun 19 01:35:31 2026] [::1]:44722 [200]: GET /
+[Fri Jun 19 01:35:31 2026] [::1]:44722 Closing
+[Fri Jun 19 01:35:31 2026] [::1]:44732 Accepted
+[Fri Jun 19 01:35:31 2026] [::1]:44732 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:35:31 2026] [::1]:44732 Closing
+[Fri Jun 19 01:35:33 2026] [::1]:44740 Accepted
+[Fri Jun 19 01:35:33 2026] [::1]:44740 [200]: POST /api/auth.php?action=login
+[Fri Jun 19 01:35:33 2026] [::1]:44740 Closing
+[Fri Jun 19 01:35:33 2026] [::1]:44742 Accepted
+[Fri Jun 19 01:35:33 2026] [::1]:44758 Accepted
+[Fri Jun 19 01:35:33 2026] [::1]:44764 Accepted
+[Fri Jun 19 01:35:33 2026] [::1]:44768 Accepted
+[Fri Jun 19 01:35:33 2026] [::1]:44742 [200]: GET /api/settings.php
+[Fri Jun 19 01:35:33 2026] [::1]:44742 Closing
+[Fri Jun 19 01:35:33 2026] [::1]:44758 [200]: GET /api/tasks.php
+[Fri Jun 19 01:35:33 2026] [::1]:44758 Closing
+[Fri Jun 19 01:35:33 2026] [::1]:44764 [200]: GET /api/users.php
+[Fri Jun 19 01:35:33 2026] [::1]:44764 Closing
+[Fri Jun 19 01:35:33 2026] [::1]:44768 [200]: GET /api/analytics.php
+[Fri Jun 19 01:35:33 2026] [::1]:44768 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45230 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45230 [200]: GET /
+[Fri Jun 19 01:36:33 2026] [::1]:45230 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45232 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45232 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:36:33 2026] [::1]:45232 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45244 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45244 [200]: POST /api/auth.php?action=login
+[Fri Jun 19 01:36:33 2026] [::1]:45244 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45256 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45270 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45276 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45282 Accepted
+[Fri Jun 19 01:36:33 2026] [::1]:45256 [200]: GET /api/settings.php
+[Fri Jun 19 01:36:33 2026] [::1]:45256 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45270 [200]: GET /api/tasks.php
+[Fri Jun 19 01:36:33 2026] [::1]:45270 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45276 [200]: GET /api/users.php
+[Fri Jun 19 01:36:33 2026] [::1]:45276 Closing
+[Fri Jun 19 01:36:33 2026] [::1]:45282 [200]: GET /api/analytics.php
+[Fri Jun 19 01:36:33 2026] [::1]:45282 Closing
+[Fri Jun 19 01:37:15 2026] [::1]:50284 Accepted
+[Fri Jun 19 01:37:15 2026] [::1]:50284 [200]: GET /
+[Fri Jun 19 01:37:15 2026] [::1]:50284 Closing
+[Fri Jun 19 01:37:15 2026] [::1]:50288 Accepted
+[Fri Jun 19 01:37:15 2026] [::1]:50288 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:37:15 2026] [::1]:50288 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50292 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50292 [200]: POST /api/auth.php?action=login
+[Fri Jun 19 01:37:16 2026] [::1]:50292 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50308 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50314 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50324 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50336 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50308 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:16 2026] [::1]:50308 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50314 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:16 2026] [::1]:50314 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50324 [200]: GET /api/users.php
+[Fri Jun 19 01:37:16 2026] [::1]:50324 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50336 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:16 2026] [::1]:50336 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50342 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50342 [200]: POST /api/tasks.php
+[Fri Jun 19 01:37:16 2026] [::1]:50342 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50348 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50364 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50378 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50384 Accepted
+[Fri Jun 19 01:37:16 2026] [::1]:50348 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:16 2026] [::1]:50348 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50364 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:16 2026] [::1]:50364 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50378 [200]: GET /api/users.php
+[Fri Jun 19 01:37:16 2026] [::1]:50378 Closing
+[Fri Jun 19 01:37:16 2026] [::1]:50384 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:16 2026] [::1]:50384 Closing
+[Fri Jun 19 01:37:41 2026] [::1]:47532 Accepted
+[Fri Jun 19 01:37:41 2026] [::1]:47532 [200]: GET /
+[Fri Jun 19 01:37:41 2026] [::1]:47532 Closing
+[Fri Jun 19 01:37:41 2026] [::1]:47534 Accepted
+[Fri Jun 19 01:37:41 2026] [::1]:47534 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:37:41 2026] [::1]:47534 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47546 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47546 [200]: POST /api/auth.php?action=login
+[Fri Jun 19 01:37:42 2026] [::1]:47546 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47548 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47558 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47574 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47590 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47548 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:42 2026] [::1]:47548 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47558 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:42 2026] [::1]:47558 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47574 [200]: GET /api/users.php
+[Fri Jun 19 01:37:42 2026] [::1]:47574 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47590 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:42 2026] [::1]:47590 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47594 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47594 [200]: POST /api/users.php
+[Fri Jun 19 01:37:42 2026] [::1]:47594 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47596 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47606 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47618 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47630 Accepted
+[Fri Jun 19 01:37:42 2026] [::1]:47596 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:42 2026] [::1]:47596 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47606 [200]: GET /api/users.php
+[Fri Jun 19 01:37:42 2026] [::1]:47606 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47618 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:42 2026] [::1]:47618 Closing
+[Fri Jun 19 01:37:42 2026] [::1]:47630 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:42 2026] [::1]:47630 Closing
+[Fri Jun 19 01:37:43 2026] [::1]:47644 Accepted
+[Fri Jun 19 01:37:43 2026] [::1]:47644 [200]: POST /api/tasks.php
+[Fri Jun 19 01:37:43 2026] [::1]:47644 Closing
+[Fri Jun 19 01:37:43 2026] [::1]:47652 Accepted
+[Fri Jun 19 01:37:43 2026] [::1]:47662 Accepted
+[Fri Jun 19 01:37:43 2026] [::1]:47676 Accepted
+[Fri Jun 19 01:37:43 2026] [::1]:47680 Accepted
+[Fri Jun 19 01:37:43 2026] [::1]:47652 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:43 2026] [::1]:47652 Closing
+[Fri Jun 19 01:37:43 2026] [::1]:47662 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:43 2026] [::1]:47662 Closing
+[Fri Jun 19 01:37:43 2026] [::1]:47676 [200]: GET /api/users.php
+[Fri Jun 19 01:37:43 2026] [::1]:47676 Closing
+[Fri Jun 19 01:37:43 2026] [::1]:47680 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:43 2026] [::1]:47680 Closing
+[Fri Jun 19 01:37:45 2026] [::1]:43914 Accepted
+[Fri Jun 19 01:37:45 2026] [::1]:43914 [200]: POST /api/tasks.php?id=6692bc771536c5678a5b60c88411a015
+[Fri Jun 19 01:37:45 2026] [::1]:43914 Closing
+[Fri Jun 19 01:37:45 2026] [::1]:43922 Accepted
+[Fri Jun 19 01:37:45 2026] [::1]:43938 Accepted
+[Fri Jun 19 01:37:45 2026] [::1]:43950 Accepted
+[Fri Jun 19 01:37:45 2026] [::1]:43962 Accepted
+[Fri Jun 19 01:37:45 2026] [::1]:43922 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:45 2026] [::1]:43922 Closing
+[Fri Jun 19 01:37:45 2026] [::1]:43938 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:45 2026] [::1]:43938 Closing
+[Fri Jun 19 01:37:45 2026] [::1]:43950 [200]: GET /api/users.php
+[Fri Jun 19 01:37:45 2026] [::1]:43950 Closing
+[Fri Jun 19 01:37:45 2026] [::1]:43962 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:45 2026] [::1]:43962 Closing
+[Fri Jun 19 01:37:46 2026] [::1]:43968 Accepted
+[Fri Jun 19 01:37:46 2026] [::1]:43968 [200]: POST /api/tasks.php?id=6692bc771536c5678a5b60c88411a015
+[Fri Jun 19 01:37:46 2026] [::1]:43968 Closing
+[Fri Jun 19 01:37:46 2026] [::1]:43980 Accepted
+[Fri Jun 19 01:37:46 2026] [::1]:43980 [200]: GET /api/settings.php
+[Fri Jun 19 01:37:46 2026] [::1]:43980 Closing
+[Fri Jun 19 01:37:46 2026] [::1]:43988 Accepted
+[Fri Jun 19 01:37:46 2026] [::1]:43996 Accepted
+[Fri Jun 19 01:37:46 2026] [::1]:43998 Accepted
+[Fri Jun 19 01:37:46 2026] [::1]:43988 [200]: GET /api/tasks.php
+[Fri Jun 19 01:37:46 2026] [::1]:43988 Closing
+[Fri Jun 19 01:37:46 2026] [::1]:43996 [200]: GET /api/users.php
+[Fri Jun 19 01:37:46 2026] [::1]:43996 Closing
+[Fri Jun 19 01:37:46 2026] PHP Warning:  Undefined array key "done" in /app/api/analytics.php on line 34
+[Fri Jun 19 01:37:46 2026] [::1]:43998 [200]: GET /api/analytics.php
+[Fri Jun 19 01:37:46 2026] [::1]:43998 Closing
+[Fri Jun 19 01:38:07 2026] [::1]:39750 Accepted
+[Fri Jun 19 01:38:07 2026] [::1]:39750 [200]: GET /
+[Fri Jun 19 01:38:07 2026] [::1]:39750 Closing
+[Fri Jun 19 01:38:07 2026] [::1]:39752 Accepted
+[Fri Jun 19 01:38:07 2026] [::1]:39752 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:38:07 2026] [::1]:39752 Closing
+[Fri Jun 19 01:38:08 2026] [::1]:39766 Accepted
+[Fri Jun 19 01:38:08 2026] [::1]:39766 [200]: POST /api/auth.php?action=login
+[Fri Jun 19 01:38:08 2026] [::1]:39766 Closing
+[Fri Jun 19 01:38:08 2026] [::1]:39782 Accepted
+[Fri Jun 19 01:38:08 2026] [::1]:39792 Accepted
+[Fri Jun 19 01:38:08 2026] [::1]:39794 Accepted
+[Fri Jun 19 01:38:08 2026] [::1]:39808 Accepted
+[Fri Jun 19 01:38:08 2026] [::1]:39782 [200]: GET /api/settings.php
+[Fri Jun 19 01:38:08 2026] [::1]:39782 Closing
+[Fri Jun 19 01:38:08 2026] [::1]:39792 [200]: GET /api/tasks.php
+[Fri Jun 19 01:38:08 2026] [::1]:39792 Closing
+[Fri Jun 19 01:38:08 2026] [::1]:39794 [200]: GET /api/users.php
+[Fri Jun 19 01:38:08 2026] [::1]:39794 Closing
+[Fri Jun 19 01:38:08 2026] PHP Warning:  Undefined array key "done" in /app/api/analytics.php on line 34
+[Fri Jun 19 01:38:08 2026] [::1]:39808 [200]: GET /api/analytics.php
+[Fri Jun 19 01:38:08 2026] [::1]:39808 Closing
+[Fri Jun 19 01:38:09 2026] [::1]:39814 Accepted
+[Fri Jun 19 01:38:09 2026] [::1]:39814 [200]: POST /api/tasks.php?id=6692bc771536c5678a5b60c88411a015
+[Fri Jun 19 01:38:09 2026] [::1]:39814 Closing
+[Fri Jun 19 01:38:09 2026] [::1]:39818 Accepted
+[Fri Jun 19 01:38:09 2026] [::1]:39824 Accepted
+[Fri Jun 19 01:38:09 2026] [::1]:39828 Accepted
+[Fri Jun 19 01:38:09 2026] [::1]:39834 Accepted
+[Fri Jun 19 01:38:09 2026] [::1]:39818 [200]: GET /api/settings.php
+[Fri Jun 19 01:38:09 2026] [::1]:39818 Closing
+[Fri Jun 19 01:38:09 2026] [::1]:39824 [200]: GET /api/tasks.php
+[Fri Jun 19 01:38:09 2026] [::1]:39824 Closing
+[Fri Jun 19 01:38:09 2026] [::1]:39828 [200]: GET /api/users.php
+[Fri Jun 19 01:38:09 2026] [::1]:39828 Closing
+[Fri Jun 19 01:38:09 2026] [::1]:39834 [200]: GET /api/analytics.php
+[Fri Jun 19 01:38:09 2026] [::1]:39834 Closing
+[Fri Jun 19 01:40:49 2026] [::1]:55630 Accepted
+[Fri Jun 19 01:40:49 2026] [::1]:55630 [200]: GET /
+[Fri Jun 19 01:40:49 2026] [::1]:55630 Closing
+[Fri Jun 19 01:40:49 2026] [::1]:55632 Accepted
+[Fri Jun 19 01:40:49 2026] [::1]:55632 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:40:49 2026] [::1]:55632 Closing
+[Fri Jun 19 01:42:46 2026] [::1]:52976 Accepted
+[Fri Jun 19 01:42:46 2026] [::1]:52976 [200]: GET /
+[Fri Jun 19 01:42:46 2026] [::1]:52976 Closing
+[Fri Jun 19 01:42:46 2026] [::1]:52984 Accepted
+[Fri Jun 19 01:42:46 2026] [::1]:52984 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:42:46 2026] [::1]:52984 Closing
+[Fri Jun 19 01:43:29 2026] [::1]:58042 Accepted
+[Fri Jun 19 01:43:29 2026] [::1]:58042 [200]: GET /
+[Fri Jun 19 01:43:29 2026] [::1]:58042 Closing
+[Fri Jun 19 01:43:42 2026] [::1]:48658 Accepted
+[Fri Jun 19 01:43:42 2026] [::1]:48658 [200]: GET /
+[Fri Jun 19 01:43:42 2026] [::1]:48658 Closing
+[Fri Jun 19 01:43:42 2026] [::1]:48660 Accepted
+[Fri Jun 19 01:43:42 2026] [::1]:48660 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:43:42 2026] [::1]:48660 Closing
+[Fri Jun 19 01:44:16 2026] [::1]:33102 Accepted
+[Fri Jun 19 01:44:16 2026] [::1]:33102 [200]: GET /
+[Fri Jun 19 01:44:16 2026] [::1]:33102 Closing
+[Fri Jun 19 01:44:16 2026] [::1]:33112 Accepted
+[Fri Jun 19 01:44:16 2026] [::1]:33112 [200]: GET /assets/js/app.js
+[Fri Jun 19 01:44:16 2026] [::1]:33112 Closing
