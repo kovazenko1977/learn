@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanatorium 2.0 - CRM</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vuedraggable/4.1.0/vuedraggable.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        [v-cloak] { display: none; }
+        .kanban-column { min-height: 400px; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; }
+            .bg-white { background: white !important; border: 1px solid #eee !important; }
+            .print-only { display: block !important; }
+        }
+        .print-only { display: none; }
+        .dark { background-color: #1a202c; color: #e2e8f0; }
+        .dark .bg-white { background-color: #2d3748; }
+        .dark .text-gray-800 { color: #f7fafc; }
+        .dark .border { border-color: #4a5568; }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 font-sans transition-colors duration-200">
+    <div id="app" v-cloak></div>
+
+    <script src="assets/js/app.js" type="module"></script>
+</body>
+</html>
