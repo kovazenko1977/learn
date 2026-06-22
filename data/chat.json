@@ -1,0 +1,24 @@
+[
+    {
+        "id": "msg_69dfd42da1168",
+        "sender_id": "u_69dfd42c6c849",
+        "sender_name": "Иван Менеджер",
+        "recipient": "all",
+        "text": "Привет от Ивана!",
+        "timestamp": "2026-04-15 18:08:45",
+        "read_by": [
+            "admin"
+        ]
+    },
+    {
+        "id": "msg_69e0e33b5df4f",
+        "sender_id": "admin",
+        "sender_name": "Администратор",
+        "recipient": "all",
+        "text": "Hello Viber Style!",
+        "reply_to": null,
+        "reply_text": null,
+        "timestamp": "2026-04-16 13:25:15",
+        "read_by": []
+    }
+]
