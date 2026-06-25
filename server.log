@@ -1,0 +1,22 @@
+[Thu Jun 25 01:22:45 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Thu Jun 25 01:23:32 2026] [::1]:32978 Accepted
+[Thu Jun 25 01:23:32 2026] [::1]:32978 [200]: GET /
+[Thu Jun 25 01:23:32 2026] [::1]:32978 Closing
+[Thu Jun 25 01:23:32 2026] [::1]:32984 Accepted
+[Thu Jun 25 01:23:32 2026] [::1]:32984 [200]: GET /assets/js/app.js
+[Thu Jun 25 01:23:32 2026] [::1]:32984 Closing
+[Thu Jun 25 01:23:34 2026] [::1]:33000 Accepted
+[Thu Jun 25 01:23:34 2026] [::1]:33000 [200]: POST /api/auth.php?action=login
+[Thu Jun 25 01:23:34 2026] [::1]:33000 Closing
+[Thu Jun 25 01:23:34 2026] [::1]:33008 Accepted
+[Thu Jun 25 01:23:34 2026] [::1]:33016 Accepted
+[Thu Jun 25 01:23:34 2026] [::1]:33028 Accepted
+[Thu Jun 25 01:23:34 2026] [::1]:33034 Accepted
+[Thu Jun 25 01:23:34 2026] [::1]:33008 [200]: GET /api/settings.php
+[Thu Jun 25 01:23:34 2026] [::1]:33008 Closing
+[Thu Jun 25 01:23:34 2026] [::1]:33016 [200]: GET /api/tasks.php
+[Thu Jun 25 01:23:34 2026] [::1]:33016 Closing
+[Thu Jun 25 01:23:34 2026] [::1]:33028 [200]: GET /api/users.php
+[Thu Jun 25 01:23:34 2026] [::1]:33028 Closing
+[Thu Jun 25 01:23:34 2026] [::1]:33034 [200]: GET /api/analytics.php
+[Thu Jun 25 01:23:34 2026] [::1]:33034 Closing
