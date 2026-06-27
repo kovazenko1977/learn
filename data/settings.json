@@ -1,0 +1,26 @@
+{
+    "storage_mode": "json",
+    "categories": ["Сантехника", "Электрика", "ИТ", "Мебель", "Общее"],
+    "priorities": {
+        "Низкий": 48,
+        "Средний": 24,
+        "Высокий": 4,
+        "Критический": 1
+    },
+    "notifications": {
+        "email": true,
+        "telegram": false
+    },
+    "form_fields": [
+        {"id": "f1", "label": "Кабинет/Номер", "type": "text", "required": true},
+        {"id": "f2", "label": "Контактный телефон", "type": "tel", "required": false}
+    ],
+    "languages": ["ru", "en"],
+    "default_language": "ru",
+    "mysql": {
+        "host": "localhost",
+        "dbname": "crm",
+        "user": "root",
+        "pass": ""
+    }
+}
