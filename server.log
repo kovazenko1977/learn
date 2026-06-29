@@ -1,0 +1,242 @@
+[Mon Jun 29 01:09:52 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Mon Jun 29 01:13:30 2026] [::1]:37896 Accepted
+[Mon Jun 29 01:13:30 2026] [::1]:37896 [200]: GET /
+[Mon Jun 29 01:13:30 2026] [::1]:37896 Closing
+[Mon Jun 29 01:13:30 2026] [::1]:37902 Accepted
+[Mon Jun 29 01:13:30 2026] [::1]:37902 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:13:30 2026] [::1]:37902 Closing
+[Mon Jun 29 01:14:27 2026] [::1]:32978 Accepted
+[Mon Jun 29 01:14:27 2026] [::1]:32978 [200]: HEAD /
+[Mon Jun 29 01:14:27 2026] [::1]:32978 Closing
+[Mon Jun 29 01:14:49 2026] [::1]:45198 Accepted
+[Mon Jun 29 01:14:49 2026] [::1]:45198 [200]: GET /
+[Mon Jun 29 01:14:49 2026] [::1]:45198 Closing
+[Mon Jun 29 01:14:49 2026] [::1]:45204 Accepted
+[Mon Jun 29 01:14:49 2026] [::1]:45204 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:14:49 2026] [::1]:45204 Closing
+[Mon Jun 29 01:14:52 2026] [::1]:45208 Accepted
+[Mon Jun 29 01:14:52 2026] [::1]:45208 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:14:52 2026] [::1]:45208 Closing
+[Mon Jun 29 01:14:52 2026] [::1]:45214 Accepted
+[Mon Jun 29 01:14:52 2026] [::1]:45228 Accepted
+[Mon Jun 29 01:14:52 2026] [::1]:45242 Accepted
+[Mon Jun 29 01:14:52 2026] [::1]:45244 Accepted
+[Mon Jun 29 01:14:52 2026] [::1]:45214 [200]: GET /api/settings.php
+[Mon Jun 29 01:14:52 2026] [::1]:45214 Closing
+[Mon Jun 29 01:14:52 2026] [::1]:45228 [200]: GET /api/tasks.php
+[Mon Jun 29 01:14:52 2026] [::1]:45228 Closing
+[Mon Jun 29 01:14:52 2026] [::1]:45242 [200]: GET /api/users.php
+[Mon Jun 29 01:14:52 2026] [::1]:45242 Closing
+[Mon Jun 29 01:14:52 2026] [::1]:45244 [200]: GET /api/analytics.php
+[Mon Jun 29 01:14:52 2026] [::1]:45244 Closing
+[Mon Jun 29 01:15:23 2026] [::1]:55630 Accepted
+[Mon Jun 29 01:15:23 2026] [::1]:55630 [200]: GET /
+[Mon Jun 29 01:15:23 2026] [::1]:55630 Closing
+[Mon Jun 29 01:15:23 2026] [::1]:55644 Accepted
+[Mon Jun 29 01:15:23 2026] [::1]:55644 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:15:23 2026] [::1]:55644 Closing
+[Mon Jun 29 01:15:26 2026] [::1]:35268 Accepted
+[Mon Jun 29 01:15:26 2026] [::1]:35268 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:15:26 2026] [::1]:35268 Closing
+[Mon Jun 29 01:15:26 2026] [::1]:35278 Accepted
+[Mon Jun 29 01:15:26 2026] [::1]:35292 Accepted
+[Mon Jun 29 01:15:26 2026] [::1]:35298 Accepted
+[Mon Jun 29 01:15:26 2026] [::1]:35310 Accepted
+[Mon Jun 29 01:15:26 2026] [::1]:35278 [200]: GET /api/settings.php
+[Mon Jun 29 01:15:26 2026] [::1]:35278 Closing
+[Mon Jun 29 01:15:26 2026] [::1]:35292 [200]: GET /api/tasks.php
+[Mon Jun 29 01:15:26 2026] [::1]:35292 Closing
+[Mon Jun 29 01:15:26 2026] [::1]:35298 [200]: GET /api/users.php
+[Mon Jun 29 01:15:26 2026] [::1]:35298 Closing
+[Mon Jun 29 01:15:26 2026] [::1]:35310 [200]: GET /api/analytics.php
+[Mon Jun 29 01:15:26 2026] [::1]:35310 Closing
+[Mon Jun 29 01:16:49 2026] [::1]:44320 Accepted
+[Mon Jun 29 01:16:49 2026] [::1]:44320 [200]: GET /
+[Mon Jun 29 01:16:49 2026] [::1]:44320 Closing
+[Mon Jun 29 01:16:49 2026] [::1]:44324 Accepted
+[Mon Jun 29 01:16:49 2026] [::1]:44324 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:16:49 2026] [::1]:44324 Closing
+[Mon Jun 29 01:16:51 2026] [::1]:44336 Accepted
+[Mon Jun 29 01:16:51 2026] [::1]:44336 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:16:51 2026] [::1]:44336 Closing
+[Mon Jun 29 01:16:51 2026] [::1]:44350 Accepted
+[Mon Jun 29 01:16:51 2026] [::1]:44362 Accepted
+[Mon Jun 29 01:16:51 2026] [::1]:44364 Accepted
+[Mon Jun 29 01:16:51 2026] [::1]:44350 [200]: GET /api/settings.php
+[Mon Jun 29 01:16:51 2026] [::1]:44350 Closing
+[Mon Jun 29 01:16:51 2026] [::1]:44362 [200]: GET /api/tasks.php
+[Mon Jun 29 01:16:51 2026] [::1]:44362 Closing
+[Mon Jun 29 01:16:51 2026] [::1]:44376 Accepted
+[Mon Jun 29 01:16:51 2026] [::1]:44364 [200]: GET /api/users.php
+[Mon Jun 29 01:16:51 2026] [::1]:44364 Closing
+[Mon Jun 29 01:16:51 2026] [::1]:44376 [200]: GET /api/analytics.php
+[Mon Jun 29 01:16:51 2026] [::1]:44376 Closing
+[Mon Jun 29 01:18:56 2026] [::1]:48316 Accepted
+[Mon Jun 29 01:18:56 2026] [::1]:48316 [200]: GET /
+[Mon Jun 29 01:18:56 2026] [::1]:48316 Closing
+[Mon Jun 29 01:18:56 2026] [::1]:48328 Accepted
+[Mon Jun 29 01:18:56 2026] [::1]:48328 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:18:56 2026] [::1]:48328 Closing
+[Mon Jun 29 01:18:59 2026] [::1]:48336 Accepted
+[Mon Jun 29 01:18:59 2026] [::1]:48336 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:18:59 2026] [::1]:48336 Closing
+[Mon Jun 29 01:18:59 2026] [::1]:48346 Accepted
+[Mon Jun 29 01:18:59 2026] [::1]:48350 Accepted
+[Mon Jun 29 01:18:59 2026] [::1]:48346 [200]: GET /api/settings.php
+[Mon Jun 29 01:18:59 2026] [::1]:48346 Closing
+[Mon Jun 29 01:18:59 2026] [::1]:48350 [200]: GET /api/tasks.php
+[Mon Jun 29 01:18:59 2026] [::1]:48350 Closing
+[Mon Jun 29 01:18:59 2026] [::1]:48362 Accepted
+[Mon Jun 29 01:18:59 2026] [::1]:48376 Accepted
+[Mon Jun 29 01:18:59 2026] [::1]:48362 [200]: GET /api/users.php
+[Mon Jun 29 01:18:59 2026] [::1]:48362 Closing
+[Mon Jun 29 01:18:59 2026] [::1]:48376 [200]: GET /api/analytics.php
+[Mon Jun 29 01:18:59 2026] [::1]:48376 Closing
+[Mon Jun 29 01:19:03 2026] [::1]:48388 Accepted
+[Mon Jun 29 01:19:03 2026] [::1]:48388 [200]: POST /api/tasks.php
+[Mon Jun 29 01:19:03 2026] [::1]:48388 Closing
+[Mon Jun 29 01:19:03 2026] [::1]:48404 Accepted
+[Mon Jun 29 01:19:03 2026] [::1]:48408 Accepted
+[Mon Jun 29 01:19:03 2026] [::1]:48420 Accepted
+[Mon Jun 29 01:19:03 2026] [::1]:48428 Accepted
+[Mon Jun 29 01:19:03 2026] [::1]:48404 [200]: GET /api/tasks.php
+[Mon Jun 29 01:19:03 2026] [::1]:48404 Closing
+[Mon Jun 29 01:19:03 2026] [::1]:48408 [200]: GET /api/settings.php
+[Mon Jun 29 01:19:03 2026] [::1]:48408 Closing
+[Mon Jun 29 01:19:03 2026] [::1]:48420 [200]: GET /api/users.php
+[Mon Jun 29 01:19:03 2026] [::1]:48420 Closing
+[Mon Jun 29 01:19:03 2026] [::1]:48428 [200]: GET /api/analytics.php
+[Mon Jun 29 01:19:03 2026] [::1]:48428 Closing
+[Mon Jun 29 01:20:22 2026] [::1]:55740 Accepted
+[Mon Jun 29 01:20:22 2026] [::1]:55740 [200]: GET /
+[Mon Jun 29 01:20:22 2026] [::1]:55740 Closing
+[Mon Jun 29 01:20:22 2026] [::1]:55754 Accepted
+[Mon Jun 29 01:20:22 2026] [::1]:55754 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:20:22 2026] [::1]:55754 Closing
+[Mon Jun 29 01:20:25 2026] [::1]:51022 Accepted
+[Mon Jun 29 01:20:25 2026] [::1]:51022 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:20:25 2026] [::1]:51022 Closing
+[Mon Jun 29 01:20:25 2026] [::1]:51026 Accepted
+[Mon Jun 29 01:20:25 2026] [::1]:51034 Accepted
+[Mon Jun 29 01:20:25 2026] [::1]:51046 Accepted
+[Mon Jun 29 01:20:25 2026] [::1]:51050 Accepted
+[Mon Jun 29 01:20:25 2026] [::1]:51026 [200]: GET /api/settings.php
+[Mon Jun 29 01:20:25 2026] [::1]:51026 Closing
+[Mon Jun 29 01:20:25 2026] [::1]:51034 [200]: GET /api/tasks.php
+[Mon Jun 29 01:20:25 2026] [::1]:51034 Closing
+[Mon Jun 29 01:20:25 2026] [::1]:51046 [200]: GET /api/users.php
+[Mon Jun 29 01:20:25 2026] [::1]:51046 Closing
+[Mon Jun 29 01:20:25 2026] [::1]:51050 [200]: GET /api/analytics.php
+[Mon Jun 29 01:20:25 2026] [::1]:51050 Closing
+[Mon Jun 29 01:20:29 2026] [::1]:51052 Accepted
+[Mon Jun 29 01:20:29 2026] [::1]:51052 [200]: POST /api/tasks.php
+[Mon Jun 29 01:20:29 2026] [::1]:51052 Closing
+[Mon Jun 29 01:20:29 2026] [::1]:51068 Accepted
+[Mon Jun 29 01:20:29 2026] [::1]:51070 Accepted
+[Mon Jun 29 01:20:29 2026] [::1]:51068 [200]: GET /api/tasks.php
+[Mon Jun 29 01:20:29 2026] [::1]:51068 Closing
+[Mon Jun 29 01:20:29 2026] [::1]:51086 Accepted
+[Mon Jun 29 01:20:29 2026] [::1]:51070 [200]: GET /api/settings.php
+[Mon Jun 29 01:20:29 2026] [::1]:51070 Closing
+[Mon Jun 29 01:20:29 2026] [::1]:51088 Accepted
+[Mon Jun 29 01:20:29 2026] [::1]:51086 [200]: GET /api/users.php
+[Mon Jun 29 01:20:29 2026] [::1]:51086 Closing
+[Mon Jun 29 01:20:29 2026] [::1]:51088 [200]: GET /api/analytics.php
+[Mon Jun 29 01:20:29 2026] [::1]:51088 Closing
+[Mon Jun 29 01:23:52 2026] [::1]:46846 Accepted
+[Mon Jun 29 01:23:52 2026] [::1]:46846 [200]: GET /
+[Mon Jun 29 01:23:52 2026] [::1]:46846 Closing
+[Mon Jun 29 01:23:52 2026] [::1]:46848 Accepted
+[Mon Jun 29 01:23:52 2026] [::1]:46848 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:23:52 2026] [::1]:46848 Closing
+[Mon Jun 29 01:23:54 2026] [::1]:36338 Accepted
+[Mon Jun 29 01:23:54 2026] [::1]:36338 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:23:54 2026] [::1]:36338 Closing
+[Mon Jun 29 01:23:54 2026] [::1]:36346 Accepted
+[Mon Jun 29 01:23:54 2026] [::1]:36354 Accepted
+[Mon Jun 29 01:23:54 2026] [::1]:36360 Accepted
+[Mon Jun 29 01:23:54 2026] [::1]:36376 Accepted
+[Mon Jun 29 01:23:55 2026] [::1]:36346 [200]: GET /api/settings.php
+[Mon Jun 29 01:23:55 2026] [::1]:36346 Closing
+[Mon Jun 29 01:23:55 2026] [::1]:36354 [200]: GET /api/tasks.php
+[Mon Jun 29 01:23:55 2026] [::1]:36354 Closing
+[Mon Jun 29 01:23:55 2026] [::1]:36360 [200]: GET /api/users.php
+[Mon Jun 29 01:23:55 2026] [::1]:36360 Closing
+[Mon Jun 29 01:23:55 2026] [::1]:36376 [200]: GET /api/analytics.php
+[Mon Jun 29 01:23:55 2026] [::1]:36376 Closing
+[Mon Jun 29 01:23:59 2026] [::1]:36390 Accepted
+[Mon Jun 29 01:23:59 2026] SENDING EMAIL to admin@example.com: Уведомление CRM [created]
+Задача #a3a64723c5027b7e542434a4c5ba6d98: Тестовая заявка Playwright
+Статус: new
+
+[Mon Jun 29 01:23:59 2026] SENDING PUSH NOTIFICATION: Уведомление CRM [created]
+Задача #a3a64723c5027b7e542434a4c5ba6d98: Тестовая заявка Playwright
+Статус: new
+
+[Mon Jun 29 01:23:59 2026] [::1]:36390 [200]: POST /api/tasks.php
+[Mon Jun 29 01:23:59 2026] [::1]:36390 Closing
+[Mon Jun 29 01:23:59 2026] [::1]:36396 Accepted
+[Mon Jun 29 01:23:59 2026] [::1]:36398 Accepted
+[Mon Jun 29 01:23:59 2026] [::1]:36402 Accepted
+[Mon Jun 29 01:23:59 2026] [::1]:36410 Accepted
+[Mon Jun 29 01:23:59 2026] [::1]:36396 [200]: GET /api/tasks.php
+[Mon Jun 29 01:23:59 2026] [::1]:36396 Closing
+[Mon Jun 29 01:23:59 2026] [::1]:36398 [200]: GET /api/settings.php
+[Mon Jun 29 01:23:59 2026] [::1]:36398 Closing
+[Mon Jun 29 01:23:59 2026] [::1]:36402 [200]: GET /api/users.php
+[Mon Jun 29 01:23:59 2026] [::1]:36402 Closing
+[Mon Jun 29 01:23:59 2026] [::1]:36410 [200]: GET /api/analytics.php
+[Mon Jun 29 01:23:59 2026] [::1]:36410 Closing
+[Mon Jun 29 01:26:12 2026] [::1]:38872 Accepted
+[Mon Jun 29 01:26:12 2026] [::1]:38872 [200]: GET /
+[Mon Jun 29 01:26:12 2026] [::1]:38872 Closing
+[Mon Jun 29 01:26:12 2026] [::1]:38882 Accepted
+[Mon Jun 29 01:26:12 2026] [::1]:38882 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:26:12 2026] [::1]:38882 Closing
+[Mon Jun 29 01:26:15 2026] [::1]:56680 Accepted
+[Mon Jun 29 01:26:15 2026] [::1]:56680 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:26:15 2026] [::1]:56680 Closing
+[Mon Jun 29 01:26:15 2026] [::1]:56692 Accepted
+[Mon Jun 29 01:26:15 2026] [::1]:56696 Accepted
+[Mon Jun 29 01:26:15 2026] [::1]:56692 [200]: GET /api/settings.php
+[Mon Jun 29 01:26:15 2026] [::1]:56692 Closing
+[Mon Jun 29 01:26:15 2026] [::1]:56700 Accepted
+[Mon Jun 29 01:26:15 2026] [::1]:56696 [200]: GET /api/tasks.php
+[Mon Jun 29 01:26:15 2026] [::1]:56696 Closing
+[Mon Jun 29 01:26:15 2026] [::1]:56702 Accepted
+[Mon Jun 29 01:26:15 2026] [::1]:56700 [200]: GET /api/users.php
+[Mon Jun 29 01:26:15 2026] [::1]:56700 Closing
+[Mon Jun 29 01:26:15 2026] [::1]:56702 [200]: GET /api/analytics.php
+[Mon Jun 29 01:26:15 2026] [::1]:56702 Closing
+[Mon Jun 29 01:26:19 2026] [::1]:56716 Accepted
+[Mon Jun 29 01:26:19 2026] SENDING EMAIL to admin@example.com: Уведомление CRM [created]
+Задача #d024dcc824f5197d175c532360d6cdca: Тестовая заявка Playwright
+Статус: new
+
+[Mon Jun 29 01:26:19 2026] SENDING PUSH NOTIFICATION: Уведомление CRM [created]
+Задача #d024dcc824f5197d175c532360d6cdca: Тестовая заявка Playwright
+Статус: new
+
+[Mon Jun 29 01:26:19 2026] [::1]:56716 [200]: POST /api/tasks.php
+[Mon Jun 29 01:26:19 2026] [::1]:56716 Closing
+[Mon Jun 29 01:26:19 2026] [::1]:56728 Accepted
+[Mon Jun 29 01:26:19 2026] [::1]:56742 Accepted
+[Mon Jun 29 01:26:19 2026] [::1]:56756 Accepted
+[Mon Jun 29 01:26:19 2026] [::1]:56764 Accepted
+[Mon Jun 29 01:26:19 2026] [::1]:56728 [200]: GET /api/settings.php
+[Mon Jun 29 01:26:19 2026] [::1]:56728 Closing
+[Mon Jun 29 01:26:19 2026] [::1]:56742 [200]: GET /api/tasks.php
+[Mon Jun 29 01:26:19 2026] [::1]:56742 Closing
+[Mon Jun 29 01:26:19 2026] [::1]:56756 [200]: GET /api/users.php
+[Mon Jun 29 01:26:19 2026] [::1]:56756 Closing
+[Mon Jun 29 01:26:19 2026] [::1]:56764 [200]: GET /api/analytics.php
+[Mon Jun 29 01:26:19 2026] [::1]:56764 Closing
+[Mon Jun 29 01:26:51 2026] [::1]:45718 Accepted
+[Mon Jun 29 01:26:51 2026] [::1]:45718 [200]: GET /
+[Mon Jun 29 01:26:51 2026] [::1]:45718 Closing
+[Mon Jun 29 01:26:51 2026] [::1]:45734 Accepted
+[Mon Jun 29 01:26:51 2026] [::1]:45734 [200]: GET /assets/js/app.js
+[Mon Jun 29 01:26:51 2026] [::1]:45734 Closing
+[Mon Jun 29 01:26:54 2026] [::1]:52192 Accepted
+[Mon Jun 29 01:26:54 2026] [::1]:52192 [200]: POST /api/auth.php?action=recover
+[Mon Jun 29 01:26:54 2026] [::1]:52192 Closing
