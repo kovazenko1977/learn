@@ -1,0 +1,15 @@
+[Mon Jun 29 01:21:56 2026] PHP 8.3.6 Development Server (http://localhost:8001) started
+[Mon Jun 29 01:22:18 2026] [::1]:45812 Accepted
+[Mon Jun 29 01:22:18 2026] [::1]:45812 [200]: POST /api/auth.php?action=login
+[Mon Jun 29 01:22:18 2026] [::1]:45812 Closing
+[Mon Jun 29 01:22:50 2026] [::1]:58850 Accepted
+[Mon Jun 29 01:22:50 2026] SENDING EMAIL to admin@example.com: Уведомление CRM [created]
+Задача #dd3139d3860a3ac2549fc47ca9068040: Trigger Notif
+Статус: new
+
+[Mon Jun 29 01:22:50 2026] SENDING PUSH NOTIFICATION: Уведомление CRM [created]
+Задача #dd3139d3860a3ac2549fc47ca9068040: Trigger Notif
+Статус: new
+
+[Mon Jun 29 01:22:50 2026] [::1]:58850 [200]: POST /api/tasks.php
+[Mon Jun 29 01:22:50 2026] [::1]:58850 Closing
