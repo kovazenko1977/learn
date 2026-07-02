@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "title": "Test Task",
+        "description": "Test Desc",
+        "category": "Repair",
+        "priority": "High",
+        "status": "new",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": [],
+        "created_at": "2026-07-02 01:25:42",
+        "deadline": "2026-07-02 05:25:42"
+    }
+]
