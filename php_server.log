@@ -1,0 +1,55 @@
+[Tue Jul  7 01:34:50 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Tue Jul  7 01:35:05 2026] [::1]:32978 Accepted
+[Tue Jul  7 01:35:05 2026] [::1]:32978 [200]: POST /api/auth.php?action=login
+[Tue Jul  7 01:35:05 2026] [::1]:32978 Closing
+[Tue Jul  7 01:35:22 2026] [::1]:36998 Accepted
+[Tue Jul  7 01:35:22 2026] [::1]:36998 [200]: GET /api/backup.php
+[Tue Jul  7 01:35:22 2026] [::1]:36998 Closing
+[Tue Jul  7 01:35:51 2026] [::1]:53254 Accepted
+[Tue Jul  7 01:35:51 2026] [::1]:53254 [200]: POST /api/tasks.php
+[Tue Jul  7 01:35:51 2026] [::1]:53254 Closing
+[Tue Jul  7 01:37:21 2026] [::1]:34260 Accepted
+[Tue Jul  7 01:37:21 2026] [::1]:34260 [200]: GET /
+[Tue Jul  7 01:37:21 2026] [::1]:34260 Closing
+[Tue Jul  7 01:37:23 2026] [::1]:34266 Accepted
+[Tue Jul  7 01:37:23 2026] [::1]:34266 [200]: POST /api/auth.php?action=login
+[Tue Jul  7 01:37:23 2026] [::1]:34266 Closing
+[Tue Jul  7 01:37:23 2026] [::1]:34270 Accepted
+[Tue Jul  7 01:37:23 2026] [::1]:34270 [200]: GET /api/tasks.php
+[Tue Jul  7 01:37:23 2026] [::1]:34270 Closing
+[Tue Jul  7 01:37:23 2026] [::1]:34284 Accepted
+[Tue Jul  7 01:37:23 2026] [::1]:34284 [200]: GET /api/settings.php
+[Tue Jul  7 01:37:23 2026] [::1]:34284 Closing
+[Tue Jul  7 01:37:23 2026] [::1]:34294 Accepted
+[Tue Jul  7 01:37:23 2026] [::1]:34294 [200]: GET /api/settings.php?action=users
+[Tue Jul  7 01:37:23 2026] [::1]:34294 Closing
+[Tue Jul  7 01:37:24 2026] [::1]:34300 Accepted
+[Tue Jul  7 01:37:24 2026] [::1]:34300 Closed without sending a request; it was probably just an unused speculative preconnection
+[Tue Jul  7 01:37:24 2026] [::1]:34300 Closing
+[Tue Jul  7 01:37:50 2026] [::1]:36800 Accepted
+[Tue Jul  7 01:37:50 2026] [::1]:36800 [200]: GET /
+[Tue Jul  7 01:37:50 2026] [::1]:36800 Closing
+[Tue Jul  7 01:38:33 2026] [::1]:38616 Accepted
+[Tue Jul  7 01:38:33 2026] [::1]:38616 [200]: HEAD /
+[Tue Jul  7 01:38:33 2026] [::1]:38616 Closing
+[Tue Jul  7 01:38:57 2026] [::1]:38346 Accepted
+[Tue Jul  7 01:38:57 2026] [::1]:38346 [200]: GET /
+[Tue Jul  7 01:38:57 2026] [::1]:38346 Closing
+[Tue Jul  7 01:38:58 2026] [::1]:38354 Accepted
+[Tue Jul  7 01:38:58 2026] [::1]:38354 [200]: POST /api/auth.php?action=login
+[Tue Jul  7 01:38:58 2026] [::1]:38354 Closing
+[Tue Jul  7 01:38:58 2026] [::1]:38368 Accepted
+[Tue Jul  7 01:38:58 2026] [::1]:38368 [200]: GET /api/tasks.php
+[Tue Jul  7 01:38:58 2026] [::1]:38368 Closing
+[Tue Jul  7 01:38:58 2026] [::1]:38370 Accepted
+[Tue Jul  7 01:38:58 2026] [::1]:38370 [200]: GET /api/settings.php
+[Tue Jul  7 01:38:58 2026] [::1]:38370 Closing
+[Tue Jul  7 01:38:58 2026] [::1]:38372 Accepted
+[Tue Jul  7 01:38:58 2026] [::1]:38372 [200]: GET /api/settings.php?action=users
+[Tue Jul  7 01:38:58 2026] [::1]:38372 Closing
+[Tue Jul  7 01:38:58 2026] [::1]:38374 Accepted
+[Tue Jul  7 01:38:58 2026] [::1]:38374 [200]: GET /api/analytics.php?action=dashboard
+[Tue Jul  7 01:38:58 2026] [::1]:38374 Closing
+[Tue Jul  7 01:40:39 2026] [::1]:57948 Accepted
+[Tue Jul  7 01:40:39 2026] [::1]:57948 [200]: POST /api/auth.php?action=recovery
+[Tue Jul  7 01:40:39 2026] [::1]:57948 Closing

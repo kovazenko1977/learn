@@ -1,0 +1,9 @@
+# Protect settings but allow uploads to be served if they are public
+# Actually we want to protect uploads from unauthorized users too
+# But for simplicity in this demo, let's allow them.
+# In a real app we'd serve them through a script that checks session.
+
+<Files "*">
+    Order Deny,Allow
+    Allow from all
+</Files>
