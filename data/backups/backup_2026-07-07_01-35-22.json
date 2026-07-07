@@ -1,0 +1,85 @@
+{
+    "settings": {
+        "categories": [
+            "Repair",
+            "Maintenance",
+            "IT Support",
+            "Cleaning"
+        ],
+        "priorities": [
+            {
+                "name": "Low",
+                "sla_hours": 72
+            },
+            {
+                "name": "Medium",
+                "sla_hours": 24
+            },
+            {
+                "name": "High",
+                "sla_hours": 4
+            },
+            {
+                "name": "Critical",
+                "sla_hours": 1
+            }
+        ],
+        "form_fields": [
+            {
+                "id": "f1",
+                "label": "Location\/Room",
+                "type": "text",
+                "required": true
+            },
+            {
+                "id": "f2",
+                "label": "Asset ID",
+                "type": "text",
+                "required": false
+            }
+        ],
+        "storage_mode": "json",
+        "mysql_config": {
+            "host": "localhost",
+            "db": "crm_db",
+            "user": "root",
+            "pass": ""
+        },
+        "notifications": {
+            "email_enabled": true,
+            "telegram_enabled": false,
+            "push_enabled": true,
+            "frequency": "immediate"
+        },
+        "language": "en"
+    },
+    "tasks": [
+        {
+            "id": 1,
+            "title": "Test Task",
+            "description": "Test Desc",
+            "category": "Repair",
+            "priority": "High",
+            "status": "new",
+            "creator_id": 1,
+            "creator_department": "IT",
+            "assigned_to": null,
+            "completed_at": null,
+            "attachments": [],
+            "custom_fields": [],
+            "created_at": "2026-07-02 01:25:42",
+            "deadline": "2026-07-02 05:25:42"
+        }
+    ],
+    "users": [
+        {
+            "id": 1,
+            "username": "admin",
+            "password": "$2y$10$juFrxPUWqGNhUAyQ3krhQOJtU2tgg\/Ql\/wlgcB5fkQk.R02TxTXF2",
+            "full_name": "System Administrator",
+            "role": "admin",
+            "department": "IT"
+        }
+    ],
+    "comments": []
+}
