@@ -11,5 +11,31 @@
         "creator_id": "1",
         "created_at": "2026-07-09 12:22:58",
         "updated_at": "2026-07-09 12:22:58"
+    },
+    {
+        "title": "Автоматический тест",
+        "content": "Привет от Коваженко С.Б. в системе PWA Hub!",
+        "category": "Личное",
+        "tags": [],
+        "priority": "Medium",
+        "shared": false,
+        "audio_url": null,
+        "id": "6a4f968c362e3",
+        "creator_id": "1",
+        "created_at": "2026-07-09 12:39:40",
+        "updated_at": "2026-07-09 12:39:40"
+    },
+    {
+        "title": "Тест 4421",
+        "content": "Привет от Коваженко С.Б. в системе PWA Hub!",
+        "category": "Личное",
+        "tags": [],
+        "priority": "Medium",
+        "shared": false,
+        "audio_url": null,
+        "id": "6a4f96b1310fa",
+        "creator_id": "1",
+        "created_at": "2026-07-09 12:40:17",
+        "updated_at": "2026-07-09 12:40:17"
     }
 ]
