@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PWA Notes & Tasks Hub</title>
-  <!-- PWA Manifest & Meta -->
   <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12,7 +11,6 @@
   <link rel="apple-touch-icon" href="/icon-192.png">
   <meta name="theme-color" content="#4F46E5">
 
-  <!-- CDNs -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,12 +30,11 @@
       }
     }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* Custom Scrollbar for mobile */
     ::-webkit-scrollbar {
       width: 4px;
       height: 4px;
@@ -74,54 +71,48 @@
 <body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased transition-colors duration-200">
   <div id="app" v-cloak class="h-full flex flex-col max-w-md mx-auto bg-white dark:bg-slate-900 shadow-2xl relative overflow-hidden">
 
-    <!-- Offline Indicator -->
     <div v-if="isOffline" class="bg-amber-500 text-white text-xs font-semibold px-4 py-1.5 text-center flex items-center justify-center gap-1.5 z-50 animate-pulse">
-      <i data-lucide="wifi-off" class="w-3.5 h-3.5"></i>
+      <i class="fas fa-wifi"></i>
       Вы находитесь в офлайн-режиме.
     </div>
 
-    <!-- Background Sync Alert -->
     <div v-if="syncQueue.length > 0 && !isOffline" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-1.5 text-center flex items-center justify-center gap-1.5 z-50">
-      <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin"></i>
-      <span>Автосохранение: синхронизация изменений (<span v-text="syncQueue.length"></span>)...</span>
+      <i class="fas fa-sync-alt animate-spin"></i>
+      <span>Автосохранение: синхронизация изменений ({{ syncQueue.length }})...</span>
     </div>
 
-    <!-- MAIN FLOW -->
     <div class="flex-1 flex flex-col overflow-hidden">
 
-      <!-- AUTHENTICATION SCREEN -->
       <div v-if="!authorized" class="flex-1 flex flex-col justify-between p-6 bg-slate-50 dark:bg-slate-950 overflow-y-auto">
         <div class="flex flex-col items-center mt-8">
           <div class="w-20 h-20 bg-brand-600 dark:bg-brand-500 rounded-3xl flex items-center justify-center shadow-lg shadow-brand-500/30 mb-4 animate-bounce">
-            <i data-lucide="check-square" class="w-10 h-10 text-white"></i>
+            <i class="fas fa-check-double text-4xl text-white"></i>
           </div>
           <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">PWA Hub</h1>
           <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Вход по PIN-коду (по умолчанию: 1234)</p>
         </div>
 
         <div class="my-6">
-          <!-- Dots Indicator -->
           <div class="flex justify-center gap-4 mb-8" :class="{'shake-anim': pinError}">
             <div v-for="i in 4" :key="i" class="w-4 h-4 rounded-full border-2 transition-all duration-150"
                  :class="pinCode.length >= i ? 'bg-brand-600 border-brand-600 dark:bg-brand-500 dark:border-brand-500 scale-110' : 'border-slate-300 dark:border-slate-700 bg-transparent'">
             </div>
           </div>
 
-          <!-- Pin Keypad -->
           <div class="grid grid-cols-3 gap-4 max-w-[280px] mx-auto">
             <button v-for="num in [1,2,3,4,5,6,7,8,9]" :key="num" @click="pressPinDigit(num.toString())"
-                    v-text="num"
                     class="w-16 h-16 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all text-xl font-semibold shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              {{ num }}
             </button>
             <button @click="clearPin()" class="w-16 h-16 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-sm font-medium text-rose-500 flex items-center justify-center">
               Сброс
             </button>
             <button @click="pressPinDigit('0')"
-                    v-text="0"
                     class="w-16 h-16 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all text-xl font-semibold shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              0
             </button>
             <button @click="deletePinLastDigit()" class="w-16 h-16 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center text-slate-500 dark:text-slate-400">
-              <i data-lucide="delete" class="w-5 h-5"></i>
+              <i class="fas fa-backspace"></i>
             </button>
           </div>
         </div>
@@ -132,76 +123,65 @@
         </div>
       </div>
 
-      <!-- AUTHORIZED SPA CORE -->
       <div v-else class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top App Bar -->
         <header class="h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-4 z-10 shrink-0">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-brand-600 dark:bg-brand-500 flex items-center justify-center text-white">
-              <i data-lucide="check-square" class="w-4 h-4"></i>
+              <i class="fas fa-check-double text-sm"></i>
             </div>
             <span class="font-bold text-sm text-slate-800 dark:text-white">PWA Hub</span>
           </div>
 
-          <!-- Top Toolbar Right -->
           <div class="flex items-center gap-1.5">
-            <!-- Theme Toggle -->
             <button @click="toggleTheme" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg active:scale-95 transition-transform" title="Переключить тему">
-              <i v-if="theme === 'light'" data-lucide="moon" class="w-4 h-4"></i>
-              <i v-else data-lucide="sun" class="w-4 h-4"></i>
+              <i v-if="theme === 'light'" class="fas fa-moon"></i>
+              <i v-else class="fas fa-sun"></i>
             </button>
 
-            <!-- Sync Status Button -->
             <button @click="syncData" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg active:scale-95 transition-transform" title="Синхронизировать данные">
-              <i data-lucide="refresh-cw" class="w-4 h-4" :class="{'animate-spin text-brand-600': syncPending}"></i>
+              <i class="fas fa-sync-alt" :class="{'animate-spin text-brand-600': syncPending}"></i>
             </button>
 
-            <!-- Sign out Button -->
             <button @click="logout" class="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg active:scale-95 transition-transform" title="Выйти">
-              <i data-lucide="log-out" class="w-4 h-4"></i>
+              <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>
         </header>
 
-        <!-- Dynamic Content Body -->
         <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
 
-          <!-- TAB 1: DASHBOARD -->
           <div v-if="currentTab === 'dashboard'" class="p-4 space-y-4">
-            <!-- Header Greeting Widget -->
             <div class="p-5 rounded-2xl bg-gradient-to-br from-indigo-500 to-brand-600 text-white shadow-md shadow-brand-500/10">
               <p class="text-xs text-brand-100 font-medium">Добро пожаловать в Sanatorium PWA,</p>
-              <h2 class="text-xl font-bold" v-text="userName"></h2>
+              <h2 class="text-xl font-bold">{{ userName }}</h2>
               <p class="text-[11px] text-indigo-100 mt-2 flex items-center gap-1">
-                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                <span v-text="todayFormatted"></span>
+                <i class="fas fa-calendar-alt"></i>
+                <span>{{ todayFormatted }}</span>
               </p>
             </div>
 
-            <!-- Quick Access Widgets Row -->
             <div class="grid grid-cols-2 gap-3">
               <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-24">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Задачи в работе</span>
                   <span class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
-                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <i class="fas fa-check-circle"></i>
                   </span>
                 </div>
-                <span class="text-2xl font-bold text-slate-800 dark:text-slate-100" v-text="activeTasksCount"></span>
+                <span class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ activeTasksCount }}</span>
               </div>
 
               <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-24">
                 <div class="flex items-center justify-between">
                   <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Всего заметок</span>
                   <span class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-brand-600 dark:text-brand-400">
-                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <i class="fas fa-file-alt"></i>
                   </span>
                 </div>
-                <span class="text-2xl font-bold text-slate-800 dark:text-slate-100" v-text="notes.length"></span>
+                <span class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ notes.length }}</span>
               </div>
             </div>
 
-            <!-- Interactive Voice Quick Record Widget -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-2">
               <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Голосовые заметки (Audio Rec)</h3>
@@ -212,31 +192,30 @@
               </div>
               <div class="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg">
                 <div class="text-xs text-slate-500 dark:text-slate-400">
-                  <span v-if="recording" class="font-medium text-rose-500 animate-pulse" v-text="'Запись... (' + recordingSeconds + ' сек)'"></span>
+                  <span v-if="recording" class="font-medium text-rose-500 animate-pulse">Запись... ({{ recordingSeconds }} сек)</span>
                   <span v-else-if="voiceBlobUrl" class="font-medium text-indigo-600">Запись готова!</span>
                   <span v-else>Записать мысли прямо сейчас</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                  <button v-if="!recording && !voiceBlobUrl" @click="startRecording" class="w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-transform active:scale-90">
-                    <i data-lucide="mic" class="w-4 h-4"></i>
+                  <button v-if="!recording && !voiceBlobUrl" @click="startRecording" class="w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-transform active:scale-90" title="Запись">
+                    <i class="fas fa-microphone"></i>
                   </button>
-                  <button v-if="recording" @click="stopRecording" class="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center animate-pulse">
-                    <i data-lucide="square" class="w-3.5 h-3.5"></i>
+                  <button v-if="recording" @click="stopRecording" class="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center animate-pulse" title="Стоп">
+                    <i class="fas fa-square"></i>
                   </button>
-                  <button v-if="voiceBlobUrl" @click="playVoiceBlob" class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center">
-                    <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                  <button v-if="voiceBlobUrl" @click="playVoiceBlob" class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center" title="Воспроизвести">
+                    <i class="fas fa-play"></i>
                   </button>
                   <button v-if="voiceBlobUrl" @click="saveVoiceBlobToNote" class="px-2.5 py-1 text-xs rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium flex items-center gap-1">
-                    <i data-lucide="save" class="w-3.5 h-3.5"></i> Свежая заметка
+                    <i class="fas fa-save"></i> Свежая заметка
                   </button>
-                  <button v-if="voiceBlobUrl" @click="clearVoiceBlob" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  <button v-if="voiceBlobUrl" @click="clearVoiceBlob" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center" title="Очистить">
+                    <i class="fas fa-trash"></i>
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Home Screen Widgets (Today's Scheduled Tasks) -->
             <div class="space-y-2">
               <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Задачи на сегодня</h3>
               <div v-if="todayTasks.length === 0" class="p-6 text-center text-sm text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
@@ -248,30 +227,28 @@
                   <div class="flex items-center gap-2.5">
                     <span class="w-2.5 h-2.5 rounded-full" :class="getPriorityBg(task.priority)"></span>
                     <div>
-                      <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200" :class="{'line-through opacity-50': task.status === 'completed'}" v-text="task.title"></h4>
+                      <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200" :class="{'line-through opacity-50': task.status === 'completed'}">{{ task.title }}</h4>
                       <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                        <i data-lucide="tag" class="w-3 h-3"></i> <span v-text="task.category"></span>
+                        <i class="fas fa-tag"></i> <span>{{ task.category }}</span>
                       </p>
                     </div>
                   </div>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full text-slate-500 bg-slate-100 dark:bg-slate-800 font-semibold uppercase" v-text="task.priority">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full text-slate-500 bg-slate-100 dark:bg-slate-800 font-semibold uppercase">
+                    {{ task.priority }}
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- TAB 2: NOTES -->
           <div v-if="currentTab === 'notes'" class="p-4 space-y-4">
-            <!-- Search & Filters -->
             <div class="space-y-2">
               <div class="relative">
-                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3.5 text-slate-400"></i>
+                <i class="fas fa-search absolute left-3 top-3.5 text-slate-400"></i>
                 <input v-model="noteQuery" type="text" placeholder="Поиск заметок по названию или тегам..."
                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm">
               </div>
 
-              <!-- Filter Chips -->
               <div class="flex gap-1.5 overflow-x-auto pb-1">
                 <button @click="noteCategoryFilter = ''"
                         class="px-3 py-1 text-xs rounded-full border shrink-0 transition-all font-medium"
@@ -279,59 +256,55 @@
                   Все
                 </button>
                 <button v-for="cat in systemCategories" :key="cat" @click="noteCategoryFilter = cat"
-                        v-text="cat"
                         class="px-3 py-1 text-xs rounded-full border shrink-0 transition-all font-medium"
                         :class="noteCategoryFilter === cat ? 'bg-brand-600 text-white border-brand-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'">
+                  {{ cat }}
                 </button>
               </div>
             </div>
 
-            <!-- Notes List Grid -->
             <div class="grid grid-cols-2 gap-3" v-if="filteredNotes.length > 0">
               <div v-for="note in filteredNotes" :key="note.id" @click="editNote(note)"
                    class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-brand-300 dark:hover:border-brand-700 cursor-pointer flex flex-col justify-between h-36 relative transition-all">
                 <div>
                   <div class="flex items-center justify-between">
-                    <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase" :class="getCategoryBadgeClass(note.category)" v-text="note.category">
+                    <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase" :class="getCategoryBadgeClass(note.category)">
+                      {{ note.category }}
                     </span>
-                    <!-- Indicators -->
                     <div class="flex items-center gap-1 text-slate-400">
-                      <i v-if="note.shared" data-lucide="users" class="w-3 h-3 text-brand-500"></i>
-                      <i v-if="note.audio_url" data-lucide="mic" class="w-3 h-3 text-rose-500"></i>
+                      <i v-if="note.shared" class="fas fa-users text-brand-500"></i>
+                      <i v-if="note.audio_url" class="fas fa-microphone text-rose-500"></i>
                     </div>
                   </div>
-                  <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mt-2 line-clamp-1" v-text="note.title"></h4>
-                  <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 line-clamp-2" v-text="note.content"></p>
+                  <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mt-2 line-clamp-1">{{ note.title }}</h4>
+                  <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 line-clamp-2">{{ note.content }}</p>
                 </div>
 
                 <div class="flex flex-wrap gap-1 mt-2 overflow-hidden max-h-[18px]">
-                  <span v-for="tag in note.tags" :key="tag" class="text-[8px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-500 dark:text-slate-400 font-medium" v-text="'#' + tag">
+                  <span v-for="tag in note.tags" :key="tag" class="text-[8px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-500 dark:text-slate-400 font-medium">
+                    #{{ tag }}
                   </span>
                 </div>
               </div>
             </div>
             <div v-else class="text-center py-12 text-slate-400 dark:text-slate-600">
-              <i data-lucide="file-question" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              <i class="fas fa-file-excel text-4xl mx-auto mb-2 opacity-50"></i>
               Заметки не найдены
             </div>
 
-            <!-- FAB Button to create note -->
-            <button @click="openNewNoteModal" class="fixed right-6 bottom-20 w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all z-20">
-              <i data-lucide="plus" class="w-6 h-6"></i>
+            <button @click="openNewNoteModal" class="fixed right-6 bottom-20 w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all z-20" title="Добавить">
+              <i class="fas fa-plus text-lg"></i>
             </button>
           </div>
 
-          <!-- TAB 3: TASKS -->
           <div v-if="currentTab === 'tasks'" class="p-4 space-y-4">
-            <!-- Search & Filter Toggles -->
             <div class="space-y-2">
               <div class="relative">
-                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3.5 text-slate-400"></i>
+                <i class="fas fa-search absolute left-3 top-3.5 text-slate-400"></i>
                 <input v-model="taskQuery" type="text" placeholder="Поиск задач..."
                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm">
               </div>
 
-              <!-- Status Toggle Filters -->
               <div class="flex border-b border-slate-100 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900 rounded-lg">
                 <button @click="taskStatusFilter = 'pending'" class="flex-1 py-1.5 text-xs font-semibold rounded-lg text-center transition-all"
                         :class="taskStatusFilter === 'pending' ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-slate-400'">
@@ -344,71 +317,68 @@
               </div>
             </div>
 
-            <!-- Tasks List -->
             <div class="space-y-2.5" v-if="filteredTasks.length > 0">
               <div v-for="task in filteredTasks" :key="task.id"
                    class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between gap-3 relative hover:border-brand-300">
                 <div class="flex items-center gap-3 flex-1 min-w-0">
-                  <button @click="toggleTaskStatus(task)" class="p-1 text-slate-300 dark:text-slate-700 hover:text-emerald-500 transition-colors">
-                    <i v-if="task.status === 'completed'" data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i>
-                    <i v-else data-lucide="circle" class="w-5 h-5"></i>
+                  <button @click="toggleTaskStatus(task)" class="p-1 text-slate-300 dark:text-slate-700 hover:text-emerald-500 transition-colors" title="Статус">
+                    <i v-if="task.status === 'completed'" class="fas fa-check-circle text-emerald-500 text-lg"></i>
+                    <i v-else class="far fa-circle text-lg"></i>
                   </button>
                   <div class="min-w-0 flex-1 cursor-pointer" @click="editTask(task)">
-                    <h4 class="text-sm font-semibold text-slate-800 dark:text-slate-100" :class="{'line-through opacity-50': task.status === 'completed'}" v-text="task.title">
+                    <h4 class="text-sm font-semibold text-slate-800 dark:text-slate-100" :class="{'line-through opacity-50': task.status === 'completed'}">
+                      {{ task.title }}
                     </h4>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 line-clamp-1" v-if="task.description" v-text="task.description"></p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 line-clamp-1" v-if="task.description">{{ task.description }}</p>
                     <div class="flex items-center gap-2 mt-1">
-                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase" :class="getCategoryBadgeClass(task.category)" v-text="task.category"></span>
+                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase" :class="getCategoryBadgeClass(task.category)">{{ task.category }}</span>
                       <span v-if="task.due_date" class="text-[9px] text-indigo-500 flex items-center gap-0.5">
-                        <i data-lucide="calendar" class="w-2.5 h-2.5"></i> <span v-text="task.due_date"></span>
+                        <i class="fas fa-calendar-alt"></i> <span>{{ task.due_date }}</span>
                       </span>
                     </div>
                   </div>
                 </div>
                 <div class="flex flex-col items-end shrink-0 gap-1">
-                  <span class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase" :class="getPriorityClass(task.priority)" v-text="task.priority">
+                  <span class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase" :class="getPriorityClass(task.priority)">
+                    {{ task.priority }}
                   </span>
                   <div class="flex items-center gap-1 text-slate-400">
-                    <i v-if="task.repeat_interval !== 'none'" data-lucide="repeat" class="w-3 h-3 text-indigo-500" :title="'Повтор: ' + task.repeat_interval"></i>
-                    <i v-if="task.reminder_time" data-lucide="bell" class="w-3 h-3 text-amber-500" :title="'Напоминание: ' + task.reminder_time"></i>
+                    <i v-if="task.repeat_interval !== 'none'" class="fas fa-redo text-xs text-indigo-500" :title="'Повтор: ' + task.repeat_interval"></i>
+                    <i v-if="task.reminder_time" class="fas fa-bell text-xs text-amber-500" :title="'Напоминание: ' + task.reminder_time"></i>
                   </div>
                 </div>
               </div>
             </div>
             <div v-else class="text-center py-12 text-slate-400 dark:text-slate-600">
-              <i data-lucide="check-square" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              <i class="fas fa-check-double text-4xl mx-auto mb-2 opacity-50"></i>
               Нет задач в этой категории
             </div>
 
-            <!-- FAB Button to create task -->
-            <button @click="openNewTaskModal" class="fixed right-6 bottom-20 w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all z-20">
-              <i data-lucide="plus" class="w-6 h-6"></i>
+            <button @click="openNewTaskModal" class="fixed right-6 bottom-20 w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all z-20" title="Добавить">
+              <i class="fas fa-plus text-lg"></i>
             </button>
           </div>
 
-          <!-- TAB 4: CALENDAR -->
           <div v-if="currentTab === 'calendar'" class="p-4 space-y-4">
             <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4 shadow-sm">
-              <!-- Calendar Header -->
               <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-slate-800 dark:text-white" v-text="currentMonthName + ' ' + currentYear"></h3>
+                <h3 class="font-bold text-slate-800 dark:text-white">{{ currentMonthName }} {{ currentYear }}</h3>
                 <div class="flex items-center gap-1">
-                  <button @click="prevMonth" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
-                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                  <button @click="prevMonth" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg" title="Назад">
+                    <i class="fas fa-chevron-left"></i>
                   </button>
-                  <button @click="nextMonth" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
-                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                  <button @click="nextMonth" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg" title="Вперед">
+                    <i class="fas fa-chevron-right"></i>
                   </button>
                 </div>
               </div>
 
-              <!-- Calendar Weekdays -->
               <div class="grid grid-cols-7 gap-1 text-center mb-1">
-                <span v-for="day in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="day" class="text-xs font-semibold text-slate-400" v-text="day">
+                <span v-for="day in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="day" class="text-xs font-semibold text-slate-400">
+                  {{ day }}
                 </span>
               </div>
 
-              <!-- Calendar Days Grid -->
               <div class="grid grid-cols-7 gap-1 text-center">
                 <div v-for="(cell, idx) in calendarDays" :key="idx"
                      @click="selectCalendarDate(cell.date)"
@@ -418,7 +388,7 @@
                        isSameDay(cell.date, selectedDate) ? 'bg-indigo-50 border-brand-500 dark:bg-slate-800' : '',
                        isToday(cell.date) ? 'ring-2 ring-brand-500' : ''
                      ]">
-                  <span class="text-xs font-medium" v-text="cell.day"></span>
+                  <span class="text-xs font-medium">{{ cell.day }}</span>
 
                   <div class="flex gap-0.5 justify-center mt-1">
                     <span v-if="getTasksForDate(cell.date).length > 0" class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>
@@ -428,9 +398,9 @@
               </div>
             </div>
 
-            <!-- Details for selected date -->
             <div class="space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500" v-text="'События на ' + formatDateRu(selectedDate)">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                События на {{ formatDateRu(selectedDate) }}
               </h3>
 
               <div v-if="getTasksForDate(selectedDate).length === 0 && getNotesForDate(selectedDate).length === 0"
@@ -438,22 +408,20 @@
                 Запланированных событий на этот день нет
               </div>
               <div v-else class="space-y-2">
-                <!-- Tasks -->
                 <div v-for="task in getTasksForDate(selectedDate)" :key="task.id" @click="editTask(task)"
                      class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:border-brand-300">
                   <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span>
-                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200" v-text="task.title"></span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ task.title }}</span>
                   </div>
                   <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">Задача</span>
                 </div>
 
-                <!-- Notes (created on that date) -->
                 <div v-for="note in getNotesForDate(selectedDate)" :key="note.id" @click="editNote(note)"
                      class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:border-brand-300">
                   <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200" v-text="note.title"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-50"></span>
+                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ note.title }}</span>
                   </div>
                   <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">Заметка</span>
                 </div>
@@ -461,14 +429,12 @@
             </div>
           </div>
 
-          <!-- TAB 5: COLLABORATION -->
           <div v-if="currentTab === 'collaboration'" class="p-4 space-y-4 flex flex-col h-full overflow-hidden">
             <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 shrink-0">
-              <i data-lucide="users" class="w-4 h-4 text-brand-600"></i>
+              <i class="fas fa-users text-brand-600"></i>
               Совместные обсуждения и мини-конференции
             </h3>
 
-            <!-- Shared Notes Selection -->
             <div class="shrink-0 space-y-1">
               <label class="text-[10px] uppercase font-bold text-slate-400">Выберите общую заметку:</label>
               <select v-model="selectedDiscussionNoteId" @change="loadDiscussionMessages"
@@ -480,31 +446,28 @@
               </select>
             </div>
 
-            <!-- Chat Pane / Audio Indicator Box -->
             <div v-if="selectedDiscussionNoteId" class="flex-1 flex flex-col overflow-hidden min-h-[300px] border border-slate-100 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 shadow-sm">
-              <!-- Mini Conference Audio Panel -->
               <div class="p-2.5 bg-gradient-to-r from-emerald-50 to-brand-50 dark:from-slate-800 dark:to-slate-800 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2">
                   <span class="flex h-2.5 w-2.5 relative">
                     <span v-if="audioConferenceActive" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2.5 w-2.5" :class="audioConferenceActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
                   </span>
-                  <span class="text-xs font-bold text-slate-700 dark:text-slate-300" v-text="audioConferenceActive ? 'Аудио-конференция активна' : 'Конференция выключена'">
+                  <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {{ audioConferenceActive ? 'Аудио-конференция активна' : 'Конференция выключена' }}
                   </span>
                 </div>
                 <button @click="toggleAudioConference" class="px-2.5 py-1 text-[10px] rounded font-semibold text-white transition-all active:scale-95"
-                        v-text="audioConferenceActive ? 'Покинуть' : 'Подключиться'"
                         :class="audioConferenceActive ? 'bg-rose-600 hover:bg-rose-700' : 'bg-brand-600 hover:bg-brand-700'">
+                  {{ audioConferenceActive ? 'Покинуть' : 'Подключиться' }}
                 </button>
               </div>
 
-              <!-- Simulated Speaking Users list if audio is on -->
               <div v-if="audioConferenceActive" class="px-3 py-1.5 bg-emerald-500/10 text-[10px] text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-2 border-b border-slate-100 dark:border-slate-800">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5 animate-bounce"></i>
+                <i class="fas fa-volume-up animate-bounce"></i>
                 В эфире: <span class="font-bold">Коваженко С.Б. (вы)</span>, Собеседник (wes.by)
               </div>
 
-              <!-- Message Stream -->
               <div class="flex-1 overflow-y-auto p-3 space-y-3" ref="chatStream">
                 <div v-if="discussionMessages.length === 0" class="text-center text-slate-400 dark:text-slate-600 text-xs py-12">
                   Нет сообщений в этой теме. Отправьте первое сообщение!
@@ -513,72 +476,65 @@
                      class="flex flex-col max-w-[85%] rounded-xl p-2.5"
                      :class="msg.user_id === userId ? 'bg-brand-500 text-white self-end ml-auto' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 self-start mr-auto'">
                   <div class="flex items-center justify-between gap-2 mb-1">
-                    <span class="text-[10px] font-extrabold" :class="msg.user_id === userId ? 'text-brand-100' : 'text-brand-600 dark:text-brand-400'" v-text="msg.user_name"></span>
-                    <span class="text-[8px] opacity-70" v-text="msg.timestamp"></span>
+                    <span class="text-[10px] font-extrabold" :class="msg.user_id === userId ? 'text-brand-100' : 'text-brand-600 dark:text-brand-400'">{{ msg.user_name }}</span>
+                    <span class="text-[8px] opacity-70">{{ msg.timestamp }}</span>
                   </div>
-                  <p class="text-xs leading-relaxed whitespace-pre-wrap" v-text="msg.text"></p>
+                  <p class="text-xs leading-relaxed whitespace-pre-wrap">{{ msg.text }}</p>
                 </div>
               </div>
 
-              <!-- Input Bar -->
               <div class="p-2 border-t border-slate-100 dark:border-slate-800 flex gap-1.5 shrink-0">
                 <input v-model="newMessageText" @keyup.enter="postDiscussionMessage" type="text" placeholder="Введите сообщение..."
                        class="flex-1 px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                <button @click="postDiscussionMessage" class="w-8 h-8 rounded-lg bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shrink-0 active:scale-95 transition-all">
-                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <button @click="postDiscussionMessage" class="w-8 h-8 rounded-lg bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shrink-0 active:scale-95 transition-all" title="Отправить">
+                  <i class="fas fa-paper-plane"></i>
                 </button>
               </div>
             </div>
             <div v-else class="p-8 text-center text-sm text-slate-400 dark:text-slate-600">
-              <i data-lucide="users" class="w-10 h-10 mx-auto mb-2 opacity-50"></i>
+              <i class="fas fa-users text-4xl mx-auto mb-2 opacity-50 flex items-center justify-center"></i>
               Пожалуйста, выберите общую заметку для просмотра чата и подключения к аудио-конференции. <br>
               <span class="text-xs text-indigo-500 mt-2 block">Сделать заметку «Общей» можно при её создании или редактировании.</span>
             </div>
           </div>
 
-          <!-- TAB 6: STATISTICS -->
           <div v-if="currentTab === 'statistics'" class="p-4 space-y-4">
             <h3 class="text-sm font-bold text-slate-800 dark:text-white">Отчёты и графики продуктивности</h3>
 
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Продуктивность</h4>
 
-              <!-- Metrics -->
               <div class="grid grid-cols-3 gap-2 text-center">
                 <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                  <span class="text-lg font-bold text-brand-600 dark:text-brand-400" v-text="activeTasksCount"></span>
+                  <span class="text-lg font-bold text-brand-600 dark:text-brand-400">{{ activeTasksCount }}</span>
                   <p class="text-[9px] text-slate-400 mt-0.5">В работе</p>
                 </div>
                 <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                  <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400" v-text="completedTasksCount"></span>
+                  <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">{{ completedTasksCount }}</span>
                   <p class="text-[9px] text-slate-400 mt-0.5">Завершено</p>
                 </div>
                 <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                  <span class="text-lg font-bold text-amber-500" v-text="completionRate + '%'"></span>
+                  <span class="text-lg font-bold text-amber-500">{{ completionRate }}%</span>
                   <p class="text-[9px] text-slate-400 mt-0.5">Прогресс</p>
                 </div>
               </div>
 
-              <!-- Chart Wrapper -->
               <div class="mt-4 relative h-48 w-full flex items-center justify-center">
                 <canvas id="productivityChart" class="w-full h-full max-h-[190px]"></canvas>
               </div>
             </div>
 
-            <!-- Insights -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-2">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Оценка эффективности</h4>
               <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Вы завершили <span class="font-bold text-emerald-600" v-text="completedTasksCount"></span> из последних <span class="font-bold text-slate-700 dark:text-slate-200" v-text="tasks.length"></span> задач. Коэффициент выполнения составляет <span class="font-bold text-indigo-600" v-text="completionRate + '%'"></span>. Самая активная категория: <span class="font-bold text-slate-700 dark:text-slate-300">Личное</span>.
+                Вы завершили <span class="font-bold text-emerald-600">{{ completedTasksCount }}</span> из последних <span class="font-bold text-slate-700 dark:text-slate-200">{{ tasks.length }}</span> задач. Коэффициент выполнения составляет <span class="font-bold text-indigo-600">{{ completionRate }}%</span>. Самая активная категория: <span class="font-bold text-slate-700 dark:text-slate-300">Личное</span>.
               </p>
             </div>
           </div>
 
-          <!-- TAB 7: SETTINGS -->
           <div v-if="currentTab === 'settings'" class="p-4 space-y-4">
             <h3 class="text-sm font-bold text-slate-800 dark:text-white">Настройки приложения</h3>
 
-            <!-- Change PIN Panel -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Смена PIN-кода авторизации</h4>
               <div class="space-y-2.5">
@@ -598,7 +554,6 @@
               </div>
             </div>
 
-            <!-- Notifications -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Push-уведомления и Системные Настройки</h4>
               <div class="space-y-3">
@@ -618,7 +573,6 @@
               </div>
             </div>
 
-            <!-- Export / Import Operations -->
             <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Экспорт / Импорт данных (JSON)</h4>
               <p class="text-[11px] text-slate-400 leading-normal">
@@ -626,21 +580,20 @@
               </p>
               <div class="flex gap-2">
                 <button @click="exportData" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-                  <i data-lucide="download" class="w-3.5 h-3.5"></i> Экспорт
+                  <i class="fas fa-download"></i> Экспорт
                 </button>
                 <label class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer text-center">
-                  <i data-lucide="upload" class="w-3.5 h-3.5"></i> Импорт
+                  <i class="fas fa-upload"></i> Импорт
                   <input type="file" @change="importData" class="hidden" accept=".json">
                 </label>
               </div>
             </div>
           </div>
 
-          <!-- TAB 8: ABOUT -->
           <div v-if="currentTab === 'about'" class="p-6 text-center space-y-6">
             <div class="flex justify-center animate-pulse">
               <div class="w-24 h-24 bg-indigo-100 dark:bg-slate-800 rounded-3xl flex items-center justify-center shadow-lg">
-                <i data-lucide="info" class="w-12 h-12 text-brand-600"></i>
+                <i class="fas fa-info-circle text-4xl text-brand-600"></i>
               </div>
             </div>
 
@@ -673,14 +626,14 @@
 
         </main>
 
-        <!-- Dynamic Note Dialog -->
         <div v-if="noteModalOpen" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-40">
           <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-4 py-3 bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <h3 class="text-sm font-bold text-slate-800 dark:text-white" v-text="editingNote.id ? 'Редактировать заметку' : 'Создать заметку'">
+              <h3 class="text-sm font-bold text-slate-800 dark:text-white">
+                {{ editingNote.id ? 'Редактировать заметку' : 'Создать заметку' }}
               </h3>
-              <button @click="closeNoteModal" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg">
-                <i data-lucide="x" class="w-4 h-4"></i>
+              <button @click="closeNoteModal" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg" title="Закрыть">
+                <i class="fas fa-times text-sm"></i>
               </button>
             </div>
 
@@ -693,7 +646,7 @@
 
               <div>
                 <label class="text-[10px] uppercase font-bold text-slate-400">Текст заметки</label>
-                <textarea v-model="editingNote.content" rows="4" placeholder="Введите text заметки..."
+                <textarea v-model="editingNote.content" rows="4" placeholder="Введите текст заметки..."
                           class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg"></textarea>
               </div>
 
@@ -701,7 +654,7 @@
                 <div>
                   <label class="text-[10px] uppercase font-bold text-slate-400">Категория</label>
                   <select v-model="editingNote.category" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <option v-for="cat in systemCategories" :key="cat" :value="cat" v-text="cat"></option>
+                    <option v-for="cat in systemCategories" :key="cat" :value="cat">{{ cat }}</option>
                   </select>
                 </div>
                 <div>
@@ -725,29 +678,28 @@
                 <input v-model="editingNote.shared" type="checkbox" class="w-4 h-4 rounded text-brand-600">
               </div>
 
-              <!-- Voice Recording inside modal -->
               <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg space-y-2">
                 <span class="text-[10px] uppercase font-bold text-slate-400 block">Голосовая заметка</span>
                 <div class="flex items-center justify-between gap-2">
                   <div class="text-xs text-slate-500">
                     <span v-if="recording" class="text-rose-500 font-semibold animate-pulse">Запись...</span>
                     <span v-else-if="editingNote.audio_url" class="text-emerald-600 flex items-center gap-1">
-                      <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Аудиозапись привязана
+                      <i class="fas fa-check-circle text-xs"></i> Аудиозапись привязана
                     </span>
                     <span v-else>Нет аудиозаписи</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button v-if="!recording && !editingNote.audio_url" @click="startRecording" class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center">
-                      <i data-lucide="mic" class="w-4 h-4"></i>
+                    <button v-if="!recording && !editingNote.audio_url" @click="startRecording" class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center" title="Запись">
+                      <i class="fas fa-microphone"></i>
                     </button>
-                    <button v-if="recording" @click="stopRecordingAndAttachToNote" class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center">
-                      <i data-lucide="square" class="w-3.5 h-3.5"></i>
+                    <button v-if="recording" @click="stopRecordingAndAttachToNote" class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center" title="Стоп">
+                      <i class="fas fa-square"></i>
                     </button>
-                    <button v-if="editingNote.audio_url" @click="playAudioUrl(editingNote.audio_url)" class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-                      <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                    <button v-if="editingNote.audio_url" @click="playAudioUrl(editingNote.audio_url)" class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center" title="Воспроизвести">
+                      <i class="fas fa-play"></i>
                     </button>
-                    <button v-if="editingNote.audio_url" @click="removeAttachedAudio" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-rose-500 flex items-center justify-center">
-                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                    <button v-if="editingNote.audio_url" @click="removeAttachedAudio" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-rose-500 flex items-center justify-center" title="Удалить">
+                      <i class="fas fa-trash-alt"></i>
                     </button>
                   </div>
                 </div>
@@ -755,8 +707,8 @@
             </div>
 
             <div class="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex gap-2 shrink-0">
-              <button v-if="editingNote.id" @click="deleteNote(editingNote.id)" class="px-3 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/40 text-rose-600 rounded-lg text-xs font-bold shrink-0">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <button v-if="editingNote.id" @click="deleteNote(editingNote.id)" class="px-3 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/40 text-rose-600 rounded-lg text-xs font-bold shrink-0" title="Удалить">
+                <i class="fas fa-trash-alt"></i>
               </button>
               <button @click="saveNote" class="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold">
                 Сохранить
@@ -765,14 +717,14 @@
           </div>
         </div>
 
-        <!-- Dynamic Task Dialog -->
         <div v-if="taskModalOpen" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-40">
           <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-4 py-3 bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <h3 class="text-sm font-bold text-slate-800 dark:text-white" v-text="editingTask.id ? 'Редактировать задачу' : 'Создать задачу'">
+              <h3 class="text-sm font-bold text-slate-800 dark:text-white">
+                {{ editingTask.id ? 'Редактировать задачу' : 'Создать задачу' }}
               </h3>
-              <button @click="closeTaskModal" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg">
-                <i data-lucide="x" class="w-4 h-4"></i>
+              <button @click="closeTaskModal" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg" title="Закрыть">
+                <i class="fas fa-times text-sm"></i>
               </button>
             </div>
 
@@ -793,7 +745,7 @@
                 <div>
                   <label class="text-[10px] uppercase font-bold text-slate-400">Категория</label>
                   <select v-model="editingTask.category" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <option v-for="cat in systemCategories" :key="cat" :value="cat" v-text="cat"></option>
+                    <option v-for="cat in systemCategories" :key="cat" :value="cat">{{ cat }}</option>
                   </select>
                 </div>
                 <div>
@@ -836,8 +788,8 @@
             </div>
 
             <div class="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex gap-2 shrink-0">
-              <button v-if="editingTask.id" @click="deleteTask(editingTask.id)" class="px-3 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/40 text-rose-600 rounded-lg text-xs font-bold shrink-0">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <button v-if="editingTask.id" @click="deleteTask(editingTask.id)" class="px-3 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/40 text-rose-600 rounded-lg text-xs font-bold shrink-0" title="Удалить">
+                <i class="fas fa-trash-alt text-sm"></i>
               </button>
               <button @click="saveTask" class="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold">
                 Сохранить
@@ -846,53 +798,52 @@
           </div>
         </div>
 
-        <!-- Global Bottom Tab Bar (PWA Navigation) -->
         <nav class="h-14 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-around z-10 shrink-0 select-none pb-safe">
           <button @click="switchTab('dashboard')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'dashboard' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="home" class="w-5 h-5"></i>
+            <i class="fas fa-home text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Главная</span>
           </button>
 
           <button @click="switchTab('notes')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'notes' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="file-text" class="w-5 h-5"></i>
+            <i class="fas fa-file-alt text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Заметки</span>
           </button>
 
           <button @click="switchTab('tasks')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'tasks' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="check-square" class="w-5 h-5"></i>
+            <i class="fas fa-check-square text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Задачи</span>
           </button>
 
           <button @click="switchTab('calendar')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'calendar' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <i class="fas fa-calendar-alt text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Календарь</span>
           </button>
 
           <button @click="switchTab('collaboration')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'collaboration' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="users" class="w-5 h-5"></i>
+            <i class="fas fa-users text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Общение</span>
           </button>
 
           <button @click="switchTab('statistics')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'statistics' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            <i class="fas fa-chart-bar text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Отчёты</span>
           </button>
 
           <button @click="switchTab('settings')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'settings' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="settings" class="w-5 h-5"></i>
+            <i class="fas fa-cog text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Опции</span>
           </button>
 
           <button @click="switchTab('about')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
                   :class="currentTab === 'about' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i data-lucide="info" class="w-5 h-5"></i>
+            <i class="fas fa-info-circle text-lg"></i>
             <span class="text-[9px] mt-0.5 font-medium">Инфо</span>
           </button>
         </nav>
@@ -901,7 +852,6 @@
     </div>
   </div>
 
-  <!-- VUE 3 CONTROLLER APPLICATION CODE -->
   <script src="/assets/js/app.js"></script>
 </body>
 </html>

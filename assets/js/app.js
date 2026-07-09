@@ -424,14 +424,12 @@ createApp({
       };
       editingNoteTagsString.value = "";
       noteModalOpen.value = true;
-      nextTick(() => lucide.createIcons());
     }
 
     function editNote(note) {
       editingNote.value = JSON.parse(JSON.stringify(note));
       editingNoteTagsString.value = (note.tags || []).join(", ");
       noteModalOpen.value = true;
-      nextTick(() => lucide.createIcons());
     }
 
     function closeNoteModal() {
@@ -516,14 +514,12 @@ createApp({
       };
       editingTaskCompleted.value = false;
       taskModalOpen.value = true;
-      nextTick(() => lucide.createIcons());
     }
 
     function editTask(task) {
       editingTask.value = JSON.parse(JSON.stringify(task));
       editingTaskCompleted.value = task.status === 'completed';
       taskModalOpen.value = true;
-      nextTick(() => lucide.createIcons());
     }
 
     function closeTaskModal() {
@@ -921,12 +917,6 @@ createApp({
       return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400';
     }
 
-    function getPriorityBg(priority) {
-      if (priority === 'High') return 'bg-rose-500';
-      if (priority === 'Medium') return 'bg-amber-500';
-      return 'bg-slate-400';
-    }
-
     // Theme Customizer
     function toggleTheme() {
       theme.value = theme.value === "light" ? "dark" : "light";
@@ -946,7 +936,6 @@ createApp({
     function switchTab(tab) {
       currentTab.value = tab;
       nextTick(() => {
-        lucide.createIcons();
         if (tab === 'statistics') {
           renderProductivityChart();
         }
@@ -1020,10 +1009,15 @@ createApp({
     });
 
     function refreshIconsAndCharts() {
-      lucide.createIcons();
       if (currentTab.value === 'statistics') {
         renderProductivityChart();
       }
+    }
+
+    function getPriorityBg(priority) {
+      if (priority === 'High') return 'bg-rose-500';
+      if (priority === 'Medium') return 'bg-amber-500';
+      return 'bg-slate-400';
     }
 
     onMounted(() => {
