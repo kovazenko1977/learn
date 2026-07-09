@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Session configuration
-session_name('PWA_SESSION');
+session_name('PWA_SESSION_SECURE');
 session_start();
 
 $usersFile = __DIR__ . '/data/users.json';
@@ -19,7 +19,7 @@ $settingsFile = __DIR__ . '/data/settings.json';
 $discussionsFile = __DIR__ . '/data/discussions.json';
 $uploadsDir = __DIR__ . '/uploads';
 
-// Utility to read JSON with dynamic creation and lock protection
+// Utility to read JSON
 function readJsonFile($filePath, $default = []) {
     if (!file_exists($filePath)) {
         return $default;
@@ -212,7 +212,7 @@ switch ($action) {
         foreach ($notes as $n) {
             if ($n['id'] === $noteId) {
                 $deleted = true;
-                // Delete associated audio file if it exists (safely sanitize filename against path-traversal)
+                // Delete associated audio file safely
                 if (!empty($n['audio_url'])) {
                     $safeFileName = basename($n['audio_url']);
                     $filePath = $uploadsDir . '/' . $safeFileName;
@@ -249,7 +249,7 @@ switch ($action) {
         if (empty($task['id'])) {
             $task['id'] = uniqid();
             $task['creator_id'] = $userId;
-            $task['status'] = $task['status'] ?? 'pending'; // pending, completed
+            $task['status'] = $task['status'] ?? 'pending';
             $task['created_at'] = date('Y-m-d H:i:s');
             $task['updated_at'] = date('Y-m-d H:i:s');
             $tasks[] = $task;
@@ -264,7 +264,7 @@ switch ($action) {
                     $t['priority'] = $task['priority'] ?? 'Medium';
                     $t['due_date'] = $task['due_date'] ?? null;
                     $t['reminder_time'] = $task['reminder_time'] ?? null;
-                    $t['repeat_interval'] = $task['repeat_interval'] ?? 'none'; // none, daily, weekly, monthly
+                    $t['repeat_interval'] = $task['repeat_interval'] ?? 'none';
                     $t['status'] = $task['status'] ?? 'pending';
                     $t['updated_at'] = date('Y-m-d H:i:s');
                     $found = true;
@@ -307,7 +307,7 @@ switch ($action) {
         jsonResponse(['error' => 'Task not found'], 404);
         break;
 
-    // --- DISCUSSIONS (MINI-CONFERENCE) ---
+    // --- DISCUSSIONS ---
     case 'get_discussions':
         authenticate();
         $noteId = $_GET['note_id'] ?? '';
@@ -346,7 +346,7 @@ switch ($action) {
         jsonResponse($newMessage);
         break;
 
-    // --- FILE UPLOADS (VOICE NOTES) ---
+    // --- FILE UPLOADS ---
     case 'upload_voice':
         $userId = authenticate();
         if (!isset($_FILES['audio'])) {
@@ -358,9 +358,15 @@ switch ($action) {
         }
 
         $file = $_FILES['audio'];
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (empty($ext)) {
-            $ext = 'wav'; // default fallback for audio blobs
+            $ext = 'wav';
+        }
+
+        // Strict file extension and type validation for security
+        $allowedExtensions = ['wav', 'mp3', 'ogg', 'webm', 'm4a'];
+        if (!in_array($ext, $allowedExtensions)) {
+            jsonResponse(['error' => 'Only audio files are allowed'], 400);
         }
 
         $fileName = 'voice_' . uniqid() . '.' . $ext;
@@ -402,7 +408,7 @@ switch ($action) {
         $content = file_get_contents($file['tmp_name']);
         $data = json_decode($content, true);
         if (!is_array($data)) {
-            jsonResponse(['error' => 'Invalid JSON file format'], 400);
+            jsonResponse(['error' => 'Invalid JSON format'], 400);
         }
 
         if (isset($data['users']) && is_array($data['users'])) {

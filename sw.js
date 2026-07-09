@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-notes-tasks-v1';
+const CACHE_NAME = 'pwa-notes-tasks-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -15,7 +15,7 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching app shell & static resources');
+      console.log('[Service Worker] Caching app shell');
       return cache.addAll(ASSETS_TO_CACHE);
     }).then(() => self.skipWaiting())
   );
@@ -45,7 +45,6 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.includes('api.php')) {
     event.respondWith(
       fetch(event.request).catch(() => {
-        // Fallback or generic offline message can be structured if needed
         return new Response(JSON.stringify({ error: "Вы находитесь в офлайн-режиме. Изменения сохранены локально." }), {
           headers: { 'Content-Type': 'application/json' }
         });
@@ -61,7 +60,6 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
       return fetch(event.request).then((networkResponse) => {
-        // Cache newly requested local resources
         if (event.request.method === 'GET' && networkResponse.status === 200 && url.origin === self.location.origin) {
           return caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, networkResponse.clone());
@@ -70,7 +68,7 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        if (event.request.headers.get('accept').includes('text/html')) {
+        if (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html')) {
           return caches.match('/index.html');
         }
       });

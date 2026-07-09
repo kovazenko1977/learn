@@ -2,19 +2,19 @@ const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
 
 createApp({
   setup() {
-    // Authentication
+    // Authentication State
     const authorized = ref(false);
     const pinCode = ref("");
     const pinError = ref(false);
     const userId = ref("");
     const userName = ref("");
 
-    // Navigation & Theme
+    // Navigation & Layout
     const currentTab = ref("dashboard");
     const theme = ref(localStorage.getItem("pwa_theme") || "light");
     const isOffline = ref(!navigator.onLine);
 
-    // Dynamic Collections
+    // Reactive Data Collections
     const notes = ref([]);
     const tasks = ref([]);
     const discussions = ref([]);
@@ -34,7 +34,7 @@ createApp({
     const editingTask = ref({ title: "", description: "", category: "Личное", tags: [], priority: "Medium", due_date: "", reminder_time: "", repeat_interval: "none", status: "pending" });
     const editingTaskCompleted = ref(false);
 
-    // Collaboration Chat
+    // Collaboration Chat & Conferencing
     const selectedDiscussionNoteId = ref("");
     const discussionMessages = ref([]);
     const newMessageText = ref("");
@@ -49,7 +49,7 @@ createApp({
     const currentMonth = ref(new Date().getMonth());
     const selectedDate = ref(new Date().toISOString().split('T')[0]);
 
-    // Audio Voice Note Recording State
+    // Audio Voice Note Recording
     const recording = ref(false);
     const recordingSeconds = ref(0);
     const voiceBlobUrl = ref(null);
@@ -58,10 +58,10 @@ createApp({
     let recordingInterval = null;
     let localVoiceBlob = null;
 
-    // Charts
+    // Chart.js
     let chartInstance = null;
 
-    // Computed Counts & Lists
+    // Computed Properties
     const activeTasksCount = computed(() => tasks.value.filter(t => t.status === 'pending').length);
     const completedTasksCount = computed(() => tasks.value.filter(t => t.status === 'completed').length);
     const completionRate = computed(() => {
@@ -101,7 +101,7 @@ createApp({
       return notes.value.filter(n => n.shared);
     });
 
-    // Calendar Cells Generation
+    // Calendar Cell Logic
     const monthNamesRu = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
     const currentMonthName = computed(() => monthNamesRu[currentMonth.value]);
 
@@ -109,13 +109,11 @@ createApp({
       const year = currentYear.value;
       const month = currentMonth.value;
 
-      // Get first day of the month
-      const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Monday-indexed
+      const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Monday-first
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       const days = [];
 
-      // Pad previous month days
       const prevMonthDays = new Date(year, month, 0).getDate();
       for (let i = firstDayIndex - 1; i >= 0; i--) {
         const d = new Date(year, month - 1, prevMonthDays - i);
@@ -126,9 +124,8 @@ createApp({
         });
       }
 
-      // Current month days
       for (let i = 1; i <= daysInMonth; i++) {
-        const d = new Date(year, month, i + 1); // safe timezone offset addition
+        const d = new Date(year, month, i + 1); // offset safety
         days.push({
           day: i,
           date: d.toISOString().split('T')[0],
@@ -136,7 +133,6 @@ createApp({
         });
       }
 
-      // Pad next month days to make complete 42 cells grid
       const remainingCells = 42 - days.length;
       for (let i = 1; i <= remainingCells; i++) {
         const d = new Date(year, month + 1, i + 1);
@@ -150,7 +146,7 @@ createApp({
       return days;
     });
 
-    // --- AUDIO NOTIFICATION SOUND FOR KEYPAD ---
+    // Keypad Audio Synth Beep
     function playBeep() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -159,22 +155,21 @@ createApp({
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4 beep
+        oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
         gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
         oscillator.start();
         setTimeout(() => oscillator.stop(), 80);
       } catch (e) {
-        // Audio API not supported/blocked
+        // audio not supported/blocked
       }
     }
 
-    // --- PIN AUTHENTICATION INTERACTION ---
+    // Keypad Numeric Handler
     function pressPinDigit(digit) {
       if (pinCode.value.length < 4) {
         pinCode.value += digit;
         playBeep();
 
-        // Haptic feedback
         if (navigator.vibrate) {
           navigator.vibrate(25);
         }
@@ -195,7 +190,7 @@ createApp({
 
     function submitLogin() {
       if (isOffline.value) {
-        // Offline local auth check
+        // Offline PIN match
         const offlineUsers = JSON.parse(localStorage.getItem("pwa_offline_users") || '[{"id":"1","pin":"1234","name":"Коваженко С.Б."}]');
         const user = offlineUsers.find(u => u.pin === pinCode.value);
         if (user) {
@@ -214,7 +209,7 @@ createApp({
         })
         .then(res => {
           if (res.status === 200) return res.json();
-          throw new Error("Invalid Pin");
+          throw new Error("Invalid PIN");
         })
         .then(data => {
           if (data.success) {
@@ -222,7 +217,6 @@ createApp({
             userId.value = data.user.id;
             userName.value = data.user.name;
             localStorage.setItem("pwa_token", data.user.id);
-            // Save offline user fallback
             localStorage.setItem("pwa_offline_users", JSON.stringify([data.user]));
             loadAllData();
           } else {
@@ -239,7 +233,7 @@ createApp({
       pinError.value = true;
       pinCode.value = "";
       if (navigator.vibrate) {
-        navigator.vibrate([100, 50, 100]); // double error vibration
+        navigator.vibrate([100, 50, 100]);
       }
       setTimeout(() => {
         pinError.value = false;
@@ -249,7 +243,6 @@ createApp({
     function checkSession() {
       const storedToken = localStorage.getItem("pwa_token");
       if (storedToken) {
-        // Skip calling server if offline
         if (isOffline.value) {
           authorized.value = true;
           userId.value = storedToken;
@@ -271,7 +264,6 @@ createApp({
           }
         })
         .catch(() => {
-          // fallback if server is unreachable
           authorized.value = true;
           userId.value = storedToken;
           userName.value = "Коваженко С.Б.";
@@ -288,14 +280,18 @@ createApp({
       }
     }
 
-    // --- SYSTEM OPTIONS & CONFIGURATION CHANGE ---
+    // Change PIN settings
+    const changePinOld = ref("");
+    const changePinNew = ref("");
+    const notificationsEnabled = ref(true);
+
     function submitChangePin() {
       if (!changePinOld.value || !changePinNew.value) {
-        alert("Пожалуйста, заполните оба поля PIN-кода.");
+        alert("Заполните оба поля PIN-кода.");
         return;
       }
       if (isOffline.value) {
-        alert("Смена PIN-кода недоступна в офлайн-режиме.");
+        alert("Смена PIN недоступна офлайн.");
         return;
       }
 
@@ -310,7 +306,7 @@ createApp({
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          alert("PIN-код успешно изменен!");
+          alert("PIN успешно изменен!");
           changePinOld.value = "";
           changePinNew.value = "";
         } else {
@@ -319,13 +315,8 @@ createApp({
       });
     }
 
-    const changePinOld = ref("");
-    const changePinNew = ref("");
-    const notificationsEnabled = ref(true);
-
-    // --- DATA FETCHING & SYNCHRONIZATION ---
+    // --- SYNCHRONIZATION AND LOCAL STORAGE CACHE ---
     function loadAllData() {
-      // Load offline cache first
       notes.value = JSON.parse(localStorage.getItem("pwa_notes") || "[]");
       tasks.value = JSON.parse(localStorage.getItem("pwa_tasks") || "[]");
 
@@ -336,9 +327,7 @@ createApp({
         return;
       }
 
-      // Fetch fresh data from backend
       const headers = { "Authorization": "Bearer " + userId.value };
-
       Promise.all([
         fetch("/api.php?action=get_notes", { headers }).then(r => r.json()),
         fetch("/api.php?action=get_tasks", { headers }).then(r => r.json())
@@ -357,13 +346,13 @@ createApp({
         });
       })
       .catch(err => {
-        console.error("Error fetching remote data", err);
+        console.warn("Data loading error", err);
       });
     }
 
     function syncData() {
       if (isOffline.value) {
-        alert("Вы находитесь в офлайн-режиме. Подключитесь к сети для синхронизации.");
+        alert("Офлайн-режим. Синхронизация невозможна.");
         return;
       }
 
@@ -378,7 +367,6 @@ createApp({
         return;
       }
 
-      // Process synchronization queue sequentially
       let promiseChain = Promise.resolve();
       const headers = {
         "Content-Type": "application/json",
@@ -406,7 +394,7 @@ createApp({
         alert("Синхронизация успешно завершена!");
       })
       .catch(() => {
-        alert("Произошла ошибка при отправке офлайн-изменений.");
+        alert("Ошибка отправки локальных изменений.");
       })
       .finally(() => {
         syncPending.value = false;
@@ -423,7 +411,7 @@ createApp({
       localStorage.setItem("pwa_sync_queue", JSON.stringify(syncQueue.value));
     }
 
-    // --- NOTES MODAL & OPERATIONS ---
+    // --- NOTES MODAL ---
     function openNewNoteModal() {
       editingNote.value = {
         title: "",
@@ -453,11 +441,10 @@ createApp({
 
     function saveNote() {
       if (!editingNote.value.title) {
-        alert("Пожалуйста, введите название заметки.");
+        alert("Введите название заметки.");
         return;
       }
 
-      // Convert tag string to array
       editingNote.value.tags = editingNoteTagsString.value
         .split(",")
         .map(t => t.trim())
@@ -467,7 +454,7 @@ createApp({
 
       if (isOffline.value) {
         if (!noteToSave.id) {
-          noteToSave.id = "local_" + Date.now();
+          noteToSave.id = "local_note_" + Date.now();
           notes.value.push(noteToSave);
         } else {
           const idx = notes.value.findIndex(n => n.id === noteToSave.id);
@@ -494,7 +481,7 @@ createApp({
     }
 
     function deleteNote(noteId) {
-      if (!confirm("Вы действительно хотите удалить эту заметку?")) return;
+      if (!confirm("Вы действительно хотите удалить заметку?")) return;
 
       if (isOffline.value) {
         notes.value = notes.value.filter(n => n.id !== noteId);
@@ -514,7 +501,7 @@ createApp({
       }
     }
 
-    // --- TASKS MODAL & OPERATIONS ---
+    // --- TASKS MODAL ---
     function openNewTaskModal() {
       editingTask.value = {
         title: "",
@@ -567,7 +554,7 @@ createApp({
 
     function saveTask() {
       if (!editingTask.value.title) {
-        alert("Пожалуйста, введите название задачи.");
+        alert("Введите название задачи.");
         return;
       }
 
@@ -603,7 +590,7 @@ createApp({
     }
 
     function deleteTask(taskId) {
-      if (!confirm("Вы действительно хотите удалить эту задачу?")) return;
+      if (!confirm("Удалить эту задачу?")) return;
 
       if (isOffline.value) {
         tasks.value = tasks.value.filter(t => t.id !== taskId);
@@ -623,7 +610,7 @@ createApp({
       }
     }
 
-    // --- AUDIO VOICE NOTES RECORDER ---
+    // --- VOICE RECORDER ---
     function startRecording() {
       audioChunks = [];
       recordingSeconds.value = 0;
@@ -648,7 +635,7 @@ createApp({
         }, 1000);
       })
       .catch(err => {
-        alert("Доступ к микрофону заблокирован: " + err.message);
+        alert("Микрофон не отвечает: " + err.message);
       });
     }
 
@@ -676,7 +663,7 @@ createApp({
     function saveVoiceBlobToNote() {
       if (!localVoiceBlob) return;
       if (isOffline.value) {
-        alert("Загрузка аудиозаписей временно недоступна в офлайн-режиме.");
+        alert("Офлайн-режим. Загрузка невозможна.");
         return;
       }
 
@@ -691,10 +678,9 @@ createApp({
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Open new note modal prefilled with audio
           editingNote.value = {
-            title: "Голосовая заметка от " + new Date().toLocaleDateString('ru-RU'),
-            content: "Аудиозапись приложена к заметке.",
+            title: "Голосовая заметка " + new Date().toLocaleDateString('ru-RU'),
+            content: "Аудиозапись сохранена в заметке.",
             category: "Личное",
             tags: ["Голос"],
             priority: "Medium",
@@ -705,15 +691,11 @@ createApp({
           noteModalOpen.value = true;
           clearVoiceBlob();
         } else {
-          alert("Ошибка сохранения: " + data.error);
+          alert("Ошибка: " + data.error);
         }
-      })
-      .catch(() => {
-        alert("Произошла ошибка при загрузке аудио на сервер.");
       });
     }
 
-    // Modal Attachments Audio Recording logic
     function stopRecordingAndAttachToNote() {
       if (mediaRecorder && recording.value) {
         mediaRecorder.stop();
@@ -751,7 +733,7 @@ createApp({
       editingNote.value.audio_url = null;
     }
 
-    // --- COLLABORATION CHAT MINI-CONFERENCE ---
+    // --- FORUM DISCUSSIONS ---
     function loadDiscussionMessages() {
       if (!selectedDiscussionNoteId.value) {
         discussionMessages.value = [];
@@ -794,14 +776,13 @@ createApp({
     function toggleAudioConference() {
       audioConferenceActive.value = !audioConferenceActive.value;
       if (audioConferenceActive.value) {
-        // request microphone permission immediately
         navigator.mediaDevices.getUserMedia({ audio: true })
         .then(() => {
           if (navigator.vibrate) navigator.vibrate(50);
         })
         .catch(err => {
           audioConferenceActive.value = false;
-          alert("Для конференции необходим микрофон: " + err.message);
+          alert("Для аудио-конференции нужен микрофон: " + err.message);
         });
       }
     }
@@ -815,7 +796,7 @@ createApp({
       });
     }
 
-    // --- CALENDAR LOGIC ---
+    // --- CALENDAR GRID NAVIGATION ---
     function prevMonth() {
       if (currentMonth.value === 0) {
         currentMonth.value = 11;
@@ -861,7 +842,7 @@ createApp({
       return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // --- CHART GRAPHICS & REPORT ---
+    // --- PRODUCTIVITY BAR CHART ---
     function renderProductivityChart() {
       const ctx = document.getElementById('productivityChart');
       if (!ctx) return;
@@ -870,7 +851,6 @@ createApp({
         chartInstance.destroy();
       }
 
-      // Group tasks completed vs total by category
       const labels = systemCategories.value;
       const totalData = labels.map(cat => tasks.value.filter(t => t.category === cat).length);
       const completedData = labels.map(cat => tasks.value.filter(t => t.category === cat && t.status === 'completed').length);
@@ -923,7 +903,7 @@ createApp({
       });
     }
 
-    // --- OTHER UI UTILITIES ---
+    // Badge CSS Helpers
     function getCategoryBadgeClass(category) {
       const colors = {
         'Личное': 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-400',
@@ -947,6 +927,7 @@ createApp({
       return 'bg-slate-400';
     }
 
+    // Theme Customizer
     function toggleTheme() {
       theme.value = theme.value === "light" ? "dark" : "light";
       localStorage.setItem("pwa_theme", theme.value);
@@ -976,16 +957,14 @@ createApp({
     }
 
     function requestSystemPermissions() {
-      // Notification Access
       if ('Notification' in window) {
         Notification.requestPermission().then(permission => {
-          alert("Уведомления: " + (permission === 'granted' ? 'Разрешено' : 'Заблокировано'));
+          alert("Получение уведомлений: " + (permission === 'granted' ? 'Разрешено' : 'Запрещено'));
         });
       }
-      // Camera/Mic access prompt
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      navigator.mediaDevices.getUserMedia({ audio: true })
       .then(() => {
-        alert("Доступ к аудиозаписи успешно проверен.");
+        alert("Микрофон подключен и исправен.");
       })
       .catch(e => {
         console.warn("Permissions error", e);
@@ -994,18 +973,16 @@ createApp({
 
     function testPushNotification() {
       if (!('Notification' in window) || Notification.permission !== 'granted') {
-        alert("Пожалуйста, сначала разрешите получение уведомлений в браузере.");
+        alert("Пожалуйста, сначала разрешите уведомления.");
         return;
       }
-
-      // Local notification fallback
-      new Notification("PWA Напоминание", {
-        body: "Привет! Ваши напоминания работают стабильно.",
+      new Notification("Sanatorium PWA Hub", {
+        body: "Ваше тестовое напоминание успешно сработало!",
         icon: "/icon-192.png"
       });
     }
 
-    // --- EXPORT / IMPORT LOGIC ---
+    // --- JSON FILE DOWNLOADS / EXPORTS ---
     function exportData() {
       window.location.href = "/api.php?action=export";
     }
@@ -1025,15 +1002,15 @@ createApp({
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          alert("Данные успешно импортированы!");
+          alert("Данные импортированы!");
           loadAllData();
         } else {
-          alert("Ошибка импорта: " + data.error);
+          alert("Ошибка: " + data.error);
         }
       });
     }
 
-    // Network connection status changes
+    // Network Online / Offline Events
     window.addEventListener('online', () => {
       isOffline.value = false;
       syncData();
@@ -1053,14 +1030,13 @@ createApp({
       checkSession();
       applyTheme();
 
-      // Auto register PWA Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js')
         .then(reg => {
-          console.log('Service Worker Registered successfully', reg.scope);
+          console.log('SW Registered', reg.scope);
         })
         .catch(err => {
-          console.warn('Service Worker registration failed', err);
+          console.warn('SW failed', err);
         });
       }
     });
