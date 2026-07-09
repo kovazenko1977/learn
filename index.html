@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru" class="h-full">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PWA Notes & Tasks Hub</title>
+
   <link rel="manifest" href="/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -11,845 +12,1495 @@
   <link rel="apple-touch-icon" href="/icon-192.png">
   <meta name="theme-color" content="#4F46E5">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#f5f3ff',
-              100: '#ede9fe',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
-            }
-          }
-        }
-      }
-    }
-  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    ::-webkit-scrollbar {
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-header: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-color: #4f46e5;
+      --accent-hover: #4338ca;
+    }
+
+    .dark {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --bg-header: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    body, html {
+      height: 100%;
+      background-color: #e2e8f0;
+      overflow: hidden;
+    }
+
+    #app-container {
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Header styling */
+    header {
+      height: 56px;
+      background-color: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .logo i {
+      color: var(--accent-color);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .header-btn:hover {
+      background-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    /* Main view area */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Alerts */
+    .alert-banner {
+      padding: 8px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      z-index: 100;
+    }
+
+    #offline-banner {
+      background-color: #f59e0b;
+      display: none;
+    }
+
+    #sync-banner {
+      background-color: #4f46e5;
+      display: none;
+    }
+
+    /* Keypad Auth screen */
+    #auth-screen {
+      position: absolute;
+      inset: 0;
+      background-color: var(--bg-primary);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px 24px;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .auth-logo {
+      width: 72px;
+      height: 72px;
+      background-color: var(--accent-color);
+      border-radius: 20px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+    }
+
+    .auth-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .auth-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .pin-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      transition: all 0.15s;
+    }
+
+    .pin-dot.filled {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      transform: scale(1.15);
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-cols: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    .keypad-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .keypad-btn:active {
+      transform: scale(0.95);
+      background-color: var(--border-color);
+    }
+
+    .keypad-btn.text {
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: #ef4444;
+      box-shadow: none;
+    }
+
+    .keypad-btn.icon {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .auth-credits {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .auth-credits span {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--bg-card);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+    }
+
+    .gradient-header-card {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #ffffff;
+      border: none;
+    }
+
+    .gradient-header-card p {
+      opacity: 0.9;
+      font-size: 12px;
+    }
+
+    .gradient-header-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 2px 0 6px;
+    }
+
+    /* Grid layout widgets */
+    .widgets-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .widget-box {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 90px;
+    }
+
+    .widget-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .widget-top i {
+      padding: 6px;
+      border-radius: 6px;
+    }
+
+    .widget-box.active-tasks i {
+      background-color: #ecfdf5;
+      color: #059669;
+    }
+
+    .widget-box.total-notes i {
+      background-color: #e0e7ff;
+      color: #4f46e5;
+    }
+
+    .widget-val {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* Audio quick record widget */
+    .audio-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .audio-widget-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .audio-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-primary);
+      padding: 8px 12px;
+      border-radius: 10px;
+      gap: 12px;
+    }
+
+    .audio-status {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .audio-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .audio-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      font-size: 13px;
+    }
+
+    .audio-btn.record { background-color: #ef4444; }
+    .audio-btn.stop { background-color: #374151; }
+    .audio-btn.play { background-color: #4f46e5; }
+    .audio-btn.delete { background-color: #94a3b8; }
+    .audio-btn.save {
+      border-radius: 4px;
+      padding: 0 10px;
+      font-size: 10px;
+      font-weight: 600;
+      width: auto;
+      background-color: #10b981;
+    }
+
+    /* Bottom tab bar */
+    nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: white;
+      border-t: 1px solid #ede9fe;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 10;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .dark nav {
+      background: #0f172a;
+      border-top-color: #1e293b;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-col: true;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+    }
+
+    .nav-btn.active {
+      color: var(--accent-color);
+    }
+
+    .nav-btn i {
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+
+    /* Modal dialogs */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 300;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--bg-card);
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh;
+    }
+
+    .modal-header {
+      padding: 12px 16px;
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    .form-checkbox-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .modal-footer {
+      padding: 12px 16px;
+      background-color: var(--bg-primary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-danger {
+      background-color: #fee2e2;
+      color: #ef4444;
+    }
+
+    /* Plus FAB button */
+    .fab-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 76px;
+      width: 48px;
+      height: 48px;
+      background-color: var(--accent-color);
+      color: white;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+      z-index: 20;
+    }
+
+    /* Lists and items */
+    .search-bar-container {
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px 10px 36px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    .search-bar-container i {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      color: var(--text-muted);
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+    }
+
+    .filter-chip {
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-chip.active {
+      background-color: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+
+    /* Grid lists */
+    .notes-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .note-card {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 128px;
+      cursor: pointer;
+    }
+
+    .note-card:hover {
+      border-color: var(--accent-color);
+    }
+
+    .note-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .note-cat {
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background-color: #f1f5f9;
+      color: #475569;
+    }
+
+    .note-indicators {
+      display: flex;
+      gap: 4px;
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .note-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .note-content {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex-grow: 1;
+    }
+
+    .note-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .note-tag {
+      font-size: 8px;
+      background-color: var(--bg-primary);
+      color: var(--text-muted);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    /* Task list item */
+    .task-item {
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .task-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-check-btn {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--border-color);
+    }
+
+    .task-check-btn.checked {
+      color: #10b981;
+    }
+
+    .task-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .task-title.completed {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    .task-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .task-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .priority-badge {
+      font-size: 8px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .priority-High { background-color: #fee2e2; color: #ef4444; }
+    .priority-Medium { background-color: #fef3c7; color: #d97706; }
+    .priority-Low { background-color: #f1f5f9; color: #475569; }
+
+    /* Calendar month view */
+    .calendar-card {
+      padding: 12px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .calendar-days-grid {
+      display: grid;
+      grid-template-cols: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
+    .calendar-weekday {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .calendar-cell {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .calendar-cell.muted {
+      color: var(--border-color);
+    }
+
+    .calendar-cell.selected {
+      background-color: var(--border-color);
+    }
+
+    .calendar-cell.today {
+      border: 2px solid var(--accent-color);
+    }
+
+    .calendar-dots {
+      display: flex;
+      gap: 2px;
+      justify-content: center;
+    }
+
+    .calendar-dot {
       width: 4px;
       height: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(156, 163, 175, 0.5);
-      border-radius: 2px;
+      border-radius: 50%;
     }
 
-    [v-cloak] {
-      display: none !important;
+    .calendar-dot.task { background-color: var(--accent-color); }
+    .calendar-dot.note { background-color: #10b981; }
+
+    /* Custom CSS-based Productivity Graph instead of loading heavy Chart.js */
+    .stats-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
     }
 
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: #6366f1;
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    .stats-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-8px); }
-      75% { transform: translateX(8px); }
-    }
-    .shake-anim {
-      animation: shake 0.2s ease-in-out 0s 2;
+    .stats-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
     }
 
-    body {
-      padding-bottom: env(safe-area-inset-bottom);
+    .stats-bar-outer {
+      height: 12px;
+      background-color: var(--bg-primary);
+      border-radius: 6px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .stats-bar-inner {
+      height: 100%;
+      background-color: var(--accent-color);
+      width: 0%;
+      transition: width 0.4s ease-out;
+    }
+
+    /* Settings list option row */
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .settings-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .settings-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* About Section */
+    .about-box {
+      text-align: center;
+      padding: 24px 12px;
+    }
+
+    .about-logo {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(79, 70, 229, 0.1);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-color);
+      font-size: 36px;
+      margin: 0 auto 16px;
+    }
+
+    .about-list {
+      background-color: var(--bg-primary);
+      border-radius: 12px;
+      padding: 4px 16px;
+      text-align: left;
+      margin-top: 24px;
+    }
+
+    .about-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+    }
+
+    .about-row:last-child {
+      border-bottom: none;
+    }
+
+    .about-row span:first-child {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .about-row span:last-child {
+      font-weight: 700;
+      color: var(--text-main);
     }
   </style>
 </head>
-<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased transition-colors duration-200">
-  <div id="app" v-cloak class="h-full flex flex-col max-w-md mx-auto bg-white dark:bg-slate-900 shadow-2xl relative overflow-hidden">
+<body class="h-full">
+  <div id="app-container">
 
-    <div v-if="isOffline" class="bg-amber-500 text-white text-xs font-semibold px-4 py-1.5 text-center flex items-center justify-center gap-1.5 z-50 animate-pulse">
-      <i class="fas fa-wifi"></i>
-      Вы находитесь в офлайн-режиме.
+    <!-- Alerts Banner Area -->
+    <div id="offline-banner" class="alert-banner">
+      <i class="fas fa-wifi"></i> Вы находитесь в офлайн-режиме.
+    </div>
+    <div id="sync-banner" class="alert-banner">
+      <i class="fas fa-sync-alt fa-spin"></i> Сохранение изменений в JSON...
     </div>
 
-    <div v-if="syncQueue.length > 0 && !isOffline" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-1.5 text-center flex items-center justify-center gap-1.5 z-50">
-      <i class="fas fa-sync-alt animate-spin"></i>
-      <span>Автосохранение: синхронизация изменений ({{ syncQueue.length }})...</span>
-    </div>
+    <!-- 1. KEYPAD AUTH OVERLAY -->
+    <div id="auth-screen">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <i class="fas fa-check-double"></i>
+        </div>
+        <h1 class="auth-title">PWA Hub</h1>
+        <p class="auth-subtitle">Вход по PIN-коду (по умолчанию: 1234)</p>
+      </div>
 
-    <div class="flex-1 flex flex-col overflow-hidden">
-
-      <div v-if="!authorized" class="flex-1 flex flex-col justify-between p-6 bg-slate-50 dark:bg-slate-950 overflow-y-auto">
-        <div class="flex flex-col items-center mt-8">
-          <div class="w-20 h-20 bg-brand-600 dark:bg-brand-500 rounded-3xl flex items-center justify-center shadow-lg shadow-brand-500/30 mb-4 animate-bounce">
-            <i class="fas fa-check-double text-4xl text-white"></i>
-          </div>
-          <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">PWA Hub</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Вход по PIN-коду (по умолчанию: 1234)</p>
+      <div>
+        <div class="pin-dots">
+          <div class="pin-dot" id="dot-1"></div>
+          <div class="pin-dot" id="dot-2"></div>
+          <div class="pin-dot" id="dot-3"></div>
+          <div class="pin-dot" id="dot-4"></div>
         </div>
 
-        <div class="my-6">
-          <div class="flex justify-center gap-4 mb-8" :class="{'shake-anim': pinError}">
-            <div v-for="i in 4" :key="i" class="w-4 h-4 rounded-full border-2 transition-all duration-150"
-                 :class="pinCode.length >= i ? 'bg-brand-600 border-brand-600 dark:bg-brand-500 dark:border-brand-500 scale-110' : 'border-slate-300 dark:border-slate-700 bg-transparent'">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-4 max-w-[280px] mx-auto">
-            <button v-for="num in [1,2,3,4,5,6,7,8,9]" :key="num" @click="pressPinDigit(num.toString())"
-                    class="w-16 h-16 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all text-xl font-semibold shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-              {{ num }}
-            </button>
-            <button @click="clearPin()" class="w-16 h-16 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all text-sm font-medium text-rose-500 flex items-center justify-center">
-              Сброс
-            </button>
-            <button @click="pressPinDigit('0')"
-                    class="w-16 h-16 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 active:scale-95 transition-all text-xl font-semibold shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-              0
-            </button>
-            <button @click="deletePinLastDigit()" class="w-16 h-16 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center text-slate-500 dark:text-slate-400">
-              <i class="fas fa-backspace"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="text-center text-xs text-slate-400 dark:text-slate-500 pb-4">
-          Разработчик: <span class="font-semibold text-slate-600 dark:text-slate-300">wes.by</span><br>
-          Автор: <span class="font-semibold text-slate-600 dark:text-slate-300">Коваженко С.Б.</span>
+        <div class="keypad">
+          <button class="keypad-btn" onclick="pressDigit('1')">1</button>
+          <button class="keypad-btn" onclick="pressDigit('2')">2</button>
+          <button class="keypad-btn" onclick="pressDigit('3')">3</button>
+          <button class="keypad-btn" onclick="pressDigit('4')">4</button>
+          <button class="keypad-btn" onclick="pressDigit('5')">5</button>
+          <button class="keypad-btn" onclick="pressDigit('6')">6</button>
+          <button class="keypad-btn" onclick="pressDigit('7')">7</button>
+          <button class="keypad-btn" onclick="pressDigit('8')">8</button>
+          <button class="keypad-btn" onclick="pressDigit('9')">9</button>
+          <button class="keypad-btn text" onclick="clearDigit()">Сброс</button>
+          <button class="keypad-btn" onclick="pressDigit('0')">0</button>
+          <button class="keypad-btn icon" onclick="backspaceDigit()"><i class="fas fa-backspace"></i></button>
         </div>
       </div>
 
-      <div v-else class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-4 z-10 shrink-0">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-brand-600 dark:bg-brand-500 flex items-center justify-center text-white">
-              <i class="fas fa-check-double text-sm"></i>
-            </div>
-            <span class="font-bold text-sm text-slate-800 dark:text-white">PWA Hub</span>
+      <div class="auth-credits">
+        Разработчик: <span>wes.by</span><br>
+        Автор: <span>Коваженко С.Б.</span>
+      </div>
+    </div>
+
+    <!-- 2. MAIN APPLICATION CORE (HIDDEN UNTIL LOGIN) -->
+    <div id="app-main-core" style="display: none; height: 100%; flex-direction: column;">
+
+      <!-- Top App bar -->
+      <header>
+        <div class="logo">
+          <i class="fas fa-check-double"></i>
+          <span>PWA Hub</span>
+        </div>
+        <div class="header-actions">
+          <button class="header-btn" onclick="toggleAppTheme()" title="Переключить тему">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
+          <button class="header-btn" onclick="manualSync()" title="Синхронизировать">
+            <i class="fas fa-sync-alt" id="sync-icon"></i>
+          </button>
+          <button class="header-btn" onclick="triggerLogout()" title="Выйти" style="color: #ef4444;">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <main id="main-content-scroller">
+
+        <!-- Tab 1: Dashboard -->
+        <div id="tab-dashboard" class="view-section active">
+          <div class="card gradient-header-card">
+            <p>Добро пожаловать в PWA Sanatorium,</p>
+            <h2 id="dashboard-user-name">Коваженко С.Б.</h2>
+            <p><i class="fas fa-calendar-alt"></i> <span id="dashboard-date-str">четверг, 9 июля 2026 г.</span></p>
           </div>
 
-          <div class="flex items-center gap-1.5">
-            <button @click="toggleTheme" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg active:scale-95 transition-transform" title="Переключить тему">
-              <i v-if="theme === 'light'" class="fas fa-moon"></i>
-              <i v-else class="fas fa-sun"></i>
-            </button>
-
-            <button @click="syncData" class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg active:scale-95 transition-transform" title="Синхронизировать данные">
-              <i class="fas fa-sync-alt" :class="{'animate-spin text-brand-600': syncPending}"></i>
-            </button>
-
-            <button @click="logout" class="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg active:scale-95 transition-transform" title="Выйти">
-              <i class="fas fa-sign-out-alt"></i>
-            </button>
+          <div class="widgets-grid">
+            <div class="widget-box active-tasks">
+              <div class="widget-top">
+                <span>В работе</span>
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="widget-val" id="widget-active-tasks-count">0</div>
+            </div>
+            <div class="widget-box total-notes">
+              <div class="widget-top">
+                <span>Заметок</span>
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="widget-val" id="widget-notes-count">0</div>
+            </div>
           </div>
-        </header>
 
-        <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
-
-          <div v-if="currentTab === 'dashboard'" class="p-4 space-y-4">
-            <div class="p-5 rounded-2xl bg-gradient-to-br from-indigo-500 to-brand-600 text-white shadow-md shadow-brand-500/10">
-              <p class="text-xs text-brand-100 font-medium">Добро пожаловать в Sanatorium PWA,</p>
-              <h2 class="text-xl font-bold">{{ userName }}</h2>
-              <p class="text-[11px] text-indigo-100 mt-2 flex items-center gap-1">
-                <i class="fas fa-calendar-alt"></i>
-                <span>{{ todayFormatted }}</span>
-              </p>
+          <!-- Quick Audio note widget -->
+          <div class="card audio-widget">
+            <div class="flex justify-between align-center" style="display: flex; justify-content: space-between;">
+              <span class="audio-widget-title">Голосовые заметки (HTML5 Rec)</span>
+              <span id="recording-indicator" style="display:none; color:#ef4444; font-size:10px;" class="animate-pulse">🔴 Идёт запись...</span>
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-24">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Задачи в работе</span>
-                  <span class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
-                    <i class="fas fa-check-circle"></i>
-                  </span>
-                </div>
-                <span class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ activeTasksCount }}</span>
-              </div>
-
-              <div class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col justify-between h-24">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Всего заметок</span>
-                  <span class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-brand-600 dark:text-brand-400">
-                    <i class="fas fa-file-alt"></i>
-                  </span>
-                </div>
-                <span class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ notes.length }}</span>
-              </div>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-2">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Голосовые заметки (Audio Rec)</h3>
-                <span v-if="recording" class="flex h-2 w-2 relative">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                </span>
-              </div>
-              <div class="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg">
-                <div class="text-xs text-slate-500 dark:text-slate-400">
-                  <span v-if="recording" class="font-medium text-rose-500 animate-pulse">Запись... ({{ recordingSeconds }} сек)</span>
-                  <span v-else-if="voiceBlobUrl" class="font-medium text-indigo-600">Запись готова!</span>
-                  <span v-else>Записать мысли прямо сейчас</span>
-                </div>
-                <div class="flex items-center gap-1.5">
-                  <button v-if="!recording && !voiceBlobUrl" @click="startRecording" class="w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-transform active:scale-90" title="Запись">
-                    <i class="fas fa-microphone"></i>
-                  </button>
-                  <button v-if="recording" @click="stopRecording" class="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center animate-pulse" title="Стоп">
-                    <i class="fas fa-square"></i>
-                  </button>
-                  <button v-if="voiceBlobUrl" @click="playVoiceBlob" class="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center" title="Воспроизвести">
-                    <i class="fas fa-play"></i>
-                  </button>
-                  <button v-if="voiceBlobUrl" @click="saveVoiceBlobToNote" class="px-2.5 py-1 text-xs rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium flex items-center gap-1">
-                    <i class="fas fa-save"></i> Свежая заметка
-                  </button>
-                  <button v-if="voiceBlobUrl" @click="clearVoiceBlob" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 flex items-center justify-center" title="Очистить">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Задачи на сегодня</h3>
-              <div v-if="todayTasks.length === 0" class="p-6 text-center text-sm text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-                Нет запланированных задач на сегодня
-              </div>
-              <div v-else class="space-y-2">
-                <div v-for="task in todayTasks" :key="task.id" @click="editTask(task)"
-                     class="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 flex items-center justify-between hover:border-indigo-200 cursor-pointer">
-                  <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-2.5 rounded-full" :class="getPriorityBg(task.priority)"></span>
-                    <div>
-                      <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200" :class="{'line-through opacity-50': task.status === 'completed'}">{{ task.title }}</h4>
-                      <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                        <i class="fas fa-tag"></i> <span>{{ task.category }}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <span class="text-[10px] px-2 py-0.5 rounded-full text-slate-500 bg-slate-100 dark:bg-slate-800 font-semibold uppercase">
-                    {{ task.priority }}
-                  </span>
-                </div>
+            <div class="audio-bar">
+              <div class="audio-status" id="audio-record-status">Записать мысли прямо сейчас</div>
+              <div class="audio-btns">
+                <button class="audio-btn record" id="rec-btn-start" onclick="startMicRecording()"><i class="fas fa-microphone"></i></button>
+                <button class="audio-btn stop" id="rec-btn-stop" onclick="stopMicRecording()" style="display:none;"><i class="fas fa-square"></i></button>
+                <button class="audio-btn play" id="rec-btn-play" onclick="playCurrentRecord()" style="display:none;"><i class="fas fa-play"></i></button>
+                <button class="audio-btn save" id="rec-btn-save" onclick="saveRecordToNote()" style="display:none;"><i class="fas fa-save"></i> Спасти</button>
+                <button class="audio-btn delete" id="rec-btn-delete" onclick="clearCurrentRecord()" style="display:none;"><i class="fas fa-trash"></i></button>
               </div>
             </div>
           </div>
 
-          <div v-if="currentTab === 'notes'" class="p-4 space-y-4">
-            <div class="space-y-2">
-              <div class="relative">
-                <i class="fas fa-search absolute left-3 top-3.5 text-slate-400"></i>
-                <input v-model="noteQuery" type="text" placeholder="Поиск заметок по названию или тегам..."
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm">
-              </div>
-
-              <div class="flex gap-1.5 overflow-x-auto pb-1">
-                <button @click="noteCategoryFilter = ''"
-                        class="px-3 py-1 text-xs rounded-full border shrink-0 transition-all font-medium"
-                        :class="noteCategoryFilter === '' ? 'bg-brand-600 text-white border-brand-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'">
-                  Все
-                </button>
-                <button v-for="cat in systemCategories" :key="cat" @click="noteCategoryFilter = cat"
-                        class="px-3 py-1 text-xs rounded-full border shrink-0 transition-all font-medium"
-                        :class="noteCategoryFilter === cat ? 'bg-brand-600 text-white border-brand-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'">
-                  {{ cat }}
-                </button>
-              </div>
+          <!-- Today's task list widget -->
+          <div style="margin-top: 16px;">
+            <h3 class="audio-widget-title" style="margin-bottom: 8px;">Задачи на сегодня</h3>
+            <div id="today-tasks-container">
+              <!-- rendered dynamically -->
             </div>
-
-            <div class="grid grid-cols-2 gap-3" v-if="filteredNotes.length > 0">
-              <div v-for="note in filteredNotes" :key="note.id" @click="editNote(note)"
-                   class="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-brand-300 dark:hover:border-brand-700 cursor-pointer flex flex-col justify-between h-36 relative transition-all">
-                <div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase" :class="getCategoryBadgeClass(note.category)">
-                      {{ note.category }}
-                    </span>
-                    <div class="flex items-center gap-1 text-slate-400">
-                      <i v-if="note.shared" class="fas fa-users text-brand-500"></i>
-                      <i v-if="note.audio_url" class="fas fa-microphone text-rose-500"></i>
-                    </div>
-                  </div>
-                  <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100 mt-2 line-clamp-1">{{ note.title }}</h4>
-                  <p class="text-xs text-slate-400 dark:text-slate-500 mt-1 line-clamp-2">{{ note.content }}</p>
-                </div>
-
-                <div class="flex flex-wrap gap-1 mt-2 overflow-hidden max-h-[18px]">
-                  <span v-for="tag in note.tags" :key="tag" class="text-[8px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-500 dark:text-slate-400 font-medium">
-                    #{{ tag }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div v-else class="text-center py-12 text-slate-400 dark:text-slate-600">
-              <i class="fas fa-file-excel text-4xl mx-auto mb-2 opacity-50"></i>
-              Заметки не найдены
-            </div>
-
-            <button @click="openNewNoteModal" class="fixed right-6 bottom-20 w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all z-20" title="Добавить">
-              <i class="fas fa-plus text-lg"></i>
-            </button>
           </div>
+        </div>
 
-          <div v-if="currentTab === 'tasks'" class="p-4 space-y-4">
-            <div class="space-y-2">
-              <div class="relative">
-                <i class="fas fa-search absolute left-3 top-3.5 text-slate-400"></i>
-                <input v-model="taskQuery" type="text" placeholder="Поиск задач..."
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm">
-              </div>
-
-              <div class="flex border-b border-slate-100 dark:border-slate-800 p-0.5 bg-slate-100 dark:bg-slate-900 rounded-lg">
-                <button @click="taskStatusFilter = 'pending'" class="flex-1 py-1.5 text-xs font-semibold rounded-lg text-center transition-all"
-                        :class="taskStatusFilter === 'pending' ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-slate-400'">
-                  В процессе
-                </button>
-                <button @click="taskStatusFilter = 'completed'" class="flex-1 py-1.5 text-xs font-semibold rounded-lg text-center transition-all"
-                        :class="taskStatusFilter === 'completed' ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-slate-400'">
-                  Завершенные
-                </button>
-              </div>
-            </div>
-
-            <div class="space-y-2.5" v-if="filteredTasks.length > 0">
-              <div v-for="task in filteredTasks" :key="task.id"
-                   class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between gap-3 relative hover:border-brand-300">
-                <div class="flex items-center gap-3 flex-1 min-w-0">
-                  <button @click="toggleTaskStatus(task)" class="p-1 text-slate-300 dark:text-slate-700 hover:text-emerald-500 transition-colors" title="Статус">
-                    <i v-if="task.status === 'completed'" class="fas fa-check-circle text-emerald-500 text-lg"></i>
-                    <i v-else class="far fa-circle text-lg"></i>
-                  </button>
-                  <div class="min-w-0 flex-1 cursor-pointer" @click="editTask(task)">
-                    <h4 class="text-sm font-semibold text-slate-800 dark:text-slate-100" :class="{'line-through opacity-50': task.status === 'completed'}">
-                      {{ task.title }}
-                    </h4>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 line-clamp-1" v-if="task.description">{{ task.description }}</p>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase" :class="getCategoryBadgeClass(task.category)">{{ task.category }}</span>
-                      <span v-if="task.due_date" class="text-[9px] text-indigo-500 flex items-center gap-0.5">
-                        <i class="fas fa-calendar-alt"></i> <span>{{ task.due_date }}</span>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col items-end shrink-0 gap-1">
-                  <span class="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase" :class="getPriorityClass(task.priority)">
-                    {{ task.priority }}
-                  </span>
-                  <div class="flex items-center gap-1 text-slate-400">
-                    <i v-if="task.repeat_interval !== 'none'" class="fas fa-redo text-xs text-indigo-500" :title="'Повтор: ' + task.repeat_interval"></i>
-                    <i v-if="task.reminder_time" class="fas fa-bell text-xs text-amber-500" :title="'Напоминание: ' + task.reminder_time"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div v-else class="text-center py-12 text-slate-400 dark:text-slate-600">
-              <i class="fas fa-check-double text-4xl mx-auto mb-2 opacity-50"></i>
-              Нет задач в этой категории
-            </div>
-
-            <button @click="openNewTaskModal" class="fixed right-6 bottom-20 w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all z-20" title="Добавить">
-              <i class="fas fa-plus text-lg"></i>
-            </button>
+        <!-- Tab 2: Notes -->
+        <div id="tab-notes" class="view-section">
+          <div class="search-bar-container">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="search-notes-input" oninput="renderNotesList()" placeholder="Поиск заметок по названию или тегам...">
           </div>
+          <div class="filter-chips" id="notes-filter-chips">
+            <!-- category filter chips will be generated dynamically -->
+          </div>
+          <div class="notes-grid" id="notes-grid-container">
+            <!-- notes rendered dynamically -->
+          </div>
+        </div>
 
-          <div v-if="currentTab === 'calendar'" class="p-4 space-y-4">
-            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-4 shadow-sm">
-              <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-slate-800 dark:text-white">{{ currentMonthName }} {{ currentYear }}</h3>
-                <div class="flex items-center gap-1">
-                  <button @click="prevMonth" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg" title="Назад">
-                    <i class="fas fa-chevron-left"></i>
-                  </button>
-                  <button @click="nextMonth" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg" title="Вперед">
-                    <i class="fas fa-chevron-right"></i>
-                  </button>
-                </div>
-              </div>
+        <!-- Tab 3: Tasks -->
+        <div id="tab-tasks" class="view-section">
+          <div class="search-bar-container">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="search-tasks-input" oninput="renderTasksList()" placeholder="Поиск задач...">
+          </div>
+          <div class="filter-chips">
+            <button class="filter-chip active" id="task-filter-pending" onclick="setTaskStatusFilter('pending')">В процессе</button>
+            <button class="filter-chip" id="task-filter-completed" onclick="setTaskStatusFilter('completed')">Завершенные</button>
+          </div>
+          <div id="tasks-list-container">
+            <!-- tasks rendered dynamically -->
+          </div>
+        </div>
 
-              <div class="grid grid-cols-7 gap-1 text-center mb-1">
-                <span v-for="day in ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']" :key="day" class="text-xs font-semibold text-slate-400">
-                  {{ day }}
-                </span>
-              </div>
-
-              <div class="grid grid-cols-7 gap-1 text-center">
-                <div v-for="(cell, idx) in calendarDays" :key="idx"
-                     @click="selectCalendarDate(cell.date)"
-                     class="aspect-square flex flex-col justify-between p-1 rounded-lg border border-transparent hover:bg-indigo-50 dark:hover:bg-slate-800 cursor-pointer relative transition-all"
-                     :class="[
-                       cell.isCurrentMonth ? 'text-slate-800 dark:text-slate-100' : 'text-slate-300 dark:text-slate-700',
-                       isSameDay(cell.date, selectedDate) ? 'bg-indigo-50 border-brand-500 dark:bg-slate-800' : '',
-                       isToday(cell.date) ? 'ring-2 ring-brand-500' : ''
-                     ]">
-                  <span class="text-xs font-medium">{{ cell.day }}</span>
-
-                  <div class="flex gap-0.5 justify-center mt-1">
-                    <span v-if="getTasksForDate(cell.date).length > 0" class="w-1.5 h-1.5 bg-brand-500 rounded-full"></span>
-                    <span v-if="getNotesForDate(cell.date).length > 0" class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                  </div>
-                </div>
+        <!-- Tab 4: Calendar -->
+        <div id="tab-calendar" class="view-section">
+          <div class="card calendar-card">
+            <div class="calendar-header">
+              <h3 id="calendar-month-title" style="font-weight:700;">Январь 2026</h3>
+              <div style="display: flex; gap: 8px;">
+                <button class="header-btn" onclick="navigateCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="header-btn" onclick="navigateCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button>
               </div>
             </div>
-
-            <div class="space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                События на {{ formatDateRu(selectedDate) }}
-              </h3>
-
-              <div v-if="getTasksForDate(selectedDate).length === 0 && getNotesForDate(selectedDate).length === 0"
-                   class="p-6 text-center text-sm text-slate-400 dark:text-slate-600 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800">
-                Запланированных событий на этот день нет
-              </div>
-              <div v-else class="space-y-2">
-                <div v-for="task in getTasksForDate(selectedDate)" :key="task.id" @click="editTask(task)"
-                     class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:border-brand-300">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-brand-600"></span>
-                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ task.title }}</span>
-                  </div>
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">Задача</span>
-                </div>
-
-                <div v-for="note in getNotesForDate(selectedDate)" :key="note.id" @click="editNote(note)"
-                     class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:border-brand-300">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-50"></span>
-                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ note.title }}</span>
-                  </div>
-                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold uppercase">Заметка</span>
-                </div>
-              </div>
+            <div class="calendar-days-grid" id="calendar-weekday-header">
+              <!-- weekdays -->
+            </div>
+            <div class="calendar-days-grid" id="calendar-days-container" style="margin-top: 6px;">
+              <!-- cells -->
             </div>
           </div>
 
-          <div v-if="currentTab === 'collaboration'" class="p-4 space-y-4 flex flex-col h-full overflow-hidden">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5 shrink-0">
-              <i class="fas fa-users text-brand-600"></i>
-              Совместные обсуждения и мини-конференции
-            </h3>
+          <div style="margin-top: 16px;">
+            <h3 class="audio-widget-title" id="calendar-details-title" style="margin-bottom: 8px;">События</h3>
+            <div id="calendar-details-container">
+              <!-- list of events -->
+            </div>
+          </div>
+        </div>
 
-            <div class="shrink-0 space-y-1">
-              <label class="text-[10px] uppercase font-bold text-slate-400">Выберите общую заметку:</label>
-              <select v-model="selectedDiscussionNoteId" @change="loadDiscussionMessages"
-                      class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
-                <option value="">-- Выберите заметку --</option>
-                <option v-for="note in sharedNotes" :key="note.id" :value="note.id">
-                  {{ note.title }} ({{ note.category }})
-                </option>
-              </select>
+        <!-- Tab 5: Collaboration (Chat Discussion) -->
+        <div id="tab-collaboration" class="view-section" style="height: 100%;">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label">Выберите общую заметку для беседы:</label>
+            <select class="form-select" id="chat-note-selector" onchange="onChatNoteChanged()">
+              <option value="">-- Выберите заметку --</option>
+            </select>
+          </div>
+
+          <div id="chat-active-pane" class="card" style="display: none; padding: 0; overflow: hidden; border-radius:12px;">
+            <div style="padding: 10px 12px; background: linear-gradient(90deg, #ecfdf5, #f5f3ff); border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="display: flex; align-items:center; gap:6px;">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#10b981;" id="audio-conf-pulse"></span>
+                <span style="font-size:11px; font-weight:700;" id="audio-conf-title">Конференция выключена</span>
+              </div>
+              <button class="btn" id="audio-conf-toggle-btn" onclick="toggleConferenceMic()" style="padding: 4px 10px; font-size:9px; font-weight:700; color:white; background-color:#4f46e5; border-radius:4px;">Подключиться</button>
             </div>
 
-            <div v-if="selectedDiscussionNoteId" class="flex-1 flex flex-col overflow-hidden min-h-[300px] border border-slate-100 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 shadow-sm">
-              <div class="p-2.5 bg-gradient-to-r from-emerald-50 to-brand-50 dark:from-slate-800 dark:to-slate-800 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-2">
-                  <span class="flex h-2.5 w-2.5 relative">
-                    <span v-if="audioConferenceActive" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5" :class="audioConferenceActive ? 'bg-emerald-500' : 'bg-slate-400'"></span>
-                  </span>
-                  <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    {{ audioConferenceActive ? 'Аудио-конференция активна' : 'Конференция выключена' }}
-                  </span>
-                </div>
-                <button @click="toggleAudioConference" class="px-2.5 py-1 text-[10px] rounded font-semibold text-white transition-all active:scale-95"
-                        :class="audioConferenceActive ? 'bg-rose-600 hover:bg-rose-700' : 'bg-brand-600 hover:bg-brand-700'">
-                  {{ audioConferenceActive ? 'Покинуть' : 'Подключиться' }}
-                </button>
-              </div>
-
-              <div v-if="audioConferenceActive" class="px-3 py-1.5 bg-emerald-500/10 text-[10px] text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-2 border-b border-slate-100 dark:border-slate-800">
-                <i class="fas fa-volume-up animate-bounce"></i>
-                В эфире: <span class="font-bold">Коваженко С.Б. (вы)</span>, Собеседник (wes.by)
-              </div>
-
-              <div class="flex-1 overflow-y-auto p-3 space-y-3" ref="chatStream">
-                <div v-if="discussionMessages.length === 0" class="text-center text-slate-400 dark:text-slate-600 text-xs py-12">
-                  Нет сообщений в этой теме. Отправьте первое сообщение!
-                </div>
-                <div v-else v-for="msg in discussionMessages" :key="msg.id"
-                     class="flex flex-col max-w-[85%] rounded-xl p-2.5"
-                     :class="msg.user_id === userId ? 'bg-brand-500 text-white self-end ml-auto' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 self-start mr-auto'">
-                  <div class="flex items-center justify-between gap-2 mb-1">
-                    <span class="text-[10px] font-extrabold" :class="msg.user_id === userId ? 'text-brand-100' : 'text-brand-600 dark:text-brand-400'">{{ msg.user_name }}</span>
-                    <span class="text-[8px] opacity-70">{{ msg.timestamp }}</span>
-                  </div>
-                  <p class="text-xs leading-relaxed whitespace-pre-wrap">{{ msg.text }}</p>
-                </div>
-              </div>
-
-              <div class="p-2 border-t border-slate-100 dark:border-slate-800 flex gap-1.5 shrink-0">
-                <input v-model="newMessageText" @keyup.enter="postDiscussionMessage" type="text" placeholder="Введите сообщение..."
-                       class="flex-1 px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                <button @click="postDiscussionMessage" class="w-8 h-8 rounded-lg bg-brand-600 hover:bg-brand-700 text-white flex items-center justify-center shrink-0 active:scale-95 transition-all" title="Отправить">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
+            <div id="audio-conf-participants-bar" style="display: none; padding: 6px 12px; background-color: rgba(16, 185, 129, 0.1); font-size:10px; color:#059669; font-weight:600; border-bottom:1px solid var(--border-color);">
+              <i class="fas fa-volume-up animate-bounce"></i> В эфире: <span>Коваженко С.Б. (вы)</span>, Собеседник (wes.by)
             </div>
-            <div v-else class="p-8 text-center text-sm text-slate-400 dark:text-slate-600">
-              <i class="fas fa-users text-4xl mx-auto mb-2 opacity-50 flex items-center justify-center"></i>
-              Пожалуйста, выберите общую заметку для просмотра чата и подключения к аудио-конференции. <br>
-              <span class="text-xs text-indigo-500 mt-2 block">Сделать заметку «Общей» можно при её создании или редактировании.</span>
+
+            <div id="chat-messages-scroller" style="height: 220px; overflow-y:auto; padding: 12px; display:flex; flex-direction:column; gap:8px;">
+              <!-- rendered messages -->
+            </div>
+
+            <div style="padding: 8px; border-top:1px solid var(--border-color); display:flex; gap:6px;">
+              <input type="text" id="chat-message-input" onkeyup="if(event.key === 'Enter') sendChatMessage()" class="form-input" style="padding: 6px 10px; font-size:12px;" placeholder="Введите сообщение...">
+              <button class="btn btn-primary" onclick="sendChatMessage()" style="width:36px; height:32px; padding:0; display:flex; align-items:center; justify-content:center;"><i class="fas fa-paper-plane"></i></button>
             </div>
           </div>
 
-          <div v-if="currentTab === 'statistics'" class="p-4 space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Отчёты и графики продуктивности</h3>
+          <div id="chat-placeholder-pane" style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <i class="fas fa-users" style="font-size: 32px; margin-bottom: 12px; opacity:0.5;"></i>
+            <p style="font-size:12px; line-height:1.5;">Сделайте заметку «Общей» во время создания или редактирования, чтобы получить к ней совместный доступ и обсуждать идеи.</p>
+          </div>
+        </div>
 
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Продуктивность</h4>
+        <!-- Tab 6: Reports & Statistics -->
+        <div id="tab-statistics" class="view-section">
+          <h3 class="audio-widget-title" style="margin-bottom: 12px;">Продуктивность по категориям</h3>
 
-              <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                  <span class="text-lg font-bold text-brand-600 dark:text-brand-400">{{ activeTasksCount }}</span>
-                  <p class="text-[9px] text-slate-400 mt-0.5">В работе</p>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                  <span class="text-lg font-bold text-emerald-600 dark:text-emerald-400">{{ completedTasksCount }}</span>
-                  <p class="text-[9px] text-slate-400 mt-0.5">Завершено</p>
-                </div>
-                <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                  <span class="text-lg font-bold text-amber-500">{{ completionRate }}%</span>
-                  <p class="text-[9px] text-slate-400 mt-0.5">Прогресс</p>
-                </div>
+          <div class="card">
+            <div style="display: grid; grid-template-cols: repeat(3, 1fr); gap: 8px; text-align:center; margin-bottom: 16px;">
+              <div style="background-color: var(--bg-primary); padding: 8px; border-radius:8px;">
+                <div style="font-size: 16px; font-weight:700;" id="stats-val-pending">0</div>
+                <div style="font-size: 8px; color: var(--text-muted); text-transform:uppercase; margin-top:2px;">В процессе</div>
               </div>
-
-              <div class="mt-4 relative h-48 w-full flex items-center justify-center">
-                <canvas id="productivityChart" class="w-full h-full max-h-[190px]"></canvas>
+              <div style="background-color: var(--bg-primary); padding: 8px; border-radius:8px;">
+                <div style="font-size: 16px; font-weight:700; color: #10b981;" id="stats-val-completed">0</div>
+                <div style="font-size: 8px; color: var(--text-muted); text-transform:uppercase; margin-top:2px;">Завершено</div>
+              </div>
+              <div style="background-color: var(--bg-primary); padding: 8px; border-radius:8px;">
+                <div style="font-size: 16px; font-weight:700; color: #d97706;" id="stats-val-percent">0%</div>
+                <div style="font-size: 8px; color: var(--text-muted); text-transform:uppercase; margin-top:2px;">Прогресс</div>
               </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-2">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Оценка эффективности</h4>
-              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Вы завершили <span class="font-bold text-emerald-600">{{ completedTasksCount }}</span> из последних <span class="font-bold text-slate-700 dark:text-slate-200">{{ tasks.length }}</span> задач. Коэффициент выполнения составляет <span class="font-bold text-indigo-600">{{ completionRate }}%</span>. Самая активная категория: <span class="font-bold text-slate-700 dark:text-slate-300">Личное</span>.
-              </p>
+            <!-- Custom dynamic CSS bars chart -->
+            <div class="stats-progress-container" id="productivity-bars-container">
+              <!-- bars rendered dynamically -->
             </div>
           </div>
 
-          <div v-if="currentTab === 'settings'" class="p-4 space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-white">Настройки приложения</h3>
-
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Смена PIN-кода авторизации</h4>
-              <div class="space-y-2.5">
-                <div>
-                  <label class="text-[10px] font-bold text-slate-400 uppercase">Текущий PIN</label>
-                  <input v-model="changePinOld" type="password" maxlength="4" placeholder="••••"
-                         class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-center tracking-widest">
-                </div>
-                <div>
-                  <label class="text-[10px] font-bold text-slate-400 uppercase">Новый PIN</label>
-                  <input v-model="changePinNew" type="password" maxlength="4" placeholder="••••"
-                         class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm text-center tracking-widest">
-                </div>
-                <button @click="submitChangePin" class="w-full py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold active:scale-95 transition-all">
-                  Сменить PIN
-                </button>
-              </div>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Push-уведомления и Системные Настройки</h4>
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Включить уведомления</span>
-                  <input v-model="notificationsEnabled" type="checkbox" class="w-4 h-4 rounded text-indigo-600">
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Запросить доступ к системе</span>
-                  <button @click="requestSystemPermissions" class="px-2.5 py-1 text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-400 rounded-lg font-bold">
-                    Запросить
-                  </button>
-                </div>
-                <button @click="testPushNotification" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold active:scale-95 transition-all">
-                  Протестировать Push-уведомление
-                </button>
-              </div>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Экспорт / Импорт данных (JSON)</h4>
-              <p class="text-[11px] text-slate-400 leading-normal">
-                Сохраните ваши заметки, задачи, настройки и комментарии в переносимый JSON-файл или восстановите их из резервной копии.
-              </p>
-              <div class="flex gap-2">
-                <button @click="exportData" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-                  <i class="fas fa-download"></i> Экспорт
-                </button>
-                <label class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer text-center">
-                  <i class="fas fa-upload"></i> Импорт
-                  <input type="file" @change="importData" class="hidden" accept=".json">
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="currentTab === 'about'" class="p-6 text-center space-y-6">
-            <div class="flex justify-center animate-pulse">
-              <div class="w-24 h-24 bg-indigo-100 dark:bg-slate-800 rounded-3xl flex items-center justify-center shadow-lg">
-                <i class="fas fa-info-circle text-4xl text-brand-600"></i>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <h3 class="text-xl font-bold text-slate-800 dark:text-white">О программе</h3>
-              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Современный мобильный органайзер Progressive Web App (PWA) для эффективного управления задачами, заметками, аудиозаписями и совместной работы.
-              </p>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-left space-y-3.5">
-              <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
-                <span class="text-xs text-slate-400 font-bold uppercase">Разработчик</span>
-                <span class="text-sm font-semibold text-brand-600 dark:text-brand-400">wes.by</span>
-              </div>
-              <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
-                <span class="text-xs text-slate-400 font-bold uppercase">Автор</span>
-                <span class="text-sm font-semibold text-slate-800 dark:text-white">Коваженко С.Б.</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-slate-400 font-bold uppercase">Версия</span>
-                <span class="text-sm font-semibold text-slate-800 dark:text-white">2.0.0 (Custom Rebuild)</span>
-              </div>
-            </div>
-
-            <p class="text-[10px] text-slate-400 leading-relaxed">
-              Все права защищены. Локальное шифрование и хранение данных в формате JSON для переносимости и безопасности.
+          <div class="card" style="padding: 12px;">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Оценка эффективности</h4>
+            <p style="font-size:12px; line-height:1.5; color: var(--text-muted);">
+              Система анализирует выполненные задачи в реальном времени. На данный момент категория <span style="font-weight:700; color:var(--text-main);">Личное</span> является наиболее продуктивной в вашей рабочей среде.
             </p>
           </div>
+        </div>
 
-        </main>
+        <!-- Tab 7: Settings -->
+        <div id="tab-settings" class="view-section">
+          <h3 class="audio-widget-title" style="margin-bottom: 12px;">Настройки PWA</h3>
 
-        <div v-if="noteModalOpen" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-40">
-          <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="px-4 py-3 bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <h3 class="text-sm font-bold text-slate-800 dark:text-white">
-                {{ editingNote.id ? 'Редактировать заметку' : 'Создать заметку' }}
-              </h3>
-              <button @click="closeNoteModal" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg" title="Закрыть">
-                <i class="fas fa-times text-sm"></i>
-              </button>
+          <div class="card">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:12px;">Смена PIN-кода авторизации</h4>
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label class="form-label">Текущий PIN</label>
+              <input type="password" maxlength="4" class="form-input" id="settings-pin-old" placeholder="••••" style="text-align: center; letter-spacing:8px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Новый PIN</label>
+              <input type="password" maxlength="4" class="form-input" id="settings-pin-new" placeholder="••••" style="text-align: center; letter-spacing:8px;">
+            </div>
+            <button class="btn btn-primary" onclick="changeUserPin()" style="width: 100%;">Сменить PIN</button>
+          </div>
+
+          <div class="card">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:12px;">Уведомления и Системный Доступ</h4>
+
+            <div class="settings-row">
+              <div class="settings-left">
+                <span class="settings-title">Push-уведомления</span>
+                <span class="settings-subtitle">Включить напоминания о задачах</span>
+              </div>
+              <input type="checkbox" id="settings-notify-toggle" checked style="width:16px; height:16px;">
             </div>
 
-            <div class="p-4 space-y-3.5 overflow-y-auto flex-1">
-              <div>
-                <label class="text-[10px] uppercase font-bold text-slate-400">Название</label>
-                <input v-model="editingNote.title" type="text" placeholder="Введите название..."
-                       class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
+            <div class="settings-row">
+              <div class="settings-left">
+                <span class="settings-title">Запросить доступ</span>
+                <span class="settings-subtitle">Проверить микрофон и уведомления</span>
               </div>
-
-              <div>
-                <label class="text-[10px] uppercase font-bold text-slate-400">Текст заметки</label>
-                <textarea v-model="editingNote.content" rows="4" placeholder="Введите текст заметки..."
-                          class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg"></textarea>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Категория</label>
-                  <select v-model="editingNote.category" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <option v-for="cat in systemCategories" :key="cat" :value="cat">{{ cat }}</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Приоритет</label>
-                  <select v-model="editingNote.priority" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <option value="High">Высокий</option>
-                    <option value="Medium">Средний</option>
-                    <option value="Low">Низкий</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label class="text-[10px] uppercase font-bold text-slate-400">Теги (через запятую)</label>
-                <input v-model="editingNoteTagsString" type="text" placeholder="учеба, идеи, дом"
-                       class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-              </div>
-
-              <div class="flex items-center justify-between py-1 bg-slate-50 dark:bg-slate-950 px-2.5 rounded-lg">
-                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Общий доступ</span>
-                <input v-model="editingNote.shared" type="checkbox" class="w-4 h-4 rounded text-brand-600">
-              </div>
-
-              <div class="bg-slate-50 dark:bg-slate-950 p-2.5 rounded-lg space-y-2">
-                <span class="text-[10px] uppercase font-bold text-slate-400 block">Голосовая заметка</span>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-xs text-slate-500">
-                    <span v-if="recording" class="text-rose-500 font-semibold animate-pulse">Запись...</span>
-                    <span v-else-if="editingNote.audio_url" class="text-emerald-600 flex items-center gap-1">
-                      <i class="fas fa-check-circle text-xs"></i> Аудиозапись привязана
-                    </span>
-                    <span v-else>Нет аудиозаписи</span>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button v-if="!recording && !editingNote.audio_url" @click="startRecording" class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center" title="Запись">
-                      <i class="fas fa-microphone"></i>
-                    </button>
-                    <button v-if="recording" @click="stopRecordingAndAttachToNote" class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center" title="Стоп">
-                      <i class="fas fa-square"></i>
-                    </button>
-                    <button v-if="editingNote.audio_url" @click="playAudioUrl(editingNote.audio_url)" class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center" title="Воспроизвести">
-                      <i class="fas fa-play"></i>
-                    </button>
-                    <button v-if="editingNote.audio_url" @click="removeAttachedAudio" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-rose-500 flex items-center justify-center" title="Удалить">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <button class="btn" onclick="requestAppPermissions()" style="padding: 4px 10px; font-size:10px; background-color:var(--border-color); color:var(--text-main);">Проверить</button>
             </div>
 
-            <div class="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex gap-2 shrink-0">
-              <button v-if="editingNote.id" @click="deleteNote(editingNote.id)" class="px-3 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/40 text-rose-600 rounded-lg text-xs font-bold shrink-0" title="Удалить">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-              <button @click="saveNote" class="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold">
-                Сохранить
-              </button>
+            <button class="btn" onclick="testLocalPush()" style="width: 100%; margin-top:12px; font-size:11px; background-color:var(--border-color); color:var(--text-main);">Протестировать Push-уведомление</button>
+          </div>
+
+          <div class="card">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:8px;">Экспорт / Импорт данных (JSON)</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px; line-height:1.4;">Загрузите переносимый JSON-файл резервной копии или импортируйте его на другом устройстве.</p>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" onclick="exportBackupData()" style="flex:1; background-color:#10b981; color:white;"><i class="fas fa-download"></i> Экспорт</button>
+              <label class="btn" style="flex:1; background-color:#2563eb; color:white; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+                <i class="fas fa-upload"></i> Импорт
+                <input type="file" id="import-backup-file-input" onchange="importBackupData(event)" style="display:none;" accept=".json">
+              </label>
             </div>
           </div>
         </div>
 
-        <div v-if="taskModalOpen" class="fixed inset-0 bg-slate-900/60 flex items-center justify-center p-4 z-40">
-          <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="px-4 py-3 bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
-              <h3 class="text-sm font-bold text-slate-800 dark:text-white">
-                {{ editingTask.id ? 'Редактировать задачу' : 'Создать задачу' }}
-              </h3>
-              <button @click="closeTaskModal" class="p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg" title="Закрыть">
-                <i class="fas fa-times text-sm"></i>
-              </button>
+        <!-- Tab 8: About -->
+        <div id="tab-about" class="view-section">
+          <div class="about-box">
+            <div class="about-logo">
+              <i class="fas fa-info-circle"></i>
             </div>
+            <h3 style="font-size:20px; font-weight:700; margin-bottom:4px;">О программе</h3>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.5;">Современный мобильный органайзер Progressive Web App (PWA) для эффективного управления задачами, заметками, аудиозаписями и совместной работы.</p>
 
-            <div class="p-4 space-y-3.5 overflow-y-auto flex-1">
-              <div>
-                <label class="text-[10px] uppercase font-bold text-slate-400">Название задачи</label>
-                <input v-model="editingTask.title" type="text" placeholder="Купить продукты..."
-                       class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
+            <div class="about-list">
+              <div class="about-row">
+                <span>Разработчик</span>
+                <span>wes.by</span>
               </div>
-
-              <div>
-                <label class="text-[10px] uppercase font-bold text-slate-400">Описание / Детали</label>
-                <textarea v-model="editingTask.description" rows="3" placeholder="Детали задачи..."
-                          class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg"></textarea>
+              <div class="about-row">
+                <span>Автор</span>
+                <span>Коваженко С.Б.</span>
               </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Категория</label>
-                  <select v-model="editingTask.category" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <option v-for="cat in systemCategories" :key="cat" :value="cat">{{ cat }}</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Приоритет</label>
-                  <select v-model="editingTask.priority" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                    <option value="High">Высокий</option>
-                    <option value="Medium">Средний</option>
-                    <option value="Low">Низкий</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Срок (Дата)</label>
-                  <input v-model="editingTask.due_date" type="date"
-                         class="w-full px-2 py-1 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                </div>
-                <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Время напоминания</label>
-                  <input v-model="editingTask.reminder_time" type="time"
-                         class="w-full px-2 py-1 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                </div>
-              </div>
-
-              <div>
-                <label class="text-[10px] uppercase font-bold text-slate-400">Повторение</label>
-                <select v-model="editingTask.repeat_interval" class="w-full px-2 py-1.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg">
-                  <option value="none">Без повторений</option>
-                  <option value="daily">Каждый день</option>
-                  <option value="weekly">Каждую неделю</option>
-                  <option value="monthly">Каждый месяц</option>
-                </select>
-              </div>
-
-              <div class="flex items-center justify-between py-1 bg-slate-50 dark:bg-slate-950 px-2.5 rounded-lg">
-                <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Статус: Выполнено</span>
-                <input v-model="editingTaskCompleted" type="checkbox" class="w-4 h-4 rounded text-brand-600">
+              <div class="about-row">
+                <span>Версия</span>
+                <span>3.0.0 (Pure Vanilla HTML)</span>
               </div>
             </div>
 
-            <div class="p-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex gap-2 shrink-0">
-              <button v-if="editingTask.id" @click="deleteTask(editingTask.id)" class="px-3 py-2 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/40 text-rose-600 rounded-lg text-xs font-bold shrink-0" title="Удалить">
-                <i class="fas fa-trash-alt text-sm"></i>
-              </button>
-              <button @click="saveTask" class="flex-1 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-bold">
-                Сохранить
-              </button>
-            </div>
+            <p style="font-size:10px; color:var(--text-muted); margin-top:24px; line-height:1.4;">Все права защищены. Локальное шифрование и переносимость данных в формате JSON.</p>
           </div>
         </div>
 
-        <nav class="h-14 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-around z-10 shrink-0 select-none pb-safe">
-          <button @click="switchTab('dashboard')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'dashboard' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-home text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Главная</span>
-          </button>
+      </main>
 
-          <button @click="switchTab('notes')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'notes' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-file-alt text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Заметки</span>
-          </button>
+      <!-- FAB creation button -->
+      <button class="fab-btn" id="fab-create-btn" onclick="onFabClicked()" title="Добавить новую"><i class="fas fa-plus"></i></button>
 
-          <button @click="switchTab('tasks')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'tasks' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-check-square text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Задачи</span>
-          </button>
-
-          <button @click="switchTab('calendar')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'calendar' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-calendar-alt text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Календарь</span>
-          </button>
-
-          <button @click="switchTab('collaboration')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'collaboration' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-users text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Общение</span>
-          </button>
-
-          <button @click="switchTab('statistics')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'statistics' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-chart-bar text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Отчёты</span>
-          </button>
-
-          <button @click="switchTab('settings')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'settings' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-cog text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Опции</span>
-          </button>
-
-          <button @click="switchTab('about')" class="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-90"
-                  :class="currentTab === 'about' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-slate-600'">
-            <i class="fas fa-info-circle text-lg"></i>
-            <span class="text-[9px] mt-0.5 font-medium">Инфо</span>
-          </button>
-        </nav>
-      </div>
+      <!-- Bottom PWA Navigation -->
+      <nav>
+        <button class="nav-btn active" onclick="switchActiveTab('dashboard')" id="nav-dashboard">
+          <i class="fas fa-home"></i>
+          <span>Главная</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('notes')" id="nav-notes">
+          <i class="fas fa-file-alt"></i>
+          <span>Заметки</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('tasks')" id="nav-tasks">
+          <i class="fas fa-check-square"></i>
+          <span>Задачи</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('calendar')" id="nav-calendar">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Календарь</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('collaboration')" id="nav-collaboration">
+          <i class="fas fa-users"></i>
+          <span>Общение</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('statistics')" id="nav-statistics">
+          <i class="fas fa-chart-bar"></i>
+          <span>Отчёты</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('settings')" id="nav-settings">
+          <i class="fas fa-cog"></i>
+          <span>Опции</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('about')" id="nav-about">
+          <i class="fas fa-info-circle"></i>
+          <span>Инфо</span>
+        </button>
+      </nav>
 
     </div>
+
+    <!-- 3. DYNAMIC NOTES DIALOG MODAL -->
+    <div class="modal-overlay" id="note-modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="note-modal-title">Создать заметку</h3>
+          <button class="modal-close" onclick="closeNoteModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="note-form-id">
+          <div class="form-group">
+            <label class="form-label">Название</label>
+            <input type="text" class="form-input" id="note-form-title" placeholder="Введите название...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Текст заметки</label>
+            <textarea class="form-textarea" id="note-form-content" rows="4" placeholder="Введите текст заметки..."></textarea>
+          </div>
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Категория</label>
+              <select class="form-select" id="note-form-category">
+                <option value="Личное">Личное</option>
+                <option value="Работа">Работа</option>
+                <option value="Учеба">Учеба</option>
+                <option value="Идеи">Идеи</option>
+                <option value="Другое">Другое</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Приоритет</label>
+              <select class="form-select" id="note-form-priority">
+                <option value="High">Высокий</option>
+                <option value="Medium">Средний</option>
+                <option value="Low">Низкий</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Теги (через запятую)</label>
+            <input type="text" class="form-input" id="note-form-tags" placeholder="учеба, идеи, дом">
+          </div>
+          <div class="form-checkbox-group">
+            <span style="font-size:12px; font-weight:600;">Общий доступ</span>
+            <input type="checkbox" id="note-form-shared" style="width:16px; height:16px;">
+          </div>
+
+          <!-- Attachment microphone recording block inside note modal -->
+          <div style="padding: 10px; background-color: var(--bg-primary); border-radius:10px; display:flex; flex-direction:column; gap:6px;">
+            <span class="form-label">Голосовая запись к заметке</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <span style="font-size:11px;" id="modal-audio-status">Нет аудиозаписи</span>
+              <div style="display:flex; gap:6px;">
+                <button class="audio-btn record" id="modal-rec-btn" onclick="startModalMicRecording()"><i class="fas fa-microphone"></i></button>
+                <button class="audio-btn stop" id="modal-stop-btn" onclick="stopModalMicRecording()" style="display:none;"><i class="fas fa-square"></i></button>
+                <button class="audio-btn play" id="modal-play-btn" onclick="playModalRecord()" style="display:none;"><i class="fas fa-play"></i></button>
+                <button class="audio-btn delete" id="modal-delete-btn" onclick="deleteModalRecord()" style="display:none;"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" id="note-delete-form-btn" onclick="deleteCurrentFormNote()" style="display:none;"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn btn-primary" onclick="saveNoteForm()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. DYNAMIC TASKS DIALOG MODAL -->
+    <div class="modal-overlay" id="task-modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="task-modal-title">Создать задачу</h3>
+          <button class="modal-close" onclick="closeTaskModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="task-form-id">
+          <div class="form-group">
+            <label class="form-label">Название задачи</label>
+            <input type="text" class="form-input" id="task-form-title" placeholder="Купить продукты...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Описание / Детали</label>
+            <textarea class="form-textarea" id="task-form-description" rows="3" placeholder="Детали задачи..."></textarea>
+          </div>
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Категория</label>
+              <select class="form-select" id="task-form-category">
+                <option value="Личное">Личное</option>
+                <option value="Работа">Работа</option>
+                <option value="Учеба">Учеба</option>
+                <option value="Идеи">Идеи</option>
+                <option value="Другое">Другое</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Приоритет</label>
+              <select class="form-select" id="task-form-priority">
+                <option value="High">Высокий</option>
+                <option value="Medium">Средний</option>
+                <option value="Low">Низкий</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Срок (Дата)</label>
+              <input type="date" class="form-input" id="task-form-duedate">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Время напоминания</label>
+              <input type="time" class="form-input" id="task-form-remindertime">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Повторение</label>
+            <select class="form-select" id="task-form-repeat">
+              <option value="none">Без повторений</option>
+              <option value="daily">Каждый день</option>
+              <option value="weekly">Каждую неделю</option>
+              <option value="monthly">Каждый месяц</option>
+            </select>
+          </div>
+          <div class="form-checkbox-group">
+            <span style="font-size:12px; font-weight:600;">Выполнено</span>
+            <input type="checkbox" id="task-form-completed" style="width:16px; height:16px;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" id="task-delete-form-btn" onclick="deleteCurrentFormTask()" style="display:none;"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn btn-primary" onclick="saveTaskForm()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script src="/assets/js/app.js"></script>

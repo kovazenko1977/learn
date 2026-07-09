@@ -1,17 +1,13 @@
-const CACHE_NAME = 'pwa-notes-tasks-v2';
+const CACHE_NAME = 'pwa-notes-tasks-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js',
-  'https://cdn.jsdelivr.net/npm/vue@3.4.21/dist/vue.global.prod.js',
-  'https://cdn.jsdelivr.net/npm/chart.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
 ];
 
-// Install Event
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -21,7 +17,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -37,11 +32,9 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Skip caching for backend API requests to allow fresh operations, but allow offline fallback
   if (url.pathname.includes('api.php')) {
     event.respondWith(
       fetch(event.request).catch(() => {
@@ -53,7 +46,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first strategy for static assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -76,7 +68,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push Notification Event
 self.addEventListener('push', (event) => {
   let data = { title: 'Напоминание', body: 'У вас есть новое напоминание!' };
   if (event.data) {
@@ -102,7 +93,6 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Notification Click Event
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
