@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Progressive Notes & Tasks Mobile Hub</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="PWA Hub">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta name="theme-color" content="#6366f1">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-header: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #f1f5f9;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-light: #e0e7ff;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(99, 102, 241, 0.08), 0 4px 6px -2px rgba(99, 102, 241, 0.04);
+      --gradient-brand: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+      --radius-box: 16px;
+    }
+
+    .dark {
+      --bg-primary: #0b0f19;
+      --bg-card: #151c2c;
+      --bg-header: #151c2c;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #202b3c;
+      --accent-color: #818cf8;
+      --accent-hover: #6366f1;
+      --accent-light: rgba(99, 102, 241, 0.15);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+      --gradient-brand: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      background-color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 480px) {
+      #app-container {
+        max-width: 100%;
+        box-shadow: none;
+      }
+    }
+
+    header {
+      height: 64px;
+      background-color: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-badge {
+      width: 30px;
+      height: 30px;
+      background: var(--gradient-brand);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      box-shadow: 0 4px 8px rgba(99, 102, 241, 0.2);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .header-btn:hover {
+      background-color: var(--border-color);
+      color: var(--text-main);
+    }
+
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      padding-bottom: 84px;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+      animation: fadeInTab 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-banner {
+      padding: 8px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      z-index: 100;
+    }
+
+    #offline-banner {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+      display: none;
+    }
+
+    #sync-banner {
+      background: linear-gradient(90deg, #6366f1, #4f46e5);
+      display: none;
+    }
+
+    #auth-screen {
+      position: absolute;
+      inset: 0;
+      background-color: var(--bg-primary);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 64px 32px;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .auth-logo {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-brand);
+      border-radius: 24px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      box-shadow: 0 12px 24px rgba(99, 102, 241, 0.25);
+    }
+
+    .auth-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .auth-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin: 28px 0;
+    }
+
+    .pin-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--text-muted);
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .pin-dot.filled {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-color);
+      transform: scale(1.2);
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-cols: repeat(3, 1fr);
+      gap: 16px 20px;
+      max-width: 260px;
+      margin: 0 auto;
+    }
+
+    .keypad-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 24px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .keypad-btn:active {
+      transform: scale(0.9);
+      background-color: var(--border-color);
+    }
+
+    .keypad-btn.text {
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+      color: #ef4444;
+      box-shadow: none;
+    }
+
+    .keypad-btn.icon {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .auth-credits {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .auth-credits span {
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-box);
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: transparent;
+    }
+
+    .card.accent::before {
+      background-color: var(--accent-color);
+    }
+
+    .gradient-header-card {
+      background: var(--gradient-brand);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
+    }
+
+    .gradient-header-card p {
+      opacity: 0.9;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .gradient-header-card h2 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 4px 0 8px;
+    }
+
+    .clock-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .analog-clock {
+      width: 32px;
+      height: 32px;
+      border: 2px solid white;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .analog-hand {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40%;
+      height: 2px;
+      background-color: white;
+      transform-origin: 0% 50%;
+      transform: rotate(-90deg);
+    }
+
+    .analog-hand.hour {
+      width: 28%;
+      height: 2.5px;
+    }
+
+    .widgets-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .widget-box {
+      background-color: var(--bg-card);
+      border-radius: 14px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 94px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .widget-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .widget-top i {
+      padding: 6px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .widget-box.active-tasks i {
+      background-color: #ecfdf5;
+      color: #059669;
+    }
+    .dark .widget-box.active-tasks i {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+
+    .widget-box.total-notes i {
+      background-color: #e0e7ff;
+      color: #4f46e5;
+    }
+    .dark .widget-box.total-notes i {
+      background-color: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+    }
+
+    .widget-val {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .voice-wave-container {
+      display: none;
+      align-items: center;
+      gap: 3px;
+      height: 14px;
+    }
+
+    .voice-bar {
+      width: 2px;
+      height: 100%;
+      background-color: #ef4444;
+      border-radius: 1px;
+      animation: voicePulse 0.8s infinite ease-in-out;
+    }
+
+    .voice-bar:nth-child(2) { animation-delay: 0.15s; }
+    .voice-bar:nth-child(3) { animation-delay: 0.3s; }
+    .voice-bar:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes voicePulse {
+      0%, 100% { transform: scaleY(0.3); }
+      50% { transform: scaleY(1.2); }
+    }
+
+    .search-bar-container {
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 13px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-bar-container i {
+      position: absolute;
+      left: 14px;
+      top: 15px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+
+    .filter-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .filter-chip.active {
+      background-color: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .note-card {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-box);
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 136px;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .note-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-box);
+      border: 1.5px solid transparent;
+      pointer-events: none;
+    }
+
+    .note-card:hover::after {
+      border-color: var(--accent-color);
+    }
+
+    .note-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .note-cat {
+      font-size: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    .cat-Личное { background-color: #e0e7ff; color: #4338ca; }
+    .cat-Работа { background-color: #e0f2fe; color: #0369a1; }
+    .cat-Учеба { background-color: #fef3c7; color: #b45309; }
+    .cat-Идеи { background-color: #d1fae5; color: #047857; }
+    .cat-Другое { background-color: #f1f5f9; color: #475569; }
+
+    .dark .cat-Личное { background-color: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
+    .dark .cat-Работа { background-color: rgba(14, 165, 233, 0.2); color: #7dd3fc; }
+    .dark .cat-Учеба { background-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .dark .cat-Идеи { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .dark .cat-Другое { background-color: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+
+    .note-indicators {
+      display: flex;
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    .note-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-top: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .note-content {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex-grow: 1;
+      line-height: 1.4;
+    }
+
+    .note-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+      overflow: hidden;
+      max-height: 18px;
+    }
+
+    .note-tag {
+      font-size: 8px;
+      font-weight: 700;
+      background-color: var(--border-color);
+      color: var(--text-muted);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .task-item {
+      background-color: var(--bg-card);
+      border-radius: var(--radius-box);
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .task-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-check-btn {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .task-check-btn.checked {
+      color: #10b981;
+      animation: popCheck 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popCheck {
+      0% { transform: scale(0.8); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .task-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .task-title.completed {
+      text-decoration: line-through;
+      opacity: 0.45;
+    }
+
+    .task-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .task-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .task-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .priority-badge {
+      font-size: 8px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .priority-High { background-color: #fee2e2; color: #ef4444; }
+    .priority-Medium { background-color: #fef3c7; color: #d97706; }
+    .priority-Low { background-color: #f1f5f9; color: #475569; }
+
+    .dark .priority-High { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .dark .priority-Medium { background-color: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    .dark .priority-Low { background-color: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+
+    .calendar-card {
+      padding: 14px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .calendar-days-grid {
+      display: grid;
+      grid-template-cols: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+    }
+
+    .calendar-weekday {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .calendar-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .calendar-cell.muted {
+      color: var(--text-muted);
+      opacity: 0.3;
+    }
+
+    .calendar-cell.selected {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+    }
+
+    .calendar-cell.today {
+      box-shadow: 0 0 0 2px var(--accent-color);
+    }
+
+    .calendar-dots {
+      display: flex;
+      gap: 2px;
+      justify-content: center;
+      height: 4px;
+    }
+
+    .calendar-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+
+    .calendar-dot.task { background-color: var(--accent-color); }
+    .calendar-dot.note { background-color: #10b981; }
+
+    #chat-messages-scroller {
+      height: 240px;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background-color: var(--bg-primary);
+    }
+
+    .chat-bubble {
+      display: flex;
+      flex-direction: column;
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.45;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-bubble.me {
+      align-self: flex-end;
+      background: var(--gradient-brand);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-bubble.other {
+      align-self: flex-start;
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 3px;
+      font-size: 9px;
+    }
+
+    .chat-sender {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .chat-bubble.me .chat-sender { color: rgba(255, 255, 255, 0.9); }
+    .chat-bubble.other .chat-sender { color: var(--accent-color); }
+
+    .chat-time {
+      opacity: 0.7;
+      font-size: 8px;
+    }
+
+    .fab-btn {
+      position: fixed;
+      right: 24px;
+      bottom: 84px;
+      width: 52px;
+      height: 52px;
+      background: var(--gradient-brand);
+      color: white;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(99, 102, 241, 0.35);
+      z-index: 20;
+    }
+
+    .fab-btn:active {
+      transform: scale(0.9) rotate(90deg);
+    }
+
+    nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background-color: var(--bg-header);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 10;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+    }
+
+    .nav-btn.active {
+      color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn i {
+      font-size: 17px;
+      margin-bottom: 3px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 2px var(--accent-light);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 300;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--bg-card);
+      width: 100%;
+      max-width: 370px;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 82vh;
+      animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes modalSlide {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      background-color: var(--bg-primary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--gradient-brand);
+      color: white;
+      flex: 1;
+      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-danger {
+      background-color: #fee2e2;
+      color: #ef4444;
+    }
+
+    .dark .btn-danger {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+
+    .audio-widget-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .audio-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-primary);
+      padding: 8px 12px;
+      border-radius: 10px;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .audio-status {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .audio-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .audio-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      font-size: 13px;
+    }
+
+    .audio-btn.record { background-color: #ef4444; }
+    .audio-btn.stop { background-color: #374151; }
+    .audio-btn.play { background-color: #4f46e5; }
+    .audio-btn.delete { background-color: #94a3b8; }
+    .audio-btn.save {
+      border-radius: 4px;
+      padding: 0 10px;
+      font-size: 10px;
+      font-weight: 600;
+      width: auto;
+      background-color: #10b981;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .form-checkbox-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .stats-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stats-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .stats-bar-outer {
+      height: 12px;
+      background-color: var(--bg-primary);
+      border-radius: 6px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .stats-bar-inner {
+      height: 100%;
+      background-color: var(--accent-color);
+      width: 0%;
+      transition: width 0.4s ease-out;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .settings-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .settings-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .about-box {
+      text-align: center;
+      padding: 24px 12px;
+    }
+
+    .about-logo {
+      width: 80px;
+      height: 80px;
+      background-color: rgba(79, 70, 229, 0.1);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-color);
+      font-size: 36px;
+      margin: 0 auto 16px;
+    }
+
+    .about-list {
+      background-color: var(--bg-primary);
+      border-radius: 12px;
+      padding: 4px 16px;
+      text-align: left;
+      margin-top: 24px;
+    }
+
+    .about-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+    }
+
+    .about-row:last-child {
+      border-bottom: none;
+    }
+
+    .about-row span:first-child {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .about-row span:last-child {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body class="h-full">
+
+  <div id="app-container">
+
+    <!-- Alerts Banner Area -->
+    <div id="offline-banner" class="alert-banner">
+      <i class="fas fa-wifi"></i> Вы находитесь в офлайн-режиме
+    </div>
+    <div id="sync-banner" class="alert-banner">
+      <i class="fas fa-sync-alt fa-spin"></i> Сохранение изменений в JSON...
+    </div>
+
+    <!-- 1. KEYPAD AUTH OVERLAY -->
+    <div id="auth-screen">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <i class="fas fa-check-double"></i>
+        </div>
+        <h1 class="auth-title">PWA Hub</h1>
+        <p class="auth-subtitle">Вход по PIN-коду (по умолчанию: 1234)</p>
+      </div>
+
+      <div>
+        <div class="pin-dots">
+          <div class="pin-dot" id="dot-1"></div>
+          <div class="pin-dot" id="dot-2"></div>
+          <div class="pin-dot" id="dot-3"></div>
+          <div class="pin-dot" id="dot-4"></div>
+        </div>
+
+        <div class="keypad">
+          <button class="keypad-btn" onclick="pressDigit('1')">1</button>
+          <button class="keypad-btn" onclick="pressDigit('2')">2</button>
+          <button class="keypad-btn" onclick="pressDigit('3')">3</button>
+          <button class="keypad-btn" onclick="pressDigit('4')">4</button>
+          <button class="keypad-btn" onclick="pressDigit('5')">5</button>
+          <button class="keypad-btn" onclick="pressDigit('6')">6</button>
+          <button class="keypad-btn" onclick="pressDigit('7')">7</button>
+          <button class="keypad-btn" onclick="pressDigit('8')">8</button>
+          <button class="keypad-btn" onclick="pressDigit('9')">9</button>
+          <button class="keypad-btn text" onclick="clearDigit()">Сброс</button>
+          <button class="keypad-btn" onclick="pressDigit('0')">0</button>
+          <button class="keypad-btn icon" onclick="backspaceDigit()"><i class="fas fa-backspace"></i></button>
+        </div>
+      </div>
+
+      <div class="auth-credits">
+        Разработчик: <span>wes.by</span><br>
+        Автор: <span>Коваженко С.Б.</span>
+      </div>
+    </div>
+
+    <!-- 2. MAIN APPLICATION CORE (HIDDEN UNTIL LOGIN) -->
+    <div id="app-main-core" style="display: none; height: 100%; flex-direction: column;">
+
+      <!-- Top App bar -->
+      <header>
+        <div class="logo">
+          <div class="logo-badge">
+            <i class="fas fa-check-double"></i>
+          </div>
+          <span>PWA Hub</span>
+        </div>
+        <div class="header-actions">
+          <button class="header-btn" onclick="toggleAppTheme()" title="Переключить тему">
+            <i class="fas fa-moon" id="theme-icon"></i>
+          </button>
+          <button class="header-btn" onclick="manualSync()" title="Синхронизировать">
+            <i class="fas fa-sync-alt" id="sync-icon"></i>
+          </button>
+          <button class="header-btn" onclick="triggerLogout()" title="Выйти" style="color: #ef4444;">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <main id="main-content-scroller">
+
+        <!-- Tab 1: Dashboard -->
+        <div id="tab-dashboard" class="view-section active">
+          <div class="card gradient-header-card">
+            <p>Добро пожаловать в PWA Sanatorium,</p>
+            <h2 id="dashboard-user-name">Коваженко С.Б.</h2>
+            <div class="clock-container">
+              <p><i class="fas fa-calendar-alt"></i> <span id="dashboard-date-str">четверг, 9 июля 2026 г.</span></p>
+              <div class="analog-clock">
+                <div class="analog-hand hour" id="clock-hour-hand"></div>
+                <div class="analog-hand" id="clock-min-hand"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="widgets-grid">
+            <div class="widget-box active-tasks">
+              <div class="widget-top">
+                <span>В работе</span>
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="widget-val" id="widget-active-tasks-count">0</div>
+            </div>
+            <div class="widget-box total-notes">
+              <div class="widget-top">
+                <span>Заметок</span>
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="widget-val" id="widget-notes-count">0</div>
+            </div>
+          </div>
+
+          <!-- Quick Audio note widget with dynamic voice wave -->
+          <div class="card accent" style="border-left-width:4px; border-left-color:#ef4444;">
+            <div style="display: flex; justify-content: space-between; align-items:center; margin-bottom:4px;">
+              <span class="audio-widget-title" style="color:#ef4444;"><i class="fas fa-microphone"></i> Голосовой Органайзер</span>
+              <div class="voice-wave-container" id="recording-indicator">
+                <div class="voice-bar"></div>
+                <div class="voice-bar"></div>
+                <div class="voice-bar"></div>
+                <div class="voice-bar"></div>
+              </div>
+            </div>
+            <div class="audio-bar">
+              <div class="audio-status" id="audio-record-status">Записать мысли прямо сейчас</div>
+              <div class="audio-btns">
+                <button class="audio-btn record" id="rec-btn-start" onclick="startMicRecording()"><i class="fas fa-microphone"></i></button>
+                <button class="audio-btn stop" id="rec-btn-stop" onclick="stopMicRecording()" style="display:none;"><i class="fas fa-square"></i></button>
+                <button class="audio-btn play" id="rec-btn-play" onclick="playCurrentRecord()" style="display:none;"><i class="fas fa-play"></i></button>
+                <button class="audio-btn save" id="rec-btn-save" onclick="saveRecordToNote()" style="display:none;"><i class="fas fa-save"></i> Спасти</button>
+                <button class="audio-btn delete" id="rec-btn-delete" onclick="clearCurrentRecord()" style="display:none;"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's task list widget -->
+          <div style="margin-top: 16px;">
+            <h3 class="audio-widget-title" style="margin-bottom: 8px;">Задачи на сегодня</h3>
+            <div id="today-tasks-container">
+              <!-- rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Notes -->
+        <div id="tab-notes" class="view-section">
+          <div class="search-bar-container">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="search-notes-input" oninput="renderNotesList()" placeholder="Поиск заметок по названию или тегам...">
+          </div>
+          <div class="filter-chips" id="notes-filter-chips">
+            <!-- category filter chips will be generated dynamically -->
+          </div>
+          <div class="notes-grid" id="notes-grid-container">
+            <!-- notes rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Tasks -->
+        <div id="tab-tasks" class="view-section">
+          <div class="search-bar-container">
+            <i class="fas fa-search"></i>
+            <input type="text" class="search-input" id="search-tasks-input" oninput="renderTasksList()" placeholder="Поиск задач...">
+          </div>
+          <div class="filter-chips">
+            <button class="filter-chip active" id="task-filter-pending" onclick="setTaskStatusFilter('pending')">В процессе</button>
+            <button class="filter-chip" id="task-filter-completed" onclick="setTaskStatusFilter('completed')">Завершенные</button>
+          </div>
+          <div id="tasks-list-container">
+            <!-- tasks rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Tab 4: Calendar -->
+        <div id="tab-calendar" class="view-section">
+          <div class="card calendar-card">
+            <div class="calendar-header">
+              <h3 id="calendar-month-title" style="font-weight:700;">Январь 2026</h3>
+              <div style="display: flex; gap: 8px;">
+                <button class="header-btn" onclick="navigateCalendarMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="header-btn" onclick="navigateCalendarMonth(1)"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+            <div class="calendar-days-grid" id="calendar-weekday-header">
+              <!-- weekdays -->
+            </div>
+            <div class="calendar-days-grid" id="calendar-days-container" style="margin-top: 6px;">
+              <!-- cells -->
+            </div>
+          </div>
+
+          <div style="margin-top: 16px;">
+            <h3 class="audio-widget-title" id="calendar-details-title" style="margin-bottom: 8px;">События</h3>
+            <div id="calendar-details-container">
+              <!-- list of events -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Collaboration (Chat Discussion) -->
+        <div id="tab-collaboration" class="view-section" style="height: 100%;">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label">Выберите общую заметку для беседы:</label>
+            <select class="form-select" id="chat-note-selector" onchange="onChatNoteChanged()">
+              <option value="">-- Выберите заметку --</option>
+            </select>
+          </div>
+
+          <div id="chat-active-pane" class="card" style="display: none; padding: 0; overflow: hidden; border-radius:12px;">
+            <div style="padding: 10px 12px; background: rgba(99, 102, 241, 0.05); border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div style="display: flex; align-items:center; gap:6px;">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#10b981;" id="audio-conf-pulse"></span>
+                <span style="font-size:11px; font-weight:700;" id="audio-conf-title">Конференция выключена</span>
+              </div>
+              <button class="btn" id="audio-conf-toggle-btn" onclick="toggleConferenceMic()" style="padding: 4px 10px; font-size:9px; font-weight:700; color:white; background-color:#4f46e5; border-radius:4px;">Подключиться</button>
+            </div>
+
+            <div id="audio-conf-participants-bar" style="display: none; padding: 6px 12px; background-color: rgba(16, 185, 129, 0.1); font-size:10px; color:#059669; font-weight:600; border-bottom:1px solid var(--border-color);">
+              <i class="fas fa-volume-up animate-bounce"></i> В эфире: <span>Коваженко С.Б. (вы)</span>, Собеседник (wes.by)
+            </div>
+
+            <div id="chat-messages-scroller" style="height: 220px; overflow-y:auto; padding: 12px; display:flex; flex-direction:column; gap:8px;">
+              <!-- rendered messages -->
+            </div>
+
+            <div style="padding: 8px; border-top:1px solid var(--border-color); display:flex; gap:6px;">
+              <input type="text" id="chat-message-input" onkeyup="if(event.key === 'Enter') sendChatMessage()" class="form-input" style="padding: 6px 10px; font-size:12px;" placeholder="Введите сообщение...">
+              <button class="btn btn-primary" onclick="sendChatMessage()" style="width:36px; height:32px; padding:0; display:flex; align-items:center; justify-content:center;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+          </div>
+
+          <div id="chat-placeholder-pane" style="text-align: center; padding: 48px 16px; color: var(--text-muted);">
+            <div class="about-logo" style="margin-bottom: 12px; background-color: var(--accent-light);"><i class="fas fa-users" style="color:var(--accent-color);"></i></div>
+            <p style="font-size:12px; line-height:1.5;">Сделайте заметку «Общей» во время создания или редактирования, чтобы получить к ней совместный доступ и обсуждать идеи.</p>
+          </div>
+        </div>
+
+        <!-- Tab 6: Reports & Statistics -->
+        <div id="tab-statistics" class="view-section">
+          <h3 class="audio-widget-title" style="margin-bottom: 12px;">Продуктивность по категориям</h3>
+
+          <div class="card">
+            <div style="display: grid; grid-template-cols: repeat(3, 1fr); gap: 8px; text-align:center; margin-bottom: 16px;">
+              <div style="background-color: var(--bg-primary); padding: 8px; border-radius:8px;">
+                <div style="font-size: 16px; font-weight:700;" id="stats-val-pending">0</div>
+                <div style="font-size: 8px; color: var(--text-muted); text-transform:uppercase; margin-top:2px;">В процессе</div>
+              </div>
+              <div style="background-color: var(--bg-primary); padding: 8px; border-radius:8px;">
+                <div style="font-size: 16px; font-weight:700; color: #10b981;" id="stats-val-completed">0</div>
+                <div style="font-size: 8px; color: var(--text-muted); text-transform:uppercase; margin-top:2px;">Завершено</div>
+              </div>
+              <div style="background-color: var(--bg-primary); padding: 8px; border-radius:8px;">
+                <div style="font-size: 16px; font-weight:700; color: #d97706;" id="stats-val-percent">0%</div>
+                <div style="font-size: 8px; color: var(--text-muted); text-transform:uppercase; margin-top:2px;">Прогресс</div>
+              </div>
+            </div>
+
+            <!-- Custom dynamic CSS bars chart -->
+            <div class="stats-progress-container" id="productivity-bars-container">
+              <!-- bars rendered dynamically -->
+            </div>
+          </div>
+
+          <div class="card" style="padding: 12px;">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Оценка эффективности</h4>
+            <p style="font-size:12px; line-height:1.5; color: var(--text-muted);">
+              Система анализирует выполненные задачи в реальном времени. На данный момент категория <span style="font-weight:700; color:var(--accent-color);">Личное</span> является наиболее продуктивной в вашей рабочей среде.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 7: Settings -->
+        <div id="tab-settings" class="view-section">
+          <h3 class="audio-widget-title" style="margin-bottom: 12px;">Настройки PWA</h3>
+
+          <div class="card">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:12px;">Смена PIN-кода авторизации</h4>
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label class="form-label">Текущий PIN</label>
+              <input type="password" maxlength="4" class="form-input" id="settings-pin-old" placeholder="••••" style="text-align: center; letter-spacing:8px;">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Новый PIN</label>
+              <input type="password" maxlength="4" class="form-input" id="settings-pin-new" placeholder="••••" style="text-align: center; letter-spacing:8px;">
+            </div>
+            <button class="btn btn-primary" onclick="changeUserPin()" style="width: 100%;">Сменить PIN</button>
+          </div>
+
+          <div class="card">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:12px;">Уведомления и Системный Доступ</h4>
+
+            <div class="settings-row">
+              <div class="settings-left">
+                <span class="settings-title">Push-уведомления</span>
+                <span class="settings-subtitle">Включить напоминания о задачах</span>
+              </div>
+              <input type="checkbox" id="settings-notify-toggle" checked style="width:16px; height:16px;">
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-left">
+                <span class="settings-title">Запросить доступ</span>
+                <span class="settings-subtitle">Проверить микрофон и уведомления</span>
+              </div>
+              <button class="btn" onclick="requestAppPermissions()" style="padding: 4px 10px; font-size:10px; background-color:var(--border-color); color:var(--text-main);">Проверить</button>
+            </div>
+
+            <button class="btn" onclick="testLocalPush()" style="width: 100%; margin-top:12px; font-size:11px; background-color:var(--border-color); color:var(--text-main);">Протестировать Push-уведомление</button>
+          </div>
+
+          <div class="card">
+            <h4 style="font-size: 11px; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:8px;">Экспорт / Импорт данных (JSON)</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px; line-height:1.4;">Загрузите переносимый JSON-файл резервной копии или импортируйте его на другом устройстве.</p>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" onclick="exportBackupData()" style="flex:1; background-color:#10b981; color:white;"><i class="fas fa-download"></i> Экспорт</button>
+              <label class="btn" style="flex:1; background-color:#2563eb; color:white; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer;">
+                <i class="fas fa-upload"></i> Импорт
+                <input type="file" id="import-backup-file-input" onchange="importBackupData(event)" style="display:none;" accept=".json">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 8: About -->
+        <div id="tab-about" class="view-section">
+          <div class="about-box">
+            <div class="about-logo">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <h3 style="font-size:20px; font-weight:700; margin-bottom:4px;">О программе</h3>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.5;">Современный мобильный органайзер Progressive Web App (PWA) для эффективного управления задачами, заметками, аудиозаписями и совместной работы.</p>
+
+            <div class="about-list">
+              <div class="about-row">
+                <span>Разработчик</span>
+                <span>wes.by</span>
+              </div>
+              <div class="about-row">
+                <span>Автор</span>
+                <span>Коваженко С.Б.</span>
+              </div>
+              <div class="about-row">
+                <span>Версия</span>
+                <span>3.0.0 (Pure Vanilla HTML)</span>
+              </div>
+            </div>
+
+            <p style="font-size:10px; color:var(--text-muted); margin-top:24px; line-height:1.4;">Все права защищены. Локальное шифрование и переносимость данных в формате JSON.</p>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- FAB creation button -->
+      <button class="fab-btn" id="fab-create-btn" onclick="onFabClicked()" title="Добавить новую"><i class="fas fa-plus"></i></button>
+
+      <!-- Bottom PWA Navigation -->
+      <nav>
+        <button class="nav-btn active" onclick="switchActiveTab('dashboard')" id="nav-dashboard">
+          <i class="fas fa-home"></i>
+          <span>Главная</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('notes')" id="nav-notes">
+          <i class="fas fa-file-alt"></i>
+          <span>Заметки</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('tasks')" id="nav-tasks">
+          <i class="fas fa-check-square"></i>
+          <span>Задачи</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('calendar')" id="nav-calendar">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Календарь</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('collaboration')" id="nav-collaboration">
+          <i class="fas fa-users"></i>
+          <span>Общение</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('statistics')" id="nav-statistics">
+          <i class="fas fa-chart-bar"></i>
+          <span>Отчёты</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('settings')" id="nav-settings">
+          <i class="fas fa-cog"></i>
+          <span>Опции</span>
+        </button>
+        <button class="nav-btn" onclick="switchActiveTab('about')" id="nav-about">
+          <i class="fas fa-info-circle"></i>
+          <span>Инфо</span>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- 3. DYNAMIC NOTES DIALOG MODAL -->
+    <div class="modal-overlay" id="note-modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="note-modal-title">Создать заметку</h3>
+          <button class="modal-close" onclick="closeNoteModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="note-form-id">
+          <div class="form-group">
+            <label class="form-label">Название</label>
+            <input type="text" class="form-input" id="note-form-title" placeholder="Введите название...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Текст заметки</label>
+            <textarea class="form-textarea" id="note-form-content" rows="4" placeholder="Введите текст заметки..."></textarea>
+          </div>
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Категория</label>
+              <select class="form-select" id="note-form-category">
+                <option value="Личное">Личное</option>
+                <option value="Работа">Работа</option>
+                <option value="Учеба">Учеба</option>
+                <option value="Идеи">Идеи</option>
+                <option value="Другое">Другое</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Приоритет</label>
+              <select class="form-select" id="note-form-priority">
+                <option value="High">Высокий</option>
+                <option value="Medium">Средний</option>
+                <option value="Low">Низкий</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Теги (через запятую)</label>
+            <input type="text" class="form-input" id="note-form-tags" placeholder="учеба, идеи, дом">
+          </div>
+          <div class="form-checkbox-group">
+            <span style="font-size:12px; font-weight:600;">Общий доступ</span>
+            <input type="checkbox" id="note-form-shared" style="width:16px; height:16px;">
+          </div>
+
+          <div style="padding: 10px; background-color: var(--bg-primary); border-radius:10px; display:flex; flex-direction:column; gap:6px;">
+            <span class="form-label">Голосовая запись к заметке</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <span style="font-size:11px;" id="modal-audio-status">Нет аудиозаписи</span>
+              <div style="display:flex; gap:6px;">
+                <button class="audio-btn record" id="modal-rec-btn" onclick="startModalMicRecording()"><i class="fas fa-microphone"></i></button>
+                <button class="audio-btn stop" id="modal-stop-btn" onclick="stopModalMicRecording()" style="display:none;"><i class="fas fa-square"></i></button>
+                <button class="audio-btn play" id="modal-play-btn" onclick="playModalRecord()" style="display:none;"><i class="fas fa-play"></i></button>
+                <button class="audio-btn delete" id="modal-delete-btn" onclick="deleteModalRecord()" style="display:none;"><i class="fas fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" id="note-delete-form-btn" onclick="deleteCurrentFormNote()" style="display:none;"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn btn-primary" onclick="saveNoteForm()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. DYNAMIC TASKS DIALOG MODAL -->
+    <div class="modal-overlay" id="task-modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="task-modal-title">Создать задачу</h3>
+          <button class="modal-close" onclick="closeTaskModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="task-form-id">
+          <div class="form-group">
+            <label class="form-label">Название задачи</label>
+            <input type="text" class="form-input" id="task-form-title" placeholder="Купить продукты...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Описание / Детали</label>
+            <textarea class="form-textarea" id="task-form-description" rows="3" placeholder="Детали задачи..."></textarea>
+          </div>
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Категория</label>
+              <select class="form-select" id="task-form-category">
+                <option value="Личное">Личное</option>
+                <option value="Работа">Работа</option>
+                <option value="Учеба">Учеба</option>
+                <option value="Идеи">Идеи</option>
+                <option value="Другое">Другое</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Приоритет</label>
+              <select class="form-select" id="task-form-priority">
+                <option value="High">Высокий</option>
+                <option value="Medium">Средний</option>
+                <option value="Low">Низкий</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Срок (Дата)</label>
+              <input type="date" class="form-input" id="task-form-duedate">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Время напоминания</label>
+              <input type="time" class="form-input" id="task-form-remindertime">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Повторение</label>
+            <select class="form-select" id="task-form-repeat">
+              <option value="none">Без повторений</option>
+              <option value="daily">Каждый день</option>
+              <option value="weekly">Каждую неделю</option>
+              <option value="monthly">Каждый месяц</option>
+            </select>
+          </div>
+          <div class="form-checkbox-group">
+            <span style="font-size:12px; font-weight:600;">Выполнено</span>
+            <input type="checkbox" id="task-form-completed" style="width:16px; height:16px;">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" id="task-delete-form-btn" onclick="deleteCurrentFormTask()" style="display:none;"><i class="fas fa-trash-alt"></i></button>
+          <button class="btn btn-primary" onclick="saveTaskForm()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/assets/js/app.js?v=10"></script>
+</body>
+</html>
