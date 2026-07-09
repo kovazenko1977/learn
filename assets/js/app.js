@@ -67,7 +67,30 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(reg => console.log('SW registered', reg.scope))
       .catch(err => console.warn('SW failed', err));
   }
+
+  // Start Header Clock Rotation Updates
+  startDashboardClockRotation();
 });
+
+// --- HEAD CLOCK ROTATION ---
+function startDashboardClockRotation() {
+  setInterval(() => {
+    const d = new Date();
+    const hours = d.getHours() % 12;
+    const mins = d.getMinutes();
+    const sec = d.getSeconds();
+
+    const hrHand = document.getElementById("clock-hour-hand");
+    const minHand = document.getElementById("clock-min-hand");
+
+    if (hrHand && minHand) {
+      const hrDeg = (hours * 30) + (mins * 0.5) - 90;
+      const minDeg = (mins * 6) - 90;
+      hrHand.style.transform = `rotate(${hrDeg}deg)`;
+      minHand.style.transform = `rotate(${minDeg}deg)`;
+    }
+  }, 1000);
+}
 
 // --- SESSION / AUTHENTICATION ---
 function pressDigit(digit) {
@@ -417,7 +440,7 @@ function renderDashboardWidgets() {
           <div class="task-details">
             <div class="task-title ${task.status === 'completed' ? 'completed' : ''}">${task.title}</div>
             <div class="task-meta">
-              <span class="note-cat" style="font-size:7px; background-color: var(--border-color); color:var(--text-main);">${task.category}</span>
+              <span class="note-cat cat-${task.category}">${task.category}</span>
             </div>
           </div>
         </div>
@@ -495,7 +518,7 @@ function renderNotesList() {
     card.innerHTML = `
       <div>
         <div class="note-top">
-          <span class="note-cat">${note.category}</span>
+          <span class="note-cat cat-${note.category}">${note.category}</span>
           <div class="note-indicators">${indicators}</div>
         </div>
         <div class="note-title">${note.title}</div>
@@ -680,7 +703,7 @@ function renderTasksList() {
           <div class="task-title ${isCompleted ? 'completed' : ''}">${task.title}</div>
           <div class="task-desc">${task.description || ""}</div>
           <div class="task-meta">
-            <span class="note-cat">${task.category}</span>
+            <span class="note-cat cat-${task.category}">${task.category}</span>
             ${subInfo}
           </div>
         </div>
@@ -863,7 +886,6 @@ function renderCalendarGrid() {
   const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
   document.getElementById("calendar-month-title").textContent = `${monthNames[calendarMonth]} ${calendarYear}`;
 
-  // Draw weekdays header
   const weekdaysHeader = document.getElementById("calendar-weekday-header");
   weekdaysHeader.innerHTML = "";
   ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].forEach(day => {
@@ -873,7 +895,6 @@ function renderCalendarGrid() {
     weekdaysHeader.appendChild(el);
   });
 
-  // Calculate days in month and layout grid
   const firstDayIdx = (new Date(calendarYear, calendarMonth, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 
@@ -882,7 +903,6 @@ function renderCalendarGrid() {
 
   const todayStr = new Date().toISOString().split('T')[0];
 
-  // Previous month padding
   const prevMonthDays = new Date(calendarYear, calendarMonth, 0).getDate();
   for (let i = firstDayIdx - 1; i >= 0; i--) {
     const d = new Date(calendarYear, calendarMonth - 1, prevMonthDays - i);
@@ -890,14 +910,12 @@ function renderCalendarGrid() {
     createCalendarCell(prevMonthDays - i, dateStr, false, dateStr === todayStr);
   }
 
-  // Current month days
   for (let i = 1; i <= daysInMonth; i++) {
-    const d = new Date(calendarYear, calendarMonth, i + 1); // safe timezone buffer
+    const d = new Date(calendarYear, calendarMonth, i + 1);
     const dateStr = d.toISOString().split('T')[0];
     createCalendarCell(i, dateStr, true, dateStr === todayStr);
   }
 
-  // Next month padding to make full 42 grid
   const cellsRendered = firstDayIdx + daysInMonth;
   const remaining = 42 - cellsRendered;
   for (let i = 1; i <= remaining; i++) {
@@ -1045,20 +1063,12 @@ function renderChatMessages(msgs) {
   msgs.forEach(msg => {
     const isMe = msg.user_id === userId;
     const msgDiv = document.createElement("div");
-    msgDiv.style.cssText = `
-      display: flex;
-      flex-direction: column;
-      max-width: 85%;
-      border-radius: 12px;
-      padding: 8px 12px;
-      margin-bottom: 4px;
-      font-size: 12px;
-      ${isMe ? 'align-self: flex-end; background-color: var(--accent-color); color: white;' : 'align-self: flex-start; background-color: var(--bg-primary); color: var(--text-main);'}
-    `;
+    msgDiv.className = `chat-bubble ${isMe ? 'me' : 'other'}`;
+
     msgDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:2px;">
-        <span style="font-weight:800; font-size:9px; ${isMe ? 'color:#ede9fe' : 'color:var(--accent-color)'}">${msg.user_name}</span>
-        <span style="font-size:8px; opacity:0.7;">${msg.timestamp}</span>
+      <div class="chat-top-row">
+        <span class="chat-sender">${msg.user_name}</span>
+        <span class="chat-time">${msg.timestamp}</span>
       </div>
       <p style="white-space:pre-wrap; leading-relaxed:normal;">${msg.text}</p>
     `;
@@ -1145,8 +1155,8 @@ function renderProductivityStatistics() {
     row.className = "stats-row";
     row.innerHTML = `
       <div class="stats-label-row">
-        <span>${cat} (${catComp}/${catTasks.length})</span>
-        <span>${catPct}%</span>
+        <span style="font-weight:700;">${cat} (${catComp}/${catTasks.length})</span>
+        <span style="font-weight:700; color:var(--accent-color);">${catPct}%</span>
       </div>
       <div class="stats-bar-outer">
         <div class="stats-bar-inner" style="width: ${catPct}%;"></div>
@@ -1181,7 +1191,7 @@ function startMicRecording() {
     isRecording = true;
     document.getElementById("rec-btn-start").style.display = "none";
     document.getElementById("rec-btn-stop").style.display = "inline-flex";
-    document.getElementById("recording-indicator").style.display = "inline";
+    document.getElementById("recording-indicator").style.display = "flex";
     document.getElementById("audio-record-status").textContent = "Идёт запись аудио...";
   })
   .catch(err => alert("Микрофон не отвечает: " + err.message));

@@ -24,5 +24,31 @@
         "creator_id": "1",
         "created_at": "2026-07-09 16:02:54",
         "updated_at": "2026-07-09 16:02:54"
+    },
+    {
+        "title": "Супер Ванилла Тест 1679",
+        "content": "Привет от Коваженко С.Б. в заново пересобранном Vanilla PWA приложении!",
+        "category": "Личное",
+        "priority": "Medium",
+        "tags": [],
+        "shared": false,
+        "audio_url": null,
+        "id": "6a4fd0e2db09d",
+        "creator_id": "1",
+        "created_at": "2026-07-09 16:48:34",
+        "updated_at": "2026-07-09 16:48:34"
+    },
+    {
+        "title": "Супер Ванилла Тест 7969",
+        "content": "Привет от Коваженко С.Б. в заново пересобранном Vanilla PWA приложении!",
+        "category": "Личное",
+        "priority": "Medium",
+        "tags": [],
+        "shared": false,
+        "audio_url": null,
+        "id": "6a4fd1c0704a7",
+        "creator_id": "1",
+        "created_at": "2026-07-09 16:52:16",
+        "updated_at": "2026-07-09 16:52:16"
     }
 ]
