@@ -1,0 +1,6 @@
+{
+  "theme": "light",
+  "sync_interval": 30,
+  "notifications_enabled": true,
+  "categories": ["Личное", "Работа", "Учеба", "Идеи", "Другое"]
+}
