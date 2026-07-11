@@ -46,6 +46,46 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Custom PWA Install prompt handling
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the mini-infobar from appearing on mobile
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+  // Update UI notify the user they can install the PWA
+  const installBanner = document.getElementById('pwa-install-banner');
+  if (installBanner) {
+    installBanner.classList.remove('hidden');
+  }
+});
+
+// Setup PWA Banner Events
+document.addEventListener('DOMContentLoaded', () => {
+  const installBanner = document.getElementById('pwa-install-banner');
+  const installBtn = document.getElementById('pwa-install-btn');
+  const closeBtn = document.getElementById('pwa-close-banner-btn');
+
+  if (installBtn && closeBtn && installBanner) {
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        // Show the install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, and can't use it again
+        deferredPrompt = null;
+      }
+      installBanner.classList.add('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+      installBanner.classList.add('hidden');
+    });
+  }
+});
+
 // Request Notification Permission on load
 if ('Notification' in window && Notification.permission === 'default') {
   Notification.requestPermission();

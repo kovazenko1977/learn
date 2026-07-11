@@ -10,6 +10,21 @@
 </head>
 <body>
 
+  <!-- Custom PWA Install Banner -->
+  <div id="pwa-install-banner" class="pwa-install-banner hidden">
+    <div class="banner-content">
+      <i class="fas fa-mobile-alt banner-icon"></i>
+      <div class="banner-text">
+        <h4>Установить приложение?</h4>
+        <p>Добавьте приложение на главный экран для быстрого доступа и работы офлайн.</p>
+      </div>
+      <div class="banner-actions">
+        <button id="pwa-install-btn" class="btn btn-primary btn-sm">Да</button>
+        <button id="pwa-close-banner-btn" class="btn btn-secondary btn-sm">Нет</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Lock Screen (PIN Keypad) -->
   <div id="lock-screen" class="lock-screen">
     <div class="lock-container">
