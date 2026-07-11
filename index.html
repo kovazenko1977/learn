@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PWA Web App</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Lock Screen (PIN Keypad) -->
+  <div id="lock-screen" class="lock-screen">
+    <div class="lock-container">
+      <div class="lock-header">
+        <i class="fas fa-lock lock-icon"></i>
+        <h2>Вход в систему</h2>
+        <p>Введите PIN-код для разблокировки</p>
+      </div>
+      <div class="pin-display">
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+      </div>
+      <div id="pin-error" class="pin-error"></div>
+      <div class="keypad">
+        <button class="key-btn" data-key="1">1</button>
+        <button class="key-btn" data-key="2">2</button>
+        <button class="key-btn" data-key="3">3</button>
+        <button class="key-btn" data-key="4">4</button>
+        <button class="key-btn" data-key="5">5</button>
+        <button class="key-btn" data-key="6">6</button>
+        <button class="key-btn" data-key="7">7</button>
+        <button class="key-btn" data-key="8">8</button>
+        <button class="key-btn" data-key="9">9</button>
+        <button class="key-btn action-btn" data-key="clear"><i class="fas fa-backspace"></i></button>
+        <button class="key-btn" data-key="0">0</button>
+        <button class="key-btn action-btn" data-key="submit"><i class="fas fa-check"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div id="app-container" class="app-container hidden">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <span class="user-greeting"><i class="fas fa-user-circle"></i> <span id="username-display">Гость</span></span>
+      </div>
+      <div class="header-title">
+        <h1>PWA App</h1>
+      </div>
+      <div class="header-right">
+        <button id="theme-toggle-btn" class="icon-btn" title="Сменить тему">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button id="logout-btn" class="icon-btn" title="Выйти">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+
+      <!-- Screen 1: Dashboard (Dashboard Widgets & Stats & Quick Search) -->
+      <section id="screen-dashboard" class="app-screen">
+        <div class="search-bar-container">
+          <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="global-search-input" placeholder="Поиск по заметкам и задачам...">
+            <button id="clear-search-btn" class="hidden-btn"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+
+        <div class="dashboard-widgets">
+          <!-- Widget 1: Quick Add Task/Note -->
+          <div class="widget-card quick-add-widget">
+            <h3><i class="fas fa-bolt"></i> Быстрое действие</h3>
+            <div class="quick-add-buttons">
+              <button id="quick-add-task-btn" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Задачу</button>
+              <button id="quick-add-note-btn" class="btn btn-secondary"><i class="fas fa-file-signature"></i> Заметку</button>
+            </div>
+          </div>
+
+          <!-- Widget 2: Tasks Summary Widget -->
+          <div class="widget-card tasks-summary-widget">
+            <h3><i class="fas fa-tasks"></i> Ваши задачи</h3>
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span id="stat-pending-count" class="stat-number">0</span>
+                <span class="stat-label">В процессе</span>
+              </div>
+              <div class="stat-item">
+                <span id="stat-completed-count" class="stat-number">0</span>
+                <span class="stat-label">Выполнено</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Widget 3: Quick Voice Record Widget -->
+          <div class="widget-card voice-widget">
+            <h3><i class="fas fa-microphone"></i> Голосовая заметка</h3>
+            <div class="voice-widget-body">
+              <button id="quick-record-btn" class="btn btn-danger btn-round"><i class="fas fa-microphone"></i></button>
+              <div id="quick-record-status" class="record-status">Готов к записи</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Productivity Analytics -->
+        <div class="productivity-section">
+          <h3><i class="fas fa-chart-bar"></i> Статистика продуктивности</h3>
+          <div class="productivity-chart-container">
+            <div class="chart-bars" id="productivity-chart">
+              <!-- Rendered dynamically -->
+            </div>
+            <div class="chart-labels">
+              <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+            </div>
+          </div>
+          <div class="productivity-info">
+            <p>Выполнено задач за неделю: <strong id="total-weekly-completed">0</strong></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 2: Tasks Manager -->
+      <section id="screen-tasks" class="app-screen hidden">
+        <div class="screen-header-actions">
+          <h2><i class="fas fa-check-double"></i> Задачи</h2>
+          <button id="add-task-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Новая задача</button>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label for="task-filter-category">Категория:</label>
+            <select id="task-filter-category">
+              <option value="all">Все</option>
+              <option value="Работа">Работа</option>
+              <option value="Личное">Личное</option>
+              <option value="Учеба">Учеба</option>
+              <option value="Другое">Другое</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="task-filter-priority">Приоритет:</label>
+            <select id="task-filter-priority">
+              <option value="all">Все</option>
+              <option value="high">Высокий</option>
+              <option value="medium">Средний</option>
+              <option value="low">Низкий</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="task-sort">Сортировка:</label>
+            <select id="task-sort">
+              <option value="date-desc">Сначала новые</option>
+              <option value="date-asc">Сначала старые</option>
+              <option value="priority-desc">По приоритету</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Task List -->
+        <div id="tasks-list" class="cards-list">
+          <!-- Dynamic tasks rendered here -->
+        </div>
+      </section>
+
+      <!-- Screen 3: Notes Manager -->
+      <section id="screen-notes" class="app-screen hidden">
+        <div class="screen-header-actions">
+          <h2><i class="fas fa-sticky-note"></i> Заметки</h2>
+          <button id="add-note-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Новая заметка</button>
+        </div>
+
+        <!-- Filter bar for Notes -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label for="note-filter-category">Категория:</label>
+            <select id="note-filter-category">
+              <option value="all">Все</option>
+              <option value="Работа">Работа</option>
+              <option value="Личное">Личное</option>
+              <option value="Идеи">Идеи</option>
+              <option value="Другое">Другое</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="note-sort">Сортировка:</label>
+            <select id="note-sort">
+              <option value="date-desc">Сначала новые</option>
+              <option value="date-asc">Сначала старые</option>
+              <option value="title-asc">По алфавиту</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Notes List -->
+        <div id="notes-list" class="cards-list notes-grid">
+          <!-- Dynamic notes rendered here -->
+        </div>
+      </section>
+
+      <!-- Screen 4: Calendar Planner -->
+      <section id="screen-calendar" class="app-screen hidden">
+        <h2><i class="fas fa-calendar-alt"></i> Календарь задач</h2>
+        <div class="calendar-wrapper">
+          <div class="calendar-header">
+            <button id="cal-prev-btn" class="btn-icon-square"><i class="fas fa-chevron-left"></i></button>
+            <h3 id="calendar-month-year">Июль 2026</h3>
+            <button id="cal-next-btn" class="btn-icon-square"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div class="calendar-grid-header">
+            <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+          </div>
+          <div id="calendar-days" class="calendar-days-grid">
+            <!-- Dynamic days -->
+          </div>
+        </div>
+        <div class="calendar-day-tasks">
+          <h3 id="selected-day-title">Задачи на сегодня</h3>
+          <div id="calendar-day-tasks-list" class="cards-list">
+            <!-- Selected day tasks -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 5: Mini-Conference / Collaboration Discussions -->
+      <section id="screen-collab" class="app-screen hidden">
+        <h2><i class="fas fa-users"></i> Совместная работа</h2>
+        <p class="subtitle">Обсуждайте идеи и делитесь мыслями с коллегами в мини-конференциях.</p>
+
+        <div class="collab-container">
+          <!-- Create Discussion -->
+          <div class="collab-sidebar">
+            <div class="card create-discussion-card">
+              <h3>Создать обсуждение</h3>
+              <div class="form-group">
+                <label for="new-discussion-title">Тема обсуждения:</label>
+                <input type="text" id="new-discussion-title" placeholder="Название темы...">
+              </div>
+              <button id="create-discussion-btn" class="btn btn-primary btn-block"><i class="fas fa-plus"></i> Начать</button>
+            </div>
+
+            <div class="active-discussions-list">
+              <h3>Активные темы</h3>
+              <ul id="discussions-ul" class="list-navigation">
+                <!-- Dynamically loaded topics -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Discussion Chat Area -->
+          <div class="collab-main-chat">
+            <div id="chat-placeholder" class="chat-placeholder">
+              <i class="fas fa-comments chat-large-icon"></i>
+              <p>Выберите обсуждение или создайте новое, чтобы начать общение</p>
+            </div>
+            <div id="chat-active-window" class="chat-active-window hidden">
+              <div class="chat-header">
+                <h3 id="chat-topic-title">Обсуждение</h3>
+                <span id="chat-users-online" class="badge-online"><i class="fas fa-circle"></i> В эфире</span>
+              </div>
+              <div id="chat-messages" class="chat-messages">
+                <!-- Chat messages -->
+              </div>
+              <div class="chat-input-area">
+                <input type="text" id="chat-message-input" placeholder="Введите ваше сообщение...">
+                <button id="chat-send-btn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screen 6: Settings & Customization -->
+      <section id="screen-settings" class="app-screen hidden">
+        <h2><i class="fas fa-cog"></i> Настройки</h2>
+
+        <!-- Customization -->
+        <div class="settings-group card">
+          <h3><i class="fas fa-palette"></i> Оформление интерфейса</h3>
+          <div class="settings-row">
+            <span>Цветовая схема:</span>
+            <div class="theme-buttons">
+              <button id="theme-light-btn" class="btn">Светлая</button>
+              <button id="theme-dark-btn" class="btn">Тёмная</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <label for="font-size-select">Размер шрифта:</label>
+            <select id="font-size-select">
+              <option value="small">Мелкий</option>
+              <option value="medium" selected>Стандартный</option>
+              <option value="large">Крупный</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Change PIN -->
+        <div class="settings-group card">
+          <h3><i class="fas fa-key"></i> Безопасность</h3>
+          <div class="form-group">
+            <label for="settings-old-pin">Старый PIN-код:</label>
+            <input type="password" id="settings-old-pin" placeholder="••••" maxlength="8">
+          </div>
+          <div class="form-group">
+            <label for="settings-new-pin">Новый PIN-код:</label>
+            <input type="password" id="settings-new-pin" placeholder="••••" maxlength="8">
+          </div>
+          <div id="settings-pin-msg" class="pin-status-msg"></div>
+          <button id="settings-save-pin-btn" class="btn btn-primary"><i class="fas fa-save"></i> Изменить PIN-код</button>
+        </div>
+
+        <!-- Synchronization and Backup -->
+        <div class="settings-group card">
+          <h3><i class="fas fa-sync"></i> Синхронизация и Данные</h3>
+          <p class="settings-info-text">Импортируйте или экспортируйте ваши заметки и задачи в JSON.</p>
+          <div class="settings-actions">
+            <a href="api.php?action=export" class="btn btn-secondary" download><i class="fas fa-download"></i> Экспорт в JSON</a>
+            <div class="import-wrapper">
+              <label for="import-file-input" class="btn btn-secondary"><i class="fas fa-upload"></i> Импорт из JSON</label>
+              <input type="file" id="import-file-input" accept=".json" class="hidden-file-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- About section -->
+        <div class="settings-group card about-card">
+          <h3><i class="fas fa-info-circle"></i> О программе</h3>
+          <p><strong>Мобильное PWA-приложение для планирования</strong></p>
+          <p>Версия: 1.0.0</p>
+          <p>Разработчик: <a href="https://wes.by" target="_blank" rel="noopener">wes.by</a></p>
+          <p>Автор: <strong>Коваженко С.Б.</strong></p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar for Mobile-first standalone experience -->
+    <nav class="app-nav">
+      <button class="nav-item active" data-screen="dashboard">
+        <i class="fas fa-chart-line"></i>
+        <span>Обзор</span>
+      </button>
+      <button class="nav-item" data-screen="tasks">
+        <i class="fas fa-tasks"></i>
+        <span>Задачи</span>
+      </button>
+      <button class="nav-item" data-screen="notes">
+        <i class="fas fa-sticky-note"></i>
+        <span>Заметки</span>
+      </button>
+      <button class="nav-item" data-screen="calendar">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Календарь</span>
+      </button>
+      <button class="nav-item" data-screen="collab">
+        <i class="fas fa-users"></i>
+        <span>Коллаб</span>
+      </button>
+      <button class="nav-item" data-screen="settings">
+        <i class="fas fa-cog"></i>
+        <span>Настройки</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Task Edit/Create Modal -->
+  <div id="task-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="task-modal-title">Новая задача</h3>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-task-id">
+        <div class="form-group">
+          <label for="task-title-input">Название задачи:</label>
+          <input type="text" id="task-title-input" placeholder="Купить продукты..." required>
+        </div>
+        <div class="form-group">
+          <label for="task-desc-input">Описание:</label>
+          <textarea id="task-desc-input" placeholder="Молоко, хлеб, яблоки..." rows="3"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="task-category-input">Категория:</label>
+            <select id="task-category-input">
+              <option value="Работа">Работа</option>
+              <option value="Личное">Личное</option>
+              <option value="Учеба">Учеба</option>
+              <option value="Другое">Другое</option>
+            </select>
+          </div>
+          <div class="form-group half-width">
+            <label for="task-priority-input">Приоритет:</label>
+            <select id="task-priority-input">
+              <option value="high">Высокий</option>
+              <option value="medium" selected>Средний</option>
+              <option value="low">Низкий</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="task-due-input">Срок выполнения:</label>
+            <input type="date" id="task-due-input">
+          </div>
+          <div class="form-group half-width">
+            <label for="task-reminder-input">Повторять напоминание:</label>
+            <select id="task-reminder-input">
+              <option value="none">Без повторений</option>
+              <option value="daily">Каждый день</option>
+              <option value="weekly">Каждую неделю</option>
+              <option value="monthly">Каждый месяц</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="task-tags-input">Теги (через запятую):</label>
+          <input type="text" id="task-tags-input" placeholder="продукты, магазин, выходные">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="save-task-btn" class="btn btn-primary">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note Edit/Create Modal -->
+  <div id="note-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="note-modal-title">Новая заметка</h3>
+        <button class="close-modal-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-note-id">
+        <div class="form-group">
+          <label for="note-title-input">Заголовок заметки:</label>
+          <input type="text" id="note-title-input" placeholder="Идея для проекта..." required>
+        </div>
+        <div class="form-group">
+          <label for="note-content-input">Содержимое:</label>
+          <textarea id="note-content-input" placeholder="Начать писать заметку здесь..." rows="6"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="note-category-input">Категория:</label>
+            <select id="note-category-input">
+              <option value="Работа">Работа</option>
+              <option value="Личное">Личное</option>
+              <option value="Идеи">Идеи</option>
+              <option value="Другое">Другое</option>
+            </select>
+          </div>
+          <div class="form-group half-width">
+            <label for="note-tags-input">Теги (через запятую):</label>
+            <input type="text" id="note-tags-input" placeholder="идеи, веб, дизайн">
+          </div>
+        </div>
+
+        <!-- Audio Note Recorder Inside Modal -->
+        <div class="audio-recorder-section">
+          <h4><i class="fas fa-microphone"></i> Прикрепить голосовую заметку</h4>
+          <div class="audio-controls-row">
+            <button id="modal-record-btn" class="btn btn-danger"><i class="fas fa-microphone"></i> Записать</button>
+            <button id="modal-stop-btn" class="btn btn-secondary hidden" disabled><i class="fas fa-stop"></i> Стоп</button>
+            <span id="modal-audio-status">Готов</span>
+          </div>
+          <div id="modal-audio-preview" class="audio-preview-container hidden">
+            <audio id="modal-audio-player" controls></audio>
+            <input type="hidden" id="modal-audio-url">
+          </div>
+        </div>
+
+        <!-- Note Sharing / Collaboration Access -->
+        <div class="share-note-section">
+          <h4><i class="fas fa-share-alt"></i> Совместный доступ</h4>
+          <div class="checkbox-row">
+            <input type="checkbox" id="note-shared-input">
+            <label for="note-shared-input">Сделать заметку доступной всем пользователям</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="save-note-btn" class="btn btn-primary">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
