@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Коваженко С.Б.",
+    "pin": "$2y$10$enx9qw2zgS88vouB7DQXK.iSBUfdaB8IHHbo7JOKRBPS4OMGNIB4K"
+  },
+  {
+    "id": 2,
+    "name": "Иванов И.И.",
+    "pin": "$2y$10$AMl.UGyzfd.81cnKpgoW5.biDPwZJx6fxjCjKtct2wxfDQKXQui6e"
+  },
+  {
+    "id": 3,
+    "name": "Петров П.П.",
+    "pin": "$2y$10$G/eERsKtpkvCpQJQ3L.bFOGe4i9qX78EUcJYEztHJT760ALkarGP."
+  },
+  {
+    "id": 4,
+    "name": "Сидоров С.С.",
+    "pin": "$2y$10$WqIztHU65ioSuBtYqWoCVOoov4FWrEHq93aw6EBSiHv.5ayiMOPzW"
+  }
+]

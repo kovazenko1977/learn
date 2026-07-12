@@ -1,0 +1,148 @@
+[Sat Jul 11 15:37:44 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sat Jul 11 15:39:02 2026] [::1]:50472 Accepted
+[Sat Jul 11 15:39:02 2026] [::1]:50472 [200]: GET /index.html
+[Sat Jul 11 15:39:02 2026] [::1]:50472 Closing
+[Sat Jul 11 15:39:02 2026] [::1]:50476 Accepted
+[Sat Jul 11 15:39:02 2026] [::1]:50478 Accepted
+[Sat Jul 11 15:39:02 2026] [::1]:50476 [200]: GET /app.css
+[Sat Jul 11 15:39:02 2026] [::1]:50478 [200]: GET /app.js
+[Sat Jul 11 15:39:02 2026] [::1]:50476 Closing
+[Sat Jul 11 15:39:02 2026] [::1]:50478 Closing
+[Sat Jul 11 15:39:03 2026] [::1]:50486 Accepted
+[Sat Jul 11 15:39:03 2026] [::1]:50486 [200]: GET /sw.js
+[Sat Jul 11 15:39:03 2026] [::1]:50486 Closing
+[Sat Jul 11 15:39:04 2026] [::1]:50490 Accepted
+[Sat Jul 11 15:39:04 2026] [::1]:50500 Accepted
+[Sat Jul 11 15:39:04 2026] [::1]:50514 Accepted
+[Sat Jul 11 15:39:04 2026] [::1]:50490 [200]: GET /index.html
+[Sat Jul 11 15:39:04 2026] [::1]:50500 [200]: GET /app.css
+[Sat Jul 11 15:39:04 2026] [::1]:50514 [200]: GET /app.js
+[Sat Jul 11 15:39:04 2026] [::1]:50490 Closing
+[Sat Jul 11 15:39:04 2026] [::1]:50500 Closing
+[Sat Jul 11 15:39:04 2026] [::1]:50514 Closing
+[Sat Jul 11 15:39:04 2026] [::1]:50518 Accepted
+[Sat Jul 11 15:39:04 2026] [::1]:50518 [200]: GET /manifest.json
+[Sat Jul 11 15:39:04 2026] [::1]:50518 Closing
+[Sat Jul 11 15:39:05 2026] [::1]:50532 Accepted
+[Sat Jul 11 15:39:05 2026] [::1]:50532 [200]: POST /api.php?action=login
+[Sat Jul 11 15:39:05 2026] [::1]:50532 Closing
+[Sat Jul 11 15:39:05 2026] [::1]:50536 Accepted
+[Sat Jul 11 15:39:05 2026] [::1]:50536 [200]: GET /api.php?action=get_data
+[Sat Jul 11 15:39:05 2026] [::1]:50536 Closing
+[Sat Jul 11 15:39:06 2026] [::1]:50548 Accepted
+[Sat Jul 11 15:39:06 2026] [::1]:50548 [200]: POST /api.php?action=save_data
+[Sat Jul 11 15:39:06 2026] [::1]:50548 Closing
+[Sat Jul 11 15:39:07 2026] [::1]:50564 Accepted
+[Sat Jul 11 15:39:07 2026] [::1]:50564 [200]: GET /api.php?action=get_data
+[Sat Jul 11 15:39:07 2026] [::1]:50564 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42436 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42436 [200]: GET /index.html
+[Sat Jul 11 15:41:16 2026] [::1]:42436 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42446 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42458 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42446 [200]: GET /app.css
+[Sat Jul 11 15:41:16 2026] [::1]:42458 [200]: GET /app.js
+[Sat Jul 11 15:41:16 2026] [::1]:42446 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42458 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42466 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42466 [200]: GET /sw.js
+[Sat Jul 11 15:41:16 2026] [::1]:42466 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42472 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42482 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42488 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42472 [200]: GET /index.html
+[Sat Jul 11 15:41:16 2026] [::1]:42472 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42482 [200]: GET /app.css
+[Sat Jul 11 15:41:16 2026] [::1]:42482 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42488 [200]: GET /app.js
+[Sat Jul 11 15:41:16 2026] [::1]:42488 Closing
+[Sat Jul 11 15:41:16 2026] [::1]:42500 Accepted
+[Sat Jul 11 15:41:16 2026] [::1]:42500 [200]: GET /manifest.json
+[Sat Jul 11 15:41:16 2026] [::1]:42500 Closing
+[Sat Jul 11 15:41:17 2026] [::1]:42508 Accepted
+[Sat Jul 11 15:41:17 2026] [::1]:42508 [200]: POST /api.php?action=login
+[Sat Jul 11 15:41:17 2026] [::1]:42508 Closing
+[Sat Jul 11 15:41:17 2026] [::1]:42514 Accepted
+[Sat Jul 11 15:41:17 2026] [::1]:42514 [200]: GET /api.php?action=get_data
+[Sat Jul 11 15:41:17 2026] [::1]:42514 Closing
+[Sat Jul 11 15:41:18 2026] [::1]:49004 Accepted
+[Sat Jul 11 15:41:18 2026] [::1]:49004 [200]: POST /api.php?action=save_data
+[Sat Jul 11 15:41:18 2026] [::1]:49004 Closing
+[Sat Jul 11 15:41:20 2026] [::1]:49016 Accepted
+[Sat Jul 11 15:41:20 2026] [::1]:49016 [200]: GET /api.php?action=get_data
+[Sat Jul 11 15:41:20 2026] [::1]:49016 Closing
+[Sat Jul 11 15:59:18 2026] [::1]:48316 Accepted
+[Sat Jul 11 15:59:18 2026] [::1]:48316 [200]: GET /index.html
+[Sat Jul 11 15:59:18 2026] [::1]:48316 Closing
+[Sat Jul 11 15:59:18 2026] [::1]:48320 Accepted
+[Sat Jul 11 15:59:18 2026] [::1]:48332 Accepted
+[Sat Jul 11 15:59:18 2026] [::1]:48320 [200]: GET /app.css
+[Sat Jul 11 15:59:18 2026] [::1]:48320 Closing
+[Sat Jul 11 15:59:18 2026] [::1]:48332 [200]: GET /app.js
+[Sat Jul 11 15:59:18 2026] [::1]:48332 Closing
+[Sat Jul 11 15:59:19 2026] [::1]:48338 Accepted
+[Sat Jul 11 15:59:19 2026] [::1]:48338 [200]: GET /sw.js
+[Sat Jul 11 15:59:19 2026] [::1]:48338 Closing
+[Sat Jul 11 15:59:19 2026] [::1]:48350 Accepted
+[Sat Jul 11 15:59:19 2026] [::1]:48356 Accepted
+[Sat Jul 11 15:59:19 2026] [::1]:48362 Accepted
+[Sat Jul 11 15:59:19 2026] [::1]:48350 [200]: GET /index.html
+[Sat Jul 11 15:59:19 2026] [::1]:48356 [200]: GET /app.css
+[Sat Jul 11 15:59:19 2026] [::1]:48362 [200]: GET /app.js
+[Sat Jul 11 15:59:19 2026] [::1]:48350 Closing
+[Sat Jul 11 15:59:19 2026] [::1]:48356 Closing
+[Sat Jul 11 15:59:19 2026] [::1]:48362 Closing
+[Sat Jul 11 15:59:19 2026] [::1]:48372 Accepted
+[Sat Jul 11 15:59:19 2026] [::1]:48372 [200]: GET /manifest.json
+[Sat Jul 11 15:59:19 2026] [::1]:48372 Closing
+[Sat Jul 11 15:59:20 2026] [::1]:48388 Accepted
+[Sat Jul 11 15:59:20 2026] [::1]:48388 [200]: POST /api.php?action=login
+[Sat Jul 11 15:59:20 2026] [::1]:48388 Closing
+[Sat Jul 11 15:59:20 2026] [::1]:48390 Accepted
+[Sat Jul 11 15:59:20 2026] [::1]:48390 [200]: GET /api.php?action=get_data
+[Sat Jul 11 15:59:20 2026] [::1]:48390 Closing
+[Sat Jul 11 15:59:21 2026] [::1]:48402 Accepted
+[Sat Jul 11 15:59:21 2026] [::1]:48402 [200]: POST /api.php?action=save_data
+[Sat Jul 11 15:59:21 2026] [::1]:48402 Closing
+[Sat Jul 11 15:59:22 2026] [::1]:48410 Accepted
+[Sat Jul 11 15:59:22 2026] [::1]:48410 [200]: GET /api.php?action=get_data
+[Sat Jul 11 15:59:22 2026] [::1]:48410 Closing
+[Sun Jul 12 17:14:10 2026] [::1]:56524 Accepted
+[Sun Jul 12 17:14:10 2026] [::1]:56524 [200]: GET /index.html
+[Sun Jul 12 17:14:10 2026] [::1]:56524 Closing
+[Sun Jul 12 17:14:10 2026] [::1]:56532 Accepted
+[Sun Jul 12 17:14:10 2026] [::1]:56540 Accepted
+[Sun Jul 12 17:14:10 2026] [::1]:56532 [200]: GET /app.css
+[Sun Jul 12 17:14:10 2026] [::1]:56532 Closing
+[Sun Jul 12 17:14:10 2026] [::1]:56540 [200]: GET /app.js
+[Sun Jul 12 17:14:10 2026] [::1]:56540 Closing
+[Sun Jul 12 17:14:11 2026] [::1]:56554 Accepted
+[Sun Jul 12 17:14:11 2026] [::1]:56554 [200]: GET /sw.js
+[Sun Jul 12 17:14:11 2026] [::1]:56554 Closing
+[Sun Jul 12 17:14:11 2026] [::1]:56566 Accepted
+[Sun Jul 12 17:14:11 2026] [::1]:56570 Accepted
+[Sun Jul 12 17:14:11 2026] [::1]:56572 Accepted
+[Sun Jul 12 17:14:11 2026] [::1]:56566 [200]: GET /index.html
+[Sun Jul 12 17:14:11 2026] [::1]:56570 [200]: GET /app.css
+[Sun Jul 12 17:14:11 2026] [::1]:56566 Closing
+[Sun Jul 12 17:14:11 2026] [::1]:56570 Closing
+[Sun Jul 12 17:14:11 2026] [::1]:56572 [200]: GET /app.js
+[Sun Jul 12 17:14:11 2026] [::1]:56572 Closing
+[Sun Jul 12 17:14:11 2026] [::1]:56588 Accepted
+[Sun Jul 12 17:14:11 2026] [::1]:56588 [200]: GET /manifest.json
+[Sun Jul 12 17:14:11 2026] [::1]:56588 Closing
+[Sun Jul 12 17:14:12 2026] [::1]:56602 Accepted
+[Sun Jul 12 17:14:12 2026] [::1]:56602 [200]: POST /api.php?action=login
+[Sun Jul 12 17:14:12 2026] [::1]:56602 Closing
+[Sun Jul 12 17:14:12 2026] [::1]:56612 Accepted
+[Sun Jul 12 17:14:12 2026] [::1]:56612 [200]: GET /api.php?action=get_data
+[Sun Jul 12 17:14:12 2026] [::1]:56612 Closing
+[Sun Jul 12 17:14:12 2026] [::1]:56614 Accepted
+[Sun Jul 12 17:14:12 2026] [::1]:56614 [200]: GET /api.php?action=get_users
+[Sun Jul 12 17:14:12 2026] [::1]:56614 Closing
+[Sun Jul 12 17:14:13 2026] [::1]:56628 Accepted
+[Sun Jul 12 17:14:13 2026] [::1]:56628 [200]: POST /api.php?action=save_data
+[Sun Jul 12 17:14:13 2026] [::1]:56628 Closing
+[Sun Jul 12 17:14:14 2026] [::1]:56642 Accepted
+[Sun Jul 12 17:14:14 2026] [::1]:56642 [200]: GET /api.php?action=get_data
+[Sun Jul 12 17:14:14 2026] [::1]:56642 Closing
