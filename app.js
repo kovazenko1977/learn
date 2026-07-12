@@ -1,11 +1,14 @@
 // Core Application State
 let appState = {
   currentUser: null,
+  users: [], // Loaded dynamically from roster
   notes: [],
   tasks: [],
   settings: {
     theme: 'light',
-    fontSize: 'medium'
+    accent: 'blue',
+    fontSize: 'medium',
+    audioFeedback: true
   },
   discussions: [],
   activeDiscussionId: null,
@@ -16,6 +19,7 @@ let appState = {
 // Keypad audio feedback using Web Audio API (sine wave beep)
 let audioCtx = null;
 function playKeyBeep() {
+  if (!appState.settings.audioFeedback) return;
   try {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -49,11 +53,8 @@ if ('serviceWorker' in navigator) {
 // Custom PWA Install prompt handling
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent the mini-infobar from appearing on mobile
   e.preventDefault();
-  // Stash the event so it can be triggered later.
   deferredPrompt = e;
-  // Update UI notify the user they can install the PWA
   const installBanner = document.getElementById('pwa-install-banner');
   if (installBanner) {
     installBanner.classList.remove('hidden');
@@ -69,12 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (installBtn && closeBtn && installBanner) {
     installBtn.addEventListener('click', async () => {
       if (deferredPrompt) {
-        // Show the install prompt
         deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response to the install prompt: ${outcome}`);
-        // We've used the prompt, and can't use it again
         deferredPrompt = null;
       }
       installBanner.classList.add('hidden');
@@ -120,7 +118,10 @@ async function loadAppData() {
   if (res && res.success) {
     appState.notes = res.notes || [];
     appState.tasks = res.tasks || [];
-    appState.settings = res.settings || { theme: 'light', fontSize: 'medium' };
+
+    // Default safe settings fallback
+    const defaultSettings = { theme: 'light', accent: 'blue', fontSize: 'medium', audioFeedback: true };
+    appState.settings = Object.assign(defaultSettings, res.settings);
     appState.discussions = res.discussions || [];
 
     // Save to localStorage for robust offline capability
@@ -132,12 +133,40 @@ async function loadAppData() {
     // Offline mode: load from localStorage fallback
     appState.notes = JSON.parse(localStorage.getItem('pwa_notes')) || [];
     appState.tasks = JSON.parse(localStorage.getItem('pwa_tasks')) || [];
-    appState.settings = JSON.parse(localStorage.getItem('pwa_settings')) || { theme: 'light', fontSize: 'medium' };
+    appState.settings = JSON.parse(localStorage.getItem('pwa_settings')) || { theme: 'light', accent: 'blue', fontSize: 'medium', audioFeedback: true };
     appState.discussions = JSON.parse(localStorage.getItem('pwa_discussions')) || [];
   }
 
+  // Load users roster
+  const usersRes = await fetchFromApi('get_users');
+  if (usersRes && usersRes.success) {
+    appState.users = usersRes.users || [];
+    localStorage.setItem('pwa_users_roster', JSON.stringify(appState.users));
+  } else {
+    appState.users = JSON.parse(localStorage.getItem('pwa_users_roster')) || [
+      { id: 1, name: 'Коваженко С.Б.' },
+      { id: 2, name: 'Иванов И.И.' },
+      { id: 3, name: 'Петров П.П.' },
+      { id: 4, name: 'Сидоров С.С.' }
+    ];
+  }
+
+  populateAssigneesDropdowns();
   applySettings();
   renderAll();
+}
+
+function populateAssigneesDropdowns() {
+  const select = document.getElementById('task-assignee-input');
+  if (!select) return;
+  select.innerHTML = '';
+
+  appState.users.forEach(user => {
+    const opt = document.createElement('option');
+    opt.value = user.id;
+    opt.innerText = user.name;
+    select.appendChild(opt);
+  });
 }
 
 // Save all application data (auto-saves on changes)
@@ -158,21 +187,48 @@ async function saveAppData() {
   await fetchFromApi('save_data', payload, 'POST');
 }
 
-// Apply settings (Theme, Font Size)
+// Apply settings (Theme, Accents, Font Size, Audio Toggles)
 function applySettings() {
-  // Dark/Light theme
+  // Reset all themes
+  document.body.classList.remove('dark-theme', 'midnight-theme', 'sepia-theme');
   if (appState.settings.theme === 'dark') {
     document.body.classList.add('dark-theme');
-    document.getElementById('theme-toggle-btn').innerHTML = '<i class="fas fa-sun"></i>';
-  } else {
-    document.body.classList.remove('dark-theme');
-    document.getElementById('theme-toggle-btn').innerHTML = '<i class="fas fa-moon"></i>';
+  } else if (appState.settings.theme === 'midnight') {
+    document.body.classList.add('midnight-theme');
+  } else if (appState.settings.theme === 'sepia') {
+    document.body.classList.add('sepia-theme');
   }
+
+  // Set Accents
+  document.body.classList.remove('accent-blue', 'accent-green', 'accent-purple', 'accent-orange');
+  const accent = appState.settings.accent || 'blue';
+  document.body.classList.add(`accent-${accent}`);
+
+  // Update accent circular selection active state in Settings
+  document.querySelectorAll('.accent-dot').forEach(dot => {
+    if (dot.getAttribute('data-accent') === accent) {
+      dot.classList.add('active');
+    } else {
+      dot.classList.remove('active');
+    }
+  });
 
   // Font Size
   document.body.classList.remove('font-small', 'font-medium', 'font-large');
   document.body.classList.add(`font-${appState.settings.fontSize || 'medium'}`);
   document.getElementById('font-size-select').value = appState.settings.fontSize || 'medium';
+
+  // Sound feedback toggle check
+  const soundChkBx = document.getElementById('settings-audio-feedback-input');
+  if (soundChkBx) {
+    soundChkBx.checked = !!appState.settings.audioFeedback;
+  }
+
+  // Set username profile field in settings
+  if (appState.currentUser) {
+    const nameInput = document.getElementById('settings-username-input');
+    if (nameInput) nameInput.value = appState.currentUser.name;
+  }
 }
 
 // Authorization logic
@@ -199,6 +255,7 @@ function setupLockScreen() {
       return;
     }
 
+    // Request multi-user secure backend login verification
     const res = await fetchFromApi('login', { pin: pinBuffer }, 'POST');
     if (res && res.success) {
       appState.currentUser = res.user;
@@ -206,28 +263,32 @@ function setupLockScreen() {
       lockScreen.classList.add('hidden');
       appContainer.classList.remove('hidden');
 
-      // Load data upon entry
+      // Load and render app
       await loadAppData();
-
-      // Setup scheduler for reminders
       startReminderScheduler();
     } else {
       pinError.innerText = res.message || 'Ошибка подключения к серверу';
-      pinBuffer = '';
-      updatePinDots();
 
-      // Offline fallback login for default user
-      if (pinBuffer === '' && (res.error || !res.success)) {
-        // Simple offline bypass with default PIN '1234'
-        const inputPin = document.getElementById('pin-error').getAttribute('data-last-try') || '';
-        if (inputPin === '1234') {
-          appState.currentUser = { id: 1, name: 'Коваженко С.Б. (Офлайн)' };
-          document.getElementById('username-display').innerText = appState.currentUser.name;
-          lockScreen.classList.add('hidden');
-          appContainer.classList.remove('hidden');
-          await loadAppData();
-          startReminderScheduler();
-        }
+      // Offline fallback bypass mapping for local demo simulation:
+      // Map selector ID values to standard pins for seamless execution
+      const selectedUserId = parseInt(document.getElementById('lock-user-select').value);
+      const offlineUserMap = {
+        1: { name: 'Коваженко С.Б.', pin: '1234' },
+        2: { name: 'Иванов И.И.', pin: '5555' },
+        3: { name: 'Петров П.П.', pin: '7777' },
+        4: { name: 'Сидоров С.С.', pin: '9999' }
+      };
+
+      if (offlineUserMap[selectedUserId] && pinBuffer === offlineUserMap[selectedUserId].pin) {
+        appState.currentUser = { id: selectedUserId, name: offlineUserMap[selectedUserId].name + ' (Офлайн)' };
+        document.getElementById('username-display').innerText = appState.currentUser.name;
+        lockScreen.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        await loadAppData();
+        startReminderScheduler();
+      } else {
+        pinBuffer = '';
+        updatePinDots();
       }
     }
   }
@@ -242,15 +303,12 @@ function setupLockScreen() {
         pinBuffer = pinBuffer.slice(0, -1);
         updatePinDots();
       } else if (key === 'submit') {
-        document.getElementById('pin-error').setAttribute('data-last-try', pinBuffer);
         submitPin();
       } else {
         if (pinBuffer.length < 8) {
           pinBuffer += key;
           updatePinDots();
           if (pinBuffer.length === 4) {
-            // Auto submit standard 4 digit code
-            document.getElementById('pin-error').setAttribute('data-last-try', pinBuffer);
             submitPin();
           }
         }
@@ -259,7 +317,7 @@ function setupLockScreen() {
   });
 }
 
-// App routing / Navigation
+// Navigation / Route switcher
 function setupNavigation() {
   const navItems = document.querySelectorAll('.nav-item');
   const screens = document.querySelectorAll('.app-screen');
@@ -268,11 +326,9 @@ function setupNavigation() {
     item.addEventListener('click', () => {
       const screenId = item.getAttribute('data-screen');
 
-      // Toggle nav items active state
       navItems.forEach(n => n.classList.remove('active'));
       item.classList.add('active');
 
-      // Toggle active screens
       screens.forEach(screen => {
         if (screen.id === `screen-${screenId}`) {
           screen.classList.remove('hidden');
@@ -281,7 +337,6 @@ function setupNavigation() {
         }
       });
 
-      // Dynamic loads for specific screens
       if (screenId === 'calendar') {
         renderCalendar();
       } else if (screenId === 'collab') {
@@ -290,26 +345,28 @@ function setupNavigation() {
     });
   });
 
-  // Quick redirect utility
   window.navigateToScreen = function(screenId) {
     const targetNav = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
     if (targetNav) targetNav.click();
   };
 
-  // Theme Toggle Button in Header
+  // Adjust theme in Header
   document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-    appState.settings.theme = appState.settings.theme === 'light' ? 'dark' : 'light';
+    // Quick cycling themes
+    const themes = ['light', 'dark', 'midnight', 'sepia'];
+    let idx = themes.indexOf(appState.settings.theme);
+    idx = (idx + 1) % themes.length;
+    appState.settings.theme = themes[idx];
     applySettings();
     saveAppData();
   });
 
-  // Logout Button
   document.getElementById('logout-btn').addEventListener('click', () => {
     location.reload();
   });
 }
 
-// ----------------- RENDER ALL CONTROLS -----------------
+// ----------------- RENDER ALL -----------------
 function renderAll() {
   renderStats();
   renderTasks();
@@ -319,25 +376,25 @@ function renderAll() {
 
 // ----------------- STATISTICS -----------------
 function renderStats() {
-  const completed = appState.tasks.filter(t => t.completed).length;
-  const pending = appState.tasks.filter(t => !t.completed).length;
+  // Scoped to current user tasks
+  const myTasks = appState.tasks.filter(t => t.creatorId === appState.currentUser.id || t.assigneeId === appState.currentUser.id);
+  const completed = myTasks.filter(t => t.completed).length;
+  const pending = myTasks.filter(t => !t.completed).length;
 
   document.getElementById('stat-completed-count').innerText = completed;
   document.getElementById('stat-pending-count').innerText = pending;
 
   // Render Week Productivity Bar Chart
-  // Count tasks completed on each day of the current week (Monday-Sunday)
-  const daysOfWeek = [1, 2, 3, 4, 5, 6, 0]; // Monday to Sunday JS day index mapping
   const today = new Date();
   const startOfWeek = new Date(today);
   const currentDay = today.getDay();
-  const distance = currentDay === 0 ? -6 : 1 - currentDay; // Distance to Monday
+  const distance = currentDay === 0 ? -6 : 1 - currentDay;
   startOfWeek.setDate(today.getDate() + distance);
   startOfWeek.setHours(0, 0, 0, 0);
 
-  const dailyCounts = [0, 0, 0, 0, 0, 0, 0]; // Mon to Sun counts
+  const dailyCounts = [0, 0, 0, 0, 0, 0, 0];
 
-  appState.tasks.forEach(task => {
+  myTasks.forEach(task => {
     if (task.completed && task.completedAt) {
       const compDate = new Date(task.completedAt);
       const diffTime = compDate.getTime() - startOfWeek.getTime();
@@ -381,6 +438,7 @@ function renderStats() {
 let taskModal = document.getElementById('task-modal');
 function openTaskModal(taskId = null) {
   taskModal.classList.remove('hidden');
+  populateAssigneesDropdowns();
 
   if (taskId) {
     document.getElementById('task-modal-title').innerText = 'Редактировать задачу';
@@ -391,6 +449,7 @@ function openTaskModal(taskId = null) {
       document.getElementById('task-desc-input').value = task.desc || '';
       document.getElementById('task-category-input').value = task.category || 'Работа';
       document.getElementById('task-priority-input').value = task.priority || 'medium';
+      document.getElementById('task-assignee-input').value = task.assigneeId || appState.currentUser.id;
       document.getElementById('task-due-input').value = task.due || '';
       document.getElementById('task-reminder-input').value = task.reminder || 'none';
       document.getElementById('task-tags-input').value = (task.tags || []).join(', ');
@@ -402,6 +461,7 @@ function openTaskModal(taskId = null) {
     document.getElementById('task-desc-input').value = '';
     document.getElementById('task-category-input').value = 'Работа';
     document.getElementById('task-priority-input').value = 'medium';
+    document.getElementById('task-assignee-input').value = appState.currentUser.id;
     document.getElementById('task-due-input').value = '';
     document.getElementById('task-reminder-input').value = 'none';
     document.getElementById('task-tags-input').value = '';
@@ -422,19 +482,17 @@ function renderTasks() {
   const sortOption = document.getElementById('task-sort').value;
   const searchKeyword = document.getElementById('global-search-input').value.toLowerCase().trim();
 
-  let filtered = [...appState.tasks];
+  // Show tasks where current user is creator OR is assignee
+  let filtered = appState.tasks.filter(t => t.creatorId === appState.currentUser.id || t.assigneeId === appState.currentUser.id);
 
-  // Apply Category Filter
   if (categoryFilter !== 'all') {
     filtered = filtered.filter(t => t.category === categoryFilter);
   }
 
-  // Apply Priority Filter
   if (priorityFilter !== 'all') {
     filtered = filtered.filter(t => t.priority === priorityFilter);
   }
 
-  // Apply Global Search & Tag Search
   if (searchKeyword) {
     filtered = filtered.filter(t => {
       const titleMatch = t.title.toLowerCase().includes(searchKeyword);
@@ -444,7 +502,6 @@ function renderTasks() {
     });
   }
 
-  // Apply Sorting
   if (sortOption === 'date-desc') {
     filtered.sort((a, b) => b.id - a.id);
   } else if (sortOption === 'date-asc') {
@@ -463,7 +520,6 @@ function renderTasks() {
     const card = document.createElement('div');
     card.className = `task-card priority-${task.priority} ${task.completed ? 'completed' : ''}`;
 
-    // Checkbox element
     const chkWrapper = document.createElement('div');
     chkWrapper.className = 'task-checkbox-wrapper';
     const chk = document.createElement('input');
@@ -473,7 +529,6 @@ function renderTasks() {
     chk.addEventListener('change', () => toggleTaskCompleted(task.id));
     chkWrapper.appendChild(chk);
 
-    // Task Meta & Badges
     const content = document.createElement('div');
     content.className = 'task-card-content';
 
@@ -492,6 +547,23 @@ function renderTasks() {
     catBadge.className = 'badge';
     catBadge.innerHTML = `<i class="fas fa-folder"></i> ${task.category}`;
     meta.appendChild(catBadge);
+
+    // Creator/Assignee Badges
+    const creatorUser = appState.users.find(u => u.id === task.creatorId);
+    const assigneeUser = appState.users.find(u => u.id === task.assigneeId);
+
+    if (creatorUser) {
+      const crBadge = document.createElement('span');
+      crBadge.className = 'badge';
+      crBadge.innerHTML = `<i class="fas fa-user-edit"></i> От: ${creatorUser.name}`;
+      meta.appendChild(crBadge);
+    }
+    if (assigneeUser && task.assigneeId !== task.creatorId) {
+      const asBadge = document.createElement('span');
+      asBadge.className = 'badge badge-tag';
+      asBadge.innerHTML = `<i class="fas fa-user-check"></i> Кому: ${assigneeUser.name}`;
+      meta.appendChild(asBadge);
+    }
 
     if (task.due) {
       const dueBadge = document.createElement('span');
@@ -522,20 +594,17 @@ function renderTasks() {
     if (task.desc) content.appendChild(desc);
     content.appendChild(meta);
 
-    // Action buttons
     const actions = document.createElement('div');
     actions.className = 'task-actions';
 
     const editBtn = document.createElement('button');
     editBtn.className = 'icon-btn';
     editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-    editBtn.title = 'Редактировать';
     editBtn.addEventListener('click', () => openTaskModal(task.id));
 
     const delBtn = document.createElement('button');
     delBtn.className = 'icon-btn';
     delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    delBtn.title = 'Удалить';
     delBtn.addEventListener('click', () => deleteTask(task.id));
 
     actions.appendChild(editBtn);
@@ -555,7 +624,6 @@ function toggleTaskCompleted(taskId) {
     task.completed = !task.completed;
     task.completedAt = task.completed ? new Date().toISOString() : null;
 
-    // Notify user with browser notification if allowed
     if (task.completed && 'Notification' in window && Notification.permission === 'granted') {
       new Notification('Задача выполнена!', {
         body: `Вы выполнили задачу: "${task.title}"`,
@@ -576,7 +644,6 @@ function deleteTask(taskId) {
   }
 }
 
-// Save/Submit task form
 function setupTaskEvents() {
   document.getElementById('add-task-btn').addEventListener('click', () => openTaskModal());
   document.getElementById('quick-add-task-btn').addEventListener('click', () => {
@@ -598,27 +665,29 @@ function setupTaskEvents() {
     const desc = document.getElementById('task-desc-input').value.trim();
     const category = document.getElementById('task-category-input').value;
     const priority = document.getElementById('task-priority-input').value;
+    const assigneeId = parseInt(document.getElementById('task-assignee-input').value);
     const due = document.getElementById('task-due-input').value;
     const reminder = document.getElementById('task-reminder-input').value;
     const tagsRaw = document.getElementById('task-tags-input').value;
     const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
     if (editId) {
-      // Edit
       const task = appState.tasks.find(t => t.id === parseInt(editId));
       if (task) {
         task.title = title;
         task.desc = desc;
         task.category = category;
         task.priority = priority;
+        task.assigneeId = assigneeId;
         task.due = due;
         task.reminder = reminder;
         task.tags = tags;
       }
     } else {
-      // Create
       const newTask = {
         id: Date.now(),
+        creatorId: appState.currentUser.id,
+        assigneeId: assigneeId,
         title,
         desc,
         category,
@@ -638,7 +707,6 @@ function setupTaskEvents() {
     renderAll();
   });
 
-  // Task filters event handlers
   document.getElementById('task-filter-category').addEventListener('change', renderTasks);
   document.getElementById('task-filter-priority').addEventListener('change', renderTasks);
   document.getElementById('task-sort').addEventListener('change', renderTasks);
@@ -652,7 +720,6 @@ let audioChunks = [];
 function openNoteModal(noteId = null) {
   noteModal.classList.remove('hidden');
 
-  // Reset audio recorders state inside modal
   audioChunks = [];
   document.getElementById('modal-audio-status').innerText = 'Готов';
   document.getElementById('modal-audio-status').className = '';
@@ -705,16 +772,13 @@ function renderNotes() {
   const sortOption = document.getElementById('note-sort').value;
   const searchKeyword = document.getElementById('global-search-input').value.toLowerCase().trim();
 
-  let filtered = [...appState.notes];
+  // Show notes created by me OR marked as shared
+  let filtered = appState.notes.filter(n => n.creatorId === appState.currentUser.id || !!n.shared);
 
-  // Shared vs Personal filters visibility:
-  // Render notes that are either created by the current user OR are shared to all.
-  // Personal filtering continues
   if (categoryFilter !== 'all') {
     filtered = filtered.filter(n => n.category === categoryFilter);
   }
 
-  // Search
   if (searchKeyword) {
     filtered = filtered.filter(n => {
       const titleMatch = n.title.toLowerCase().includes(searchKeyword);
@@ -724,7 +788,6 @@ function renderNotes() {
     });
   }
 
-  // Sorting
   if (sortOption === 'date-desc') {
     filtered.sort((a, b) => b.id - a.id);
   } else if (sortOption === 'date-asc') {
@@ -749,7 +812,6 @@ function renderNotes() {
     title.innerText = note.title;
     header.appendChild(title);
 
-    // Shared notes badge indicator
     if (note.shared) {
       const sharedBadge = document.createElement('span');
       sharedBadge.className = 'note-shared-badge';
@@ -761,7 +823,6 @@ function renderNotes() {
     body.className = 'note-body';
     body.innerText = note.content || '';
 
-    // Audio notes support preview inside list
     let audioContainer = null;
     if (note.audioUrl) {
       audioContainer = document.createElement('div');
@@ -779,12 +840,21 @@ function renderNotes() {
 
     const metaInfo = document.createElement('div');
     metaInfo.style.display = 'flex';
+    metaInfo.style.flexWrap = 'wrap';
     metaInfo.style.gap = '8px';
 
     const catSpan = document.createElement('span');
     catSpan.className = 'badge';
     catSpan.innerHTML = `<i class="fas fa-folder"></i> ${note.category}`;
     metaInfo.appendChild(catSpan);
+
+    const creatorUser = appState.users.find(u => u.id === note.creatorId);
+    if (creatorUser) {
+      const creatorSpan = document.createElement('span');
+      creatorSpan.className = 'badge';
+      creatorSpan.innerHTML = `<i class="fas fa-user"></i> ${creatorUser.name}`;
+      metaInfo.appendChild(creatorSpan);
+    }
 
     if (note.audioUrl) {
       const audBadge = document.createElement('span');
@@ -796,18 +866,21 @@ function renderNotes() {
     const actions = document.createElement('div');
     actions.className = 'task-actions';
 
-    const editBtn = document.createElement('button');
-    editBtn.className = 'icon-btn';
-    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-    editBtn.addEventListener('click', () => openNoteModal(note.id));
+    // Only author can edit/delete personal note
+    if (note.creatorId === appState.currentUser.id) {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'icon-btn';
+      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      editBtn.addEventListener('click', () => openNoteModal(note.id));
 
-    const delBtn = document.createElement('button');
-    delBtn.className = 'icon-btn';
-    delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    delBtn.addEventListener('click', () => deleteNote(note.id));
+      const delBtn = document.createElement('button');
+      delBtn.className = 'icon-btn';
+      delBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+      delBtn.addEventListener('click', () => deleteNote(note.id));
 
-    actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+    }
 
     footer.appendChild(metaInfo);
     footer.appendChild(actions);
@@ -829,7 +902,6 @@ function deleteNote(noteId) {
   }
 }
 
-// Setup Note Events
 function setupNoteEvents() {
   document.getElementById('add-note-btn').addEventListener('click', () => openNoteModal());
   document.getElementById('quick-add-note-btn').addEventListener('click', () => {
@@ -841,7 +913,6 @@ function setupNoteEvents() {
     btn.addEventListener('click', closeNoteModal);
   });
 
-  // Note Save
   document.getElementById('save-note-btn').addEventListener('click', () => {
     const title = document.getElementById('note-title-input').value.trim();
     if (!title) {
@@ -870,6 +941,7 @@ function setupNoteEvents() {
     } else {
       const newNote = {
         id: Date.now(),
+        creatorId: appState.currentUser.id,
         title,
         content,
         category,
@@ -886,11 +958,9 @@ function setupNoteEvents() {
     renderAll();
   });
 
-  // Filter Event Handlers
   document.getElementById('note-filter-category').addEventListener('change', renderNotes);
   document.getElementById('note-sort').addEventListener('change', renderNotes);
 
-  // Global search input handling
   const globalSearch = document.getElementById('global-search-input');
   const clearSearchBtn = document.getElementById('clear-search-btn');
 
@@ -911,7 +981,7 @@ function setupNoteEvents() {
     renderNotes();
   });
 
-  // Voice Recording API (MediaRecorder) Setup Inside Modal
+  // Microphone recording
   const recordBtn = document.getElementById('modal-record-btn');
   const stopBtn = document.getElementById('modal-stop-btn');
   const statusSpan = document.getElementById('modal-audio-status');
@@ -932,7 +1002,6 @@ function setupNoteEvents() {
         statusSpan.innerText = 'Обработка аудио...';
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
 
-        // Upload audio file to backend
         const formData = new FormData();
         formData.append('audio', audioBlob, 'note_voice.webm');
 
@@ -947,8 +1016,6 @@ function setupNoteEvents() {
           statusSpan.innerText = 'Ошибка сохранения аудио на сервере.';
           statusSpan.className = 'text-danger';
         }
-
-        // Stop all tracks to release microphone
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -975,7 +1042,7 @@ function setupNoteEvents() {
     }
   });
 
-  // Quick Voice Widget Recording logic on Dashboard
+  // Quick Voice widget
   const quickRecBtn = document.getElementById('quick-record-btn');
   const quickRecStatus = document.getElementById('quick-record-status');
   let quickMediaRecorder = null;
@@ -984,7 +1051,6 @@ function setupNoteEvents() {
 
   quickRecBtn.addEventListener('click', async () => {
     if (!isQuickRecording) {
-      // Start recording
       quickAudioChunks = [];
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1006,9 +1072,9 @@ function setupNoteEvents() {
           if (res && res.success) {
             quickRecStatus.innerText = 'Создана новая голосовая заметка!';
 
-            // Create a voice note automatically
             const newVoiceNote = {
               id: Date.now(),
+              creatorId: appState.currentUser.id,
               title: `Голосовая заметка ${new Date().toLocaleDateString('ru-RU')}`,
               content: 'Голосовая запись с главного экрана.',
               category: 'Личное',
@@ -1029,22 +1095,21 @@ function setupNoteEvents() {
         quickMediaRecorder.start();
         isQuickRecording = true;
         quickRecBtn.classList.add('recording-pulse');
-        quickRecBtn.style.backgroundColor = '#34a853'; // Green for active stop indicator
+        quickRecBtn.style.backgroundColor = '#34a853';
         quickRecBtn.innerHTML = '<i class="fas fa-stop"></i>';
-        quickRecStatus.innerText = 'Запись пошла... Нажмите кнопку еще раз для сохранения';
+        quickRecStatus.innerText = 'Запись пошла...';
 
       } catch (err) {
         console.error(err);
         quickRecStatus.innerText = 'Доступ к микрофону заблокирован';
       }
     } else {
-      // Stop recording
       if (quickMediaRecorder && quickMediaRecorder.state !== 'inactive') {
         quickMediaRecorder.stop();
       }
       isQuickRecording = false;
       quickRecBtn.classList.remove('recording-pulse');
-      quickRecBtn.style.backgroundColor = ''; // Restore default
+      quickRecBtn.style.backgroundColor = '';
       quickRecBtn.innerHTML = '<i class="fas fa-microphone"></i>';
     }
   });
@@ -1068,22 +1133,16 @@ function renderCalendar() {
 
   monthYearHeader.innerText = `${monthNames[currentMonth]} ${currentYear}`;
 
-  // First day of the month
   const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
-  // Adjust JS day indexing (Sunday is 0, make it last so Mon is 0, Sun is 6)
   const adjustedFirstDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-
-  // Days in current month
   const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Render blank spots for previous month offset
   for (let i = 0; i < adjustedFirstDay; i++) {
     const emptyCell = document.createElement('div');
     emptyCell.className = 'cal-day empty';
     daysGrid.appendChild(emptyCell);
   }
 
-  // Render days of the month
   const today = new Date();
 
   for (let day = 1; day <= totalDays; day++) {
@@ -1093,7 +1152,6 @@ function renderCalendar() {
     const cell = document.createElement('div');
     cell.className = 'cal-day';
 
-    // Highlight if selected or today
     if (dayDate.toDateString() === today.toDateString()) {
       cell.classList.add('today');
     }
@@ -1103,8 +1161,8 @@ function renderCalendar() {
 
     cell.innerText = day;
 
-    // Visual indicators/dots for tasks matching this date
-    const tasksForDay = appState.tasks.filter(t => t.due === dateStr && !t.completed);
+    // Scoped to my calendar tasks
+    const tasksForDay = appState.tasks.filter(t => (t.creatorId === appState.currentUser.id || t.assigneeId === appState.currentUser.id) && t.due === dateStr && !t.completed);
     if (tasksForDay.length > 0) {
       const dotsContainer = document.createElement('div');
       dotsContainer.className = 'cal-day-dots';
@@ -1140,7 +1198,7 @@ function renderCalendarTasksList() {
 
   document.getElementById('selected-day-title').innerText = `Задачи на ${appState.selectedCalendarDate.toLocaleDateString('ru-RU')}`;
 
-  const tasksForDay = appState.tasks.filter(t => t.due === dateStr);
+  const tasksForDay = appState.tasks.filter(t => (t.creatorId === appState.currentUser.id || t.assigneeId === appState.currentUser.id) && t.due === dateStr);
 
   if (tasksForDay.length === 0) {
     container.innerHTML = '<div class="no-data-msg">Нет запланированных задач на этот день</div>';
@@ -1185,7 +1243,7 @@ function setupCalendarEvents() {
   });
 }
 
-// ----------------- COLLABORATION / DISCUSSION MINI-CONFERENCE -----------------
+// ----------------- COLLABORATION / DISCUSSION CHAT -----------------
 let collabPollInterval = null;
 
 function renderDiscussions() {
@@ -1231,7 +1289,6 @@ function openDiscussionChat() {
 
   document.getElementById('chat-topic-title').innerText = activeDisc.title;
 
-  // Render messages
   const msgContainer = document.getElementById('chat-messages');
   msgContainer.innerHTML = '';
 
@@ -1260,15 +1317,11 @@ function openDiscussionChat() {
 
     msgContainer.appendChild(bubble);
   });
-
-  // Auto-scroll chat to bottom
   msgContainer.scrollTop = msgContainer.scrollHeight;
 }
 
 async function startCollabPolling() {
-  // Setup discussion live update polling every 3.5 seconds
   if (collabPollInterval) clearInterval(collabPollInterval);
-
   collabPollInterval = setInterval(async () => {
     if (appState.currentUser) {
       const res = await fetchFromApi('get_data');
@@ -1276,7 +1329,6 @@ async function startCollabPolling() {
         appState.discussions = res.discussions || [];
         localStorage.setItem('pwa_discussions', JSON.stringify(appState.discussions));
 
-        // Re-render chat if active
         if (appState.activeDiscussionId) {
           openDiscussionChat();
         }
@@ -1312,7 +1364,6 @@ function setupCollabEvents() {
     openDiscussionChat();
   });
 
-  // Send message
   const sendBtn = document.getElementById('chat-send-btn');
   const chatInput = document.getElementById('chat-message-input');
 
@@ -1334,7 +1385,6 @@ function setupCollabEvents() {
       disc.messages.push(newMsg);
       chatInput.value = '';
 
-      // Save data immediately
       await saveAppData();
       openDiscussionChat();
     }
@@ -1350,9 +1400,9 @@ function setupCollabEvents() {
   startCollabPolling();
 }
 
-// ----------------- SETTINGS & USER MANAGEMENT -----------------
+// ----------------- SETTINGS & PREFERENCES -----------------
 function setupSettingsEvents() {
-  // Theme selection buttons
+  // Themes
   document.getElementById('theme-light-btn').addEventListener('click', () => {
     appState.settings.theme = 'light';
     applySettings();
@@ -1363,15 +1413,68 @@ function setupSettingsEvents() {
     applySettings();
     saveAppData();
   });
+  document.getElementById('theme-midnight-btn').addEventListener('click', () => {
+    appState.settings.theme = 'midnight';
+    applySettings();
+    saveAppData();
+  });
+  document.getElementById('theme-sepia-btn').addEventListener('click', () => {
+    appState.settings.theme = 'sepia';
+    applySettings();
+    saveAppData();
+  });
 
-  // Font size changer
+  // Custom Accents
+  document.querySelectorAll('.accent-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      appState.settings.accent = dot.getAttribute('data-accent');
+      applySettings();
+      saveAppData();
+    });
+  });
+
+  // Fonts Sizes
   document.getElementById('font-size-select').addEventListener('change', (e) => {
     appState.settings.fontSize = e.target.value;
     applySettings();
     saveAppData();
   });
 
-  // PIN change
+  // Audio Keyboard Feedback
+  document.getElementById('settings-audio-feedback-input').addEventListener('change', (e) => {
+    appState.settings.audioFeedback = e.target.checked;
+    applySettings();
+    saveAppData();
+  });
+
+  // Change username profile
+  document.getElementById('settings-save-profile-btn').addEventListener('click', async () => {
+    const inputName = document.getElementById('settings-username-input').value.trim();
+    const statusMsg = document.getElementById('settings-profile-msg');
+
+    if (!inputName) {
+      statusMsg.innerText = 'Имя не должно быть пустым';
+      statusMsg.className = 'pin-status-msg error';
+      return;
+    }
+
+    const res = await fetchFromApi('update_username', {
+      user_id: appState.currentUser.id,
+      name: inputName
+    }, 'POST');
+
+    if (res && res.success) {
+      statusMsg.innerText = 'Имя успешно обновлено!';
+      statusMsg.className = 'pin-status-msg';
+      appState.currentUser.name = inputName;
+      document.getElementById('username-display').innerText = inputName;
+    } else {
+      statusMsg.innerText = res.message || 'Ошибка обновления';
+      statusMsg.className = 'pin-status-msg error';
+    }
+  });
+
+  // Change PIN security settings
   document.getElementById('settings-save-pin-btn').addEventListener('click', async () => {
     const oldPin = document.getElementById('settings-old-pin').value.trim();
     const newPin = document.getElementById('settings-new-pin').value.trim();
@@ -1390,7 +1493,7 @@ function setupSettingsEvents() {
     }, 'POST');
 
     if (res && res.success) {
-      statusMsg.innerText = 'PIN-код успешно обновлен!';
+      statusMsg.innerText = 'PIN-код успешно изменен!';
       statusMsg.className = 'pin-status-msg';
       document.getElementById('settings-old-pin').value = '';
       document.getElementById('settings-new-pin').value = '';
@@ -1400,7 +1503,7 @@ function setupSettingsEvents() {
     }
   });
 
-  // Backup JSON import
+  // Backup upload JSON
   const fileInput = document.getElementById('import-file-input');
   fileInput.addEventListener('change', async () => {
     const file = fileInput.files[0];
@@ -1421,14 +1524,12 @@ function setupSettingsEvents() {
 
 // ----------------- FLEXIBLE REMINDER SCHEDULER & NOTIFICATIONS -----------------
 function startReminderScheduler() {
-  // Check tasks for due dates or repetitions periodically (every 1 minute)
   setInterval(() => {
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     appState.tasks.forEach(task => {
-      if (!task.completed && task.due === todayStr) {
-        // Trigger notification
+      if (!task.completed && task.due === todayStr && (task.creatorId === appState.currentUser.id || task.assigneeId === appState.currentUser.id)) {
         if ('Notification' in window && Notification.permission === 'granted') {
           new Notification('Напоминание о задаче!', {
             body: `Сегодня срок выполнения задачи: "${task.title}"`,
@@ -1437,7 +1538,6 @@ function startReminderScheduler() {
           });
         }
 
-        // Handle Repetitive scheduling (daily, weekly, monthly) automatically rolls over
         if (task.reminder && task.reminder !== 'none') {
           const nextDue = new Date();
           if (task.reminder === 'daily') {
@@ -1447,8 +1547,6 @@ function startReminderScheduler() {
           } else if (task.reminder === 'monthly') {
             nextDue.setMonth(now.getMonth() + 1);
           }
-
-          // Rollover task due date but keep incomplete
           task.due = `${nextDue.getFullYear()}-${String(nextDue.getMonth() + 1).padStart(2, '0')}-${String(nextDue.getDate()).padStart(2, '0')}`;
           saveAppData();
           renderAll();

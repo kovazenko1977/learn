@@ -14,27 +14,63 @@
   --nav-height: 65px;
 }
 
+/* Accent Color Variations */
+body.accent-blue {
+  --accent-color: #4285f4;
+  --accent-light: #e8f0fe;
+}
+body.accent-green {
+  --accent-color: #2e7d32;
+  --accent-light: #e8f5e9;
+}
+body.accent-purple {
+  --accent-color: #7b1fa2;
+  --accent-light: #f3e5f5;
+}
+body.accent-orange {
+  --accent-color: #e65100;
+  --accent-light: #fff3e0;
+}
+
 /* Dark theme overrides */
 body.dark-theme {
   --bg-primary: #121212;
   --bg-secondary: #1e1e1e;
   --text-primary: #f5f5f5;
   --text-secondary: #b0b0b0;
-  --accent-color: #3b82f6;
-  --accent-light: #1e293b;
   --border-color: #333333;
   --shadow-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Midnight theme overrides */
+body.midnight-theme {
+  --bg-primary: #0a1128;
+  --bg-secondary: #101f42;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --border-color: #1e293b;
+  --shadow-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Sepia theme overrides */
+body.sepia-theme {
+  --bg-primary: #f4ecd8;
+  --bg-secondary: #fdf6e3;
+  --text-primary: #5c4738;
+  --text-secondary: #8c7662;
+  --border-color: #e4d7ba;
+  --shadow-color: rgba(92, 71, 56, 0.15);
+}
+
 /* Typography font sizes support */
 body.font-small {
-  font-size: 14px;
+  font-size: 13px;
 }
 body.font-medium {
-  font-size: 16px;
+  font-size: 15px;
 }
 body.font-large {
-  font-size: 18px;
+  font-size: 17px;
 }
 
 html, body {
@@ -160,6 +196,11 @@ html, body {
   font-size: 0.9rem;
 }
 
+.lock-user-select-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
 .pin-display {
   display: flex;
   justify-content: center;
@@ -252,7 +293,7 @@ html, body {
 }
 
 .header-title h1 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   margin: 0;
   font-weight: 700;
   color: var(--accent-color);
@@ -444,7 +485,7 @@ html, body {
   color: var(--text-secondary);
 }
 
-/* Productivity Section / Simple Custom CSS Graphic */
+/* Productivity Section */
 .productivity-section {
   background-color: var(--bg-secondary);
   border-radius: 15px;
@@ -579,7 +620,8 @@ html, body {
 }
 
 .btn-primary:hover {
-  background-color: #3171d6;
+  background-color: var(--accent-color);
+  filter: brightness(0.9);
 }
 
 .btn-secondary {
@@ -622,6 +664,40 @@ html, body {
 
 .btn-icon-square:hover {
   background-color: var(--accent-light);
+}
+
+/* Accent Palette Colors */
+.accent-palette {
+  display: flex;
+  gap: 12px;
+}
+
+.accent-dot {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-block;
+  border: 2px solid transparent;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s;
+}
+
+.accent-dot:active {
+  transform: scale(0.9);
+}
+
+.accent-dot.active {
+  border-color: var(--text-primary);
+}
+
+.bg-blue { background-color: #4285f4; }
+.bg-green { background-color: #2e7d32; }
+.bg-purple { background-color: #7b1fa2; }
+.bg-orange { background-color: #e65100; }
+
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 /* Filter & Screen Header Actions */

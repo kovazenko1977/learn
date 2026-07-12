@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>PWA Web App</title>
+  <title>PWA Premium Web Planner</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,10 +29,22 @@
   <div id="lock-screen" class="lock-screen">
     <div class="lock-container">
       <div class="lock-header">
-        <i class="fas fa-lock lock-icon"></i>
+        <i class="fas fa-shield-alt lock-icon"></i>
         <h2>Вход в систему</h2>
-        <p>Введите PIN-код для разблокировки</p>
+        <p>Выберите пользователя и введите PIN-код</p>
       </div>
+
+      <!-- User Switcher inside Lock Screen -->
+      <div class="form-group lock-user-select-group">
+        <label for="lock-user-select">Пользователь:</label>
+        <select id="lock-user-select">
+          <option value="1">Коваженко С.Б. (1234)</option>
+          <option value="2">Иванов И.И. (5555)</option>
+          <option value="3">Петров П.П. (7777)</option>
+          <option value="4">Сидоров С.С. (9999)</option>
+        </select>
+      </div>
+
       <div class="pin-display">
         <div class="pin-dot"></div>
         <div class="pin-dot"></div>
@@ -65,11 +77,11 @@
         <span class="user-greeting"><i class="fas fa-user-circle"></i> <span id="username-display">Гость</span></span>
       </div>
       <div class="header-title">
-        <h1>PWA App</h1>
+        <h1>PWA Premium Planner</h1>
       </div>
       <div class="header-right">
-        <button id="theme-toggle-btn" class="icon-btn" title="Сменить тему">
-          <i class="fas fa-moon"></i>
+        <button id="theme-toggle-btn" class="icon-btn" title="Быстрая смена темы">
+          <i class="fas fa-adjust"></i>
         </button>
         <button id="logout-btn" class="icon-btn" title="Выйти">
           <i class="fas fa-sign-out-alt"></i>
@@ -80,7 +92,7 @@
     <!-- Main Content Area -->
     <main class="app-main">
 
-      <!-- Screen 1: Dashboard (Dashboard Widgets & Stats & Quick Search) -->
+      <!-- Screen 1: Dashboard (Widgets & Stats & Quick Search) -->
       <section id="screen-dashboard" class="app-screen">
         <div class="search-bar-container">
           <div class="search-input-wrapper">
@@ -297,14 +309,36 @@
       <section id="screen-settings" class="app-screen hidden">
         <h2><i class="fas fa-cog"></i> Настройки</h2>
 
+        <!-- Custom Profile Card -->
+        <div class="settings-group card">
+          <h3><i class="fas fa-user-edit"></i> Профиль пользователя</h3>
+          <div class="form-group">
+            <label for="settings-username-input">Имя отображения:</label>
+            <input type="text" id="settings-username-input" placeholder="Ваше имя...">
+          </div>
+          <div id="settings-profile-msg" class="pin-status-msg"></div>
+          <button id="settings-save-profile-btn" class="btn btn-primary"><i class="fas fa-user-check"></i> Сохранить имя</button>
+        </div>
+
         <!-- Customization -->
         <div class="settings-group card">
           <h3><i class="fas fa-palette"></i> Оформление интерфейса</h3>
           <div class="settings-row">
-            <span>Цветовая схема:</span>
-            <div class="theme-buttons">
-              <button id="theme-light-btn" class="btn">Светлая</button>
-              <button id="theme-dark-btn" class="btn">Тёмная</button>
+            <span>Цветовая тема:</span>
+            <div class="theme-buttons flex-wrap">
+              <button id="theme-light-btn" class="btn btn-secondary btn-sm">Светлая</button>
+              <button id="theme-dark-btn" class="btn btn-secondary btn-sm">Тёмная</button>
+              <button id="theme-midnight-btn" class="btn btn-secondary btn-sm">Полуночная</button>
+              <button id="theme-sepia-btn" class="btn btn-secondary btn-sm">Сепия</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span>Цветовой акцент:</span>
+            <div class="accent-palette">
+              <span class="accent-dot bg-blue" data-accent="blue" title="Синий"></span>
+              <span class="accent-dot bg-green" data-accent="green" title="Зеленый"></span>
+              <span class="accent-dot bg-purple" data-accent="purple" title="Фиолетовый"></span>
+              <span class="accent-dot bg-orange" data-accent="orange" title="Оранжевый"></span>
             </div>
           </div>
           <div class="settings-row">
@@ -314,6 +348,12 @@
               <option value="medium" selected>Стандартный</option>
               <option value="large">Крупный</option>
             </select>
+          </div>
+          <div class="settings-row">
+            <label for="settings-audio-feedback-input" class="checkbox-row">
+              <input type="checkbox" id="settings-audio-feedback-input" checked>
+              <span>Звуковой отклик клавиш</span>
+            </label>
           </div>
         </div>
 
@@ -348,8 +388,8 @@
         <!-- About section -->
         <div class="settings-group card about-card">
           <h3><i class="fas fa-info-circle"></i> О программе</h3>
-          <p><strong>Мобильное PWA-приложение для планирования</strong></p>
-          <p>Версия: 1.0.0</p>
+          <p><strong>Премиальное PWA-приложение для совместной работы</strong></p>
+          <p>Версия: 2.0.0</p>
           <p>Разработчик: <a href="https://wes.by" target="_blank" rel="noopener">wes.by</a></p>
           <p>Автор: <strong>Коваженко С.Б.</strong></p>
         </div>
@@ -357,7 +397,7 @@
 
     </main>
 
-    <!-- Bottom Navigation Bar for Mobile-first standalone experience -->
+    <!-- Bottom Navigation Bar -->
     <nav class="app-nav">
       <button class="nav-item active" data-screen="dashboard">
         <i class="fas fa-chart-line"></i>
@@ -397,11 +437,11 @@
         <input type="hidden" id="edit-task-id">
         <div class="form-group">
           <label for="task-title-input">Название задачи:</label>
-          <input type="text" id="task-title-input" placeholder="Купить продукты..." required>
+          <input type="text" id="task-title-input" placeholder="Название задачи..." required>
         </div>
         <div class="form-group">
           <label for="task-desc-input">Описание:</label>
-          <textarea id="task-desc-input" placeholder="Молоко, хлеб, яблоки..." rows="3"></textarea>
+          <textarea id="task-desc-input" placeholder="Дополнительные детали..." rows="3"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group half-width">
@@ -424,8 +464,10 @@
         </div>
         <div class="form-row">
           <div class="form-group half-width">
-            <label for="task-due-input">Срок выполнения:</label>
-            <input type="date" id="task-due-input">
+            <label for="task-assignee-input">Ответственный (Исполнитель):</label>
+            <select id="task-assignee-input">
+              <!-- Dynamically rendered -->
+            </select>
           </div>
           <div class="form-group half-width">
             <label for="task-reminder-input">Повторять напоминание:</label>
@@ -437,9 +479,15 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="task-tags-input">Теги (через запятую):</label>
-          <input type="text" id="task-tags-input" placeholder="продукты, магазин, выходные">
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="task-due-input">Срок выполнения:</label>
+            <input type="date" id="task-due-input">
+          </div>
+          <div class="form-group half-width">
+            <label for="task-tags-input">Теги (через запятую):</label>
+            <input type="text" id="task-tags-input" placeholder="тег1, тег2">
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -459,11 +507,11 @@
         <input type="hidden" id="edit-note-id">
         <div class="form-group">
           <label for="note-title-input">Заголовок заметки:</label>
-          <input type="text" id="note-title-input" placeholder="Идея для проекта..." required>
+          <input type="text" id="note-title-input" placeholder="Заголовок заметки..." required>
         </div>
         <div class="form-group">
           <label for="note-content-input">Содержимое:</label>
-          <textarea id="note-content-input" placeholder="Начать писать заметку здесь..." rows="6"></textarea>
+          <textarea id="note-content-input" placeholder="Начать писать заметку здесь..." rows="5"></textarea>
         </div>
         <div class="form-row">
           <div class="form-group half-width">
@@ -485,8 +533,8 @@
         <div class="audio-recorder-section">
           <h4><i class="fas fa-microphone"></i> Прикрепить голосовую заметку</h4>
           <div class="audio-controls-row">
-            <button id="modal-record-btn" class="btn btn-danger"><i class="fas fa-microphone"></i> Записать</button>
-            <button id="modal-stop-btn" class="btn btn-secondary hidden" disabled><i class="fas fa-stop"></i> Стоп</button>
+            <button id="modal-record-btn" class="btn btn-danger btn-sm"><i class="fas fa-microphone"></i> Записать</button>
+            <button id="modal-stop-btn" class="btn btn-secondary btn-sm hidden" disabled><i class="fas fa-stop"></i> Стоп</button>
             <span id="modal-audio-status">Готов</span>
           </div>
           <div id="modal-audio-preview" class="audio-preview-container hidden">

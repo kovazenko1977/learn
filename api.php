@@ -103,6 +103,46 @@ switch ($action) {
         }
         break;
 
+    case 'get_users':
+        $users = read_json('data/users.json');
+        $safe_users = [];
+        foreach ($users as $u) {
+            $safe_users[] = [
+                'id' => $u['id'],
+                'name' => $u['name']
+            ];
+        }
+        echo json_encode(['success' => true, 'users' => $safe_users]);
+        break;
+
+    case 'update_username':
+        $input = json_decode(file_get_contents('php://input'), true);
+        $user_id = isset($input['user_id']) ? (int)$input['user_id'] : 0;
+        $new_name = isset($input['name']) ? trim($input['name']) : '';
+
+        if (empty($new_name)) {
+            echo json_encode(['success' => false, 'message' => 'Имя не должно быть пустым']);
+            exit;
+        }
+
+        $users = read_json('data/users.json');
+        $updated = false;
+        foreach ($users as &$user) {
+            if ($user['id'] === $user_id) {
+                $user['name'] = $new_name;
+                $updated = true;
+                break;
+            }
+        }
+
+        if ($updated) {
+            write_json('data/users.json', $users);
+            echo json_encode(['success' => true, 'message' => 'Имя пользователя успешно обновлено']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Пользователь не найден']);
+        }
+        break;
+
     case 'get_data':
         $notes = read_json('data/notes.json');
         $tasks = read_json('data/tasks.json');

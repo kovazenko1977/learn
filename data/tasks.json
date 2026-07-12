@@ -49,5 +49,24 @@
         "completed": false,
         "completedAt": null,
         "createdAt": "2026-07-11T15:59:21.593Z"
+    },
+    {
+        "id": 1783876453422,
+        "creatorId": 1,
+        "assigneeId": 1,
+        "title": "Реализовать PWA-приложение",
+        "desc": "Все данные в JSON, поддержка аудиозаметок",
+        "category": "Работа",
+        "priority": "high",
+        "due": "",
+        "reminder": "none",
+        "tags": [
+            "pwa",
+            "json",
+            "php"
+        ],
+        "completed": false,
+        "completedAt": null,
+        "createdAt": "2026-07-12T17:14:13.422Z"
     }
 ]
