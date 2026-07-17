@@ -1,0 +1,147 @@
+/* Premium Forest Parallax Admin CSS */
+.premium-forest-wrap {
+	margin: 20px 20px 0 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.premium-forest-header {
+	background: linear-gradient(135deg, #1e3c1a 0%, #3d6a24 100%);
+	color: #fff;
+	padding: 24px 30px;
+	border-radius: 8px 8px 0 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.premium-forest-header h1 {
+	color: #fff;
+	margin: 0;
+	font-size: 28px;
+	font-weight: 700;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.premium-forest-header .author-tag {
+	font-size: 13px;
+	opacity: 0.85;
+	text-align: right;
+}
+
+.premium-forest-header .author-tag a {
+	color: #fff;
+	text-decoration: underline;
+}
+
+.premium-forest-body {
+	background: #fff;
+	border: 1px solid #ccd0d4;
+	border-top: none;
+	border-radius: 0 0 8px 8px;
+	display: flex;
+	min-height: 500px;
+}
+
+/* Tabs Sidebar */
+.premium-forest-tabs {
+	width: 220px;
+	background: #f6f7f7;
+	border-right: 1px solid #ccd0d4;
+	flex-shrink: 0;
+}
+
+.premium-forest-tab-link {
+	display: block;
+	padding: 15px 20px;
+	color: #2c3338;
+	text-decoration: none;
+	font-weight: 600;
+	border-bottom: 1px solid #dec3c4;
+	transition: all 0.2s ease;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.premium-forest-tab-link:hover {
+	background: #f0f0f1;
+	color: #3d6a24;
+}
+
+.premium-forest-tab-link.active {
+	background: #fff;
+	color: #3d6a24;
+	border-right: 4px solid #3d6a24;
+	margin-right: -1px;
+}
+
+/* Content Area */
+.premium-forest-content {
+	flex-grow: 1;
+	padding: 30px;
+}
+
+.premium-forest-tab-content {
+	display: none;
+}
+
+.premium-forest-tab-content.active {
+	display: block;
+}
+
+.premium-forest-tab-content h2 {
+	font-size: 20px;
+	margin-top: 0;
+	margin-bottom: 20px;
+	border-bottom: 1px solid #f0f0f1;
+	padding-bottom: 10px;
+	color: #1e3c1a;
+}
+
+/* Form Styling */
+.form-table th {
+	width: 250px;
+	font-weight: 600;
+}
+
+.premium-forest-desc {
+	display: block;
+	margin-top: 5px;
+	color: #646970;
+	font-style: italic;
+	font-size: 12px;
+}
+
+.premium-forest-wrap input[type="text"],
+.premium-forest-wrap input[type="number"],
+.premium-forest-wrap select,
+.premium-forest-wrap textarea {
+	max-width: 400px;
+	width: 100%;
+}
+
+.premium-forest-wrap textarea {
+	font-family: monospace;
+	font-size: 13px;
+}
+
+/* Save Bar */
+.premium-forest-footer {
+	margin-top: 20px;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.premium-forest-footer .button-primary {
+	background: #3d6a24 !important;
+	border-color: #2f541c !important;
+	box-shadow: 0 1px 0 #2f541c !important;
+	text-shadow: none !important;
+	font-weight: 600 !important;
+	padding: 5px 20px !important;
+	height: auto !important;
+	font-size: 14px !important;
+}
+
+.premium-forest-footer .button-primary:hover {
+	background: #4a7f2c !important;
+	border-color: #3c6823 !important;
+}

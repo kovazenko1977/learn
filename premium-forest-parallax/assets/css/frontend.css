@@ -1,0 +1,20 @@
+/* Premium Forest Parallax Frontend CSS */
+.premium-forest-env-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none; /* Make center screen fully interactive, free of leaf block */
+	z-index: 999999; /* Ensure parallax layers reside above body but below dropdown overlays */
+	overflow: hidden;
+}
+
+#premium-forest-parallax-canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: block;
+}
