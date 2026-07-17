@@ -1,17 +1,17 @@
 <?php
-/**
- * Plugin Name: Premium Forest Parallax
- * Plugin URI: https://wes.by
- * Description: Premium Forest Parallax plugin adds an interactive, high-performance, live-nature aesthetic parallax leaf and particle effect on the edges of your website using WebGL2, Three.js, and Canvas2D fallback.
- * Version: 1.0.0
- * Author: Kovazhenko S.B.
- * Author URI: https://wes.by
- * License: GPLv2 or later
- * Text Domain: premium-forest-parallax
- * Domain Path: /languages
- * Requires PHP: 8.0
- * Requires at least: 6.0
- */
+/*
+Plugin Name: Premium Forest Parallax
+Plugin URI: https://wes.by
+Description: Adds interactive detailed leaf parallax on screen edges.
+Version: 1.0.0
+Author: Kovazhenko S.B.
+Author URI: https://wes.by
+License: GPLv2 or later
+Text Domain: premium-forest-parallax
+Domain Path: /languages
+Requires PHP: 8.0
+Requires at least: 6.0
+*/
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
