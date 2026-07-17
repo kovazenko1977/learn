@@ -1,16 +1,16 @@
 <?php
 /*
 Plugin Name: Premium Forest Parallax
-Plugin URI: https://wes.by
+Plugin URI: https://wes.by/
 Description: Adds interactive detailed leaf parallax on screen edges.
 Version: 1.0.0
 Author: Kovazhenko S.B.
-Author URI: https://wes.by
-License: GPLv2 or later
+Author URI: https://wes.by/
 Text Domain: premium-forest-parallax
 Domain Path: /languages
-Requires PHP: 8.0
+License: GPLv2 or later
 Requires at least: 6.0
+Requires PHP: 8.0
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
