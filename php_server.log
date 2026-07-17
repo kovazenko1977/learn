@@ -1,0 +1,118 @@
+[Fri Jul 17 01:35:20 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Fri Jul 17 01:35:29 2026] [::1]:34216 Accepted
+[Fri Jul 17 01:35:29 2026] [::1]:34216 [200]: HEAD /
+[Fri Jul 17 01:35:29 2026] [::1]:34216 Closing
+[Fri Jul 17 01:36:17 2026] [::1]:44320 Accepted
+[Fri Jul 17 01:36:17 2026] [::1]:44320 [200]: GET /
+[Fri Jul 17 01:36:17 2026] [::1]:44320 Closing
+[Fri Jul 17 01:36:17 2026] [::1]:33218 Accepted
+[Fri Jul 17 01:36:17 2026] [::1]:33220 Accepted
+[Fri Jul 17 01:36:17 2026] [::1]:33218 [200]: GET /style.css
+[Fri Jul 17 01:36:17 2026] [::1]:33218 Closing
+[Fri Jul 17 01:36:17 2026] [::1]:33220 [200]: GET /app.js
+[Fri Jul 17 01:36:17 2026] [::1]:33220 Closing
+[Fri Jul 17 01:37:02 2026] [::1]:36804 Accepted
+[Fri Jul 17 01:37:02 2026] [::1]:36804 [200]: GET /
+[Fri Jul 17 01:37:02 2026] [::1]:36804 Closing
+[Fri Jul 17 01:37:02 2026] [::1]:36812 Accepted
+[Fri Jul 17 01:37:02 2026] [::1]:36826 Accepted
+[Fri Jul 17 01:37:02 2026] [::1]:36812 [200]: GET /style.css
+[Fri Jul 17 01:37:02 2026] [::1]:36812 Closing
+[Fri Jul 17 01:37:02 2026] [::1]:36826 [200]: GET /app.js
+[Fri Jul 17 01:37:02 2026] [::1]:36826 Closing
+[Fri Jul 17 01:37:35 2026] [::1]:48658 Accepted
+[Fri Jul 17 01:37:35 2026] [::1]:48658 [200]: GET /
+[Fri Jul 17 01:37:35 2026] [::1]:48658 Closing
+[Fri Jul 17 01:37:35 2026] [::1]:48662 Accepted
+[Fri Jul 17 01:37:35 2026] [::1]:48666 Accepted
+[Fri Jul 17 01:37:35 2026] [::1]:48662 [200]: GET /style.css
+[Fri Jul 17 01:37:35 2026] [::1]:48666 [200]: GET /app.js
+[Fri Jul 17 01:37:35 2026] [::1]:48662 Closing
+[Fri Jul 17 01:37:35 2026] [::1]:48666 Closing
+[Fri Jul 17 01:38:42 2026] [::1]:47012 Accepted
+[Fri Jul 17 01:38:42 2026] [::1]:47012 [200]: GET /
+[Fri Jul 17 01:38:42 2026] [::1]:47012 Closing
+[Fri Jul 17 01:38:42 2026] [::1]:47026 Accepted
+[Fri Jul 17 01:38:42 2026] [::1]:47040 Accepted
+[Fri Jul 17 01:38:42 2026] [::1]:47026 [200]: GET /style.css
+[Fri Jul 17 01:38:42 2026] [::1]:47040 [200]: GET /app.js
+[Fri Jul 17 01:38:42 2026] [::1]:47026 Closing
+[Fri Jul 17 01:38:42 2026] [::1]:47040 Closing
+[Fri Jul 17 01:39:04 2026] [::1]:44616 Accepted
+[Fri Jul 17 01:39:04 2026] [::1]:44616 [200]: GET /
+[Fri Jul 17 01:39:04 2026] [::1]:44616 Closing
+[Fri Jul 17 01:39:04 2026] [::1]:44626 Accepted
+[Fri Jul 17 01:39:04 2026] [::1]:44634 Accepted
+[Fri Jul 17 01:39:04 2026] [::1]:44626 [200]: GET /style.css
+[Fri Jul 17 01:39:04 2026] [::1]:44626 Closing
+[Fri Jul 17 01:39:04 2026] [::1]:44634 [200]: GET /app.js
+[Fri Jul 17 01:39:04 2026] [::1]:44634 Closing
+[Fri Jul 17 01:39:21 2026] [::1]:57948 Accepted
+[Fri Jul 17 01:39:21 2026] [::1]:57948 [200]: GET /
+[Fri Jul 17 01:39:21 2026] [::1]:57948 Closing
+[Fri Jul 17 01:39:21 2026] [::1]:57956 Accepted
+[Fri Jul 17 01:39:21 2026] [::1]:57960 Accepted
+[Fri Jul 17 01:39:21 2026] [::1]:57956 [200]: GET /style.css
+[Fri Jul 17 01:39:21 2026] [::1]:57960 [200]: GET /app.js
+[Fri Jul 17 01:39:21 2026] [::1]:57956 Closing
+[Fri Jul 17 01:39:21 2026] [::1]:57960 Closing
+[Fri Jul 17 01:40:10 2026] [::1]:46924 Accepted
+[Fri Jul 17 01:40:10 2026] [::1]:46924 [200]: GET /
+[Fri Jul 17 01:40:10 2026] [::1]:46924 Closing
+[Fri Jul 17 01:40:10 2026] [::1]:46928 Accepted
+[Fri Jul 17 01:40:10 2026] [::1]:46944 Accepted
+[Fri Jul 17 01:40:10 2026] [::1]:46928 [200]: GET /style.css
+[Fri Jul 17 01:40:10 2026] [::1]:46944 [200]: GET /app.js
+[Fri Jul 17 01:40:10 2026] [::1]:46928 Closing
+[Fri Jul 17 01:40:10 2026] [::1]:46944 Closing
+[Fri Jul 17 01:40:12 2026] [::1]:46950 Accepted
+[Fri Jul 17 01:40:12 2026] [::1]:46950 [200]: POST /api.php?action=register
+[Fri Jul 17 01:40:12 2026] [::1]:46950 Closing
+[Fri Jul 17 01:40:12 2026] [::1]:46958 Accepted
+[Fri Jul 17 01:40:12 2026] [::1]:46958 [200]: GET /api.php?action=dashboard
+[Fri Jul 17 01:40:12 2026] [::1]:46958 Closing
+[Fri Jul 17 01:40:12 2026] [::1]:46970 Accepted
+[Fri Jul 17 01:40:12 2026] [::1]:46970 [200]: GET /api.php?action=settings
+[Fri Jul 17 01:40:12 2026] [::1]:46970 Closing
+[Fri Jul 17 01:40:16 2026] [::1]:46986 Accepted
+[Fri Jul 17 01:40:16 2026] [::1]:46986 [200]: POST /api.php?action=ticket_save
+[Fri Jul 17 01:40:16 2026] [::1]:46986 Closing
+[Fri Jul 17 01:40:16 2026] [::1]:46998 Accepted
+[Fri Jul 17 01:40:16 2026] [::1]:46998 [200]: GET /api.php?action=dashboard
+[Fri Jul 17 01:40:16 2026] [::1]:46998 Closing
+[Fri Jul 17 01:40:16 2026] [::1]:47012 Accepted
+[Fri Jul 17 01:40:16 2026] [::1]:47012 [200]: GET /api.php?action=settings
+[Fri Jul 17 01:40:16 2026] [::1]:47012 Closing
+[Fri Jul 17 01:40:18 2026] [::1]:49186 Accepted
+[Fri Jul 17 01:40:18 2026] [::1]:49186 [200]: GET /api.php?action=tickets
+[Fri Jul 17 01:40:18 2026] [::1]:49186 Closing
+[Fri Jul 17 01:40:18 2026] [::1]:49190 Accepted
+[Fri Jul 17 01:40:18 2026] [::1]:49190 [200]: GET /api.php?action=settings
+[Fri Jul 17 01:40:18 2026] [::1]:49190 Closing
+[Fri Jul 17 01:40:18 2026] [::1]:49198 Accepted
+[Fri Jul 17 01:40:18 2026] [::1]:49198 [200]: GET /api.php?action=users
+[Fri Jul 17 01:40:18 2026] [::1]:49198 Closing
+[Fri Jul 17 01:40:19 2026] [::1]:49210 Accepted
+[Fri Jul 17 01:40:19 2026] [::1]:49210 [200]: GET /api.php?action=tickets
+[Fri Jul 17 01:40:19 2026] [::1]:49210 Closing
+[Fri Jul 17 01:40:19 2026] [::1]:49212 Accepted
+[Fri Jul 17 01:40:19 2026] [::1]:49212 [200]: GET /api.php?action=settings
+[Fri Jul 17 01:40:19 2026] [::1]:49212 Closing
+[Fri Jul 17 01:40:19 2026] [::1]:49228 Accepted
+[Fri Jul 17 01:40:19 2026] [::1]:49228 [200]: GET /api.php?action=users
+[Fri Jul 17 01:40:19 2026] [::1]:49228 Closing
+[Fri Jul 17 01:40:21 2026] [::1]:49244 Accepted
+[Fri Jul 17 01:40:21 2026] [::1]:49244 [200]: GET /api.php?action=tickets
+[Fri Jul 17 01:40:21 2026] [::1]:49244 Closing
+[Fri Jul 17 01:40:21 2026] [::1]:49256 Accepted
+[Fri Jul 17 01:40:21 2026] [::1]:49256 [200]: GET /api.php?action=settings
+[Fri Jul 17 01:40:21 2026] [::1]:49256 Closing
+[Fri Jul 17 01:40:21 2026] [::1]:49272 Accepted
+[Fri Jul 17 01:40:21 2026] [::1]:49272 [200]: GET /api.php?action=comments&ticket_id=2
+[Fri Jul 17 01:40:21 2026] [::1]:49272 Closing
+[Fri Jul 17 01:40:23 2026] [::1]:49276 Accepted
+[Fri Jul 17 01:40:23 2026] [::1]:49276 [200]: POST /api.php?action=comment_save
+[Fri Jul 17 01:40:23 2026] [::1]:49276 Closing
+[Fri Jul 17 01:40:23 2026] [::1]:49286 Accepted
+[Fri Jul 17 01:40:23 2026] [::1]:49286 [200]: GET /api.php?action=comments&ticket_id=2
+[Fri Jul 17 01:40:23 2026] [::1]:49286 Closing

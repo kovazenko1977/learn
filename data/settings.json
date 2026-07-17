@@ -1,0 +1,39 @@
+{
+    "categories": [
+        "Электрика",
+        "Сантехника",
+        "Оборудование",
+        "Офис",
+        "Другое"
+    ],
+    "priorities": [
+        {
+            "key": "low",
+            "label": "Низкий",
+            "color": "#28a745"
+        },
+        {
+            "key": "medium",
+            "label": "Средний",
+            "color": "#ffc107"
+        },
+        {
+            "key": "high",
+            "label": "Высокий",
+            "color": "#dc3545"
+        }
+    ],
+    "sla": {
+        "low": 72,
+        "medium": 24,
+        "high": 4
+    },
+    "form_fields": [
+        {
+            "id": "room_number",
+            "label": "Комната",
+            "type": "text",
+            "required": true
+        }
+    ]
+}

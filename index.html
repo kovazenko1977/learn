@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM-система заявок</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for beautiful modern icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-mode">
+
+    <!-- Auth Container (Overlay screen) -->
+    <div id="auth-screen" class="auth-overlay active">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fa-solid fa-screwdriver-wrench auth-logo"></i>
+                <h2 data-i18n="auth_title">Вход в CRM</h2>
+                <p data-i18n="auth_subtitle">Управление заявками на ремонт и обслуживание</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username" data-i18n="username_lbl">Имя пользователя</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="login-username" required placeholder="Введите логин">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="login-password" data-i18n="password_lbl">Пароль</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-password" required placeholder="Введите пароль">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="btn-login-submit">
+                    <span data-i18n="btn_login">Войти</span> <i class="fa-solid fa-right-to-bracket"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p><a href="#" id="link-recover-pwd" data-i18n="forgot_password">Забыли пароль?</a></p>
+                <p><span data-i18n="no_account_yet">Нет аккаунта?</span> <a href="#" id="link-show-register" data-i18n="btn_register">Зарегистрироваться</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Card Overlay -->
+    <div id="register-screen" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fa-solid fa-user-plus auth-logo"></i>
+                <h2 data-i18n="register_title">Регистрация в CRM</h2>
+                <p data-i18n="register_subtitle">Создайте новый рабочий профиль</p>
+            </div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-username" data-i18n="username_lbl">Имя пользователя</label>
+                    <input type="text" id="reg-username" required placeholder="Например, ivan_p">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password" data-i18n="password_lbl">Пароль</label>
+                    <input type="password" id="reg-password" required placeholder="Минимум 6 символов">
+                </div>
+                <div class="form-group">
+                    <label for="reg-fullname" data-i18n="fullname_lbl">ФИО полностью</label>
+                    <input type="text" id="reg-fullname" required placeholder="Иванов Иван Петрович">
+                </div>
+                <div class="form-group">
+                    <label for="reg-email" data-i18n="email_lbl">Email для уведомлений</label>
+                    <input type="email" id="reg-email" required placeholder="ivanov@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="reg-phone" data-i18n="phone_lbl">Телефон</label>
+                    <input type="text" id="reg-phone" placeholder="+7 (999) 123-45-67">
+                </div>
+                <div class="form-group">
+                    <label for="reg-role" data-i18n="role_lbl">Желаемая роль</label>
+                    <select id="reg-role">
+                        <option value="creator" data-i18n="role_creator">Ответственный сотрудник (Заявитель)</option>
+                        <option value="executor" data-i18n="role_executor">Исполнитель (Техник/Слесарь)</option>
+                        <option value="manager" data-i18n="role_manager">Начальник отдела</option>
+                        <option value="admin" data-i18n="role_admin">Администратор</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span data-i18n="btn_register">Зарегистрироваться</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p><a href="#" id="link-back-login" data-i18n="already_have_account">Уже есть аккаунт? Войти</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recovery Overlay -->
+    <div id="recover-screen" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="fa-solid fa-key auth-logo"></i>
+                <h2 data-i18n="recover_title">Восстановление доступа</h2>
+                <p data-i18n="recover_subtitle">Введите имя пользователя или Email для получения ссылки</p>
+            </div>
+
+            <form id="recover-form">
+                <div class="form-group">
+                    <label for="recover-identity" data-i18n="username_or_email_lbl">Имя пользователя или Email</label>
+                    <input type="text" id="recover-identity" required placeholder="Введите логин или Email">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span data-i18n="btn_recover">Получить ссылку</span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p><a href="#" id="link-recover-back" data-i18n="back_to_login">Назад к авторизации</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="app-layout">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-cubes-stacked brand-icon"></i>
+                <span>CRM Master</span>
+            </div>
+
+            <div class="user-pill">
+                <div class="user-avatar" id="avatar-circle">U</div>
+                <div class="user-info">
+                    <h4 id="sidebar-fullname">Пользователь</h4>
+                    <span id="sidebar-role" class="badge">Роль</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-view="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span data-i18n="menu_dashboard">Дашборд</span>
+                </a>
+                <a href="#tickets" class="menu-item" data-view="tickets">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span data-i18n="menu_tickets">Список заявок</span>
+                </a>
+                <a href="#kanban" class="menu-item" data-view="kanban">
+                    <i class="fa-solid fa-rectangle-list"></i>
+                    <span data-i18n="menu_kanban">Канбан-доска</span>
+                </a>
+                <a href="#users" class="menu-item admin-only manager-only" data-view="users">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span data-i18n="menu_users">Пользователи</span>
+                </a>
+                <a href="#settings" class="menu-item admin-only" data-view="settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span data-i18n="menu_settings">Конструктор и БД</span>
+                </a>
+                <a href="#logs" class="menu-item admin-only" data-view="logs">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span data-i18n="menu_logs">Лог действий</span>
+                </a>
+                <a href="#profile" class="menu-item" data-view="profile">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span data-i18n="menu_profile">Мой профиль</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="btn-logout" class="btn btn-danger btn-block">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="btn_logout">Выйти</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-content">
+
+            <!-- Header Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="sidebar-toggle" class="btn-icon"><i class="fa-solid fa-bars"></i></button>
+                    <h2 id="current-view-title" data-i18n="title_dashboard">Дашборд аналитики</h2>
+                </div>
+
+                <div class="topbar-right">
+                    <!-- Quick create ticket button -->
+                    <button id="btn-quick-create" class="btn btn-success creator-only admin-only manager-only">
+                        <i class="fa-solid fa-circle-plus"></i> <span data-i18n="btn_new_ticket">Создать заявку</span>
+                    </button>
+
+                    <!-- Language Selector -->
+                    <div class="lang-selector">
+                        <button id="btn-lang-toggle" class="btn btn-outline">
+                            <i class="fa-solid fa-globe"></i> <span id="lang-text">RU</span>
+                        </button>
+                    </div>
+
+                    <!-- Dark / Light toggle button -->
+                    <button id="btn-theme-toggle" class="btn-icon">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic View Windows -->
+            <div class="view-viewport">
+
+                <!-- VIEW 1: Dashboard -->
+                <section id="view-dashboard" class="app-view active">
+                    <!-- KPI Cards Grid -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card info">
+                            <div class="kpi-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                            <div class="kpi-details">
+                                <h3 id="kpi-total-tickets">0</h3>
+                                <p data-i18n="kpi_total">Всего заявок</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card warning">
+                            <div class="kpi-icon"><i class="fa-solid fa-spinner"></i></div>
+                            <div class="kpi-details">
+                                <h3 id="kpi-in-progress">0</h3>
+                                <p data-i18n="kpi_active">В работе / Назначено</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card danger">
+                            <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="kpi-details">
+                                <h3 id="kpi-sla-violations">0</h3>
+                                <p data-i18n="kpi_sla_expired">Просрочено SLA</p>
+                            </div>
+                        </div>
+                        <div class="kpi-card success">
+                            <div class="kpi-icon"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="kpi-details">
+                                <h3 id="kpi-completed-avg">0 ч</h3>
+                                <p data-i18n="kpi_avg_time">Среднее время выполнения</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Visual Analytics Sections -->
+                    <div class="dashboard-charts-row">
+                        <div class="chart-box">
+                            <h3 data-i18n="chart_status_dist">Распределение по статусам</h3>
+                            <div class="custom-bar-chart" id="status-bar-chart">
+                                <!-- Bars will be injected via JS -->
+                            </div>
+                        </div>
+
+                        <div class="chart-box">
+                            <h3 data-i18n="chart_staff_load">Нагрузка на исполнителей</h3>
+                            <div class="workload-list" id="workload-container">
+                                <!-- Exec workloads injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: Tickets List & Archive -->
+                <section id="view-tickets" class="app-view">
+                    <!-- Filtering and Actions Bar -->
+                    <div class="filter-bar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="search-tickets-input" data-i18n-placeholder="search_placeholder" placeholder="Поиск по теме или описанию...">
+                        </div>
+
+                        <div class="filters-row">
+                            <select id="filter-category">
+                                <option value="" data-i18n="all_categories">Все категории</option>
+                            </select>
+
+                            <select id="filter-priority">
+                                <option value="" data-i18n="all_priorities">Все приоритеты</option>
+                                <option value="low" data-i18n="priority_low">Низкий</option>
+                                <option value="medium" data-i18n="priority_medium">Средний</option>
+                                <option value="high" data-i18n="priority_high">Высокий</option>
+                            </select>
+
+                            <select id="filter-status">
+                                <option value="" data-i18n="all_statuses">Все статусы</option>
+                                <option value="new" data-i18n="status_new">Новая</option>
+                                <option value="assigned" data-i18n="status_assigned">Назначена</option>
+                                <option value="in_work" data-i18n="status_in_work">В работе</option>
+                                <option value="completed" data-i18n="status_completed">Выполнено</option>
+                                <option value="rejected" data-i18n="status_rejected">Отклонено</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Actions Bar -->
+                    <div id="bulk-actions-bar" class="bulk-actions-panel admin-only manager-only hidden">
+                        <div class="bulk-info">
+                            <span data-i18n="selected_count">Выбрано заявок:</span> <strong id="bulk-selected-count">0</strong>
+                        </div>
+                        <div class="bulk-controls">
+                            <select id="bulk-assignee-select">
+                                <option value="" data-i18n="choose_executor">Выбрать исполнителя...</option>
+                            </select>
+                            <button id="btn-bulk-assign-submit" class="btn btn-primary btn-sm" data-i18n="btn_assign_bulk">Назначить</button>
+                        </div>
+                    </div>
+
+                    <!-- Tickets Data Table Container -->
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th width="40" class="admin-only manager-only">
+                                        <input type="checkbox" id="check-all-tickets">
+                                    </th>
+                                    <th width="70" data-sort="id">ID <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="title" data-i18n="th_title">Тема <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="category" data-i18n="th_category">Категория <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="priority" data-i18n="th_priority">Приоритет <i class="fa-solid fa-sort"></i></th>
+                                    <th data-sort="status" data-i18n="th_status">Статус <i class="fa-solid fa-sort"></i></th>
+                                    <th data-i18n="th_executor">Исполнитель</th>
+                                    <th data-sort="sla" data-i18n="th_sla">SLA Дедлайн <i class="fa-solid fa-sort"></i></th>
+                                    <th data-i18n="th_actions">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tickets-table-body">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Excel Report Export Controls -->
+                    <div class="report-export-section admin-only manager-only">
+                        <button id="btn-export-csv" class="btn btn-outline">
+                            <i class="fa-solid fa-file-excel"></i> <span data-i18n="btn_export_excel">Экспортировать отчёт в Excel/CSV</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: Kanban Board (Drag-and-Drop) -->
+                <section id="view-kanban" class="app-view">
+                    <p class="section-hint" data-i18n="kanban_drag_hint">Перетаскивайте карточки заявок между колонками для смены статуса, либо перетащите заявку на аватар исполнителя.</p>
+
+                    <!-- Kanban Columns Grid -->
+                    <div class="kanban-grid">
+                        <!-- Column 1: New -->
+                        <div class="kanban-column" data-status="new">
+                            <div class="kanban-column-header text-new">
+                                <span data-i18n="status_new">Новая</span>
+                                <span class="badge" id="count-kb-new">0</span>
+                            </div>
+                            <div class="kanban-cards-container" id="kb-column-new"></div>
+                        </div>
+
+                        <!-- Column 2: Assigned -->
+                        <div class="kanban-column" data-status="assigned">
+                            <div class="kanban-column-header text-assigned">
+                                <span data-i18n="status_assigned">Назначена</span>
+                                <span class="badge" id="count-kb-assigned">0</span>
+                            </div>
+                            <div class="kanban-cards-container" id="kb-column-assigned"></div>
+                        </div>
+
+                        <!-- Column 3: In Work -->
+                        <div class="kanban-column" data-status="in_work">
+                            <div class="kanban-column-header text-in-work">
+                                <span data-i18n="status_in_work">В работе</span>
+                                <span class="badge" id="count-kb-inwork">0</span>
+                            </div>
+                            <div class="kanban-cards-container" id="kb-column-inwork"></div>
+                        </div>
+
+                        <!-- Column 4: Completed -->
+                        <div class="kanban-column" data-status="completed">
+                            <div class="kanban-column-header text-completed">
+                                <span data-i18n="status_completed">Выполнено</span>
+                                <span class="badge" id="count-kb-completed">0</span>
+                            </div>
+                            <div class="kanban-cards-container" id="kb-column-completed"></div>
+                        </div>
+
+                        <!-- Column 5: Rejected -->
+                        <div class="kanban-column" data-status="rejected">
+                            <div class="kanban-column-header text-rejected">
+                                <span data-i18n="status_rejected">Отклонено</span>
+                                <span class="badge" id="count-kb-rejected">0</span>
+                            </div>
+                            <div class="kanban-cards-container" id="kb-column-rejected"></div>
+                        </div>
+                    </div>
+
+                    <!-- Drag-and-Drop quick Executor assignment list on Kanban -->
+                    <div class="kanban-exec-assignment-panel admin-only manager-only">
+                        <h4 data-i18n="drag_to_assignee_title">Быстрое назначение исполнителя (Перетащите карточку сюда)</h4>
+                        <div class="assignment-execs-row" id="kanban-execs-drop-list">
+                            <!-- Populated with tech personnel badges -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: User Directory (Admin/Manager only) -->
+                <section id="view-users" class="app-view">
+                    <div class="section-actions-row">
+                        <h3 data-i18n="users_management">Управление пользователями</h3>
+                        <button id="btn-add-user" class="btn btn-primary admin-only">
+                            <i class="fa-solid fa-plus"></i> <span data-i18n="btn_add_user">Добавить пользователя</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th data-i18n="th_username">Логин</th>
+                                    <th data-i18n="th_fullname">ФИО</th>
+                                    <th data-i18n="th_role">Роль</th>
+                                    <th data-i18n="th_email">Email</th>
+                                    <th data-i18n="th_phone">Телефон</th>
+                                    <th class="admin-only" data-i18n="th_actions">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- VIEW 5: Settings, Custom Form Builder, & Storage Switcher (Admin only) -->
+                <section id="view-settings" class="app-view">
+                    <div class="settings-grid">
+
+                        <!-- Storage Config & Switcher Block -->
+                        <div class="card settings-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-database"></i>
+                                <h3 data-i18n="storage_switcher_title">Режим хранения данных</h3>
+                            </div>
+                            <div class="card-body">
+                                <p data-i18n="storage_switch_desc">Переключайтесь между легким JSON-файловым хранилищем и производительным MySQL. Автомиграция запустится при переключении!</p>
+
+                                <div class="form-group mt-3">
+                                    <label data-i18n="active_mode_lbl">Активный режим хранения:</label>
+                                    <div class="storage-mode-badges">
+                                        <span id="badge-mode-json" class="mode-badge active">JSON</span>
+                                        <span id="badge-mode-mysql" class="mode-badge">MySQL</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label for="settings-storage-select" data-i18n="change_mode_to">Изменить режим на:</label>
+                                    <select id="settings-storage-select">
+                                        <option value="json">JSON файл</option>
+                                        <option value="mysql">База данных MySQL</option>
+                                    </select>
+                                </div>
+
+                                <div id="mysql-credentials-box" class="mysql-creds-panel hidden">
+                                    <h4>Параметры подключения к MySQL</h4>
+                                    <div class="form-group">
+                                        <label>Host</label>
+                                        <input type="text" id="db-host" value="localhost">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Port</label>
+                                        <input type="number" id="db-port" value="3306">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Database Name</label>
+                                        <input type="text" id="db-name" value="crm_db">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" id="db-user" value="root">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                        <input type="password" id="db-pass" placeholder="Введите пароль">
+                                    </div>
+                                </div>
+
+                                <button id="btn-save-storage-mode" class="btn btn-primary mt-3">
+                                    <i class="fa-solid fa-sync"></i> <span data-i18n="btn_apply_and_migrate">Применить и перенести данные</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SLA Limits Configuration Block -->
+                        <div class="card settings-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                                <h3 data-i18n="sla_config_title">Настройка сроков SLA (часы)</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="sla-settings-form">
+                                    <div class="form-group">
+                                        <label for="sla-low" data-i18n="priority_low">Низкий</label>
+                                        <input type="number" id="sla-low" required min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sla-medium" data-i18n="priority_medium">Средний</label>
+                                        <input type="number" id="sla-medium" required min="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sla-high" data-i18n="priority_high">Высокий</label>
+                                        <input type="number" id="sla-high" required min="1">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <span data-i18n="btn_save_sla">Сохранить лимиты SLA</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Categories Manager Block -->
+                        <div class="card settings-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-tags"></i>
+                                <h3 data-i18n="categories_config_title">Категории заявок</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="categories-list-wrapper" id="settings-categories-list">
+                                    <!-- Dynamic list with delete option -->
+                                </div>
+                                <div class="input-group mt-3">
+                                    <input type="text" id="new-category-input" placeholder="Новая категория...">
+                                    <button id="btn-add-category-item" class="btn btn-secondary"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Form Field Builder Canvas (Drag-and-Drop UI) -->
+                        <div class="card settings-card span-two">
+                            <div class="card-header">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <h3 data-i18n="form_builder_title">Конструктор дополнительных полей заявок</h3>
+                            </div>
+                            <div class="card-body form-builder-container">
+                                <p data-i18n="form_builder_desc">Перетащите типы полей на панель конструктора справа, чтобы настроить индивидуальную форму подачи заявок.</p>
+
+                                <div class="builder-workspace">
+                                    <!-- Toolbox containing draggable input components -->
+                                    <div class="builder-toolbox">
+                                        <h4 data-i18n="fb_toolbox">Компоненты полей</h4>
+                                        <div class="draggable-field-item" draggable="true" data-type="text">
+                                            <i class="fa-solid fa-font"></i> Текстовая строка (Text)
+                                        </div>
+                                        <div class="draggable-field-item" draggable="true" data-type="number">
+                                            <i class="fa-solid fa-calculator"></i> Числовое поле (Number)
+                                        </div>
+                                        <div class="draggable-field-item" draggable="true" data-type="select">
+                                            <i class="fa-solid fa-circle-chevron-down"></i> Выпадающий список (Select)
+                                        </div>
+                                    </div>
+
+                                    <!-- Canvas dropzone where fields are positioned, renamed or ordered -->
+                                    <div class="builder-canvas" id="builder-canvas-zone">
+                                        <div class="canvas-empty-state" id="canvas-placeholder-msg">
+                                            <i class="fa-solid fa-arrow-pointer"></i>
+                                            <p data-i18n="fb_drop_placeholder">Перетащите элементы сюда</p>
+                                        </div>
+                                        <!-- Configured fields list -->
+                                        <div id="builder-fields-wrapper" class="builder-fields-list"></div>
+                                    </div>
+                                </div>
+
+                                <div class="builder-actions mt-3">
+                                    <button id="btn-save-custom-form" class="btn btn-primary">
+                                        <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="btn_save_form">Сохранить структуру формы</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- VIEW 6: System Audit Action Logs (Admin only) -->
+                <section id="view-logs" class="app-view">
+                    <div class="section-actions-row">
+                        <h3 data-i18n="logs_history">История действий (Лог аудита)</h3>
+                        <button id="btn-refresh-logs" class="btn btn-outline btn-sm">
+                            <i class="fa-solid fa-rotate"></i> <span data-i18n="btn_refresh">Обновить</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th data-i18n="th_log_time">Время</th>
+                                    <th data-i18n="th_log_user">Пользователь</th>
+                                    <th data-i18n="th_log_action">Действие</th>
+                                    <th data-i18n="th_log_target">Объект</th>
+                                    <th data-i18n="th_log_details">Детали</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- VIEW 7: User Profile Settings -->
+                <section id="view-profile" class="app-view">
+                    <div class="profile-layout">
+
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-user-pen"></i>
+                                <h3 data-i18n="profile_details_title">Личные данные</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="profile-details-form">
+                                    <div class="form-group">
+                                        <label for="prof-fullname" data-i18n="fullname_lbl">ФИО полностью</label>
+                                        <input type="text" id="prof-fullname" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prof-email" data-i18n="email_lbl">Email</label>
+                                        <input type="email" id="prof-email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prof-phone" data-i18n="phone_lbl">Телефон</label>
+                                        <input type="text" id="prof-phone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="prof-password" data-i18n="prof_new_pass_lbl">Новый пароль (оставьте пустым, если не хотите менять)</label>
+                                        <input type="password" id="prof-password" placeholder="Введите новый пароль">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <span data-i18n="btn_save_changes">Сохранить изменения</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <i class="fa-solid fa-bell"></i>
+                                <h3 data-i18n="notif_settings_title">Настройки уведомлений</h3>
+                            </div>
+                            <div class="card-body">
+                                <form id="profile-notifications-form">
+                                    <div class="form-group">
+                                        <label for="prof-notif-freq" data-i18n="notif_freq_lbl">Частота рассылок</label>
+                                        <select id="prof-notif-freq">
+                                            <option value="immediate" data-i18n="notif_freq_immediate">Мгновенно при изменениях</option>
+                                            <option value="daily" data-i18n="notif_freq_daily">Ежедневный сводный отчет</option>
+                                            <option value="weekly" data-i18n="notif_freq_weekly">Еженедельный отчет</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-checkbox-group mt-3">
+                                        <input type="checkbox" id="prof-notify-email" checked>
+                                        <label for="prof-notify-email" data-i18n="notify_by_email">Отправлять Email оповещения</label>
+                                    </div>
+
+                                    <div class="form-checkbox-group mt-2">
+                                        <input type="checkbox" id="prof-notify-push" checked>
+                                        <label for="prof-notify-push" data-i18n="notify_by_push">Push-уведомления на ПК/телефон</label>
+                                    </div>
+
+                                    <div class="form-checkbox-group mt-2">
+                                        <input type="checkbox" id="prof-notify-tg">
+                                        <label for="prof-notify-tg" data-i18n="notify_by_tg">Интеграция с Telegram-ботом</label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary mt-4">
+                                        <span data-i18n="btn_save_notif">Сохранить настройки каналов</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: Create or Edit Ticket Dialog -->
+    <div id="ticket-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="ticket-modal-title" data-i18n="title_new_ticket">Создать заявку</h3>
+                <button class="btn-close modal-close-btn">&times;</button>
+            </div>
+            <form id="ticket-form" enctype="multipart/form-data">
+                <input type="hidden" id="ticket-id-field">
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="t-title" data-i18n="ticket_theme_lbl">Тема / Краткое описание проблемы</label>
+                        <input type="text" id="t-title" required placeholder="Например: Перегорела лампа в коридоре">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="t-category" data-i18n="ticket_category_lbl">Категория</label>
+                            <select id="t-category" required>
+                                <!-- Injected categories via Settings API -->
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="t-priority" data-i18n="ticket_priority_lbl">Приоритет</label>
+                            <select id="t-priority" required>
+                                <option value="low" data-i18n="priority_low">Низкий</option>
+                                <option value="medium" data-i18n="priority_medium">Средний</option>
+                                <option value="high" data-i18n="priority_high">Высокий</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="t-description" data-i18n="ticket_desc_lbl">Подробное описание заявки</label>
+                        <textarea id="t-description" rows="3" placeholder="Укажите детали проблемы..."></textarea>
+                    </div>
+
+                    <!-- Dynamic Custom Form Fields (Injected here by builder layout definition) -->
+                    <div id="dynamic-fields-container" class="dynamic-custom-form-fields">
+                        <!-- Custom inputs built dynamically -->
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close-btn" data-i18n="btn_cancel">Отмена</button>
+                    <button type="submit" class="btn btn-primary" id="btn-ticket-save-submit">
+                        <span data-i18n="btn_save">Сохранить</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Full Ticket Details View Modal (with Nested Comments and upload workflow) -->
+    <div id="ticket-details-modal" class="modal-overlay">
+        <div class="modal-card modal-card-large">
+            <div class="modal-header">
+                <h3><span data-i18n="ticket_details_title">Детали заявки</span> #<span id="det-ticket-id">0</span></h3>
+                <button class="btn-close modal-close-btn">&times;</button>
+            </div>
+
+            <div class="modal-body details-grid">
+                <!-- Info Panel Left -->
+                <div class="details-main-info">
+                    <div class="details-title-row">
+                        <h2 id="det-title">Тема заявки</h2>
+                        <span id="det-badge-status" class="badge">Статус</span>
+                    </div>
+
+                    <div class="details-meta-bar">
+                        <span class="meta-item"><i class="fa-solid fa-user"></i> <span id="det-creator">Создатель</span></span>
+                        <span class="meta-item"><i class="fa-solid fa-clock"></i> <span id="det-created-at">01.01.2023</span></span>
+                    </div>
+
+                    <p class="details-description" id="det-description">Описание отсутствует.</p>
+
+                    <!-- Dynamic field answers -->
+                    <div class="details-custom-fields-box mt-3" id="det-custom-fields-container">
+                        <!-- Custom field answers list -->
+                    </div>
+                </div>
+
+                <!-- Control Panel Right -->
+                <div class="details-control-panel">
+                    <div class="form-group admin-only manager-only">
+                        <label for="det-assignee-select" data-i18n="assign_executor">Назначить исполнителя</label>
+                        <select id="det-assignee-select" class="form-control">
+                            <option value="">-- Выбрать исполнителя --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group executor-only admin-only manager-only">
+                        <label for="det-status-select" data-i18n="change_status_lbl">Изменить статус</label>
+                        <select id="det-status-select" class="form-control">
+                            <option value="new" data-i18n="status_new">Новая</option>
+                            <option value="assigned" data-i18n="status_assigned">Назначена</option>
+                            <option value="in_work" data-i18n="status_in_work">В работе</option>
+                            <option value="completed" data-i18n="status_completed">Выполнено</option>
+                            <option value="rejected" data-i18n="status_rejected">Отклонено</option>
+                        </select>
+                    </div>
+
+                    <div class="sla-deadline-status-box mt-3">
+                        <span data-i18n="th_sla">SLA Дедлайн:</span>
+                        <strong id="det-sla-deadline">01.01.2023</strong>
+                        <div id="det-sla-status-warning" class="sla-warning-text hidden">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="sla_expired_msg">СРОК ВЫПОЛНЕНИЯ ИСТЕК!</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-save-details-controls" class="btn btn-primary btn-block mt-3 admin-only manager-only executor-only">
+                        <span data-i18n="btn_save_status">Обновить заявку</span>
+                    </button>
+                </div>
+
+                <!-- Comments & Action History Section -->
+                <div class="details-comments-section span-two">
+                    <h3 data-i18n="comments_title">Комментарии и отчёты</h3>
+
+                    <!-- Scrollable list of comments -->
+                    <div class="comments-list" id="det-comments-container">
+                        <!-- Comment cards go here -->
+                    </div>
+
+                    <!-- New comment composition form with safe audio/photo drop -->
+                    <form id="comment-composition-form" class="comment-composer-box mt-3" enctype="multipart/form-data">
+                        <textarea id="comment-text-field" rows="2" data-i18n-placeholder="comment_placeholder" placeholder="Оставьте комментарий, отчет о выполнении или прикрепите фото..."></textarea>
+
+                        <div class="composer-actions">
+                            <div class="file-uploader-pill">
+                                <label for="comment-file-input">
+                                    <i class="fa-solid fa-paperclip"></i> <span data-i18n="btn_attach_file">Прикрепить файл/фото</span>
+                                </label>
+                                <input type="file" id="comment-file-input" class="hidden">
+                                <span id="comment-attached-file-name" class="attached-file-lbl"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <span data-i18n="btn_send">Отправить</span> <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: User Create/Edit Dialog (Admin only) -->
+    <div id="user-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="user-modal-title" data-i18n="user_modal_add_title">Создать пользователя</h3>
+                <button class="btn-close modal-close-btn">&times;</button>
+            </div>
+            <form id="user-form">
+                <input type="hidden" id="user-id-field">
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="u-username" data-i18n="username_lbl">Логин</label>
+                        <input type="text" id="u-username" required placeholder="ivan_p">
+                    </div>
+                    <div class="form-group">
+                        <label for="u-password" id="u-password-label" data-i18n="password_lbl">Пароль</label>
+                        <input type="password" id="u-password" placeholder="Введите пароль">
+                    </div>
+                    <div class="form-group">
+                        <label for="u-role" data-i18n="role_lbl">Роль</label>
+                        <select id="u-role" required>
+                            <option value="creator" data-i18n="role_creator">Ответственный сотрудник</option>
+                            <option value="executor" data-i18n="role_executor">Исполнитель</option>
+                            <option value="manager" data-i18n="role_manager">Начальник отдела</option>
+                            <option value="admin" data-i18n="role_admin">Администратор</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="u-fullname" data-i18n="fullname_lbl">ФИО полностью</label>
+                        <input type="text" id="u-fullname" required placeholder="Иванов Иван Петрович">
+                    </div>
+                    <div class="form-group">
+                        <label for="u-email" data-i18n="email_lbl">Email</label>
+                        <input type="email" id="u-email" required placeholder="ivan@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="u-phone" data-i18n="phone_lbl">Телефон</label>
+                        <input type="text" id="u-phone" placeholder="+7...">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close-btn" data-i18n="btn_cancel">Отмена</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="btn_save">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UI Audio Alerts elements (for pleasant notifications) -->
+    <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-48.wav" preload="auto"></audio>
+    <audio id="sound-error" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-48.wav" preload="auto"></audio>
+
+    <!-- App Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
