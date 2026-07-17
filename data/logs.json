@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "user_id": "system",
+        "action": "test_init",
+        "target_type": "database",
+        "target_id": "system",
+        "details": "DB setup success",
+        "created_at": "2026-07-17 01:27:43"
+    },
+    {
+        "id": 2,
+        "user_id": "admin_demo",
+        "action": "register",
+        "target_type": "user",
+        "target_id": 2,
+        "details": "User registered self",
+        "created_at": "2026-07-17 01:40:12"
+    },
+    {
+        "id": 3,
+        "user_id": "admin_demo",
+        "action": "create_ticket",
+        "target_type": "ticket",
+        "target_id": 2,
+        "details": "Created ticket 'Капает вода из кондиционера'",
+        "created_at": "2026-07-17 01:40:16"
+    },
+    {
+        "id": 4,
+        "user_id": "admin_demo",
+        "action": "add_comment",
+        "target_type": "ticket",
+        "target_id": "2",
+        "details": "Added comment. Attachment: None",
+        "created_at": "2026-07-17 01:40:23"
+    },
+    {
+        "id": 5,
+        "user_id": "system",
+        "action": "notification",
+        "target_type": "email",
+        "target_id": "2",
+        "details": "Email notification sent about new comment on Ticket ID 2",
+        "created_at": "2026-07-17 01:40:23"
+    }
+]

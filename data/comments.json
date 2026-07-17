@@ -1,0 +1,20 @@
+[
+    {
+        "ticket_id": 1,
+        "user_id": 1,
+        "comment_text": "Перекрыл стояк, иду осматривать.",
+        "attachment_path": null,
+        "attachment_name": null,
+        "id": 1,
+        "created_at": "2026-07-17 01:30:54"
+    },
+    {
+        "ticket_id": 2,
+        "user_id": 2,
+        "comment_text": "Проблема принята, мастер выдвинулся.",
+        "attachment_path": null,
+        "attachment_name": null,
+        "id": 2,
+        "created_at": "2026-07-17 01:40:23"
+    }
+]

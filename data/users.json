@@ -1,0 +1,24 @@
+[
+    {
+        "username": "admin",
+        "password_hash": "$2y$10$KjDCPzV7kb72PnXBzwhNbu2uvHoWM8GHSrMcs3iwtTF.Ba76GoLUK",
+        "role": "admin",
+        "full_name": "System Administrator",
+        "email": "admin@example.com",
+        "phone": "+1234567890",
+        "id": 1
+    },
+    {
+        "username": "admin_demo",
+        "password_hash": "$2y$10$Ivdwe8VBUGpWogNMPKswSOyzx8FkrDJGO1rNmEPHYwDesCvQ31doq",
+        "role": "admin",
+        "full_name": "Иванов Иван Петрович",
+        "email": "demo_admin@example.com",
+        "phone": "+7 (999) 555-44-33",
+        "notifications_freq": "immediate",
+        "notify_email": 1,
+        "notify_push": 1,
+        "notify_tg": 0,
+        "id": 2
+    }
+]
