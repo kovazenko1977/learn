@@ -9,8 +9,8 @@
  * License: GPLv2 or later
  * Text Domain: premium-forest-parallax
  * Domain Path: /languages
- * Requires PHP: 8.2
- * Requires At Least: 6.8
+ * Requires PHP: 8.0
+ * Requires at least: 6.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

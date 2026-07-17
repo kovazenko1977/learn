@@ -1,9 +1,9 @@
 === Premium Forest Parallax ===
 Contributors: wes.by, Коваженко С.Б.
 Tags: forest, parallax, leaves, wind, custom shaders, webgl, threejs, animation
-Requires at least: 6.8
-Tested up to: 6.8
-Requires PHP: 8.2
+Requires at least: 6.0
+Tested up to: 6.7
+Requires PHP: 8.0
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
