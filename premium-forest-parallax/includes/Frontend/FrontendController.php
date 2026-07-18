@@ -160,6 +160,14 @@ class FrontendController {
 
 				<!-- Mobile specific responsive overlay styling overrides -->
 				<style>
+					@keyframes premiumForestFadeIn {
+						from { opacity: 0; }
+						to { opacity: 1; }
+					}
+					.premium-forest-overlay-edge {
+						animation: premiumForestFadeIn <?php echo intval( $settings['overlay_fade_in_duration'] ); ?>ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+					}
+
 					@media (max-width: 768px) {
 						<?php if ( '1' === $settings['mobile_overlay_hide'] ) : ?>
 							.premium-forest-overlay-edge { display: none !important; }

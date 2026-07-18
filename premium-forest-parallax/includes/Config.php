@@ -64,6 +64,7 @@ class Config {
 			'desktop_offset_right'       => 0,
 			'desktop_offset_top'         => 0,
 			'desktop_offset_bottom'      => 0,
+			'overlay_fade_in_duration'   => 1500, // in ms
 
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees

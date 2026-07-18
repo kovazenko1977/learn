@@ -307,6 +307,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="premium-forest-desc"><?php esc_html_e( 'Укажите 0, чтобы полностью отключить любую анимацию/движение и получить статичные рамки без нагрузки на систему.', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Время появления при загрузке (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_fade_in_duration]" value="<?php echo esc_attr( $settings['overlay_fade_in_duration'] ); ?>" min="100" max="10000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Длительность плавной плавной анимации проявления (Fade-in) рамок при первой загрузке страницы сайта (по умолчанию 1500 мс / 1.5 сек).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 
