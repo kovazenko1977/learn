@@ -120,6 +120,9 @@ class Config {
 			'mobile_reduce_branches'     => 30,
 			'mobile_disable_gyro'        => '0',
 			'mobile_disable_on_touch'    => '0',
+			'mobile_fade_on_tap'         => '0',
+			'mobile_fade_out_duration'   => 800, // in ms
+			'mobile_reappear_delay'      => 4000, // in ms
 
 			// Advanced Tab
 			'custom_css'         => '',

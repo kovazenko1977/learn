@@ -623,6 +623,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="premium-forest-desc"><?php esc_html_e( 'Если включено, лесной параллакс не будет вообще отображаться на смартфонах и планшетах.', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Исчезновение при нажатии (UX)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_fade_on_tap]" value="1" <?php checked( $settings['mobile_fade_on_tap'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Включает плавное исчезновение леса при любом таче по экрану смартфона, чтобы не мешать просмотру контента.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Длительность исчезновения (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[mobile_fade_out_duration]" value="<?php echo esc_attr( $settings['mobile_fade_out_duration'] ); ?>" min="100" max="5000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Сколько миллисекунд длится плавное растворение рамок и листьев (по умолчанию 800 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Время отсутствия активности перед возвратом (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[mobile_reappear_delay]" value="<?php echo esc_attr( $settings['mobile_reappear_delay'] ); ?>" min="1000" max="30000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Время бездействия в миллисекундах перед тем, как лесной эффект плавно появится снова (по умолчанию 4000 мс / 4 сек).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 

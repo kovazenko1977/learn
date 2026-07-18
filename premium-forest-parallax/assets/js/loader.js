@@ -75,6 +75,34 @@ document.addEventListener('DOMContentLoaded', async function () {
 	}
 	resizeCanvas();
 
+	// 5.5 Mobile Interaction Fade on Tap UX integration
+	let isFadedOut = false;
+	let reappearTimeout = null;
+
+	if (isTouchDevice && config.mobile_fade_on_tap === '1') {
+		const fadeOutMs = parseInt(config.mobile_fade_out_duration || 800);
+		const reappearMs = parseInt(config.mobile_reappear_delay || 4000);
+
+		window.addEventListener('touchstart', function () {
+			// Fade out the entire container smoothly using GPU-accelerated CSS transition
+			container.style.transition = `opacity ${fadeOutMs}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+			container.style.opacity = '0';
+			isFadedOut = true;
+
+			// Clear previous timer
+			if (reappearTimeout) {
+				clearTimeout(reappearTimeout);
+			}
+
+			// Restart reappear timer upon inactivity
+			reappearTimeout = setTimeout(() => {
+				container.style.transition = `opacity ${fadeOutMs}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+				container.style.opacity = '1';
+				isFadedOut = false;
+			}, reappearMs);
+		}, { passive: true });
+	}
+
 	// 6. Execute Main requestAnimationFrame Render Loop with dynamic throttling and pausing
 	let lastTime = performance.now();
 	let isTabActive = true;
