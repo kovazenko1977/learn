@@ -60,6 +60,10 @@ class Config {
 			'overlay_opacity'            => 100,
 			'overlay_parallax_strength'  => 5,
 			'overlay_width'              => 250,
+			'desktop_offset_left'        => 0,
+			'desktop_offset_right'       => 0,
+			'desktop_offset_top'         => 0,
+			'desktop_offset_bottom'      => 0,
 
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees
@@ -131,6 +135,10 @@ class Config {
 			'mobile_overlay_opacity'     => 80,
 			'mobile_overlay_parallax_strength' => 2,
 			'mobile_overlay_hide'        => '0',
+			'mobile_offset_left'         => 0,
+			'mobile_offset_right'        => 0,
+			'mobile_offset_top'          => 0,
+			'mobile_offset_bottom'       => 0,
 
 			// Advanced Tab
 			'custom_css'         => '',
