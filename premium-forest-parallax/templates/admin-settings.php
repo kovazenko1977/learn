@@ -314,6 +314,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="premium-forest-desc"><?php esc_html_e( 'Длительность плавной плавной анимации проявления (Fade-in) рамок при первой загрузке страницы сайта (по умолчанию 1500 мс / 1.5 сек).', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Задержка перед появлением (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_fade_in_delay]" value="<?php echo esc_attr( $settings['overlay_fade_in_delay'] ); ?>" min="0" max="10000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Отсрочка во времени перед началом анимации проявления рамок после загрузки страницы (по умолчанию 500 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 
@@ -809,6 +816,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td style="background: #f0f9ff;">
 								<input type="number" name="premium_forest_parallax_settings[mobile_overlay_fade_in_duration]" value="<?php echo esc_attr( $settings['mobile_overlay_fade_in_duration'] ); ?>" min="100" max="10000" />
 								<span class="premium-forest-desc"><?php esc_html_e( 'Длительность плавного проявления (Fade-in) рамок при первой загрузке страницы сайта на мобильных устройствах (по умолчанию 1000 мс / 1 сек).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Задержка перед появлением на мобильных (мс)', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[mobile_overlay_fade_in_delay]" value="<?php echo esc_attr( $settings['mobile_overlay_fade_in_delay'] ); ?>" min="0" max="10000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Отсрочка во времени перед началом анимации проявления рамок на мобильных после загрузки страницы (по умолчанию 200 мс).', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
 					</table>

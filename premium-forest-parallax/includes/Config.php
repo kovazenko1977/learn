@@ -65,6 +65,7 @@ class Config {
 			'desktop_offset_top'         => 0,
 			'desktop_offset_bottom'      => 0,
 			'overlay_fade_in_duration'   => 1500, // in ms
+			'overlay_fade_in_delay'      => 500, // in ms
 
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees
@@ -137,6 +138,7 @@ class Config {
 			'mobile_overlay_parallax_strength' => 2,
 			'mobile_overlay_hide'        => '0',
 			'mobile_overlay_fade_in_duration' => 1000, // in ms
+			'mobile_overlay_fade_in_delay' => 200, // in ms
 			'mobile_offset_left'         => 0,
 			'mobile_offset_right'        => 0,
 			'mobile_offset_top'          => 0,

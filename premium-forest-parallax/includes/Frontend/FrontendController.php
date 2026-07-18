@@ -166,6 +166,7 @@ class FrontendController {
 					}
 					.premium-forest-overlay-edge {
 						animation: premiumForestFadeIn <?php echo intval( $settings['overlay_fade_in_duration'] ); ?>ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+						animation-delay: <?php echo intval( $settings['overlay_fade_in_delay'] ); ?>ms;
 					}
 
 					@media (max-width: 768px) {
@@ -179,6 +180,7 @@ class FrontendController {
 							.premium-forest-overlay-edge {
 								opacity: <?php echo intval( $settings['mobile_overlay_opacity'] ) / 100; ?> !important;
 								animation-duration: <?php echo intval( $settings['mobile_overlay_fade_in_duration'] ); ?>ms !important;
+								animation-delay: <?php echo intval( $settings['mobile_overlay_fade_in_delay'] ); ?>ms !important;
 							}
 						<?php endif; ?>
 					}
