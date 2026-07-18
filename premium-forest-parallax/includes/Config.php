@@ -136,6 +136,7 @@ class Config {
 			'mobile_overlay_opacity'     => 80,
 			'mobile_overlay_parallax_strength' => 2,
 			'mobile_overlay_hide'        => '0',
+			'mobile_overlay_fade_in_duration' => 1000, // in ms
 			'mobile_offset_left'         => 0,
 			'mobile_offset_right'        => 0,
 			'mobile_offset_top'          => 0,

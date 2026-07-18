@@ -176,7 +176,10 @@ class FrontendController {
 							.forest-overlay-right { right: -<?php echo intval($settings['mobile_offset_right']); ?>px !important; width: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
 							.forest-overlay-top { top: -<?php echo intval($settings['mobile_offset_top']); ?>px !important; height: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
 							.forest-overlay-bottom { bottom: -<?php echo intval($settings['mobile_offset_bottom']); ?>px !important; height: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
-							.premium-forest-overlay-edge { opacity: <?php echo intval( $settings['mobile_overlay_opacity'] ) / 100; ?> !important; }
+							.premium-forest-overlay-edge {
+								opacity: <?php echo intval( $settings['mobile_overlay_opacity'] ) / 100; ?> !important;
+								animation-duration: <?php echo intval( $settings['mobile_overlay_fade_in_duration'] ); ?>ms !important;
+							}
 						<?php endif; ?>
 					}
 				</style>
