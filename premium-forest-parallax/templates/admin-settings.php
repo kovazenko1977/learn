@@ -33,6 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<a href="#" class="premium-forest-tab-link" data-tab="leaves"><?php esc_html_e( 'Листья', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="branches" style="background: #f1fbf0; color: #1e3c1a;"><?php esc_html_e( '🌲 Ветви и Лес', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="overlays" style="background: #eef9ff; color: #104c6e;"><?php esc_html_e( '🖼️ Рамки-Наложения', 'premium-forest-parallax' ); ?></a>
+				<a href="#" class="premium-forest-tab-link" data-tab="offsets" style="background: #f7efff; color: #51106e; font-weight: 600;"><?php esc_html_e( '📐 Сдвиг и Превью', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="wind"><?php esc_html_e( 'Ветер', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="particles"><?php esc_html_e( 'Частицы', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="lighting"><?php esc_html_e( 'Освещение', 'premium-forest-parallax' ); ?></a>
@@ -307,6 +308,103 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 						</tr>
 					</table>
+				</div>
+
+				<!-- 2.8 Сдвиг и Окно Превью -->
+				<div id="tab-offsets" class="premium-forest-tab-content">
+					<h2><?php esc_html_e( '📐 Тонкая настройка сдвигов за экран и Интерактивное Превью', 'premium-forest-parallax' ); ?></h2>
+					<p style="font-style: italic; color: #646970; margin-bottom: 25px;">
+						<?php esc_html_e( 'Настройте величину сдвига (выхода) рамок наложения за пределы экрана по каждому направлению отдельно. Положительное значение смещает изображение за пределы видимой области, освобождая драгоценное пространство для контента сайта.', 'premium-forest-parallax' ); ?>
+					</p>
+
+					<div style="display: flex; gap: 40px; flex-wrap: wrap;">
+						<!-- Опции сдвига -->
+						<div style="flex: 1; min-width: 320px;">
+							<h3 style="border-bottom: 1px solid #ddd; padding-bottom: 8px; color: #51106e;"><?php esc_html_e( '🖥️ Сдвиг за экран (Десктоп/ПК в px)', 'premium-forest-parallax' ); ?></h3>
+							<table class="form-table" style="margin-top:0;">
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СЛЕВА', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_desktop_l" class="premium-offset-input" name="premium_forest_parallax_settings[desktop_offset_left]" value="<?php echo esc_attr( $settings['desktop_offset_left'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СПРАВА', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_desktop_r" class="premium-offset-input" name="premium_forest_parallax_settings[desktop_offset_right]" value="<?php echo esc_attr( $settings['desktop_offset_right'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СВЕРХУ', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_desktop_t" class="premium-offset-input" name="premium_forest_parallax_settings[desktop_offset_top]" value="<?php echo esc_attr( $settings['desktop_offset_top'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СНИЗУ', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_desktop_b" class="premium-offset-input" name="premium_forest_parallax_settings[desktop_offset_bottom]" value="<?php echo esc_attr( $settings['desktop_offset_bottom'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+							</table>
+
+							<h3 style="border-bottom: 1px solid #ddd; padding-bottom: 8px; color: #a42c2c; margin-top:30px;"><?php esc_html_e( '📱 Сдвиг за экран (Мобильные в px)', 'premium-forest-parallax' ); ?></h3>
+							<table class="form-table" style="margin-top:0;">
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СЛЕВА', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_mobile_l" class="premium-offset-input" name="premium_forest_parallax_settings[mobile_offset_left]" value="<?php echo esc_attr( $settings['mobile_offset_left'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СПРАВА', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_mobile_r" class="premium-offset-input" name="premium_forest_parallax_settings[mobile_offset_right]" value="<?php echo esc_attr( $settings['mobile_offset_right'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СВЕРХУ', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_mobile_t" class="premium-offset-input" name="premium_forest_parallax_settings[mobile_offset_top]" value="<?php echo esc_attr( $settings['mobile_offset_top'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" style="width:180px;"><?php esc_html_e( 'Сдвиг СНИЗУ', 'premium-forest-parallax' ); ?></th>
+									<td>
+										<input type="number" id="offset_mobile_b" class="premium-offset-input" name="premium_forest_parallax_settings[mobile_offset_bottom]" value="<?php echo esc_attr( $settings['mobile_offset_bottom'] ); ?>" min="0" max="400" />
+									</td>
+								</tr>
+							</table>
+						</div>
+
+						<!-- Окно Интерактивного Превью -->
+						<div class="premium-preview-panel" style="flex: 1; min-width: 320px; background: #fafafb; border: 1px solid #ddecde; border-radius: 8px; padding: 25px;">
+							<h3 style="margin-top:0; color:#1e3c1a; display:flex; align-items:center; gap:8px;">
+								<span>🔍</span> <?php esc_html_e( 'Интерактивный Живой Предпросмотр', 'premium-forest-parallax' ); ?>
+							</h3>
+							<p class="description" style="margin-bottom:15px;">
+								<?php esc_html_e( 'Попробуйте изменить значения сдвигов слева и поменяйте режим предпросмотра!', 'premium-forest-parallax' ); ?>
+							</p>
+
+							<div class="preview-mode-switch" style="margin-bottom: 20px;">
+								<button type="button" class="button button-secondary active" id="btn-preview-desktop"><?php esc_html_e( '💻 Десктопный вид', 'premium-forest-parallax' ); ?></button>
+								<button type="button" class="button button-secondary" id="btn-preview-mobile"><?php esc_html_e( '📱 Мобильный вид', 'premium-forest-parallax' ); ?></button>
+							</div>
+
+							<!-- Эмулятор Браузера -->
+							<div id="premium-preview-simulator" class="desktop-mode" style="position:relative; width:100%; height:320px; background:#fff; border:2px solid #ccc; border-radius:6px; overflow:hidden; box-shadow:inset 0 0 15px rgba(0,0,0,0.05); margin: 0 auto; transition: all 0.3s ease;">
+								<div class="sim-edge sim-left" style="position:absolute; top:0; left:0; width:45px; height:100%; background:linear-gradient(90deg, #3d6a24, #2f541c); border-right:2px dashed #1b320f; opacity: 0.85; transition: all 0.2s ease;"></div>
+								<div class="sim-edge sim-right" style="position:absolute; top:0; right:0; width:45px; height:100%; background:linear-gradient(270deg, #3d6a24, #2f541c); border-left:2px dashed #1b320f; opacity: 0.85; transition: all 0.2s ease;"></div>
+								<div class="sim-edge sim-top" style="position:absolute; top:0; left:0; width:100%; height:35px; background:linear-gradient(180deg, #3d6a24, #2f541c); border-bottom:2px dashed #1b320f; opacity: 0.85; transition: all 0.2s ease;"></div>
+								<div class="sim-edge sim-bottom" style="position:absolute; bottom:0; left:0; width:100%; height:35px; background:linear-gradient(0deg, #3d6a24, #2f541c); border-top:2px dashed #1b320f; opacity: 0.85; transition: all 0.2s ease;"></div>
+
+								<div class="sim-content" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding: 20px; box-sizing:border-box; color:#666;">
+									<strong style="color:#111;"><?php esc_html_e( 'Ваш Сайт (Контент)', 'premium-forest-parallax' ); ?></strong>
+									<span style="font-size:11px; margin-top:5px;"><?php esc_html_e( 'Зеленым показаны лесные рамки по краям.', 'premium-forest-parallax' ); ?></span>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<!-- 3. Ветер -->

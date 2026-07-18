@@ -144,18 +144,18 @@ class FrontendController {
 			<canvas id="premium-forest-parallax-canvas"></canvas>
 
 			<?php if ( '1' === $settings['overlay_mode_enabled'] ) : ?>
-				<!-- Premium Forest Photo Overlay Frames -->
+				<!-- Premium Forest Photo Overlay Frames with customizable desktop margins -->
 				<?php if ( ! empty( $settings['overlay_image_left'] ) ) : ?>
-					<div class="premium-forest-overlay-edge forest-overlay-left" style="background-image: url('<?php echo esc_url( $settings['overlay_image_left'] ); ?>'); width: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+					<div class="premium-forest-overlay-edge forest-overlay-left" style="background-image: url('<?php echo esc_url( $settings['overlay_image_left'] ); ?>'); width: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>; left: -<?php echo intval($settings['desktop_offset_left']); ?>px;"></div>
 				<?php endif; ?>
 				<?php if ( ! empty( $settings['overlay_image_right'] ) ) : ?>
-					<div class="premium-forest-overlay-edge forest-overlay-right" style="background-image: url('<?php echo esc_url( $settings['overlay_image_right'] ); ?>'); width: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+					<div class="premium-forest-overlay-edge forest-overlay-right" style="background-image: url('<?php echo esc_url( $settings['overlay_image_right'] ); ?>'); width: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>; right: -<?php echo intval($settings['desktop_offset_right']); ?>px;"></div>
 				<?php endif; ?>
 				<?php if ( ! empty( $settings['overlay_image_top'] ) ) : ?>
-					<div class="premium-forest-overlay-edge forest-overlay-top" style="background-image: url('<?php echo esc_url( $settings['overlay_image_top'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+					<div class="premium-forest-overlay-edge forest-overlay-top" style="background-image: url('<?php echo esc_url( $settings['overlay_image_top'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>; top: -<?php echo intval($settings['desktop_offset_top']); ?>px;"></div>
 				<?php endif; ?>
 				<?php if ( ! empty( $settings['overlay_image_bottom'] ) ) : ?>
-					<div class="premium-forest-overlay-edge forest-overlay-bottom" style="background-image: url('<?php echo esc_url( $settings['overlay_image_bottom'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+					<div class="premium-forest-overlay-edge forest-overlay-bottom" style="background-image: url('<?php echo esc_url( $settings['overlay_image_bottom'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>; bottom: -<?php echo intval($settings['desktop_offset_bottom']); ?>px;"></div>
 				<?php endif; ?>
 
 				<!-- Mobile specific responsive overlay styling overrides -->
@@ -164,8 +164,10 @@ class FrontendController {
 						<?php if ( '1' === $settings['mobile_overlay_hide'] ) : ?>
 							.premium-forest-overlay-edge { display: none !important; }
 						<?php else : ?>
-							.forest-overlay-left, .forest-overlay-right { width: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
-							.forest-overlay-top, .forest-overlay-bottom { height: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
+							.forest-overlay-left { left: -<?php echo intval($settings['mobile_offset_left']); ?>px !important; width: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
+							.forest-overlay-right { right: -<?php echo intval($settings['mobile_offset_right']); ?>px !important; width: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
+							.forest-overlay-top { top: -<?php echo intval($settings['mobile_offset_top']); ?>px !important; height: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
+							.forest-overlay-bottom { bottom: -<?php echo intval($settings['mobile_offset_bottom']); ?>px !important; height: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
 							.premium-forest-overlay-edge { opacity: <?php echo intval( $settings['mobile_overlay_opacity'] ) / 100; ?> !important; }
 						<?php endif; ?>
 					}
