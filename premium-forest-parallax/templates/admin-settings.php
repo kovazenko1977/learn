@@ -32,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<a href="#" class="premium-forest-tab-link active" data-tab="general"><?php esc_html_e( 'Основные', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="leaves"><?php esc_html_e( 'Листья', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="branches" style="background: #f1fbf0; color: #1e3c1a;"><?php esc_html_e( '🌲 Ветви и Лес', 'premium-forest-parallax' ); ?></a>
+				<a href="#" class="premium-forest-tab-link" data-tab="overlays" style="background: #eef9ff; color: #104c6e;"><?php esc_html_e( '🖼️ Рамки-Наложения', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="wind"><?php esc_html_e( 'Ветер', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="particles"><?php esc_html_e( 'Частицы', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="lighting"><?php esc_html_e( 'Освещение', 'premium-forest-parallax' ); ?></a>
@@ -209,6 +210,71 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<input type="text" id="premium_custom_branch_image" name="premium_forest_parallax_settings[custom_branch_image]" value="<?php echo esc_url( $settings['custom_branch_image'] ); ?>" style="width: 70%; max-width: 300px;" />
 								<button class="button premium-media-upload" data-input="premium_custom_branch_image"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
 								<span class="premium-forest-desc"><?php esc_html_e( 'Загрузите прозрачный PNG/SVG файл цельной ветки или куста. При загрузке этот спрайт заменит процедурные ветки, сделав лесное обрамление невероятно фотореалистичным.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+					</table>
+				</div>
+
+				<!-- 2.7 Рамки-Наложения -->
+				<div id="tab-overlays" class="premium-forest-tab-content">
+					<h2><?php esc_html_e( 'Режим наложения фоновых рамок (0 отступы от краёв)', 'premium-forest-parallax' ); ?></h2>
+					<p style="font-style: italic; color: #646970; margin-bottom: 20px;">
+						<?php esc_html_e( 'Этот режим позволяет загрузить качественные готовые PNG/SVG изображения ветвей деревьев или лесных панорам и плотно закрепить их по самым краям экрана с отступами 0px. Можно выключить анимацию для 100% экономии батареи (0% нагрузки на CPU/GPU), создав роскошную статичную атмосферу лесного сайта.', 'premium-forest-parallax' ); ?>
+					</p>
+					<table class="form-table">
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Включить режим рамок-наложений', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[overlay_mode_enabled]" value="1" <?php checked( $settings['overlay_mode_enabled'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Активирует плотные лесные рамки по краям экрана.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Изображение СЛЕВА', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" id="premium_overlay_image_left" name="premium_forest_parallax_settings[overlay_image_left]" value="<?php echo esc_url( $settings['overlay_image_left'] ); ?>" style="width: 70%; max-width: 300px;" />
+								<button class="button premium-media-upload" data-input="premium_overlay_image_left"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Изображение СПРАВА', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" id="premium_overlay_image_right" name="premium_forest_parallax_settings[overlay_image_right]" value="<?php echo esc_url( $settings['overlay_image_right'] ); ?>" style="width: 70%; max-width: 300px;" />
+								<button class="button premium-media-upload" data-input="premium_overlay_image_right"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Изображение СВЕРХУ', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" id="premium_overlay_image_top" name="premium_forest_parallax_settings[overlay_image_top]" value="<?php echo esc_url( $settings['overlay_image_top'] ); ?>" style="width: 70%; max-width: 300px;" />
+								<button class="button premium-media-upload" data-input="premium_overlay_image_top"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Изображение СНИЗУ', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" id="premium_overlay_image_bottom" name="premium_forest_parallax_settings[overlay_image_bottom]" value="<?php echo esc_url( $settings['overlay_image_bottom'] ); ?>" style="width: 70%; max-width: 300px;" />
+								<button class="button premium-media-upload" data-input="premium_overlay_image_bottom"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Прозрачность рамок (%)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_opacity]" value="<?php echo esc_attr( $settings['overlay_opacity'] ); ?>" min="10" max="100" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Ширина рамок на экране (px)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_width]" value="<?php echo esc_attr( $settings['overlay_width'] ); ?>" min="50" max="1000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Определяет ширину боковых рамок и высоту верхней/нижней рамки на дисплее.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Сила параллакса при движении мыши', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_parallax_strength]" value="<?php echo esc_attr( $settings['overlay_parallax_strength'] ); ?>" min="0" max="50" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Укажите 0, чтобы полностью отключить любую анимацию/движение и получить статичные рамки без нагрузки на систему.', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
 					</table>

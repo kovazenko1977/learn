@@ -50,6 +50,16 @@ class Config {
 			'edge_branches_sway_amplitude' => 15,
 			'custom_branch_image'        => '',
 
+			// Image Overlay Mode Settings
+			'overlay_mode_enabled'       => '0',
+			'overlay_image_left'         => '',
+			'overlay_image_right'        => '',
+			'overlay_image_top'          => '',
+			'overlay_image_bottom'       => '',
+			'overlay_opacity'            => 100,
+			'overlay_parallax_strength'  => 5,
+			'overlay_width'              => 250,
+
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees
 			'wind_strength'      => 5,

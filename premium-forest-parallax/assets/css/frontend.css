@@ -18,3 +18,42 @@
 	height: 100%;
 	display: block;
 }
+
+/* Photo Overlay Borders (0px Margin Offset) */
+.premium-forest-overlay-edge {
+	position: absolute;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	pointer-events: none;
+	will-change: transform;
+	transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.forest-overlay-left {
+	top: 0;
+	left: 0;
+	height: 100%;
+	background-position: left center;
+}
+
+.forest-overlay-right {
+	top: 0;
+	right: 0;
+	height: 100%;
+	background-position: right center;
+}
+
+.forest-overlay-top {
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-position: center top;
+}
+
+.forest-overlay-bottom {
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	background-position: center bottom;
+}

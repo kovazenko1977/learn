@@ -96,6 +96,28 @@ document.addEventListener('DOMContentLoaded', async function () {
 		// Perform frame update tick
 		const frameState = physics.update(deltaTime);
 
+		// Apply GPU-accelerated CSS Parallax transform on Photo Overlays if enabled
+		if (config.overlay_mode_enabled === '1') {
+			const strength = parseFloat(config.overlay_parallax_strength || 5) * 0.1;
+			if (strength > 0) {
+				const ox = physics.mouse.x * strength;
+				const oy = physics.mouse.y * strength;
+
+				const overlays = document.querySelectorAll('.premium-forest-overlay-edge');
+				overlays.forEach(overlay => {
+					// Different edges can slide slightly differently for beautiful depth illusion
+					let factorX = 1.0;
+					let factorY = 1.0;
+					if (overlay.classList.contains('forest-overlay-left')) { factorX = 0.5; factorY = 0.3; }
+					else if (overlay.classList.contains('forest-overlay-right')) { factorX = -0.5; factorY = 0.3; }
+					else if (overlay.classList.contains('forest-overlay-top')) { factorX = 0.3; factorY = 0.5; }
+					else if (overlay.classList.contains('forest-overlay-bottom')) { factorX = 0.3; factorY = -0.5; }
+
+					overlay.style.transform = `translate3d(${ox * factorX}px, ${oy * factorY}px, 0)`;
+				});
+			}
+		}
+
 		// Calculate fog depth opacity relative to wind force
 		const fogOpacity = parseFloat((config.fog_opacity || 30) / 100);
 

@@ -142,6 +142,22 @@ class FrontendController {
 		<!-- Premium Forest Parallax Layer Canvas -->
 		<div id="premium-forest-parallax-container" class="premium-forest-env-container" aria-hidden="true">
 			<canvas id="premium-forest-parallax-canvas"></canvas>
+
+			<?php if ( '1' === $settings['overlay_mode_enabled'] ) : ?>
+				<!-- Premium Forest Photo Overlay Frames -->
+				<?php if ( ! empty( $settings['overlay_image_left'] ) ) : ?>
+					<div class="premium-forest-overlay-edge forest-overlay-left" style="background-image: url('<?php echo esc_url( $settings['overlay_image_left'] ); ?>'); width: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['overlay_image_right'] ) ) : ?>
+					<div class="premium-forest-overlay-edge forest-overlay-right" style="background-image: url('<?php echo esc_url( $settings['overlay_image_right'] ); ?>'); width: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['overlay_image_top'] ) ) : ?>
+					<div class="premium-forest-overlay-edge forest-overlay-top" style="background-image: url('<?php echo esc_url( $settings['overlay_image_top'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+				<?php endif; ?>
+				<?php if ( ! empty( $settings['overlay_image_bottom'] ) ) : ?>
+					<div class="premium-forest-overlay-edge forest-overlay-bottom" style="background-image: url('<?php echo esc_url( $settings['overlay_image_bottom'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
+				<?php endif; ?>
+			<?php endif; ?>
 		</div>
 		<?php
 		// Inject custom styling variables (must not use esc_html which destroys parent selectors, e.g. > )
