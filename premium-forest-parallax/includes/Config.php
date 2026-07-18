@@ -110,6 +110,9 @@ class Config {
 			'perf_observe'       => '1',
 			'perf_pause_hidden'  => '1',
 			'perf_pause_offscr'  => '1',
+			'desktop_fade_on_click'      => '0',
+			'desktop_fade_out_duration'  => 800, // in ms
+			'desktop_reappear_delay'     => 4000, // in ms
 
 			// Mobile Devices Specific Settings
 			'mobile_optimize_enabled'    => '1',

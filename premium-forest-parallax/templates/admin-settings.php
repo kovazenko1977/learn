@@ -80,6 +80,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="premium-forest-desc"><?php esc_html_e( 'Укажите ID страниц, на которых эффект должен быть гарантированно отключен (например, личный кабинет, оформление заказа).', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Исчезновение при клике (Desktop)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[desktop_fade_on_click]" value="1" <?php checked( $settings['desktop_fade_on_click'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Включает плавное исчезновение леса при любом клике мыши на ПК версии, чтобы не отвлекать пользователя от контента.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Длительность исчезновения на ПК (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[desktop_fade_out_duration]" value="<?php echo esc_attr( $settings['desktop_fade_out_duration'] ); ?>" min="100" max="5000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Сколько миллисекунд длится плавное растворение на ПК (по умолчанию 800 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Возврат ПК-эффекта при бездействии (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[desktop_reappear_delay]" value="<?php echo esc_attr( $settings['desktop_reappear_delay'] ); ?>" min="1000" max="30000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Время отсутствия кликов/бездействия в миллисекундах перед возвратом лесного эффекта на ПК (по умолчанию 4000 мс / 4 сек).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 
