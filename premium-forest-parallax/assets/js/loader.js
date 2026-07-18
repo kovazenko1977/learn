@@ -101,7 +101,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 		// Render the frame
 		// In WebGL mode, renderer expects time value; In Canvas2D fallback, renderer expects fogOpacity.
-		const fogOpacity = parseFloat((config.fog_opacity || 30) / 100);
 		if (useWebGL) {
 			renderer.render(physics.layers, physics.leaves, physics.particles, frameState.wind, time * 0.001);
 		} else {
