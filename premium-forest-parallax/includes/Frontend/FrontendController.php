@@ -157,6 +157,19 @@ class FrontendController {
 				<?php if ( ! empty( $settings['overlay_image_bottom'] ) ) : ?>
 					<div class="premium-forest-overlay-edge forest-overlay-bottom" style="background-image: url('<?php echo esc_url( $settings['overlay_image_bottom'] ); ?>'); height: <?php echo intval( $settings['overlay_width'] ); ?>px; opacity: <?php echo intval( $settings['overlay_opacity'] ) / 100; ?>;"></div>
 				<?php endif; ?>
+
+				<!-- Mobile specific responsive overlay styling overrides -->
+				<style>
+					@media (max-width: 768px) {
+						<?php if ( '1' === $settings['mobile_overlay_hide'] ) : ?>
+							.premium-forest-overlay-edge { display: none !important; }
+						<?php else : ?>
+							.forest-overlay-left, .forest-overlay-right { width: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
+							.forest-overlay-top, .forest-overlay-bottom { height: <?php echo intval( $settings['mobile_overlay_width'] ); ?>px !important; }
+							.premium-forest-overlay-edge { opacity: <?php echo intval( $settings['mobile_overlay_opacity'] ) / 100; ?> !important; }
+						<?php endif; ?>
+					}
+				</style>
 			<?php endif; ?>
 		</div>
 		<?php

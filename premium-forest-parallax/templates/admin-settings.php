@@ -672,6 +672,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="premium-forest-desc"><?php esc_html_e( 'Время бездействия в миллисекундах перед тем, как лесной эффект плавно появится снова (по умолчанию 4000 мс / 4 сек).', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Скрыть Рамки-Наложения на мобильных', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_overlay_hide]" value="1" <?php checked( $settings['mobile_overlay_hide'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Полностью отключить отображение рамок-наложений на экранах смартфонов.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Ширина рамок на мобильных (px)', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[mobile_overlay_width]" value="<?php echo esc_attr( $settings['mobile_overlay_width'] ); ?>" min="20" max="500" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Уменьшите размер рамок на мобильных (например, до 150px вместо 250px на десктопе), чтобы они не перекрывали контент.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Прозрачность рамок на мобильных (%)', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[mobile_overlay_opacity]" value="<?php echo esc_attr( $settings['mobile_overlay_opacity'] ); ?>" min="10" max="100" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Сила параллакса рамок на мобильных', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[mobile_overlay_parallax_strength]" value="<?php echo esc_attr( $settings['mobile_overlay_parallax_strength'] ); ?>" min="0" max="30" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Укажите 0, чтобы полностью зафиксировать картинку-рамку на мобильных девайсах без ее смещения.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 

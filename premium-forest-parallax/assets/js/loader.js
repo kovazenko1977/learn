@@ -161,7 +161,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 		// Apply GPU-accelerated CSS Parallax transform on Photo Overlays if enabled
 		if (config.overlay_mode_enabled === '1') {
-			const strength = parseFloat(config.overlay_parallax_strength || 5) * 0.1;
+			const pStrength = isTouchDevice ? (config.mobile_overlay_parallax_strength || 2) : (config.overlay_parallax_strength || 5);
+			const strength = parseFloat(pStrength) * 0.1;
 			if (strength > 0) {
 				const ox = physics.mouse.x * strength;
 				const oy = physics.mouse.y * strength;

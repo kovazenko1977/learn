@@ -127,6 +127,10 @@ class Config {
 			'mobile_fade_on_tap'         => '0',
 			'mobile_fade_out_duration'   => 800, // in ms
 			'mobile_reappear_delay'      => 4000, // in ms
+			'mobile_overlay_width'       => 150,
+			'mobile_overlay_opacity'     => 80,
+			'mobile_overlay_parallax_strength' => 2,
+			'mobile_overlay_hide'        => '0',
 
 			// Advanced Tab
 			'custom_css'         => '',
