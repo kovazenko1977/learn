@@ -143,16 +143,31 @@ function adjustConfigForProfile(config, profile) {
 }
 
 /**
- * Parallel async helper to preload all 15 leaf SVG types as images and ThreeJS textures
+ * Parallel async helper to preload all 15 leaf SVG types + custom uploaded images
  */
 async function preloadLeafAssets(config, baseUrl) {
 	const leafTypes = ['birch1', 'birch2', 'birch3', 'oak1', 'oak2', 'oak3', 'linden1', 'linden2', 'linden3', 'maple1', 'maple2', 'maple3', 'aspen1', 'aspen2', 'aspen3'];
+
+	// Add custom files if specified
+	if (config.custom_leaf_image) {
+		leafTypes.push('custom_leaf');
+	}
+	if (config.custom_branch_image) {
+		leafTypes.push('custom_branch');
+	}
+
 	const images = {};
 	const textures = {};
 
 	const promises = leafTypes.map(type => {
 		return new Promise((resolve) => {
-			const imgUrl = `${baseUrl}${type}.svg`;
+			let imgUrl = `${baseUrl}${type}.svg`;
+			if (type === 'custom_leaf') {
+				imgUrl = config.custom_leaf_image;
+			} else if (type === 'custom_branch') {
+				imgUrl = config.custom_branch_image;
+			}
+
 			const img = new Image();
 			img.onload = () => {
 				images[type] = img;

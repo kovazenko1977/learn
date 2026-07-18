@@ -210,6 +210,9 @@ class ForestPhysicsEngine {
 	}
 
 	getLeafTypesFromSet() {
+		if (this.config.custom_leaf_image) {
+			return ['custom_leaf'];
+		}
 		const set = this.config.leaf_svg_set || 'mixed';
 		const allTypes = ['birch1', 'birch2', 'birch3', 'oak1', 'oak2', 'oak3', 'linden1', 'linden2', 'linden3', 'maple1', 'maple2', 'maple3', 'aspen1', 'aspen2', 'aspen3'];
 

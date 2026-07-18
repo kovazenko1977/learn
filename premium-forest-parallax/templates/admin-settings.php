@@ -140,6 +140,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 								</select>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Своё изображение листа', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" id="premium_custom_leaf_image" name="premium_forest_parallax_settings[custom_leaf_image]" value="<?php echo esc_url( $settings['custom_leaf_image'] ); ?>" style="width: 70%; max-width: 300px;" />
+								<button class="button premium-media-upload" data-input="premium_custom_leaf_image"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
+								<span class="premium-forest-desc"><?php esc_html_e( 'Загрузите прозрачный PNG/SVG файл собственного листа, чтобы использовать его вместо стандартных.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 
@@ -193,6 +201,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td>
 								<input type="number" name="premium_forest_parallax_settings[edge_branches_sway_amplitude]" value="<?php echo esc_attr( $settings['edge_branches_sway_amplitude'] ); ?>" min="1" max="100" />
 								<span class="premium-forest-desc"><?php esc_html_e( 'Максимальное смещение ветки от ветра в пикселях.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Своё изображение ветки', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" id="premium_custom_branch_image" name="premium_forest_parallax_settings[custom_branch_image]" value="<?php echo esc_url( $settings['custom_branch_image'] ); ?>" style="width: 70%; max-width: 300px;" />
+								<button class="button premium-media-upload" data-input="premium_custom_branch_image"><?php esc_html_e( 'Выбрать', 'premium-forest-parallax' ); ?></button>
+								<span class="premium-forest-desc"><?php esc_html_e( 'Загрузите прозрачный PNG/SVG файл цельной ветки или куста. При загрузке этот спрайт заменит процедурные ветки, сделав лесное обрамление невероятно фотореалистичным.', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
 					</table>

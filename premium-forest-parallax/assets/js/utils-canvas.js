@@ -262,6 +262,41 @@ class Canvas2DRenderer {
 		const time = performance.now() * 0.001 * swaySpeed;
 		const sway = Math.sin(time + layer.depth) * swayAmp * (layer.depth * 0.2 + 0.4);
 
+		// If a beautiful custom branch image is uploaded, we draw it!
+		const customBranchImg = this.loadedAssets['custom_branch'];
+		if (customBranchImg) {
+			ctx.save();
+			ctx.globalAlpha = layer.opacity || 1.0;
+
+			// Draw Left forest border using custom images
+			for (let i = 0; i <= density; i++) {
+				const yAnchor = (height / density) * i;
+				ctx.save();
+				ctx.translate(sway, yAnchor);
+				ctx.rotate(Math.sin(time + i) * 0.05);
+
+				// Draw left branch pointing right
+				ctx.drawImage(customBranchImg, 0, -baseWidth / 2, baseWidth, baseWidth);
+				ctx.restore();
+			}
+
+			// Draw Right forest border using custom images
+			for (let i = 0; i <= density; i++) {
+				const yAnchor = (height / density) * i;
+				ctx.save();
+				ctx.translate(width + sway, yAnchor);
+				ctx.scale(-1, 1); // Flip horizontally for right side
+				ctx.rotate(Math.cos(time + i) * 0.05);
+
+				// Draw right branch pointing left
+				ctx.drawImage(customBranchImg, 0, -baseWidth / 2, baseWidth, baseWidth);
+				ctx.restore();
+			}
+
+			ctx.restore();
+			return;
+		}
+
 		// Draw decorative branch trunks and leafy stems on Left and Right borders
 		ctx.save();
 

@@ -38,6 +38,7 @@ class Config {
 			'leaf_opacity'       => 90,
 			'leaf_random_color'  => '0',
 			'leaf_svg_set'       => 'mixed', // birch, oak, linden, maple, aspen, mixed
+			'custom_leaf_image'  => '',
 
 			// Edge Branches (Forest Frame) Settings
 			'edge_branches_enabled'      => '1',
@@ -47,6 +48,7 @@ class Config {
 			'edge_branches_color2'       => '#2f541c',
 			'edge_branches_sway_speed'   => 10,
 			'edge_branches_sway_amplitude' => 15,
+			'custom_branch_image'        => '',
 
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees

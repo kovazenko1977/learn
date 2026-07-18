@@ -21,4 +21,29 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		});
 	});
+
+	// WordPress native Media Uploader Integration
+	const mediaButtons = document.querySelectorAll('.premium-media-upload');
+	mediaButtons.forEach(button => {
+		button.addEventListener('click', function (e) {
+			e.preventDefault();
+			const inputId = this.getAttribute('data-input');
+			const inputField = document.getElementById(inputId);
+
+			const customUploader = wp.media({
+				title: 'Выбрать изображение',
+				button: { text: 'Использовать' },
+				multiple: false
+			});
+
+			customUploader.on('select', function () {
+				const attachment = customUploader.state().get('selection').first().toJSON();
+				if (inputField && attachment.url) {
+					inputField.value = attachment.url;
+				}
+			});
+
+			customUploader.open();
+		});
+	});
 });

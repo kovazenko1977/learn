@@ -59,6 +59,9 @@ class AdminController {
 			return;
 		}
 
+		// Enqueue WordPress native Media Uploader frame
+		wp_enqueue_media();
+
 		wp_enqueue_style(
 			'premium-forest-parallax-admin-css',
 			PREMIUM_FOREST_PARALLAX_URL . 'assets/css/admin.css',
