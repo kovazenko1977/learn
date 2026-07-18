@@ -31,6 +31,7 @@ class Config {
 			'exclude_pages'      => [],
 
 			// Leaves Tab
+			'leaf_enabled'       => '1',
 			'leaf_count'         => 30,
 			'leaf_mode'          => 'falling', // falling, swaying
 			'leaf_size_min'      => 30,

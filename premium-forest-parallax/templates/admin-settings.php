@@ -109,6 +109,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<h2><?php esc_html_e( 'Настройка падающих листьев', 'premium-forest-parallax' ); ?></h2>
 					<table class="form-table">
 						<tr>
+							<th scope="row"><?php esc_html_e( 'Включить отображение листьев', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[leaf_enabled]" value="1" <?php checked( $settings['leaf_enabled'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Снимите галочку, чтобы полностью отключить/скрыть все падающие и колышущиеся листья.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
 							<th scope="row"><?php esc_html_e( 'Режим движения листьев', 'premium-forest-parallax' ); ?></th>
 							<td>
 								<select name="premium_forest_parallax_settings[leaf_mode]">

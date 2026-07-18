@@ -188,13 +188,15 @@ class ForestPhysicsEngine {
 			});
 		}
 
-		// 2. Spawn Falling Leaves Entities
-		const leavesCount = parseInt(this.config.leaf_count || 30);
-		const leafTypes = this.getLeafTypesFromSet();
+		// 2. Spawn Falling Leaves Entities (If enabled by admin)
+		if (this.config.leaf_enabled !== '0') {
+			const leavesCount = parseInt(this.config.leaf_count || 30);
+			const leafTypes = this.getLeafTypesFromSet();
 
-		for (let i = 0; i < leavesCount; i++) {
-			const type = leafTypes[Math.floor(Math.random() * leafTypes.length)];
-			this.leaves.push(new LeafEntity(this.width, this.height, this.config, type));
+			for (let i = 0; i < leavesCount; i++) {
+				const type = leafTypes[Math.floor(Math.random() * leafTypes.length)];
+				this.leaves.push(new LeafEntity(this.width, this.height, this.config, type));
+			}
 		}
 
 		// 3. Spawn Floating Particles
