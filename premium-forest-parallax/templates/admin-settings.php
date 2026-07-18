@@ -85,6 +85,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<h2><?php esc_html_e( 'Настройка падающих листьев', 'premium-forest-parallax' ); ?></h2>
 					<table class="form-table">
 						<tr>
+							<th scope="row"><?php esc_html_e( 'Режим движения листьев', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<select name="premium_forest_parallax_settings[leaf_mode]">
+									<option value="falling" <?php selected( $settings['leaf_mode'], 'falling' ); ?>><?php esc_html_e( 'Падающие сверху листья (сверху вниз)', 'premium-forest-parallax' ); ?></option>
+									<option value="swaying" <?php selected( $settings['leaf_mode'], 'swaying' ); ?>><?php esc_html_e( 'Статичные колышущиеся ветки (по кругу экрана)', 'premium-forest-parallax' ); ?></option>
+								</select>
+								<span class="premium-forest-desc"><?php esc_html_e( 'Выберите режим "Статичные колышущиеся ветки", чтобы листья были равномерно распределены по краям и кругу экрана, колыхаясь в такт ветру, без постоянного падения вниз.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
 							<th scope="row"><?php esc_html_e( 'Количество листьев', 'premium-forest-parallax' ); ?></th>
 							<td>
 								<input type="number" name="premium_forest_parallax_settings[leaf_count]" value="<?php echo esc_attr( $settings['leaf_count'] ); ?>" min="5" max="150" />

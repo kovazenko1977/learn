@@ -32,6 +32,7 @@ class Config {
 
 			// Leaves Tab
 			'leaf_count'         => 30,
+			'leaf_mode'          => 'falling', // falling, swaying
 			'leaf_size_min'      => 30,
 			'leaf_size_max'      => 60,
 			'leaf_opacity'       => 90,

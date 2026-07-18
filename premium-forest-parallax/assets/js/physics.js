@@ -8,9 +8,6 @@ class LeafEntity {
 		this.config = config;
 		this.active = true;
 
-		// Initial physical states
-		this.x = Math.random() * width;
-		this.y = -Math.random() * 200 - 50; // Spawn offscreen above
 		this.depth = Math.random() * 6 + 1; // 1 to 7 depth range
 
 		const minSize = parseFloat(config.leaf_size_min || 30);
@@ -21,22 +18,49 @@ class LeafEntity {
 		const depthFactor = 1 / (this.depth * 0.5 + 0.5);
 		this.size *= depthFactor;
 
-		this.vx = (Math.random() - 0.5) * 1.5;
-		this.vy = (Math.random() * 1.5 + 1.0) * depthFactor;
-
-		this.rotation = Math.random() * Math.PI * 2;
-		this.angularVelocity = (Math.random() - 0.5) * 0.05;
-
 		this.opacity = parseFloat((config.leaf_opacity || 90) / 100);
-
-		// Wind influence scaling
 		this.windInfluence = Math.random() * 0.8 + 0.2;
 		this.gravity = (0.2 + Math.random() * 0.15) * depthFactor;
-		this.drag = 0.985; // Air drag / resistance
+		this.drag = 0.985;
 
-		// Floating lifetime
-		this.lifetime = 0;
-		this.maxLifetime = 500 + Math.random() * 1000;
+		this.lifetime = Math.floor(Math.random() * 500);
+		this.maxLifetime = 1000 + Math.random() * 1000;
+
+		// Swaying Mode Position Anchors
+		this.mode = config.leaf_mode || 'falling'; // falling, swaying
+		this.side = ['left', 'right', 'top'][Math.floor(Math.random() * 3)];
+		this.initPosition(width, height);
+	}
+
+	initPosition(width, height) {
+		if (this.mode === 'swaying') {
+			// Anchored to borders of screen
+			if (this.side === 'left') {
+				this.anchorX = Math.random() * 120;
+				this.anchorY = Math.random() * height;
+			} else if (this.side === 'right') {
+				this.anchorX = width - Math.random() * 120;
+				this.anchorY = Math.random() * height;
+			} else {
+				this.anchorX = Math.random() * width;
+				this.anchorY = Math.random() * 80;
+			}
+			this.x = this.anchorX;
+			this.y = this.anchorY;
+			this.baseRotation = Math.random() * Math.PI * 2;
+			this.rotation = this.baseRotation;
+			this.vx = 0;
+			this.vy = 0;
+		} else {
+			// Falling Mode Spawning
+			this.x = Math.random() * width;
+			this.y = -Math.random() * 200 - 50;
+			this.vx = (Math.random() - 0.5) * 1.5;
+			const depthFactor = 1 / (this.depth * 0.5 + 0.5);
+			this.vy = (Math.random() * 1.5 + 1.0) * depthFactor;
+			this.rotation = Math.random() * Math.PI * 2;
+			this.angularVelocity = (Math.random() - 0.5) * 0.05;
+		}
 	}
 
 	/**
@@ -45,33 +69,41 @@ class LeafEntity {
 	update(wind, width, height) {
 		this.lifetime++;
 
-		// 1. Gravity Influence
-		this.vy += this.gravity;
+		if (this.mode === 'swaying') {
+			// Static Swaying Logic: gentle oscillation around the edges
+			const freq = 0.015 * (this.config.wind_frequency || 2);
+			const swayAmount = 10 + (wind.intensity * 2.0);
 
-		// 2. Wind Vector force and Perlin turbulence distortion
-		const windX = wind.forceX * this.windInfluence;
-		const windY = wind.forceY * this.windInfluence;
+			this.x = this.anchorX + Math.sin(this.lifetime * freq + this.depth) * swayAmount + (wind.forceX * this.windInfluence * 1.2);
+			this.y = this.anchorY + Math.cos(this.lifetime * freq * 0.8 + this.depth) * (swayAmount * 0.5) + (wind.forceY * this.windInfluence * 0.8);
 
-		this.vx += windX * 0.1;
-		this.vy += windY * 0.05;
+			// Oscillate rotation
+			const rotSpeed = 0.01 * (this.config.wind_rotation || 10);
+			this.rotation = this.baseRotation + Math.sin(this.lifetime * freq * 1.2) * 0.15 * rotSpeed;
+		} else {
+			// Standard Falling Physics
+			this.vy += this.gravity;
 
-		// 3. Air Drag resistance
-		this.vx *= this.drag;
-		this.vy *= this.drag;
+			const windX = wind.forceX * this.windInfluence;
+			const windY = wind.forceY * this.windInfluence;
 
-		// 4. Update Position
-		this.x += this.vx;
-		this.y += this.vy;
+			this.vx += windX * 0.1;
+			this.vy += windY * 0.05;
 
-		// 5. Angular momentum based on turbulence and velocity
-		const velocitySpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-		this.angularVelocity += Math.sin(this.lifetime * 0.05) * 0.002 + (this.vx * 0.001);
-		this.angularVelocity *= 0.96; // Angular drag
-		this.rotation += this.angularVelocity;
+			this.vx *= this.drag;
+			this.vy *= this.drag;
 
-		// Bounds checks - recycle leaf once offscreen
-		if (this.y > height + 100 || this.x < -100 || this.x > width + 100 || this.lifetime > this.maxLifetime) {
-			this.reset(width);
+			this.x += this.vx;
+			this.y += this.vy;
+
+			this.angularVelocity += Math.sin(this.lifetime * 0.05) * 0.002 + (this.vx * 0.001);
+			this.angularVelocity *= 0.96;
+			this.rotation += this.angularVelocity;
+
+			// Recycle falling leaf once offscreen
+			if (this.y > height + 100 || this.x < -100 || this.x > width + 100 || this.lifetime > this.maxLifetime) {
+				this.reset(width);
+			}
 		}
 	}
 
@@ -81,7 +113,7 @@ class LeafEntity {
 		this.vx = (Math.random() - 0.5) * 1.5;
 		this.vy = Math.random() * 1.5 + 1.0;
 		this.lifetime = 0;
-		this.active = Math.random() > 0.4; // Introduce natural gaps/delays (leaves spawn occasionally)
+		this.active = Math.random() > 0.4;
 	}
 }
 
@@ -210,8 +242,28 @@ class ForestPhysicsEngine {
 	}
 
 	resize(width, height) {
+		const oldWidth = this.width;
+		const oldHeight = this.height;
 		this.width = width;
 		this.height = height;
+
+		// Adapt swaying leaf anchors dynamically to new screen borders on resize
+		this.leaves.forEach(leaf => {
+			if (leaf.mode === 'swaying') {
+				if (leaf.side === 'right' && oldWidth > 0) {
+					leaf.anchorX = width - (oldWidth - leaf.anchorX);
+				} else if (leaf.side === 'left' && oldWidth > 0) {
+					// Left side anchor remains relatively the same
+					leaf.anchorX = Math.min(leaf.anchorX, 120);
+				} else if (leaf.side === 'top' && oldWidth > 0) {
+					leaf.anchorX = (leaf.anchorX / oldWidth) * width;
+				}
+
+				if (oldHeight > 0 && leaf.side !== 'top') {
+					leaf.anchorY = (leaf.anchorY / oldHeight) * height;
+				}
+			}
+		});
 	}
 
 	/**
