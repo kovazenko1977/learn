@@ -39,6 +39,15 @@ class Config {
 			'leaf_random_color'  => '0',
 			'leaf_svg_set'       => 'mixed', // birch, oak, linden, maple, aspen, mixed
 
+			// Edge Branches (Forest Frame) Settings
+			'edge_branches_enabled'      => '1',
+			'edge_branches_width'        => 180,
+			'edge_branches_density'      => 8,
+			'edge_branches_color'        => '#3d6a24',
+			'edge_branches_color2'       => '#2f541c',
+			'edge_branches_sway_speed'   => 10,
+			'edge_branches_sway_amplitude' => 15,
+
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees
 			'wind_strength'      => 5,

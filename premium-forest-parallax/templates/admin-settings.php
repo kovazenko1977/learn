@@ -31,6 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="premium-forest-tabs">
 				<a href="#" class="premium-forest-tab-link active" data-tab="general"><?php esc_html_e( 'Основные', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="leaves"><?php esc_html_e( 'Листья', 'premium-forest-parallax' ); ?></a>
+				<a href="#" class="premium-forest-tab-link" data-tab="branches" style="background: #f1fbf0; color: #1e3c1a;"><?php esc_html_e( '🌲 Ветви и Лес', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="wind"><?php esc_html_e( 'Ветер', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="particles"><?php esc_html_e( 'Частицы', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="lighting"><?php esc_html_e( 'Освещение', 'premium-forest-parallax' ); ?></a>
@@ -137,6 +138,61 @@ if ( ! defined( 'ABSPATH' ) ) {
 									<option value="aspen" <?php selected( $settings['leaf_svg_set'], 'aspen' ); ?>><?php esc_html_e( 'Только осина', 'premium-forest-parallax' ); ?></option>
 									<option value="mixed" <?php selected( $settings['leaf_svg_set'], 'mixed' ); ?>><?php esc_html_e( 'Смешанный лес (Все типы листьев)', 'premium-forest-parallax' ); ?></option>
 								</select>
+							</td>
+						</tr>
+					</table>
+				</div>
+
+				<!-- 2.5 Ветви и Лес -->
+				<div id="tab-branches" class="premium-forest-tab-content">
+					<h2><?php esc_html_e( 'Настройка обрамления ветвей леса по краям экрана', 'premium-forest-parallax' ); ?></h2>
+					<table class="form-table">
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Включить ветви по бокам', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[edge_branches_enabled]" value="1" <?php checked( $settings['edge_branches_enabled'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Отображает густые качающиеся лесные ветки по левому и правому краям экрана.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Ширина лесного края (px)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[edge_branches_width]" value="<?php echo esc_attr( $settings['edge_branches_width'] ); ?>" min="50" max="500" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'На сколько пикселей ветки и листья будут заходить на экран с боков.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Густота листвы (плотность)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[edge_branches_density]" value="<?php echo esc_attr( $settings['edge_branches_density'] ); ?>" min="2" max="25" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Количество подветвей и наслоений зелени.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Основной цвет листьев', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" name="premium_forest_parallax_settings[edge_branches_color]" value="<?php echo esc_attr( $settings['edge_branches_color'] ); ?>" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'HEX-цвет листьев на ветках (например, #3d6a24).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Цвет теней листьев', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="text" name="premium_forest_parallax_settings[edge_branches_color2]" value="<?php echo esc_attr( $settings['edge_branches_color2'] ); ?>" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'HEX-цвет затенённых глубоких слоёв ветвей (например, #2f541c).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Скорость покачивания ветвей', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[edge_branches_sway_speed]" value="<?php echo esc_attr( $settings['edge_branches_sway_speed'] ); ?>" min="1" max="50" />
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Амплитуда колыхания (px)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[edge_branches_sway_amplitude]" value="<?php echo esc_attr( $settings['edge_branches_sway_amplitude'] ); ?>" min="1" max="100" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Максимальное смещение ветки от ветра в пикселях.', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
 					</table>

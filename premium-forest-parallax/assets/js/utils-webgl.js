@@ -133,21 +133,78 @@ class WebGLRenderer {
 	 * Prepare static and dynamic layers for the scene
 	 */
 	setupScene(layers, maxLeavesCount, particlesArray) {
-		// 1. Build edge branches framework
+		// 1. Build edge branches framework with lush procedural foliage
+		const baseWidth = parseFloat(this.config.edge_branches_width || 180);
+		const density = parseInt(this.config.edge_branches_density || 8);
+		const leafColor = new THREE.Color(this.config.edge_branches_color || '#3d6a24');
+		const leafColorShadow = new THREE.Color(this.config.edge_branches_color2 || '#2f541c');
+
 		layers.forEach(layer => {
 			const group = new THREE.Group();
 			group.position.z = -layer.depth * 10;
 
-			// Build simple stylized procedural vector geometry representations of edge branches/vines
-			const branchGeo = new THREE.BufferGeometry();
-			const vertices = new Float32Array([
-				-window.innerWidth/2, window.innerHeight/2, 0,
-				-window.innerWidth/2 + 200, -window.innerHeight/2, 0
-			]);
-			branchGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-			const branchMat = new THREE.LineBasicMaterial({ color: 0x1b320f, linewidth: 5 });
-			const branchLine = new THREE.Line(branchGeo, branchMat);
-			group.add(branchLine);
+			if (this.config.edge_branches_enabled !== '0') {
+				// Branch geometry setup
+				const branchMat = new THREE.LineBasicMaterial({ color: 0x1b320f, linewidth: 4 });
+				const leafMat = new THREE.MeshBasicMaterial({
+					color: layer.depth % 2 === 0 ? leafColor : leafColorShadow,
+					side: THREE.DoubleSide
+				});
+
+				const leafGeo = new THREE.PlaneGeometry(24, 12);
+
+				// Create stems on Left side
+				for (let i = 0; i <= density; i++) {
+					const y = -window.innerHeight / 2 + (window.innerHeight / density) * i;
+					const branchLength = baseWidth * (0.6 + Math.sin(i * 1.5) * 0.3) * (1 / (layer.depth * 0.15 + 0.55));
+
+					const points = [];
+					points.push(new THREE.Vector3(-window.innerWidth / 2, y, 0));
+					points.push(new THREE.Vector3(-window.innerWidth / 2 + branchLength * 0.5, y + Math.sin(i) * 30, 0));
+					points.push(new THREE.Vector3(-window.innerWidth / 2 + branchLength, y + Math.cos(i) * 30, 0));
+
+					const curve = new THREE.QuadraticBezierCurve3(points[0], points[1], points[2]);
+					const bGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(10));
+					const branchLine = new THREE.Line(bGeo, branchMat);
+					group.add(branchLine);
+
+					// Add leaves along the curves
+					for (let j = 2; j <= 6; j++) {
+						const t = j / 6;
+						const p = curve.getPoint(t);
+						const leafMesh = new THREE.Mesh(leafGeo, leafMat);
+						leafMesh.position.copy(p);
+						leafMesh.rotation.z = Math.sin(i + j) * 0.5 + (j * 0.3);
+						group.add(leafMesh);
+					}
+				}
+
+				// Create stems on Right side
+				for (let i = 0; i <= density; i++) {
+					const y = -window.innerHeight / 2 + (window.innerHeight / density) * i;
+					const branchLength = baseWidth * (0.6 + Math.cos(i * 1.5) * 0.3) * (1 / (layer.depth * 0.15 + 0.55));
+
+					const points = [];
+					points.push(new THREE.Vector3(window.innerWidth / 2, y, 0));
+					points.push(new THREE.Vector3(window.innerWidth / 2 - branchLength * 0.5, y + Math.cos(i) * 30, 0));
+					points.push(new THREE.Vector3(window.innerWidth / 2 - branchLength, y + Math.sin(i) * 30, 0));
+
+					const curve = new THREE.QuadraticBezierCurve3(points[0], points[1], points[2]);
+					const bGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(10));
+					const branchLine = new THREE.Line(bGeo, branchMat);
+					group.add(branchLine);
+
+					// Add leaves
+					for (let j = 2; j <= 6; j++) {
+						const t = j / 6;
+						const p = curve.getPoint(t);
+						const leafMesh = new THREE.Mesh(leafGeo, leafMat);
+						leafMesh.position.copy(p);
+						leafMesh.rotation.z = Math.cos(i + j) * 0.5 - (j * 0.3);
+						group.add(leafMesh);
+					}
+				}
+			}
 
 			this.scene.add(group);
 			this.branchGroups.push({ group, layer });

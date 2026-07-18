@@ -243,32 +243,102 @@ class Canvas2DRenderer {
 	}
 
 	/**
-	 * Draw branch border frame on screen edges
+	 * Draw branch border frame on screen edges with detailed leafy branches
 	 */
 	drawEdgeFraming(layer, width, height) {
 		const ctx = this.ctx;
-		const offset = layer.offsetY || 0;
-		const depthOffset = layer.depth * 15;
+		if (this.config.edge_branches_enabled === '0') {
+			return;
+		}
 
-		ctx.fillStyle = '#2d4c1b';
+		const baseWidth = parseFloat(this.config.edge_branches_width || 180);
+		const density = parseInt(this.config.edge_branches_density || 8);
+		const color1 = this.config.edge_branches_color || '#3d6a24';
+		const color2 = this.config.edge_branches_color2 || '#2f541c';
+		const swaySpeed = parseFloat(this.config.edge_branches_sway_speed || 10) * 0.1;
+		const swayAmp = parseFloat(this.config.edge_branches_sway_amplitude || 15);
+
+		// Calculate organic sway offset based on Perlin wind and time
+		const time = performance.now() * 0.001 * swaySpeed;
+		const sway = Math.sin(time + layer.depth) * swayAmp * (layer.depth * 0.2 + 0.4);
+
+		// Draw decorative branch trunks and leafy stems on Left and Right borders
+		ctx.save();
+
+		// 1. Draw Left forest border
+		ctx.fillStyle = layer.depth % 2 === 0 ? color1 : color2;
 		ctx.strokeStyle = '#1b320f';
-		ctx.lineWidth = 4;
+		ctx.lineWidth = 3;
 
-		// Draw decorative branches along Left edge
-		ctx.beginPath();
-		ctx.moveTo(0, 0);
-		ctx.quadraticCurveTo(30 + depthOffset + offset, height * 0.3, 0, height * 0.6);
-		ctx.quadraticCurveTo(45 + depthOffset + offset, height * 0.8, 0, height);
-		ctx.lineTo(0, 0);
-		ctx.fill();
+		for (let i = 0; i <= density; i++) {
+			const yAnchor = (height / density) * i;
+			const branchLength = baseWidth * (0.6 + Math.sin(i * 1.7) * 0.3) * (1 / (layer.depth * 0.15 + 0.55));
 
-		// Draw decorative branches along Right edge
-		ctx.beginPath();
-		ctx.moveTo(width, 0);
-		ctx.quadraticCurveTo(width - 30 - depthOffset - offset, height * 0.3, width, height * 0.6);
-		ctx.quadraticCurveTo(width - 45 - depthOffset - offset, height * 0.8, width, height);
-		ctx.lineTo(width, 0);
-		ctx.fill();
+			// Main branch stem
+			ctx.beginPath();
+			ctx.moveTo(0, yAnchor);
+			const ctrlX = branchLength * 0.5 + sway;
+			const ctrlY = yAnchor + Math.cos(time + i) * 20;
+			const endX = branchLength + sway;
+			const endY = yAnchor + Math.sin(time + i) * 20;
+
+			ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+			ctx.stroke();
+
+			// Draw multiple green leaves hanging on the branch
+			for (let j = 2; j <= 6; j++) {
+				const leafRatio = j / 6;
+				const lx = endX * leafRatio;
+				const ly = yAnchor + (endY - yAnchor) * leafRatio;
+
+				ctx.save();
+				ctx.translate(lx, ly);
+				ctx.rotate(Math.sin(time * 1.5 + i + j) * 0.2 + (j * 0.5));
+
+				// Draw a leaf shape
+				ctx.beginPath();
+				ctx.ellipse(0, 0, 15, 8, 0, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.stroke();
+				ctx.restore();
+			}
+		}
+
+		// 2. Draw Right forest border
+		ctx.fillStyle = layer.depth % 2 === 0 ? color2 : color1;
+		for (let i = 0; i <= density; i++) {
+			const yAnchor = (height / density) * i;
+			const branchLength = baseWidth * (0.6 + Math.cos(i * 1.7) * 0.3) * (1 / (layer.depth * 0.15 + 0.55));
+
+			ctx.beginPath();
+			ctx.moveTo(width, yAnchor);
+			const ctrlX = width - (branchLength * 0.5) + sway;
+			const ctrlY = yAnchor + Math.sin(time * 0.8 + i) * 20;
+			const endX = width - branchLength + sway;
+			const endY = yAnchor + Math.cos(time * 0.8 + i) * 20;
+
+			ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
+			ctx.stroke();
+
+			// Draw leaves
+			for (let j = 2; j <= 6; j++) {
+				const leafRatio = j / 6;
+				const lx = width - (width - endX) * leafRatio;
+				const ly = yAnchor + (endY - yAnchor) * leafRatio;
+
+				ctx.save();
+				ctx.translate(lx, ly);
+				ctx.rotate(Math.cos(time * 1.5 + i + j) * 0.2 - (j * 0.5));
+
+				ctx.beginPath();
+				ctx.ellipse(0, 0, 15, 8, 0, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.stroke();
+				ctx.restore();
+			}
+		}
+
+		ctx.restore();
 	}
 }
 
