@@ -40,6 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<a href="#" class="premium-forest-tab-link" data-tab="parallax"><?php esc_html_e( 'Параллакс', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="webgl"><?php esc_html_e( 'WebGL2', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="performance"><?php esc_html_e( 'Оптимизация', 'premium-forest-parallax' ); ?></a>
+				<a href="#" class="premium-forest-tab-link" data-tab="mobile" style="background: #fff5f5; color: #a42c2c;"><?php esc_html_e( '📱 Мобильные', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="advanced"><?php esc_html_e( 'Код и CSS', 'premium-forest-parallax' ); ?></a>
 				<a href="#" class="premium-forest-tab-link" data-tab="help" style="background: #fffcf0; color: #b77a00; font-weight: bold; border-left: 3px solid #e29f00;"><?php esc_html_e( '📚 Справка', 'premium-forest-parallax' ); ?></a>
 			</div>
@@ -557,6 +558,69 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<th scope="row"><?php esc_html_e( 'Останавливать за экраном (IntersectionObserver)', 'premium-forest-parallax' ); ?></th>
 							<td>
 								<input type="checkbox" name="premium_forest_parallax_settings[perf_pause_offscr]" value="1" <?php checked( $settings['perf_pause_offscr'], '1' ); ?> />
+							</td>
+						</tr>
+					</table>
+				</div>
+
+				<!-- 9.5 Мобильные устройства -->
+				<div id="tab-mobile" class="premium-forest-tab-content">
+					<h2><?php esc_html_e( 'Специфичные настройки для мобильных устройств (смартфоны и планшеты)', 'premium-forest-parallax' ); ?></h2>
+					<table class="form-table">
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Включить мобильную оптимизацию', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_optimize_enabled]" value="1" <?php checked( $settings['mobile_optimize_enabled'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Включает автоматическое интеллектуальное сжатие и адаптацию для сенсорных экранов.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Отключить тяжелые шейдеры (Bloom/Blur)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_disable_effects]" value="1" <?php checked( $settings['mobile_disable_effects'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Отключает ресурсоемкие шейдеры размытия и свечения на мобильных для экономии заряда.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Принудительный Canvas2D (без WebGL)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_force_canvas2d]" value="1" <?php checked( $settings['mobile_force_canvas2d'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Всегда использовать высокопроизводительный Canvas2D-рендерер вместо трехмерного WebGL2 на смартфонах.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Сократить листья на (%)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[mobile_reduce_leaves]" value="<?php echo esc_attr( $settings['mobile_reduce_leaves'] ); ?>" min="0" max="95" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'На сколько процентов уменьшить число летающих листьев на смартфонах (по умолчанию 50%).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Сократить микрочастицы на (%)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[mobile_reduce_particles]" value="<?php echo esc_attr( $settings['mobile_reduce_particles'] ); ?>" min="0" max="95" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'На сколько процентов снизить плотность летающей пыльцы.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Сократить густоту ветвей на (%)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[mobile_reduce_branches]" value="<?php echo esc_attr( $settings['mobile_reduce_branches'] ); ?>" min="0" max="95" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'На сколько процентов уменьшить ветвистость лесного края по бокам.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Отключить гироскоп (акселерометр)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_disable_gyro]" value="1" <?php checked( $settings['mobile_disable_gyro'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Отключает отслеживание физического наклона телефона для экономии батареи (будет работать только тач).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Полностью скрыть на мобильных', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[mobile_disable_on_touch]" value="1" <?php checked( $settings['mobile_disable_on_touch'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Если включено, лесной параллакс не будет вообще отображаться на смартфонах и планшетах.', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
 					</table>

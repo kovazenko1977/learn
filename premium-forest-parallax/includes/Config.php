@@ -111,6 +111,16 @@ class Config {
 			'perf_pause_hidden'  => '1',
 			'perf_pause_offscr'  => '1',
 
+			// Mobile Devices Specific Settings
+			'mobile_optimize_enabled'    => '1',
+			'mobile_disable_effects'     => '1',
+			'mobile_force_canvas2d'      => '1',
+			'mobile_reduce_leaves'       => 50,
+			'mobile_reduce_particles'    => 50,
+			'mobile_reduce_branches'     => 30,
+			'mobile_disable_gyro'        => '0',
+			'mobile_disable_on_touch'    => '0',
+
 			// Advanced Tab
 			'custom_css'         => '',
 			'custom_js'          => '',

@@ -235,13 +235,15 @@ class ForestPhysicsEngine {
 			}
 		});
 
-		// Dynamic Mobile Device Orientation Gyroscope Interactions
-		window.addEventListener('deviceorientation', (e) => {
-			if (e.gamma !== null && e.beta !== null) {
-				this.orientation.gamma = e.gamma; // Horizontal tilt
-				this.orientation.beta = e.beta;   // Vertical tilt
-			}
-		});
+		// Dynamic Mobile Device Orientation Gyroscope Interactions (If not disabled by admin to save battery)
+		if (this.config.mobile_disable_gyro !== '1') {
+			window.addEventListener('deviceorientation', (e) => {
+				if (e.gamma !== null && e.beta !== null) {
+					this.orientation.gamma = e.gamma; // Horizontal tilt
+					this.orientation.beta = e.beta;   // Vertical tilt
+				}
+			});
+		}
 	}
 
 	resize(width, height) {

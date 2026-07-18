@@ -15,11 +15,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 	if (!container || !canvas) return;
 
+	// Detect touch/mobile device
+	const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+	// Total mobile opt-out check
+	if (isTouchDevice && config.mobile_disable_on_touch === '1') {
+		container.style.display = 'none';
+		return;
+	}
+
 	// 1. Run Dynamic Hardware Benchmarking and Determine Device Profile
 	const profile = await window.PremiumForestParallax.DeviceProfiler.getProfile(config.perf_observe === '1');
 
 	// Apply profile parameters to configuration overrides
-	adjustConfigForProfile(config, profile);
+	adjustConfigForProfile(config, profile, isTouchDevice);
 
 	// 2. Preload Leaf SVG Textures
 	const loadedAssets = await preloadLeafAssets(config, premiumForestParams.svg_url);
@@ -144,9 +153,10 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 /**
- * Scale parameters down or up dynamically to match device performance thresholds.
+ * Scale parameters down or up dynamically to match device performance thresholds + granular mobile options.
  */
-function adjustConfigForProfile(config, profile) {
+function adjustConfigForProfile(config, profile, isTouch) {
+	// 1. Core Profile Defaults
 	if (profile === 'Lite') {
 		config.webgl_enabled = '0';
 		config.leaf_count = Math.min(parseInt(config.leaf_count), 15);
@@ -159,8 +169,33 @@ function adjustConfigForProfile(config, profile) {
 	} else if (profile === 'Medium') {
 		config.leaf_count = Math.min(parseInt(config.leaf_count), 30);
 	} else if (profile === 'Ultra') {
-		// Boost limits slightly for amazing visuals on ultra desktop PCs
 		config.leaf_count = Math.max(parseInt(config.leaf_count), 50);
+	}
+
+	// 2. Granular Mobile Overrides
+	if (isTouch && config.mobile_optimize_enabled === '1') {
+		if (config.mobile_force_canvas2d === '1') {
+			config.webgl_enabled = '0';
+		}
+
+		if (config.mobile_disable_effects === '1') {
+			config.webgl_bloom_pass = '0';
+			config.webgl_blur_pass = '0';
+			config.webgl_noise_pass = '0';
+			config.webgl_fog_pass = '0';
+			config.fog_enabled = '0';
+		}
+
+		// Apply percentage reductions based on admin sliders
+		const leavesReduction = parseFloat(config.mobile_reduce_leaves || 50) * 0.01;
+		config.leaf_count = Math.floor(parseInt(config.leaf_count) * (1 - leavesReduction));
+
+		const particlesReduction = parseFloat(config.mobile_reduce_particles || 50) * 0.01;
+		config.particles_count = Math.floor(parseInt(config.particles_count) * (1 - particlesReduction));
+
+		const branchesReduction = parseFloat(config.mobile_reduce_branches || 30) * 0.01;
+		config.edge_branches_density = Math.floor(parseInt(config.edge_branches_density || 8) * (1 - branchesReduction));
+		config.edge_branches_density = Math.max(config.edge_branches_density, 2); // Keep minimum of 2 branches for visuals
 	}
 }
 
