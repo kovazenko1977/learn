@@ -38,6 +38,7 @@ add_action('wp_ajax_berezina_chatbot_upload_file', 'berezina_chatbot_ajax_upload
 add_action('wp_ajax_berezina_chatbot_delete_file', 'berezina_chatbot_ajax_delete_file');
 add_action('wp_ajax_berezina_chatbot_clear_history', 'berezina_chatbot_ajax_clear_history');
 add_action('wp_ajax_berezina_chatbot_delete_history_item', 'berezina_chatbot_ajax_delete_history_item');
+add_action('wp_ajax_berezina_chatbot_bulk_add_qa', 'berezina_chatbot_ajax_bulk_add_qa');
 
 /**
  * Register Admin Menu Page
@@ -466,4 +467,46 @@ function berezina_chatbot_ajax_delete_history_item() {
 
     Berezina_Chatbot_Storage::write('history.json', $filtered);
     wp_send_json_success(array('success' => true));
+}
+
+/**
+ * AJAX Bulk Add Q&A
+ */
+function berezina_chatbot_ajax_bulk_add_qa() {
+    check_ajax_referer('berezina-chatbot-admin-nonce', 'nonce');
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error(array('error' => 'Permission denied'));
+    }
+
+    if (!isset($_POST['text'])) {
+        wp_send_json_error(array('error' => 'Missing text data'));
+    }
+
+    $text = stripslashes($_POST['text']);
+    $lines = explode("\n", $text);
+    $knowledge = Berezina_Chatbot_Storage::read('knowledge.json') ?: array();
+    $added = 0;
+
+    foreach ($lines as $line) {
+        $parts = explode(';', $line, 2);
+        if (count($parts) < 2) continue;
+        $keywords_raw = trim($parts[0]);
+        $answer = trim($parts[1]);
+        if ($keywords_raw === '' || $answer === '') continue;
+        $keywords = array_filter(array_map('trim', explode(',', $keywords_raw)));
+        if (empty($keywords)) continue;
+        $knowledge[] = array(
+            'keywords' => array_values($keywords),
+            'answer' => $answer
+        );
+        $added++;
+    }
+
+    Berezina_Chatbot_Storage::write('knowledge.json', $knowledge);
+
+    wp_send_json_success(array(
+        'success' => true,
+        'added' => $added,
+        'knowledge' => $knowledge
+    ));
 }

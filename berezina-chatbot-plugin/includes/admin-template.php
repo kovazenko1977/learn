@@ -170,6 +170,14 @@ if (!defined('ABSPATH')) {
                         <button @click="addQAItem" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold">Добавить вопрос-ответ</button>
                     </div>
 
+                    <!-- Bulk Addition Row -->
+                    <div class="p-6 bg-blue-50 rounded-3xl border border-blue-100 space-y-3">
+                        <h3 class="text-sm font-black text-blue-800">Групповое добавление вопросов и ответов</h3>
+                        <p class="text-[11px] text-blue-600 font-medium">Введите пары "ключевики; ответ" (каждая пара с новой строки). Ключевики можно разделять запятыми.</p>
+                        <textarea v-model="bulkText" rows="3" placeholder="привет, здравствуйте; Приветствуем вас в санатории Березина!&#10;номера, проживание; Ознакомьтесь с нашими комфортными номерами на вкладке Номера." class="w-full bg-white p-3 rounded-2xl border border-blue-100 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+                        <button @click="bulkAdd" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold">Добавить группу вопросов</button>
+                    </div>
+
                     <div class="space-y-6">
                         <div v-for="(item, index) in knowledge" :key="index" class="p-6 bg-gray-50 rounded-2xl border border-gray-100 relative group">
                             <button @click="knowledge.splice(index, 1)" class="absolute top-4 right-4 text-red-300 hover:text-red-500 text-lg font-black">&times;</button>

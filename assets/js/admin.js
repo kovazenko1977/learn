@@ -30,6 +30,7 @@ createApp({
         const isLoaded = ref(false);
         const scriptUrl = ref('');
         const searchQuery = ref('');
+        const bulkText = ref('');
 
         const stats = computed(() => {
             const total = history.value.length;
@@ -97,6 +98,24 @@ createApp({
         const updateKeywords = (index, val) => {
             knowledge.value[index].keywords = val.split(',').map(s => s.trim()).filter(s => s);
         };
+        const bulkAdd = async () => {
+            if (!bulkText.value.trim()) return alert('Введите текст для добавления');
+            try {
+                const res = await fetch('admin.php?action=bulk_add_qa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: bulkText.value })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    knowledge.value = data.knowledge;
+                    bulkText.value = '';
+                    alert(`Успешно добавлено вопросов: ${data.added}`);
+                }
+            } catch (e) {
+                alert('Ошибка импорта');
+            }
+        };
         const triggerImport = () => document.querySelector('input[type="file"]').click();
         const clearHistory = async () => { if (confirm('Очистить историю?')) { await fetch('admin.php?action=clear_history'); history.value = []; } };
         const deleteHistoryItem = async (id) => { await fetch(`admin.php?action=delete_history_item&id=${id}`); history.value = history.value.filter(i => i.id !== id); };
@@ -109,8 +128,8 @@ createApp({
 
         return {
             activeTab, dayNames, settings, knowledge, history, uploads, isLoaded, scriptUrl,
-            searchQuery, filteredKnowledge, stats,
-            save, addQnA, removeQnA, updateKeywords, triggerImport, clearHistory,
+            searchQuery, filteredKnowledge, stats, bulkText,
+            save, addQnA, removeQnA, updateKeywords, bulkAdd, triggerImport, clearHistory,
             deleteHistoryItem, addForm, addWebhook, addDepartment, addQuickStart, deleteUpload
         };
     }

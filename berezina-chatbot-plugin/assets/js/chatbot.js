@@ -235,115 +235,107 @@
                 };
             },
             template: `
-                <div>
+                <div id="chat-widget-container" :class="{'mobile-open': isOpen}">
                     <!-- Widget Button -->
-                    <button @click="toggleChat" class="berezina-chatbot-launcher shadow-2xl transition-all" :style="{ backgroundColor: '#2563eb' }">
-                        <svg v-if="!isOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-white">
+                    <button @click="toggleChat" class="chat-button">
+                        <svg v-if="!isOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 32px; height: 32px;">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a.598.598 0 01-.61-.326 5.784 5.784 0 01-.389-2.257c0-.157.018-.313.051-.465C3.301 16.59 3 14.343 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                         </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-white">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <span v-else style="font-size: 28px;">✕</span>
                     </button>
 
                     <!-- Chat Window Panel -->
-                    <div v-show="isOpen" class="berezina-chatbot-panel shadow-2xl flex flex-col overflow-hidden">
+                    <div v-show="isOpen" class="chat-window">
                         <!-- Top Header -->
-                        <div class="berezina-chatbot-header flex items-center justify-between p-4 text-white" :style="{ backgroundColor: '#2563eb' }">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center font-black text-blue-600 shadow">Б</div>
-                                <div>
-                                    <div class="font-bold text-sm">{{ settings.widget_title }}</div>
-                                    <div class="text-[10px] opacity-80 flex items-center gap-1">
-                                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block animate-pulse"></span> Онлайн
-                                    </div>
+                        <div class="chat-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 36px; height: 36px; border-radius: 50%; background: white; color: var(--chat-primary); display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Б</div>
+                                <div style="display: flex; flex-direction: column; text-align: left;">
+                                    <span style="font-weight: bold; font-size: 14px; line-height: 1.2;">{{ settings.widget_title }}</span>
+                                    <span style="font-size: 10px; opacity: 0.9; display: flex; align-items: center; gap: 4px;">
+                                        <span style="width: 6px; height: 6px; background: #4ade80; border-radius: 50%; display: inline-block;"></span> Онлайн
+                                    </span>
                                 </div>
                             </div>
-                            <button @click="toggleChat" class="text-white hover:opacity-80 font-black">&times;</button>
+                            <button @click="toggleChat" style="background: none; border: none; color: white; cursor: pointer; font-size: 24px;">&times;</button>
                         </div>
 
                         <!-- Chat Messages Container -->
-                        <div ref="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
-                            <div v-for="(msg, index) in messages" :key="index" :class="msg.isBot ? 'justify-start' : 'justify-end'" class="flex">
-                                <div :class="msg.isBot ? 'bg-white text-gray-800' : 'bg-blue-600 text-white'" class="p-3 rounded-2xl max-w-[85%] text-xs shadow-sm font-medium">
-                                    <div class="whitespace-pre-line leading-relaxed">{{ msg.text }}</div>
+                        <div ref="messagesContainer" class="chat-messages">
+                            <div v-for="(msg, index) in messages" :key="index" :class="['message', msg.isBot ? 'message-bot' : 'message-user']">
+                                <div style="white-space: pre-line; line-height: 1.4;">{{ msg.text }}</div>
 
-                                    <!-- Fallback action button -->
-                                    <div v-if="msg.fallback" class="mt-3 pt-3 border-t border-gray-100 flex flex-col gap-2">
-                                        <button @click="activeForm = 'contact'" class="bg-blue-50 text-blue-600 px-3 py-2 rounded-xl font-bold text-[10px] text-center shadow-sm">
-                                            {{ msg.fallback.text }}
-                                        </button>
-                                        <a :href="'tel:' + msg.fallback.phone" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-xl font-bold text-[10px] text-center shadow-sm">
-                                            Позвонить нам
-                                        </a>
-                                    </div>
+                                <!-- Fallback action button -->
+                                <div v-if="msg.fallback" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 6px;">
+                                    <button @click="activeForm = 'contact'" class="quick-reply-btn" style="text-align: center;">
+                                        {{ msg.fallback.text }}
+                                    </button>
+                                    <a :href="'tel:' + msg.fallback.phone" class="quick-reply-btn" style="text-align: center; background: #e2e8f0; color: #475569; border-color: transparent;">
+                                        Позвонить нам
+                                    </a>
                                 </div>
                             </div>
 
                             <!-- Interactive Lead Form (Contact) -->
-                            <div v-if="activeForm === 'contact'" class="bg-white p-4 rounded-2xl shadow-md border border-blue-100 space-y-3">
-                                <div class="font-black text-xs text-gray-800">Заказать обратный звонок</div>
-                                <input v-model="leadData.name" placeholder="Ваше имя" class="w-full bg-gray-50 p-2.5 rounded-xl text-xs border border-gray-100">
-                                <input v-model="leadData.phone" placeholder="Ваш телефон" class="w-full bg-gray-50 p-2.5 rounded-xl text-xs border border-gray-100">
-                                <div class="flex gap-2">
-                                    <button @click="submitLeadForm" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] py-2 rounded-xl">Отправить</button>
-                                    <button @click="activeForm = null" class="bg-gray-100 text-gray-600 font-bold text-[10px] py-2 px-3 rounded-xl">Отмена</button>
+                            <div v-if="activeForm === 'contact'" style="padding: 15px; background: var(--chat-bot-bg); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-top: 10px;">
+                                <div style="font-weight: bold; font-size: 13px; margin-bottom: 10px; color: var(--chat-text);">Заказать обратный звонок</div>
+                                <input v-model="leadData.name" placeholder="Ваше имя" class="custom-input">
+                                <input v-model="leadData.phone" placeholder="Ваш телефон" class="custom-input">
+                                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                    <button @click="submitLeadForm" class="lead-btn" style="padding: 8px 15px; font-size: 11px;">Отправить</button>
+                                    <button @click="activeForm = null" class="quick-reply-btn" style="flex: 1; padding: 8px 15px; font-size: 11px;">Отмена</button>
                                 </div>
                             </div>
 
                             <!-- Interactive Booking Form -->
-                            <div v-if="activeForm === 'booking'" class="bg-white p-4 rounded-2xl shadow-md border border-blue-100 space-y-3">
-                                <div class="font-black text-xs text-gray-800">Бронирование путевки</div>
-                                <input v-model="leadData.name" placeholder="Имя" class="w-full bg-gray-50 p-2 rounded-xl text-xs border-none shadow-inner">
-                                <input v-model="leadData.phone" placeholder="Телефон" class="w-full bg-gray-50 p-2 rounded-xl text-xs border-none shadow-inner">
-                                <select v-model="leadData.room_type" class="w-full bg-gray-50 p-2 rounded-xl text-xs border-none shadow-inner">
+                            <div v-if="activeForm === 'booking'" style="padding: 15px; background: var(--chat-bot-bg); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-top: 10px;">
+                                <div style="font-weight: bold; font-size: 13px; margin-bottom: 10px; color: var(--chat-text);">Бронирование путевки</div>
+                                <input v-model="leadData.name" placeholder="Имя" class="custom-input">
+                                <input v-model="leadData.phone" placeholder="Телефон" class="custom-input">
+                                <select v-model="leadData.room_type" class="custom-input">
                                     <option>Одноместный 1-комнатный</option>
                                     <option>Двухместный 1-комнатный</option>
                                     <option>Двухместный 2-комнатный</option>
                                 </select>
-                                <div class="flex gap-1">
-                                    <input type="text" v-model="leadData.date_start" placeholder="С какого" class="w-1/2 bg-gray-50 p-2 rounded-xl text-xs border-none shadow-inner">
-                                    <input type="text" v-model="leadData.date_end" placeholder="По какое" class="w-1/2 bg-gray-50 p-2 rounded-xl text-xs border-none shadow-inner">
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" v-model="leadData.date_start" placeholder="С какого" class="custom-input" style="width: 50%;">
+                                    <input type="text" v-model="leadData.date_end" placeholder="По какое" class="custom-input" style="width: 50%;">
                                 </div>
-                                <div class="flex gap-2">
-                                    <button @click="submitLeadForm" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] py-2 rounded-xl">Забронировать</button>
-                                    <button @click="activeForm = null" class="bg-gray-100 text-gray-600 font-bold text-[10px] py-2 px-3 rounded-xl">Отмена</button>
+                                <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                    <button @click="submitLeadForm" class="lead-btn" style="padding: 8px 15px; font-size: 11px;">Забронировать</button>
+                                    <button @click="activeForm = null" class="quick-reply-btn" style="flex: 1; padding: 8px 15px; font-size: 11px;">Отмена</button>
                                 </div>
                             </div>
 
                             <!-- Loading indicator -->
-                            <div v-if="isLoading" class="flex justify-start">
-                                <div class="bg-white p-3 rounded-2xl shadow-sm text-xs text-gray-400 font-medium flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></span>
-                                    <span class="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-                                    <span class="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
-                                </div>
+                            <div v-if="isLoading" class="message message-bot">
+                                <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
                             </div>
                         </div>
 
                         <!-- Quick start suggestions -->
-                        <div v-if="settings.quick_start_menu && settings.quick_start_menu.length && messages.length === 1" class="p-3 bg-white border-t border-gray-100 flex flex-wrap gap-2">
-                            <button v-for="btn in settings.quick_start_menu" @click="handleQuickStart(btn.message)" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-full font-bold text-[10px] shadow-sm transition-colors">
+                        <div v-if="settings.quick_start_menu && settings.quick_start_menu.length && messages.length === 1" class="quick-replies" style="padding: 10px 15px; background: var(--chat-bot-bg);">
+                            <button v-for="btn in settings.quick_start_menu" @click="handleQuickStart(btn.message)" class="quick-reply-btn">
                                 {{ btn.text }}
                             </button>
                         </div>
 
                         <!-- Bottom Footer Input Form -->
-                        <div class="p-3 bg-white border-t border-gray-100 flex items-center gap-2">
-                            <input v-model="userInput" @keyup.enter="sendMessage()" placeholder="Введите ваш вопрос..." class="flex-1 text-xs border-none bg-gray-50 p-2.5 rounded-xl focus:ring-1 focus:ring-blue-500">
-                            <button @click="sendMessage()" class="bg-blue-600 text-white p-2.5 rounded-xl shadow-md hover:bg-blue-700 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                        <div class="chat-input-area">
+                            <input v-model="userInput" @keyup.enter="sendMessage()" placeholder="Введите ваш вопрос..." class="chat-input">
+                            <button @click="sendMessage()" class="send-btn" style="padding: 8px 12px; display: flex; align-items: center; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                                 </svg>
                             </button>
                         </div>
 
                         <!-- Messenger Shortcuts Footer Row -->
-                        <div class="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-[10px] font-bold text-gray-400">
-                            <span class="uppercase tracking-widest text-[8px]">Наши контакты:</span>
-                            <div class="flex items-center gap-3">
-                                <a v-if="settings.contacts.whatsapp" :href="'https://wa.me/' + settings.contacts.whatsapp" target="_blank" class="text-green-500 hover:underline">WhatsApp</a>
-                                <a v-if="settings.contacts.telegram" :href="'https://t.me/' + settings.contacts.telegram" target="_blank" class="text-blue-400 hover:underline">Telegram</a>
+                        <div class="chat-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 15px;">
+                            <span style="font-size: 9px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.5px;">Контакты:</span>
+                            <div style="display: flex; gap: 10px;">
+                                <a v-if="settings.contacts.whatsapp" :href="'https://wa.me/' + settings.contacts.whatsapp" target="_blank" style="color: #25d366; font-weight: bold; text-decoration: none;">WhatsApp</a>
+                                <a v-if="settings.contacts.telegram" :href="'https://t.me/' + settings.contacts.telegram" target="_blank" style="color: #0088cc; font-weight: bold; text-decoration: none;">Telegram</a>
                             </div>
                         </div>
                     </div>

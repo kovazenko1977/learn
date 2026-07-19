@@ -22,6 +22,30 @@ if (isset($_GET['action'])) {
     header('Content-Type: application/json');
     if ($_GET['action'] === 'get_data') { echo json_encode(['settings' => Storage::read('settings.json'), 'knowledge' => Storage::read('knowledge.json')]); exit; }
     if ($_GET['action'] === 'save_data') { $input = json_decode(file_get_contents('php://input'), true); Storage::write('settings.json', $input['settings']); Storage::write('knowledge.json', $input['knowledge']); echo json_encode(['success' => true]); exit; }
+    if ($_GET['action'] === 'bulk_add_qa') {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $text = $input['text'] ?? '';
+        $lines = explode("\n", $text);
+        $knowledge = Storage::read('knowledge.json') ?: [];
+        $added = 0;
+        foreach ($lines as $line) {
+            $parts = explode(';', $line, 2);
+            if (count($parts) < 2) continue;
+            $keywords_raw = trim($parts[0]);
+            $answer = trim($parts[1]);
+            if ($keywords_raw === '' || $answer === '') continue;
+            $keywords = array_filter(array_map('trim', explode(',', $keywords_raw)));
+            if (empty($keywords)) continue;
+            $knowledge[] = [
+                'keywords' => array_values($keywords),
+                'answer' => $answer
+            ];
+            $added++;
+        }
+        Storage::write('knowledge.json', $knowledge);
+        echo json_encode(['success' => true, 'added' => $added, 'knowledge' => $knowledge]);
+        exit;
+    }
     if ($_GET['action'] === 'get_history') { echo json_encode(Storage::read('history.json') ?: []); exit; }
     if ($_GET['action'] === 'clear_history') { Storage::write('history.json', []); echo json_encode(['success' => true]); exit; }
     if ($_GET['action'] === 'delete_history_item') {
@@ -118,6 +142,15 @@ if (isset($_GET['action'])) {
                     <div class="relative w-full md:w-96"><input v-model="searchQuery" placeholder="Поиск по базе..." class="w-full bg-gray-50 p-4 rounded-2xl border-none text-sm outline-none focus:ring-2 focus:ring-blue-100 transition-all"><span class="absolute right-4 top-4 opacity-20">🔍</span></div>
                     <button @click="addQnA" class="bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold shadow-lg shadow-blue-100">+ Добавить фразу</button>
                 </div>
+
+                <!-- Bulk Addition Row -->
+                <div class="mb-8 p-6 bg-blue-50 rounded-3xl border border-blue-100">
+                    <h3 class="text-sm font-black text-blue-800 mb-2">Групповое добавление вопросов и ответов</h3>
+                    <p class="text-[11px] text-blue-600 mb-4 font-medium">Введите пары "ключевики; ответ" (каждая пара с новой строки). Ключевики можно разделять запятыми.</p>
+                    <textarea v-model="bulkText" rows="3" placeholder="привет, здравствуйте; Приветствуем вас в санатории Березина!&#10;номера, проживание; Ознакомьтесь с нашими комфортными номерами на вкладке Номера." class="w-full bg-white p-3 rounded-2xl border border-blue-100 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-200 mb-3"></textarea>
+                    <button @click="bulkAdd" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold">Добавить группу вопросов</button>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
                     <div v-for="(item, idx) in filteredKnowledge" :key="idx" class="p-6 bg-gray-50 rounded-3xl relative border border-transparent hover:border-blue-200 transition-all group">
                         <button @click="removeQnA(idx)" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">Удалить</button>

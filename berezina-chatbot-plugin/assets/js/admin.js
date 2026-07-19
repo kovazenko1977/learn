@@ -30,6 +30,7 @@ createApp({
         const history = ref([]);
         const uploads = ref([]);
         const banner = ref({ text: '', type: 'success' });
+        const bulkText = ref('');
 
         const isWP = typeof window.berezinaAdminConfig !== 'undefined';
         const config = isWP ? window.berezinaAdminConfig : { ajax_url: 'admin.php', nonce: '' };
@@ -237,6 +238,45 @@ createApp({
             knowledge.value[index].keywords = val.split(',').map(s => s.trim()).filter(s => s);
         };
 
+        const bulkAdd = async () => {
+            if (!bulkText.value.trim()) return alert('Введите текст для добавления');
+            try {
+                if (isWP) {
+                    const formData = new FormData();
+                    formData.append('action', 'berezina_chatbot_bulk_add_qa');
+                    formData.append('nonce', config.nonce);
+                    formData.append('text', bulkText.value);
+
+                    const res = await fetch(config.ajax_url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        knowledge.value = data.data.knowledge;
+                        bulkText.value = '';
+                        showBanner(`Успешно добавлено вопросов: ${data.data.added}`);
+                    } else {
+                        showBanner('Ошибка при групповом добавлении: ' + (data.data.error || 'unknown'), 'error');
+                    }
+                } else {
+                    const res = await fetch('admin.php?action=bulk_add_qa', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: bulkText.value })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        knowledge.value = data.knowledge;
+                        bulkText.value = '';
+                        showBanner(`Успешно добавлено вопросов: ${data.added}`);
+                    }
+                }
+            } catch (e) {
+                showBanner('Ошибка соединения с сервером', 'error');
+            }
+        };
+
         const addQuickStart = () => {
             settings.value.quick_start_menu.push({ text: 'Новая кнопка', message: 'Текст для бота' });
         };
@@ -244,8 +284,8 @@ createApp({
         onMounted(fetchData);
 
         return {
-            activeTab, dayNames, settings, knowledge, history, uploads, banner,
-            saveData, addQAItem, updateKeywords, addQuickStart, handleFileDrop, handleFileSelect, deleteUpload, clearHistory, deleteHistoryItem
+            activeTab, dayNames, settings, knowledge, history, uploads, banner, bulkText,
+            saveData, addQAItem, updateKeywords, bulkAdd, addQuickStart, handleFileDrop, handleFileSelect, deleteUpload, clearHistory, deleteHistoryItem
         };
     }
 }).mount('#berezina-chatbot-admin');

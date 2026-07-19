@@ -92,3 +92,39 @@
 [Sun Jul 19 16:02:40 2026] [::1]:44734 Accepted
 [Sun Jul 19 16:02:40 2026] [::1]:44734 [200]: GET /api/settings.php
 [Sun Jul 19 16:02:40 2026] [::1]:44734 Closing
+[Sun Jul 19 19:11:01 2026] [::1]:55860 Accepted
+[Sun Jul 19 19:11:01 2026] [::1]:55860 [200]: GET /index.php
+[Sun Jul 19 19:11:01 2026] [::1]:55860 Closing
+[Sun Jul 19 19:11:01 2026] [::1]:55876 Accepted
+[Sun Jul 19 19:11:01 2026] [::1]:55876 [200]: GET /assets/css/style.css
+[Sun Jul 19 19:11:01 2026] [::1]:55876 Closing
+[Sun Jul 19 19:11:01 2026] [::1]:55878 Accepted
+[Sun Jul 19 19:11:01 2026] [::1]:55892 Accepted
+[Sun Jul 19 19:11:02 2026] [::1]:55878 [200]: GET /assets/js/app.js
+[Sun Jul 19 19:11:02 2026] [::1]:55892 [200]: GET /assets/js/loader.js
+[Sun Jul 19 19:11:02 2026] [::1]:55878 Closing
+[Sun Jul 19 19:11:02 2026] [::1]:55892 Closing
+[Sun Jul 19 19:11:02 2026] [::1]:55894 Accepted
+[Sun Jul 19 19:11:02 2026] [::1]:55894 [200]: GET /assets/css/chatbot.css
+[Sun Jul 19 19:11:02 2026] [::1]:55894 Closing
+[Sun Jul 19 19:11:02 2026] [::1]:55908 Accepted
+[Sun Jul 19 19:11:02 2026] [::1]:55908 [200]: GET /api/settings.php
+[Sun Jul 19 19:11:02 2026] [::1]:55908 Closing
+[Sun Jul 19 19:13:52 2026] [::1]:58446 Accepted
+[Sun Jul 19 19:13:52 2026] [::1]:58446 [200]: GET /index.php
+[Sun Jul 19 19:13:52 2026] [::1]:58446 Closing
+[Sun Jul 19 19:13:52 2026] [::1]:58450 Accepted
+[Sun Jul 19 19:13:52 2026] [::1]:58450 [200]: GET /assets/css/style.css
+[Sun Jul 19 19:13:52 2026] [::1]:58450 Closing
+[Sun Jul 19 19:13:52 2026] [::1]:58456 Accepted
+[Sun Jul 19 19:13:52 2026] [::1]:58460 Accepted
+[Sun Jul 19 19:13:52 2026] [::1]:58456 [200]: GET /assets/js/app.js
+[Sun Jul 19 19:13:52 2026] [::1]:58460 [200]: GET /assets/js/loader.js
+[Sun Jul 19 19:13:52 2026] [::1]:58456 Closing
+[Sun Jul 19 19:13:52 2026] [::1]:58460 Closing
+[Sun Jul 19 19:13:52 2026] [::1]:58466 Accepted
+[Sun Jul 19 19:13:52 2026] [::1]:58466 [200]: GET /assets/css/chatbot.css
+[Sun Jul 19 19:13:52 2026] [::1]:58466 Closing
+[Sun Jul 19 19:13:52 2026] [::1]:58472 Accepted
+[Sun Jul 19 19:13:52 2026] [::1]:58472 [200]: GET /api/settings.php
+[Sun Jul 19 19:13:52 2026] [::1]:58472 Closing
