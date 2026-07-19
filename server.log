@@ -128,3 +128,21 @@
 [Sun Jul 19 19:13:52 2026] [::1]:58472 Accepted
 [Sun Jul 19 19:13:52 2026] [::1]:58472 [200]: GET /api/settings.php
 [Sun Jul 19 19:13:52 2026] [::1]:58472 Closing
+[Sun Jul 19 19:31:35 2026] [::1]:56742 Accepted
+[Sun Jul 19 19:31:35 2026] [::1]:56742 [200]: GET /index.php
+[Sun Jul 19 19:31:35 2026] [::1]:56742 Closing
+[Sun Jul 19 19:31:35 2026] [::1]:56746 Accepted
+[Sun Jul 19 19:31:35 2026] [::1]:56746 [200]: GET /assets/css/style.css
+[Sun Jul 19 19:31:35 2026] [::1]:56746 Closing
+[Sun Jul 19 19:31:35 2026] [::1]:56752 Accepted
+[Sun Jul 19 19:31:35 2026] [::1]:56764 Accepted
+[Sun Jul 19 19:31:35 2026] [::1]:56752 [200]: GET /assets/js/app.js
+[Sun Jul 19 19:31:35 2026] [::1]:56764 [200]: GET /assets/js/loader.js
+[Sun Jul 19 19:31:35 2026] [::1]:56752 Closing
+[Sun Jul 19 19:31:35 2026] [::1]:56764 Closing
+[Sun Jul 19 19:31:35 2026] [::1]:56778 Accepted
+[Sun Jul 19 19:31:35 2026] [::1]:56778 [200]: GET /assets/css/chatbot.css
+[Sun Jul 19 19:31:35 2026] [::1]:56778 Closing
+[Sun Jul 19 19:31:36 2026] [::1]:56792 Accepted
+[Sun Jul 19 19:31:36 2026] [::1]:56792 [200]: GET /api/settings.php
+[Sun Jul 19 19:31:36 2026] [::1]:56792 Closing
