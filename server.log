@@ -1,0 +1,40 @@
+[Sun Jul 19 15:15:52 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Sun Jul 19 15:16:10 2026] [::1]:34958 Accepted
+[Sun Jul 19 15:16:10 2026] [::1]:34958 [200]: HEAD /index.php
+[Sun Jul 19 15:16:10 2026] [::1]:34958 Closing
+[Sun Jul 19 15:17:02 2026] [::1]:47532 Accepted
+[Sun Jul 19 15:17:02 2026] [::1]:47532 [200]: GET /index.php
+[Sun Jul 19 15:17:02 2026] [::1]:47532 Closing
+[Sun Jul 19 15:17:02 2026] [::1]:47542 Accepted
+[Sun Jul 19 15:17:02 2026] [::1]:47542 [200]: GET /assets/css/style.css
+[Sun Jul 19 15:17:02 2026] [::1]:47542 Closing
+[Sun Jul 19 15:17:02 2026] [::1]:47546 Accepted
+[Sun Jul 19 15:17:02 2026] [::1]:47558 Accepted
+[Sun Jul 19 15:17:02 2026] [::1]:47546 [200]: GET /assets/js/app.js
+[Sun Jul 19 15:17:02 2026] [::1]:47546 Closing
+[Sun Jul 19 15:17:02 2026] [::1]:47558 [200]: GET /assets/js/loader.js
+[Sun Jul 19 15:17:02 2026] [::1]:47558 Closing
+[Sun Jul 19 15:17:03 2026] [::1]:47560 Accepted
+[Sun Jul 19 15:17:03 2026] [::1]:47560 [200]: GET /assets/css/chatbot.css
+[Sun Jul 19 15:17:03 2026] [::1]:47560 Closing
+[Sun Jul 19 15:17:03 2026] [::1]:47564 Accepted
+[Sun Jul 19 15:17:03 2026] [::1]:47564 [200]: GET /api/settings.php
+[Sun Jul 19 15:17:03 2026] [::1]:47564 Closing
+[Sun Jul 19 15:26:46 2026] [::1]:54722 Accepted
+[Sun Jul 19 15:26:46 2026] [::1]:54722 [200]: GET /index.php
+[Sun Jul 19 15:26:46 2026] [::1]:54722 Closing
+[Sun Jul 19 15:26:46 2026] [::1]:54730 Accepted
+[Sun Jul 19 15:26:46 2026] [::1]:54730 [200]: GET /assets/css/style.css
+[Sun Jul 19 15:26:46 2026] [::1]:54730 Closing
+[Sun Jul 19 15:26:46 2026] [::1]:54732 Accepted
+[Sun Jul 19 15:26:46 2026] [::1]:54742 Accepted
+[Sun Jul 19 15:26:46 2026] [::1]:54732 [200]: GET /assets/js/app.js
+[Sun Jul 19 15:26:46 2026] [::1]:54742 [200]: GET /assets/js/loader.js
+[Sun Jul 19 15:26:46 2026] [::1]:54732 Closing
+[Sun Jul 19 15:26:46 2026] [::1]:54742 Closing
+[Sun Jul 19 15:26:46 2026] [::1]:54758 Accepted
+[Sun Jul 19 15:26:46 2026] [::1]:54758 [200]: GET /assets/css/chatbot.css
+[Sun Jul 19 15:26:46 2026] [::1]:54758 Closing
+[Sun Jul 19 15:26:46 2026] [::1]:54760 Accepted
+[Sun Jul 19 15:26:46 2026] [::1]:54760 [200]: GET /api/settings.php
+[Sun Jul 19 15:26:46 2026] [::1]:54760 Closing

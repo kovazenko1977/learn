@@ -1,0 +1,82 @@
+{
+    "enabled": true,
+    "bot_name": "Помощник БЕРЕЗИНА",
+    "welcome_message": "Здравствуйте! Рады приветствовать вас в санатории «Березина». Чем я могу помочь вам сегодня?",
+    "admin_password": "admin",
+    "working_hours": {
+        "timezone": "Europe\/Minsk",
+        "out_of_hours_message": "В данный момент наши специалисты не в сети, но вы можете оставить заявку или вопрос!"
+    },
+    "contacts": {
+        "phone": "+375 (177) 92-99-69",
+        "email": "sanatorium@gu-berezina.by",
+        "address": "222514, Республика Беларусь, Минская область, Борисовский р-н, Пригородный с/с, 8, корпус 4",
+        "whatsapp": "375292289297",
+        "telegram": "berezinaborisov"
+    },
+    "fallback": {
+        "threshold": 40,
+        "message": "Извините, я вас не совсем понял. Пожалуйста, обратитесь к нашему регистратору или маркетологу по телефону.",
+        "button_text": "Позвонить"
+    },
+    "notifications": {
+        "email": { "enabled": false, "address": "" },
+        "telegram": { "enabled": false, "token": "", "chat_id": "" }
+    },
+    "features": {
+        "proactive_greeting": 0,
+        "sound_enabled": true,
+        "voice_input": true,
+        "persistence": true,
+        "rating_system": true,
+        "dark_mode": "auto",
+        "typing_indicator": true,
+        "rich_text": true,
+        "show_branding": true,
+        "quick_start": true,
+        "departments": true,
+        "file_upload": true,
+        "chat_export": true,
+        "idle_reminder": 60,
+        "dynamic_greeting": true,
+        "keyboard_shortcuts": true,
+        "user_id_form": true,
+        "smart_scroll": true,
+        "custom_css_enabled": true
+    },
+    "visuals": {
+        "theme_color": "#0067c0",
+        "chat_icon_url": "",
+        "bot_avatar_url": "https://img.icons8.com/fluency/48/000000/hospital-sign.png",
+        "floating_text": "Задайте вопрос о санатории!",
+        "floating_bg": "#0067c0",
+        "floating_color": "#ffffff",
+        "floating_animation": "pulse",
+        "typing_speed": 30,
+        "position": "bottom-right",
+        "offset_x": 20,
+        "offset_y": 70,
+        "custom_css": ".message-bot { border-left: 4px solid var(--chat-primary); }"
+    },
+    "schedule": [
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"},
+        {"enabled": true, "start": "00:00", "end": "23:59"}
+    ],
+    "directions": ["Бронирование", "Медицинские процедуры", "Общие вопросы"],
+    "forms": [],
+    "webhooks": [],
+    "departments": [
+        {"id": "marketing", "name": "Отдел маркетинга (Бронирование)"},
+        {"id": "medical", "name": "Регистратура (Лечение)"}
+    ],
+    "quick_start_menu": [
+        {"text": "🌲 Услуги и процедуры", "message": "Какие медицинские процедуры и услуги вы предоставляете?"},
+        {"text": "💰 Цены на путёвки", "message": "Какова стоимость проживания и лечения?"},
+        {"text": "📞 Контакты и адрес", "message": "Как с вами связаться и как добраться?"}
+    ]
+}

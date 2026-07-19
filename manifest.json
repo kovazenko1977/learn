@@ -1,0 +1,23 @@
+{
+  "name": "Санаторий Березина",
+  "short_name": "Березина",
+  "description": "Официальное приложение Санатория Березина. Лечение и отдых в сосновом бору.",
+  "start_url": "index.php",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0067c0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluency/192/000000/hospital-sign.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://img.icons8.com/fluency/512/000000/hospital-sign.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
