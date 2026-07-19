@@ -129,6 +129,90 @@ document.addEventListener('DOMContentLoaded', async function () {
 		});
 	}
 
+	// Desktop Overlay Mouse-Fade Interaction
+	let overlayMouseTimeout = null;
+	if (!isTouchDevice && config.overlay_mode_enabled === '1' && config.overlay_mouse_fade_enabled === '1') {
+		const mouseFadeDuration = parseInt(config.overlay_mouse_fade_duration || 800);
+		const mouseReappearDelay = parseInt(config.overlay_mouse_reappear_delay || 3000);
+		const defaultOpacity = parseFloat((config.overlay_opacity || 100) / 100);
+
+		window.addEventListener('mousemove', function () {
+			const overlays = document.querySelectorAll('.premium-forest-overlay-edge');
+			overlays.forEach(overlay => {
+				overlay.style.animation = 'none';
+				overlay.style.transition = `opacity ${mouseFadeDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+				overlay.style.opacity = '0';
+				overlay.style.pointerEvents = 'none'; // Avoid trapping clicks
+			});
+
+			if (overlayMouseTimeout) {
+				clearTimeout(overlayMouseTimeout);
+			}
+
+			overlayMouseTimeout = setTimeout(() => {
+				const overlaysToRestore = document.querySelectorAll('.premium-forest-overlay-edge');
+				overlaysToRestore.forEach(overlay => {
+					overlay.style.animation = 'none';
+					overlay.style.transition = `opacity ${mouseFadeDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+					overlay.style.opacity = defaultOpacity;
+					overlay.style.pointerEvents = 'auto';
+				});
+			}, mouseReappearDelay);
+		});
+	}
+
+	// Mobile Overlay Gyroscope-Fade Interaction
+	let overlayGyroTimeout = null;
+	if (isTouchDevice && config.overlay_mode_enabled === '1' && config.overlay_gyro_fade_enabled === '1') {
+		const gyroThreshold = parseFloat(config.overlay_gyro_fade_threshold || 15);
+		const gyroFadeDuration = parseInt(config.overlay_gyro_fade_duration || 800);
+		const gyroReappearDelay = parseInt(config.overlay_gyro_reappear_delay || 3000);
+		const defaultMobileOpacity = parseFloat((config.mobile_overlay_opacity || 80) / 100);
+
+		let lastBeta = null;
+		let lastGamma = null;
+
+		window.addEventListener('deviceorientation', function (event) {
+			const beta = event.beta;
+			const gamma = event.gamma;
+
+			if (beta === null || gamma === null) return;
+
+			if (lastBeta !== null && lastGamma !== null) {
+				const deltaBeta = Math.abs(beta - lastBeta);
+				const deltaGamma = Math.abs(gamma - lastGamma);
+
+				if (deltaBeta > gyroThreshold || deltaGamma > gyroThreshold) {
+					// Significant tilt/shake detected! Fade out overlays
+					const overlays = document.querySelectorAll('.premium-forest-overlay-edge');
+					overlays.forEach(overlay => {
+						overlay.style.animation = 'none';
+						overlay.style.transition = `opacity ${gyroFadeDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+						overlay.style.opacity = '0';
+						overlay.style.pointerEvents = 'none';
+					});
+
+					if (overlayGyroTimeout) {
+						clearTimeout(overlayGyroTimeout);
+					}
+
+					overlayGyroTimeout = setTimeout(() => {
+						const overlaysToRestore = document.querySelectorAll('.premium-forest-overlay-edge');
+						overlaysToRestore.forEach(overlay => {
+							overlay.style.animation = 'none';
+							overlay.style.transition = `opacity ${gyroFadeDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+							overlay.style.opacity = defaultMobileOpacity;
+							overlay.style.pointerEvents = 'auto';
+						});
+					}, gyroReappearDelay);
+				}
+			}
+
+			lastBeta = beta;
+			lastGamma = gamma;
+		}, { passive: true });
+	}
+
 	// 6. Execute Main requestAnimationFrame Render Loop with dynamic throttling and pausing
 	let lastTime = performance.now();
 	let isTabActive = true;

@@ -66,6 +66,9 @@ class Config {
 			'desktop_offset_bottom'      => 0,
 			'overlay_fade_in_duration'   => 1500, // in ms
 			'overlay_fade_in_delay'      => 500, // in ms
+			'overlay_mouse_fade_enabled' => '0',
+			'overlay_mouse_fade_duration' => 800, // in ms
+			'overlay_mouse_reappear_delay' => 3000, // in ms
 
 			// Wind Tab
 			'wind_direction'     => 180, // Angle in degrees
@@ -143,6 +146,10 @@ class Config {
 			'mobile_offset_right'        => 0,
 			'mobile_offset_top'          => 0,
 			'mobile_offset_bottom'       => 0,
+			'overlay_gyro_fade_enabled'  => '0',
+			'overlay_gyro_fade_threshold' => 15,
+			'overlay_gyro_fade_duration' => 800, // in ms
+			'overlay_gyro_reappear_delay' => 3000, // in ms
 
 			// Advanced Tab
 			'custom_css'         => '',

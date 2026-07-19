@@ -321,6 +321,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<span class="premium-forest-desc"><?php esc_html_e( 'Отсрочка во времени перед началом анимации проявления рамок после загрузки страницы (по умолчанию 500 мс).', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Исчезновение рамок по движению мыши', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="checkbox" name="premium_forest_parallax_settings[overlay_mouse_fade_enabled]" value="1" <?php checked( $settings['overlay_mouse_fade_enabled'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Если включено, рамки-наложения будут плавно исчезать, когда пользователь перемещает мышь на ПК, открывая полный обзор сайта.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Время исчезновения рамок мыши (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_mouse_fade_duration]" value="<?php echo esc_attr( $settings['overlay_mouse_fade_duration'] ); ?>" min="100" max="5000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Сколько миллисекунд длится плавное растворение рамок при движении мыши (по умолчанию 800 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Время бездействия мыши до возврата (мс)', 'premium-forest-parallax' ); ?></th>
+							<td>
+								<input type="number" name="premium_forest_parallax_settings[overlay_mouse_reappear_delay]" value="<?php echo esc_attr( $settings['overlay_mouse_reappear_delay'] ); ?>" min="500" max="30000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Время отсутствия движения мыши в миллисекундах перед автоматическим плавным возвратом рамок (по умолчанию 3000 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
 					</table>
 				</div>
 
@@ -823,6 +844,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td style="background: #f0f9ff;">
 								<input type="number" name="premium_forest_parallax_settings[mobile_overlay_fade_in_delay]" value="<?php echo esc_attr( $settings['mobile_overlay_fade_in_delay'] ); ?>" min="0" max="10000" />
 								<span class="premium-forest-desc"><?php esc_html_e( 'Отсрочка во времени перед началом анимации проявления рамок на мобильных после загрузки страницы (по умолчанию 200 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Исчезновение рамок от гироскопа', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="checkbox" name="premium_forest_parallax_settings[overlay_gyro_fade_enabled]" value="1" <?php checked( $settings['overlay_gyro_fade_enabled'], '1' ); ?> />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Если включено, рамки-наложения будут плавно исчезать при интенсивном наклоне или встряхивании мобильного телефона (реакция гироскопа).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Чувствительность наклона (градусы)', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[overlay_gyro_fade_threshold]" value="<?php echo esc_attr( $settings['overlay_gyro_fade_threshold'] ); ?>" min="5" max="60" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Порог отклонения углов наклона (в градусах в секунду) для срабатывания эффекта исчезновения (по умолчанию 15°). Меньше — чувствительнее.', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Время исчезновения от гироскопа (мс)', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[overlay_gyro_fade_duration]" value="<?php echo esc_attr( $settings['overlay_gyro_fade_duration'] ); ?>" min="100" max="5000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Сколько миллисекунд длится плавное исчезновение рамок при наклоне (по умолчанию 800 мс).', 'premium-forest-parallax' ); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row" style="color: #104c6e; background: #f0f9ff;"><?php esc_html_e( 'Время покоя гироскопа до возврата (мс)', 'premium-forest-parallax' ); ?></th>
+							<td style="background: #f0f9ff;">
+								<input type="number" name="premium_forest_parallax_settings[overlay_gyro_reappear_delay]" value="<?php echo esc_attr( $settings['overlay_gyro_reappear_delay'] ); ?>" min="500" max="30000" />
+								<span class="premium-forest-desc"><?php esc_html_e( 'Время стабильного положения устройства в миллисекундах перед возвратом рамок на экран (по умолчанию 3000 мс).', 'premium-forest-parallax' ); ?></span>
 							</td>
 						</tr>
 					</table>
