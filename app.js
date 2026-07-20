@@ -56,6 +56,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const statTotalTasks = document.getElementById('stat-total-tasks');
   const statTotalCigs = document.getElementById('stat-total-cigs');
 
+  // Advanced stats elements
+  const statAvgCigs = document.getElementById('stat-avg-cigs');
+  const statPeakCigs = document.getElementById('stat-peak-cigs');
+  const statSmokeFreeDays = document.getElementById('stat-smoke-free-days');
+
+  // Category progress elements
+  const catProgressValWork = document.getElementById('cat-progress-val-work');
+  const catProgressBarWork = document.getElementById('cat-progress-bar-work');
+
+  const catProgressValHome = document.getElementById('cat-progress-val-home');
+  const catProgressBarHome = document.getElementById('cat-progress-bar-home');
+
+  const catProgressValPersonal = document.getElementById('cat-progress-val-personal');
+  const catProgressBarPersonal = document.getElementById('cat-progress-bar-personal');
+
+  const catProgressValHealth = document.getElementById('cat-progress-val-health');
+  const catProgressBarHealth = document.getElementById('cat-progress-bar-health');
+
+  // Import/Export buttons
+  const btnExportJson = document.getElementById('btn-export-json');
+  const inputImportJson = document.getElementById('input-import-json');
+  const btnImportJsonTrigger = document.getElementById('btn-import-json-trigger');
+
   // Add Task Input elements
   const btnVoiceInput = document.getElementById('btn-voice-input');
   const inputTaskText = document.getElementById('input-task-text');
@@ -485,7 +508,29 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderAnalytics() {
     // Total cigarettes smoked all time
     let totalCigs = 0;
-    Object.values(state.cigarettes).forEach(val => totalCigs += val);
+    let peakCigs = 0;
+    let daysTracked = 0;
+    let smokeFreeDaysCount = 0;
+
+    Object.entries(state.cigarettes).forEach(([dateStr, count]) => {
+      if (count > 0) {
+        totalCigs += count;
+        daysTracked++;
+        if (count > peakCigs) {
+          peakCigs = count;
+        }
+      } else if (count === 0) {
+        // Explicitly set to zero count
+        smokeFreeDaysCount++;
+      }
+    });
+
+    const averageCigs = daysTracked > 0 ? (totalCigs / daysTracked).toFixed(1) : 0;
+
+    // Output advanced cigarette stats
+    statAvgCigs.textContent = averageCigs;
+    statPeakCigs.textContent = peakCigs;
+    statSmokeFreeDays.textContent = smokeFreeDaysCount;
 
     // Calculations based on rules
     const costPerCig = 10; // avg 10 Rubles
@@ -501,6 +546,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const completedTasksCount = state.tasks.filter(t => t.completed).length;
     statTotalTasks.textContent = completedTasksCount;
     statTotalCigs.textContent = totalCigs;
+
+    // Render Category-Specific Progress
+    renderCategoryProgress('Работа', catProgressValWork, catProgressBarWork);
+    renderCategoryProgress('Дом', catProgressValHome, catProgressBarHome);
+    renderCategoryProgress('Личное', catProgressValPersonal, catProgressBarPersonal);
+    renderCategoryProgress('Здоровье', catProgressValHealth, catProgressBarHealth);
+  }
+
+  function renderCategoryProgress(category, valueElement, barElement) {
+    const catTasks = state.tasks.filter(t => t.category === category);
+    const total = catTasks.length;
+    const completed = catTasks.filter(t => t.completed).length;
+    const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+    valueElement.textContent = `${percent}% (${completed}/${total})`;
+    barElement.style.width = `${percent}%`;
   }
 
   // POPOVERS & DIALOG TOGGLES
@@ -720,6 +781,70 @@ document.addEventListener('DOMContentLoaded', () => {
   // Trigger from top header button too
   btnReadTasks.addEventListener('click', () => {
     readAllTasksSpeech();
+  });
+
+  // DATABASE IMPORT & EXPORT LOGIC
+  btnExportJson.addEventListener('click', () => {
+    const backupData = {
+      version: "1.0",
+      tasks: state.tasks,
+      cigarettes: state.cigarettes,
+      theme: localStorage.getItem('diary_theme') || 'dark',
+      visited: localStorage.getItem('diary_visited') || 'false'
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `diary_backup_${getFormattedDate(new Date())}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  });
+
+  btnImportJsonTrigger.addEventListener('click', () => {
+    inputImportJson.click();
+  });
+
+  inputImportJson.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+
+        // Validation check
+        if (importedData && typeof importedData === 'object') {
+          if (Array.isArray(importedData.tasks)) {
+            state.tasks = importedData.tasks;
+          }
+          if (importedData.cigarettes && typeof importedData.cigarettes === 'object') {
+            state.cigarettes = importedData.cigarettes;
+          }
+          if (importedData.theme) {
+            localStorage.setItem('diary_theme', importedData.theme);
+          }
+          if (importedData.visited) {
+            localStorage.setItem('diary_visited', importedData.visited);
+          }
+
+          updateUI();
+          initTheme();
+          renderDateScroll();
+          alert('Данные успешно импортированы!');
+        } else {
+          alert('Неверный формат файла резервной копии.');
+        }
+      } catch (err) {
+        console.error('Error parsing imported JSON:', err);
+        alert('Ошибка при импорте файла. Убедитесь, что это валидный JSON-файл.');
+      }
+    };
+    reader.readAsText(file);
+    // Clear input so same file can be re-uploaded if modified
+    inputImportJson.value = '';
   });
 
   // FILTER PILLS LOGIC

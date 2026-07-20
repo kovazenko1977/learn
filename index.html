@@ -261,6 +261,114 @@
             </div>
           </div>
         </div>
+
+        <!-- Advanced Cigarettes Analytics -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-rose-400 text-sm">troubleshoot</span>
+            <span>Расширенная статистика курения</span>
+          </h4>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-950/50 p-2 rounded-2xl border border-slate-800/50 text-center">
+              <span class="text-slate-400 block text-[9px]">Среднее в день</span>
+              <span id="stat-avg-cigs" class="text-xs font-bold text-slate-100">0</span>
+            </div>
+            <div class="bg-slate-950/50 p-2 rounded-2xl border border-slate-800/50 text-center">
+              <span class="text-slate-400 block text-[9px]">Максимум за день</span>
+              <span id="stat-peak-cigs" class="text-xs font-bold text-slate-100">0</span>
+            </div>
+            <div class="bg-slate-950/50 p-2 rounded-2xl border border-slate-800/50 text-center">
+              <span class="text-slate-400 block text-[9px]">Дней без курения</span>
+              <span id="stat-smoke-free-days" class="text-xs font-bold text-emerald-400">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Completion by Category -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-indigo-400 text-sm">pie_chart</span>
+            <span>Выполнение задач по категориям</span>
+          </h4>
+          <div class="space-y-2 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+            <!-- Работа -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-indigo-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">work</span>
+                  <span>Работа</span>
+                </span>
+                <span id="cat-progress-val-work" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-work" class="bg-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Дом -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-emerald-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">home</span>
+                  <span>Дом</span>
+                </span>
+                <span id="cat-progress-val-home" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-home" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Личное -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-pink-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">person</span>
+                  <span>Личное</span>
+                </span>
+                <span id="cat-progress-val-personal" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-personal" class="bg-pink-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Здоровье -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-rose-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">health_and_safety</span>
+                  <span>Здоровье</span>
+                </span>
+                <span id="cat-progress-val-health" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-health" class="bg-rose-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup Data Management -->
+        <div class="space-y-2 pt-2 border-t border-slate-800/60">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-cyan-400 text-sm">settings_backup_restore</span>
+            <span>Резервное копирование и JSON</span>
+          </h4>
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Export JSON -->
+            <button id="btn-export-json" class="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 font-bold transition-all border border-slate-700">
+              <span class="material-icons-round text-sm">download</span>
+              <span>Экспорт JSON</span>
+            </button>
+            <!-- Import JSON trigger wrapper -->
+            <div class="relative">
+              <input type="file" id="input-import-json" accept=".json" class="hidden">
+              <button id="btn-import-json-trigger" class="w-full flex items-center justify-center space-x-1.5 py-2 px-3 rounded-2xl bg-cyan-600/20 border border-cyan-500/30 hover:bg-cyan-600/30 active:scale-95 text-cyan-400 font-bold transition-all">
+                <span class="material-icons-round text-sm">upload</span>
+                <span>Импорт JSON</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </details>
 
