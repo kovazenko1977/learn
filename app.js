@@ -18,7 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
     currentFilter: 'all', // 'all', 'active', 'completed'
     currentPriority: 'medium', // Default task priority
     currentCategory: 'Личное', // Default task category
-    isDark: true
+    isDark: true,
+
+    // NEW SETTINGS & DATA
+    usePin: JSON.parse(localStorage.getItem('diary_use_pin')) || false,
+    userPin: localStorage.getItem('diary_user_pin') || '1234',
+    packCost: Number(localStorage.getItem('diary_pack_cost')) || 200,
+    cigsPerPack: Number(localStorage.getItem('diary_cigs_per_pack')) || 20,
+    water: JSON.parse(localStorage.getItem('diary_water')) || {} // Keyed by YYYY-MM-DD
   };
 
   // UI ELEMENTS
@@ -60,6 +67,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const statAvgCigs = document.getElementById('stat-avg-cigs');
   const statPeakCigs = document.getElementById('stat-peak-cigs');
   const statSmokeFreeDays = document.getElementById('stat-smoke-free-days');
+
+  // New settings & UI references
+  const networkStatus = document.getElementById('network-status');
+
+  // PIN lock elements
+  const lockScreenOverlay = document.getElementById('lock-screen-overlay');
+  const lockScreenError = document.getElementById('lock-screen-error');
+  const btnKeypadClear = document.getElementById('btn-keypad-clear');
+  const btnKeypadDelete = document.getElementById('btn-keypad-delete');
+  const pinDots = document.querySelectorAll('.pin-dot');
+  const keypadBtns = document.querySelectorAll('.keypad-btn');
+
+  // Water elements
+  const waterCounterVal = document.getElementById('water-counter-val');
+  const waterTrackerHelper = document.getElementById('water-tracker-helper');
+  const btnWaterReset = document.getElementById('btn-water-reset');
+  const btnWaterPlus = document.getElementById('btn-water-plus');
+
+  // Settings elements
+  const settingPackCost = document.getElementById('setting-pack-cost');
+  const settingCigsPerPack = document.getElementById('setting-cigs-per-pack');
+  const settingUsePin = document.getElementById('setting-use-pin');
+  const settingPinInputGroup = document.getElementById('setting-pin-input-group');
+  const settingPinVal = document.getElementById('setting-pin-val');
 
   // Category progress elements
   const catProgressValWork = document.getElementById('cat-progress-val-work');
@@ -186,9 +217,166 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // INITIALIZATION
   initTheme();
+  initSettings();
+  initPinLock();
+  initNetworkStatus();
   renderDateScroll();
   updateUI();
   checkFirstVisit();
+
+  // NETWORK STATUS MONITOR
+  function initNetworkStatus() {
+    function updateStatus() {
+      if (navigator.onLine) {
+        networkStatus.innerHTML = `
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>В сети</span>
+        `;
+        networkStatus.className = "inline-flex items-center space-x-1 bg-emerald-500/10 text-emerald-400 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-emerald-500/20";
+      } else {
+        networkStatus.innerHTML = `
+          <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+          <span>Офлайн</span>
+        `;
+        networkStatus.className = "inline-flex items-center space-x-1 bg-amber-500/10 text-amber-400 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-amber-500/20";
+      }
+    }
+
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus(); // Initial check
+  }
+
+  // PIN LOCK SYSTEM
+  let enteredPin = '';
+  function initPinLock() {
+    if (!state.usePin) {
+      lockScreenOverlay.classList.add('hidden');
+      return;
+    }
+
+    lockScreenOverlay.classList.remove('hidden');
+    enteredPin = '';
+    updatePinDots();
+
+    // Keypad listeners
+    keypadBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (enteredPin.length < 4) {
+          enteredPin += btn.textContent.trim();
+          updatePinDots();
+          if (enteredPin.length === 4) {
+            verifyPin();
+          }
+        }
+      });
+    });
+
+    btnKeypadClear.addEventListener('click', () => {
+      enteredPin = '';
+      updatePinDots();
+    });
+
+    btnKeypadDelete.addEventListener('click', () => {
+      if (enteredPin.length > 0) {
+        enteredPin = enteredPin.slice(0, -1);
+        updatePinDots();
+      }
+    });
+  }
+
+  function updatePinDots() {
+    pinDots.forEach((dot, idx) => {
+      if (idx < enteredPin.length) {
+        dot.className = "w-4 h-4 rounded-full bg-brand-500 border-2 border-brand-500 scale-110 transition-all duration-150";
+      } else {
+        dot.className = "w-4 h-4 rounded-full border-2 border-slate-700 bg-transparent transition-all duration-150 pin-dot";
+      }
+    });
+  }
+
+  function verifyPin() {
+    if (enteredPin === state.userPin) {
+      // Access granted
+      lockScreenOverlay.classList.add('hidden');
+      enteredPin = '';
+      updatePinDots();
+    } else {
+      // Access denied haptic/error animation
+      lockScreenError.classList.remove('opacity-0');
+      lockScreenError.classList.add('opacity-100');
+
+      // Vibrate if supported
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+
+      setTimeout(() => {
+        lockScreenError.classList.remove('opacity-100');
+        lockScreenError.classList.add('opacity-0');
+        enteredPin = '';
+        updatePinDots();
+      }, 1200);
+    }
+  }
+
+  // APP CONFIG / SETTINGS PANEL
+  function initSettings() {
+    // Populate form fields with loaded state
+    settingPackCost.value = state.packCost;
+    settingCigsPerPack.value = state.cigsPerPack;
+    settingUsePin.checked = state.usePin;
+    settingPinVal.value = state.userPin;
+
+    if (state.usePin) {
+      settingPinInputGroup.classList.remove('hidden');
+    } else {
+      settingPinInputGroup.classList.add('hidden');
+    }
+
+    // Cost input changes
+    settingPackCost.addEventListener('input', () => {
+      const val = Number(settingPackCost.value);
+      if (val >= 0) {
+        state.packCost = val;
+        localStorage.setItem('diary_pack_cost', val);
+        updateUI();
+      }
+    });
+
+    settingCigsPerPack.addEventListener('input', () => {
+      const val = Number(settingCigsPerPack.value);
+      if (val > 0) {
+        state.cigsPerPack = val;
+        localStorage.setItem('diary_cigs_per_pack', val);
+        updateUI();
+      }
+    });
+
+    // Pin Toggle option
+    settingUsePin.addEventListener('change', () => {
+      const usePin = settingUsePin.checked;
+      state.usePin = usePin;
+      localStorage.setItem('diary_use_pin', usePin);
+
+      if (usePin) {
+        settingPinInputGroup.classList.remove('hidden');
+      } else {
+        settingPinInputGroup.classList.add('hidden');
+      }
+      updateUI();
+    });
+
+    // Pin Code text edits
+    settingPinVal.addEventListener('input', () => {
+      const pin = settingPinVal.value.replace(/\D/g, '').slice(0, 4);
+      settingPinVal.value = pin;
+      if (pin.length === 4) {
+        state.userPin = pin;
+        localStorage.setItem('diary_user_pin', pin);
+      }
+    });
+  }
 
   // THEME MANAGEMENT
   function initTheme() {
@@ -302,13 +490,43 @@ document.addEventListener('DOMContentLoaded', () => {
     saveState();
     renderTasks();
     renderCigarettes();
+    renderWater();
     renderAnalytics();
   }
 
   function saveState() {
     localStorage.setItem('diary_tasks', JSON.stringify(state.tasks));
     localStorage.setItem('diary_cigarettes', JSON.stringify(state.cigarettes));
+    localStorage.setItem('diary_water', JSON.stringify(state.water));
   }
+
+  // WATER BALANCE TRACKER ENGINE
+  function renderWater() {
+    const ml = state.water[state.selectedDate] || 0;
+    waterCounterVal.textContent = ml;
+
+    if (ml === 0) {
+      waterTrackerHelper.textContent = 'Вы не пили сегодня.';
+      waterTrackerHelper.className = 'text-[10px] text-slate-400 mt-1';
+    } else if (ml < 1500) {
+      waterTrackerHelper.textContent = 'Ещё немного до нормы в 1.5 л!';
+      waterTrackerHelper.className = 'text-[10px] text-amber-400 mt-1 font-medium';
+    } else {
+      waterTrackerHelper.textContent = 'Норма гидратации выполнена! Отлично!';
+      waterTrackerHelper.className = 'text-[10px] text-emerald-400 mt-1 font-medium';
+    }
+  }
+
+  btnWaterPlus.addEventListener('click', () => {
+    const cur = state.water[state.selectedDate] || 0;
+    state.water[state.selectedDate] = cur + 250;
+    updateUI();
+  });
+
+  btnWaterReset.addEventListener('click', () => {
+    state.water[state.selectedDate] = 0;
+    updateUI();
+  });
 
   // TASK HANDLING
   function renderTasks() {
@@ -533,10 +751,10 @@ document.addEventListener('DOMContentLoaded', () => {
     statSmokeFreeDays.textContent = smokeFreeDaysCount;
 
     // Calculations based on rules
-    const costPerCig = 10; // avg 10 Rubles
+    const costPerCig = state.cigsPerPack > 0 ? (state.packCost / state.cigsPerPack) : 0;
     const lifeMinutesLostPerCig = 11; // avg 11 minutes of life
 
-    const moneySpent = totalCigs * costPerCig;
+    const moneySpent = Math.round(totalCigs * costPerCig);
     const minutesLost = totalCigs * lifeMinutesLostPerCig;
 
     statMoneySpent.textContent = `${moneySpent.toLocaleString('ru-RU')} ₽`;
@@ -786,9 +1004,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // DATABASE IMPORT & EXPORT LOGIC
   btnExportJson.addEventListener('click', () => {
     const backupData = {
-      version: "1.0",
+      version: "1.1",
       tasks: state.tasks,
       cigarettes: state.cigarettes,
+      water: state.water,
+      packCost: state.packCost,
+      cigsPerPack: state.cigsPerPack,
+      usePin: state.usePin,
+      userPin: state.userPin,
       theme: localStorage.getItem('diary_theme') || 'dark',
       visited: localStorage.getItem('diary_visited') || 'false'
     };
@@ -823,6 +1046,25 @@ document.addEventListener('DOMContentLoaded', () => {
           if (importedData.cigarettes && typeof importedData.cigarettes === 'object') {
             state.cigarettes = importedData.cigarettes;
           }
+          if (importedData.water && typeof importedData.water === 'object') {
+            state.water = importedData.water;
+          }
+          if (importedData.packCost !== undefined) {
+            state.packCost = Number(importedData.packCost);
+            localStorage.setItem('diary_pack_cost', state.packCost);
+          }
+          if (importedData.cigsPerPack !== undefined) {
+            state.cigsPerPack = Number(importedData.cigsPerPack);
+            localStorage.setItem('diary_cigs_per_pack', state.cigsPerPack);
+          }
+          if (importedData.usePin !== undefined) {
+            state.usePin = Boolean(importedData.usePin);
+            localStorage.setItem('diary_use_pin', state.usePin);
+          }
+          if (importedData.userPin !== undefined) {
+            state.userPin = String(importedData.userPin);
+            localStorage.setItem('diary_user_pin', state.userPin);
+          }
           if (importedData.theme) {
             localStorage.setItem('diary_theme', importedData.theme);
           }
@@ -832,6 +1074,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           updateUI();
           initTheme();
+          initSettings();
           renderDateScroll();
           alert('Данные успешно импортированы!');
         } else {
