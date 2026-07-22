@@ -730,9 +730,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // WEB NOTIFICATIONS & ALARMS ENGINE
   let notifiedTasks = {};
+  let currentAlarmTask = null;
+
+  // Synthesize an alarm chime using Web Audio API
+  function playAlarmChime() {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+
+      // Play a sequential musical chime
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + (idx * 0.15));
+
+        gainNode.gain.setValueAtTime(0.15, ctx.currentTime + (idx * 0.15));
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (idx * 0.15) + 0.4);
+
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + (idx * 0.15));
+        osc.stop(ctx.currentTime + (idx * 0.15) + 0.5);
+      });
+    } catch (e) {
+      console.warn("Web Audio API chime error:", e);
+    }
+  }
 
   function initNotifications() {
     const btnNotify = document.getElementById('btn-request-notifications');
+    const alarmOverlay = document.getElementById('alarm-popup-overlay');
+    const alarmText = document.getElementById('alarm-task-text');
+    const alarmTime = document.getElementById('alarm-task-time');
+    const btnAlarmComplete = document.getElementById('btn-alarm-complete');
+    const btnAlarmSnooze = document.getElementById('btn-alarm-snooze');
+
     if (!btnNotify) return;
 
     if ('Notification' in window) {
@@ -764,6 +801,39 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Alarm Action Handlers
+    if (btnAlarmComplete) {
+      btnAlarmComplete.addEventListener('click', () => {
+        if (currentAlarmTask) {
+          currentAlarmTask.completed = true;
+          updateUI();
+        }
+        alarmOverlay.classList.add('hidden');
+        currentAlarmTask = null;
+      });
+    }
+
+    if (btnAlarmSnooze) {
+      btnAlarmSnooze.addEventListener('click', () => {
+        if (currentAlarmTask) {
+          // Parse current time, add 5 minutes
+          const now = new Date();
+          const snoozedTime = new Date(now.getTime() + 5 * 60000);
+          const hh = String(snoozedTime.getHours()).padStart(2, '0');
+          const mm = String(snoozedTime.getMinutes()).padStart(2, '0');
+
+          currentAlarmTask.time = `${hh}:${mm}`;
+          // Clear notification trigger lock to let it trigger again
+          delete notifiedTasks[currentAlarmTask.id];
+
+          updateUI();
+          speakText("Задача отложена на пять минут.");
+        }
+        alarmOverlay.classList.add('hidden');
+        currentAlarmTask = null;
+      });
+    }
+
     // Background Scheduler checking every 10 seconds
     setInterval(() => {
       const now = new Date();
@@ -779,6 +849,15 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!notifiedTasks[task.id]) {
             notifiedTasks[task.id] = true;
             triggerNotification(`Напоминание о задаче!`, `${task.text} запланировано на ${task.time}`);
+
+            // Trigger visual overlay popup & audible synth chime
+            if (alarmOverlay && alarmText && alarmTime) {
+              currentAlarmTask = task;
+              alarmText.textContent = task.text;
+              alarmTime.textContent = `Запланировано на ${task.time}`;
+              alarmOverlay.classList.remove('hidden');
+              playAlarmChime();
+            }
           }
         }
       });
@@ -1664,11 +1743,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (task.category === 'Личное') catIcon = 'person';
         if (task.category === 'Здоровье') catIcon = 'health_and_safety';
 
-        // Optional Time badge
+        // Optional Creation Time badge
+        const createdBadge = task.createdAt
+          ? `<span class="flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-semibold tracking-wide bg-slate-800 text-slate-400 border border-slate-700/50">
+               <span class="material-icons-round text-[10px]">edit_calendar</span>
+               <span>Создано в ${task.createdAt}</span>
+             </span>`
+          : '';
+
+        // Optional Target Time badge
         const timeBadge = task.time
           ? `<span class="flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
                <span class="material-icons-round text-[10px]">schedule</span>
-               <span>${task.time}</span>
+               <span>Назначено на ${task.time}</span>
              </span>`
           : '';
 
@@ -1680,31 +1767,52 @@ document.addEventListener('DOMContentLoaded', () => {
              </span>`
           : '';
 
-        item.innerHTML = `
-          <div class="flex items-center space-x-3 flex-1 min-w-0">
-            <!-- Complete toggle checkbox custom -->
-            <button class="btn-toggle-complete w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-              task.completed
-                ? 'bg-emerald-500 border-emerald-500 text-slate-950'
-                : 'border-slate-700 hover:border-brand-500 text-transparent'
-            }">
-              <span class="material-icons-round text-sm font-bold">done</span>
-            </button>
+        // Format focus seconds (e.g. 05:23)
+        const pad = (num) => String(num).padStart(2, '0');
+        const focusMins = Math.floor((task.focusSeconds || 0) / 60);
+        const focusSecs = (task.focusSeconds || 0) % 60;
+        const focusTimeStr = `${pad(focusMins)}:${pad(focusSecs)}`;
 
-            <div class="flex-1 min-w-0">
-              <span class="text-sm font-medium block truncate">${task.text}</span>
-              <!-- Badges row -->
-              <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                ${timeBadge}
-                ${transferredBadge}
-                <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase border ${prioColor}">
-                  ${task.priority === 'high' ? 'Высокий' : task.priority === 'medium' ? 'Средний' : 'Низкий'}
-                </span>
-                <span class="flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase bg-slate-800 text-slate-400">
-                  <span class="material-icons-round text-[10px]">${catIcon}</span>
-                  <span>${task.category || 'Личное'}</span>
-                </span>
+        item.innerHTML = `
+          <div class="flex flex-col space-y-2 flex-1 min-w-0">
+            <div class="flex items-center space-x-3">
+              <!-- Complete toggle checkbox custom -->
+              <button class="btn-toggle-complete w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                task.completed
+                  ? 'bg-emerald-500 border-emerald-500 text-slate-950'
+                  : 'border-slate-700 hover:border-brand-500 text-transparent'
+              }">
+                <span class="material-icons-round text-sm font-bold">done</span>
+              </button>
+
+              <div class="flex-1 min-w-0">
+                <span class="text-sm font-medium block truncate">${task.text}</span>
+                <!-- Badges row -->
+                <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                  ${createdBadge}
+                  ${timeBadge}
+                  ${transferredBadge}
+                  <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase border ${prioColor}">
+                    ${task.priority === 'high' ? 'Высокий' : task.priority === 'medium' ? 'Средний' : 'Низкий'}
+                  </span>
+                  <span class="flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase bg-slate-800 text-slate-400">
+                    <span class="material-icons-round text-[10px]">${catIcon}</span>
+                    <span>${task.category || 'Личное'}</span>
+                  </span>
+                </div>
               </div>
+            </div>
+
+            <!-- Focus stopwatch widget inside the card -->
+            <div class="flex items-center space-x-2 pl-9">
+              <span class="text-[10px] font-semibold text-slate-400 flex items-center space-x-1">
+                <span class="material-icons-round text-[11px] text-brand-400">hourglass_bottom</span>
+                <span>Фокус: ${focusTimeStr}</span>
+              </span>
+              <button class="btn-toggle-focus px-2 py-0.5 rounded bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 text-[9px] font-bold active:scale-95 transition-all flex items-center space-x-0.5" data-id="${task.id}">
+                <span class="material-icons-round text-[10px]">${task.focusActive ? 'pause' : 'play_arrow'}</span>
+                <span>${task.focusActive ? 'Пауза' : 'Старт'}</span>
+              </button>
             </div>
           </div>
 
@@ -1723,6 +1831,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Action attachments
         item.querySelector('.btn-toggle-complete').addEventListener('click', () => {
           task.completed = !task.completed;
+          // Stop focus if completing
+          task.focusActive = false;
           updateUI();
         });
 
@@ -1735,8 +1845,36 @@ document.addEventListener('DOMContentLoaded', () => {
           updateUI();
         });
 
+        item.querySelector('.btn-toggle-focus').addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Pause all other focus timers
+          state.tasks.forEach(t => {
+            if (t.id !== task.id) t.focusActive = false;
+          });
+          task.focusActive = !task.focusActive;
+          updateUI();
+        });
+
         tasksList.appendChild(item);
       });
+    }
+
+    // Set up a single interval loop to increment active focus timers
+    if (!window.taskFocusInterval) {
+      window.taskFocusInterval = setInterval(() => {
+        let changed = false;
+        state.tasks.forEach(t => {
+          if (t.focusActive && !t.completed) {
+            t.focusSeconds = (t.focusSeconds || 0) + 1;
+            changed = true;
+          }
+        });
+        if (changed) {
+          // Re-render task components to reflect incremental timer updates
+          renderTasks();
+          saveState();
+        }
+      }, 1000);
     }
 
     // Update Progress Indicator
@@ -1753,6 +1891,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function addNewTask(text, priority = 'medium', category = 'Личное', time = '') {
     if (!text.trim()) return;
 
+    const now = new Date();
+    const createdAt = [
+      String(now.getHours()).padStart(2, '0'),
+      String(now.getMinutes()).padStart(2, '0')
+    ].join(':');
+
     const newTask = {
       id: Date.now() + Math.random().toString(36).substr(2, 5),
       text: text.trim(),
@@ -1760,7 +1904,10 @@ document.addEventListener('DOMContentLoaded', () => {
       completed: false,
       priority: priority,
       category: category,
-      time: time || ''
+      time: time || '',
+      createdAt: createdAt,
+      focusSeconds: 0,
+      focusActive: false
     };
 
     state.tasks.push(newTask);
