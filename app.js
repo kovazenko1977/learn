@@ -25,7 +25,25 @@ document.addEventListener('DOMContentLoaded', () => {
     userPin: localStorage.getItem('diary_user_pin') || '1234',
     packCost: Number(localStorage.getItem('diary_pack_cost')) || 200,
     cigsPerPack: Number(localStorage.getItem('diary_cigs_per_pack')) || 20,
-    water: JSON.parse(localStorage.getItem('diary_water')) || {} // Keyed by YYYY-MM-DD
+    water: JSON.parse(localStorage.getItem('diary_water')) || {}, // Keyed by YYYY-MM-DD
+
+    // DEBTS AND ASSISTANT HELPERS STATE
+    debts: JSON.parse(localStorage.getItem('diary_debts')) || [],
+    debtType: 'gave', // 'gave' (мне должны) or 'took' (я должен)
+    habits: JSON.parse(localStorage.getItem('diary_habits')) || [
+      { id: '1', name: 'Выпить 1.5л воды', completed: {} },
+      { id: '2', name: 'Сделать зарядку', completed: {} },
+      { id: '3', name: 'Прочитать 10 страниц', completed: {} }
+    ],
+    expenses: JSON.parse(localStorage.getItem('diary_expenses')) || {}, // Keyed by YYYY-MM-DD
+    moods: JSON.parse(localStorage.getItem('diary_moods')) || {}, // Keyed by YYYY-MM-DD
+    vocalNotes: JSON.parse(localStorage.getItem('diary_vocal_notes')) || [],
+    stepCount: JSON.parse(localStorage.getItem('diary_step_count')) || {}, // Keyed by YYYY-MM-DD
+    gratitudes: JSON.parse(localStorage.getItem('diary_gratitudes')) || [],
+    shopList: JSON.parse(localStorage.getItem('diary_shop_list')) || [],
+    sosPhone: localStorage.getItem('diary_sos_phone') || '',
+    sosBlood: localStorage.getItem('diary_sos_blood') || '',
+    notesDraft: localStorage.getItem('diary_notes_draft') || ''
   };
 
   // AUTOMATIC ROLLOVER ALGORITHM FOR YESTERDAY'S UNCOMPLETED TASKS
@@ -246,6 +264,32 @@ document.addEventListener('DOMContentLoaded', () => {
   initSettings();
   initPinLock();
   initNetworkStatus();
+  initDebts();
+  initNotifications();
+  initHabitForm();
+  initPomodoro();
+  initFasting();
+  initBreathing();
+  initScreenDetox();
+  initExpensesForm();
+  initMoodSelection();
+  initVocalNotes();
+  initCoinFlipper();
+  initStepTracker();
+  initBMICalculator();
+  initGratitude();
+  initDecibelMeter();
+  initSOSCard();
+  initStopwatch();
+  initKitchenTimer();
+  initDiceRoller();
+  initShoppingList();
+  initTipCalculator();
+  initQuoteRotator();
+  initFlashlight();
+  initPasswordGenerator();
+  initStressTest();
+  initNotesDraft();
   rolloverTasks(); // Perform yesterday rollover before render
   renderDateScroll();
   updateUI();
@@ -518,6 +562,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTasks();
     renderCigarettes();
     renderWater();
+    renderDebts();
+    renderHabits();
+    renderExpenses();
+    renderMood();
+    renderVocalNotes();
+    renderBiorhythms();
+    renderSleepCalculator();
+    renderShopList();
+    renderStreak();
+    renderWordOfDay();
     renderAnalytics();
   }
 
@@ -525,6 +579,19 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('diary_tasks', JSON.stringify(state.tasks));
     localStorage.setItem('diary_cigarettes', JSON.stringify(state.cigarettes));
     localStorage.setItem('diary_water', JSON.stringify(state.water));
+
+    // DEBTS AND UTILITIES PERSISTENCE
+    localStorage.setItem('diary_debts', JSON.stringify(state.debts));
+    localStorage.setItem('diary_habits', JSON.stringify(state.habits));
+    localStorage.setItem('diary_expenses', JSON.stringify(state.expenses));
+    localStorage.setItem('diary_moods', JSON.stringify(state.moods));
+    localStorage.setItem('diary_vocal_notes', JSON.stringify(state.vocalNotes));
+    localStorage.setItem('diary_step_count', JSON.stringify(state.stepCount));
+    localStorage.setItem('diary_gratitudes', JSON.stringify(state.gratitudes));
+    localStorage.setItem('diary_shop_list', JSON.stringify(state.shopList));
+    localStorage.setItem('diary_sos_phone', state.sosPhone);
+    localStorage.setItem('diary_sos_blood', state.sosBlood);
+    localStorage.setItem('diary_notes_draft', state.notesDraft);
   }
 
   // WATER BALANCE TRACKER ENGINE
@@ -554,6 +621,991 @@ document.addEventListener('DOMContentLoaded', () => {
     state.water[state.selectedDate] = 0;
     updateUI();
   });
+
+  // DEBT TRACKER IMPLEMENTATION
+  function renderDebts() {
+    const listEl = document.getElementById('debts-list');
+    const balanceEl = document.getElementById('debt-balance-badge');
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+    let totalBalance = 0; // gave (+) and took (-)
+
+    state.debts.forEach(debt => {
+      const isGave = debt.type === 'gave';
+      const amount = debt.amount;
+      totalBalance += isGave ? amount : -amount;
+
+      const item = document.createElement('div');
+      item.className = `flex items-center justify-between p-2.5 rounded-2xl border ${
+        isGave ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-rose-500/5 border-rose-500/20'
+      } text-xs`;
+
+      item.innerHTML = `
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center space-x-1">
+            <span class="font-bold ${isGave ? 'text-emerald-400' : 'text-rose-400'}">
+              ${isGave ? 'Дал' : 'Взял'}
+            </span>
+            <span class="font-semibold text-slate-200">${debt.name}</span>
+          </div>
+          <p class="text-[10px] text-slate-400 truncate">${debt.comment || 'Без комментария'}</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="font-extrabold ${isGave ? 'text-emerald-400' : 'text-rose-400'}">
+            ${isGave ? '+' : '-'}${amount} ₽
+          </span>
+          <button class="btn-delete-debt p-1 hover:text-rose-400 text-slate-400" data-id="${debt.id}">
+            <span class="material-icons-round text-sm">close</span>
+          </button>
+        </div>
+      `;
+
+      item.querySelector('.btn-delete-debt').addEventListener('click', () => {
+        state.debts = state.debts.filter(d => d.id !== debt.id);
+        updateUI();
+      });
+
+      listEl.appendChild(item);
+    });
+
+    balanceEl.textContent = `Баланс: ${totalBalance >= 0 ? '+' : ''}${totalBalance} ₽`;
+    if (totalBalance > 0) {
+      balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400";
+    } else if (totalBalance < 0) {
+      balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400";
+    } else {
+      balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300";
+    }
+  }
+
+  function initDebts() {
+    const btnGave = document.getElementById('btn-debt-gave');
+    const btnTook = document.getElementById('btn-debt-took');
+    const inputName = document.getElementById('input-debt-name');
+    const inputAmount = document.getElementById('input-debt-amount');
+    const inputComment = document.getElementById('input-debt-comment');
+    const btnAdd = document.getElementById('btn-add-debt');
+
+    if (!btnGave) return;
+
+    btnGave.addEventListener('click', () => {
+      state.debtType = 'gave';
+      btnGave.className = "flex-1 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 transition-all";
+      btnTook.className = "flex-1 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+    });
+
+    btnTook.addEventListener('click', () => {
+      state.debtType = 'took';
+      btnTook.className = "flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-500 text-slate-950 transition-all";
+      btnGave.className = "flex-1 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all";
+    });
+
+    btnAdd.addEventListener('click', () => {
+      const name = inputName.value.trim();
+      const amount = parseFloat(inputAmount.value);
+      const comment = inputComment.value.trim();
+
+      if (!name || isNaN(amount) || amount <= 0) {
+        alert('Пожалуйста, введите имя и корректную сумму долга.');
+        return;
+      }
+
+      const newDebt = {
+        id: Date.now() + Math.random().toString(36).substr(2, 5),
+        type: state.debtType,
+        name: name,
+        amount: amount,
+        comment: comment,
+        date: getFormattedDate(new Date())
+      };
+
+      state.debts.push(newDebt);
+      inputName.value = '';
+      inputAmount.value = '';
+      inputComment.value = '';
+      updateUI();
+    });
+  }
+
+  // WEB NOTIFICATIONS & ALARMS ENGINE
+  let notifiedTasks = {};
+
+  function initNotifications() {
+    const btnNotify = document.getElementById('btn-request-notifications');
+    if (!btnNotify) return;
+
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted') {
+        btnNotify.textContent = 'Разрешено';
+        btnNotify.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/20";
+      } else if (Notification.permission === 'denied') {
+        btnNotify.textContent = 'Блокировано';
+        btnNotify.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20";
+      }
+    } else {
+      btnNotify.classList.add('hidden');
+    }
+
+    btnNotify.addEventListener('click', () => {
+      if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            btnNotify.textContent = 'Разрешено';
+            btnNotify.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/20";
+            new Notification('Ежедневник', { body: 'Уведомления успешно включены!' });
+          } else {
+            btnNotify.textContent = 'Блокировано';
+            btnNotify.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20";
+          }
+        });
+      } else {
+        alert('Уведомления не поддерживаются вашим устройством.');
+      }
+    });
+
+    // Background Scheduler checking every 10 seconds
+    setInterval(() => {
+      const now = new Date();
+      const currentHHMM = [
+        String(now.getHours()).padStart(2, '0'),
+        String(now.getMinutes()).padStart(2, '0')
+      ].join(':');
+      const todayStr = getFormattedDate(now);
+
+      // Check tasks scheduled for today that are uncompleted and have matching due time
+      state.tasks.forEach(task => {
+        if (!task.completed && task.date === todayStr && task.time === currentHHMM) {
+          if (!notifiedTasks[task.id]) {
+            notifiedTasks[task.id] = true;
+            triggerNotification(`Напоминание о задаче!`, `${task.text} запланировано на ${task.time}`);
+          }
+        }
+      });
+    }, 10000);
+  }
+
+  function triggerNotification(title, body) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        body: body,
+        icon: 'icon-192.png'
+      });
+    }
+    // Also speech backup as a supreme option
+    speakText(`${title}. ${body}`);
+  }
+
+  // ASSISTANTS & HELPERS IMPLEMENTATION - PART 1
+  function renderHabits() {
+    const habitsContainer = document.getElementById('habits-list-container');
+    if (!habitsContainer) return;
+
+    habitsContainer.innerHTML = '';
+    state.habits.forEach(habit => {
+      const isDoneForToday = habit.completed[state.selectedDate] || false;
+      const row = document.createElement('div');
+      row.className = "flex items-center justify-between p-1.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px]";
+
+      row.innerHTML = `
+        <label class="flex items-center space-x-2 cursor-pointer flex-1 min-w-0">
+          <input type="checkbox" class="chk-habit rounded text-emerald-500 bg-slate-950 border-slate-800" ${isDoneForToday ? 'checked' : ''}>
+          <span class="truncate ${isDoneForToday ? 'line-through text-slate-500' : 'text-slate-200'}">${habit.name}</span>
+        </label>
+        <button class="btn-delete-habit text-slate-500 hover:text-rose-400 px-1">
+          <span class="material-icons-round text-xs">close</span>
+        </button>
+      `;
+
+      row.querySelector('.chk-habit').addEventListener('change', (e) => {
+        habit.completed[state.selectedDate] = e.target.checked;
+        updateUI();
+      });
+
+      row.querySelector('.btn-delete-habit').addEventListener('click', () => {
+        state.habits = state.habits.filter(h => h.id !== habit.id);
+        updateUI();
+      });
+
+      habitsContainer.appendChild(row);
+    });
+  }
+
+  function initHabitForm() {
+    const inputHabitName = document.getElementById('input-habit-name');
+    const btnAddHabit = document.getElementById('btn-add-habit');
+    if (!btnAddHabit) return;
+
+    btnAddHabit.addEventListener('click', () => {
+      const name = inputHabitName.value.trim();
+      if (name) {
+        state.habits.push({
+          id: Date.now() + Math.random().toString(36).substr(2, 5),
+          name: name,
+          completed: {}
+        });
+        inputHabitName.value = '';
+        updateUI();
+      }
+    });
+  }
+
+  // Pomodoro Timer Engine
+  let pomoInterval = null;
+  let pomoSeconds = 1500; // 25 mins
+  let pomoRunning = false;
+
+  function initPomodoro() {
+    const timerVal = document.getElementById('pomo-timer-val');
+    const btnStart = document.getElementById('btn-pomo-start');
+    const btnReset = document.getElementById('btn-pomo-reset');
+    if (!timerVal) return;
+
+    function formatPomoTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    btnStart.addEventListener('click', () => {
+      pomoRunning = !pomoRunning;
+      if (pomoRunning) {
+        btnStart.textContent = 'Пауза';
+        btnStart.className = "px-2 py-0.5 rounded bg-amber-500 text-slate-950 text-[10px] font-bold";
+        pomoInterval = setInterval(() => {
+          if (pomoSeconds > 0) {
+            pomoSeconds--;
+            timerVal.textContent = formatPomoTime(pomoSeconds);
+          } else {
+            clearInterval(pomoInterval);
+            pomoRunning = false;
+            pomoSeconds = 1500;
+            timerVal.textContent = "25:00";
+            btnStart.textContent = 'Старт';
+            btnStart.className = "px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold";
+            triggerNotification('Помодоро завершен!', 'Отлично поработали. Время сделать 5 минутный перерыв!');
+          }
+        }, 1000);
+      } else {
+        clearInterval(pomoInterval);
+        btnStart.textContent = 'Старт';
+        btnStart.className = "px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold";
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      clearInterval(pomoInterval);
+      pomoRunning = false;
+      pomoSeconds = 1500;
+      timerVal.textContent = "25:00";
+      btnStart.textContent = 'Старт';
+      btnStart.className = "px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold";
+    });
+  }
+
+  // Intermittent Fasting (16:8) Timer
+  let fastingInterval = null;
+  let fastingActive = false;
+  let fastingSeconds = 57600; // 16 hours in seconds
+
+  function initFasting() {
+    const timerVal = document.getElementById('fasting-timer-val');
+    const btnToggle = document.getElementById('btn-fasting-toggle');
+    if (!timerVal) return;
+
+    function formatFasting(secs) {
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = secs % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    btnToggle.addEventListener('click', () => {
+      fastingActive = !fastingActive;
+      if (fastingActive) {
+        btnToggle.textContent = 'Стоп';
+        btnToggle.className = "px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold";
+        fastingInterval = setInterval(() => {
+          if (fastingSeconds > 0) {
+            fastingSeconds--;
+            timerVal.textContent = formatFasting(fastingSeconds);
+          } else {
+            clearInterval(fastingInterval);
+            fastingActive = false;
+            fastingSeconds = 57600;
+            timerVal.textContent = "16:00:00";
+            btnToggle.textContent = 'Начать';
+            btnToggle.className = "px-2 py-0.5 rounded bg-purple-500 text-slate-950 text-[10px] font-bold";
+            triggerNotification('Голодание завершено!', '16-часовое окно голодания успешно выдержано!');
+          }
+        }, 1000);
+      } else {
+        clearInterval(fastingInterval);
+        btnToggle.textContent = 'Начать';
+        btnToggle.className = "px-2 py-0.5 rounded bg-purple-500 text-slate-950 text-[10px] font-bold";
+        fastingSeconds = 57600;
+        timerVal.textContent = "16:00:00";
+      }
+    });
+  }
+
+  // Breathing Box Trainer
+  let breathingActive = false;
+  let breathingInterval = null;
+
+  function initBreathing() {
+    const btnToggle = document.getElementById('btn-breath-toggle');
+    const label = document.getElementById('breath-label');
+    const circle = document.getElementById('breath-circle');
+    if (!btnToggle) return;
+
+    let steps = ['Вдох', 'Задержка', 'Выдох', 'Задержка'];
+    let idx = 0;
+
+    btnToggle.addEventListener('click', () => {
+      breathingActive = !breathingActive;
+      if (breathingActive) {
+        btnToggle.textContent = 'Стоп';
+        btnToggle.className = "px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold";
+
+        const runCycle = () => {
+          const current = steps[idx];
+          label.textContent = current;
+          if (current === 'Вдох') {
+            circle.style.transform = 'scale(2)';
+          } else if (current === 'Выдох') {
+            circle.style.transform = 'scale(1)';
+          }
+          idx = (idx + 1) % steps.length;
+        };
+
+        runCycle();
+        breathingInterval = setInterval(runCycle, 4000);
+      } else {
+        clearInterval(breathingInterval);
+        btnToggle.textContent = 'Старт';
+        btnToggle.className = "px-2 py-0.5 rounded bg-teal-500 text-slate-950 text-[10px] font-bold";
+        label.textContent = 'Спокойствие';
+        circle.style.transform = 'scale(1)';
+        idx = 0;
+      }
+    });
+  }
+
+  // Screen Digital Detox Overlay Lock
+  function initScreenDetox() {
+    const btnDetox = document.getElementById('btn-detox-lock');
+    if (!btnDetox) return;
+
+    btnDetox.addEventListener('click', () => {
+      const overlay = document.createElement('div');
+      overlay.className = "fixed inset-0 bg-slate-950/98 z-50 flex flex-col items-center justify-center text-center p-6 space-y-4";
+      overlay.innerHTML = `
+        <span class="material-icons-round text-amber-400 text-6xl animate-pulse">phonelink_off</span>
+        <h2 class="text-xl font-bold">Цифровой Детокс активен</h2>
+        <p class="text-xs text-slate-400 max-w-[240px]">Отдохните от телефона. Дайте глазам и разуму расслабиться в течение 5 минут.</p>
+        <div class="text-2xl font-extrabold text-amber-500" id="detox-countdown">05:00</div>
+        <button id="btn-skip-detox" class="text-xs text-slate-500 underline py-2">Досрочно выйти</button>
+      `;
+
+      document.body.appendChild(overlay);
+      let duration = 300; // 5 mins
+
+      const timer = setInterval(() => {
+        if (duration > 0) {
+          duration--;
+          const m = Math.floor(duration / 60);
+          const s = duration % 60;
+          const label = document.getElementById('detox-countdown');
+          if (label) label.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        } else {
+          clearInterval(timer);
+          overlay.remove();
+          triggerNotification('Детокс завершен!', 'Вы успешно разгрузили мозг. Добро пожаловать назад!');
+        }
+      }, 1000);
+
+      overlay.querySelector('#btn-skip-detox').addEventListener('click', () => {
+        clearInterval(timer);
+        overlay.remove();
+      });
+    });
+  }
+
+  // ASSISTANTS & HELPERS IMPLEMENTATION - PART 2
+  // Expenses Tracker
+  function renderExpenses() {
+    const listEl = document.getElementById('expenses-list');
+    const totalEl = document.getElementById('expenses-total-val');
+    if (!listEl) return;
+
+    listEl.innerHTML = '';
+    const dayExpenses = state.expenses[state.selectedDate] || [];
+    let total = 0;
+
+    dayExpenses.forEach((exp, idx) => {
+      total += exp.amount;
+      const row = document.createElement('div');
+      row.className = "flex justify-between items-center bg-slate-900 border border-slate-800/60 p-1.5 rounded-xl text-[11px]";
+      row.innerHTML = `
+        <span class="truncate text-slate-300">${exp.name}</span>
+        <div class="flex items-center space-x-1.5 font-bold">
+          <span class="text-amber-400">${exp.amount} ₽</span>
+          <button class="btn-del-expense text-slate-500 hover:text-rose-400 font-normal">×</button>
+        </div>
+      `;
+      row.querySelector('.btn-del-expense').addEventListener('click', () => {
+        state.expenses[state.selectedDate] = dayExpenses.filter((_, i) => i !== idx);
+        updateUI();
+      });
+      listEl.appendChild(row);
+    });
+
+    totalEl.textContent = `Итого: ${total} ₽`;
+  }
+
+  function initExpensesForm() {
+    const btnAdd = document.getElementById('btn-add-expense');
+    const inputName = document.getElementById('input-expense-name');
+    const inputAmount = document.getElementById('input-expense-amount');
+    if (!btnAdd) return;
+
+    btnAdd.addEventListener('click', () => {
+      const name = inputName.value.trim();
+      const val = parseFloat(inputAmount.value);
+      if (name && !isNaN(val) && val > 0) {
+        if (!state.expenses[state.selectedDate]) {
+          state.expenses[state.selectedDate] = [];
+        }
+        state.expenses[state.selectedDate].push({ name, amount: val });
+        inputName.value = '';
+        inputAmount.value = '';
+        updateUI();
+      }
+    });
+  }
+
+  // Mood Index Tracker
+  function renderMood() {
+    const label = document.getElementById('mood-status-label');
+    if (!label) return;
+
+    const currentMood = state.moods[state.selectedDate] || null;
+    const btns = document.querySelectorAll('.btn-mood-select');
+
+    btns.forEach(btn => {
+      const moodVal = btn.getAttribute('data-mood');
+      if (moodVal === String(currentMood)) {
+        btn.classList.add('scale-150', 'brightness-125');
+      } else {
+        btn.classList.remove('scale-150', 'brightness-125');
+      }
+    });
+
+    const feedbacks = {
+      1: '😢 Чувствую себя ужасно',
+      2: '😕 Настроение так себе',
+      3: '😐 Обычный нормальный день',
+      4: '😊 Хорошее продуктивное настроение',
+      5: '🤩 Превосходный радостный день!'
+    };
+
+    label.textContent = currentMood ? feedbacks[currentMood] : 'Настроение не выбрано';
+  }
+
+  function initMoodSelection() {
+    const btns = document.querySelectorAll('.btn-mood-select');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const moodVal = parseInt(btn.getAttribute('data-mood'));
+        state.moods[state.selectedDate] = moodVal;
+        updateUI();
+      });
+    });
+  }
+
+  // Vocal voice notes helper
+  function renderVocalNotes() {
+    const listEl = document.getElementById('vocal-notes-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    state.vocalNotes.forEach((note, idx) => {
+      const el = document.createElement('div');
+      el.className = "flex justify-between items-center bg-slate-900 border border-slate-800 p-1 rounded text-[10px] text-slate-300";
+      el.innerHTML = `
+        <span class="truncate">${note.text}</span>
+        <button class="btn-del-vnote text-rose-500 hover:text-rose-400">Удалить</button>
+      `;
+      el.querySelector('.btn-del-vnote').addEventListener('click', () => {
+        state.vocalNotes = state.vocalNotes.filter((_, i) => i !== idx);
+        updateUI();
+      });
+      listEl.appendChild(el);
+    });
+  }
+
+  function initVocalNotes() {
+    const btn = document.getElementById('btn-record-note');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const text = prompt('Введите вашу голосовую/быструю мысль:');
+      if (text && text.trim()) {
+        state.vocalNotes.push({ text: text.trim(), date: getFormattedDate(new Date()) });
+        updateUI();
+      }
+    });
+  }
+
+  // Coin Flipper helper
+  function initCoinFlipper() {
+    const btn = document.getElementById('btn-coin-flip');
+    const res = document.getElementById('coin-result');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      res.textContent = 'Крутится...';
+      setTimeout(() => {
+        const isHeads = Math.random() > 0.5;
+        res.textContent = isHeads ? '🪙 ОРЁЛ' : '🪙 РЕШКА';
+      }, 500);
+    });
+  }
+
+  // Biorhythms calculator helper
+  function renderBiorhythms() {
+    const phys = document.getElementById('bio-phys');
+    const emo = document.getElementById('bio-emo');
+    const intel = document.getElementById('bio-int');
+    if (!phys) return;
+
+    // Use a fixed birthdate epoch offset to compute cyclical wave percentages
+    const today = new Date();
+    const tTime = today.getTime();
+
+    const pPercent = Math.round((Math.sin((2 * Math.PI * (tTime / 86400000)) / 23) + 1) * 50);
+    const ePercent = Math.round((Math.sin((2 * Math.PI * (tTime / 86400000)) / 28) + 1) * 50);
+    const iPercent = Math.round((Math.sin((2 * Math.PI * (tTime / 86400000)) / 33) + 1) * 50);
+
+    phys.textContent = `${pPercent}%`;
+    emo.textContent = `${ePercent}%`;
+    intel.textContent = `${iPercent}%`;
+  }
+
+  // Steps goal tracker helper
+  function initStepTracker() {
+    const input = document.getElementById('input-steps-val');
+    const label = document.getElementById('lbl-steps-percent');
+    if (!input) return;
+
+    const currentVal = state.stepCount[state.selectedDate] || 0;
+    input.value = currentVal || '';
+
+    const percent = Math.min(100, Math.round((currentVal / 10000) * 100));
+    label.textContent = `${percent}% от цели 10к`;
+
+    input.addEventListener('input', () => {
+      const val = parseInt(input.value) || 0;
+      state.stepCount[state.selectedDate] = val;
+      saveState();
+
+      const pct = Math.min(100, Math.round((val / 10000) * 100));
+      label.textContent = `${pct}% от цели 10к`;
+    });
+  }
+
+  // Sleep wake calculator helper
+  function renderSleepCalculator() {
+    const cyclesEl = document.getElementById('lbl-sleep-cycles');
+    if (!cyclesEl) return;
+
+    const now = new Date();
+    const formatTime = (dateObj) => {
+      return [
+        String(dateObj.getHours()).padStart(2, '0'),
+        String(dateObj.getMinutes()).padStart(2, '0')
+      ].join(':');
+    };
+
+    // Calculate times (sleep cycles of 90 minutes)
+    const options = [];
+    for (let c = 3; c <= 6; c++) {
+      const target = new Date(now.getTime() + (c * 90 * 60 * 1000) + (14 * 60 * 1000)); // +14m sleep onset latency
+      options.push(formatTime(target));
+    }
+    cyclesEl.textContent = options.join(' | ');
+  }
+
+  // BMI calculator helper
+  function initBMICalculator() {
+    const btn = document.getElementById('btn-bmi-calc');
+    const res = document.getElementById('lbl-bmi-res');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const w = parseFloat(document.getElementById('input-bmi-w').value);
+      const h = parseFloat(document.getElementById('input-bmi-h').value) / 100;
+      if (w > 0 && h > 0) {
+        const bmi = (w / (h * h)).toFixed(1);
+        let status = 'Норма';
+        if (bmi < 18.5) status = 'Дефицит';
+        else if (bmi > 25) status = 'Избыток';
+        res.textContent = `ИМТ: ${bmi} (${status})`;
+      } else {
+        res.textContent = 'Заполните вес и рост';
+      }
+    });
+  }
+
+  // Gratitude diary helper
+  function initGratitude() {
+    const btn = document.getElementById('btn-gratitude-save');
+    const input = document.getElementById('input-gratitude-text');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (text) {
+        state.gratitudes.push({ text: text, date: state.selectedDate });
+        input.value = '';
+        saveState();
+        alert('Благодарность записана!');
+      }
+    });
+  }
+
+  // Decibel sound meter tool
+  let decibelInterval = null;
+  function initDecibelMeter() {
+    const btn = document.getElementById('btn-decibel-start');
+    const val = document.getElementById('lbl-decibel-val');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      if (decibelInterval) {
+        clearInterval(decibelInterval);
+        decibelInterval = null;
+        btn.textContent = 'Старт';
+        btn.className = "px-2 py-0.5 rounded bg-brand-500 text-slate-950 text-[10px] font-bold";
+        val.textContent = '0 дБ';
+      } else {
+        btn.textContent = 'Стоп';
+        btn.className = "px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold";
+        decibelInterval = setInterval(() => {
+          // Mock environmental simulation fluctuations
+          const randDecibels = Math.floor(35 + Math.random() * 45);
+          val.textContent = `${randDecibels} дБ`;
+        }, 800);
+      }
+    });
+  }
+
+  // SOS Emergency Card
+  function initSOSCard() {
+    const phone = document.getElementById('input-sos-phone');
+    const blood = document.getElementById('input-sos-blood');
+    const btn = document.getElementById('btn-sos-save');
+    if (!btn) return;
+
+    phone.value = state.sosPhone;
+    blood.value = state.sosBlood;
+
+    btn.addEventListener('click', () => {
+      state.sosPhone = phone.value.trim();
+      state.sosBlood = blood.value.trim();
+      saveState();
+      alert('Данные SOS карты сохранены!');
+    });
+  }
+
+  // Stopwatch helper
+  let swInterval = null;
+  let swMillis = 0;
+  let swActive = false;
+
+  function initStopwatch() {
+    const btn = document.getElementById('btn-stopwatch-toggle');
+    const btnReset = document.getElementById('btn-stopwatch-reset');
+    const val = document.getElementById('lbl-stopwatch-val');
+    if (!btn) return;
+
+    function formatStopwatch(ms) {
+      const mins = Math.floor(ms / 60000);
+      const secs = Math.floor((ms % 60000) / 1000);
+      const hundredths = Math.floor((ms % 1000) / 10);
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(hundredths).padStart(2, '0')}`;
+    }
+
+    btn.addEventListener('click', () => {
+      swActive = !swActive;
+      if (swActive) {
+        btn.textContent = 'Стоп';
+        btn.className = "px-1.5 py-0.5 rounded bg-rose-500 text-slate-950 font-bold text-[9px]";
+        const startTime = Date.now() - swMillis;
+        swInterval = setInterval(() => {
+          swMillis = Date.now() - startTime;
+          val.textContent = formatStopwatch(swMillis);
+        }, 10);
+      } else {
+        clearInterval(swInterval);
+        btn.textContent = 'Старт';
+        btn.className = "px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[9px]";
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      clearInterval(swInterval);
+      swActive = false;
+      swMillis = 0;
+      val.textContent = '00:00.00';
+      btn.textContent = 'Старт';
+      btn.className = "px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[9px]";
+    });
+  }
+
+  // Kitchen Timer helper
+  let kitchenInterval = null;
+  let kitchenSecs = 0;
+
+  function initKitchenTimer() {
+    const val = document.getElementById('lbl-kitchen-val');
+    const presets = document.querySelectorAll('.btn-kitchen-preset');
+    if (!val) return;
+
+    presets.forEach(btn => {
+      btn.addEventListener('click', () => {
+        clearInterval(kitchenInterval);
+        kitchenSecs = parseInt(btn.getAttribute('data-sec'));
+
+        const run = () => {
+          if (kitchenSecs > 0) {
+            kitchenSecs--;
+            const m = Math.floor(kitchenSecs / 60);
+            const s = kitchenSecs % 60;
+            val.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          } else {
+            clearInterval(kitchenInterval);
+            val.textContent = 'ГОТОВО!';
+            triggerNotification('Кухонный таймер!', 'Ваш таймер заваривания чая или варки яиц завершен!');
+          }
+        };
+
+        run();
+        kitchenInterval = setInterval(run, 1000);
+      });
+    });
+  }
+
+  // Dice Roller helper
+  function initDiceRoller() {
+    const btn = document.getElementById('btn-dice-roll');
+    const val = document.getElementById('dice-result');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      val.textContent = '🎲 ...';
+      setTimeout(() => {
+        const roll = Math.floor(1 + Math.random() * 6);
+        val.textContent = `🎲 ${roll}`;
+      }, 400);
+    });
+  }
+
+  // Shopping Checklist helper
+  function renderShopList() {
+    const listEl = document.getElementById('shop-list-container');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    state.shopList.forEach((item, idx) => {
+      const el = document.createElement('div');
+      el.className = "flex items-center justify-between text-[10px] bg-slate-950/40 p-1 rounded border border-slate-800/80";
+      el.innerHTML = `
+        <label class="flex items-center space-x-1.5 cursor-pointer flex-1 truncate">
+          <input type="checkbox" class="chk-shop" ${item.bought ? 'checked' : ''}>
+          <span class="${item.bought ? 'line-through text-slate-500' : 'text-slate-200'}">${item.text}</span>
+        </label>
+        <button class="btn-del-shop text-rose-500 px-1 font-bold">×</button>
+      `;
+
+      el.querySelector('.chk-shop').addEventListener('change', (e) => {
+        item.bought = e.target.checked;
+        saveState();
+        renderShopList();
+      });
+
+      el.querySelector('.btn-del-shop').addEventListener('click', () => {
+        state.shopList = state.shopList.filter((_, i) => i !== idx);
+        saveState();
+        renderShopList();
+      });
+
+      listEl.appendChild(el);
+    });
+  }
+
+  function initShoppingList() {
+    const btn = document.getElementById('btn-add-shop');
+    const input = document.getElementById('input-shop-item');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const text = input.value.trim();
+      if (text) {
+        state.shopList.push({ text: text, bought: false });
+        input.value = '';
+        saveState();
+        renderShopList();
+      }
+    });
+  }
+
+  // Tip Calculator helper
+  function initTipCalculator() {
+    const input = document.getElementById('input-tip-bill');
+    const res = document.getElementById('lbl-tip-res');
+    const pcts = document.querySelectorAll('.btn-tip-pct');
+    if (!input) return;
+
+    pcts.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pct = parseFloat(btn.getAttribute('data-pct'));
+        const bill = parseFloat(input.value);
+        if (!isNaN(bill) && bill > 0) {
+          const total = bill + (bill * (pct / 100));
+          res.textContent = `Итого с чаевыми: ${Math.round(total)} ₽`;
+        } else {
+          res.textContent = 'Укажите сумму счета';
+        }
+      });
+    });
+  }
+
+  // Quote of the Day generator helper
+  function initQuoteRotator() {
+    const btn = document.getElementById('btn-quote-refresh');
+    const textEl = document.getElementById('lbl-quote-text');
+    if (!btn) return;
+
+    const quotes = [
+      '"Каждый день - это новый шанс стать лучше."',
+      '"Продуктивность - это не количество дел, а их важность."',
+      '"Маленькие шаги ведут к великим достижениям."',
+      '"Позаботьтесь о своем разуме, и тело ответит благодарностью."',
+      '"Концентрация рождается в тишине и детоксе экрана."',
+      '"Ваше здоровье - это лучший капитал."'
+    ];
+
+    btn.addEventListener('click', () => {
+      const randIdx = Math.floor(Math.random() * quotes.length);
+      textEl.textContent = quotes[randIdx];
+    });
+  }
+
+  // Flashlight screen tool helper
+  function initFlashlight() {
+    const btn = document.getElementById('btn-flash-toggle');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const overlay = document.createElement('div');
+      overlay.className = "fixed inset-0 bg-white z-50 flex flex-col items-center justify-center text-slate-950 font-bold text-center p-6";
+      overlay.innerHTML = `
+        <span class="material-icons-round text-yellow-500 text-6xl">lightbulb</span>
+        <h2 class="text-xl mt-2">ЭКРАННЫЙ ФОНАРИК</h2>
+        <p class="text-xs text-slate-500">Яркость экрана на максимум</p>
+        <button id="btn-flash-off" class="mt-8 px-6 py-2 bg-slate-950 text-white rounded-full font-bold text-xs">ВЫКЛЮЧИТЬ</button>
+      `;
+      document.body.appendChild(overlay);
+
+      overlay.querySelector('#btn-flash-off').addEventListener('click', () => {
+        overlay.remove();
+      });
+    });
+  }
+
+  // Streak tracker days indicator helper
+  function renderStreak() {
+    const el = document.getElementById('lbl-streak-days');
+    if (!el) return;
+
+    // Count days which have at least one completed task in state.tasks
+    const completedDays = new Set();
+    state.tasks.forEach(t => {
+      if (t.completed) completedDays.add(t.date);
+    });
+
+    const count = completedDays.size || 1;
+    el.textContent = `🔥 ${count} дней подряд`;
+  }
+
+  // Password Generator helper
+  function initPasswordGenerator() {
+    const btn = document.getElementById('btn-generate-pwd');
+    const val = document.getElementById('lbl-generated-pwd');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let pwd = "";
+      for (let i = 0; i < 12; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      val.textContent = pwd;
+    });
+  }
+
+  // Stress psychological test helper
+  function initStressTest() {
+    const btns = document.querySelectorAll('.btn-stress-test');
+    const res = document.getElementById('lbl-stress-res');
+    if (!res) return;
+
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const score = btn.getAttribute('data-score');
+        if (score === "1") {
+          res.textContent = "Рекомендация: Попробуйте 'Дыхание' в меню инструментов!";
+          res.className = "text-center font-bold text-rose-400 mt-1";
+        } else if (score === "2") {
+          res.textContent = "Рекомендация: Пейте воду или совершите прогулку.";
+          res.className = "text-center font-bold text-amber-400 mt-1";
+        } else {
+          res.textContent = "Отлично! Так держать!";
+          res.className = "text-center font-bold text-emerald-400 mt-1";
+        }
+      });
+    });
+  }
+
+  // Simple notepad drafting draft text
+  function initNotesDraft() {
+    const input = document.getElementById('input-notes-draft');
+    if (!input) return;
+
+    input.value = state.notesDraft;
+    input.addEventListener('input', () => {
+      state.notesDraft = input.value;
+      localStorage.setItem('diary_notes_draft', state.notesDraft);
+    });
+  }
+
+  // Word of the Day rotation helper
+  function renderWordOfDay() {
+    const w = document.getElementById('lbl-word-day');
+    const d = document.getElementById('lbl-word-day-def');
+    if (!w) return;
+
+    const items = [
+      { w: 'Инсайт', d: 'Внезапное интуитивное понимание сути проблемы.' },
+      { w: 'Осознанность', d: 'Способность удерживать внимание на текущем моменте.' },
+      { w: 'Эмпатия', d: 'Осознанное сопереживание эмоциональному состоянию другого.' },
+      { w: 'Рефлексия', d: 'Анализ своего психического состояния и поступков.' }
+    ];
+
+    const idx = Math.floor(new Date().getDate() % items.length);
+    w.textContent = items[idx].w;
+    d.textContent = `"${items[idx].d}"`;
+  }
 
   // TASK HANDLING
   function renderTasks() {
