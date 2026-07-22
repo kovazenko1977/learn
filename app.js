@@ -28,6 +28,29 @@ document.addEventListener('DOMContentLoaded', () => {
     water: JSON.parse(localStorage.getItem('diary_water')) || {} // Keyed by YYYY-MM-DD
   };
 
+  // AUTOMATIC ROLLOVER ALGORITHM FOR YESTERDAY'S UNCOMPLETED TASKS
+  function rolloverTasks() {
+    const todayStr = getFormattedDate(new Date());
+    let rolledCount = 0;
+    state.tasks = state.tasks.map(task => {
+      // If task is not completed, and its date is in the past compared to today
+      if (!task.completed && task.date < todayStr) {
+        rolledCount++;
+        return {
+          ...task,
+          date: todayStr,
+          transferred: true
+        };
+      }
+      return task;
+    });
+
+    if (rolledCount > 0) {
+      console.log(`Rolled over ${rolledCount} uncompleted tasks to today.`);
+      localStorage.setItem('diary_tasks', JSON.stringify(state.tasks));
+    }
+  }
+
   // UI ELEMENTS
   const btnPrevMonth = document.getElementById('btn-prev-month');
   const btnNextMonth = document.getElementById('btn-next-month');
@@ -115,6 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputTaskText = document.getElementById('input-task-text');
   const btnTogglePriority = document.getElementById('btn-toggle-priority');
   const btnToggleCategory = document.getElementById('btn-toggle-category');
+  const inputTaskTime = document.getElementById('input-task-time');
+  const btnTimePicker = document.getElementById('btn-time-picker');
+  const timeIcon = document.getElementById('time-icon');
   const btnAddTask = document.getElementById('btn-add-task');
 
   // Popovers
@@ -220,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSettings();
   initPinLock();
   initNetworkStatus();
+  rolloverTasks(); // Perform yesterday rollover before render
   renderDateScroll();
   updateUI();
   checkFirstVisit();
@@ -543,10 +570,20 @@ document.addEventListener('DOMContentLoaded', () => {
       filtered = dayTasks.filter(t => t.completed);
     }
 
-    // Sort by priority (high > medium > low) then by time
+    // Sort: uncompleted tasks chronologically if they have a time, otherwise by priority
     const priorityWeight = { high: 3, medium: 2, low: 1 };
     filtered.sort((a, b) => {
       if (a.completed !== b.completed) return a.completed - b.completed;
+
+      // If both are not completed and have a time, sort by time chronologically
+      if (!a.completed) {
+        if (a.time && b.time) {
+          return a.time.localeCompare(b.time);
+        }
+        if (a.time && !b.time) return -1; // tasks with time first
+        if (!a.time && b.time) return 1;
+      }
+
       return (priorityWeight[b.priority] || 2) - (priorityWeight[a.priority] || 2);
     });
 
@@ -575,6 +612,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (task.category === 'Личное') catIcon = 'person';
         if (task.category === 'Здоровье') catIcon = 'health_and_safety';
 
+        // Optional Time badge
+        const timeBadge = task.time
+          ? `<span class="flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
+               <span class="material-icons-round text-[10px]">schedule</span>
+               <span>${task.time}</span>
+             </span>`
+          : '';
+
+        // Optional Transferred "Перенесено" badge
+        const transferredBadge = task.transferred
+          ? `<span class="flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20" title="Перенесено со вчерашнего дня">
+               <span class="material-icons-round text-[10px]">redo</span>
+               <span>Перенесено</span>
+             </span>`
+          : '';
+
         item.innerHTML = `
           <div class="flex items-center space-x-3 flex-1 min-w-0">
             <!-- Complete toggle checkbox custom -->
@@ -589,7 +642,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex-1 min-w-0">
               <span class="text-sm font-medium block truncate">${task.text}</span>
               <!-- Badges row -->
-              <div class="flex items-center space-x-1.5 mt-1">
+              <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                ${timeBadge}
+                ${transferredBadge}
                 <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wide uppercase border ${prioColor}">
                   ${task.priority === 'high' ? 'Высокий' : task.priority === 'medium' ? 'Средний' : 'Низкий'}
                 </span>
@@ -643,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ADD TASK LOGIC
-  function addNewTask(text, priority = 'medium', category = 'Личное') {
+  function addNewTask(text, priority = 'medium', category = 'Личное', time = '') {
     if (!text.trim()) return;
 
     const newTask = {
@@ -652,7 +707,8 @@ document.addEventListener('DOMContentLoaded', () => {
       date: state.selectedDate,
       completed: false,
       priority: priority,
-      category: category
+      category: category,
+      time: time || ''
     };
 
     state.tasks.push(newTask);
@@ -661,9 +717,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnAddTask.addEventListener('click', () => {
     const text = inputTaskText.value;
+    const time = inputTaskTime.value;
     if (text.trim()) {
-      addNewTask(text, state.currentPriority, state.currentCategory);
+      addNewTask(text, state.currentPriority, state.currentCategory, time);
       inputTaskText.value = '';
+      inputTaskTime.value = '';
       // Reset input bar flags
       resetInputBarChoices();
     }
@@ -672,11 +730,22 @@ document.addEventListener('DOMContentLoaded', () => {
   inputTaskText.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const text = inputTaskText.value;
+      const time = inputTaskTime.value;
       if (text.trim()) {
-        addNewTask(text, state.currentPriority, state.currentCategory);
+        addNewTask(text, state.currentPriority, state.currentCategory, time);
         inputTaskText.value = '';
+        inputTaskTime.value = '';
         resetInputBarChoices();
       }
+    }
+  });
+
+  // Highlight/toggle time picker icon when selected
+  inputTaskTime.addEventListener('change', () => {
+    if (inputTaskTime.value) {
+      timeIcon.style.color = '#0ea5e9'; // brand-500
+    } else {
+      timeIcon.style.color = '';
     }
   });
 
@@ -689,6 +758,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('category-icon').className = 'material-icons-round text-xl';
     document.getElementById('category-icon').textContent = 'label';
     document.getElementById('category-icon').style.color = '';
+    timeIcon.style.color = '';
+    inputTaskTime.value = '';
   }
 
   // CIGARETTES HANDLERS
@@ -948,14 +1019,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (taskContent) {
+      // Analyze and extract time expression from the task string
+      // e.g. "купить хлеб в 15:00", "позвонить врачу в 9:30", "сделать зарядку в 14 часов"
+      let extractedTime = '';
+      const timeRegexHHMM = /\b(?:в|на)\s+([0-2]?\d):([0-5]\d)\b/i;
+      const timeRegexHours = /\b(?:в|на)\s+([0-2]?\d)\s*(?:часов|часа|час|ч)\b/i;
+
+      let match = taskContent.match(timeRegexHHMM);
+      if (match) {
+        let hour = match[1].padStart(2, '0');
+        let minute = match[2].padStart(2, '0');
+        extractedTime = `${hour}:${minute}`;
+        // Strip the time expression from the task content
+        taskContent = taskContent.replace(match[0], '').trim();
+      } else {
+        match = taskContent.match(timeRegexHours);
+        if (match) {
+          let hour = match[1].padStart(2, '0');
+          extractedTime = `${hour}:00`;
+          taskContent = taskContent.replace(match[0], '').trim();
+        }
+      }
+
+      // Cleanup trailing punctuation/spaces
+      taskContent = taskContent.replace(/[,.!?;:]+$/, '').trim();
+
       // Analyze category context
       let cat = 'Личное';
       if (taskContent.toLowerCase().includes('работу') || taskContent.toLowerCase().includes('проект')) cat = 'Работа';
       if (taskContent.toLowerCase().includes('дома') || taskContent.toLowerCase().includes('убрать') || taskContent.toLowerCase().includes('купить')) cat = 'Дом';
       if (taskContent.toLowerCase().includes('здоровье') || taskContent.toLowerCase().includes('аптека') || taskContent.toLowerCase().includes('врач')) cat = 'Здоровье';
 
-      addNewTask(taskContent, 'medium', cat);
-      speakText(`Добавлена задача: ${taskContent}`);
+      addNewTask(taskContent, 'medium', cat, extractedTime);
+
+      const timeVoiceAnnounce = extractedTime ? ` на ${extractedTime}` : '';
+      speakText(`Добавлена задача: ${taskContent}${timeVoiceAnnounce}`);
     } else {
       speakText('Повторите, пожалуйста, команду громче и четче.');
     }
@@ -976,7 +1074,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let report = `На сегодня у вас запланировано ${dayTasks.length} задач. `;
 
     if (active.length > 0) {
-      report += `Активные задачи: ${active.map((t, idx) => `${idx + 1}, ${t.text}`).join('. ')}. `;
+      report += `Активные задачи: ${active.map((t, idx) => {
+        const timePart = t.time ? ` на ${t.time}` : '';
+        const transPart = t.transferred ? ' перенесена со вчера' : '';
+        return `${idx + 1}, ${t.text}${timePart}${transPart}`;
+      }).join('. ')}. `;
     } else {
       report += 'Все запланированные задачи на сегодня уже выполнены! Вы супер. ';
     }
