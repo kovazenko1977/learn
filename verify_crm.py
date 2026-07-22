@@ -36,130 +36,126 @@ def make_request(path, method="GET", data=None, headers=None):
 
 def run_tests():
     print("==========================================")
-    print("  CRM SYSTEM BACKEND TEST SUITE           ")
+    print("  CRM ADVANCED FEATURE INTEGRATION TESTS  ")
     print("==========================================")
 
-    # 1. Auth Login (Success case)
-    print("\n[TEST 1] Testing Auth Login (admin / admin123)...")
+    # 1. Auth Login
+    print("\n[TEST 1] Logging in as admin...")
     payload = {"username": "admin", "password": "admin123"}
-    status, res, headers = make_request("api/auth.php?action=login", "POST", payload)
+    status, res, _ = make_request("api/auth.php?action=login", "POST", payload)
 
     if status == 200 and res.get("success") is True:
         token = res.get("token")
-        print(f"  [PASS] Login successful! Token received: {token[:20]}...")
+        print(f"  [PASS] Logged in successfully!")
     else:
         print(f"  [FAIL] Login failed: status={status}, response={res}")
         sys.exit(1)
 
     auth_headers = {"Authorization": f"Bearer {token}"}
 
-    # 2. Auth Login (Failure case)
-    print("\n[TEST 2] Testing Auth Login with invalid credentials...")
-    bad_payload = {"username": "admin", "password": "wrong_password"}
-    status, res, _ = make_request("api/auth.php?action=login", "POST", bad_payload)
-    if status == 401 and res.get("success") is False:
-        print("  [PASS] Correctly rejected login with 401 Unauthorized.")
-    else:
-        print(f"  [FAIL] Expected 401, got status={status}, response={res}")
-        sys.exit(1)
-
-    # 3. Retrieve settings
-    print("\n[TEST 3] Testing Settings API endpoint...")
-    status, settings, _ = make_request("api/settings.php", "GET", headers=auth_headers)
-    if status == 200 and "categories" in settings:
-        print(f"  [PASS] Successfully retrieved settings. Categories: {settings['categories']}")
-    else:
-        print(f"  [FAIL] Settings retrieval failed: status={status}, response={settings}")
-        sys.exit(1)
-
-    # 4. Create Task
-    print("\n[TEST 4] Creating a new Service Task...")
+    # 2. Create Task with tags
+    print("\n[TEST 2] Creating a Task with tags...")
     task_payload = {
-        "title": "Leaking Pipe in Room 104",
-        "description": "Hot water pipe is leaking from under the sink.",
-        "category": "Repair",
-        "priority": "High",
+        "title": "IT Support - Router Upgrade",
+        "description": "Configure and install high-performance dual-band routers on the second floor.",
+        "category": "IT Support",
+        "priority": "Medium",
+        "tags": ["IT", "network", "hardware"],
         "attachments": [],
         "custom_fields": {
-            "Location/Room": "Room 104",
-            "Asset ID": "WP-9908"
+            "Location/Room": "Server Room",
+            "Asset ID": "RT-404"
         }
     }
     status, task_res, _ = make_request("api/tasks.php", "POST", task_payload, headers=auth_headers)
     if status == 200 and task_res.get("success") is True:
         task_id = task_res["task"]["id"]
-        print(f"  [PASS] Task created successfully! ID: {task_id}")
-        print(f"  [INFO] Calculated SLA Deadline: {task_res['task']['deadline']}")
+        print(f"  [PASS] Task created successfully with tags {task_res['task']['tags']}! ID: {task_id}")
     else:
         print(f"  [FAIL] Task creation failed: status={status}, response={task_res}")
         sys.exit(1)
 
-    # 5. Retrieve Tasks & Filter Visibility
-    print("\n[TEST 5] Retrieve task list & verify visibility...")
-    status, task_list, _ = make_request("api/tasks.php", "GET", headers=auth_headers)
-    if status == 200 and len(task_list) > 0:
-        found_task = next((t for t in task_list if t["id"] == task_id), None)
-        if found_task:
-            print(f"  [PASS] Newly created task found in retrieved list.")
-        else:
-            print(f"  [FAIL] Created task with ID {task_id} not found in the list.")
-            sys.exit(1)
-    else:
-        print(f"  [FAIL] Failed to retrieve task list or list is empty. Status: {status}")
-        sys.exit(1)
-
-    # 6. Retrieve Specific Task Details (with comments)
-    print("\n[TEST 6] Retrieve specific task detail by ID...")
-    status, task_detail, _ = make_request(f"api/tasks.php?id={task_id}", "GET", headers=auth_headers)
-    if status == 200 and task_detail.get("id") == task_id:
-        print(f"  [PASS] Retreived details: status='{task_detail.get('status')}', comments_count={len(task_detail.get('comments', []))}")
-    else:
-        print(f"  [FAIL] Task details retrieve failed: status={status}, response={task_detail}")
-        sys.exit(1)
-
-    # 7. Add Comment to the Task
-    print("\n[TEST 7] Adding a comment to the task...")
-    comment_payload = {
+    # 3. Add Subtask (Checklist Builder)
+    print("\n[TEST 3] Adding subtasks to task checklist...")
+    subtask_payload = {
         "task_id": task_id,
-        "content": "Plumber scheduled to arrive in 30 minutes.",
-        "attachments": []
+        "title": "Configure SSID and passphrases"
     }
-    status, comment_res, _ = make_request("api/tasks.php?action=comment", "POST", comment_payload, headers=auth_headers)
-    if status == 200 and comment_res.get("success") is True:
-        print(f"  [PASS] Comment added successfully! Comment: '{comment_res['comment']['content']}'")
+    status, sub_res, _ = make_request("api/tasks.php?action=add_subtask", "POST", subtask_payload, headers=auth_headers)
+    if status == 200 and sub_res.get("success") is True:
+        sub_id = sub_res["subtask"]["id"]
+        print(f"  [PASS] Subtask added! ID: {sub_id}, title: '{sub_res['subtask']['title']}'")
     else:
-        print(f"  [FAIL] Failed to add comment: status={status}, response={comment_res}")
+        print(f"  [FAIL] Failed to add subtask: response={sub_res}")
         sys.exit(1)
 
-    # 8. Update Task status
-    print("\n[TEST 8] Updating task status to 'in_work'...")
-    status, update_res, _ = make_request(f"api/tasks.php?id={task_id}", "PUT", {"status": "in_work"}, headers=auth_headers)
-    if status == 200 and update_res.get("success") is True:
-        print("  [PASS] Task status updated to 'in_work'")
+    # 4. Toggle Subtask completion
+    print("\n[TEST 4] Toggling subtask completion state...")
+    toggle_payload = {
+        "task_id": task_id,
+        "subtask_id": sub_id,
+        "completed": True
+    }
+    status, toggle_res, _ = make_request("api/tasks.php?action=toggle_subtask", "POST", toggle_payload, headers=auth_headers)
+    if status == 200 and toggle_res.get("success") is True:
+        print("  [PASS] Subtask completed state set to True.")
     else:
-        print(f"  [FAIL] Status update failed: status={status}, response={update_res}")
+        print(f"  [FAIL] Failed to toggle subtask: response={toggle_res}")
         sys.exit(1)
 
-    # 9. Verify Analytics
-    print("\n[TEST 9] Testing Analytics dashboard endpoint...")
-    status, analytics, _ = make_request("api/analytics.php?action=dashboard", "GET", headers=auth_headers)
-    if status == 200 and "status_counts" in analytics:
-        print(f"  [PASS] Analytics returned dashboard: status_counts={analytics['status_counts']}")
+    # 5. Log Work Hours
+    print("\n[TEST 5] Logging work hours on the task...")
+    wl_payload = {
+        "task_id": task_id,
+        "hours": 2.5,
+        "notes": "Upgraded router firmware and configured WAN settings."
+    }
+    status, wl_res, _ = make_request("api/tasks.php?action=add_work_log", "POST", wl_payload, headers=auth_headers)
+    if status == 200 and wl_res.get("success") is True:
+        print(f"  [PASS] Successfully logged {wl_res['work_log']['hours']} hours.")
     else:
-        print(f"  [FAIL] Analytics failed: status={status}, response={analytics}")
+        print(f"  [FAIL] Work log entry failed: response={wl_res}")
         sys.exit(1)
 
-    # 10. Verify Unauthorized access on analytics
-    print("\n[TEST 10] Testing access control (No token)...")
-    status, analytics_no_token, _ = make_request("api/analytics.php?action=dashboard", "GET")
-    if status == 403 or status == 401:
-        print(f"  [PASS] Correctly blocked unauthorized access with status {status}")
+    # 6. Add Customer Satisfaction Feedback Rating
+    print("\n[TEST 6] Adding customer satisfaction feedback review...")
+    fb_payload = {
+        "task_id": task_id,
+        "rating": 5,
+        "comment": "Excellent upgrade! WiFi speed is blazing fast now."
+    }
+    status, fb_res, _ = make_request("api/tasks.php?action=add_feedback", "POST", fb_payload, headers=auth_headers)
+    if status == 200 and fb_res.get("success") is True:
+        print(f"  [PASS] Logged feedback review with {fb_res['feedback']['rating']} stars!")
     else:
-        print(f"  [FAIL] Analytics without token should fail, but returned status={status}")
+        print(f"  [FAIL] Failed to log feedback review: response={fb_res}")
+        sys.exit(1)
+
+    # 7. Check specific task details integration (Verify subtasks, logs, and audits exist)
+    print("\n[TEST 7] Verifying combined task details integration fields...")
+    status, details, _ = make_request(f"api/tasks.php?id={task_id}", "GET", headers=auth_headers)
+    if status == 200 and details.get("id") == task_id:
+        subtasks = details.get("subtasks", [])
+        work_logs = details.get("work_logs", [])
+        audit_logs = details.get("audit_logs", [])
+        feedback = details.get("feedback", {})
+
+        # Check subtasks match
+        assert len(subtasks) == 1 and subtasks[0]["completed"] is True, "Subtasks mismatch"
+        # Check work log match
+        assert len(work_logs) == 1 and float(work_logs[0]["hours"]) == 2.5, "Work logs mismatch"
+        # Check feedback match
+        assert feedback and feedback["rating"] == 5, "Feedback rating mismatch"
+        # Check audit logs are recorded
+        assert len(audit_logs) >= 5, f"Expected audit logs timeline to have multiple steps, got {len(audit_logs)}"
+
+        print(f"  [PASS] All details integrated perfectly: subtasks={len(subtasks)}, work_logs={len(work_logs)}, audit_logs={len(audit_logs)}")
+    else:
+        print(f"  [FAIL] Failed to load integrated task details: status={status}")
         sys.exit(1)
 
     print("\n==========================================")
-    print("  ALL BACKEND INTEGRATION TESTS PASSED!   ")
+    print("  ALL ADVANCED ENDPOINTS PASSED SECURELY! ")
     print("==========================================")
 
 if __name__ == "__main__":

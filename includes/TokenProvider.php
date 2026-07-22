@@ -29,7 +29,7 @@ class TokenProvider {
 
         $validSignature = $this->base64UrlEncode(hash_hmac('sha256', $header . "." . $payload, $this->secret, true));
 
-        if ($signature !== $validSignature) return false;
+        if (!hash_equals($validSignature, $signature)) return false;
 
         $payloadData = json_decode($this->base64UrlDecode($payload), true);
         if (isset($payloadData['exp']) && $payloadData['exp'] < time()) return false;

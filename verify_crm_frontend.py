@@ -29,23 +29,28 @@ def run_cuj(page):
     # Save screenshot of All Tasks tab
     page.screenshot(path="/home/jules/verification/screenshots/tasks_list.png")
 
-    # Click on the leaking pipe task
-    page.click("text=Leaking Pipe in Room 104")
-    page.wait_for_timeout(1000)
+    # Click on the advanced task we created in the backend test
+    page.click("text=IT Support - Router Upgrade")
+    page.wait_for_timeout(1500)
 
-    # Save screenshot of task detail modal before comment
-    page.screenshot(path="/home/jules/verification/screenshots/task_modal_before.png")
+    # Save screenshot of task detail modal
+    page.screenshot(path="/home/jules/verification/screenshots/task_modal_after_advanced.png")
 
-    # Input comment
-    page.fill('textarea', "Everything is verified and ready on the frontend.")
+    # Input a subtask to checklist
+    page.fill('input[placeholder="Новая подзадача..."]', "Verify WAN connections and speed tests")
     page.wait_for_timeout(500)
-
-    # Click post comment button
-    page.click(".fa-paper-plane")
+    page.click("button:has-text('Добавить')")
     page.wait_for_timeout(1000)
 
-    # Save screenshot of task detail modal after comment
-    page.screenshot(path="/home/jules/verification/screenshots/task_modal_after.png")
+    # Input work hours to log
+    page.fill('input[placeholder="Часы"]', "1.5")
+    page.fill('input[placeholder="Описание работ..."]', "Ran speed tests and certified connectivity.")
+    page.wait_for_timeout(500)
+    page.click("button:has-text('Списать')")
+    page.wait_for_timeout(1000)
+
+    # Save screenshot after actions
+    page.screenshot(path="/home/jules/verification/screenshots/task_modal_after_actions.png")
 
     # Close modal
     page.click(".fa-times")
