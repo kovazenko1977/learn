@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanatorium 2.0 - CRM</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.0.0/dist/vuedraggable.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        [v-cloak] { display: none; }
+        .kanban-column { min-height: 400px; }
+        @media print {
+            .no-print { display: none; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+        .print-only { display: none; }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div id="app" v-cloak>
+        <!-- Auth Screen -->
+        <div v-if="!token" class="min-h-screen flex items-center justify-center p-4">
+            <div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-primary">Sanatorium 2.0</h1>
+                    <p class="text-gray-500 dark:text-gray-400">{{ t('login_title') }}</p>
+                </div>
+
+                <!-- Login Form -->
+                <form v-if="authMode === 'login'" @submit.prevent="login">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ t('username') }}</label>
+                            <input v-model="authForm.username" type="text" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ t('password') }}</label>
+                            <input v-model="authForm.password" type="password" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 rounded hover:bg-blue-600 transition">
+                            {{ t('login_btn') }}
+                        </button>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a @click="authMode = 'recovery'" class="text-sm text-primary cursor-pointer hover:underline">{{ t('forgot_password') }}</a>
+                    </div>
+                </form>
+
+                <!-- Recovery Form -->
+                <form v-else-if="authMode === 'recovery'" @submit.prevent="recovery">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ t('username') }}</label>
+                            <input v-model="authForm.username" type="text" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 rounded hover:bg-blue-600 transition">
+                            {{ t('recover_btn') }}
+                        </button>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a @click="authMode = 'login'" class="text-sm text-primary cursor-pointer hover:underline">{{ t('back_to_login') }}</a>
+                    </div>
+                </form>
+
+                <!-- Reset Form -->
+                <form v-else-if="authMode === 'reset'" @submit.prevent="resetPassword">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ t('new_password') }}</label>
+                            <input v-model="authForm.password" type="password" class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600" required>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 rounded hover:bg-blue-600 transition">
+                            {{ t('reset_btn') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div v-else class="min-h-screen flex flex-col md:flex-row">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-64 bg-white dark:bg-gray-800 shadow-md z-10 no-print">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-primary">Sanatorium 2.0</h2>
+                </div>
+                <nav class="mt-2">
+                    <a v-for="item in menuItems" :key="item.id"
+                       @click="activeTab = item.id"
+                       v-show="!item.role || item.role.includes(user.role)"
+                       class="flex items-center px-6 py-3 cursor-pointer transition-colors"
+                       :class="activeTab === item.id ? 'bg-blue-50 dark:bg-blue-900/30 text-primary border-r-4 border-primary' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'">
+                        <i :class="['fas', item.icon, 'w-5 mr-3']"></i>
+                        {{ t(item.id) }}
+                    </a>
+                </nav>
+                <div class="absolute bottom-0 w-64 p-4 border-t dark:border-gray-700 hidden md:block">
+                    <div class="flex items-center justify-between">
+                        <button @click="toggleDarkMode" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+                        </button>
+                        <select v-model="lang" @change="saveSettings" class="text-xs bg-transparent">
+                            <option value="en">English</option>
+                            <option value="ru">Русский</option>
+                        </select>
+                        <button @click="logout" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+                <header class="flex justify-between items-center mb-8 no-print">
+                    <h2 class="text-2xl font-bold">{{ t(activeTab) }}</h2>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm font-medium">{{ user.full_name }} ({{ user.role }})</span>
+                        <img :src="'https://ui-avatars.com/api/?name=' + user.full_name + '&background=random'" class="w-10 h-10 rounded-full">
+                    </div>
+                </header>
+
+                <!-- Tabs Content -->
+                <div v-if="activeTab === 'dashboard'">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+                        <div v-for="(count, status) in stats.status_counts" :key="status"
+                             class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border-b-4"
+                             :class="statusColors[status].border">
+                            <div class="text-gray-500 dark:text-gray-400 text-sm uppercase font-bold">{{ t('status_' + status) }}</div>
+                            <div class="text-3xl font-bold mt-1">{{ count }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Kanban -->
+                    <div class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 overflow-x-auto pb-4">
+                        <div v-for="status in ['new', 'assigned', 'in_work', 'done']" :key="status" class="flex-1 min-w-[300px]">
+                            <div class="bg-gray-200 dark:bg-gray-800/50 p-3 rounded-t-lg font-bold flex justify-between">
+                                <span>{{ t('status_' + status) }}</span>
+                                <span class="bg-white dark:bg-gray-700 px-2 rounded-full text-xs flex items-center">{{ kanban[status].length }}</span>
+                            </div>
+                            <draggable v-model="kanban[status]"
+                                       group="tasks"
+                                       @change="onKanbanChange($event, status)"
+                                       item-key="id"
+                                       class="kanban-column bg-gray-100 dark:bg-gray-800/20 p-2 space-y-2 rounded-b-lg">
+                                <template #item="{element}">
+                                    <div class="bg-white dark:bg-gray-700 p-4 rounded shadow-sm cursor-pointer hover:shadow-md transition" @click="viewTask(element)">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="priorityColors[element.priority]">
+                                                {{ element.priority }}
+                                            </span>
+                                            <span class="text-[10px] text-gray-400">#{{ element.id }}</span>
+                                        </div>
+                                        <div class="font-bold text-sm mb-1 line-clamp-2">{{ element.title }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ element.category }}</div>
+                                        <div class="mt-3 flex items-center justify-between">
+                                            <div class="flex -space-x-2">
+                                                <img :src="'https://ui-avatars.com/api/?name=User' + element.creator_id + '&size=24'" class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-700">
+                                                <img v-if="element.assigned_to" :src="'https://ui-avatars.com/api/?name=Exec' + element.assigned_to + '&size=24'" class="w-6 h-6 rounded-full border-2 border-white dark:border-gray-700">
+                                            </div>
+                                            <span v-if="element.deadline" class="text-[10px] text-red-500 font-medium">
+                                                <i class="far fa-clock mr-1"></i>{{ formatDate(element.deadline) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </draggable>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="activeTab === 'tasks'">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b dark:border-gray-700 flex flex-wrap justify-between items-center gap-4">
+                            <div class="flex items-center space-x-4">
+                                <input v-model="searchQuery" type="text" :placeholder="t('search_placeholder')" class="p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                <label class="flex items-center text-sm">
+                                    <input type="checkbox" v-model="showArchive" class="mr-2"> {{ t('show_archive') }}
+                                </label>
+                            </div>
+                            <button @click="openCreateTask" class="bg-primary text-white px-4 py-2 rounded flex items-center">
+                                <i class="fas fa-plus mr-2"></i> {{ t('create_task') }}
+                            </button>
+                        </div>
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-500">
+                                <tr>
+                                    <th class="p-4"><input type="checkbox" @change="toggleSelectAll"></th>
+                                    <th class="p-4">ID</th>
+                                    <th class="p-4">{{ t('th_task') }}</th>
+                                    <th class="p-4">{{ t('th_status') }}</th>
+                                    <th class="p-4">{{ t('th_priority') }}</th>
+                                    <th class="p-4">{{ t('th_assigned') }}</th>
+                                    <th class="p-4">{{ t('th_deadline') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="task in filteredTasks" :key="task.id"
+                                    class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30 cursor-pointer"
+                                    @click="viewTask(task)">
+                                    <td class="p-4" @click.stop><input type="checkbox" v-model="selectedTaskIds" :value="task.id"></td>
+                                    <td class="p-4 text-xs font-mono text-gray-400">#{{ task.id }}</td>
+                                    <td class="p-4">
+                                        <div class="font-bold">{{ task.title }}</div>
+                                        <div class="text-xs text-gray-500">{{ task.category }}</div>
+                                    </td>
+                                    <td class="p-4">
+                                        <span class="px-2 py-1 rounded text-xs" :class="statusColors[task.status].bg + ' ' + statusColors[task.status].text">
+                                            {{ t('status_' + task.status) }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4">
+                                        <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="priorityColors[task.priority]">
+                                            {{ task.priority }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4 text-sm">
+                                        {{ getUserName(task.assigned_to) || '-' }}
+                                    </td>
+                                    <td class="p-4 text-xs" :class="isOverdue(task) ? 'text-red-500 font-bold' : ''">
+                                        {{ formatDate(task.deadline) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div v-if="selectedTaskIds.length > 0" class="p-4 bg-blue-50 dark:bg-blue-900/20 flex justify-between items-center">
+                            <span>{{ t('selected') }}: {{ selectedTaskIds.length }}</span>
+                            <div class="flex space-x-2">
+                                <select v-model="massExecutorId" class="p-1 text-sm border rounded dark:bg-gray-700">
+                                    <option value="">{{ t('select_executor') }}</option>
+                                    <option v-for="u in executors" :key="u.id" :value="u.id">{{ u.full_name }}</option>
+                                </select>
+                                <button @click="massAssign" class="bg-primary text-white px-3 py-1 rounded text-sm">{{ t('assign') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="activeTab === 'analytics'">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                            <h3 class="font-bold mb-4">{{ t('kpi_avg_time') }}</h3>
+                            <div class="text-4xl font-bold text-primary">{{ stats.avg_execution_time }} {{ t('hours') }}</div>
+                            <p class="text-gray-500 text-sm mt-2">{{ t('kpi_desc_avg') }}</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                            <h3 class="font-bold mb-4">{{ t('kpi_user_load') }}</h3>
+                            <div class="space-y-3">
+                                <div v-for="load in stats.user_load" :key="load.name" class="flex items-center justify-between">
+                                    <span class="text-sm">{{ load.name }}</span>
+                                    <div class="flex-1 mx-4 bg-gray-100 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+                                        <div class="bg-primary h-full" :style="{width: (load.count / maxLoad * 100) + '%'}"></div>
+                                    </div>
+                                    <span class="text-sm font-bold">{{ load.count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold">{{ t('report_table') }}</h3>
+                            <div class="flex space-x-2">
+                                <button @click="exportCSV" class="bg-green-600 text-white px-4 py-2 rounded text-sm">
+                                    <i class="fas fa-file-excel mr-2"></i> EXCEL (CSV)
+                                </button>
+                                <button @click="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">
+                                    <i class="fas fa-file-pdf mr-2"></i> PDF
+                                </button>
+                            </div>
+                        </div>
+                        <table class="w-full text-left print-only">
+                             <!-- This table for PDF print -->
+                             <thead>
+                                 <tr>
+                                     <th>ID</th><th>Title</th><th>Status</th><th>Executor</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 <tr v-for="t in tasks" :key="t.id">
+                                     <td>#{{t.id}}</td><td>{{t.title}}</td><td>{{t.status}}</td><td>{{getUserName(t.assigned_to)}}</td>
+                                 </tr>
+                             </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div v-if="activeTab === 'users'">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-4 border-b dark:border-gray-700 flex justify-between">
+                            <button @click="openUserModal()" class="bg-primary text-white px-4 py-2 rounded text-sm">
+                                <i class="fas fa-user-plus mr-2"></i> {{ t('add_user') }}
+                            </button>
+                        </div>
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-500">
+                                <tr>
+                                    <th class="p-4">{{ t('full_name') }}</th>
+                                    <th class="p-4">{{ t('username') }}</th>
+                                    <th class="p-4">{{ t('role') }}</th>
+                                    <th class="p-4">{{ t('department') }}</th>
+                                    <th class="p-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="u in users" :key="u.id" class="border-b dark:border-gray-700">
+                                    <td class="p-4 font-bold">{{ u.full_name }}</td>
+                                    <td class="p-4">{{ u.username }}</td>
+                                    <td class="p-4"><span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">{{ u.role }}</span></td>
+                                    <td class="p-4">{{ u.department }}</td>
+                                    <td class="p-4 text-right">
+                                        <button @click="openUserModal(u)" class="text-primary hover:underline">{{ t('edit') }}</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div v-if="activeTab === 'settings'">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="space-y-8">
+                            <!-- Categories & Priorities -->
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                                <h3 class="font-bold mb-4">{{ t('categories_title') }}</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <div v-for="(cat, idx) in settings.categories" :key="idx" class="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full flex items-center">
+                                        {{ cat }} <i @click="settings.categories.splice(idx, 1)" class="fas fa-times ml-2 text-red-500 cursor-pointer"></i>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <input v-model="newCategory" type="text" class="flex-1 p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                    <button @click="addCategory" class="bg-primary text-white px-4 py-2 rounded">{{ t('add') }}</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                                <h3 class="font-bold mb-4">SLA {{ t('settings') }}</h3>
+                                <div class="space-y-4">
+                                    <div v-for="p in settings.priorities" :key="p.name" class="flex items-center gap-4">
+                                        <span class="w-24 text-sm">{{ p.name }}</span>
+                                        <input v-model.number="p.sla_hours" type="number" class="w-20 p-2 border rounded dark:bg-gray-700">
+                                        <span class="text-xs text-gray-500">{{ t('hours') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Constructor -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                            <h3 class="font-bold mb-4">{{ t('form_constructor') }}</h3>
+                            <draggable v-model="settings.form_fields"
+                                       item-key="id"
+                                       class="space-y-2 mb-4">
+                                <template #item="{element, index}">
+                                    <div class="border dark:border-gray-700 p-3 rounded bg-gray-50 dark:bg-gray-700/30 flex items-center gap-3">
+                                        <i class="fas fa-grip-vertical text-gray-400 cursor-move"></i>
+                                        <input v-model="element.label" class="flex-1 bg-transparent border-b border-dashed">
+                                        <select v-model="element.type" class="text-xs bg-transparent">
+                                            <option value="text">Text</option>
+                                            <option value="number">Number</option>
+                                        </select>
+                                        <label class="text-[10px]">Req <input type="checkbox" v-model="element.required"></label>
+                                        <i @click="settings.form_fields.splice(index, 1)" class="fas fa-trash text-red-500 cursor-pointer"></i>
+                                    </div>
+                                </template>
+                            </draggable>
+                            <button @click="addFormField" class="w-full border-2 border-dashed border-gray-300 py-2 text-gray-500 rounded hover:bg-gray-50">{{ t('add_field') }}</button>
+                        </div>
+
+                        <!-- System Config -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm lg:col-span-2">
+                             <h3 class="font-bold mb-4">{{ t('system_config') }}</h3>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                 <div>
+                                     <label class="block text-sm mb-2">{{ t('storage_mode') }}</label>
+                                     <select v-model="settings.storage_mode" class="w-full p-2 border rounded dark:bg-gray-700">
+                                         <option value="json">JSON Storage (File-based)</option>
+                                         <option value="mysql">MySQL Database (Production)</option>
+                                     </select>
+                                     <div v-if="settings.storage_mode === 'mysql'" class="mt-4 space-y-2 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                         <input v-model="settings.mysql_config.host" placeholder="Host" class="w-full p-2 text-sm border rounded">
+                                         <input v-model="settings.mysql_config.db" placeholder="Database" class="w-full p-2 text-sm border rounded">
+                                         <input v-model="settings.mysql_config.user" placeholder="User" class="w-full p-2 text-sm border rounded">
+                                         <input v-model="settings.mysql_config.pass" placeholder="Password" type="password" class="w-full p-2 text-sm border rounded">
+                                     </div>
+                                 </div>
+                                 <div>
+                                     <label class="block text-sm mb-2">{{ t('notifications') }}</label>
+                                     <div class="space-y-2">
+                                         <label class="flex items-center"><input type="checkbox" v-model="settings.notifications.email_enabled" class="mr-2"> Email Alerts</label>
+                                         <label class="flex items-center"><input type="checkbox" v-model="settings.notifications.telegram_enabled" class="mr-2"> Telegram Bot</label>
+                                         <label class="flex items-center"><input type="checkbox" v-model="settings.notifications.push_enabled" class="mr-2"> Web Push</label>
+                                     </div>
+                                 </div>
+                             </div>
+                             <div class="mt-8">
+                                 <button @click="saveSettings" class="bg-primary text-white px-6 py-2 rounded hover:bg-blue-600 shadow-md">
+                                     {{ t('save_changes') }}
+                                 </button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="activeTab === 'profile'">
+                    <div class="max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm">
+                        <form @submit.prevent="updateProfile">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm mb-1">{{ t('full_name') }}</label>
+                                    <input v-model="profileForm.full_name" type="text" class="w-full p-2 border rounded dark:bg-gray-700">
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-1">{{ t('new_password') }} ({{ t('optional') }})</label>
+                                    <input v-model="profileForm.password" type="password" class="w-full p-2 border rounded dark:bg-gray-700">
+                                </div>
+                                <button type="submit" class="bg-primary text-white px-4 py-2 rounded">{{ t('save') }}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Create Task Modal -->
+        <div v-if="modals.createTask" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center">
+                    <h3 class="text-xl font-bold">{{ t('create_task') }}</h3>
+                    <button @click="modals.createTask = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                </div>
+                <form @submit.prevent="createTask" class="p-6 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium mb-1">{{ t('title') }}</label>
+                            <input v-model="taskForm.title" required class="w-full p-2 border rounded dark:bg-gray-700">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ t('category') }}</label>
+                            <select v-model="taskForm.category" required class="w-full p-2 border rounded dark:bg-gray-700">
+                                <option v-for="c in settings.categories" :value="c">{{ c }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ t('priority') }}</label>
+                            <select v-model="taskForm.priority" required class="w-full p-2 border rounded dark:bg-gray-700">
+                                <option v-for="p in settings.priorities" :value="p.name">{{ p.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">{{ t('description') }}</label>
+                        <textarea v-model="taskForm.description" rows="3" class="w-full p-2 border rounded dark:bg-gray-700"></textarea>
+                    </div>
+
+                    <div v-if="settings.form_fields.length > 0" class="border-t pt-4">
+                        <h4 class="text-sm font-bold mb-3">{{ t('additional_fields') }}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div v-for="f in settings.form_fields" :key="f.id">
+                                <label class="block text-sm font-medium mb-1">{{ f.label }}</label>
+                                <input v-model="taskForm.custom_fields[f.id]" :type="f.type" :required="f.required" class="w-full p-2 border rounded dark:bg-gray-700">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <label class="block text-sm font-medium mb-2">{{ t('attachments') }}</label>
+                        <input type="file" @change="uploadFile" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        <div class="mt-2 flex flex-wrap gap-2">
+                             <div v-for="f in taskForm.attachments" :key="f.filename" class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                                 {{ f.original_name }}
+                             </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-end space-x-3">
+                        <button type="button" @click="modals.createTask = false" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">{{ t('cancel') }}</button>
+                        <button type="submit" class="px-6 py-2 bg-primary text-white rounded hover:bg-blue-600 shadow">{{ t('create') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Task Details Modal -->
+        <div v-if="modals.taskDetails" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-xl max-w-4xl w-full max-h-[95vh] overflow-hidden flex flex-col">
+                <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700/30">
+                    <div>
+                        <span class="text-xs font-mono text-gray-400">#{{ selectedTask.id }}</span>
+                        <h3 class="text-xl font-bold">{{ selectedTask.title }}</h3>
+                    </div>
+                    <button @click="modals.taskDetails = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-6 flex flex-col md:flex-row gap-8">
+                    <div class="flex-1">
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 whitespace-pre-line">{{ selectedTask.description }}</p>
+
+                        <div v-if="Object.keys(selectedTask.custom_fields || {}).length > 0" class="mb-6 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg">
+                            <div v-for="(val, key) in selectedTask.custom_fields" :key="key" class="mb-2">
+                                <span class="text-xs text-gray-400 uppercase">{{ getFieldLabel(key) }}:</span>
+                                <div class="font-medium">{{ val }}</div>
+                            </div>
+                        </div>
+
+                        <div v-if="selectedTask.attachments?.length > 0" class="mb-8">
+                             <h4 class="font-bold mb-3 text-sm">{{ t('attachments') }}</h4>
+                             <div class="flex flex-wrap gap-4">
+                                 <a v-for="f in selectedTask.attachments" :key="f.filename" :href="'uploads/'+f.filename" target="_blank" class="flex items-center p-2 border dark:border-gray-700 rounded hover:bg-gray-50 dark:hover:bg-gray-900">
+                                     <i class="far fa-file-alt mr-2 text-primary"></i>
+                                     <span class="text-xs truncate max-w-[150px]">{{ f.original_name }}</span>
+                                 </a>
+                             </div>
+                        </div>
+
+                        <div class="border-t dark:border-gray-700 pt-6">
+                            <h4 class="font-bold mb-4 text-sm">{{ t('comments') }}</h4>
+                            <div class="space-y-4 mb-6">
+                                <div v-for="c in selectedTask.comments" :key="c.id" class="flex gap-3">
+                                    <img :src="'https://ui-avatars.com/api/?name=User'+c.user_id" class="w-8 h-8 rounded-full">
+                                    <div class="flex-1">
+                                        <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                                            <div class="text-xs font-bold mb-1">{{ getUserName(c.user_id) }}</div>
+                                            <div class="text-sm">{{ c.content }}</div>
+                                        </div>
+                                        <div class="text-[10px] text-gray-400 mt-1">{{ formatDate(c.created_at) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <textarea v-model="commentForm.content" :placeholder="t('add_comment')" class="flex-1 p-2 border rounded dark:bg-gray-700 text-sm"></textarea>
+                                <button @click="addComment" class="bg-primary text-white px-4 rounded self-end h-10"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-64 space-y-6">
+                        <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg space-y-4">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 uppercase font-bold">{{ t('th_status') }}</label>
+                                <select v-model="selectedTask.status" @change="updateTaskStatus" class="w-full bg-transparent font-bold mt-1">
+                                    <option v-for="s in ['new', 'assigned', 'in_work', 'done', 'rejected']" :value="s">{{ t('status_' + s) }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 uppercase font-bold">{{ t('th_assigned') }}</label>
+                                <select v-model="selectedTask.assigned_to" @change="updateTaskAssignment" class="w-full bg-transparent text-sm mt-1">
+                                    <option :value="null">{{ t('unassigned') }}</option>
+                                    <option v-for="u in executors" :key="u.id" :value="u.id">{{ u.full_name }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 uppercase font-bold">{{ t('th_priority') }}</label>
+                                <div class="mt-1 font-bold">{{ selectedTask.priority }}</div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 uppercase font-bold">{{ t('th_deadline') }}</label>
+                                <div class="mt-1 text-sm" :class="isOverdue(selectedTask) ? 'text-red-500 font-bold' : ''">{{ formatDate(selectedTask.deadline) }}</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400 px-2">
+                            <div>Created: {{ formatDate(selectedTask.created_at) }}</div>
+                            <div v-if="selectedTask.completed_at">Completed: {{ formatDate(selectedTask.completed_at) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Modal -->
+        <div v-if="modals.user" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+             <div class="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
+                 <h3 class="text-xl font-bold mb-4">{{ userForm.id ? t('edit_user') : t('add_user') }}</h3>
+                 <form @submit.prevent="saveUser" class="space-y-4">
+                     <input v-model="userForm.full_name" placeholder="Full Name" required class="w-full p-2 border rounded dark:bg-gray-700">
+                     <input v-model="userForm.username" placeholder="Username" required class="w-full p-2 border rounded dark:bg-gray-700">
+                     <input v-model="userForm.password" placeholder="Password (leave blank to keep)" :type="userForm.id ? 'password' : 'text'" :required="!userForm.id" class="w-full p-2 border rounded dark:bg-gray-700">
+                     <select v-model="userForm.role" required class="w-full p-2 border rounded dark:bg-gray-700">
+                         <option v-for="r in roles" :value="r">{{ r }}</option>
+                     </select>
+                     <input v-model="userForm.department" placeholder="Department" required class="w-full p-2 border rounded dark:bg-gray-700">
+                     <div class="flex justify-end gap-2 mt-6">
+                         <button type="button" @click="modals.user = false" class="px-4 py-2">{{ t('cancel') }}</button>
+                         <button type="submit" class="bg-primary text-white px-6 py-2 rounded">{{ t('save') }}</button>
+                     </div>
+                 </form>
+             </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, watch } = Vue;
+
+        const app = createApp({
+            setup() {
+                const token = ref(localStorage.getItem('token'));
+                const user = ref(JSON.parse(localStorage.getItem('user') || '{}'));
+                const activeTab = ref('dashboard');
+                const authMode = ref('login');
+                const isDarkMode = ref(localStorage.getItem('darkMode') === 'true');
+                const lang = ref(localStorage.getItem('lang') || 'en');
+
+                const tasks = ref([]);
+                const users = ref([]);
+                const settings = ref({
+                    categories: [], priorities: [], form_fields: [],
+                    notifications: {}, mysql_config: {}, storage_mode: 'json'
+                });
+                const stats = ref({ status_counts: {}, user_load: {}, avg_execution_time: 0 });
+
+                const authForm = ref({ username: '', password: '' });
+                const taskForm = ref({ title: '', description: '', category: '', priority: '', attachments: [], custom_fields: {} });
+                const userForm = ref({});
+                const profileForm = ref({ full_name: user.value.full_name, password: '' });
+                const commentForm = ref({ content: '' });
+
+                const searchQuery = ref('');
+                const showArchive = ref(false);
+                const selectedTaskIds = ref([]);
+                const massExecutorId = ref('');
+                const newCategory = ref('');
+
+                const modals = ref({ createTask: false, taskDetails: false, user: false });
+                const selectedTask = ref({});
+
+                const kanban = ref({ new: [], assigned: [], in_work: [], done: [] });
+
+                watch(tasks, (newTasks) => {
+                    const k = { new: [], assigned: [], in_work: [], done: [] };
+                    newTasks.forEach(t => { if (k[t.status]) k[t.status].push(t); });
+                    kanban.value = k;
+                }, { immediate: true, deep: true });
+
+                const translations = {
+                    en: {
+                        login_title: 'Sign in to your account', login_btn: 'Login', username: 'Username', password: 'Password',
+                        forgot_password: 'Forgot password?', back_to_login: 'Back to login', recover_btn: 'Send reset link',
+                        new_password: 'New Password', reset_btn: 'Reset Password',
+                        dashboard: 'Dashboard', tasks: 'All Tasks', analytics: 'Analytics', users: 'Users', settings: 'Settings', profile: 'Profile',
+                        status_new: 'New', status_assigned: 'Assigned', status_in_work: 'In Work', status_done: 'Done', status_rejected: 'Rejected',
+                        th_task: 'Task', th_status: 'Status', th_priority: 'Priority', th_assigned: 'Assigned', th_deadline: 'Deadline',
+                        create_task: 'Create Task', search_placeholder: 'Search tasks...', show_archive: 'Show Archive',
+                        kpi_avg_time: 'Average Execution Time', kpi_desc_avg: 'From creation to completion', kpi_user_load: 'Employee Load',
+                        report_table: 'Task Report', save_changes: 'Save All Settings', system_config: 'System Configuration',
+                        storage_mode: 'Data Storage Mode', notifications: 'Notification Channels', categories_title: 'Service Categories',
+                        form_constructor: 'Custom Field Constructor', add_field: 'Add Field', add_user: 'Add Employee',
+                        full_name: 'Full Name', role: 'Role', department: 'Department', edit: 'Edit', cancel: 'Cancel', save: 'Save',
+                        title: 'Title', category: 'Category', priority: 'Priority', description: 'Description', additional_fields: 'Additional Info',
+                        attachments: 'Attachments', create: 'Create', comments: 'Comments', add_comment: 'Add a comment...',
+                        selected: 'Selected', assign: 'Assign', select_executor: 'Select Executor', optional: 'Optional', edit_user: 'Edit User',
+                        hours: 'h', unassigned: 'Unassigned', add: 'Add'
+                    },
+                    ru: {
+                        login_title: 'Вход в систему', login_btn: 'Войти', username: 'Логин', password: 'Пароль',
+                        forgot_password: 'Забыли пароль?', back_to_login: 'Назад к логину', recover_btn: 'Восстановить',
+                        new_password: 'Новый пароль', reset_btn: 'Сбросить пароль',
+                        dashboard: 'Дашборд', tasks: 'Все заявки', analytics: 'Аналитика', users: 'Сотрудники', settings: 'Настройки', profile: 'Профиль',
+                        status_new: 'Новая', status_assigned: 'Назначена', status_in_work: 'В работе', status_done: 'Выполнено', status_rejected: 'Отклонена',
+                        th_task: 'Заявка', th_status: 'Статус', th_priority: 'Приоритет', th_assigned: 'Исполнитель', th_deadline: 'Срок',
+                        create_task: 'Создать заявку', search_placeholder: 'Поиск заявок...', show_archive: 'Архив',
+                        kpi_avg_time: 'Среднее время выполнения', kpi_desc_avg: 'С момента создания до завершения', kpi_user_load: 'Нагрузка на сотрудников',
+                        report_table: 'Отчёт по задачам', save_changes: 'Сохранить настройки', system_config: 'Конфигурация системы',
+                        storage_mode: 'Режим хранения данных', notifications: 'Каналы уведомлений', categories_title: 'Категории услуг',
+                        form_constructor: 'Конструктор полей', add_field: 'Добавить поле', add_user: 'Добавить сотрудника',
+                        full_name: 'ФИО', role: 'Роль', department: 'Отдел', edit: 'Правка', cancel: 'Отмена', save: 'Сохранить',
+                        title: 'Тема', category: 'Категория', priority: 'Приоритет', description: 'Описание', additional_fields: 'Доп. поля',
+                        attachments: 'Вложения', create: 'Создать', comments: 'Комментарии', add_comment: 'Ваш комментарий...',
+                        selected: 'Выбрано', assign: 'Назначить', select_executor: 'Выбор исполнителя', optional: 'Необязательно', edit_user: 'Ред. пользователя',
+                        hours: 'ч', unassigned: 'Не назначен', add: 'Добавить'
+                    }
+                };
+
+                const t = (key) => translations[lang.value][key] || key;
+
+                const statusColors = {
+                    new: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-400' },
+                    assigned: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-400' },
+                    in_work: { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-400' },
+                    done: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-400' },
+                    rejected: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-400' }
+                };
+
+                const priorityColors = {
+                    Low: 'bg-gray-100 text-gray-700',
+                    Medium: 'bg-green-100 text-green-700',
+                    High: 'bg-orange-100 text-orange-700',
+                    Critical: 'bg-red-100 text-red-700'
+                };
+
+                const menuItems = [
+                    { id: 'dashboard', icon: 'fa-chart-pie' },
+                    { id: 'tasks', icon: 'fa-tasks' },
+                    { id: 'analytics', icon: 'fa-chart-line', role: ['admin'] },
+                    { id: 'users', icon: 'fa-users', role: ['admin'] },
+                    { id: 'settings', icon: 'fa-cog', role: ['admin'] },
+                    { id: 'profile', icon: 'fa-user-circle' }
+                ];
+
+                const roles = ['admin', 'Responsible Employee', 'Department Head', 'Executor'];
+
+                const api = async (url, method = 'GET', body = null) => {
+                    const options = {
+                        method,
+                        headers: { 'Authorization': `Bearer ${token.value}` }
+                    };
+                    if (body) {
+                        if (body instanceof FormData) options.body = body;
+                        else {
+                            options.headers['Content-Type'] = 'application/json';
+                            options.body = JSON.stringify(body);
+                        }
+                    }
+                    const res = await fetch(url, options);
+                    if (res.status === 401) logout();
+                    return res.json();
+                };
+
+                const loadData = async () => {
+                    if (!token.value) return;
+                    tasks.value = await api('api/tasks.php');
+                    settings.value = await api('api/settings.php');
+                    if (user.value.role === 'admin') {
+                        users.value = await api('api/settings.php?action=users');
+                        stats.value = await api('api/analytics.php?action=dashboard');
+                    }
+                };
+
+                const login = async () => {
+                    const res = await api('api/auth.php?action=login', 'POST', authForm.value);
+                    if (res.success) {
+                        token.value = res.token;
+                        user.value = res.user;
+                        localStorage.setItem('token', res.token);
+                        localStorage.setItem('user', JSON.stringify(res.user));
+                        loadData();
+                    } else alert(res.message);
+                };
+
+                const logout = () => {
+                    token.value = null;
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                };
+
+                const recovery = async () => {
+                    const res = await api('api/auth.php?action=recovery', 'POST', { username: authForm.value.username });
+                    if (res.success) {
+                        alert(res.message);
+                        authMode.value = 'login';
+                    } else alert(res.message);
+                };
+
+                const resetPassword = async () => {
+                    const res = await api('api/auth.php?action=reset_password', 'POST', {
+                        token: authForm.value.token, password: authForm.value.password
+                    });
+                    if (res.success) {
+                        alert(res.message);
+                        authMode.value = 'login';
+                    } else alert(res.message);
+                };
+
+                const updateProfile = async () => {
+                    const res = await api('api/auth.php?action=profile', 'POST', profileForm.value);
+                    if (res.success) alert(res.message);
+                };
+
+                const createTask = async () => {
+                    const res = await api('api/tasks.php', 'POST', taskForm.value);
+                    if (res.success) {
+                        modals.value.createTask = false;
+                        taskForm.value = { title: '', description: '', category: '', priority: '', attachments: [], custom_fields: {} };
+                        loadData();
+                    }
+                };
+
+                const viewTask = async (task) => {
+                    selectedTask.value = await api(`api/tasks.php?id=${task.id}`);
+                    modals.value.taskDetails = true;
+                };
+
+                const updateTaskStatus = async () => {
+                    await api(`api/tasks.php?id=${selectedTask.value.id}`, 'PUT', { status: selectedTask.value.status });
+                    loadData();
+                };
+
+                const updateTaskAssignment = async () => {
+                    await api(`api/tasks.php?id=${selectedTask.value.id}`, 'PUT', { assigned_to: selectedTask.value.assigned_to });
+                    loadData();
+                };
+
+                const addComment = async () => {
+                    if (!commentForm.value.content) return;
+                    const res = await api('api/tasks.php?action=comment', 'POST', {
+                        task_id: selectedTask.value.id, content: commentForm.value.content
+                    });
+                    if (res.success) {
+                        selectedTask.value.comments.push(res.comment);
+                        commentForm.value.content = '';
+                    }
+                };
+
+                const onKanbanChange = async (evt, newStatus) => {
+                    if (evt.added) {
+                        const task = evt.added.element;
+                        await api(`api/tasks.php?id=${task.id}`, 'PUT', { status: newStatus });
+                        loadData();
+                    }
+                };
+
+                const uploadFile = async (e) => {
+                    for (let file of e.target.files) {
+                        const fd = new FormData();
+                        fd.append('file', file);
+                        const res = await api('api/uploads.php', 'POST', fd);
+                        if (res.success) taskForm.value.attachments.push(res);
+                    }
+                };
+
+                const massAssign = async () => {
+                    if (!massExecutorId.value || selectedTaskIds.value.length === 0) return;
+                    const res = await api('api/tasks.php?action=mass_assign', 'POST', {
+                        ids: selectedTaskIds.value, executor_id: massExecutorId.value
+                    });
+                    if (res.success) {
+                        selectedTaskIds.value = [];
+                        loadData();
+                    }
+                };
+
+                const saveSettings = async () => {
+                    localStorage.setItem('lang', lang.value);
+                    const res = await api('api/settings.php?action=save_settings', 'POST', settings.value);
+                    if (res.success) alert('Settings saved');
+                };
+
+                const saveUser = async () => {
+                    const res = await api('api/settings.php?action=save_user', 'POST', userForm.value);
+                    if (res.success) {
+                        modals.value.user = false;
+                        loadData();
+                    }
+                };
+
+                const openUserModal = (u = null) => {
+                    userForm.value = u ? { ...u, password: '' } : { role: 'Executor' };
+                    modals.value.user = true;
+                };
+
+                const toggleDarkMode = () => {
+                    isDarkMode.value = !isDarkMode.value;
+                    localStorage.setItem('darkMode', isDarkMode.value);
+                    document.documentElement.classList.toggle('dark', isDarkMode.value);
+                };
+
+                const filteredTasks = computed(() => {
+                    return tasks.value.filter(t => {
+                        const matchSearch = t.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                                          t.id.toString().includes(searchQuery.value);
+                        const matchArchive = showArchive.value ? true : !['done', 'rejected'].includes(t.status);
+                        return matchSearch && matchArchive;
+                    });
+                });
+
+                const executors = computed(() => users.value.filter(u => u.role === 'Executor'));
+                const maxLoad = computed(() => Math.max(...Object.values(stats.value.user_load).map(l => l.count), 1));
+
+                const getUserName = (id) => users.value.find(u => u.id == id)?.full_name || id;
+                const getFieldLabel = (id) => settings.value.form_fields.find(f => f.id === id)?.label || id;
+                const formatDate = (d) => d ? new Date(d).toLocaleString() : '-';
+                const isOverdue = (t) => t.status !== 'done' && t.deadline && new Date(t.deadline) < new Date();
+
+                const exportCSV = () => {
+                    window.open(`api/analytics.php?action=export_csv&token=${token.value}`, '_blank');
+                };
+
+                const addCategory = () => {
+                    if (newCategory.value) {
+                        settings.value.categories.push(newCategory.value);
+                        newCategory.value = '';
+                    }
+                };
+
+                const addFormField = () => {
+                    settings.value.form_fields.push({ id: 'f' + Date.now(), label: 'New Field', type: 'text', required: false });
+                };
+
+                onMounted(() => {
+                    if (isDarkMode.value) document.documentElement.classList.add('dark');
+                    loadData();
+                });
+
+                return {
+                    token, user, activeTab, authMode, isDarkMode, lang, t,
+                    tasks, users, settings, stats, authForm, taskForm, userForm, profileForm, commentForm,
+                    searchQuery, showArchive, selectedTaskIds, massExecutorId, newCategory,
+                    modals, selectedTask, statusColors, priorityColors, menuItems, roles,
+                    login, logout, recovery, resetPassword, updateProfile, createTask, viewTask,
+                    updateTaskStatus, updateTaskAssignment, addComment, onKanbanChange, uploadFile,
+                    massAssign, saveSettings, saveUser, openUserModal, toggleDarkMode,
+                    kanban, filteredTasks, executors, maxLoad, getUserName, getFieldLabel, formatDate, isOverdue,
+                    exportCSV, addCategory, addFormField, openCreateTask: () => modals.value.createTask = true,
+                    toggleSelectAll: (e) => selectedTaskIds.value = e.target.checked ? filteredTasks.value.map(t => t.id) : []
+                };
+            }
+        });
+        app.component('draggable', vuedraggable);
+        app.mount('#app');
+    </script>
+</body>
+</html>

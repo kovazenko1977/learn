@@ -1,0 +1,2 @@
+{"timestamp":"2026-07-02 01:25:42","user_id":1,"title":"New Task Created","message":"Your task 'Test Task' has been created.","trigger":"task_update","channels":["Email","Push"]}
+{"timestamp":"2026-07-22 20:53:48","user_id":1,"title":"New Task Created","message":"Your task 'Leaking Pipe in Room 104' has been created.","trigger":"task_update","channels":["Email","Push"]}
