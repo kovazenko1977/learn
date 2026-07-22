@@ -1,0 +1,310 @@
+[Wed Jul 22 01:28:42 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Wed Jul 22 01:28:47 2026] 127.0.0.1:58696 Accepted
+[Wed Jul 22 01:28:47 2026] 127.0.0.1:58696 [401]: POST /api/auth.php?action=login
+[Wed Jul 22 01:28:47 2026] 127.0.0.1:58696 Closing
+[Wed Jul 22 20:44:47 2026] 127.0.0.1:44930 Accepted
+[Wed Jul 22 20:44:47 2026] 127.0.0.1:44930 [200]: GET /index.html
+[Wed Jul 22 20:44:47 2026] 127.0.0.1:44930 Closing
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44942 Accepted
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44942 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44942 Closing
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44954 Accepted
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44954 [200]: GET /api/tasks.php
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44954 Closing
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44968 Accepted
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44968 [200]: GET /api/settings.php
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44968 Closing
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44982 Accepted
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44982 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 20:44:51 2026] 127.0.0.1:44982 Closing
+[Wed Jul 22 20:44:52 2026] 127.0.0.1:44994 Accepted
+[Wed Jul 22 20:44:52 2026] 127.0.0.1:44994 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 20:44:52 2026] 127.0.0.1:44994 Closing
+[Wed Jul 22 20:46:03 2026] 127.0.0.1:58570 Accepted
+[Wed Jul 22 20:46:03 2026] 127.0.0.1:58570 [200]: GET /index.html
+[Wed Jul 22 20:46:03 2026] 127.0.0.1:58570 Closing
+[Wed Jul 22 20:47:09 2026] 127.0.0.1:37200 Accepted
+[Wed Jul 22 20:47:09 2026] 127.0.0.1:37200 [200]: GET /index.html
+[Wed Jul 22 20:47:09 2026] 127.0.0.1:37200 Closing
+[Wed Jul 22 20:47:40 2026] 127.0.0.1:33036 Accepted
+[Wed Jul 22 20:47:40 2026] 127.0.0.1:33036 [200]: GET /index.html
+[Wed Jul 22 20:47:40 2026] 127.0.0.1:33036 Closing
+[Wed Jul 22 20:49:42 2026] 127.0.0.1:43050 Accepted
+[Wed Jul 22 20:49:42 2026] 127.0.0.1:43050 [200]: GET /index.html
+[Wed Jul 22 20:49:42 2026] 127.0.0.1:43050 Closing
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37468 Accepted
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37468 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37468 Closing
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37484 Accepted
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37484 [200]: GET /api/tasks.php
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37484 Closing
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37498 Accepted
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37498 [200]: GET /api/settings.php
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37498 Closing
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37500 Accepted
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37500 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37500 Closing
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37510 Accepted
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37510 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 20:49:45 2026] 127.0.0.1:37510 Closing
+[Wed Jul 22 20:51:27 2026] 127.0.0.1:53466 Accepted
+[Wed Jul 22 20:51:27 2026] 127.0.0.1:53466 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 20:51:27 2026] 127.0.0.1:53466 Closing
+[Wed Jul 22 20:51:27 2026] 127.0.0.1:53478 Accepted
+[Wed Jul 22 20:51:27 2026] 127.0.0.1:53478 [200]: GET /api/tasks.php
+[Wed Jul 22 20:51:27 2026] 127.0.0.1:53478 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43848 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43848 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43848 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43850 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43850 [401]: POST /api/auth.php?action=login
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43850 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43866 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43866 [200]: GET /api/settings.php
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43866 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43868 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43868 [200]: POST /api/tasks.php
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43868 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43882 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43882 [200]: GET /api/tasks.php
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43882 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43898 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43898 [200]: GET /api/tasks.php?id=2
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43898 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43910 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43910 [200]: POST /api/tasks.php?action=comment
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43910 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43914 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43914 [200]: PUT /api/tasks.php?id=2
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43914 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43922 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43922 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43922 Closing
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43938 Accepted
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43938 [403]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 20:53:48 2026] 127.0.0.1:43938 Closing
+[Wed Jul 22 20:54:12 2026] 127.0.0.1:40244 Accepted
+[Wed Jul 22 20:54:12 2026] 127.0.0.1:40244 [200]: GET /index.html
+[Wed Jul 22 20:54:12 2026] 127.0.0.1:40244 Closing
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33700 Accepted
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33700 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33700 Closing
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33706 Accepted
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33706 [200]: GET /api/tasks.php
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33706 Closing
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33708 Accepted
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33708 [200]: GET /api/settings.php
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33708 Closing
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33714 Accepted
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33714 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33714 Closing
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33728 Accepted
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33728 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 20:54:15 2026] 127.0.0.1:33728 Closing
+[Wed Jul 22 20:54:18 2026] 127.0.0.1:33738 Accepted
+[Wed Jul 22 20:54:18 2026] 127.0.0.1:33738 [200]: GET /api/tasks.php?id=2
+[Wed Jul 22 20:54:18 2026] 127.0.0.1:33738 Closing
+[Wed Jul 22 20:56:16 2026] 127.0.0.1:35240 Accepted
+[Wed Jul 22 20:56:16 2026] 127.0.0.1:35240 [200]: GET /index.html
+[Wed Jul 22 20:56:16 2026] 127.0.0.1:35240 Closing
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35242 Accepted
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35242 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35242 Closing
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35258 Accepted
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35258 [200]: GET /api/tasks.php
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35258 Closing
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35270 Accepted
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35270 [200]: GET /api/settings.php
+[Wed Jul 22 20:56:19 2026] 127.0.0.1:35270 Closing
+[Wed Jul 22 20:56:20 2026] 127.0.0.1:35276 Accepted
+[Wed Jul 22 20:56:20 2026] 127.0.0.1:35276 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 20:56:20 2026] 127.0.0.1:35276 Closing
+[Wed Jul 22 20:56:20 2026] 127.0.0.1:35282 Accepted
+[Wed Jul 22 20:56:20 2026] 127.0.0.1:35282 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 20:56:20 2026] 127.0.0.1:35282 Closing
+[Wed Jul 22 20:56:22 2026] 127.0.0.1:35298 Accepted
+[Wed Jul 22 20:56:22 2026] 127.0.0.1:35298 [200]: GET /api/tasks.php?id=2
+[Wed Jul 22 20:56:22 2026] 127.0.0.1:35298 Closing
+[Wed Jul 22 20:56:24 2026] 127.0.0.1:34064 Accepted
+[Wed Jul 22 20:56:24 2026] 127.0.0.1:34064 [200]: POST /api/tasks.php?action=comment
+[Wed Jul 22 20:56:24 2026] 127.0.0.1:34064 Closing
+[Wed Jul 22 21:34:41 2026] 127.0.0.1:39618 Accepted
+[Wed Jul 22 21:34:41 2026] 127.0.0.1:39618 [200]: HEAD /index.html
+[Wed Jul 22 21:34:41 2026] 127.0.0.1:39618 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49808 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49808 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49808 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49824 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49824 [200]: POST /api/tasks.php
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49824 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49830 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49830 [200]: POST /api/tasks.php?action=add_subtask
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49830 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49840 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49840 [200]: POST /api/tasks.php?action=toggle_subtask
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49840 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49846 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49846 [200]: POST /api/tasks.php?action=add_work_log
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49846 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49852 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49852 [200]: POST /api/tasks.php?action=add_feedback
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49852 Closing
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49860 Accepted
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49860 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:36:07 2026] 127.0.0.1:49860 Closing
+[Wed Jul 22 21:37:04 2026] 127.0.0.1:60632 Accepted
+[Wed Jul 22 21:37:04 2026] 127.0.0.1:60632 [200]: GET /index.html
+[Wed Jul 22 21:37:04 2026] 127.0.0.1:60632 Closing
+[Wed Jul 22 21:37:07 2026] 127.0.0.1:60646 Accepted
+[Wed Jul 22 21:37:07 2026] 127.0.0.1:60646 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 21:37:07 2026] 127.0.0.1:60646 Closing
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60648 Accepted
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60648 [200]: GET /api/tasks.php
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60648 Closing
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60654 Accepted
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60654 [200]: GET /api/settings.php
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60654 Closing
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60670 Accepted
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60670 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60670 Closing
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60674 Accepted
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60674 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 21:37:08 2026] 127.0.0.1:60674 Closing
+[Wed Jul 22 21:37:10 2026] 127.0.0.1:36248 Accepted
+[Wed Jul 22 21:37:10 2026] 127.0.0.1:36248 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:37:10 2026] 127.0.0.1:36248 Closing
+[Wed Jul 22 21:37:13 2026] 127.0.0.1:36254 Accepted
+[Wed Jul 22 21:37:13 2026] 127.0.0.1:36254 [200]: POST /api/tasks.php?action=add_subtask
+[Wed Jul 22 21:37:13 2026] 127.0.0.1:36254 Closing
+[Wed Jul 22 21:37:13 2026] 127.0.0.1:36260 Accepted
+[Wed Jul 22 21:37:13 2026] 127.0.0.1:36260 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:37:13 2026] 127.0.0.1:36260 Closing
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36262 Accepted
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36262 [200]: POST /api/tasks.php?action=add_work_log
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36262 Closing
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36270 Accepted
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36270 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36270 Closing
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36272 Accepted
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36272 [200]: GET /api/tasks.php
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36272 Closing
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36286 Accepted
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36286 [200]: GET /api/settings.php
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36286 Closing
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36288 Accepted
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36288 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36288 Closing
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36304 Accepted
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36304 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 21:37:14 2026] 127.0.0.1:36304 Closing
+[Wed Jul 22 21:43:04 2026] 127.0.0.1:54182 Accepted
+[Wed Jul 22 21:43:04 2026] 127.0.0.1:54182 [200]: GET /index.html
+[Wed Jul 22 21:43:04 2026] 127.0.0.1:54182 Closing
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54196 Accepted
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54196 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54196 Closing
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54212 Accepted
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54212 [200]: GET /api/tasks.php
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54212 Closing
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54228 Accepted
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54228 [200]: GET /api/settings.php
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54228 Closing
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54232 Accepted
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54232 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54232 Closing
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54240 Accepted
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54240 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 21:43:07 2026] 127.0.0.1:54240 Closing
+[Wed Jul 22 21:43:10 2026] 127.0.0.1:58514 Accepted
+[Wed Jul 22 21:43:10 2026] 127.0.0.1:58514 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:43:10 2026] 127.0.0.1:58514 Closing
+[Wed Jul 22 21:43:12 2026] 127.0.0.1:58524 Accepted
+[Wed Jul 22 21:43:12 2026] 127.0.0.1:58524 [200]: POST /api/tasks.php?action=add_subtask
+[Wed Jul 22 21:43:12 2026] 127.0.0.1:58524 Closing
+[Wed Jul 22 21:43:12 2026] 127.0.0.1:58528 Accepted
+[Wed Jul 22 21:43:12 2026] 127.0.0.1:58528 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:43:12 2026] 127.0.0.1:58528 Closing
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58536 Accepted
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58536 [200]: POST /api/tasks.php?action=add_work_log
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58536 Closing
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58544 Accepted
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58544 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58544 Closing
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58554 Accepted
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58554 [200]: GET /api/tasks.php
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58554 Closing
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58570 Accepted
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58570 [200]: GET /api/settings.php
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58570 Closing
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58574 Accepted
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58574 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58574 Closing
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58576 Accepted
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58576 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 21:43:14 2026] 127.0.0.1:58576 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44076 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44076 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44076 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44088 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44088 [200]: POST /api/tasks.php
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44088 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44098 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44098 [200]: POST /api/tasks.php?action=add_subtask
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44098 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44108 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44108 [200]: POST /api/tasks.php?action=toggle_subtask
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44108 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44116 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44116 [200]: POST /api/tasks.php?action=add_work_log
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44116 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44132 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44132 [200]: POST /api/tasks.php?action=add_feedback
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44132 Closing
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44136 Accepted
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44136 [200]: GET /api/tasks.php?id=4
+[Wed Jul 22 21:52:02 2026] 127.0.0.1:44136 Closing
+[Wed Jul 22 21:52:29 2026] 127.0.0.1:47446 Accepted
+[Wed Jul 22 21:52:29 2026] 127.0.0.1:47446 [200]: GET /index.html
+[Wed Jul 22 21:52:29 2026] 127.0.0.1:47446 Closing
+[Wed Jul 22 21:52:31 2026] 127.0.0.1:47450 Accepted
+[Wed Jul 22 21:52:31 2026] 127.0.0.1:47450 [200]: POST /api/auth.php?action=login
+[Wed Jul 22 21:52:31 2026] 127.0.0.1:47450 Closing
+[Wed Jul 22 21:52:31 2026] 127.0.0.1:47452 Accepted
+[Wed Jul 22 21:52:31 2026] 127.0.0.1:47452 [200]: GET /api/tasks.php
+[Wed Jul 22 21:52:31 2026] 127.0.0.1:47452 Closing
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47454 Accepted
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47454 [200]: GET /api/settings.php
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47454 Closing
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47466 Accepted
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47466 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47466 Closing
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47476 Accepted
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47476 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 21:52:32 2026] 127.0.0.1:47476 Closing
+[Wed Jul 22 21:52:34 2026] 127.0.0.1:47488 Accepted
+[Wed Jul 22 21:52:34 2026] 127.0.0.1:47488 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:52:34 2026] 127.0.0.1:47488 Closing
+[Wed Jul 22 21:52:36 2026] 127.0.0.1:47496 Accepted
+[Wed Jul 22 21:52:36 2026] 127.0.0.1:47496 [200]: POST /api/tasks.php?action=add_subtask
+[Wed Jul 22 21:52:36 2026] 127.0.0.1:47496 Closing
+[Wed Jul 22 21:52:36 2026] 127.0.0.1:47502 Accepted
+[Wed Jul 22 21:52:36 2026] 127.0.0.1:47502 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:52:36 2026] 127.0.0.1:47502 Closing
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53788 Accepted
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53788 [200]: POST /api/tasks.php?action=add_work_log
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53788 Closing
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53800 Accepted
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53800 [200]: GET /api/tasks.php?id=3
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53800 Closing
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53816 Accepted
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53816 [200]: GET /api/tasks.php
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53816 Closing
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53818 Accepted
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53818 [200]: GET /api/settings.php
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53818 Closing
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53822 Accepted
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53822 [200]: GET /api/settings.php?action=users
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53822 Closing
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53824 Accepted
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53824 [200]: GET /api/analytics.php?action=dashboard
+[Wed Jul 22 21:52:38 2026] 127.0.0.1:53824 Closing
