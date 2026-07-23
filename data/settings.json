@@ -1,0 +1,27 @@
+{
+    "categories": ["Repair", "Maintenance", "IT Support", "Cleaning"],
+    "priorities": [
+        {"name": "Low", "sla_hours": 72},
+        {"name": "Medium", "sla_hours": 24},
+        {"name": "High", "sla_hours": 4},
+        {"name": "Critical", "sla_hours": 1}
+    ],
+    "form_fields": [
+        {"id": "f1", "label": "Location/Room", "type": "text", "required": true},
+        {"id": "f2", "label": "Asset ID", "type": "text", "required": false}
+    ],
+    "storage_mode": "json",
+    "mysql_config": {
+        "host": "localhost",
+        "db": "crm_db",
+        "user": "root",
+        "pass": ""
+    },
+    "notifications": {
+        "email_enabled": true,
+        "telegram_enabled": false,
+        "push_enabled": true,
+        "frequency": "immediate"
+    },
+    "language": "ru"
+}
