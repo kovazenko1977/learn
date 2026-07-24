@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Ежедневник и Трекер</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <!-- PWA Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0ea5e9">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input, textarea {
+      user-select: text;
+    }
+    /* Avoid double tap zoom & standard delay on mobile */
+    button, a, input, select, textarea, [role="button"] {
+      touch-action: manipulation;
+    }
+    /* Safe Area padding for iPhones with notches */
+    .safe-pt {
+      padding-top: max(1rem, env(safe-area-inset-top));
+    }
+    .safe-pb {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    /* Custom scrollbar hiding */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Scroll Snap for mobile native swipe feel */
+    .scroll-snap-x {
+      scroll-snap-type: x mandatory;
+    }
+    .scroll-snap-align-center {
+      scroll-snap-align: center;
+    }
+    /* Smooth transition */
+    .fade-enter {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .fade-enter-active {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- LOCK SCREEN PIN PAD OVERLAY -->
+  <div id="lock-screen-overlay" class="hidden fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center p-6 select-none">
+    <div class="w-full max-w-xs flex flex-col items-center space-y-6">
+      <div class="text-center space-y-2">
+        <span class="material-icons-round text-brand-500 text-5xl animate-bounce">lock</span>
+        <h2 class="text-xl font-extrabold text-slate-100">Доступ заблокирован</h2>
+        <p class="text-xs text-slate-400">Введите 4-значный PIN-код для входа</p>
+      </div>
+
+      <!-- Pin indicator circles -->
+      <div class="flex space-x-4 justify-center py-2">
+        <div class="w-4 h-4 rounded-full border-2 border-slate-700 bg-transparent transition-all duration-150 pin-dot"></div>
+        <div class="w-4 h-4 rounded-full border-2 border-slate-700 bg-transparent transition-all duration-150 pin-dot"></div>
+        <div class="w-4 h-4 rounded-full border-2 border-slate-700 bg-transparent transition-all duration-150 pin-dot"></div>
+        <div class="w-4 h-4 rounded-full border-2 border-slate-700 bg-transparent transition-all duration-150 pin-dot"></div>
+      </div>
+
+      <!-- Numeric keypad -->
+      <div class="grid grid-cols-3 gap-4 w-full px-4">
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">1</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">2</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">3</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">4</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">5</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">6</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">7</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">8</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">9</button>
+        <button id="btn-keypad-clear" class="w-16 h-16 rounded-full text-slate-400 hover:text-slate-100 text-xs font-bold active:scale-90 transition-all flex items-center justify-center">Сброс</button>
+        <button class="keypad-btn w-16 h-16 rounded-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-xl font-bold active:scale-90 transition-all flex items-center justify-center">0</button>
+        <button id="btn-keypad-delete" class="w-16 h-16 rounded-full text-slate-400 hover:text-rose-400 active:scale-90 transition-all flex items-center justify-center">
+          <span class="material-icons-round">backspace</span>
+        </button>
+      </div>
+
+      <!-- Error Feedback message -->
+      <p id="lock-screen-error" class="text-xs text-rose-400 opacity-0 transition-opacity font-semibold">Неверный PIN-код!</p>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header class="bg-slate-900 border-b border-slate-800 safe-pt sticky top-0 z-40 shadow-md">
+    <div class="px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="material-icons-round text-brand-500 text-3xl">event_note</span>
+        <div>
+          <h1 class="text-lg font-bold leading-none tracking-tight">Ежедневник</h1>
+          <div class="flex items-center space-x-1.5 mt-0.5">
+            <span class="text-xs text-slate-400 font-medium">Ваш умный компаньон</span>
+            <!-- Network status badge -->
+            <span class="inline-flex items-center space-x-1 bg-emerald-500/10 text-emerald-400 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-emerald-500/20" id="network-status">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>В сети</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions in Header -->
+      <div class="flex items-center space-x-2">
+        <!-- Text-to-Speech All Tasks Button -->
+        <button id="btn-read-tasks" class="p-2 rounded-full bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 border border-brand-500/20 active:scale-95 transition-all flex items-center justify-center" title="Озвучить задачи">
+          <span class="material-icons-round text-xl">volume_up</span>
+        </button>
+        <!-- Toggle Theme -->
+        <button id="btn-toggle-theme" class="p-2 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-95 transition-all flex items-center justify-center">
+          <span class="material-icons-round text-xl text-amber-400" id="theme-icon">light_mode</span>
+        </button>
+        <!-- Install PWA button (hidden by default) -->
+        <button id="btn-install-pwa" class="hidden px-3 py-1.5 rounded-full bg-brand-500 text-slate-950 font-bold text-xs flex items-center space-x-1 hover:bg-brand-400 active:scale-95 transition-all">
+          <span class="material-icons-round text-sm">install_mobile</span>
+          <span>Установить</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Horizontal Date Navigation -->
+    <div class="px-4 pb-3">
+      <div class="flex items-center justify-between mb-2">
+        <button id="btn-prev-month" class="text-slate-400 hover:text-slate-200">
+          <span class="material-icons-round text-lg">chevron_left</span>
+        </button>
+        <span id="current-month-label" class="text-sm font-semibold capitalize">Март 2025</span>
+        <button id="btn-next-month" class="text-slate-400 hover:text-slate-200">
+          <span class="material-icons-round text-lg">chevron_right</span>
+        </button>
+      </div>
+      <div id="date-scroll-container" class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
+        <!-- Date nodes will be injected here by app.js -->
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SCROLLABLE CONTENT -->
+  <main class="flex-1 p-4 max-w-lg mx-auto w-full space-y-5 pb-24">
+
+    <!-- VOICE STATUS BANNER -->
+    <div id="voice-status-banner" class="hidden bg-brand-950/80 border border-brand-500/30 rounded-2xl p-4 flex items-center space-x-3 text-sm text-brand-200 animate-pulse">
+      <div class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-500"></span>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold">Слушаю...</p>
+        <p class="text-xs text-brand-300/80" id="voice-realtime-text">Скажите задачу или "Прочитай задачи"</p>
+      </div>
+      <button id="btn-stop-voice" class="text-xs underline text-brand-400 font-bold hover:text-brand-300">Отмена</button>
+    </div>
+
+    <!-- QUICK STATS SECTION (CIGARETTES + WATER + DAILY PROGRESS) -->
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Cigarette Counter (Request Requirement) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 opacity-10">
+            <span class="material-icons-round text-7xl text-rose-500">smoking_rooms</span>
+          </div>
+          <div class="flex items-center space-x-2 z-10">
+            <span class="material-icons-round text-rose-500 text-xl">smoking_rooms</span>
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Выкурено</h2>
+          </div>
+          <div class="my-2 z-10">
+            <span id="cig-counter-val" class="text-3xl font-extrabold text-slate-100">0</span>
+            <span class="text-xs text-slate-400 ml-1">сиг.</span>
+            <p id="cig-tracker-helper" class="text-[10px] text-slate-400 mt-1">Сегодня без затяжек!</p>
+          </div>
+          <div class="flex items-center space-x-2 mt-1 z-10">
+            <button id="btn-cig-minus" class="flex-1 py-1 px-2 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 font-bold text-sm transition-all">-1</button>
+            <button id="btn-cig-plus" class="flex-1 py-1.5 px-2 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 hover:bg-rose-500/30 active:scale-95 font-bold text-sm transition-all">+1</button>
+          </div>
+        </div>
+
+        <!-- Water Tracker (Discretionary Feature) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 opacity-10">
+            <span class="material-icons-round text-7xl text-sky-500">local_drink</span>
+          </div>
+          <div class="flex items-center space-x-2 z-10">
+            <span class="material-icons-round text-sky-400 text-xl">local_drink</span>
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Водный баланс</h2>
+          </div>
+          <div class="my-2 z-10">
+            <span id="water-counter-val" class="text-3xl font-extrabold text-slate-100">0</span>
+            <span class="text-xs text-slate-400 ml-0.5">мл</span>
+            <p id="water-tracker-helper" class="text-[10px] text-sky-400 mt-1">Пейте больше воды!</p>
+          </div>
+          <div class="flex items-center space-x-2 mt-1 z-10">
+            <button id="btn-water-reset" class="py-1 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-400 font-bold text-xs transition-all flex items-center justify-center" title="Сбросить">
+              <span class="material-icons-round text-sm">refresh</span>
+            </button>
+            <button id="btn-water-plus" class="flex-1 py-1.5 px-2 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-400 hover:bg-sky-500/30 active:scale-95 font-bold text-xs transition-all">+250 мл</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spanned General Task Progress / Helper -->
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
+        <div class="absolute -right-3 -top-3 opacity-10">
+          <span class="material-icons-round text-7xl text-emerald-500">done_all</span>
+        </div>
+        <div class="flex items-center justify-between z-10">
+          <div class="flex items-center space-x-2">
+            <span class="material-icons-round text-emerald-500 text-xl">insights</span>
+            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Прогресс дня</h2>
+          </div>
+          <span id="task-progress-val" class="text-sm font-extrabold text-slate-200">0%</span>
+        </div>
+        <!-- Progress Bar and subtitle wrapper -->
+        <div class="mt-3 space-y-2 z-10">
+          <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+            <div id="task-progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <p id="task-progress-subtitle" class="text-[10px] text-slate-400">0 из 0 задач сделано</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS HEAD / FILTER -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span class="material-icons-round text-brand-500">task_alt</span>
+        <h3 class="font-bold text-base">Список задач</h3>
+      </div>
+
+      <!-- Category/Priority filtering pill buttons -->
+      <div class="flex space-x-1" id="filter-pills">
+        <button data-filter="all" class="filter-pill active px-3 py-1 rounded-full text-xs font-semibold bg-brand-500 text-slate-950 transition-all">Все</button>
+        <button data-filter="active" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Активные</button>
+        <button data-filter="completed" class="filter-pill px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Готово</button>
+      </div>
+    </div>
+
+    <!-- TASK CONTAINER -->
+    <div id="tasks-list" class="space-y-3">
+      <!-- Tasks will be dynamically populated here -->
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="tasks-empty-state" class="hidden flex flex-col items-center justify-center py-10 text-center space-y-3">
+      <span class="material-icons-round text-6xl text-slate-700">celebration</span>
+      <div class="space-y-1">
+        <h4 class="font-bold text-slate-300 text-sm">Свободный день!</h4>
+        <p class="text-xs text-slate-500 max-w-[240px]">Задач на выбранную дату нет. Нажмите кнопку внизу или используйте голос, чтобы добавить!</p>
+      </div>
+    </div>
+
+    <!-- SECTION: DEBTS TRACKER (ДАЛ / ВЗЯЛ) -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="material-icons-round text-emerald-500">account_balance_wallet</span>
+          <h3 class="font-bold text-base">Долги (Дал / Взял)</h3>
+        </div>
+        <span id="debt-balance-badge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Баланс: 0 ₽</span>
+      </div>
+
+      <!-- Quick Add Debt form -->
+      <div class="grid grid-cols-2 gap-2 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60">
+        <div class="col-span-2 flex space-x-2">
+          <button id="btn-debt-gave" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-emerald-500 text-slate-950 transition-all">Дал (Мне должны)</button>
+          <button id="btn-debt-took" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Взял (Я должен)</button>
+        </div>
+        <div>
+          <input id="input-debt-name" type="text" placeholder="Имя человека" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+        </div>
+        <div>
+          <input id="input-debt-amount" type="number" placeholder="Сумма (₽)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+        </div>
+        <div class="col-span-2">
+          <input id="input-debt-comment" type="text" placeholder="Комментарий / За что" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+        </div>
+        <div class="col-span-2">
+          <button id="btn-add-debt" class="w-full py-1.5 rounded-xl text-xs font-bold bg-brand-500 text-slate-950 hover:bg-brand-400 active:scale-95 transition-all">Добавить долг</button>
+        </div>
+      </div>
+
+      <!-- Debt list -->
+      <div id="debts-list" class="space-y-2 max-h-48 overflow-y-auto no-scrollbar">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- SECTION: NOTIFICATIONS & REMINDERS SETUP -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <span class="material-icons-round text-brand-500">notifications_active</span>
+          <h3 class="font-bold text-base">Напоминания и Пуши</h3>
+        </div>
+        <button id="btn-request-notifications" class="text-xs font-bold px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20 hover:bg-brand-500/20 active:scale-95 transition-all">
+          Разрешить пуши
+        </button>
+      </div>
+      <p class="text-[10px] text-slate-400 leading-relaxed">
+        Умный авто-помощник отправляет фоновые напоминания о времени выполнения задач, привычках, водном балансе и цифровом детоксе.
+      </p>
+    </div>
+
+    <!-- SECTION: 30 INDISPENSABLE ASSISTANCE FUNCTIONS -->
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 space-y-3">
+      <div class="flex items-center space-x-2">
+        <span class="material-icons-round text-amber-500">grid_view</span>
+        <h3 class="font-bold text-base">30 умных инструментов</h3>
+      </div>
+
+      <!-- Helpers grid accordion tabs -->
+      <div class="grid grid-cols-2 gap-2" id="helpers-grid">
+
+        <!-- Helper 1: Habit tracker -->
+        <details class="col-span-2 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-emerald-400 text-sm">stars</span>
+              <span>1. Трекер полезных привычек</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-2 text-xs">
+            <div class="flex space-x-1.5">
+              <input id="input-habit-name" type="text" placeholder="Новая привычка..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1 text-xs text-slate-100">
+              <button id="btn-add-habit" class="px-3 rounded-xl bg-emerald-500 text-slate-950 font-bold">+</button>
+            </div>
+            <div id="habits-list-container" class="space-y-1.5">
+              <!-- Habit check-off lists -->
+            </div>
+          </div>
+        </details>
+
+        <!-- Helper 2: Expenses tracker -->
+        <details class="col-span-2 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-amber-400 text-sm">monetization_on</span>
+              <span>2. Дневной учет финансов</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-2 text-xs">
+            <div class="grid grid-cols-2 gap-1.5">
+              <input id="input-expense-name" type="text" placeholder="Название траты" class="bg-slate-900 border border-slate-800 rounded-xl px-2 py-1">
+              <input id="input-expense-amount" type="number" placeholder="Сумма ₽" class="bg-slate-900 border border-slate-800 rounded-xl px-2 py-1">
+              <button id="btn-add-expense" class="col-span-2 py-1 rounded-xl bg-amber-500 text-slate-950 font-bold">Добавить трату</button>
+            </div>
+            <div id="expenses-list" class="space-y-1"></div>
+            <div class="text-right font-bold text-amber-400" id="expenses-total-val">Итого: 0 ₽</div>
+          </div>
+        </details>
+
+        <!-- Helper 3: Mood index -->
+        <details class="col-span-2 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-pink-400 text-sm">sentiment_satisfied_alt</span>
+              <span>3. Дневник настроения</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-2 text-xs">
+            <p class="text-[10px] text-slate-400">Как вы себя чувствуете сегодня?</p>
+            <div class="flex justify-between px-2">
+              <button class="btn-mood-select text-2xl active:scale-125 transition-all" data-mood="1" title="Ужасно">😢</button>
+              <button class="btn-mood-select text-2xl active:scale-125 transition-all" data-mood="2" title="Плохо">😕</button>
+              <button class="btn-mood-select text-2xl active:scale-125 transition-all" data-mood="3" title="Нормально">😐</button>
+              <button class="btn-mood-select text-2xl active:scale-125 transition-all" data-mood="4" title="Хорошо">😊</button>
+              <button class="btn-mood-select text-2xl active:scale-125 transition-all" data-mood="5" title="Отлично">🤩</button>
+            </div>
+            <div class="text-center font-semibold text-pink-400" id="mood-status-label">Настроение не выбрано</div>
+          </div>
+        </details>
+
+        <!-- Helper 4: Pomodoro -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-rose-400 text-sm">timer</span>
+              <span>4. Помодоро</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div class="text-lg font-bold text-rose-400" id="pomo-timer-val">25:00</div>
+            <div class="flex space-x-1 justify-center">
+              <button id="btn-pomo-start" class="px-2 py-0.5 rounded bg-rose-500 text-slate-950 text-[10px] font-bold">Старт</button>
+              <button id="btn-pomo-reset" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">Сброс</button>
+            </div>
+          </div>
+        </details>
+
+        <!-- Helper 5: Intermittent Fasting -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-purple-400 text-sm">hourglass_empty</span>
+              <span>5. Голодание</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div class="text-lg font-bold text-purple-400" id="fasting-timer-val">16:00:00</div>
+            <div class="flex space-x-1 justify-center">
+              <button id="btn-fasting-toggle" class="px-2 py-0.5 rounded bg-purple-500 text-slate-950 text-[10px] font-bold">Начать</button>
+            </div>
+          </div>
+        </details>
+
+        <!-- Helper 6: Hydration alerts toggle -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-sky-400 text-sm">water_drop</span>
+              <span>6. Напомнить пить</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-xs">
+            <label class="flex items-center justify-between">
+              <span>Каждые 2 часа</span>
+              <input type="checkbox" id="chk-water-alert" class="w-3.5 h-3.5 rounded">
+            </label>
+          </div>
+        </details>
+
+        <!-- Helper 7: Breathing -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-teal-400 text-sm">air</span>
+              <span>7. Дыхание</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div id="breath-circle" class="w-8 h-8 rounded-full bg-teal-500/20 border-2 border-teal-500 mx-auto transition-all duration-4000"></div>
+            <div id="breath-label" class="text-[10px] text-teal-400">Спокойствие</div>
+            <button id="btn-breath-toggle" class="px-2 py-0.5 rounded bg-teal-500 text-slate-950 text-[10px] font-bold">Старт</button>
+          </div>
+        </details>
+
+        <!-- Helper 8: Eye Fatigue Gymnastics -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-indigo-400 text-sm">visibility</span>
+              <span>8. Глаза</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <p id="eye-instruction" class="text-[9px] text-slate-400">Снимите усталость</p>
+            <button id="btn-eye-start" class="px-2 py-0.5 rounded bg-indigo-500 text-slate-950 text-[10px] font-bold">Упражнение</button>
+          </div>
+        </details>
+
+        <!-- Helper 9: Vocal voice notes -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-rose-500 text-sm">keyboard_voice</span>
+              <span>9. Голосовые заметки</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1.5 text-xs">
+            <button id="btn-record-note" class="w-full py-1 rounded bg-rose-500 text-slate-950 text-[10px] font-bold">Записать мысль</button>
+            <div id="vocal-notes-list" class="space-y-1 max-h-20 overflow-y-auto"></div>
+          </div>
+        </details>
+
+        <!-- Helper 10: Digital detox -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-amber-500 text-sm">phonelink_off</span>
+              <span>10. Детокс экрана</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <button id="btn-detox-lock" class="px-2.5 py-1 rounded bg-amber-500 text-slate-950 text-[10px] font-bold">Включить на 5м</button>
+          </div>
+        </details>
+
+        <!-- Helper 11: Coin flipper -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-yellow-500 text-sm">monetization_on</span>
+              <span>11. Монетка</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div id="coin-result" class="text-sm font-bold text-yellow-400">Орёл / Решка</div>
+            <button id="btn-coin-flip" class="px-2 py-0.5 rounded bg-yellow-500 text-slate-950 text-[10px] font-bold">Бросить</button>
+          </div>
+        </details>
+
+        <!-- Helper 12: Biorhythms -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-cyan-400 text-sm">bubble_chart</span>
+              <span>12. Биоритмы</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1.5 text-xs text-[10px]">
+            <div class="flex justify-between"><span>Физ:</span><span id="bio-phys" class="font-bold text-cyan-400">100%</span></div>
+            <div class="flex justify-between"><span>Эмо:</span><span id="bio-emo" class="font-bold text-pink-400">100%</span></div>
+            <div class="flex justify-between"><span>Инт:</span><span id="bio-int" class="font-bold text-amber-400">100%</span></div>
+          </div>
+        </details>
+
+        <!-- Helper 13: Step goal counter -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-emerald-400 text-sm">directions_walk</span>
+              <span>13. Шаги</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1.5 text-xs">
+            <input id="input-steps-val" type="number" placeholder="Шаги сегодня" class="w-full bg-slate-900 border border-slate-800 rounded px-1 text-center text-xs">
+            <div class="text-[10px] text-emerald-400" id="lbl-steps-percent">0% от цели 10к</div>
+          </div>
+        </details>
+
+        <!-- Helper 14: Sleep wake calculator -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-sky-400 text-sm">bedtime</span>
+              <span>14. Калькулятор сна</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-[10px] text-slate-300 space-y-1">
+            <p>Проснуться бодрым при засыпании сейчас:</p>
+            <div class="text-sky-400 font-bold" id="lbl-sleep-cycles">--:--</div>
+          </div>
+        </details>
+
+        <!-- Helper 15: BMI calculator -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-teal-400 text-sm">scale</span>
+              <span>15. Калькулятор ИМТ</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-xs">
+            <div class="grid grid-cols-2 gap-1">
+              <input id="input-bmi-w" type="number" placeholder="Вес кг" class="bg-slate-900 border border-slate-800 rounded px-1 text-center text-[10px]">
+              <input id="input-bmi-h" type="number" placeholder="Рост см" class="bg-slate-900 border border-slate-800 rounded px-1 text-center text-[10px]">
+            </div>
+            <button id="btn-bmi-calc" class="w-full py-0.5 rounded bg-teal-500 text-slate-950 font-bold text-[10px]">Расчет</button>
+            <div id="lbl-bmi-res" class="text-[9px] text-teal-400 text-center font-bold">ИМТ: -</div>
+          </div>
+        </details>
+
+        <!-- Helper 16: Gratitude Diary -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-pink-400 text-sm">favorite_border</span>
+              <span>16. Благодарности</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-xs">
+            <textarea id="input-gratitude-text" placeholder="Спасибо за..." class="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] h-10 resize-none"></textarea>
+            <button id="btn-gratitude-save" class="w-full py-0.5 rounded bg-pink-500 text-slate-950 font-bold text-[10px]">Записать</button>
+          </div>
+        </details>
+
+        <!-- Helper 17: Decibel Sound Meter -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-brand-400 text-sm">volume_down</span>
+              <span>17. Шумомер</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div class="text-sm font-bold text-brand-400" id="lbl-decibel-val">0 дБ</div>
+            <button id="btn-decibel-start" class="px-2 py-0.5 rounded bg-brand-500 text-slate-950 text-[10px] font-bold">Старт</button>
+          </div>
+        </details>
+
+        <!-- Helper 18: SOS emergency card -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-rose-500 text-sm">contact_emergency</span>
+              <span>18. SOS Карта</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-[9px] text-slate-300">
+            <input id="input-sos-phone" type="text" placeholder="Телефон близкого" class="w-full bg-slate-900 border border-slate-800 rounded p-0.5 text-[9px]">
+            <input id="input-sos-blood" type="text" placeholder="Группа крови, аллергии" class="w-full bg-slate-900 border border-slate-800 rounded p-0.5 text-[9px]">
+            <button id="btn-sos-save" class="w-full py-0.5 rounded bg-rose-500 text-slate-950 font-bold">Сохранить</button>
+          </div>
+        </details>
+
+        <!-- Helper 19: Stopwatch -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-amber-400 text-sm">timer_10</span>
+              <span>19. Секундомер</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div class="text-sm font-bold text-amber-400" id="lbl-stopwatch-val">00:00.00</div>
+            <div class="flex justify-center space-x-1">
+              <button id="btn-stopwatch-toggle" class="px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[9px]">Старт</button>
+              <button id="btn-stopwatch-reset" class="px-1.5 py-0.5 rounded bg-slate-800 text-[9px]">Сброс</button>
+            </div>
+          </div>
+        </details>
+
+        <!-- Helper 20: Kitchen / Tea timer -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-orange-400 text-sm">coffee</span>
+              <span>20. Таймер чая/яиц</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1.5 text-xs">
+            <div class="flex justify-center space-x-1">
+              <button class="btn-kitchen-preset bg-slate-800 px-1 py-0.5 rounded text-[9px]" data-sec="180">Чай 3м</button>
+              <button class="btn-kitchen-preset bg-slate-800 px-1 py-0.5 rounded text-[9px]" data-sec="300">Яйца 5м</button>
+            </div>
+            <div id="lbl-kitchen-val" class="text-orange-400 font-bold text-[11px]">--:--</div>
+          </div>
+        </details>
+
+        <!-- Helper 21: Dice roller -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-indigo-400 text-sm">casino</span>
+              <span>21. Кости (D6)</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div id="dice-result" class="text-lg font-extrabold text-indigo-400">🎲 -</div>
+            <button id="btn-dice-roll" class="px-2.5 py-0.5 rounded bg-indigo-500 text-slate-950 font-bold text-[10px]">Бросить</button>
+          </div>
+        </details>
+
+        <!-- Helper 22: Shopping checklist -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-emerald-400 text-sm">shopping_cart</span>
+              <span>22. Список покупок</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1.5 text-xs">
+            <div class="flex space-x-1">
+              <input id="input-shop-item" type="text" placeholder="Купить..." class="flex-1 bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-[10px]">
+              <button id="btn-add-shop" class="bg-emerald-500 text-slate-950 px-1.5 rounded font-bold text-[10px]">+</button>
+            </div>
+            <div id="shop-list-container" class="space-y-1 max-h-16 overflow-y-auto"></div>
+          </div>
+        </details>
+
+        <!-- Helper 23: Tip calculator -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-yellow-400 text-sm">room_service</span>
+              <span>23. Расчет чаевых</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-xs text-[10px]">
+            <input id="input-tip-bill" type="number" placeholder="Счет ₽" class="w-full bg-slate-900 border border-slate-800 rounded px-1 py-0.5 text-center">
+            <div class="flex space-x-1 justify-between">
+              <button class="btn-tip-pct bg-slate-800 px-1 py-0.5 rounded text-[9px]" data-pct="10">10%</button>
+              <button class="btn-tip-pct bg-slate-800 px-1 py-0.5 rounded text-[9px]" data-pct="15">15%</button>
+              <button class="btn-tip-pct bg-slate-800 px-1 py-0.5 rounded text-[9px]" data-pct="20">20%</button>
+            </div>
+            <div id="lbl-tip-res" class="text-[9px] text-yellow-400 font-bold text-center">Итого с чаевыми: -</div>
+          </div>
+        </details>
+
+        <!-- Helper 24: Quote of the Day -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-pink-400 text-sm">format_quote</span>
+              <span>24. Мотивация дня</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-[9px] text-slate-300 italic text-center space-y-1">
+            <p id="lbl-quote-text">"Каждый день - это новый шанс стать лучше."</p>
+            <button id="btn-quote-refresh" class="text-pink-400 underline hover:text-pink-300">Другая</button>
+          </div>
+        </details>
+
+        <!-- Helper 25: Flashlight screen tool -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-amber-400 text-sm">flashlight_on</span>
+              <span>25. Фонарик экрана</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <button id="btn-flash-toggle" class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[10px]">Включить</button>
+          </div>
+        </details>
+
+        <!-- Helper 26: Complete Streak indicator -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-emerald-400 text-sm">bolt</span>
+              <span>26. Серия дней</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-1 text-xs">
+            <div id="lbl-streak-days" class="text-sm font-bold text-emerald-400">🔥 1 дней подряд</div>
+          </div>
+        </details>
+
+        <!-- Helper 27: Password generator -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-cyan-400 text-sm">vpn_key</span>
+              <span>27. Генератор паролей</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-xs">
+            <div id="lbl-generated-pwd" class="bg-slate-900 border border-slate-800 rounded px-1.5 py-0.5 text-center text-[10px] select-all truncate">******</div>
+            <button id="btn-generate-pwd" class="w-full py-0.5 rounded bg-cyan-500 text-slate-950 font-bold text-[10px]">Создать</button>
+          </div>
+        </details>
+
+        <!-- Helper 28: Interactive Stress Test -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-rose-400 text-sm">psychology</span>
+              <span>28. Тест на стресс</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-[10px] space-y-1">
+            <p>Чувствуете ли вы напряжение?</p>
+            <div class="flex space-x-1 justify-between">
+              <button class="btn-stress-test bg-slate-800 px-1 py-0.5 rounded text-rose-400" data-score="1">Да, сильно</button>
+              <button class="btn-stress-test bg-slate-800 px-1 py-0.5 rounded text-yellow-400" data-score="2">Средне</button>
+              <button class="btn-stress-test bg-slate-800 px-1 py-0.5 rounded text-emerald-400" data-score="3">Нет</button>
+            </div>
+            <div id="lbl-stress-res" class="text-center font-bold text-slate-300">-</div>
+          </div>
+        </details>
+
+        <!-- Helper 29: Simple notepad drafting -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-purple-400 text-sm">notes</span>
+              <span>29. Заметки черновик</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 space-y-1 text-xs">
+            <textarea id="input-notes-draft" placeholder="Пишите здесь..." class="w-full bg-slate-900 border border-slate-800 rounded p-1 text-[10px] h-10 resize-none"></textarea>
+          </div>
+        </details>
+
+        <!-- Helper 30: Target Word helper -->
+        <details class="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-2.5 transition-all">
+          <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none text-xs font-semibold">
+            <span class="flex items-center space-x-1.5">
+              <span class="material-icons-round text-teal-400 text-sm">menu_book</span>
+              <span>30. Слово дня</span>
+            </span>
+            <span class="material-icons-round text-slate-500 text-sm">expand_more</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-800/60 text-center space-y-0.5 text-[9px] text-slate-300">
+            <div id="lbl-word-day" class="font-bold text-teal-400">Инсайт</div>
+            <div id="lbl-word-day-def" class="italic">"Внезапное интуитивное понимание сути проблемы."</div>
+          </div>
+        </details>
+
+      </div>
+    </div>
+
+    <!-- ANALYTICS MODAL OR EXPANDED STATS BUTTON -->
+    <details class="bg-slate-900 border border-slate-800 rounded-3xl p-4 transition-all duration-300 group">
+      <summary class="list-none flex items-center justify-between cursor-pointer focus:outline-none select-none">
+        <div class="flex items-center space-x-2 text-slate-200">
+          <span class="material-icons-round text-amber-500 text-xl">analytics</span>
+          <span class="text-sm font-semibold">Аналитика и Здоровье</span>
+        </div>
+        <span class="material-icons-round text-slate-400 group-open:rotate-180 transition-transform duration-300">expand_more</span>
+      </summary>
+      <div class="mt-4 pt-4 border-t border-slate-800/80 space-y-4 text-xs text-slate-300">
+        <!-- Cigarette analytics -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-rose-500 text-sm">health_and_safety</span>
+            <span>Влияние на организм</span>
+          </h4>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+              <span class="text-slate-400 block text-[10px]">Потрачено денег</span>
+              <span id="stat-money-spent" class="text-sm font-bold text-rose-400">0 ₽</span>
+            </div>
+            <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+              <span class="text-slate-400 block text-[10px]">Потеряно минут жизни</span>
+              <span id="stat-life-lost" class="text-sm font-bold text-rose-400">0 мин</span>
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-500 leading-relaxed italic">
+            * Расчёт основан на средней стоимости 1 сигареты (10 ₽) и условной потере 11 минут жизни на каждую выкуренную сигарету.
+          </p>
+        </div>
+
+        <!-- Productivity trend -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-emerald-500 text-sm">trending_up</span>
+            <span>Статистика за всё время</span>
+          </h4>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+              <span class="text-slate-400 block text-[10px]">Всего сделано задач</span>
+              <span id="stat-total-tasks" class="text-sm font-bold text-emerald-400">0</span>
+            </div>
+            <div class="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+              <span class="text-slate-400 block text-[10px]">Всего выкурено сигарет</span>
+              <span id="stat-total-cigs" class="text-sm font-bold text-slate-200">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Cigarettes Analytics -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-rose-400 text-sm">troubleshoot</span>
+            <span>Расширенная статистика курения</span>
+          </h4>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-slate-950/50 p-2 rounded-2xl border border-slate-800/50 text-center">
+              <span class="text-slate-400 block text-[9px]">Среднее в день</span>
+              <span id="stat-avg-cigs" class="text-xs font-bold text-slate-100">0</span>
+            </div>
+            <div class="bg-slate-950/50 p-2 rounded-2xl border border-slate-800/50 text-center">
+              <span class="text-slate-400 block text-[9px]">Максимум за день</span>
+              <span id="stat-peak-cigs" class="text-xs font-bold text-slate-100">0</span>
+            </div>
+            <div class="bg-slate-950/50 p-2 rounded-2xl border border-slate-800/50 text-center">
+              <span class="text-slate-400 block text-[9px]">Дней без курения</span>
+              <span id="stat-smoke-free-days" class="text-xs font-bold text-emerald-400">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Completion by Category -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-indigo-400 text-sm">pie_chart</span>
+            <span>Выполнение задач по категориям</span>
+          </h4>
+          <div class="space-y-2 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+            <!-- Работа -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-indigo-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">work</span>
+                  <span>Работа</span>
+                </span>
+                <span id="cat-progress-val-work" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-work" class="bg-indigo-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Дом -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-emerald-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">home</span>
+                  <span>Дом</span>
+                </span>
+                <span id="cat-progress-val-home" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-home" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Личное -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-pink-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">person</span>
+                  <span>Личное</span>
+                </span>
+                <span id="cat-progress-val-personal" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-personal" class="bg-pink-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+            <!-- Здоровье -->
+            <div class="space-y-1">
+              <div class="flex justify-between text-[10px]">
+                <span class="font-semibold text-rose-400 flex items-center space-x-1">
+                  <span class="material-icons-round text-[10px]">health_and_safety</span>
+                  <span>Здоровье</span>
+                </span>
+                <span id="cat-progress-val-health" class="text-slate-400">0% (0/0)</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div id="cat-progress-bar-health" class="bg-rose-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- App Settings -->
+        <div class="space-y-3 pt-2 border-t border-slate-800/60">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-brand-400 text-sm">settings</span>
+            <span>Настройки приложения</span>
+          </h4>
+          <div class="grid grid-cols-1 gap-3 bg-slate-950/50 p-3 rounded-2xl border border-slate-800/50">
+            <!-- Cigarette Settings Row -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="space-y-1">
+                <label class="text-[10px] text-slate-400 block">Цена пачки (₽)</label>
+                <input type="number" id="setting-pack-cost" value="200" min="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+              </div>
+              <div class="space-y-1">
+                <label class="text-[10px] text-slate-400 block">Сигарет в пачке</label>
+                <input type="number" id="setting-cigs-per-pack" value="20" min="1" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+              </div>
+            </div>
+
+            <!-- Pin code options -->
+            <div class="space-y-2 pt-2 border-t border-slate-800/40">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-300 font-semibold">Вход по PIN-коду</span>
+                <input type="checkbox" id="setting-use-pin" class="w-4 h-4 text-brand-500 bg-slate-900 border-slate-800 rounded focus:ring-brand-500">
+              </div>
+              <div id="setting-pin-input-group" class="hidden space-y-1">
+                <label class="text-[10px] text-slate-400 block">Новый PIN (4 цифры)</label>
+                <input type="password" id="setting-pin-val" maxlength="4" placeholder="1234" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-100 tracking-widest focus:outline-none focus:border-brand-500">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup Data Management -->
+        <div class="space-y-2 pt-2 border-t border-slate-800/60">
+          <h4 class="font-bold text-slate-200 flex items-center space-x-1">
+            <span class="material-icons-round text-cyan-400 text-sm">settings_backup_restore</span>
+            <span>Резервное копирование и JSON</span>
+          </h4>
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Export JSON -->
+            <button id="btn-export-json" class="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-100 font-bold transition-all border border-slate-700">
+              <span class="material-icons-round text-sm">download</span>
+              <span>Экспорт JSON</span>
+            </button>
+            <!-- Import JSON trigger wrapper -->
+            <div class="relative">
+              <input type="file" id="input-import-json" accept=".json" class="hidden">
+              <button id="btn-import-json-trigger" class="w-full flex items-center justify-center space-x-1.5 py-2 px-3 rounded-2xl bg-cyan-600/20 border border-cyan-500/30 hover:bg-cyan-600/30 active:scale-95 text-cyan-400 font-bold transition-all">
+                <span class="material-icons-round text-sm">upload</span>
+                <span>Импорт JSON</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </details>
+
+  </main>
+
+  <!-- FIXED BOTTOM CONTROLS (Floating Mic and Add Buttons) -->
+  <footer class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent z-40">
+    <div class="max-w-lg mx-auto flex items-center justify-between space-x-4">
+
+      <!-- Voice Input Microphone Button -->
+      <button id="btn-voice-input" class="w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-400 text-slate-950 shadow-lg shadow-brand-500/20 active:scale-90 transition-all flex items-center justify-center relative group" title="Голосовой ввод (нажмите и говорите)">
+        <!-- Ripple animation placeholder -->
+        <span class="absolute inset-0 rounded-full bg-brand-500/40 animate-ping opacity-0 group-hover:opacity-100 transition-opacity"></span>
+        <span class="material-icons-round text-3xl" id="mic-icon">mic</span>
+      </button>
+
+      <!-- Input Bar (Text + Categories) for standard typing -->
+      <div class="flex-1 bg-slate-900 border border-slate-800 rounded-full py-1.5 pl-4 pr-1.5 flex items-center space-x-2 shadow-lg">
+        <input id="input-task-text" type="text" placeholder="Новая задача..." class="bg-transparent focus:outline-none text-sm text-slate-100 flex-1 min-w-0 placeholder:text-slate-500">
+
+        <!-- Priority Flag picker -->
+        <button id="btn-toggle-priority" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 active:scale-95 transition-all flex items-center justify-center" title="Приоритет">
+          <span class="material-icons-round text-xl" id="priority-icon">flag</span>
+        </button>
+
+        <!-- Category Tag Picker (Work, Home, Personal) -->
+        <button id="btn-toggle-category" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 active:scale-95 transition-all flex items-center justify-center" title="Категория">
+          <span class="material-icons-round text-xl" id="category-icon">label</span>
+        </button>
+
+        <!-- Time Picker (Compact Mobile-Optimized) -->
+        <div class="relative flex items-center justify-center">
+          <input id="input-task-time" type="time" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10" title="Выберите время">
+          <button id="btn-time-picker" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 active:scale-95 transition-all flex items-center justify-center" title="Время">
+            <span class="material-icons-round text-xl" id="time-icon">schedule</span>
+          </button>
+        </div>
+
+        <button id="btn-add-task" class="p-2 rounded-full bg-brand-500/10 hover:bg-brand-500 text-brand-400 hover:text-slate-950 active:scale-95 transition-all flex items-center justify-center">
+          <span class="material-icons-round text-xl">add</span>
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- FLOATING MODALS/POPOVERS -->
+  <!-- Priority Picker Popover -->
+  <div id="popover-priority" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 w-64 bg-slate-900 border border-slate-800 rounded-3xl p-3 shadow-2xl z-50">
+    <h4 class="text-xs font-bold text-slate-400 mb-2 px-2">Выберите приоритет:</h4>
+    <div class="grid grid-cols-1 gap-1">
+      <button data-prio="high" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-rose-400">
+        <span class="material-icons-round">flag</span>
+        <span>Высокий</span>
+      </button>
+      <button data-prio="medium" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-amber-400">
+        <span class="material-icons-round">flag</span>
+        <span>Средний</span>
+      </button>
+      <button data-prio="low" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-sky-400">
+        <span class="material-icons-round">flag</span>
+        <span>Низкий</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Category Picker Popover -->
+  <div id="popover-category" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 w-64 bg-slate-900 border border-slate-800 rounded-3xl p-3 shadow-2xl z-50">
+    <h4 class="text-xs font-bold text-slate-400 mb-2 px-2">Выберите категорию:</h4>
+    <div class="grid grid-cols-1 gap-1">
+      <button data-cat="Работа" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-indigo-400">
+        <span class="material-icons-round">work</span>
+        <span>Работа</span>
+      </button>
+      <button data-cat="Дом" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-emerald-400">
+        <span class="material-icons-round">home</span>
+        <span>Дом</span>
+      </button>
+      <button data-cat="Личное" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-pink-400">
+        <span class="material-icons-round">person</span>
+        <span>Личное</span>
+      </button>
+      <button data-cat="Здоровье" class="flex items-center space-x-3 px-3 py-2 rounded-2xl hover:bg-slate-800 text-left text-sm text-rose-400">
+        <span class="material-icons-round">health_and_safety</span>
+        <span>Здоровье</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ALARM POPUP MODAL/OVERLAY -->
+  <div id="alarm-popup-overlay" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl animate-bounce">
+      <div class="w-16 h-16 bg-brand-500/10 border border-brand-500/20 text-brand-400 rounded-full flex items-center justify-center mx-auto">
+        <span class="material-icons-round text-3xl animate-spin">alarm</span>
+      </div>
+      <div class="space-y-1">
+        <h3 class="font-extrabold text-base text-slate-100">Будильник / Напоминание!</h3>
+        <p id="alarm-task-text" class="text-xs font-semibold text-brand-400">Название задачи</p>
+        <p id="alarm-task-time" class="text-[10px] text-slate-400">Запланировано на HH:MM</p>
+      </div>
+      <div class="flex space-x-2">
+        <button id="btn-alarm-complete" class="flex-1 py-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition-all active:scale-95">
+          Выполнено
+        </button>
+        <button id="btn-alarm-snooze" class="flex-1 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all active:scale-95">
+          Отложить на 5 мин
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOICE SPEECH INSTRUCTIONS MODAL (ON FIRST VISIT) -->
+  <div id="voice-help-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center space-x-3 text-brand-400">
+        <span class="material-icons-round text-4xl">voice_over_off</span>
+        <h3 class="font-bold text-lg">Голосовое управление</h3>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Вы можете использовать голосовые команды без клавиатуры! Нажмите на микрофон внизу и скажите:
+      </p>
+      <div class="space-y-2 bg-slate-950/50 p-3 rounded-2xl border border-slate-800 text-xs">
+        <div class="flex items-start space-x-2">
+          <span class="text-brand-400 font-bold">•</span>
+          <p><span class="font-semibold text-slate-100">"Добавить [название задачи]"</span> — добавляет новую задачу.</p>
+        </div>
+        <div class="flex items-start space-x-2">
+          <span class="text-brand-400 font-bold">•</span>
+          <p><span class="font-semibold text-slate-100">"Прочитай задачи"</span> или <span class="font-semibold text-slate-100">"Какие дела на сегодня"</span> — озвучит список дел на сегодня.</p>
+        </div>
+        <div class="flex items-start space-x-2">
+          <span class="text-brand-400 font-bold">•</span>
+          <p><span class="font-semibold text-slate-100">"Добавь сигарету"</span> или <span class="font-semibold text-slate-100">"Плюс одна"</span> — увеличит счётчик сигарет.</p>
+        </div>
+        <div class="flex items-start space-x-2">
+          <span class="text-brand-400 font-bold">•</span>
+          <p><span class="font-semibold text-slate-100">"Удали [текст]"</span> — удаляет совпадающую задачу.</p>
+        </div>
+      </div>
+      <button id="btn-close-voice-help" class="w-full py-2.5 rounded-2xl bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-sm transition-all">
+        Понятно
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
