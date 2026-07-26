@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор этикеток на кеги - ГОСТ / СТБ РБ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f7f5',
+                            100: '#e3eae3',
+                            500: '#2d6a4f',
+                            600: '#1b4332',
+                            700: '#081c15',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=PT+Sans+Narrow:wght@400;700&display=swap" rel="stylesheet">
+    <!-- React & Babel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <!-- Barcode & QR Code Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <style>
+        /* General Web UI styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        /* Style for printing - exact A5 Landscape (2 per A4 Page) */
+        @media print {
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                display: block !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                box-sizing: border-box !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+            }
+            /* A5 horizontal size: 210mm x 148mm. Two labels exactly fit on A4 portrait (297mm) */
+            .print-label {
+                width: 210mm !important;
+                height: 148mm !important;
+                box-sizing: border-box !important;
+                border: 1px dashed #999 !important;
+                position: relative !important;
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
+                background: white !important;
+            }
+            /* First label top, second label directly below */
+            .print-label:first-child {
+                margin-bottom: 1mm !important;
+            }
+        }
+
+        /* Live Editor Zoom & Scroll adjustments */
+        .label-preview-container {
+            width: 210mm;
+            height: 148mm;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transform-origin: top left;
+        }
+
+        /* High-quality narrow font for technical details (saves space, matches real labels) */
+        .font-narrow {
+            font-family: 'PT Sans Narrow', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Custom Lucide Icon components so we don't have dependency resolution issues
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            // High-fidelity custom SVG icons for premium feel
+            const icons = {
+                beer: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <path d="M17 11h1a3 3 0 0 1 0 6h-1" />
+                        <path d="M9 12v6" />
+                        <path d="M13 12v6" />
+                        <path d="M14 7.5a2.5 2.5 0 0 0-5 0v11a1.5 1.5 0 0 0 1.5 1.5h5a1.5 1.5 0 0 0 1.5-1.5V7.5z" />
+                        <path d="M8 22h8" />
+                    </svg>
+                ),
+                printer: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <polyline points="6 9 6 2 18 2 18 9" />
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                        <rect x="6" y="14" width="12" height="8" />
+                    </svg>
+                ),
+                alertCircle: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                ),
+                checkCircle: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                ),
+                download: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                ),
+                upload: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                ),
+                save: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                    </svg>
+                ),
+                trash: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                ),
+                fileText: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                ),
+                cog: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                ),
+                refresh: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <polyline points="23 4 23 10 17 10" />
+                        <polyline points="1 20 1 14 7 14" />
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                    </svg>
+                ),
+                info: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                ),
+                settings: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                ),
+                move: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <polyline points="5 9 2 12 5 15" />
+                        <polyline points="9 5 12 2 15 5" />
+                        <polyline points="15 19 12 22 19 19" />
+                        <polyline points="19 9 22 12 19 15" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <line x1="12" y1="2" x2="12" y2="22" />
+                    </svg>
+                )
+            };
+            return icons[name] || <span className="text-red-500">?</span>;
+        };
+
+        // Standard dynamic presets based on RB STB/GOST regulations
+        const PRESETS = [
+            {
+                id: 'cider',
+                name: 'Сидр Традиционный Сухой (СТБ)',
+                brandName: 'МИНСК КРИСТАЛЛ ГРУПП',
+                productType: 'СИДР',
+                subtitle: 'ФРУКТОВО-ЯГОДНЫЙ ГАЗИРОВАННЫЙ ПОЛУСЛАДКИЙ «Эпл Бум» («Apple Boom»)',
+                standard: 'СТБ 1861-2008',
+                tiNumber: 'ТИ BY 690277551.026-2023',
+                alcohol: '5,7',
+                sugar: '50',
+                volume: '30 л',
+                ingredients: 'Состав: виноматериал яблочный натуральный столовый, вода питьевая, сахар, пищевые добавки: регулятор кислотности лимонная кислота, антиокислитель E224, консервант E202.',
+                nutrition: 'Пищевая ценность 100 мл продукта: углеводы - 5 г; энергетическая ценность - 55 ккал / 100 мл (220 кДж/100 мл).',
+                storage: 'Хранить в условиях, исключающих воздействие прямого солнечного света, при температуре от 5 °С до 20 °С. После подключения ПЭТ- КЕГ к оборудованию для розлива, сидр следует хранить под давлением двуокиси углерода в течение 10 суток при температуре от 5 °С до 20 °С.',
+                expiration: 'СРОК ГОДНОСТИ: 4 МЕСЯЦА С ДАТЫ РОЗЛИВА.',
+                warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
+                manufacturerName: 'ОАО "Пищевой комбинат "Веселово"',
+                manufacturerAddress: '222132, Республика Беларусь, Минская обл., Борисовский р-н, д. Веселово, ул. Заводская, 24',
+                manufacturerContact: 'Тел.: (0177) 933-400, e-mail: info@alco.by, www.alco.by',
+                barcode: '4811173002052',
+                qrCode: 'https://iz.by/cider-apple-boom-30l',
+                eacActive: true,
+                foodActive: true,
+                petActive: true,
+                warningHeightPercent: 12, // Exceeds the 10% threshold safely
+                // Standard visual offsets (structured setup)
+                offsets: {
+                    headerY: 4,
+                    titleY: 15,
+                    subtitleY: 30,
+                    statsX: 4,
+                    iconsX: 180,
+                    bodyY: 55,
+                    bottomY: 130
+                }
+            },
+            {
+                id: 'beer',
+                name: 'Пиво Светлое Классическое (ГОСТ)',
+                brandName: 'БРЕСТСКОЕ ПИВО',
+                productType: 'ПИВО',
+                subtitle: 'СВЕТЛОЕ ПАСТЕРИЗОВАННОЕ ФИЛЬТРОВАННОЕ «КЛАССИЧЕСКОЕ»',
+                standard: 'ГОСТ 31711-2012',
+                tiNumber: 'ТИ BY 200020111.002-2022',
+                alcohol: '4,5',
+                sugar: '0',
+                volume: '30 л',
+                ingredients: 'Состав: вода питьевая, солод пивоваренный ячменный светлый, хмель прессованный, хмелепродукты.',
+                nutrition: 'Пищевая ценность 100 мл пива: углеводы - не более 4.6 г; энергетическая ценность - 42 ккал / 170 кДж.',
+                storage: 'Хранить в затемненных помещениях при температуре от 2 °С до 12 °С. После вскрытия кега хранить пиво под избыточным давлением углекислого газа не более 7 суток.',
+                expiration: 'СРОК ГОДНОСТИ: 180 СУТОК С ДАТЫ РОЗЛИВА.',
+                warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
+                manufacturerName: 'ОАО "Брестское пиво"',
+                manufacturerAddress: '224014, Республика Беларусь, г. Брест, ул. Писателя Смирнова, 168',
+                manufacturerContact: 'Тел.: +375 (162) 24-51-12, info@brestbeer.by, www.brestbeer.by',
+                barcode: '4810123456789',
+                qrCode: 'https://brestbeer.by/classic-keg-30',
+                eacActive: true,
+                foodActive: true,
+                petActive: true,
+                warningHeightPercent: 11,
+                offsets: {
+                    headerY: 4,
+                    titleY: 15,
+                    subtitleY: 30,
+                    statsX: 4,
+                    iconsX: 180,
+                    bodyY: 55,
+                    bottomY: 130
+                }
+            },
+            {
+                id: 'wine',
+                name: 'Вино Виноградное Сухое Красное (ГОСТ)',
+                brandName: 'МИНСКИЙ ЗАВОД ИГРИСТЫХ ВИН',
+                productType: 'ВИНО',
+                subtitle: 'ВИНОГРАДНОЕ ОРДИНАРНОЕ СУХОЕ КРАСНОЕ «КАБЕРНЕ»',
+                standard: 'ГОСТ 32030-2013',
+                tiNumber: 'ТИ BY 100213456.095-2020',
+                alcohol: '12,0',
+                sugar: '3',
+                volume: '20 л',
+                ingredients: 'Состав: виноград свежий машинного сбора сорта Каберне Совиньон, пищевая добавка консервант-антиокислитель диоксид серы (E220). Содержит сульфиты.',
+                nutrition: 'Пищевая ценность 100 мл: углеводы - менее 0.3 г; энергетическая ценность - 75 ккал / 315 кДж.',
+                storage: 'Хранить в вентилируемых помещениях, без постороннего запаха, при температуре от 5 °С до 20 °С. Избегать попадания прямого солнечного света.',
+                expiration: 'СРОК ГОДНОСТИ НЕ ОГРАНИЧЕН ПРИ СОБЛЮДЕНИИ УСЛОВИЙ ХРАНЕНИЯ.',
+                warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
+                manufacturerName: 'ОАО "Минский завод игристых вин"',
+                manufacturerAddress: '220070, Республика Беларусь, г. Минск, ул. Радиальная, 50',
+                manufacturerContact: 'Тел.: +375 (17) 299-27-00, info@wines.by',
+                barcode: '4810234005011',
+                qrCode: 'https://wines.by/kabernet-keg',
+                eacActive: true,
+                foodActive: true,
+                petActive: false, // E.g., wine uses metal/wooden keg structure
+                warningHeightPercent: 12,
+                offsets: {
+                    headerY: 4,
+                    titleY: 15,
+                    subtitleY: 30,
+                    statsX: 4,
+                    iconsX: 180,
+                    bodyY: 55,
+                    bottomY: 130
+                }
+            }
+        ];
+
+        function App() {
+            const [selectedTemplate, setSelectedTemplate] = useState(PRESETS[0]);
+            const [form, setForm] = useState({ ...PRESETS[0] });
+            const [savedTemplates, setSavedTemplates] = useState([]);
+            const [activeTab, setActiveTab] = useState('editor'); // editor | templates | preview
+            const [customName, setCustomName] = useState('');
+            const [isFreeform, setIsFreeform] = useState(false);
+            const [zoom, setZoom] = useState(0.85); // scaling for visual workspace
+
+            // Load saved templates from localStorage on launch
+            useEffect(() => {
+                const stored = localStorage.getItem('rb_wine_keg_labels');
+                if (stored) {
+                    try {
+                        setSavedTemplates(JSON.parse(stored));
+                    } catch (e) {
+                        console.error('Failed to parse saved templates', e);
+                    }
+                }
+            }, []);
+
+            // Apply preset or standard label layout modifications
+            const applyPreset = (preset) => {
+                setSelectedTemplate(preset);
+                setForm({ ...preset });
+            };
+
+            const handleFieldChange = (key, val) => {
+                setForm(prev => {
+                    const updated = { ...prev, [key]: val };
+                    return updated;
+                });
+            };
+
+            const handleOffsetChange = (key, val) => {
+                setForm(prev => {
+                    const newOffsets = { ...prev.offsets, [key]: parseFloat(val) };
+                    return { ...prev, offsets: newOffsets };
+                });
+            };
+
+            // EAN-13 Checksum calculator & validator
+            const validateEAN13 = (code) => {
+                if (!code || typeof code !== 'string') return false;
+                const trimmed = code.trim();
+                if (trimmed.length !== 13) return false;
+                if (!/^\d{13}$/.test(trimmed)) return false;
+
+                let sum = 0;
+                for (let i = 0; i < 12; i++) {
+                    const num = parseInt(trimmed[i], 10);
+                    if (i % 2 === 0) {
+                        sum += num;
+                    } else {
+                        sum += num * 3;
+                    }
+                }
+                const calculatedChecksum = (10 - (sum % 10)) % 10;
+                const givenChecksum = parseInt(trimmed[12], 10);
+                return calculatedChecksum === givenChecksum;
+            };
+
+            // Compliance validation rules
+            const verifyCompliance = (data) => {
+                const reports = [];
+                let score = 100;
+
+                // 1. Warning banner height
+                const isWarningSizeValid = data.warningHeightPercent >= 10;
+                if (!isWarningSizeValid) {
+                    score -= 30;
+                    reports.push({
+                        status: 'error',
+                        text: `Предупреждающая надпись занимает ${data.warningHeightPercent}%. По законам РБ (Закон о рекламе, СанПиН) площадь должна быть не менее 10% от всей площади этикетки!`
+                    });
+                } else {
+                    reports.push({
+                        status: 'success',
+                        text: `Предупреждающая надпись занимает ${data.warningHeightPercent}%. Соответствует норме (не менее 10%).`
+                    });
+                }
+
+                // 2. Strict Warning text content
+                const cleanedWarning = data.warningText ? data.warningText.toUpperCase().trim() : '';
+                const exactPhrase = "ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ";
+                if (cleanedWarning !== exactPhrase) {
+                    score -= 20;
+                    reports.push({
+                        status: 'error',
+                        text: `Текст предупреждения должен быть точно: "${exactPhrase}". Обнаружен измененный текст.`
+                    });
+                } else {
+                    reports.push({
+                        status: 'success',
+                        text: 'Предупреждающий текст соответствует регламенту Министерства здравоохранения РБ.'
+                    });
+                }
+
+                // 3. EAC Mark
+                if (!data.eacActive) {
+                    score -= 20;
+                    reports.push({
+                        status: 'warning',
+                        text: 'Отсутствует знак ЕАС. Маркировка продукции знаком Евразийского соответствия обязательна согласно ТР ТС 022/2011.'
+                    });
+                } else {
+                    reports.push({
+                        status: 'success',
+                        text: 'Знак EAC включен (соответствие ТР ТС 022/2011, ТР ТС 021/2011).'
+                    });
+                }
+
+                // 4. Food Contact + Eco mark
+                if (!data.foodActive) {
+                    score -= 15;
+                    reports.push({
+                        status: 'warning',
+                        text: 'Отсутствует знак контакта с пищевыми продуктами (бокал и вилка). ТР ТС 005/2011 "О безопасности упаковки".'
+                    });
+                } else {
+                    reports.push({
+                        status: 'success',
+                        text: 'Знак "Пищевой пластик/Стекло" (бокал-вилка) включен.'
+                    });
+                }
+
+                // 5. Standard referenced
+                const standardDefined = data.standard && data.standard.trim().length > 3;
+                if (!standardDefined) {
+                    score -= 15;
+                    reports.push({
+                        status: 'error',
+                        text: 'Не указан ГОСТ или СТБ РБ. Продукция в РБ должна производиться строго по ТУ, СТБ или ГОСТ.'
+                    });
+                } else {
+                    reports.push({
+                        status: 'success',
+                        text: `Производится по действующему нормативному стандарту: ${data.standard}.`
+                    });
+                }
+
+                // 6. Barcode validation
+                if (data.barcode) {
+                    const barcodeValid = validateEAN13(data.barcode);
+                    if (!barcodeValid) {
+                        score -= 15;
+                        reports.push({
+                            status: 'error',
+                            text: 'Невалидный штрих-код EAN-13. Контрольная цифра не совпадает. Штрих-код должен состоять ровно из 13 цифр.'
+                        });
+                    } else {
+                        reports.push({
+                            status: 'success',
+                            text: 'Штрих-код EAN-13 прошел валидацию контрольной суммы.'
+                        });
+                    }
+                } else {
+                    score -= 10;
+                    reports.push({
+                        status: 'warning',
+                        text: 'Штрих-код не указан. Обязателен для продажи в розничных сетях Республики Беларусь.'
+                    });
+                }
+
+                // 7. Alcohol and Sugar indicators
+                const isNonAlc = data.productType === 'КВАС' || parseFloat(data.alcohol.replace(',', '.')) <= 1.2;
+                if (!isNonAlc && (!data.alcohol || parseFloat(data.alcohol.replace(',', '.')) === 0)) {
+                    score -= 10;
+                    reports.push({
+                        status: 'warning',
+                        text: 'Содержание алкоголя не указано для алкогольного напитка.'
+                    });
+                }
+
+                return {
+                    score: Math.max(0, score),
+                    reports
+                };
+            };
+
+            const compliance = verifyCompliance(form);
+
+            // Save custom template to LocalStorage
+            const saveTemplate = () => {
+                if (!customName.trim()) {
+                    alert('Пожалуйста, введите название шаблона перед сохранением!');
+                    return;
+                }
+                const newTemplate = {
+                    ...form,
+                    id: Date.now().toString(),
+                    name: customName
+                };
+                const updated = [newTemplate, ...savedTemplates];
+                setSavedTemplates(updated);
+                localStorage.setItem('rb_wine_keg_labels', JSON.stringify(updated));
+                setCustomName('');
+                alert('Шаблон успешно сохранен в локальную базу!');
+            };
+
+            const deleteTemplate = (id) => {
+                if (confirm('Вы уверены, что хотите удалить этот шаблон?')) {
+                    const updated = savedTemplates.filter(t => t.id !== id);
+                    setSavedTemplates(updated);
+                    localStorage.setItem('rb_wine_keg_labels', JSON.stringify(updated));
+                }
+            };
+
+            // JSON Export
+            const exportTemplates = () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(form));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `этикетка_${form.productType || 'напиток'}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
+            };
+
+            // JSON Import
+            const handleImport = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (imported && imported.productType) {
+                            setForm(imported);
+                            alert('Шаблон успешно загружен из файла!');
+                        } else {
+                            alert('Некорректный формат файла шаблона.');
+                        }
+                    } catch (err) {
+                        alert('Ошибка при чтении файла JSON.');
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col no-print">
+                    {/* Upper Navigation Header */}
+                    <header className="bg-gradient-to-r from-brand-700 to-brand-500 text-white shadow-md">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                            <div className="flex items-center space-x-3">
+                                <div className="p-2 bg-white/10 rounded-lg">
+                                    <Icon name="beer" className="w-8 h-8 text-emerald-300" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl md:text-2xl font-bold tracking-tight Montserrat">
+                                        Этикетки Кег 2.0 <span className="text-emerald-300">РБ</span>
+                                    </h1>
+                                    <p className="text-xs text-brand-100 font-medium">
+                                        Профессиональный конструктор пивных и винных этикеток (ГОСТ / СТБ)
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={() => setActiveTab('editor')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 flex items-center space-x-1.5 ${
+                                        activeTab === 'editor' ? 'bg-white text-brand-700 shadow-md' : 'text-white hover:bg-white/10'
+                                    }`}
+                                >
+                                    <Icon name="cog" className="w-4 h-4" />
+                                    <span>Конструктор</span>
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('templates')}
+                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-150 flex items-center space-x-1.5 ${
+                                        activeTab === 'templates' ? 'bg-white text-brand-700 shadow-md' : 'text-white hover:bg-white/10'
+                                    }`}
+                                >
+                                    <Icon name="fileText" className="w-4 h-4" />
+                                    <span>Сохраненные</span>
+                                </button>
+                                <button
+                                    onClick={() => window.print()}
+                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-md transition-all duration-150 flex items-center space-x-1.5 border border-emerald-400"
+                                >
+                                    <Icon name="printer" className="w-4 h-4" />
+                                    <span>Печать (А4)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Workspace Grid */}
+                    <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+                        {activeTab === 'editor' && (
+                            <>
+                                {/* Left Side: Real-time Interactive Preview Workspace */}
+                                <div className="xl:col-span-7 flex flex-col space-y-4">
+                                    <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <h3 className="text-base font-bold text-slate-800 flex items-center space-x-2">
+                                                <span>Интерактивная панель (А5 Ландшафт: 210 x 148 мм)</span>
+                                            </h3>
+                                            <div className="flex items-center space-x-2">
+                                                <span className="text-xs text-slate-500">Масштаб:</span>
+                                                <input
+                                                    type="range"
+                                                    min="0.5"
+                                                    max="1.2"
+                                                    step="0.05"
+                                                    value={zoom}
+                                                    onChange={(e) => setZoom(parseFloat(e.target.value))}
+                                                    className="w-24 accent-brand-500 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+                                                />
+                                                <span className="text-xs font-semibold text-slate-700 w-8 text-right">
+                                                    {Math.round(zoom * 100)}%
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Preview Container Wrapper */}
+                                        <div className="overflow-auto bg-slate-100 p-4 rounded-lg border border-slate-300 flex justify-center items-start min-h-[420px]">
+                                            <div
+                                                style={{ transform: `scale(${zoom})` }}
+                                                className="transition-transform duration-75"
+                                            >
+                                                <LabelPreview data={form} />
+                                            </div>
+                                        </div>
+
+                                        <p className="text-xs text-slate-500 mt-2 text-center">
+                                            * При выводе на печать размер составит ровно 210 х 148 мм (1/2 А4 листа) без потери качества.
+                                        </p>
+                                    </div>
+
+                                    {/* Real-time RB Compliance Checker and Legality Report Card */}
+                                    <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200">
+                                        <div className="flex items-center justify-between border-b pb-2 mb-3">
+                                            <h3 className="font-bold text-slate-800 flex items-center space-x-2">
+                                                <span>Проверка стандартов маркировки РБ</span>
+                                            </h3>
+                                            <div className="flex items-center space-x-1.5">
+                                                <span className="text-xs font-bold text-slate-500">Индекс легальности:</span>
+                                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                                                    compliance.score >= 90 ? 'bg-emerald-100 text-emerald-800' :
+                                                    compliance.score >= 70 ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                    {compliance.score}%
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Score Progress Bar */}
+                                        <div className="w-full bg-slate-200 rounded-full h-2 mb-4 overflow-hidden">
+                                            <div
+                                                className={`h-full transition-all duration-300 ${
+                                                    compliance.score >= 90 ? 'bg-emerald-500' :
+                                                    compliance.score >= 70 ? 'bg-amber-500' : 'bg-red-500'
+                                                }`}
+                                                style={{ width: `${compliance.score}%` }}
+                                            />
+                                        </div>
+
+                                        {/* Report Items List */}
+                                        <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+                                            {compliance.reports.map((r, idx) => (
+                                                <div key={idx} className={`p-2 rounded-lg text-xs flex items-start space-x-2 border ${
+                                                    r.status === 'success' ? 'bg-emerald-50/70 text-emerald-900 border-emerald-200' :
+                                                    r.status === 'warning' ? 'bg-amber-50/70 text-amber-900 border-amber-200' :
+                                                    'bg-red-50/70 text-red-900 border-red-200'
+                                                }`}>
+                                                    <span className="mt-0.5 shrink-0">
+                                                        {r.status === 'success' && <Icon name="checkCircle" className="w-4 h-4 text-emerald-600" />}
+                                                        {r.status === 'warning' && <Icon name="info" className="w-4 h-4 text-amber-600" />}
+                                                        {r.status === 'error' && <Icon name="alertCircle" className="w-4 h-4 text-red-600" />}
+                                                    </span>
+                                                    <span className="font-medium">{r.text}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Side: Tabbed Input Fields Constructor Form */}
+                                <div className="xl:col-span-5 bg-white rounded-xl shadow-md border border-slate-200 flex flex-col">
+                                    <div className="border-b border-slate-200 bg-slate-50/50 p-3 rounded-t-xl flex justify-between items-center">
+                                        <span className="font-bold text-slate-800 text-sm">Параметры и наполнение</span>
+                                        <div className="flex items-center space-x-1 bg-slate-200/60 p-0.5 rounded-lg text-xs">
+                                            <button
+                                                onClick={() => setIsFreeform(false)}
+                                                className={`px-2 py-1 rounded-md font-medium transition-all ${
+                                                    !isFreeform ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                                                }`}
+                                            >
+                                                Стандартный
+                                            </button>
+                                            <button
+                                                onClick={() => setIsFreeform(true)}
+                                                className={`px-2 py-1 rounded-md font-medium transition-all ${
+                                                    isFreeform ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                                                }`}
+                                            >
+                                                Конструктор сдвигов
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Dynamic Preset Switcher */}
+                                    <div className="p-3 bg-brand-50 border-b border-slate-200 flex items-center space-x-2 overflow-x-auto">
+                                        <span className="text-xs font-bold text-slate-500 shrink-0">Предустановки:</span>
+                                        {PRESETS.map((p) => (
+                                            <button
+                                                key={p.id}
+                                                onClick={() => applyPreset(p)}
+                                                className={`px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 transition-all ${
+                                                    form.id === p.id || (form.id && form.id.startsWith(p.id))
+                                                        ? 'bg-brand-600 text-white'
+                                                        : 'bg-white text-brand-700 hover:bg-brand-100 border border-brand-200'
+                                                }`}
+                                            >
+                                                {p.productType}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Form Fields Scrolling Area */}
+                                    <div className="p-4 space-y-4 overflow-y-auto max-h-[520px]">
+                                        {/* General section */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Основная информация</h4>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Организация/Бренд</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.brandName}
+                                                        onChange={(e) => handleFieldChange('brandName', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 bg-slate-50"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Вид продукции (крупно)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.productType}
+                                                        onChange={(e) => handleFieldChange('productType', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 bg-slate-50"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Наименование продукции / Описание</label>
+                                                <textarea
+                                                    rows="2"
+                                                    value={form.subtitle}
+                                                    onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 bg-slate-50"
+                                                />
+                                            </div>
+
+                                            <div className="grid grid-cols-3 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Объем (л)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.volume}
+                                                        onChange={(e) => handleFieldChange('volume', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Алкоголь (% об.)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.alcohol}
+                                                        onChange={(e) => handleFieldChange('alcohol', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Сахар (г/л, г/дм³)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.sugar}
+                                                        onChange={(e) => handleFieldChange('sugar', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">ГОСТ / СТБ</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.standard}
+                                                        onChange={(e) => handleFieldChange('standard', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">ТИ / ТУ</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.tiNumber}
+                                                        onChange={(e) => handleFieldChange('tiNumber', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr className="border-slate-100" />
+
+                                        {/* Technical compositions */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Детали и Тексты</h4>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Состав продукта</label>
+                                                <textarea
+                                                    rows="2"
+                                                    value={form.ingredients}
+                                                    onChange={(e) => handleFieldChange('ingredients', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Пищевая и энергетическая ценность</label>
+                                                <textarea
+                                                    rows="2"
+                                                    value={form.nutrition}
+                                                    onChange={(e) => handleFieldChange('nutrition', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Срок годности</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.expiration}
+                                                    onChange={(e) => handleFieldChange('expiration', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Условия хранения</label>
+                                                <textarea
+                                                    rows="3"
+                                                    value={form.storage}
+                                                    onChange={(e) => handleFieldChange('storage', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <hr className="border-slate-100" />
+
+                                        {/* Manufacturer */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Изготовитель</h4>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Наименование изготовителя</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.manufacturerName}
+                                                    onChange={(e) => handleFieldChange('manufacturerName', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Адрес производства</label>
+                                                <textarea
+                                                    rows="2"
+                                                    value={form.manufacturerAddress}
+                                                    onChange={(e) => handleFieldChange('manufacturerAddress', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Контакты (телефон, email, сайт)</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.manufacturerContact}
+                                                    onChange={(e) => handleFieldChange('manufacturerContact', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <hr className="border-slate-100" />
+
+                                        {/* Codes & Legal Signs */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Штрихкод, Маркировки и Законы</h4>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Штрихкод EAN-13</label>
+                                                    <input
+                                                        type="text"
+                                                        maxLength="13"
+                                                        value={form.barcode}
+                                                        onChange={(e) => handleFieldChange('barcode', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 font-mono"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">QR-код (Ссылка/Маркировка)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={form.qrCode}
+                                                        onChange={(e) => handleFieldChange('qrCode', e.target.value)}
+                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 font-mono"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Предупреждающий баннер РБ</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.warningText}
+                                                    onChange={(e) => handleFieldChange('warningText', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 font-bold"
+                                                />
+                                            </div>
+
+                                            {/* Height warning slide to comply with 10% law */}
+                                            <div>
+                                                <div className="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                                    <span>Высота баннера (% от высоты этикетки)</span>
+                                                    <span className={`font-bold ${form.warningHeightPercent >= 10 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                                        {form.warningHeightPercent}% (Минимум по закону РБ: 10%)
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="range"
+                                                    min="5"
+                                                    max="20"
+                                                    step="1"
+                                                    value={form.warningHeightPercent}
+                                                    onChange={(e) => handleFieldChange('warningHeightPercent', parseInt(e.target.value, 10))}
+                                                    className="w-full accent-brand-500 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+                                                />
+                                            </div>
+
+                                            {/* Checkboxes for active vector signs */}
+                                            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 grid grid-cols-3 gap-2">
+                                                <label className="flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={form.eacActive}
+                                                        onChange={(e) => handleFieldChange('eacActive', e.target.checked)}
+                                                        className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                                                    />
+                                                    <span>Знак EAC</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={form.foodActive}
+                                                        onChange={(e) => handleFieldChange('foodActive', e.target.checked)}
+                                                        className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                                                    />
+                                                    <span>Пищевой знак</span>
+                                                </label>
+                                                <label className="flex items-center space-x-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={form.petActive}
+                                                        onChange={(e) => handleFieldChange('petActive', e.target.checked)}
+                                                        className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                                                    />
+                                                    <span>Знак ПЭТ 01</span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        {/* Canvas Position Sliders (visible only if isFreeform is active) */}
+                                        {isFreeform && (
+                                            <div className="bg-amber-50/50 p-3 rounded-lg border border-amber-200 space-y-3">
+                                                <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center space-x-1">
+                                                    <Icon name="move" className="w-4 h-4" />
+                                                    <span>Свободное позиционирование элементов</span>
+                                                </h4>
+                                                <div className="grid grid-cols-2 gap-3 text-xs">
+                                                    <div>
+                                                        <label className="block text-slate-600 font-medium mb-1">Высота шапки бренда (Y)</label>
+                                                        <input
+                                                            type="range" min="0" max="20" step="1"
+                                                            value={form.offsets?.headerY || 4}
+                                                            onChange={(e) => handleOffsetChange('headerY', e.target.value)}
+                                                            className="w-full accent-amber-600"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-slate-600 font-medium mb-1">Высота ТИП напитка (Y)</label>
+                                                        <input
+                                                            type="range" min="10" max="25" step="1"
+                                                            value={form.offsets?.titleY || 15}
+                                                            onChange={(e) => handleOffsetChange('titleY', e.target.value)}
+                                                            className="w-full accent-amber-600"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-slate-600 font-medium mb-1">Высота Названия/СТБ (Y)</label>
+                                                        <input
+                                                            type="range" min="20" max="45" step="1"
+                                                            value={form.offsets?.subtitleY || 30}
+                                                            onChange={(e) => handleOffsetChange('subtitleY', e.target.value)}
+                                                            className="w-full accent-amber-600"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-slate-600 font-medium mb-1">Отступ показателей (X)</label>
+                                                        <input
+                                                            type="range" min="2" max="25" step="1"
+                                                            value={form.offsets?.statsX || 4}
+                                                            onChange={(e) => handleOffsetChange('statsX', e.target.value)}
+                                                            className="w-full accent-amber-600"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-slate-600 font-medium mb-1">Отступ значков/EAC (X)</label>
+                                                        <input
+                                                            type="range" min="150" max="200" step="2"
+                                                            value={form.offsets?.iconsX || 180}
+                                                            onChange={(e) => handleOffsetChange('iconsX', e.target.value)}
+                                                            className="w-full accent-amber-600"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-slate-600 font-medium mb-1">Высота состава/текста (Y)</label>
+                                                        <input
+                                                            type="range" min="45" max="80" step="2"
+                                                            value={form.offsets?.bodyY || 55}
+                                                            onChange={(e) => handleOffsetChange('bodyY', e.target.value)}
+                                                            className="w-full accent-amber-600"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-end">
+                                                    <button
+                                                        onClick={() => handleFieldChange('offsets', { ...PRESETS[0].offsets })}
+                                                        className="px-2 py-1 bg-white border border-amber-300 rounded text-amber-800 font-bold hover:bg-amber-100 transition"
+                                                    >
+                                                        Сбросить сдвиги
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Footer Save & Export Section */}
+                                    <div className="p-4 border-t border-slate-200 bg-slate-50/70 rounded-b-xl flex flex-col space-y-3">
+                                        <div className="flex space-y-2 sm:space-y-0 sm:space-x-2 flex-col sm:flex-row">
+                                            <input
+                                                type="text"
+                                                placeholder="Название нового шаблона..."
+                                                value={customName}
+                                                onChange={(e) => setCustomName(e.target.value)}
+                                                className="flex-1 text-xs border border-slate-300 rounded-lg p-2 focus:ring-1 focus:ring-brand-500 bg-white font-medium"
+                                            />
+                                            <button
+                                                onClick={saveTemplate}
+                                                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs transition flex items-center justify-center space-x-1.5 shadow"
+                                            >
+                                                <Icon name="save" className="w-4 h-4" />
+                                                <span>Сохранить в базу</span>
+                                            </button>
+                                        </div>
+
+                                        <div className="flex justify-between items-center pt-2 border-t border-slate-200/50">
+                                            <button
+                                                onClick={exportTemplates}
+                                                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-slate-700 font-semibold text-xs transition flex items-center space-x-1"
+                                            >
+                                                <Icon name="download" className="w-3.5 h-3.5" />
+                                                <span>Экспорт JSON</span>
+                                            </button>
+
+                                            <label className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-slate-700 font-semibold text-xs transition flex items-center space-x-1 cursor-pointer">
+                                                <Icon name="upload" className="w-3.5 h-3.5" />
+                                                <span>Импорт JSON</span>
+                                                <input
+                                                    type="file"
+                                                    accept=".json"
+                                                    onChange={handleImport}
+                                                    className="hidden"
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {activeTab === 'templates' && (
+                            <div className="col-span-12 bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
+                                    <Icon name="fileText" className="w-5 h-5 text-brand-600" />
+                                    <span>Ваши сохраненные шаблоны</span>
+                                </h3>
+
+                                {savedTemplates.length === 0 ? (
+                                    <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                                        <p className="text-slate-500 font-medium">У вас пока нет сохраненных шаблонов.</p>
+                                        <p className="text-xs text-slate-400 mt-1">Создайте и настройте этикетку в конструкторе, введите имя и нажмите "Сохранить в базу".</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {savedTemplates.map((t) => (
+                                            <div key={t.id} className="p-4 border border-slate-200 rounded-xl hover:shadow-md transition bg-slate-50 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="font-bold text-slate-800 truncate pr-2">{t.name}</h4>
+                                                        <span className="text-[10px] bg-brand-100 text-brand-800 px-2 py-0.5 rounded-full font-bold">
+                                                            {t.productType}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-slate-500 mb-1 font-semibold truncate">{t.subtitle}</p>
+                                                    <p className="text-xs text-slate-400">Крепость: {t.alcohol}% об. | Сахар: {t.sugar} г/л</p>
+                                                </div>
+                                                <div className="flex justify-end space-x-2 mt-4 pt-3 border-t border-slate-200/60">
+                                                    <button
+                                                        onClick={() => {
+                                                            setForm({ ...t });
+                                                            setActiveTab('editor');
+                                                        }}
+                                                        className="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-bold transition flex items-center space-x-1"
+                                                    >
+                                                        <Icon name="cog" className="w-3.5 h-3.5" />
+                                                        <span>Открыть</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteTemplate(t.id)}
+                                                        className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-semibold transition flex items-center"
+                                                    >
+                                                        <Icon name="trash" className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    {/* Dynamic print-only target layout: Prints 2 A5 landscape labels on A4 portrait page */}
+                    <div className="hidden print:block print-container">
+                        <div className="print-label">
+                            <LabelPreview data={form} isPrinting={true} />
+                        </div>
+                        <div className="print-label">
+                            <LabelPreview data={form} isPrinting={true} />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Dedicated Label Renderer (A5 Landscape: 210mm x 148mm)
+        function LabelPreview({ data, isPrinting = false }) {
+            const barcodeRef = useRef(null);
+            const qrcodeRef = useRef(null);
+
+            // Redraw barcode and qr elements dynamically when properties change
+            useEffect(() => {
+                if (barcodeRef.current && data.barcode && data.barcode.trim().length === 13) {
+                    try {
+                        JsBarcode(barcodeRef.current, data.barcode, {
+                            format: "EAN13",
+                            width: 1.1,
+                            height: 32,
+                            displayValue: true,
+                            font: "PT Sans Narrow",
+                            fontSize: 10,
+                            margin: 2
+                        });
+                    } catch (err) {
+                        console.error('Barcode draw error:', err);
+                    }
+                }
+            }, [data.barcode]);
+
+            useEffect(() => {
+                if (qrcodeRef.current && data.qrCode) {
+                    qrcodeRef.current.innerHTML = "";
+                    try {
+                        new QRCode(qrcodeRef.current, {
+                            text: data.qrCode,
+                            width: 48,
+                            height: 48,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
+                    } catch (err) {
+                        console.error('QR draw error:', err);
+                    }
+                }
+            }, [data.qrCode]);
+
+            // Custom inline styles to handle dynamic layout adjustments
+            const o = data.offsets || {
+                headerY: 4,
+                titleY: 15,
+                subtitleY: 30,
+                statsX: 4,
+                iconsX: 180,
+                bodyY: 55,
+                bottomY: 130
+            };
+
+            return (
+                <div className="label-preview-container select-none text-black relative border border-slate-300">
+                    {/* Header brand name */}
+                    <div
+                        style={{ top: `${o.headerY}mm` }}
+                        className="absolute left-1/2 -translate-x-1/2 w-full text-center flex items-center justify-center space-x-1.5"
+                    >
+                        {/* Circular Minsk Crystal Logo Pattern */}
+                        <svg className="w-5 h-5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 2v20M2 12h20M12 6l6 6-6 6-6-6 6-6z" />
+                        </svg>
+                        <span className="font-bold text-[10px] tracking-widest font-narrow uppercase">{data.brandName || 'БРЕНД'}</span>
+                    </div>
+
+                    {/* Main beverage title (e.g. СИДР, ПИВО, ВИНО) */}
+                    <div
+                        style={{ top: `${o.titleY}mm` }}
+                        className="absolute left-1/2 -translate-x-1/2 w-full text-center"
+                    >
+                        <h2 className="text-[28px] font-black tracking-widest leading-none font-narrow m-0 py-0 uppercase">
+                            {data.productType || 'НАПИТОК'}
+                        </h2>
+                    </div>
+
+                    {/* Specific dynamic beverage info */}
+                    <div
+                        style={{ top: `${o.subtitleY}mm` }}
+                        className="absolute left-1/2 -translate-x-1/2 w-[85%] text-center px-4"
+                    >
+                        <p className="text-[9px] font-bold uppercase tracking-wide leading-tight text-center">
+                            {data.subtitle || 'Описание напитка'}
+                        </p>
+                        <p className="text-[8px] font-bold text-center mt-1">
+                            {data.standard} {data.tiNumber ? `| ${data.tiNumber}` : ''}
+                        </p>
+                    </div>
+
+                    {/* Left Column Metric parameters: ALCOHOL, VOLUME, SUGAR */}
+                    <div
+                        style={{ left: `${o.statsX}mm`, top: `${o.titleY}mm` }}
+                        className="absolute w-[36mm] flex flex-col space-y-1.5 font-narrow"
+                    >
+                        <div>
+                            <div className="text-[8px] font-bold uppercase tracking-wider text-slate-500 leading-none">СПИРТ</div>
+                            <div className="text-[14px] font-bold leading-tight">{data.alcohol || '0'} % об.</div>
+                        </div>
+                        <div>
+                            <div className="text-[8px] font-bold uppercase tracking-wider text-slate-500 leading-none">ОБЪЕМ</div>
+                            <div className="text-[14px] font-bold leading-tight">{data.volume || '0 л'}</div>
+                        </div>
+                        <div>
+                            <div className="text-[8px] font-bold uppercase tracking-wider text-slate-500 leading-none">САХАР</div>
+                            <div className="text-[14px] font-bold leading-tight">{data.sugar || '0'} г/л</div>
+                        </div>
+                    </div>
+
+                    {/* Right Column Compliance Symbols & QR Code */}
+                    <div
+                        style={{ left: `${o.iconsX}mm`, top: `${o.headerY + 2}mm` }}
+                        className="absolute w-[24mm] flex flex-col items-center space-y-2.5"
+                    >
+                        {/* Made In Belarus label above QR */}
+                        {data.qrCode && (
+                            <div className="flex flex-col items-center">
+                                <span className="text-[5px] font-bold tracking-tighter uppercase whitespace-nowrap mb-0.5">MADE IN BELARUS</span>
+                                <div ref={qrcodeRef} className="p-0.5 bg-white border border-black/40 rounded shadow-sm"></div>
+                            </div>
+                        )}
+
+                        {/* EAC Logo */}
+                        {data.eacActive && (
+                            <span className="font-bold text-[13px] tracking-tight border border-black px-1 py-px rounded font-mono leading-none">
+                                EAC
+                            </span>
+                        )}
+
+                        {/* Custom Vector Logos */}
+                        <div className="flex items-center space-x-2">
+                            {/* Food contact (Glass & Fork) Symbol */}
+                            {data.foodActive && (
+                                <svg className="w-5 h-5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                    <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
+                                    <path d="M12 14v6M8 20h8" />
+                                </svg>
+                            )}
+
+                            {/* Eco material recycling loop (PET 01) symbol */}
+                            {data.petActive && (
+                                <div className="flex flex-col items-center relative">
+                                    <svg className="w-5 h-5 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                        <path d="M12 2l8 14H4L12 2z" />
+                                    </svg>
+                                    <span className="text-[6px] font-black absolute top-1.5 font-mono">1</span>
+                                    <span className="text-[5px] font-bold tracking-tighter font-mono uppercase mt-0.5">PET</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Main Technical Regulations Composition Block */}
+                    <div
+                        style={{ top: `${o.bodyY}mm` }}
+                        className="absolute left-[3.5%] w-[93%] grid grid-cols-12 gap-3"
+                    >
+                        <div className="col-span-8 flex flex-col space-y-1">
+                            <p className="text-[6.8px] leading-[1.25] text-justify font-medium">
+                                <span className="font-bold">{data.ingredients}</span>
+                            </p>
+                            <p className="text-[6.8px] leading-[1.2] text-justify font-medium">
+                                <span className="text-slate-700">{data.nutrition}</span>
+                            </p>
+                            <p className="text-[6.8px] leading-[1.2] text-justify font-medium">
+                                <span className="text-slate-800">{data.storage}</span>
+                            </p>
+                            <p className="text-[7.2px] font-bold text-left tracking-wide pt-0.5 uppercase">
+                                {data.expiration}
+                            </p>
+                            <p className="text-[6.5px] leading-[1.2] text-justify pt-0.5 text-slate-800">
+                                Изготовитель: <span className="font-bold">{data.manufacturerName}</span>, {data.manufacturerAddress}. {data.manufacturerContact}
+                            </p>
+                        </div>
+
+                        {/* Barcode and manual entry dates section */}
+                        <div className="col-span-4 flex flex-col items-end space-y-1.5 pt-1">
+                            {data.barcode && (
+                                <div className="flex justify-end pr-1">
+                                    <svg ref={barcodeRef}></svg>
+                                </div>
+                            )}
+
+                            {/* Standard manual fields with bottom underscores */}
+                            <div className="w-[100%] pl-2 space-y-1 pr-1 font-narrow">
+                                <div className="flex justify-between items-center text-[7.5px] border-b border-black/40 pb-px">
+                                    <span className="font-bold">Дата розлива:</span>
+                                    <span className="w-16 border-b border-black h-2"></span>
+                                </div>
+                                <div className="flex justify-between items-center text-[7.5px] border-b border-black/40 pb-px">
+                                    <span className="font-bold">Дата подключения:</span>
+                                    <span className="w-16 border-b border-black h-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Legal Warning Banner Block (occupies at least 10% bottom area of A5) */}
+                    <div
+                        style={{
+                            height: `${data.warningHeightPercent}%`,
+                            top: `${100 - data.warningHeightPercent}%`
+                        }}
+                        className="absolute left-0 w-full bg-white border-t-2 border-black flex items-center justify-center px-4"
+                    >
+                        <h4 className="text-[10px] md:text-[11px] font-black tracking-wider leading-none text-center uppercase text-black font-narrow">
+                            {data.warningText || 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ'}
+                        </h4>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render React Application
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<App />);
+    </script>
+</body>
+</html>
