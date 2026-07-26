@@ -38,7 +38,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #f1f5f9;
         }
-        /* Style for printing - exact A5 Landscape (2 per A4 Page) */
+        /* Style for printing - exact A5 Landscape (1 or 2 per A4 Page) */
         @media print {
             body {
                 background: white !important;
@@ -58,7 +58,7 @@
                 page-break-after: avoid !important;
                 page-break-before: avoid !important;
             }
-            /* A5 horizontal size: 210mm x 148mm. Two labels exactly fit on A4 portrait (297mm) */
+            /* A5 horizontal size: 210mm x 148mm. */
             .print-label {
                 width: 210mm !important;
                 height: 148mm !important;
@@ -69,7 +69,7 @@
                 overflow: hidden !important;
                 background: white !important;
             }
-            /* First label top, second label directly below */
+            /* Spacing can be adjusted depending on multi-print toggle */
             .print-label:first-child {
                 margin-bottom: 1mm !important;
             }
@@ -92,13 +92,25 @@
         }
 
         /* Helper styling for draggable blocks in editor */
-        .draggable-active {
-            outline: 1px dashed #3b82f6;
+        .draggable-element {
             cursor: move;
+            transition: outline-color 0.15s, background-color 0.15s;
         }
-        .draggable-active:hover {
-            outline: 2px dashed #2563eb;
-            background-color: rgba(59, 130, 246, 0.04);
+        .draggable-element:hover {
+            outline: 1px dashed #10b981;
+            background-color: rgba(16, 185, 129, 0.04);
+        }
+        .draggable-selected {
+            outline: 2px solid #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.08) !important;
+            z-index: 50 !important;
+        }
+
+        /* Grid Background pattern */
+        .grid-background {
+            background-size: 5mm 5mm;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
         }
     </style>
 </head>
@@ -108,9 +120,8 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // Custom Lucide Icon components so we don't have dependency resolution issues
+        // Custom High-Quality SVG Icons
         const Icon = ({ name, className = "w-5 h-5" }) => {
-            // High-fidelity custom SVG icons for premium feel
             const icons = {
                 beer: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -183,41 +194,45 @@
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                     </svg>
                 ),
-                refresh: (
+                undo: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                        <polyline points="23 4 23 10 17 10" />
-                        <polyline points="1 20 1 14 7 14" />
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                        <path d="M3 7v6h6" />
+                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
                     </svg>
                 ),
-                info: (
+                redo: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="16" x2="12" y2="12" />
-                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                        <path d="M21 7v6h-6" />
+                        <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7" />
                     </svg>
                 ),
-                settings: (
+                grid: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                        <circle cx="12" cy="12" r="3" />
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <line x1="9" y1="3" x2="9" y2="21" />
+                        <line x1="15" y1="3" x2="15" y2="21" />
+                        <line x1="3" y1="9" x2="21" y2="9" />
+                        <line x1="3" y1="15" x2="21" y2="15" />
                     </svg>
                 ),
-                move: (
+                image: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                        <polyline points="5 9 2 12 5 15" />
-                        <polyline points="9 5 12 2 15 5" />
-                        <polyline points="15 19 12 22 19 19" />
-                        <polyline points="19 9 22 12 19 15" />
-                        <line x1="2" y1="12" x2="22" y2="12" />
-                        <line x1="12" y1="2" x2="12" y2="22" />
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="9" cy="9" r="2" />
+                        <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                    </svg>
+                ),
+                plus: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
                 )
             };
             return icons[name] || <span className="text-red-500">?</span>;
         };
 
-        // Standard dynamic presets based on RB STB/GOST regulations
+        // Static standard configurations
         const PRESETS = [
             {
                 id: 'cider',
@@ -235,24 +250,21 @@
                 storage: 'Изготовитель: ОАО "Пищевой комбинат "Веселово", 222132, Республика Беларусь, Минская обл., Борисовский р-н, д. Веселово, ул. Заводская, 24. Тел.:(0177)933-400, e-mail:info@alco.by, www.alco.by',
                 expiration: 'СРОК ГОДНОСТИ: 4 МЕСЯЦА С ДАТЫ РОЗЛИВА.',
                 warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
-                manufacturerName: '',
-                manufacturerAddress: '',
-                manufacturerContact: '',
                 barcode: '4811173002052',
                 qrCode: 'https://iz.by/cider-apple-boom-30l',
                 eacActive: true,
                 foodActive: true,
                 petActive: true,
-                warningHeightPercent: 12, // Exceeds the 10% threshold safely
-                // Standard visual offsets to perfectly match sample image (all in mm)
-                offsets: {
-                    headerY: 4,
-                    titleY: 12,
-                    subtitleY: 26,
-                    statsX: 4,
-                    iconsX: 178,
-                    bodyY: 52,
-                    bottomY: 130
+                warningHeightPercent: 12,
+                customImages: [], // Holds array of { id, src, x, y, width, height, opacity }
+                // Modern elements positioning & sizes (all sizes in mm / standard units)
+                elements: {
+                    header: { x: 105, y: 4, size: 10, visible: true, bold: true },
+                    title: { x: 105, y: 12, size: 34, visible: true, bold: true },
+                    subtitle: { x: 105, y: 26, size: 8, visible: true, bold: true },
+                    stats: { x: 4, y: 10, size: 12, visible: true },
+                    icons: { x: 178, y: 5, size: 38, visible: true },
+                    body: { x: 6, y: 52, size: 6.5, visible: true }
                 }
             },
             {
@@ -271,74 +283,41 @@
                 storage: 'Изготовитель: ОАО "Брестское пиво", 224014, Республика Беларусь, г. Брест, ул. Писателя Смирнова, 168. Тел.: +375 (162) 24-51-12, info@brestbeer.by',
                 expiration: 'СРОК ГОДНОСТИ: 180 СУТОК С ДАТЫ РОЗЛИВА.',
                 warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
-                manufacturerName: '',
-                manufacturerAddress: '',
-                manufacturerContact: '',
                 barcode: '4810123456789',
                 qrCode: 'https://brestbeer.by/classic-keg-30',
                 eacActive: true,
                 foodActive: true,
                 petActive: true,
                 warningHeightPercent: 12,
-                offsets: {
-                    headerY: 4,
-                    titleY: 12,
-                    subtitleY: 26,
-                    statsX: 4,
-                    iconsX: 178,
-                    bodyY: 52,
-                    bottomY: 130
-                }
-            },
-            {
-                id: 'wine',
-                name: 'Вино Виноградное Сухое Красное (ГОСТ)',
-                brandName: 'МИНСКИЙ ЗАВОД ИГРИСТЫХ ВИН',
-                productType: 'ВИНО',
-                subtitle: 'ВИНОГРАДНОЕ ОРДИНАРНОЕ СУХОЕ КРАСНОЕ «КАБЕРНЕ»',
-                standard: 'ГОСТ 32030-2013',
-                tiNumber: 'ТИ BY 100213456.095-2020',
-                alcohol: '12,0%',
-                sugar: '3 г/л',
-                volume: '20 л',
-                ingredients: 'Состав: виноград свежий машинного сбора сорта Каберне Совиньон, пищевая добавка консервант-антиокислитель диоксид серы (E220). Содержит сульфиты. Пищевая ценность 100 мл: углеводы - менее 0.3 г; энергетическая ценность - 75 ккал / 315 кДж.',
-                nutrition: 'Хранить в вентилируемых помещениях, без постороннего запаха, при температуре от 5 °С до 20 °С. Избегать попадания прямого солнечного света.',
-                storage: 'Изготовитель: ОАО "Минский завод игристых вин", 220070, Республика Беларусь, г. Минск, ул. Радиальная, 50. Тел.: +375 (17) 299-27-00, info@wines.by',
-                expiration: 'СРОК ГОДНОСТИ НЕ ОГРАНИЧЕН ПРИ СОБЛЮДЕНИИ УСЛОВИЙ ХРАНЕНИЯ.',
-                warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
-                manufacturerName: '',
-                manufacturerAddress: '',
-                manufacturerContact: '',
-                barcode: '4810234005011',
-                qrCode: 'https://wines.by/kabernet-keg',
-                eacActive: true,
-                foodActive: true,
-                petActive: false,
-                warningHeightPercent: 12,
-                offsets: {
-                    headerY: 4,
-                    titleY: 12,
-                    subtitleY: 26,
-                    statsX: 4,
-                    iconsX: 178,
-                    bodyY: 52,
-                    bottomY: 130
+                customImages: [],
+                elements: {
+                    header: { x: 105, y: 4, size: 10, visible: true, bold: true },
+                    title: { x: 105, y: 12, size: 34, visible: true, bold: true },
+                    subtitle: { x: 105, y: 26, size: 8, visible: true, bold: true },
+                    stats: { x: 4, y: 10, size: 12, visible: true },
+                    icons: { x: 178, y: 5, size: 38, visible: true },
+                    body: { x: 6, y: 52, size: 6.5, visible: true }
                 }
             }
         ];
 
         function App() {
-            const [selectedTemplate, setSelectedTemplate] = useState(PRESETS[0]);
             const [form, setForm] = useState({ ...PRESETS[0] });
             const [savedTemplates, setSavedTemplates] = useState([]);
             const [activeTab, setActiveTab] = useState('editor'); // editor | templates
             const [customName, setCustomName] = useState('');
-            const [isFreeform, setIsFreeform] = useState(true); // Default to visual interactive constructor for ease of use
-            const [zoom, setZoom] = useState(0.85); // scaling for workspace viewport
+            const [zoom, setZoom] = useState(0.85);
+            const [selectedElementId, setSelectedElementId] = useState(null); // ID of currently clicked canvas element
+            const [showGrid, setShowGrid] = useState(false);
+            const [printQuantity, setPrintQuantity] = useState(2); // 1 or 2 labels per page
 
-            // Load saved templates on launch
+            // Simple Undo/Redo Stacks
+            const [history, setHistory] = useState([]);
+            const [historyIndex, setHistoryIndex] = useState(-1);
+
+            // Load templates
             useEffect(() => {
-                const stored = localStorage.getItem('rb_wine_keg_labels_v2');
+                const stored = localStorage.getItem('rb_wine_keg_labels_v3');
                 if (stored) {
                     try {
                         setSavedTemplates(JSON.parse(stored));
@@ -348,65 +327,141 @@
                 }
             }, []);
 
+            // Save history snapshot helper
+            const recordHistory = (newState) => {
+                const cleanState = JSON.parse(JSON.stringify(newState));
+                const newHistory = history.slice(0, historyIndex + 1);
+                newHistory.push(cleanState);
+                // Limit history depth
+                if (newHistory.length > 20) newHistory.shift();
+                setHistory(newHistory);
+                setHistoryIndex(newHistory.length - 1);
+            };
+
+            const updateFormWithHistory = (updater) => {
+                setForm(prev => {
+                    const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
+                    recordHistory(next);
+                    return next;
+                });
+            };
+
+            // Undo/Redo handlers
+            const handleUndo = () => {
+                if (historyIndex > 0) {
+                    const nextIndex = historyIndex - 1;
+                    setHistoryIndex(nextIndex);
+                    setForm(JSON.parse(JSON.stringify(history[nextIndex])));
+                }
+            };
+
+            const handleRedo = () => {
+                if (historyIndex < history.length - 1) {
+                    const nextIndex = historyIndex + 1;
+                    setHistoryIndex(nextIndex);
+                    setForm(JSON.parse(JSON.stringify(history[nextIndex])));
+                }
+            };
+
+            // Initialize first history frame
+            useEffect(() => {
+                if (history.length === 0) {
+                    recordHistory(form);
+                }
+            }, []);
+
             const applyPreset = (preset) => {
-                setSelectedTemplate(preset);
                 setForm({ ...preset });
+                setSelectedElementId(null);
+                recordHistory(preset);
             };
 
             const handleFieldChange = (key, val) => {
-                setForm(prev => ({ ...prev, [key]: val }));
+                updateFormWithHistory(prev => ({ ...prev, [key]: val }));
             };
 
-            const handleOffsetChange = (key, val) => {
-                setForm(prev => {
-                    const newOffsets = { ...prev.offsets, [key]: parseFloat(val) };
-                    return { ...prev, offsets: newOffsets };
+            // Inspector value modifications
+            const updateElementAttribute = (elementId, attribute, value) => {
+                updateFormWithHistory(prev => {
+                    const updated = { ...prev };
+                    if (elementId.startsWith('custom-img-')) {
+                        updated.customImages = updated.customImages.map(img => {
+                            if (img.id === elementId) {
+                                return { ...img, [attribute]: value };
+                            }
+                            return img;
+                        });
+                    } else if (updated.elements[elementId]) {
+                        updated.elements[elementId] = {
+                            ...updated.elements[elementId],
+                            [attribute]: value
+                        };
+                    }
+                    return updated;
                 });
             };
 
-            // Custom coordinate updates via mouse/drag events on preview
-            const updateElementOffset = (elementKey, deltaX, deltaY) => {
-                setForm(prev => {
-                    const currentOffsets = { ...prev.offsets };
-                    if (elementKey === 'statsX') {
-                        currentOffsets.statsX = Math.max(0, Math.min(60, (currentOffsets.statsX || 4) + deltaX));
-                    } else if (elementKey === 'iconsX') {
-                        currentOffsets.iconsX = Math.max(140, Math.min(200, (currentOffsets.iconsX || 178) + deltaX));
-                    } else if (elementKey === 'headerY') {
-                        currentOffsets.headerY = Math.max(0, Math.min(30, (currentOffsets.headerY || 4) + deltaY));
-                    } else if (elementKey === 'titleY') {
-                        currentOffsets.titleY = Math.max(8, Math.min(40, (currentOffsets.titleY || 12) + deltaY));
-                    } else if (elementKey === 'subtitleY') {
-                        currentOffsets.subtitleY = Math.max(15, Math.min(55, (currentOffsets.subtitleY || 26) + deltaY));
-                    } else if (elementKey === 'bodyY') {
-                        currentOffsets.bodyY = Math.max(40, Math.min(95, (currentOffsets.bodyY || 52) + deltaY));
+            // Direct Canvas Drag offset updates
+            const handleCanvasElementDrag = (elementId, deltaX, deltaY) => {
+                updateFormWithHistory(prev => {
+                    const updated = { ...prev };
+                    if (elementId.startsWith('custom-img-')) {
+                        updated.customImages = updated.customImages.map(img => {
+                            if (img.id === elementId) {
+                                return {
+                                    ...img,
+                                    x: Math.max(0, Math.min(210, img.x + deltaX)),
+                                    y: Math.max(0, Math.min(148, img.y + deltaY))
+                                };
+                            }
+                            return img;
+                        });
+                    } else if (updated.elements[elementId]) {
+                        updated.elements[elementId] = {
+                            ...updated.elements[elementId],
+                            x: Math.max(0, Math.min(210, updated.elements[elementId].x + deltaX)),
+                            y: Math.max(0, Math.min(148, updated.elements[elementId].y + deltaY))
+                        };
                     }
-                    return { ...prev, offsets: currentOffsets };
+                    return updated;
                 });
             };
 
-            // EAN-13 Checksum calculator & validator
-            const validateEAN13 = (code) => {
-                if (!code || typeof code !== 'string') return false;
-                const trimmed = code.trim();
-                if (trimmed.length !== 13) return false;
-                if (!/^\d{13}$/.test(trimmed)) return false;
-
-                let sum = 0;
-                for (let i = 0; i < 12; i++) {
-                    const num = parseInt(trimmed[i], 10);
-                    if (i % 2 === 0) {
-                        sum += num;
-                    } else {
-                        sum += num * 3;
-                    }
-                }
-                const calculatedChecksum = (10 - (sum % 10)) % 10;
-                const givenChecksum = parseInt(trimmed[12], 10);
-                return calculatedChecksum === givenChecksum;
+            // Image uploader handler (converts to Base64)
+            const handleImageUpload = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64Data = e.target.result;
+                    const newImage = {
+                        id: `custom-img-${Date.now()}`,
+                        src: base64Data,
+                        x: 80,
+                        y: 60,
+                        width: 40,
+                        height: 40,
+                        opacity: 1
+                    };
+                    updateFormWithHistory(prev => ({
+                        ...prev,
+                        customImages: [...(prev.customImages || []), newImage]
+                    }));
+                    setSelectedElementId(newImage.id);
+                };
+                reader.readAsDataURL(file);
             };
 
-            // Compliance validation rules
+            // Delete selected custom image
+            const deleteCustomImage = (imgId) => {
+                updateFormWithHistory(prev => ({
+                    ...prev,
+                    customImages: prev.customImages.filter(img => img.id !== imgId)
+                }));
+                setSelectedElementId(null);
+            };
+
+            // Clean compliance verification checks
             const verifyCompliance = (data) => {
                 const reports = [];
                 let score = 100;
@@ -416,12 +471,12 @@
                     score -= 30;
                     reports.push({
                         status: 'error',
-                        text: `Предупреждающая надпись занимает ${data.warningHeightPercent}%. По закону РБ площадь должна быть не менее 10%!`
+                        text: `Предупреждающая надпись занимает всего ${data.warningHeightPercent}%. По закону РБ площадь должна быть не менее 10%!`
                     });
                 } else {
                     reports.push({
                         status: 'success',
-                        text: `Предупреждающая надпись занимает ${data.warningHeightPercent}%. Соответствует норме (не менее 10%).`
+                        text: `Предупреждающий баннер занимает ${data.warningHeightPercent}% (соответствует требованиям Минздрава РБ).`
                     });
                 }
 
@@ -431,12 +486,12 @@
                     score -= 20;
                     reports.push({
                         status: 'error',
-                        text: `Текст предупреждения должен быть точно: "${exactPhrase}".`
+                        text: `Текст предупреждения должен точно соответствовать закону: "${exactPhrase}".`
                     });
                 } else {
                     reports.push({
                         status: 'success',
-                        text: 'Предупреждающий текст полностью соответствует регламенту Минздрава РБ.'
+                        text: 'Предупреждающий текст полностью идентичен официальному регламенту РБ.'
                     });
                 }
 
@@ -444,76 +499,50 @@
                     score -= 20;
                     reports.push({
                         status: 'warning',
-                        text: 'Отсутствует знак ЕАС. Маркировка продукции знаком Евразийского соответствия обязательна.'
-                    });
-                } else {
-                    reports.push({
-                        status: 'success',
-                        text: 'Знак EAC включен (ТР ТС 022/2011).'
-                    });
-                }
-
-                if (!data.foodActive) {
-                    score -= 15;
-                    reports.push({
-                        status: 'warning',
-                        text: 'Отсутствует знак контакта с пищевыми продуктами (бокал и вилка).'
-                    });
-                } else {
-                    reports.push({
-                        status: 'success',
-                        text: 'Знак "бокал-вилка" (ТР ТС 005/2011) активен.'
-                    });
-                }
-
-                const standardDefined = data.standard && data.standard.trim().length > 3;
-                if (!standardDefined) {
-                    score -= 15;
-                    reports.push({
-                        status: 'error',
-                        text: 'Не указан ГОСТ или СТБ РБ.'
-                    });
-                } else {
-                    reports.push({
-                        status: 'success',
-                        text: `Стандарт: ${data.standard}.`
+                        text: 'Маркировка знаком Евразийского соответствия EAC обязательна по ТР ТС 022/2011.'
                     });
                 }
 
                 if (data.barcode) {
-                    const barcodeValid = validateEAN13(data.barcode);
-                    if (!barcodeValid) {
+                    const trimmed = data.barcode.trim();
+                    let isEan13Valid = false;
+                    if (/^\d{13}$/.test(trimmed)) {
+                        let sum = 0;
+                        for (let i = 0; i < 12; i++) {
+                            sum += parseInt(trimmed[i], 10) * (i % 2 === 0 ? 1 : 3);
+                        }
+                        const calculatedChecksum = (10 - (sum % 10)) % 10;
+                        isEan13Valid = calculatedChecksum === parseInt(trimmed[12], 10);
+                    }
+                    if (!isEan13Valid) {
                         score -= 15;
                         reports.push({
                             status: 'error',
-                            text: 'Невалидный штрих-код EAN-13 (контрольная цифра не совпадает).'
-                        });
-                    } else {
-                        reports.push({
-                            status: 'success',
-                            text: 'Штрих-код EAN-13 прошел валидацию контрольной суммы.'
+                            text: 'Неверный формат или контрольная сумма штрих-кода EAN-13.'
                         });
                     }
-                } else {
-                    score -= 10;
-                    reports.push({
-                        status: 'warning',
-                        text: 'Штрих-код не указан.'
-                    });
                 }
 
-                return {
-                    score: Math.max(0, score),
-                    reports
-                };
+                return { score: Math.max(0, score), reports };
             };
 
             const compliance = verifyCompliance(form);
 
+            // Get configuration details of currently selected element
+            const getSelectedElementData = () => {
+                if (!selectedElementId) return null;
+                if (selectedElementId.startsWith('custom-img-')) {
+                    return form.customImages.find(img => img.id === selectedElementId) || null;
+                }
+                return form.elements[selectedElementId] ? { id: selectedElementId, ...form.elements[selectedElementId] } : null;
+            };
+
+            const selectedElement = getSelectedElementData();
+
             // LocalStorage template persistence
             const saveTemplate = () => {
                 if (!customName.trim()) {
-                    alert('Пожалуйста, введите название шаблона перед сохранением!');
+                    alert('Пожалуйста, укажите наименование шаблона для сохранения!');
                     return;
                 }
                 const newTemplate = {
@@ -523,16 +552,16 @@
                 };
                 const updated = [newTemplate, ...savedTemplates];
                 setSavedTemplates(updated);
-                localStorage.setItem('rb_wine_keg_labels_v2', JSON.stringify(updated));
+                localStorage.setItem('rb_wine_keg_labels_v3', JSON.stringify(updated));
                 setCustomName('');
-                alert('Шаблон сохранен в локальную базу!');
+                alert('Шаблон сохранен в вашу локальную библиотеку!');
             };
 
             const deleteTemplate = (id) => {
                 if (confirm('Вы уверены, что хотите удалить этот шаблон?')) {
                     const updated = savedTemplates.filter(t => t.id !== id);
                     setSavedTemplates(updated);
-                    localStorage.setItem('rb_wine_keg_labels_v2', JSON.stringify(updated));
+                    localStorage.setItem('rb_wine_keg_labels_v3', JSON.stringify(updated));
                 }
             };
 
@@ -540,7 +569,7 @@
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(form));
                 const downloadAnchor = document.createElement('a');
                 downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `этикетка_${form.productType || 'напиток'}.json`);
+                downloadAnchor.setAttribute("download", `этикетка_конструктор_${form.productType}.json`);
                 document.body.appendChild(downloadAnchor);
                 downloadAnchor.click();
                 downloadAnchor.remove();
@@ -555,12 +584,12 @@
                         const imported = JSON.parse(e.target.result);
                         if (imported && imported.productType) {
                             setForm(imported);
-                            alert('Шаблон успешно загружен из файла!');
+                            alert('Шаблон успешно импортирован!');
                         } else {
-                            alert('Некорректный формат файла шаблона.');
+                            alert('Неверная структура шаблона.');
                         }
                     } catch (err) {
-                        alert('Ошибка при чтении файла JSON.');
+                        alert('Не удалось прочесть файл JSON.');
                     }
                 };
                 reader.readAsText(file);
@@ -568,63 +597,93 @@
 
             return (
                 <div className="min-h-screen flex flex-col no-print">
-                    {/* Header bar */}
+                    {/* Header */}
                     <header className="bg-gradient-to-r from-brand-700 to-brand-500 text-white shadow-md">
-                        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
                             <div className="flex items-center space-x-3">
                                 <div className="p-2 bg-white/10 rounded-lg">
                                     <Icon name="beer" className="w-8 h-8 text-emerald-300" />
                                 </div>
                                 <div>
-                                    <h1 className="text-xl md:text-2xl font-bold tracking-tight Montserrat">
-                                        Этикетки Кег 2.0 <span className="text-emerald-300">РБ</span>
+                                    <h1 className="text-xl font-bold tracking-tight Montserrat">
+                                        Этикетки Кег 3.0 <span className="text-emerald-300">РБ</span>
                                     </h1>
                                     <p className="text-xs text-brand-100 font-medium">
-                                        Профессиональный визуальный конструктор (А5 Ландшафт на А4)
+                                        Профессиональный визуальный конструктор с добавлением изображений
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex space-x-2">
                                 <button
                                     onClick={() => setActiveTab('editor')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center space-x-1.5 ${
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-1.5 ${
                                         activeTab === 'editor' ? 'bg-white text-brand-700 shadow-md' : 'text-white hover:bg-white/10'
                                     }`}
                                 >
                                     <Icon name="cog" className="w-4 h-4" />
-                                    <span>Редактор</span>
+                                    <span>Конструктор</span>
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('templates')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center space-x-1.5 ${
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-1.5 ${
                                         activeTab === 'templates' ? 'bg-white text-brand-700 shadow-md' : 'text-white hover:bg-white/10'
                                     }`}
                                 >
                                     <Icon name="fileText" className="w-4 h-4" />
-                                    <span>Сохраненные</span>
+                                    <span>Библиотека</span>
                                 </button>
                                 <button
                                     onClick={() => window.print()}
-                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-md transition-all flex items-center space-x-1.5 border border-emerald-400"
+                                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-md transition-all flex items-center space-x-1.5 border border-emerald-400"
                                 >
                                     <Icon name="printer" className="w-4 h-4" />
-                                    <span>Печать (А4)</span>
+                                    <span>Печать</span>
                                 </button>
                             </div>
                         </div>
                     </header>
 
-                    {/* Content panels */}
-                    <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+                    {/* Main workspace */}
+                    <main className="flex-1 max-w-[1680px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
                         {activeTab === 'editor' && (
                             <>
-                                {/* Preview pane */}
+                                {/* Canvas panel */}
                                 <div className="xl:col-span-7 flex flex-col space-y-4">
                                     <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <h3 className="text-sm font-bold text-slate-800">
-                                                Интерактивный холст (Перетаскивайте элементы мышкой по вертикали/горизонтали)
-                                            </h3>
+                                        <div className="flex flex-wrap justify-between items-center gap-3 mb-3 pb-3 border-b">
+                                            {/* Toolbar actions */}
+                                            <div className="flex items-center space-x-2">
+                                                <button
+                                                    onClick={handleUndo}
+                                                    disabled={historyIndex <= 0}
+                                                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded disabled:opacity-40 transition"
+                                                    title="Отменить"
+                                                >
+                                                    <Icon name="undo" className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={handleRedo}
+                                                    disabled={historyIndex >= history.length - 1}
+                                                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded disabled:opacity-40 transition"
+                                                    title="Повторить"
+                                                >
+                                                    <Icon name="redo" className="w-4 h-4" />
+                                                </button>
+                                                <span className="h-6 w-px bg-slate-200"></span>
+                                                <button
+                                                    onClick={() => setShowGrid(!showGrid)}
+                                                    className={`p-2 rounded transition flex items-center space-x-1 ${
+                                                        showGrid ? 'bg-brand-100 text-brand-800 font-bold' : 'bg-slate-100 text-slate-700'
+                                                    }`}
+                                                    title="Сетка"
+                                                >
+                                                    <Icon name="grid" className="w-4 h-4" />
+                                                    <span className="text-xs hidden sm:inline">Сетка (5мм)</span>
+                                                </button>
+                                            </div>
+
+                                            {/* Scale sliders */}
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-xs text-slate-500">Масштаб:</span>
                                                 <input
@@ -634,7 +693,7 @@
                                                     step="0.05"
                                                     value={zoom}
                                                     onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                                    className="w-24 accent-brand-500 h-1.5 bg-slate-200"
+                                                    className="w-24 accent-brand-500 h-1.5 bg-slate-200 rounded"
                                                 />
                                                 <span className="text-xs font-semibold text-slate-700 w-8">
                                                     {Math.round(zoom * 100)}%
@@ -642,18 +701,25 @@
                                             </div>
                                         </div>
 
+                                        {/* Canvas Wrapper */}
                                         <div className="overflow-auto bg-slate-100 p-4 rounded-lg border border-slate-300 flex justify-center items-start min-h-[440px]">
                                             <div style={{ transform: `scale(${zoom})` }} className="origin-top-left transition-transform duration-75">
-                                                <LabelPreview data={form} onOffsetDrag={updateElementOffset} isInteractive={isFreeform} />
+                                                <LabelPreview
+                                                    data={form}
+                                                    selectedId={selectedElementId}
+                                                    onSelectElement={setSelectedElementId}
+                                                    onDragElement={handleCanvasElementDrag}
+                                                    showGrid={showGrid}
+                                                />
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Compliance index banner */}
+                                    {/* Compliance index & error listings */}
                                     <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200">
                                         <div className="flex items-center justify-between border-b pb-2 mb-3">
                                             <h3 className="font-bold text-slate-800 flex items-center space-x-2">
-                                                <span>Проверка стандартов маркировки РБ</span>
+                                                <span>Индикатор маркировки РБ</span>
                                             </h3>
                                             <div className="flex items-center space-x-1.5">
                                                 <span className="text-xs font-bold text-slate-500">Индекс легальности:</span>
@@ -680,8 +746,9 @@
                                     </div>
                                 </div>
 
-                                {/* Form settings */}
+                                {/* Form settings / inspector side panel */}
                                 <div className="xl:col-span-5 bg-white rounded-xl shadow-md border border-slate-200 flex flex-col">
+                                    {/* Top Preset selector */}
                                     <div className="p-3 bg-brand-50 border-b border-slate-200 flex items-center space-x-2 overflow-x-auto">
                                         <span className="text-xs font-bold text-slate-500 shrink-0">Предустановки:</span>
                                         {PRESETS.map((p) => (
@@ -697,7 +764,122 @@
                                         ))}
                                     </div>
 
-                                    <div className="p-4 space-y-4 overflow-y-auto max-h-[580px]">
+                                    {/* Form tabs */}
+                                    <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[580px]">
+
+                                        {/* Inspector block if element is selected */}
+                                        {selectedElement && (
+                                            <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-3 space-y-3">
+                                                <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
+                                                    <span className="text-xs font-bold text-blue-900 uppercase">
+                                                        Настройки: {selectedElement.id.startsWith('custom-img-') ? 'Пользовательское изображение' : selectedElement.id}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => setSelectedElementId(null)}
+                                                        className="text-xs text-blue-600 hover:text-blue-900 font-semibold"
+                                                    >
+                                                        Снять выбор
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div>
+                                                        <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Координата X (мм)</label>
+                                                        <input
+                                                            type="range" min="0" max="210" step="1"
+                                                            value={selectedElement.x}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'x', parseInt(e.target.value))}
+                                                            className="w-full accent-blue-600"
+                                                        />
+                                                        <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.x} мм</div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Координата Y (мм)</label>
+                                                        <input
+                                                            type="range" min="0" max="148" step="1"
+                                                            value={selectedElement.y}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'y', parseInt(e.target.value))}
+                                                            className="w-full accent-blue-600"
+                                                        />
+                                                        <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.y} мм</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {selectedElement.id.startsWith('custom-img-') ? (
+                                                        <>
+                                                            <div>
+                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Ширина (мм)</label>
+                                                                <input
+                                                                    type="range" min="5" max="150" step="1"
+                                                                    value={selectedElement.width}
+                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'width', parseInt(e.target.value))}
+                                                                    className="w-full accent-blue-600"
+                                                                />
+                                                                <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.width} мм</div>
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Высота (мм)</label>
+                                                                <input
+                                                                    type="range" min="5" max="150" step="1"
+                                                                    value={selectedElement.height}
+                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'height', parseInt(e.target.value))}
+                                                                    className="w-full accent-blue-600"
+                                                                />
+                                                                <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.height} мм</div>
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div>
+                                                            <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер шрифта / иконок</label>
+                                                            <input
+                                                                type="range" min="5" max="64" step="0.5"
+                                                                value={selectedElement.size}
+                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseFloat(e.target.value))}
+                                                                className="w-full accent-blue-600"
+                                                            />
+                                                            <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.size} единиц</div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex justify-between items-center pt-2">
+                                                    <label className="flex items-center space-x-2 text-xs font-semibold text-slate-700">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedElement.visible !== false}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'visible', e.target.checked)}
+                                                            className="rounded text-blue-600 w-4 h-4"
+                                                        />
+                                                        <span>Отображать элемент</span>
+                                                    </label>
+
+                                                    {selectedElement.id.startsWith('custom-img-') && (
+                                                        <button
+                                                            onClick={() => deleteCustomImage(selectedElement.id)}
+                                                            className="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-bold flex items-center space-x-1"
+                                                        >
+                                                            <Icon name="trash" className="w-3.5 h-3.5" />
+                                                            <span>Удалить изображение</span>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* External custom image uploader */}
+                                        <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 flex flex-col items-center justify-center space-y-2">
+                                            <div className="text-center">
+                                                <p className="text-xs font-bold text-slate-700">Загрузка логотипа / герба / знаков</p>
+                                                <p className="text-[10px] text-slate-400">Изображение добавится на холст как перетаскиваемый элемент</p>
+                                            </div>
+                                            <label className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold cursor-pointer flex items-center space-x-1.5 transition">
+                                                <Icon name="image" className="w-4 h-4" />
+                                                <span>Загрузить изображение</span>
+                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                                            </label>
+                                        </div>
+
                                         <div className="space-y-3">
                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Основная информация</h4>
                                             <div className="grid grid-cols-2 gap-3">
@@ -785,10 +967,11 @@
 
                                         <hr />
 
+                                        {/* Description parameters */}
                                         <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Блок описания (левая сторона)</h4>
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Маркировочные данные</h4>
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Состав и доп. предупреждения</label>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Состав</label>
                                                 <textarea
                                                     rows="3"
                                                     value={form.ingredients}
@@ -827,8 +1010,9 @@
 
                                         <hr />
 
+                                        {/* Codes, Warnings & Options */}
                                         <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Коды, Значки и Высота Предупреждения</h4>
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Коды, Предупреждения и Знаки</h4>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <label className="block text-xs font-semibold text-slate-600 mb-1">Штрихкод EAN-13</label>
@@ -841,7 +1025,7 @@
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">QR-код (Маркировка)</label>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">QR-код</label>
                                                     <input
                                                         type="text"
                                                         value={form.qrCode}
@@ -852,7 +1036,7 @@
                                             </div>
 
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Предупреждающая надпись</label>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Предупреждающий баннер</label>
                                                 <input
                                                     type="text"
                                                     value={form.warningText}
@@ -863,9 +1047,9 @@
 
                                             <div>
                                                 <div className="flex justify-between text-xs font-semibold text-slate-600 mb-1">
-                                                    <span>Высота баннера (% от этикетки)</span>
+                                                    <span>Высота баннера предупреждения</span>
                                                     <span className={`font-bold ${form.warningHeightPercent >= 10 ? 'text-emerald-600' : 'text-red-500'}`}>
-                                                        {form.warningHeightPercent}% (ГОСТ: >= 10%)
+                                                        {form.warningHeightPercent}% (РБ: >= 10%)
                                                     </span>
                                                 </div>
                                                 <input
@@ -882,7 +1066,7 @@
                                                         type="checkbox"
                                                         checked={form.eacActive}
                                                         onChange={(e) => handleFieldChange('eacActive', e.target.checked)}
-                                                        className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                                                        className="rounded text-brand-600 w-4 h-4"
                                                     />
                                                     <span>Знак EAC</span>
                                                 </label>
@@ -891,29 +1075,57 @@
                                                         type="checkbox"
                                                         checked={form.foodActive}
                                                         onChange={(e) => handleFieldChange('foodActive', e.target.checked)}
-                                                        className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                                                        className="rounded text-brand-600 w-4 h-4"
                                                     />
-                                                    <span>Пищевой</span>
+                                                    <span>Бокал-Вилка</span>
                                                 </label>
                                                 <label className="flex items-center space-x-2 text-xs font-medium cursor-pointer">
                                                     <input
                                                         type="checkbox"
                                                         checked={form.petActive}
                                                         onChange={(e) => handleFieldChange('petActive', e.target.checked)}
-                                                        className="rounded text-brand-600 focus:ring-brand-500 w-4 h-4"
+                                                        className="rounded text-brand-600 w-4 h-4"
                                                     />
                                                     <span>ПЭТ 01</span>
                                                 </label>
                                             </div>
                                         </div>
+
+                                        <hr />
+
+                                        {/* Print Page Customization */}
+                                        <div className="space-y-3">
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Макет Печати (А4)</h4>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Количество этикеток на страницу</label>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <button
+                                                        onClick={() => setPrintQuantity(1)}
+                                                        className={`py-1.5 rounded text-xs font-bold border transition ${
+                                                            printQuantity === 1 ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        1 этикетка
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPrintQuantity(2)}
+                                                        className={`py-1.5 rounded text-xs font-bold border transition ${
+                                                            printQuantity === 2 ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        2 этикетки (А5 x 2)
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    {/* Actions */}
+                                    {/* Footer save/export items */}
                                     <div className="p-4 border-t border-slate-200 bg-slate-50/70 rounded-b-xl flex flex-col space-y-3">
                                         <div className="flex space-y-2 sm:space-y-0 sm:space-x-2 flex-col sm:flex-row">
                                             <input
                                                 type="text"
-                                                placeholder="Название шаблона..."
+                                                placeholder="Имя нового шаблона..."
                                                 value={customName}
                                                 onChange={(e) => setCustomName(e.target.value)}
                                                 className="flex-1 text-xs border border-slate-300 rounded-lg p-2"
@@ -923,22 +1135,22 @@
                                                 className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs flex items-center justify-center space-x-1.5 shadow"
                                             >
                                                 <Icon name="save" className="w-4 h-4" />
-                                                <span>В локальную базу</span>
+                                                <span>Сохранить</span>
                                             </button>
                                         </div>
 
                                         <div className="flex justify-between items-center pt-2">
                                             <button
                                                 onClick={exportTemplates}
-                                                className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs transition flex items-center space-x-1"
+                                                className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs flex items-center space-x-1"
                                             >
                                                 <Icon name="download" className="w-3.5 h-3.5" />
-                                                <span>Экспорт JSON</span>
+                                                <span>Экспорт</span>
                                             </button>
 
-                                            <label className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs transition flex items-center space-x-1 cursor-pointer">
+                                            <label className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs flex items-center space-x-1 cursor-pointer">
                                                 <Icon name="upload" className="w-3.5 h-3.5" />
-                                                <span>Импорт JSON</span>
+                                                <span>Импорт</span>
                                                 <input type="file" accept=".json" onChange={handleImport} className="hidden" />
                                             </label>
                                         </div>
@@ -998,26 +1210,27 @@
                         )}
                     </main>
 
-                    {/* Print targets: exactly 2 per A4 portrait page */}
+                    {/* Print outputs layout */}
                     <div className="hidden print:block print-container">
                         <div className="print-label">
-                            <LabelPreview data={form} />
+                            <LabelPreview data={form} selectedId={null} />
                         </div>
-                        <div className="print-label">
-                            <LabelPreview data={form} />
-                        </div>
+                        {printQuantity === 2 && (
+                            <div className="print-label">
+                                <LabelPreview data={form} selectedId={null} />
+                            </div>
+                        )}
                     </div>
                 </div>
             );
         }
 
-        // Dedicated interactive label renderer
-        function LabelPreview({ data, onOffsetDrag, isInteractive = false }) {
+        // Complete Label layout renderer
+        function LabelPreview({ data, selectedId, onSelectElement, onDragElement, showGrid = false }) {
             const barcodeRef = useRef(null);
             const qrcodeRef = useRef(null);
-            const dragInfo = useRef({ active: false, elementKey: null, startX: 0, startY: 0 });
+            const dragInfo = useRef({ active: false, elementId: null, startX: 0, startY: 0 });
 
-            // Redraw barcode and qr
             useEffect(() => {
                 if (barcodeRef.current && data.barcode && data.barcode.trim().length === 13) {
                     try {
@@ -1054,13 +1267,14 @@
                 }
             }, [data.qrCode]);
 
-            // Drag event handlers
-            const handleMouseDown = (e, elementKey) => {
-                if (!isInteractive || !onOffsetDrag) return;
+            const handleMouseDown = (e, elementId) => {
+                if (!onDragElement || !onSelectElement) return;
                 e.preventDefault();
+                e.stopPropagation();
+                onSelectElement(elementId);
                 dragInfo.current = {
                     active: true,
-                    elementKey,
+                    elementId,
                     startX: e.clientX,
                     startY: e.clientY
                 };
@@ -1070,10 +1284,10 @@
 
             const handleMouseMove = (e) => {
                 if (!dragInfo.current.active) return;
-                const dx = (e.clientX - dragInfo.current.startX) / 3.779; // convert px to approximate mm
+                const dx = (e.clientX - dragInfo.current.startX) / 3.779;
                 const dy = (e.clientY - dragInfo.current.startY) / 3.779;
-                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-                    onOffsetDrag(dragInfo.current.elementKey, dx, dy);
+                if (Math.abs(dx) >= 0.5 || Math.abs(dy) >= 0.5) {
+                    onDragElement(dragInfo.current.elementId, dx, dy);
                     dragInfo.current.startX = e.clientX;
                     dragInfo.current.startY = e.clientY;
                 }
@@ -1085,159 +1299,193 @@
                 document.removeEventListener('mouseup', handleMouseUp);
             };
 
-            const o = data.offsets || {
-                headerY: 4,
-                titleY: 12,
-                subtitleY: 26,
-                statsX: 4,
-                iconsX: 178,
-                bodyY: 52,
-                bottomY: 130
+            const el = data.elements || {
+                header: { x: 105, y: 4, size: 10, visible: true },
+                title: { x: 105, y: 12, size: 34, visible: true },
+                subtitle: { x: 105, y: 26, size: 8, visible: true },
+                stats: { x: 4, y: 10, size: 12, visible: true },
+                icons: { x: 178, y: 5, size: 38, visible: true },
+                body: { x: 6, y: 52, size: 6.5, visible: true }
             };
 
+            const isSel = (id) => selectedId === id;
+
             return (
-                <div className="label-preview-container select-none text-black relative border border-slate-300 bg-white">
-                    {/* Brand header block */}
-                    <div
-                        style={{ top: `${o.headerY}mm` }}
-                        onMouseDown={(e) => handleMouseDown(e, 'headerY')}
-                        className={`absolute left-1/2 -translate-x-1/2 w-full text-center flex items-center justify-center space-x-1.5 ${isInteractive ? 'draggable-active' : ''}`}
-                    >
-                        {/* Circular Emblem matching the sample */}
-                        <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M12 2v20M2 12h20M6 6l12 12M6 18L18 6" />
-                        </svg>
-                        <span className="font-bold text-[10px] tracking-[0.25em] font-narrow uppercase">{data.brandName || 'БРЕНД'}</span>
-                    </div>
-
-                    {/* Main Category (СИДР, ПИВО, ВИНО) */}
-                    <div
-                        style={{ top: `${o.titleY}mm` }}
-                        onMouseDown={(e) => handleMouseDown(e, 'titleY')}
-                        className={`absolute left-1/2 -translate-x-1/2 w-full text-center ${isInteractive ? 'draggable-active' : ''}`}
-                    >
-                        <h2 className="text-[34px] font-black tracking-[0.1em] leading-none font-narrow m-0 py-0 uppercase">
-                            {data.productType || 'НАПИТОК'}
-                        </h2>
-                    </div>
-
-                    {/* Description subtitling */}
-                    <div
-                        style={{ top: `${o.subtitleY}mm` }}
-                        onMouseDown={(e) => handleMouseDown(e, 'subtitleY')}
-                        className={`absolute left-1/2 -translate-x-1/2 w-[85%] text-center ${isInteractive ? 'draggable-active' : ''}`}
-                    >
-                        <p className="text-[8px] font-bold uppercase tracking-wide leading-tight text-center">
-                            {data.subtitle || 'Описание напитка'}
-                        </p>
-                        <p className="text-[7.5px] font-bold text-center mt-0.5">
-                            {data.standard} {data.tiNumber ? `| ${data.tiNumber}` : ''}
-                        </p>
-                    </div>
-
-                    {/* Left Column Metric parameter block (СПИРТ, ОБЪЕМ, САХАР with divider lines matching sample) */}
-                    <div
-                        style={{ left: `${o.statsX}mm`, top: `${o.titleY - 2}mm` }}
-                        onMouseDown={(e) => handleMouseDown(e, 'statsX')}
-                        className={`absolute w-[34mm] flex flex-col font-narrow border-t border-black/30 pt-1 ${isInteractive ? 'draggable-active' : ''}`}
-                    >
-                        <div className="pb-1 border-b border-black/30">
-                            <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">СПИРТ</div>
-                            <div className="text-[12px] font-black leading-tight mt-0.5">{data.alcohol || '0'}</div>
+                <div
+                    className={`label-preview-container select-none text-black relative border border-slate-300 bg-white ${showGrid ? 'grid-background' : ''}`}
+                    onClick={() => onSelectElement && onSelectElement(null)}
+                >
+                    {/* Brand header */}
+                    {el.header.visible !== false && (
+                        <div
+                            style={{ left: `${el.header.x}mm`, top: `${el.header.y}mm`, fontSize: `${el.header.size}px` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'header')}
+                            className={`absolute -translate-x-1/2 text-center flex items-center justify-center space-x-1.5 draggable-element ${isSel('header') ? 'draggable-selected' : ''}`}
+                        >
+                            <svg className="w-3.5 h-3.5 text-black shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 2v20M2 12h20M6 6l12 12M6 18L18 6" />
+                            </svg>
+                            <span className="font-bold tracking-[0.25em] font-narrow uppercase shrink-0 leading-none">{data.brandName || 'БРЕНД'}</span>
                         </div>
-                        <div className="py-1 border-b border-black/30">
-                            <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">ОБЪЕМ</div>
-                            <div className="text-[12px] font-black leading-tight mt-0.5">{data.volume || '0 л'}</div>
-                        </div>
-                        <div className="pt-1">
-                            <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">САХАР</div>
-                            <div className="text-[12px] font-black leading-tight mt-0.5">{data.sugar || '0'}</div>
-                        </div>
-                    </div>
+                    )}
 
-                    {/* Right compliance icons matching exact look of target image */}
-                    <div
-                        style={{ left: `${o.iconsX}mm`, top: `${o.headerY + 1}mm` }}
-                        onMouseDown={(e) => handleMouseDown(e, 'iconsX')}
-                        className={`absolute w-[26mm] flex flex-col items-center space-y-1.5 ${isInteractive ? 'draggable-active' : ''}`}
-                    >
-                        {data.qrCode && (
-                            <div className="flex flex-col items-center">
-                                <span className="text-[4.5px] font-bold tracking-tighter uppercase mb-0.5 font-sans">MADE IN BELARUS</span>
-                                <div ref={qrcodeRef} className="p-0.5 bg-white border border-black/50 rounded shadow-sm"></div>
+                    {/* Main Category */}
+                    {el.title.visible !== false && (
+                        <div
+                            style={{ left: `${el.title.x}mm`, top: `${el.title.y}mm` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'title')}
+                            className={`absolute -translate-x-1/2 text-center draggable-element ${isSel('title') ? 'draggable-selected' : ''}`}
+                        >
+                            <h2 style={{ fontSize: `${el.title.size}px` }} className="font-black tracking-[0.1em] leading-none font-narrow m-0 py-0 uppercase">
+                                {data.productType || 'НАПИТОК'}
+                            </h2>
+                        </div>
+                    )}
+
+                    {/* Subtitle / Standards */}
+                    {el.subtitle.visible !== false && (
+                        <div
+                            style={{ left: `${el.subtitle.x}mm`, top: `${el.subtitle.y}mm` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'subtitle')}
+                            className={`absolute -translate-x-1/2 w-[85%] text-center draggable-element ${isSel('subtitle') ? 'draggable-selected' : ''}`}
+                        >
+                            <p style={{ fontSize: `${el.subtitle.size}px` }} className="font-bold uppercase tracking-wide leading-tight text-center">
+                                {data.subtitle || 'Описание'}
+                            </p>
+                            <p style={{ fontSize: `${el.subtitle.size * 0.9}px` }} className="font-bold text-center mt-0.5">
+                                {data.standard} {data.tiNumber ? `| ${data.tiNumber}` : ''}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Left stats parameters */}
+                    {el.stats.visible !== false && (
+                        <div
+                            style={{ left: `${el.stats.x}mm`, top: `${el.stats.y}mm` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'stats')}
+                            className={`absolute w-[34mm] flex flex-col font-narrow border-t border-black/30 pt-1 draggable-element ${isSel('stats') ? 'draggable-selected' : ''}`}
+                        >
+                            <div className="pb-1 border-b border-black/30">
+                                <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">СПИРТ</div>
+                                <div style={{ fontSize: `${el.stats.size}px` }} className="font-black leading-tight mt-0.5">{data.alcohol || '0'}</div>
                             </div>
-                        )}
+                            <div className="py-1 border-b border-black/30">
+                                <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">ОБЪЕМ</div>
+                                <div style={{ fontSize: `${el.stats.size}px` }} className="font-black leading-tight mt-0.5">{data.volume || '0 л'}</div>
+                            </div>
+                            <div className="pt-1">
+                                <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">САХАР</div>
+                                <div style={{ fontSize: `${el.stats.size}px` }} className="font-black leading-tight mt-0.5">{data.sugar || '0'}</div>
+                            </div>
+                        </div>
+                    )}
 
-                        {data.eacActive && (
-                            <span className="font-bold text-[14px] tracking-tight border border-black/90 px-1 rounded font-mono leading-none">
-                                EAC
-                            </span>
-                        )}
-
-                        <div className="flex items-center space-x-1.5">
-                            {data.foodActive && (
-                                <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                    <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
-                                    <path d="M12 14v6M8 20h8" />
-                                </svg>
+                    {/* Right regulatory icons */}
+                    {el.icons.visible !== false && (
+                        <div
+                            style={{ left: `${el.icons.x}mm`, top: `${el.icons.y}mm` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'icons')}
+                            className={`absolute w-[26mm] flex flex-col items-center space-y-1.5 draggable-element ${isSel('icons') ? 'draggable-selected' : ''}`}
+                        >
+                            {data.qrCode && (
+                                <div className="flex flex-col items-center">
+                                    <span className="text-[4.5px] font-bold tracking-tighter uppercase mb-0.5 font-sans">MADE IN BELARUS</span>
+                                    <div ref={qrcodeRef} className="p-0.5 bg-white border border-black/50 rounded"></div>
+                                </div>
                             )}
 
-                            {data.petActive && (
-                                <div className="flex flex-col items-center relative">
+                            {data.eacActive && (
+                                <span className="font-bold text-[14px] tracking-tight border border-black/90 px-1 rounded font-mono leading-none">
+                                    EAC
+                                </span>
+                            )}
+
+                            <div className="flex items-center space-x-1.5">
+                                {data.foodActive && (
                                     <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                        <path d="M12 2l8 14H4L12 2z" />
+                                        <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
+                                        <path d="M12 14v6M8 20h8" />
                                     </svg>
-                                    <span className="text-[5.5px] font-black absolute top-1.5 font-mono">1</span>
-                                    <span className="text-[4.5px] font-bold tracking-tighter font-mono uppercase">PET</span>
-                                </div>
-                            )}
+                                )}
+
+                                {data.petActive && (
+                                    <div className="flex flex-col items-center relative">
+                                        <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                            <path d="M12 2l8 14H4L12 2z" />
+                                        </svg>
+                                        <span className="text-[5.5px] font-black absolute top-1.5 font-mono">1</span>
+                                        <span className="text-[4.5px] font-bold tracking-tighter font-mono uppercase">PET</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Standard regulations block */}
-                    <div
-                        style={{ top: `${o.bodyY}mm` }}
-                        onMouseDown={(e) => handleMouseDown(e, 'bodyY')}
-                        className={`absolute left-[3%] w-[94%] grid grid-cols-12 gap-3 ${isInteractive ? 'draggable-active' : ''}`}
-                    >
-                        <div className="col-span-8 flex flex-col space-y-0.5 font-narrow">
-                            <p className="text-[6.5px] leading-[1.2] text-justify font-semibold">
-                                {data.ingredients}
-                            </p>
-                            <p className="text-[6.5px] leading-[1.2] text-justify font-semibold text-slate-800">
-                                {data.nutrition}
-                            </p>
-                            <p className="text-[6.5px] leading-[1.2] text-justify font-semibold text-slate-900">
-                                {data.storage}
-                            </p>
-                            <p className="text-[7.2px] font-bold text-left tracking-wider pt-0.5 uppercase">
-                                {data.expiration}
-                            </p>
-                        </div>
+                    {/* Custom base64 uploaded images */}
+                    {data.customImages && data.customImages.map(img => (
+                        <img
+                            key={img.id}
+                            src={img.src}
+                            style={{
+                                left: `${img.x}mm`,
+                                top: `${img.y}mm`,
+                                width: `${img.width}mm`,
+                                height: `${img.height}mm`,
+                                opacity: img.opacity !== undefined ? img.opacity : 1,
+                                display: img.visible !== false ? 'block' : 'none'
+                            }}
+                            onMouseDown={(e) => handleMouseDown(e, img.id)}
+                            className={`absolute draggable-element ${isSel(img.id) ? 'draggable-selected' : ''}`}
+                            alt="Custom user element"
+                        />
+                    ))}
 
-                        {/* Barcode and manual dates */}
-                        <div className="col-span-4 flex flex-col items-end space-y-1 pr-1">
-                            {data.barcode && (
-                                <div className="flex justify-end">
-                                    <svg ref={barcodeRef}></svg>
-                                </div>
-                            )}
+                    {/* Body columns / Composition */}
+                    {el.body.visible !== false && (
+                        <div
+                            style={{ left: `${el.body.x}mm`, top: `${el.body.y}mm` }}
+                            onMouseDown={(e) => handleMouseDown(e, 'body')}
+                            className={`absolute w-[94%] grid grid-cols-12 gap-3 draggable-element ${isSel('body') ? 'draggable-selected' : ''}`}
+                        >
+                            <div className="col-span-8 flex flex-col space-y-0.5 font-narrow">
+                                <p style={{ fontSize: `${el.body.size}px` }} className="leading-[1.2] text-justify font-semibold">
+                                    {data.ingredients}
+                                </p>
+                                <p style={{ fontSize: `${el.body.size}px` }} className="leading-[1.2] text-justify font-semibold text-slate-800">
+                                    {data.nutrition}
+                                </p>
+                                <p style={{ fontSize: `${el.body.size}px` }} className="leading-[1.2] text-justify font-semibold text-slate-900">
+                                    {data.storage}
+                                </p>
+                                <p style={{ fontSize: `${el.body.size * 1.1}px` }} className="font-bold text-left tracking-wider pt-0.5 uppercase">
+                                    {data.expiration}
+                                </p>
+                            </div>
 
-                            <div className="w-full pl-3 space-y-0.5 font-narrow">
-                                <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
-                                    <span className="font-bold">Дата розлива</span>
-                                    <span className="w-14 border-b border-black h-1.5"></span>
-                                </div>
-                                <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
-                                    <span className="font-bold">Дата подключения</span>
-                                    <span className="w-14 border-b border-black h-1.5"></span>
+                            {/* Barcodes & Dates */}
+                            <div className="col-span-4 flex flex-col items-end space-y-1 pr-1">
+                                {data.barcode && (
+                                    <div className="flex justify-end">
+                                        <svg ref={barcodeRef}></svg>
+                                    </div>
+                                )}
+
+                                <div className="w-full pl-3 space-y-0.5 font-narrow">
+                                    <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
+                                        <span className="font-bold">Дата розлива</span>
+                                        <span className="w-14 border-b border-black h-1.5"></span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
+                                        <span className="font-bold">Дата подключения</span>
+                                        <span className="w-14 border-b border-black h-1.5"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Legal Warning Banner Block */}
+                    {/* Legal health warning footer */}
                     <div
                         style={{
                             height: `${data.warningHeightPercent}%`,
@@ -1253,7 +1501,6 @@
             );
         }
 
-        // Render React application
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<App />);
