@@ -152,28 +152,99 @@ if (isset($_GET['action'])) {
             }
             .print-container {
                 display: block !important;
-                width: 210mm !important;
-                height: 297mm !important;
                 margin: 0 auto !important;
                 padding: 0 !important;
                 box-sizing: border-box !important;
                 page-break-after: avoid !important;
                 page-break-before: avoid !important;
             }
-            /* A5 horizontal size: 210mm x 148mm. */
+
+            /* Basic landscape A5 page styling */
             .print-label {
-                width: 210mm !important;
-                height: 148mm !important;
                 box-sizing: border-box !important;
-                border: 1px dashed #999 !important;
+                border: 1px dashed #ccc !important;
                 position: relative !important;
                 page-break-inside: avoid !important;
                 overflow: hidden !important;
                 background: white !important;
             }
-            /* Spacing can be adjusted depending on multi-print toggle */
-            .print-label:first-child {
-                margin-bottom: 1mm !important;
+
+            /* Layout: 1 horizontal */
+            .print-layout-h1 {
+                width: 210mm !important;
+                height: 297mm !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            .print-layout-h1 .print-label {
+                width: 210mm !important;
+                height: 148mm !important;
+            }
+
+            /* Layout: 2 horizontal */
+            .print-layout-h2 {
+                width: 210mm !important;
+                height: 297mm !important;
+            }
+            .print-layout-h2 .print-label {
+                width: 210mm !important;
+                height: 148mm !important;
+                margin-bottom: 0.5mm !important;
+            }
+
+            /* Layout: 2 vertical (side-by-side) on landscape A4 */
+            .print-layout-v2 {
+                width: 297mm !important;
+                height: 210mm !important;
+            }
+            .flex-landscape-container {
+                display: flex !important;
+                flex-direction: row !important;
+                width: 297mm !important;
+                height: 210mm !important;
+            }
+            .vertical-print-col {
+                width: 148.5mm !important;
+                height: 210mm !important;
+                position: relative !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                border-right: 1px dashed #ccc !important;
+            }
+            .rotated-print-label {
+                width: 210mm !important;
+                height: 148mm !important;
+                transform: rotate(90deg) translate(0, -210mm) !important;
+                transform-origin: top left !important;
+            }
+
+            /* Layout: 4 grid items (2x2) */
+            .print-layout-grid4 {
+                width: 210mm !important;
+                height: 297mm !important;
+            }
+            .grid-4-container {
+                display: grid !important;
+                grid-template-columns: 105mm 105mm !important;
+                grid-template-rows: 148.5mm 148.5mm !important;
+                width: 210mm !important;
+                height: 297mm !important;
+                box-sizing: border-box !important;
+            }
+            .grid-item-wrapper {
+                width: 105mm !important;
+                height: 148.5mm !important;
+                position: relative !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+                border: 1px dashed #ccc !important;
+            }
+            .grid-item-wrapper .print-label {
+                width: 210mm !important;
+                height: 148mm !important;
+                transform: scale(0.5) !important;
+                transform-origin: top left !important;
             }
         }
 
@@ -455,7 +526,7 @@ if (isset($_GET['action'])) {
             const [zoom, setZoom] = useState(0.85);
             const [selectedElementId, setSelectedElementId] = useState(null); // ID of currently clicked canvas element
             const [showGrid, setShowGrid] = useState(false);
-            const [printQuantity, setPrintQuantity] = useState(2); // 1 or 2 labels per page
+            const [printLayout, setPrintLayout] = useState('h2'); // h1, h2, v2, grid4
 
             // Checklist requirements СТБ 1100-2016
             const [checklist, setChecklist] = useState({
@@ -1523,23 +1594,43 @@ if (isset($_GET['action'])) {
                                         <div className="space-y-3">
                                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Макет Печати (А4)</h4>
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Количество этикеток на страницу</label>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Формат раскладки на листе</label>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <button
-                                                        onClick={() => setPrintQuantity(1)}
-                                                        className={`py-1.5 rounded text-xs font-bold border transition ${
-                                                            printQuantity === 1 ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                        onClick={() => setPrintLayout('h1')}
+                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                            printLayout === 'h1' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                                                         }`}
                                                     >
-                                                        1 этикетка
+                                                        <span>1 горизонтально</span>
+                                                        <span className="text-[10px] opacity-80 font-normal">A5 Альбомная</span>
                                                     </button>
                                                     <button
-                                                        onClick={() => setPrintQuantity(2)}
-                                                        className={`py-1.5 rounded text-xs font-bold border transition ${
-                                                            printQuantity === 2 ? 'bg-brand-600 text-white border-brand-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                        onClick={() => setPrintLayout('h2')}
+                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                            printLayout === 'h2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
                                                         }`}
                                                     >
-                                                        2 этикетки (А5 x 2)
+                                                        <span>2 горизонтально</span>
+                                                        <span className="text-[10px] opacity-80 font-normal">А5 x 2 Портрет лист</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPrintLayout('v2')}
+                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                            printLayout === 'v2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        <span>2 вертикально</span>
+                                                        <span className="text-[10px] opacity-80 font-normal">А5 х 2 Ландшафт лист</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPrintLayout('grid4')}
+                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                            printLayout === 'grid4' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                        }`}
+                                                    >
+                                                        <span>4 на листе (2х2)</span>
+                                                        <span className="text-[10px] opacity-80 font-normal">A6 x 4 Портрет лист</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -1638,13 +1729,58 @@ if (isset($_GET['action'])) {
                     </div>
 
                     {/* Print outputs layout */}
-                    <div className="hidden print:block print-container">
-                        <div className="print-label">
-                            <LabelPreview data={form} selectedId={null} />
-                        </div>
-                        {printQuantity === 2 && (
+                    <div className={`hidden print:block print-container print-layout-${printLayout}`}>
+                        {printLayout === 'h1' && (
                             <div className="print-label">
                                 <LabelPreview data={form} selectedId={null} />
+                            </div>
+                        )}
+                        {printLayout === 'h2' && (
+                            <>
+                                <div className="print-label">
+                                    <LabelPreview data={form} selectedId={null} />
+                                </div>
+                                <div className="print-label">
+                                    <LabelPreview data={form} selectedId={null} />
+                                </div>
+                            </>
+                        )}
+                        {printLayout === 'v2' && (
+                            <div className="flex-landscape-container">
+                                <div className="vertical-print-col">
+                                    <div className="print-label rotated-print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                </div>
+                                <div className="vertical-print-col">
+                                    <div className="print-label rotated-print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        {printLayout === 'grid4' && (
+                            <div className="grid-4-container">
+                                <div className="grid-item-wrapper">
+                                    <div className="print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                </div>
+                                <div className="grid-item-wrapper">
+                                    <div className="print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                </div>
+                                <div className="grid-item-wrapper">
+                                    <div className="print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                </div>
+                                <div className="grid-item-wrapper">
+                                    <div className="print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
