@@ -159,6 +159,15 @@ if (isset($_GET['action'])) {
                 page-break-after: avoid !important;
                 page-break-before: avoid !important;
             }
+            .custom-active {
+                display: block !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+            }
+            .custom-print-grid {
+                display: grid !important;
+                page-break-inside: avoid !important;
+            }
 
             /* Basic landscape A5 page styling */
             .print-label {
@@ -638,6 +647,15 @@ if (isset($_GET['action'])) {
             const [selectedElementId, setSelectedElementId] = useState(null); // ID of currently clicked canvas element
             const [showGrid, setShowGrid] = useState(false);
             const [printLayout, setPrintLayout] = useState('h2'); // h1, h2, v2, grid4
+            const [customPrintConfig, setCustomPrintConfig] = useState({
+                active: false,
+                columns: 2,
+                rows: 3,
+                gap: 1.0,
+                scale: 0.5,
+                pageOrientation: 'portrait',
+                labelCount: 6
+            });
 
             // Checklist requirements СТБ 1100-2016
             const [checklist, setChecklist] = useState({
@@ -1164,7 +1182,11 @@ if (isset($_GET['action'])) {
                 reader.readAsText(file);
             };
 
-            const dynamicPageSizeStyle = (printLayout === 'v2' || printLayout === 'v3')
+            const isLandscape = customPrintConfig.active
+                ? customPrintConfig.pageOrientation === 'landscape'
+                : (printLayout === 'v2' || printLayout === 'v3');
+
+            const dynamicPageSizeStyle = isLandscape
                 ? `@media print { @page { size: A4 landscape !important; margin: 0 !important; } }`
                 : `@media print { @page { size: A4 portrait !important; margin: 0 !important; } }`;
 
@@ -1811,85 +1833,173 @@ if (isset($_GET['action'])) {
                                         <hr />
 
                                         {/* Print Page Customization */}
-                                        <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Макет Печати (А4)</h4>
-                                            <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Формат раскладки на листе</label>
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <button
-                                                        onClick={() => setPrintLayout('h1')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'h1' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>1 горизонтально</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">A5 Альбомная (Центр)</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('h2')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'h2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>2 горизонтально</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">А5 x 2 Портрет</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('v2')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'v2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>2 вертикально</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">А5 х 2 Ландшафт</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('v3')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'v3' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>3 вертикально</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">А5 х 3 Ландшафт</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('grid4')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'grid4' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>4 на листе (2х2)</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">A6 x 4 Портрет</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('grid6')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'grid6' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>6 на листе (2х3)</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">Малый х 6 Портрет</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('grid8')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'grid8' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>8 на листе (2х4)</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">Малый х 8 Портрет</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPrintLayout('grid12')}
-                                                        className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                            printLayout === 'grid12' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                        }`}
-                                                    >
-                                                        <span>12 на листе (3х4)</span>
-                                                        <span className="text-[10px] opacity-80 font-normal">Мини х 12 Портрет</span>
-                                                    </button>
-                                                </div>
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center pb-1 border-b border-slate-200">
+                                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Макет Печати (А4)</h4>
+                                                <label className="flex items-center space-x-1.5 cursor-pointer select-none">
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase">Свой макет:</span>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={customPrintConfig.active}
+                                                        onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, active: e.target.checked }))}
+                                                        className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500"
+                                                    />
+                                                </label>
                                             </div>
+
+                                            {!customPrintConfig.active ? (
+                                                <div>
+                                                    <label className="block text-xs font-semibold text-slate-600 mb-2">Формат раскладки на листе:</label>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <button
+                                                            onClick={() => setPrintLayout('h1')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'h1' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>1 горизонтально</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">A5 Альбомная (Центр)</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('h2')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'h2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>2 горизонтально</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">А5 x 2 Портрет</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('v2')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'v2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>2 вертикально</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">А5 х 2 Ландшафт</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('v3')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'v3' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>3 вертикально</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">А5 х 3 Ландшафт</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('grid4')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'grid4' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>4 на листе (2х2)</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">A6 x 4 Портрет</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('grid6')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'grid6' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>6 на листе (2х3)</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">Малый х 6 Портрет</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('grid8')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'grid8' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>8 на листе (2х4)</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">Малый х 8 Портрет</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPrintLayout('grid12')}
+                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
+                                                                printLayout === 'grid12' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <span>12 на листе (3х4)</span>
+                                                            <span className="text-[10px] opacity-80 font-normal">Мини х 12 Портрет</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-3">
+                                                    <div className="text-xs font-bold text-slate-700 border-b pb-1 mb-2 uppercase tracking-wide flex justify-between items-center">
+                                                        <span>Конфигуратор размещения</span>
+                                                        <span className="text-[10px] text-brand-600">Активен</span>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Колонки (1-5)</label>
+                                                            <input
+                                                                type="number" min="1" max="5"
+                                                                value={customPrintConfig.columns}
+                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, columns: Math.max(1, Math.min(5, parseInt(e.target.value) || 1)) }))}
+                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold text-center"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Строки (1-8)</label>
+                                                            <input
+                                                                type="number" min="1" max="8"
+                                                                value={customPrintConfig.rows}
+                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, rows: Math.max(1, Math.min(8, parseInt(e.target.value) || 1)) }))}
+                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold text-center"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Разрыв (мм)</label>
+                                                            <input
+                                                                type="range" min="0" max="15" step="0.5"
+                                                                value={customPrintConfig.gap}
+                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, gap: parseFloat(e.target.value) }))}
+                                                                className="w-full accent-brand-600"
+                                                            />
+                                                            <div className="text-right text-[10px] font-bold text-slate-500">{customPrintConfig.gap} мм</div>
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Масштаб этикетки</label>
+                                                            <input
+                                                                type="range" min="0.1" max="1.5" step="0.05"
+                                                                value={customPrintConfig.scale}
+                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, scale: parseFloat(e.target.value) }))}
+                                                                className="w-full accent-brand-600"
+                                                            />
+                                                            <div className="text-right text-[10px] font-bold text-slate-500">{Math.round(customPrintConfig.scale * 100)}%</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div>
+                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Ориентация А4</label>
+                                                            <select
+                                                                value={customPrintConfig.pageOrientation}
+                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, pageOrientation: e.target.value }))}
+                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold"
+                                                            >
+                                                                <option value="portrait">Портретная</option>
+                                                                <option value="landscape">Альбомная</option>
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Количество (шт)</label>
+                                                            <input
+                                                                type="number" min="1" max="40"
+                                                                value={customPrintConfig.labelCount}
+                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, labelCount: Math.max(1, Math.min(40, parseInt(e.target.value) || 1)) }))}
+                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold text-center"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -2004,98 +2114,150 @@ if (isset($_GET['action'])) {
                     </div>
 
                     {/* Print outputs layout */}
-                    <div className={`hidden print:block print-container print-layout-${printLayout}`}>
-                        {printLayout === 'h1' && (
-                            <div className="print-label">
-                                <LabelPreview data={form} selectedId={null} />
-                            </div>
-                        )}
-                        {printLayout === 'h2' && (
+                    <div className={`hidden print:block print-container ${customPrintConfig.active ? 'custom-active' : `print-layout-${printLayout}`}`}>
+                        {customPrintConfig.active ? (
+                            (() => {
+                                const pageWidth = customPrintConfig.pageOrientation === 'landscape' ? 297 : 210;
+                                const pageHeight = customPrintConfig.pageOrientation === 'landscape' ? 210 : 297;
+                                const cellWidth = (pageWidth - (customPrintConfig.columns - 1) * customPrintConfig.gap) / customPrintConfig.columns;
+                                const cellHeight = (pageHeight - (customPrintConfig.rows - 1) * customPrintConfig.gap) / customPrintConfig.rows;
+                                return (
+                                    <div
+                                        className="custom-print-grid"
+                                        style={{
+                                            display: 'grid',
+                                            gridTemplateColumns: `repeat(${customPrintConfig.columns}, ${cellWidth}mm)`,
+                                            gridTemplateRows: `repeat(${customPrintConfig.rows}, ${cellHeight}mm)`,
+                                            gap: `${customPrintConfig.gap}mm`,
+                                            width: `${pageWidth}mm`,
+                                            height: `${pageHeight}mm`,
+                                            boxSizing: 'border-box'
+                                        }}
+                                    >
+                                        {Array.from({ length: customPrintConfig.labelCount }).map((_, i) => (
+                                            <div
+                                                key={i}
+                                                style={{
+                                                    width: `${cellWidth}mm`,
+                                                    height: `${cellHeight}mm`,
+                                                    position: 'relative',
+                                                    overflow: 'hidden',
+                                                    boxSizing: 'border-box',
+                                                    border: '1px dashed #ccc'
+                                                }}
+                                            >
+                                                <div
+                                                    className="print-label"
+                                                    style={{
+                                                        width: '210mm',
+                                                        height: '148mm',
+                                                        transform: `scale(${customPrintConfig.scale})`,
+                                                        transformOrigin: 'top left',
+                                                        position: 'absolute'
+                                                    }}
+                                                >
+                                                    <LabelPreview data={form} selectedId={null} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            })()
+                        ) : (
                             <>
-                                <div className="print-label">
-                                    <LabelPreview data={form} selectedId={null} />
-                                </div>
-                                <div className="print-label">
-                                    <LabelPreview data={form} selectedId={null} />
-                                </div>
+                                {printLayout === 'h1' && (
+                                    <div className="print-label">
+                                        <LabelPreview data={form} selectedId={null} />
+                                    </div>
+                                )}
+                                {printLayout === 'h2' && (
+                                    <>
+                                        <div className="print-label">
+                                            <LabelPreview data={form} selectedId={null} />
+                                        </div>
+                                        <div className="print-label">
+                                            <LabelPreview data={form} selectedId={null} />
+                                        </div>
+                                    </>
+                                )}
+                                {printLayout === 'v2' && (
+                                    <div className="flex-landscape-container">
+                                        <div className="vertical-print-col">
+                                            <div className="print-label rotated-print-label">
+                                                <LabelPreview data={form} selectedId={null} />
+                                            </div>
+                                        </div>
+                                        <div className="vertical-print-col">
+                                            <div className="print-label rotated-print-label">
+                                                <LabelPreview data={form} selectedId={null} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {printLayout === 'v3' && (
+                                    <div className="flex-landscape-container-v3">
+                                        <div className="vertical-print-col-v3">
+                                            <div className="print-label rotated-print-label-v3">
+                                                <LabelPreview data={form} selectedId={null} />
+                                            </div>
+                                        </div>
+                                        <div className="vertical-print-col-v3">
+                                            <div className="print-label rotated-print-label-v3">
+                                                <LabelPreview data={form} selectedId={null} />
+                                            </div>
+                                        </div>
+                                        <div className="vertical-print-col-v3">
+                                            <div className="print-label rotated-print-label-v3">
+                                                <LabelPreview data={form} selectedId={null} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {printLayout === 'grid4' && (
+                                    <div className="grid-4-container">
+                                        {Array.from({ length: 4 }).map((_, i) => (
+                                            <div key={i} className="grid-item-wrapper">
+                                                <div className="print-label">
+                                                    <LabelPreview data={form} selectedId={null} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {printLayout === 'grid6' && (
+                                    <div className="grid-6-container">
+                                        {Array.from({ length: 6 }).map((_, i) => (
+                                            <div key={i} className="grid-item-wrapper-6">
+                                                <div className="print-label">
+                                                    <LabelPreview data={form} selectedId={null} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {printLayout === 'grid8' && (
+                                    <div className="grid-8-container">
+                                        {Array.from({ length: 8 }).map((_, i) => (
+                                            <div key={i} className="grid-item-wrapper-8">
+                                                <div className="print-label">
+                                                    <LabelPreview data={form} selectedId={null} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                {printLayout === 'grid12' && (
+                                    <div className="grid-12-container">
+                                        {Array.from({ length: 12 }).map((_, i) => (
+                                            <div key={i} className="grid-item-wrapper-12">
+                                                <div className="print-label">
+                                                    <LabelPreview data={form} selectedId={null} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </>
-                        )}
-                        {printLayout === 'v2' && (
-                            <div className="flex-landscape-container">
-                                <div className="vertical-print-col">
-                                    <div className="print-label rotated-print-label">
-                                        <LabelPreview data={form} selectedId={null} />
-                                    </div>
-                                </div>
-                                <div className="vertical-print-col">
-                                    <div className="print-label rotated-print-label">
-                                        <LabelPreview data={form} selectedId={null} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {printLayout === 'v3' && (
-                            <div className="flex-landscape-container-v3">
-                                <div className="vertical-print-col-v3">
-                                    <div className="print-label rotated-print-label-v3">
-                                        <LabelPreview data={form} selectedId={null} />
-                                    </div>
-                                </div>
-                                <div className="vertical-print-col-v3">
-                                    <div className="print-label rotated-print-label-v3">
-                                        <LabelPreview data={form} selectedId={null} />
-                                    </div>
-                                </div>
-                                <div className="vertical-print-col-v3">
-                                    <div className="print-label rotated-print-label-v3">
-                                        <LabelPreview data={form} selectedId={null} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {printLayout === 'grid4' && (
-                            <div className="grid-4-container">
-                                {Array.from({ length: 4 }).map((_, i) => (
-                                    <div key={i} className="grid-item-wrapper">
-                                        <div className="print-label">
-                                            <LabelPreview data={form} selectedId={null} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        {printLayout === 'grid6' && (
-                            <div className="grid-6-container">
-                                {Array.from({ length: 6 }).map((_, i) => (
-                                    <div key={i} className="grid-item-wrapper-6">
-                                        <div className="print-label">
-                                            <LabelPreview data={form} selectedId={null} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        {printLayout === 'grid8' && (
-                            <div className="grid-8-container">
-                                {Array.from({ length: 8 }).map((_, i) => (
-                                    <div key={i} className="grid-item-wrapper-8">
-                                        <div className="print-label">
-                                            <LabelPreview data={form} selectedId={null} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        {printLayout === 'grid12' && (
-                            <div className="grid-12-container">
-                                {Array.from({ length: 12 }).map((_, i) => (
-                                    <div key={i} className="grid-item-wrapper-12">
-                                        <div className="print-label">
-                                            <LabelPreview data={form} selectedId={null} />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
                         )}
                     </div>
                 </div>
