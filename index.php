@@ -879,9 +879,10 @@ if (isset($_GET['action'])) {
             };
 
             return (
-                <div className="min-h-screen flex flex-col no-print">
-                    {/* Header */}
-                    <header className="bg-gradient-to-r from-brand-700 to-brand-500 text-white shadow-md">
+                <div className="min-h-screen flex flex-col">
+                    <div className="no-print min-h-screen flex flex-col">
+                        {/* Header */}
+                        <header className="bg-gradient-to-r from-brand-700 to-brand-500 text-white shadow-md">
                         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
                             <div className="flex items-center space-x-3">
                                 <div className="p-2 bg-white/10 rounded-lg">
@@ -1584,56 +1585,57 @@ if (isset($_GET['action'])) {
                             </>
                         )}
 
-                        {activeTab === 'templates' && (
-                            <div className="col-span-12 bg-white rounded-xl shadow-md p-6 border border-slate-200">
-                                <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
-                                    <Icon name="fileText" className="w-5 h-5 text-brand-600" />
-                                    <span>Ваши сохраненные шаблоны (База JSON PHP)</span>
-                                </h3>
+                            {activeTab === 'templates' && (
+                                <div className="col-span-12 bg-white rounded-xl shadow-md p-6 border border-slate-200">
+                                    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
+                                        <Icon name="fileText" className="w-5 h-5 text-brand-600" />
+                                        <span>Ваши сохраненные шаблоны (База JSON PHP)</span>
+                                    </h3>
 
-                                {savedTemplates.length === 0 ? (
-                                    <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                                        <p className="text-slate-500 font-medium">У вас пока нет сохраненных шаблонов в templates.json.</p>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {savedTemplates.map((t) => (
-                                            <div key={t.id} className="p-4 border border-slate-200 rounded-xl hover:shadow-md transition bg-slate-50 flex flex-col justify-between">
-                                                <div>
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="font-bold text-slate-800 truncate pr-2">{t.name}</h4>
-                                                        <span className="text-[10px] bg-brand-100 text-brand-800 px-2 py-0.5 rounded-full font-bold">
-                                                            {t.productType}
-                                                        </span>
+                                    {savedTemplates.length === 0 ? (
+                                        <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                                            <p className="text-slate-500 font-medium">У вас пока нет сохраненных шаблонов в templates.json.</p>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {savedTemplates.map((t) => (
+                                                <div key={t.id} className="p-4 border border-slate-200 rounded-xl hover:shadow-md transition bg-slate-50 flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h4 className="font-bold text-slate-800 truncate pr-2">{t.name}</h4>
+                                                            <span className="text-[10px] bg-brand-100 text-brand-800 px-2 py-0.5 rounded-full font-bold">
+                                                                {t.productType}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 mb-1 truncate">{t.subtitle}</p>
+                                                        <p className="text-xs text-slate-400">Спирт: {t.alcohol} | Сахар: {t.sugar}</p>
                                                     </div>
-                                                    <p className="text-xs text-slate-500 mb-1 truncate">{t.subtitle}</p>
-                                                    <p className="text-xs text-slate-400">Спирт: {t.alcohol} | Сахар: {t.sugar}</p>
+                                                    <div className="flex justify-end space-x-2 mt-4 pt-3 border-t border-slate-200/60">
+                                                        <button
+                                                            onClick={() => {
+                                                                setForm({ ...t });
+                                                                setActiveTab('editor');
+                                                            }}
+                                                            className="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-bold flex items-center space-x-1"
+                                                        >
+                                                            <Icon name="cog" className="w-3.5 h-3.5" />
+                                                            <span>Открыть</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => deleteTemplate(t.id)}
+                                                            className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-semibold"
+                                                        >
+                                                            <Icon name="trash" className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="flex justify-end space-x-2 mt-4 pt-3 border-t border-slate-200/60">
-                                                    <button
-                                                        onClick={() => {
-                                                            setForm({ ...t });
-                                                            setActiveTab('editor');
-                                                        }}
-                                                        className="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-bold flex items-center space-x-1"
-                                                    >
-                                                        <Icon name="cog" className="w-3.5 h-3.5" />
-                                                        <span>Открыть</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteTemplate(t.id)}
-                                                        className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-semibold"
-                                                    >
-                                                        <Icon name="trash" className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </main>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </main>
+                    </div>
 
                     {/* Print outputs layout */}
                     <div className="hidden print:block print-container">
