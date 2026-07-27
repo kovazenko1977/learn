@@ -134,6 +134,7 @@ if (isset($_GET['action'])) {
     <!-- Barcode & QR Code Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* General Web UI styles */
         body {
@@ -929,6 +930,110 @@ if (isset($_GET['action'])) {
                 downloadAnchor.remove();
             };
 
+            const exportAsImage = () => {
+                const container = document.querySelector('.label-preview-container');
+                if (!container) return;
+
+                html2canvas(container, {
+                    scale: 2.5, // High resolution
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = `этикетка_${form.productType || 'напиток'}.png`;
+                    link.href = dataUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                }).catch(err => {
+                    console.error("Failed to generate image", err);
+                    alert("Ошибка при экспорте изображения.");
+                });
+            };
+
+            const exportAsWord = () => {
+                const container = document.querySelector('.label-preview-container');
+                if (!container) return;
+
+                html2canvas(container, {
+                    scale: 2.5, // High resolution
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                }).then(canvas => {
+                    const pngDataUri = canvas.toDataURL('image/png');
+
+                    const wordHtml = `
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+                    <head>
+                        <title>Этикетка на кегу - ${form.productType}</title>
+                        <!--[if gte mso 9]>
+                        <xml>
+                            <w:WordDocument>
+                                <w:View>Print</w:View>
+                                <w:Zoom>100</w:Zoom>
+                                <w:DoNotOptimizeForBrowser/>
+                            </w:WordDocument>
+                        </xml>
+                        <![endif]-->
+                        <style>
+                            @page {
+                                size: 210mm 148mm;
+                                margin: 10mm;
+                            }
+                            body {
+                                font-family: "Arial", sans-serif;
+                                text-align: center;
+                                background-color: #ffffff;
+                                padding: 20px;
+                            }
+                            h2 {
+                                font-family: "Arial", sans-serif;
+                                margin-bottom: 5px;
+                                color: #333333;
+                            }
+                            p {
+                                font-family: "Arial", sans-serif;
+                                font-size: 11px;
+                                color: #666666;
+                                margin-bottom: 20px;
+                            }
+                            .image-container {
+                                text-align: center;
+                                margin-top: 10px;
+                            }
+                            img {
+                                max-width: 100%;
+                                height: auto;
+                                border: 1px solid #cccccc;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Этикетка на кегу - ${form.brandName || 'Бренд'} ${form.productType}</h2>
+                        <p>${form.subtitle}</p>
+                        <div class="image-container">
+                            <img src="${pngDataUri}" alt="Этикетка" />
+                        </div>
+                    </body>
+                    </html>
+                    `;
+
+                    const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `этикетка_${form.productType || 'напиток'}.doc`;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                }).catch(err => {
+                    console.error("Failed to generate Word document", err);
+                    alert("Ошибка при экспорте в MS Word.");
+                });
+            };
+
             const handleImport = (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -949,8 +1054,13 @@ if (isset($_GET['action'])) {
                 reader.readAsText(file);
             };
 
+            const dynamicPageSizeStyle = printLayout === 'v2'
+                ? `@media print { @page { size: A4 landscape !important; margin: 0 !important; } }`
+                : `@media print { @page { size: A4 portrait !important; margin: 0 !important; } }`;
+
             return (
                 <div className="min-h-screen flex flex-col">
+                    <style dangerouslySetInnerHTML={{ __html: dynamicPageSizeStyle }} />
                     <div className="no-print min-h-screen flex flex-col">
                         {/* Header */}
                         <header className="bg-gradient-to-r from-brand-700 to-brand-500 text-white shadow-md">
@@ -1656,18 +1766,37 @@ if (isset($_GET['action'])) {
                                             </button>
                                         </div>
 
+                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/50">
+                                            <button
+                                                onClick={exportAsImage}
+                                                className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-emerald-800 font-bold text-xs flex items-center justify-center space-x-1 transition"
+                                                title="Скачать этикетку в виде качественного PNG изображения"
+                                            >
+                                                <Icon name="image" className="w-3.5 h-3.5" />
+                                                <span>Скачать PNG</span>
+                                            </button>
+                                            <button
+                                                onClick={exportAsWord}
+                                                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-bold text-xs flex items-center justify-center space-x-1 transition"
+                                                title="Экспортировать этикетку как встроенный рисунок в документ Microsoft Word"
+                                            >
+                                                <Icon name="fileText" className="w-3.5 h-3.5" />
+                                                <span>В MS Word (.doc)</span>
+                                            </button>
+                                        </div>
+
                                         <div className="flex justify-between items-center pt-2">
                                             <button
                                                 onClick={exportTemplates}
                                                 className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs flex items-center space-x-1"
                                             >
                                                 <Icon name="download" className="w-3.5 h-3.5" />
-                                                <span>Экспорт</span>
+                                                <span>Экспорт шаблона</span>
                                             </button>
 
                                             <label className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs flex items-center space-x-1 cursor-pointer">
                                                 <Icon name="upload" className="w-3.5 h-3.5" />
-                                                <span>Импорт</span>
+                                                <span>Импорт шаблона</span>
                                                 <input type="file" accept=".json" onChange={handleImport} className="hidden" />
                                             </label>
                                         </div>
