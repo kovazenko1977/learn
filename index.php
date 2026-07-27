@@ -133,7 +133,7 @@ if (isset($_GET['action'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <!-- Barcode & QR Code Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* General Web UI styles */
@@ -796,11 +796,18 @@ if (isset($_GET['action'])) {
                 updateFormWithHistory(prev => {
                     const updated = { ...prev };
                     if (elementId.startsWith('custom-img-')) {
-                        updated.customImages = updated.customImages.map(img => {
+                        updated.customImages = (updated.customImages || []).map(img => {
                             if (img.id === elementId) {
                                 return { ...img, [attribute]: value };
                             }
                             return img;
+                        });
+                    } else if (elementId.startsWith('custom-txt-')) {
+                        updated.customTexts = (updated.customTexts || []).map(txt => {
+                            if (txt.id === elementId) {
+                                return { ...txt, [attribute]: value };
+                            }
+                            return txt;
                         });
                     } else if (updated.elements[elementId]) {
                         updated.elements[elementId] = {
@@ -817,7 +824,7 @@ if (isset($_GET['action'])) {
                 updateFormWithHistory(prev => {
                     const updated = { ...prev };
                     if (elementId.startsWith('custom-img-')) {
-                        updated.customImages = updated.customImages.map(img => {
+                        updated.customImages = (updated.customImages || []).map(img => {
                             if (img.id === elementId) {
                                 return {
                                     ...img,
@@ -826,6 +833,17 @@ if (isset($_GET['action'])) {
                                 };
                             }
                             return img;
+                        });
+                    } else if (elementId.startsWith('custom-txt-')) {
+                        updated.customTexts = (updated.customTexts || []).map(txt => {
+                            if (txt.id === elementId) {
+                                return {
+                                    ...txt,
+                                    x: Math.max(0, Math.min(210, txt.x + deltaX)),
+                                    y: Math.max(0, Math.min(148, txt.y + deltaY))
+                                };
+                            }
+                            return txt;
                         });
                     } else if (updated.elements[elementId]) {
                         updated.elements[elementId] = {
@@ -873,6 +891,34 @@ if (isset($_GET['action'])) {
                     setSelectedElementId(newImage.id);
                 };
                 reader.readAsDataURL(file);
+            };
+
+            // Add custom text block
+            const addCustomText = () => {
+                const newText = {
+                    id: `custom-txt-${Date.now()}`,
+                    text: 'Новый текст',
+                    x: 105,
+                    y: 60,
+                    size: 12,
+                    bold: false,
+                    italic: false,
+                    visible: true
+                };
+                updateFormWithHistory(prev => ({
+                    ...prev,
+                    customTexts: [...(prev.customTexts || []), newText]
+                }));
+                setSelectedElementId(newText.id);
+            };
+
+            // Delete selected custom text block
+            const deleteCustomText = (txtId) => {
+                updateFormWithHistory(prev => ({
+                    ...prev,
+                    customTexts: (prev.customTexts || []).filter(txt => txt.id !== txtId)
+                }));
+                setSelectedElementId(null);
             };
 
             // Delete selected custom image
@@ -1003,7 +1049,10 @@ if (isset($_GET['action'])) {
             const getSelectedElementData = () => {
                 if (!selectedElementId) return null;
                 if (selectedElementId.startsWith('custom-img-')) {
-                    return form.customImages.find(img => img.id === selectedElementId) || null;
+                    return (form.customImages || []).find(img => img.id === selectedElementId) || null;
+                }
+                if (selectedElementId.startsWith('custom-txt-')) {
+                    return (form.customTexts || []).find(txt => txt.id === selectedElementId) || null;
                 }
                 return form.elements[selectedElementId] ? { id: selectedElementId, ...form.elements[selectedElementId] } : null;
             };
@@ -1516,6 +1565,48 @@ if (isset($_GET['action'])) {
                                                                 <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.height} мм</div>
                                                             </div>
                                                         </>
+                                                    ) : selectedElement.id.startsWith('custom-txt-') ? (
+                                                        <>
+                                                            <div className="col-span-2">
+                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Текст элемента</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={selectedElement.text}
+                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'text', e.target.value)}
+                                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-semibold"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер шрифта</label>
+                                                                <input
+                                                                    type="range" min="6" max="72" step="1"
+                                                                    value={selectedElement.size || 12}
+                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseInt(e.target.value))}
+                                                                    className="w-full accent-blue-600"
+                                                                />
+                                                                <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.size || 12} px</div>
+                                                            </div>
+                                                            <div className="flex items-center space-x-2 pt-4 justify-around border rounded bg-slate-50">
+                                                                <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={selectedElement.bold || false}
+                                                                        onChange={(e) => updateElementAttribute(selectedElement.id, 'bold', e.target.checked)}
+                                                                        className="rounded text-blue-600 w-4 h-4"
+                                                                    />
+                                                                    <span>Жирный</span>
+                                                                </label>
+                                                                <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={selectedElement.italic || false}
+                                                                        onChange={(e) => updateElementAttribute(selectedElement.id, 'italic', e.target.checked)}
+                                                                        className="rounded text-blue-600 w-4 h-4"
+                                                                    />
+                                                                    <span>Курсив</span>
+                                                                </label>
+                                                            </div>
+                                                        </>
                                                     ) : (selectedElement.id === 'barcode' || selectedElement.id === 'qrcode') ? (
                                                         <div>
                                                             <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер / Ширина (мм)</label>
@@ -1542,7 +1633,7 @@ if (isset($_GET['action'])) {
                                                 </div>
 
                                                 <div className="flex justify-between items-center pt-2">
-                                                    <label className="flex items-center space-x-2 text-xs font-semibold text-slate-700">
+                                                    <label className="flex items-center space-x-2 text-xs font-semibold text-slate-700 cursor-pointer">
                                                         <input
                                                             type="checkbox"
                                                             checked={selectedElement.visible !== false}
@@ -1559,6 +1650,16 @@ if (isset($_GET['action'])) {
                                                         >
                                                             <Icon name="trash" className="w-3.5 h-3.5" />
                                                             <span>Удалить изображение</span>
+                                                        </button>
+                                                    )}
+
+                                                    {selectedElement.id.startsWith('custom-txt-') && (
+                                                        <button
+                                                            onClick={() => deleteCustomText(selectedElement.id)}
+                                                            className="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-bold flex items-center space-x-1"
+                                                        >
+                                                            <Icon name="trash" className="w-3.5 h-3.5" />
+                                                            <span>Удалить текст</span>
                                                         </button>
                                                     )}
                                                 </div>
@@ -1620,17 +1721,26 @@ if (isset($_GET['action'])) {
                                             </div>
                                         </div>
 
-                                        {/* External custom image uploader */}
-                                        <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 flex flex-col items-center justify-center space-y-2">
+                                        {/* External custom element adder */}
+                                        <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center space-y-3">
                                             <div className="text-center">
-                                                <p className="text-xs font-bold text-slate-700">Загрузка логотипа / герба / знаков</p>
-                                                <p className="text-[10px] text-slate-400">Изображение добавится на холст как перетаскиваемый элемент</p>
+                                                <p className="text-xs font-bold text-slate-700">Добавление элементов на холст</p>
+                                                <p className="text-[10px] text-slate-400">Добавьте произвольные логотипы, гербы или новые надписи</p>
                                             </div>
-                                            <label className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold cursor-pointer flex items-center space-x-1.5 transition">
-                                                <Icon name="image" className="w-4 h-4" />
-                                                <span>Загрузить изображение</span>
-                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                                            </label>
+                                            <div className="flex space-x-2 w-full justify-center">
+                                                <label className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold cursor-pointer flex items-center space-x-1 transition flex-1 justify-center">
+                                                    <Icon name="image" className="w-3.5 h-3.5" />
+                                                    <span>Загрузить фото</span>
+                                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                                                </label>
+                                                <button
+                                                    onClick={addCustomText}
+                                                    className="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold flex items-center space-x-1 transition flex-1 justify-center"
+                                                >
+                                                    <Icon name="plus" className="w-3.5 h-3.5" />
+                                                    <span>Добавить текст</span>
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-3">
@@ -2511,6 +2621,27 @@ if (isset($_GET['action'])) {
                             className={`absolute draggable-element ${isSel(img.id) ? 'draggable-selected' : ''}`}
                             alt="Custom user element"
                         />
+                    ))}
+
+                    {/* Custom added text blocks */}
+                    {data.customTexts && data.customTexts.map(txt => (
+                        <div
+                            key={txt.id}
+                            style={{
+                                left: `${txt.x}mm`,
+                                top: `${txt.y}mm`,
+                                fontSize: `${txt.size || 12}px`,
+                                fontWeight: txt.bold ? 'bold' : 'normal',
+                                fontStyle: txt.italic ? 'italic' : 'normal',
+                                display: txt.visible !== false ? 'block' : 'none',
+                                whiteSpace: 'nowrap'
+                            }}
+                            onMouseDown={(e) => handleMouseDown(e, txt.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`absolute draggable-element ${isSel(txt.id) ? 'draggable-selected' : ''} font-sans leading-none`}
+                        >
+                            {txt.text}
+                        </div>
                     ))}
 
                     {/* Standalone Barcode Element */}
