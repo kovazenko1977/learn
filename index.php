@@ -600,7 +600,9 @@ if (isset($_GET['action'])) {
                     subtitle: { x: 105, y: 26, size: 8, visible: true, bold: true },
                     stats: { x: 4, y: 10, size: 12, visible: true },
                     icons: { x: 178, y: 5, size: 38, visible: true },
-                    body: { x: 6, y: 52, size: 6.5, visible: true }
+                    body: { x: 6, y: 52, size: 6.5, visible: true },
+                    barcode: { x: 140, y: 88, size: 40, visible: true },
+                    qrcode: { x: 182, y: 15, size: 22, visible: true }
                 }
             },
             {
@@ -633,10 +635,23 @@ if (isset($_GET['action'])) {
                     subtitle: { x: 105, y: 26, size: 8, visible: true, bold: true },
                     stats: { x: 4, y: 10, size: 12, visible: true },
                     icons: { x: 178, y: 5, size: 38, visible: true },
-                    body: { x: 6, y: 52, size: 6.5, visible: true }
+                    body: { x: 6, y: 52, size: 6.5, visible: true },
+                    barcode: { x: 140, y: 88, size: 40, visible: true },
+                    qrcode: { x: 182, y: 15, size: 22, visible: true }
                 }
             }
         ];
+
+        const ELEMENT_NAMES_RU = {
+            header: 'Шапка (Производитель)',
+            title: 'Название продукта (Тип)',
+            subtitle: 'Подзаголовок / Описание',
+            stats: 'Характеристики (Алк, Сахар, Объем)',
+            icons: 'Значки соответствия (EAC, PET...)',
+            body: 'Основной текст (Состав, условия...)',
+            barcode: 'Штрих-код',
+            qrcode: 'Генератор QR-кода'
+        };
 
         function App() {
             const [form, setForm] = useState({ ...PRESETS[0] });
@@ -1428,7 +1443,7 @@ if (isset($_GET['action'])) {
                                             <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-3 space-y-3">
                                                 <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
                                                     <span className="text-xs font-bold text-blue-900 uppercase">
-                                                        Настройки: {selectedElement.id.startsWith('custom-img-') ? 'Пользовательское изображение' : selectedElement.id}
+                                                        Настройки: {selectedElement.id.startsWith('custom-img-') ? 'Пользовательское изображение' : (ELEMENT_NAMES_RU[selectedElement.id] || selectedElement.id)}
                                                     </span>
                                                     <button
                                                         onClick={() => setSelectedElementId(null)}
@@ -1501,6 +1516,17 @@ if (isset($_GET['action'])) {
                                                                 <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.height} мм</div>
                                                             </div>
                                                         </>
+                                                    ) : (selectedElement.id === 'barcode' || selectedElement.id === 'qrcode') ? (
+                                                        <div>
+                                                            <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер / Ширина (мм)</label>
+                                                            <input
+                                                                type="range" min="10" max="150" step="1"
+                                                                value={selectedElement.size || (selectedElement.id === 'barcode' ? 40 : 22)}
+                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseFloat(e.target.value))}
+                                                                className="w-full accent-blue-600"
+                                                            />
+                                                            <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.size || (selectedElement.id === 'barcode' ? 40 : 22)} мм</div>
+                                                        </div>
                                                     ) : (
                                                         <div>
                                                             <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер шрифта / иконок</label>
@@ -2344,13 +2370,15 @@ if (isset($_GET['action'])) {
                 document.removeEventListener('mouseup', handleMouseUp);
             };
 
-            const el = data.elements || {
-                header: { x: 105, y: 4, size: 10, visible: true },
-                title: { x: 105, y: 12, size: 34, visible: true },
-                subtitle: { x: 105, y: 26, size: 8, visible: true },
-                stats: { x: 4, y: 10, size: 12, visible: true },
-                icons: { x: 178, y: 5, size: 38, visible: true },
-                body: { x: 6, y: 52, size: 6.5, visible: true }
+            const el = {
+                header: { x: 105, y: 4, size: 10, visible: true, ...(data.elements?.header || {}) },
+                title: { x: 105, y: 12, size: 34, visible: true, ...(data.elements?.title || {}) },
+                subtitle: { x: 105, y: 26, size: 8, visible: true, ...(data.elements?.subtitle || {}) },
+                stats: { x: 4, y: 10, size: 12, visible: true, ...(data.elements?.stats || {}) },
+                icons: { x: 178, y: 5, size: 38, visible: true, ...(data.elements?.icons || {}) },
+                body: { x: 6, y: 52, size: 6.5, visible: true, ...(data.elements?.body || {}) },
+                barcode: { x: 140, y: 88, size: 40, visible: true, ...(data.elements?.barcode || {}) },
+                qrcode: { x: 182, y: 15, size: 22, visible: true, ...(data.elements?.qrcode || {}) }
             };
 
             const isSel = (id) => selectedId === id;
@@ -2438,13 +2466,6 @@ if (isset($_GET['action'])) {
                             onClick={(e) => e.stopPropagation()}
                             className={`absolute w-[26mm] flex flex-col items-center space-y-1.5 draggable-element ${isSel('icons') ? 'draggable-selected' : ''}`}
                         >
-                            {data.qrCode && (
-                                <div className="flex flex-col items-center">
-                                    <span className="text-[4.5px] font-bold tracking-tighter uppercase mb-0.5 font-sans">MADE IN BELARUS</span>
-                                    <div ref={qrcodeRef} className="p-0.5 bg-white border border-black/50 rounded"></div>
-                                </div>
-                            )}
-
                             {data.eacActive && (
                                 <span className="font-bold text-[14px] tracking-tight border border-black/90 px-1 rounded font-mono leading-none">
                                     EAC
@@ -2492,6 +2513,40 @@ if (isset($_GET['action'])) {
                         />
                     ))}
 
+                    {/* Standalone Barcode Element */}
+                    {el.barcode && el.barcode.visible !== false && data.barcode && (
+                        <div
+                            style={{
+                                left: `${el.barcode.x}mm`,
+                                top: `${el.barcode.y}mm`,
+                                width: `${el.barcode.size || 40}mm`
+                            }}
+                            onMouseDown={(e) => handleMouseDown(e, 'barcode')}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`absolute flex flex-col items-center justify-center draggable-element ${isSel('barcode') ? 'draggable-selected' : ''}`}
+                        >
+                            <svg ref={barcodeRef} style={{ width: '100%', height: 'auto' }}></svg>
+                        </div>
+                    )}
+
+                    {/* Standalone QR Code Element */}
+                    {el.qrcode && el.qrcode.visible !== false && data.qrCode && (
+                        <div
+                            style={{
+                                left: `${el.qrcode.x}mm`,
+                                top: `${el.qrcode.y}mm`,
+                                width: `${el.qrcode.size || 22}mm`,
+                                height: `${el.qrcode.size || 22}mm`
+                            }}
+                            onMouseDown={(e) => handleMouseDown(e, 'qrcode')}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`absolute flex flex-col items-center justify-center bg-white p-0.5 border border-black/30 rounded draggable-element ${isSel('qrcode') ? 'draggable-selected' : ''}`}
+                        >
+                            <span className="text-[4px] font-bold tracking-tighter uppercase mb-0.5 leading-none font-sans">BY BEER/WINE</span>
+                            <div ref={qrcodeRef} className="w-full h-full flex items-center justify-center overflow-hidden"></div>
+                        </div>
+                    )}
+
                     {/* Body columns / Composition */}
                     {el.body.visible !== false && (
                         <div
@@ -2515,14 +2570,8 @@ if (isset($_GET['action'])) {
                                 </p>
                             </div>
 
-                            {/* Barcodes & Dates */}
-                            <div className="col-span-4 flex flex-col items-end space-y-1 pr-1">
-                                {data.barcode && (
-                                    <div className="flex justify-end">
-                                        <svg ref={barcodeRef}></svg>
-                                    </div>
-                                )}
-
+                            {/* Dates columns */}
+                            <div className="col-span-4 flex flex-col items-end space-y-1 pr-1 justify-end">
                                 <div className="w-full pl-3 space-y-0.5 font-narrow">
                                     <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
                                         <span className="font-bold">Дата розлива</span>
