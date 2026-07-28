@@ -1,0 +1,76 @@
+[Thu Jul  2 01:36:27 2026] PHP 8.3.6 Development Server (http://localhost:8000) started
+[Thu Jul  2 01:36:30 2026] [::1]:36100 Accepted
+[Thu Jul  2 01:36:30 2026] [::1]:36100 [200]: POST /api/auth.php?action=recovery
+[Thu Jul  2 01:36:30 2026] [::1]:36100 Closing
+[Thu Jul  2 01:37:08 2026] [::1]:46846 Accepted
+[Thu Jul  2 01:37:08 2026] [::1]:46846 [200]: GET /
+[Thu Jul  2 01:37:08 2026] [::1]:46846 Closing
+[Thu Jul  2 01:37:08 2026] [::1]:46860 Accepted
+[Thu Jul  2 01:37:09 2026] [::1]:46860 [200]: POST /api/auth.php?action=login
+[Thu Jul  2 01:37:09 2026] [::1]:46860 Closing
+[Thu Jul  2 01:37:09 2026] [::1]:46862 Accepted
+[Thu Jul  2 01:37:09 2026] [::1]:46862 [200]: GET /api/tasks.php
+[Thu Jul  2 01:37:09 2026] [::1]:46862 Closing
+[Thu Jul  2 01:37:09 2026] [::1]:46874 Accepted
+[Thu Jul  2 01:37:09 2026] [::1]:46874 [200]: GET /api/settings.php
+[Thu Jul  2 01:37:09 2026] [::1]:46874 Closing
+[Thu Jul  2 01:37:09 2026] [::1]:46882 Accepted
+[Thu Jul  2 01:37:09 2026] [::1]:46882 [200]: GET /api/settings.php?action=users
+[Thu Jul  2 01:37:09 2026] [::1]:46882 Closing
+[Thu Jul  2 01:37:09 2026] [::1]:46886 Accepted
+[Thu Jul  2 01:37:09 2026] [::1]:46886 [200]: GET /api/analytics.php?action=dashboard
+[Thu Jul  2 01:37:09 2026] [::1]:46886 Closing
+[Thu Jul  2 01:37:57 2026] [::1]:43204 Accepted
+[Thu Jul  2 01:37:57 2026] [::1]:43204 [200]: GET /
+[Thu Jul  2 01:37:57 2026] [::1]:43204 Closing
+[Thu Jul  2 01:37:58 2026] [::1]:43210 Accepted
+[Thu Jul  2 01:37:58 2026] [::1]:43210 [200]: POST /api/auth.php?action=login
+[Thu Jul  2 01:37:58 2026] [::1]:43210 Closing
+[Thu Jul  2 01:37:58 2026] [::1]:43224 Accepted
+[Thu Jul  2 01:37:58 2026] [::1]:43224 [200]: GET /api/tasks.php
+[Thu Jul  2 01:37:58 2026] [::1]:43224 Closing
+[Thu Jul  2 01:37:58 2026] [::1]:43230 Accepted
+[Thu Jul  2 01:37:58 2026] [::1]:43230 [200]: GET /api/settings.php
+[Thu Jul  2 01:37:58 2026] [::1]:43230 Closing
+[Thu Jul  2 01:37:58 2026] [::1]:43236 Accepted
+[Thu Jul  2 01:37:58 2026] [::1]:43236 [200]: GET /api/settings.php?action=users
+[Thu Jul  2 01:37:58 2026] [::1]:43236 Closing
+[Thu Jul  2 01:37:58 2026] [::1]:43240 Accepted
+[Thu Jul  2 01:37:58 2026] [::1]:43240 [200]: GET /api/analytics.php?action=dashboard
+[Thu Jul  2 01:37:58 2026] [::1]:43240 Closing
+[Thu Jul  2 01:38:43 2026] [::1]:36892 Accepted
+[Thu Jul  2 01:38:43 2026] [::1]:36892 [200]: GET /
+[Thu Jul  2 01:38:43 2026] [::1]:36892 Closing
+[Thu Jul  2 01:38:44 2026] [::1]:36898 Accepted
+[Thu Jul  2 01:38:44 2026] [::1]:36898 [200]: POST /api/auth.php?action=login
+[Thu Jul  2 01:38:44 2026] [::1]:36898 Closing
+[Thu Jul  2 01:38:44 2026] [::1]:36910 Accepted
+[Thu Jul  2 01:38:44 2026] [::1]:36910 [200]: GET /api/tasks.php
+[Thu Jul  2 01:38:44 2026] [::1]:36910 Closing
+[Thu Jul  2 01:38:44 2026] [::1]:36920 Accepted
+[Thu Jul  2 01:38:44 2026] [::1]:36920 [200]: GET /api/settings.php
+[Thu Jul  2 01:38:44 2026] [::1]:36920 Closing
+[Thu Jul  2 01:38:44 2026] [::1]:36928 Accepted
+[Thu Jul  2 01:38:44 2026] [::1]:36928 [200]: GET /api/settings.php?action=users
+[Thu Jul  2 01:38:44 2026] [::1]:36928 Closing
+[Thu Jul  2 01:38:44 2026] [::1]:36930 Accepted
+[Thu Jul  2 01:38:44 2026] [::1]:36930 [200]: GET /api/analytics.php?action=dashboard
+[Thu Jul  2 01:38:44 2026] [::1]:36930 Closing
+[Thu Jul  2 01:40:14 2026] [::1]:52192 Accepted
+[Thu Jul  2 01:40:14 2026] [::1]:52192 [200]: GET /
+[Thu Jul  2 01:40:14 2026] [::1]:52192 Closing
+[Thu Jul  2 01:40:15 2026] [::1]:52208 Accepted
+[Thu Jul  2 01:40:15 2026] [::1]:52208 [200]: POST /api/auth.php?action=login
+[Thu Jul  2 01:40:15 2026] [::1]:52208 Closing
+[Thu Jul  2 01:40:15 2026] [::1]:52214 Accepted
+[Thu Jul  2 01:40:15 2026] [::1]:52214 [200]: GET /api/tasks.php
+[Thu Jul  2 01:40:15 2026] [::1]:52214 Closing
+[Thu Jul  2 01:40:15 2026] [::1]:52224 Accepted
+[Thu Jul  2 01:40:15 2026] [::1]:52224 [200]: GET /api/settings.php
+[Thu Jul  2 01:40:15 2026] [::1]:52224 Closing
+[Thu Jul  2 01:40:15 2026] [::1]:52232 Accepted
+[Thu Jul  2 01:40:15 2026] [::1]:52232 [200]: GET /api/settings.php?action=users
+[Thu Jul  2 01:40:15 2026] [::1]:52232 Closing
+[Thu Jul  2 01:40:15 2026] [::1]:52248 Accepted
+[Thu Jul  2 01:40:15 2026] [::1]:52248 [200]: GET /api/analytics.php?action=dashboard
+[Thu Jul  2 01:40:15 2026] [::1]:52248 Closing

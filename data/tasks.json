@@ -1,0 +1,555 @@
+[
+    {
+        "id": 1,
+        "title": "Test Task",
+        "description": "Test Desc",
+        "category": "Repair",
+        "priority": "High",
+        "status": "new",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": [],
+        "created_at": "2026-07-02 01:25:42",
+        "deadline": "2026-07-02 05:25:42",
+        "tags": [],
+        "subtasks": [],
+        "work_logs": [],
+        "audit_logs": [],
+        "feedback": null
+    },
+    {
+        "id": 2,
+        "title": "Leaking Pipe in Room 104",
+        "description": "Hot water pipe is leaking from under the sink.",
+        "category": "Repair",
+        "priority": "High",
+        "status": "in_work",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": {
+            "Location\/Room": "Room 104",
+            "Asset ID": "WP-9908"
+        },
+        "created_at": "2026-07-22 20:53:48",
+        "deadline": "2026-07-23 00:53:48",
+        "tags": [],
+        "subtasks": [],
+        "work_logs": [],
+        "audit_logs": [],
+        "feedback": null
+    },
+    {
+        "id": 3,
+        "title": "IT Support - Router Upgrade",
+        "description": "Configure and install high-performance dual-band routers on the second floor.",
+        "category": "IT Support",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": {
+            "Location\/Room": "Server Room",
+            "Asset ID": "RT-404"
+        },
+        "tags": [
+            "IT",
+            "network",
+            "hardware"
+        ],
+        "created_at": "2026-07-22 21:36:07",
+        "deadline": "2026-07-23 21:36:07",
+        "subtasks": [
+            {
+                "id": "1784756167197",
+                "task_id": 3,
+                "title": "Configure SSID and passphrases",
+                "completed": true
+            },
+            {
+                "id": "1784756233232",
+                "task_id": 3,
+                "title": "Verify WAN connections and speed tests",
+                "completed": false
+            },
+            {
+                "id": "1784756592833",
+                "task_id": 3,
+                "title": "Verify WAN connections and speed tests",
+                "completed": false
+            },
+            {
+                "id": "1784757156208",
+                "task_id": 3,
+                "title": "Verify WAN connections and speed tests",
+                "completed": false
+            },
+            {
+                "id": "1785201229599",
+                "task_id": 3,
+                "title": "Verify WAN connections and speed tests",
+                "completed": false
+            },
+            {
+                "id": "1785201280884",
+                "task_id": 3,
+                "title": "Verify WAN connections and speed tests",
+                "completed": false
+            },
+            {
+                "id": "1785201409136",
+                "task_id": 3,
+                "title": "Verify WAN connections and speed tests",
+                "completed": false
+            }
+        ],
+        "work_logs": [
+            {
+                "id": "1784756167530",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 2.5,
+                "notes": "Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-22 21:36:07"
+            },
+            {
+                "id": "1784756234678",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 1.5,
+                "notes": "Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-22 21:37:14"
+            },
+            {
+                "id": "1784756594195",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 1.5,
+                "notes": "Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-22 21:43:14"
+            },
+            {
+                "id": "1784757158962",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 1.5,
+                "notes": "Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-22 21:52:38"
+            },
+            {
+                "id": "1785201231737",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 1.5,
+                "notes": "Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-28 01:13:51"
+            },
+            {
+                "id": "1785201282748",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 1.5,
+                "notes": "Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-28 01:14:42"
+            },
+            {
+                "id": "1785201410760",
+                "task_id": 3,
+                "user_id": 1,
+                "hours": 1.5,
+                "notes": "Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-28 01:16:50"
+            }
+        ],
+        "audit_logs": [
+            {
+                "id": "1784756167807",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Заявка создана",
+                "created_at": "2026-07-22 21:36:07"
+            },
+            {
+                "id": "1784756167351",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Configure SSID and passphrases",
+                "created_at": "2026-07-22 21:36:07"
+            },
+            {
+                "id": "1784756167322",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Статус подзадачи изменен на: Выполнено",
+                "created_at": "2026-07-22 21:36:07"
+            },
+            {
+                "id": "1784756167780",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 2.5 ч. работы: Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-22 21:36:07"
+            },
+            {
+                "id": "1784756167359",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлен отзыв с оценкой 5 звезд(ы)",
+                "created_at": "2026-07-22 21:36:07"
+            },
+            {
+                "id": "1784756233515",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Verify WAN connections and speed tests",
+                "created_at": "2026-07-22 21:37:13"
+            },
+            {
+                "id": "1784756234613",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 1.5 ч. работы: Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-22 21:37:14"
+            },
+            {
+                "id": "1784756592720",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Verify WAN connections and speed tests",
+                "created_at": "2026-07-22 21:43:12"
+            },
+            {
+                "id": "1784756594713",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 1.5 ч. работы: Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-22 21:43:14"
+            },
+            {
+                "id": "1784757156167",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Verify WAN connections and speed tests",
+                "created_at": "2026-07-22 21:52:36"
+            },
+            {
+                "id": "1784757158209",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 1.5 ч. работы: Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-22 21:52:38"
+            },
+            {
+                "id": "1785201229584",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Verify WAN connections and speed tests",
+                "created_at": "2026-07-28 01:13:49"
+            },
+            {
+                "id": "1785201231375",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 1.5 ч. работы: Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-28 01:13:51"
+            },
+            {
+                "id": "1785201280904",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Verify WAN connections and speed tests",
+                "created_at": "2026-07-28 01:14:40"
+            },
+            {
+                "id": "1785201282637",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 1.5 ч. работы: Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-28 01:14:42"
+            },
+            {
+                "id": "1785201409371",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Verify WAN connections and speed tests",
+                "created_at": "2026-07-28 01:16:49"
+            },
+            {
+                "id": "1785201410114",
+                "task_id": 3,
+                "user_id": 1,
+                "action": "Зафиксировано 1.5 ч. работы: Ran speed tests and certified connectivity.",
+                "created_at": "2026-07-28 01:16:50"
+            }
+        ],
+        "feedback": {
+            "task_id": 3,
+            "rating": 5,
+            "comment": "Excellent upgrade! WiFi speed is blazing fast now.",
+            "created_at": "2026-07-22 21:36:07"
+        }
+    },
+    {
+        "id": 4,
+        "title": "IT Support - Router Upgrade",
+        "description": "Configure and install high-performance dual-band routers on the second floor.",
+        "category": "IT Support",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": {
+            "Location\/Room": "Server Room",
+            "Asset ID": "RT-404"
+        },
+        "tags": [
+            "IT",
+            "network",
+            "hardware"
+        ],
+        "created_at": "2026-07-22 21:52:02",
+        "deadline": "2026-07-23 21:52:02",
+        "subtasks": [
+            {
+                "id": "1784757122731",
+                "task_id": 4,
+                "title": "Configure SSID and passphrases",
+                "completed": true
+            }
+        ],
+        "work_logs": [
+            {
+                "id": "1784757122925",
+                "task_id": 4,
+                "user_id": 1,
+                "hours": 2.5,
+                "notes": "Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-22 21:52:02"
+            }
+        ],
+        "audit_logs": [
+            {
+                "id": "1784757122687",
+                "task_id": 4,
+                "user_id": 1,
+                "action": "Заявка создана",
+                "created_at": "2026-07-22 21:52:02"
+            },
+            {
+                "id": "1784757122457",
+                "task_id": 4,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Configure SSID and passphrases",
+                "created_at": "2026-07-22 21:52:02"
+            },
+            {
+                "id": "1784757122327",
+                "task_id": 4,
+                "user_id": 1,
+                "action": "Статус подзадачи изменен на: Выполнено",
+                "created_at": "2026-07-22 21:52:02"
+            },
+            {
+                "id": "1784757122591",
+                "task_id": 4,
+                "user_id": 1,
+                "action": "Зафиксировано 2.5 ч. работы: Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-22 21:52:02"
+            },
+            {
+                "id": "1784757122105",
+                "task_id": 4,
+                "user_id": 1,
+                "action": "Добавлен отзыв с оценкой 5 звезд(ы)",
+                "created_at": "2026-07-22 21:52:02"
+            }
+        ],
+        "feedback": {
+            "task_id": 4,
+            "rating": 5,
+            "comment": "Excellent upgrade! WiFi speed is blazing fast now.",
+            "created_at": "2026-07-22 21:52:02"
+        }
+    },
+    {
+        "id": 5,
+        "title": "IT Support - Router Upgrade",
+        "description": "Configure and install high-performance dual-band routers on the second floor.",
+        "category": "IT Support",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": {
+            "Location\/Room": "Server Room",
+            "Asset ID": "RT-404"
+        },
+        "tags": [
+            "IT",
+            "network",
+            "hardware"
+        ],
+        "created_at": "2026-07-28 01:14:20",
+        "deadline": "2026-07-29 01:14:20",
+        "subtasks": [
+            {
+                "id": "1785201260986",
+                "task_id": 5,
+                "title": "Configure SSID and passphrases",
+                "completed": true
+            }
+        ],
+        "work_logs": [
+            {
+                "id": "1785201260779",
+                "task_id": 5,
+                "user_id": 1,
+                "hours": 2.5,
+                "notes": "Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-28 01:14:20"
+            }
+        ],
+        "audit_logs": [
+            {
+                "id": "1785201260843",
+                "task_id": 5,
+                "user_id": 1,
+                "action": "Заявка создана",
+                "created_at": "2026-07-28 01:14:20"
+            },
+            {
+                "id": "1785201260811",
+                "task_id": 5,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Configure SSID and passphrases",
+                "created_at": "2026-07-28 01:14:20"
+            },
+            {
+                "id": "1785201260230",
+                "task_id": 5,
+                "user_id": 1,
+                "action": "Статус подзадачи изменен на: Выполнено",
+                "created_at": "2026-07-28 01:14:20"
+            },
+            {
+                "id": "1785201260268",
+                "task_id": 5,
+                "user_id": 1,
+                "action": "Зафиксировано 2.5 ч. работы: Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-28 01:14:20"
+            },
+            {
+                "id": "1785201260366",
+                "task_id": 5,
+                "user_id": 1,
+                "action": "Добавлен отзыв с оценкой 5 звезд(ы)",
+                "created_at": "2026-07-28 01:14:20"
+            }
+        ],
+        "feedback": {
+            "task_id": 5,
+            "rating": 5,
+            "comment": "Excellent upgrade! WiFi speed is blazing fast now.",
+            "created_at": "2026-07-28 01:14:20"
+        }
+    },
+    {
+        "id": 6,
+        "title": "IT Support - Router Upgrade",
+        "description": "Configure and install high-performance dual-band routers on the second floor.",
+        "category": "IT Support",
+        "priority": "Medium",
+        "status": "new",
+        "creator_id": 1,
+        "creator_department": "IT",
+        "assigned_to": null,
+        "completed_at": null,
+        "attachments": [],
+        "custom_fields": {
+            "Location\/Room": "Server Room",
+            "Asset ID": "RT-404"
+        },
+        "tags": [
+            "IT",
+            "network",
+            "hardware"
+        ],
+        "created_at": "2026-07-28 01:16:23",
+        "deadline": "2026-07-29 01:16:23",
+        "subtasks": [
+            {
+                "id": "1785201383459",
+                "task_id": 6,
+                "title": "Configure SSID and passphrases",
+                "completed": true
+            }
+        ],
+        "work_logs": [
+            {
+                "id": "1785201383993",
+                "task_id": 6,
+                "user_id": 1,
+                "hours": 2.5,
+                "notes": "Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-28 01:16:23"
+            }
+        ],
+        "audit_logs": [
+            {
+                "id": "1785201383310",
+                "task_id": 6,
+                "user_id": 1,
+                "action": "Заявка создана",
+                "created_at": "2026-07-28 01:16:23"
+            },
+            {
+                "id": "1785201383250",
+                "task_id": 6,
+                "user_id": 1,
+                "action": "Добавлена подзадача: Configure SSID and passphrases",
+                "created_at": "2026-07-28 01:16:23"
+            },
+            {
+                "id": "1785201383328",
+                "task_id": 6,
+                "user_id": 1,
+                "action": "Статус подзадачи изменен на: Выполнено",
+                "created_at": "2026-07-28 01:16:23"
+            },
+            {
+                "id": "1785201383189",
+                "task_id": 6,
+                "user_id": 1,
+                "action": "Зафиксировано 2.5 ч. работы: Upgraded router firmware and configured WAN settings.",
+                "created_at": "2026-07-28 01:16:23"
+            },
+            {
+                "id": "1785201383280",
+                "task_id": 6,
+                "user_id": 1,
+                "action": "Добавлен отзыв с оценкой 5 звезд(ы)",
+                "created_at": "2026-07-28 01:16:23"
+            }
+        ],
+        "feedback": {
+            "task_id": 6,
+            "rating": 5,
+            "comment": "Excellent upgrade! WiFi speed is blazing fast now.",
+            "created_at": "2026-07-28 01:16:23"
+        }
+    }
+]

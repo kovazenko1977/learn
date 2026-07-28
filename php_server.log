@@ -1,0 +1,133 @@
+[Tue Jul 28 01:14:11 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57928 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57928 [200]: POST /api/auth.php?action=login
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57928 Closing
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57932 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57932 [200]: POST /api/tasks.php
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57932 Closing
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57940 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57940 [200]: POST /api/tasks.php?action=add_subtask
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57940 Closing
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57950 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57950 [200]: POST /api/tasks.php?action=toggle_subtask
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57950 Closing
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57960 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57960 [200]: POST /api/tasks.php?action=add_work_log
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57960 Closing
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57972 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57972 [200]: POST /api/tasks.php?action=add_feedback
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57972 Closing
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57986 Accepted
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57986 [200]: GET /api/tasks.php?id=5
+[Tue Jul 28 01:14:20 2026] 127.0.0.1:57986 Closing
+[Tue Jul 28 01:14:32 2026] 127.0.0.1:58818 Accepted
+[Tue Jul 28 01:14:32 2026] 127.0.0.1:58818 [200]: GET /index.html
+[Tue Jul 28 01:14:32 2026] 127.0.0.1:58818 Closing
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58828 Accepted
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58828 [200]: POST /api/auth.php?action=login
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58828 Closing
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58834 Accepted
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58834 [200]: GET /api/tasks.php
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58834 Closing
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58848 Accepted
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58848 [200]: GET /api/settings.php
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58848 Closing
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58862 Accepted
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58862 [200]: GET /api/settings.php?action=users
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58862 Closing
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58872 Accepted
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58872 [200]: GET /api/analytics.php?action=dashboard
+[Tue Jul 28 01:14:35 2026] 127.0.0.1:58872 Closing
+[Tue Jul 28 01:14:38 2026] 127.0.0.1:38104 Accepted
+[Tue Jul 28 01:14:38 2026] 127.0.0.1:38104 [200]: GET /api/tasks.php?id=3
+[Tue Jul 28 01:14:38 2026] 127.0.0.1:38104 Closing
+[Tue Jul 28 01:14:40 2026] 127.0.0.1:38110 Accepted
+[Tue Jul 28 01:14:40 2026] 127.0.0.1:38110 [200]: POST /api/tasks.php?action=add_subtask
+[Tue Jul 28 01:14:40 2026] 127.0.0.1:38110 Closing
+[Tue Jul 28 01:14:40 2026] 127.0.0.1:38116 Accepted
+[Tue Jul 28 01:14:40 2026] 127.0.0.1:38116 [200]: GET /api/tasks.php?id=3
+[Tue Jul 28 01:14:40 2026] 127.0.0.1:38116 Closing
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38128 Accepted
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38128 [200]: POST /api/tasks.php?action=add_work_log
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38128 Closing
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38140 Accepted
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38140 [200]: GET /api/tasks.php?id=3
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38140 Closing
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38146 Accepted
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38146 [200]: GET /api/tasks.php
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38146 Closing
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38148 Accepted
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38148 [200]: GET /api/settings.php
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38148 Closing
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38154 Accepted
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38154 [200]: GET /api/settings.php?action=users
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38154 Closing
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38162 Accepted
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38162 [200]: GET /api/analytics.php?action=dashboard
+[Tue Jul 28 01:14:42 2026] 127.0.0.1:38162 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57508 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57508 [200]: POST /api/auth.php?action=login
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57508 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57518 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57518 [200]: POST /api/tasks.php
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57518 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57532 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57532 [200]: POST /api/tasks.php?action=add_subtask
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57532 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57536 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57536 [200]: POST /api/tasks.php?action=toggle_subtask
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57536 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57548 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57548 [200]: POST /api/tasks.php?action=add_work_log
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57548 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57556 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57556 [200]: POST /api/tasks.php?action=add_feedback
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57556 Closing
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57570 Accepted
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57570 [200]: GET /api/tasks.php?id=6
+[Tue Jul 28 01:16:23 2026] 127.0.0.1:57570 Closing
+[Tue Jul 28 01:16:41 2026] 127.0.0.1:42570 Accepted
+[Tue Jul 28 01:16:41 2026] 127.0.0.1:42570 [200]: GET /index.html
+[Tue Jul 28 01:16:41 2026] 127.0.0.1:42570 Closing
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42578 Accepted
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42578 [200]: POST /api/auth.php?action=login
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42578 Closing
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42592 Accepted
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42592 [200]: GET /api/tasks.php
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42592 Closing
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42600 Accepted
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42600 [200]: GET /api/settings.php
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42600 Closing
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42612 Accepted
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42612 [200]: GET /api/settings.php?action=users
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42612 Closing
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42616 Accepted
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42616 [200]: GET /api/analytics.php?action=dashboard
+[Tue Jul 28 01:16:44 2026] 127.0.0.1:42616 Closing
+[Tue Jul 28 01:16:47 2026] 127.0.0.1:41806 Accepted
+[Tue Jul 28 01:16:47 2026] 127.0.0.1:41806 [200]: GET /api/tasks.php?id=3
+[Tue Jul 28 01:16:47 2026] 127.0.0.1:41806 Closing
+[Tue Jul 28 01:16:49 2026] 127.0.0.1:41822 Accepted
+[Tue Jul 28 01:16:49 2026] 127.0.0.1:41822 [200]: POST /api/tasks.php?action=add_subtask
+[Tue Jul 28 01:16:49 2026] 127.0.0.1:41822 Closing
+[Tue Jul 28 01:16:49 2026] 127.0.0.1:41830 Accepted
+[Tue Jul 28 01:16:49 2026] 127.0.0.1:41830 [200]: GET /api/tasks.php?id=3
+[Tue Jul 28 01:16:49 2026] 127.0.0.1:41830 Closing
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41838 Accepted
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41838 [200]: POST /api/tasks.php?action=add_work_log
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41838 Closing
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41852 Accepted
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41852 [200]: GET /api/tasks.php?id=3
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41852 Closing
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41866 Accepted
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41866 [200]: GET /api/tasks.php
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41866 Closing
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41876 Accepted
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41876 [200]: GET /api/settings.php
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41876 Closing
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41892 Accepted
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41892 [200]: GET /api/settings.php?action=users
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41892 Closing
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41908 Accepted
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41908 [200]: GET /api/analytics.php?action=dashboard
+[Tue Jul 28 01:16:50 2026] 127.0.0.1:41908 Closing
