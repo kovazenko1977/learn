@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "task_id": 2,
+        "user_id": 1,
+        "content": "Plumber scheduled to arrive in 30 minutes.",
+        "attachments": [],
+        "created_at": "2026-07-22 20:53:48"
+    },
+    {
+        "id": 2,
+        "task_id": 2,
+        "user_id": 1,
+        "content": "Everything is verified and ready on the frontend.",
+        "attachments": [],
+        "created_at": "2026-07-22 20:56:24"
+    }
+]
