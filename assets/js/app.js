@@ -149,6 +149,60 @@ const App = {
             } catch (e) {}
         };
 
+        const activeNewAssignment = ref(null);
+
+        const checkNewAssignments = () => {
+            if (!user.value || user.value.role !== 'Executor') {
+                activeNewAssignment.value = null;
+                return;
+            }
+            const assignedTasks = tasks.value.filter(t => t.executor_id === user.value.id && t.status === 'assigned');
+            if (assignedTasks.length === 0) {
+                activeNewAssignment.value = null;
+                return;
+            }
+            let seen = [];
+            try {
+                seen = JSON.parse(localStorage.getItem('seen_assigned_tasks') || '[]');
+            } catch (e) {
+                seen = [];
+            }
+            const unseen = assignedTasks.find(t => !seen.includes(t.id));
+            if (unseen) {
+                activeNewAssignment.value = unseen;
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification("BELHOS CRM: Вам назначена новая заявка", {
+                        body: unseen.title,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/1040/1040243.png'
+                    });
+                } else if ('Notification' in window && Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+            } else {
+                activeNewAssignment.value = null;
+            }
+        };
+
+        const dismissAssignment = (taskId) => {
+            let seen = [];
+            try {
+                seen = JSON.parse(localStorage.getItem('seen_assigned_tasks') || '[]');
+            } catch (e) {
+                seen = [];
+            }
+            if (!seen.includes(taskId)) {
+                seen.push(taskId);
+                localStorage.setItem('seen_assigned_tasks', JSON.stringify(seen));
+            }
+            activeNewAssignment.value = null;
+        };
+
+        const viewAssignment = (task) => {
+            dismissAssignment(task.id);
+            view.value = 'tasks';
+            localStorage.setItem('target_view_task_id', task.id);
+        };
+
         const initData = async () => {
             if (!user.value) return;
             const [s, t, u, st] = await Promise.all([
@@ -161,7 +215,16 @@ const App = {
             tasks.value = t || [];
             users.value = u || [];
             stats.value = st;
+            checkNewAssignments();
         };
+
+        watch(tasks, () => {
+            checkNewAssignments();
+        }, { deep: true });
+
+        watch(user, () => {
+            checkNewAssignments();
+        });
 
         onMounted(() => {
             if (darkMode.value) document.documentElement.classList.add('dark');
@@ -179,11 +242,29 @@ const App = {
 
         return {
             user, token, lang, darkMode, view, t, formatDuration, toggleDarkMode, toggleLang,
-            login, logout, api, settings, tasks, users, stats, initData
+            login, logout, api, settings, tasks, users, stats, initData,
+            activeNewAssignment, dismissAssignment, viewAssignment
         };
     },
     template: `
         <div :class="{ 'dark': darkMode }" class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors">
+            <!-- Executor Notification Alert -->
+            <div v-if="activeNewAssignment" class="fixed top-4 right-4 bg-yellow-50 dark:bg-yellow-950 border-l-4 border-yellow-500 p-4 rounded-xl shadow-2xl max-w-sm z-50 flex flex-col space-y-2 border border-yellow-200 dark:border-yellow-900">
+                <div class="flex items-start space-x-3">
+                    <div class="p-1.5 bg-yellow-100 dark:bg-yellow-900 rounded-lg text-yellow-600 dark:text-yellow-300">
+                        <i class="fas fa-bell text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-xs text-gray-800 dark:text-white">Новое назначение!</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">Вам назначена новая заявка: <strong class="text-gray-900 dark:text-yellow-200">{{ activeNewAssignment.title }}</strong></p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-2 text-[10px] pt-1">
+                    <button @click="dismissAssignment(activeNewAssignment.id)" class="text-gray-500 hover:text-gray-700 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-all font-semibold">Позже</button>
+                    <button @click="viewAssignment(activeNewAssignment)" class="bg-yellow-500 text-white px-3 py-1 rounded-md font-bold hover:bg-yellow-600 shadow-sm transition-all">Посмотреть</button>
+                </div>
+            </div>
+
             <!-- Login View -->
             <div v-if="view === 'login'" class="flex items-center justify-center min-h-screen">
                 <login-form @login="login" :t="t"></login-form>
@@ -428,7 +509,34 @@ app.component('tasks-view', {
             emit('refresh');
         };
 
-        return { showForm, searchQuery, filterStatus, showArchive, filteredTasks, statusColors, updateStatus, selectedTask, onDragEnd, print, selectedTasks, bulkAssign };
+        const getExecutorName = (executorId) => {
+            const u = props.users.find(u => u.id === executorId);
+            return u ? u.full_name : '';
+        };
+
+        onMounted(() => {
+            const targetId = localStorage.getItem('target_view_task_id');
+            if (targetId) {
+                const found = props.tasks.find(t => t.id === targetId);
+                if (found) {
+                    selectedTask.value = found;
+                }
+                localStorage.removeItem('target_view_task_id');
+            }
+        });
+
+        watch(() => props.tasks, (newTasks) => {
+            const targetId = localStorage.getItem('target_view_task_id');
+            if (targetId) {
+                const found = newTasks.find(t => t.id === targetId);
+                if (found) {
+                    selectedTask.value = found;
+                }
+                localStorage.removeItem('target_view_task_id');
+            }
+        }, { deep: true });
+
+        return { showForm, searchQuery, filterStatus, showArchive, filteredTasks, statusColors, updateStatus, selectedTask, onDragEnd, print, selectedTasks, bulkAssign, getExecutorName };
     },
     template: `
         <div>
@@ -491,9 +599,14 @@ app.component('tasks-view', {
                                 </div>
                                 <div class="font-semibold text-gray-800 dark:text-white truncate pr-6">{{ element.title }}</div>
                                 <div class="text-xs text-gray-500 mt-1">{{ element.category }} | {{ element.priority }}</div>
+
+                                <div v-if="element.executor_id" class="mt-2 flex items-center space-x-1.5 text-[11px] text-primary bg-blue-50 dark:bg-gray-700 px-2 py-0.5 rounded-md font-semibold">
+                                    <i class="fas fa-user-cog text-[10px]"></i>
+                                    <span class="truncate">Исполнитель: {{ getExecutorName(element.executor_id) }}</span>
+                                </div>
+
                                 <div class="mt-3 flex justify-between items-center text-[10px] text-gray-400">
                                     <span>{{ element.created_at.split(' ')[0] }}</span>
-                                    <div v-if="element.executor_id" class="w-5 h-5 bg-primary rounded-full flex items-center justify-center text-white text-[8px]">{{ element.executor_id[0] }}</div>
                                 </div>
                             </div>
                         </template>
