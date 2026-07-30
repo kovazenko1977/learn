@@ -170,7 +170,7 @@ const App = {
                 <!-- Top Nav -->
                 <nav class="bg-white dark:bg-gray-800 shadow-sm px-6 py-3 flex justify-between items-center no-print">
                     <div class="flex items-center space-x-4">
-                        <h1 class="text-xl font-bold text-primary">Sanatorium 2.0</h1>
+                        <h1 class="text-xl font-bold text-primary">BELHOS</h1>
                         <div class="hidden md:flex space-x-1">
                             <nav-link :active="view === 'dashboard'" @click="view = 'dashboard'">{{ t('dashboard') }}</nav-link>
                             <nav-link :active="view === 'tasks'" @click="view = 'tasks'">{{ t('tasks') }}</nav-link>
@@ -254,7 +254,7 @@ app.component('login-form', {
     template: `
         <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-xl w-full max-w-md">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-primary">Sanatorium 2.0</h2>
+                <h2 class="text-3xl font-bold text-primary">BELHOS</h2>
                 <p class="text-gray-500 dark:text-gray-400 mt-2">Service CRM Portal</p>
             </div>
 
