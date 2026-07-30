@@ -1,0 +1,3038 @@
+diff --git a/index.php b/index.php
+new file mode 100644
+index 0000000..fd37dcb
+--- /dev/null
++++ b/index.php
+@@ -0,0 +1,3032 @@
++<?php
++// Simple API for template storage
++$dataFile = __DIR__ . '/data/templates.json';
++
++// Ensure data directory exists
++if (!is_dir(__DIR__ . '/data')) {
++    mkdir(__DIR__ . '/data', 0755, true);
++}
++
++// Ensure the templates file exists
++if (!file_exists($dataFile)) {
++    file_put_contents($dataFile, json_encode([], JSON_UNESCAPED_UNICODE));
++}
++
++// API router
++if (isset($_GET['action'])) {
++    header('Content-Type: application/json; charset=utf-8');
++
++    if ($_GET['action'] === 'get_templates') {
++        $data = @file_get_contents($dataFile);
++        echo $data ? $data : '[]';
++        exit;
++    }
++
++    if ($_GET['action'] === 'save_template' && $_SERVER['REQUEST_METHOD'] === 'POST') {
++        $input = json_decode(file_get_contents('php://input'), true);
++        if (!$input || !isset($input['name'])) {
++            http_response_code(400);
++            echo json_encode(['error' => 'Invalid template data']);
++            exit;
++        }
++
++        // Read current templates with lock
++        $templates = [];
++        $fp = fopen($dataFile, 'c+');
++        if ($fp && flock($fp, LOCK_EX)) {
++            $size = filesize($dataFile);
++            $content = $size > 0 ? fread($fp, $size) : '[]';
++            $templates = json_decode($content, true) ?: [];
++
++            // Check if template exists to update, or insert new
++            $exists = false;
++            foreach ($templates as &$t) {
++                if ($t['id'] === $input['id']) {
++                    $t = $input;
++                    $exists = true;
++                    break;
++                }
++            }
++            if (!$exists) {
++                $templates[] = $input;
++            }
++
++            ftruncate($fp, 0);
++            rewind($fp);
++            fwrite($fp, json_encode($templates, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
++            fflush($fp);
++            flock($fp, LOCK_UN);
++            fclose($fp);
++
++            echo json_encode(['success' => true, 'templates' => $templates]);
++        } else {
++            http_response_code(500);
++            echo json_encode(['error' => 'Cannot lock file']);
++        }
++        exit;
++    }
++
++    if ($_GET['action'] === 'delete_template' && $_SERVER['REQUEST_METHOD'] === 'POST') {
++        $input = json_decode(file_get_contents('php://input'), true);
++        if (!$input || !isset($input['id'])) {
++            http_response_code(400);
++            echo json_encode(['error' => 'Missing ID']);
++            exit;
++        }
++
++        $fp = fopen($dataFile, 'c+');
++        if ($fp && flock($fp, LOCK_EX)) {
++            $size = filesize($dataFile);
++            $content = $size > 0 ? fread($fp, $size) : '[]';
++            $templates = json_decode($content, true) ?: [];
++
++            $filtered = array_values(array_filter($templates, function($t) use ($input) {
++                return $t['id'] !== $input['id'];
++            }));
++
++            ftruncate($fp, 0);
++            rewind($fp);
++            fwrite($fp, json_encode($filtered, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
++            fflush($fp);
++            flock($fp, LOCK_UN);
++            fclose($fp);
++
++            echo json_encode(['success' => true, 'templates' => $filtered]);
++        } else {
++            http_response_code(500);
++            echo json_encode(['error' => 'Cannot lock file']);
++        }
++        exit;
++    }
++}
++?>
++<!DOCTYPE html>
++<html lang="ru">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Конструктор этикеток на кеги - ГОСТ / СТБ РБ</title>
++    <!-- Tailwind CSS -->
++    <script src="https://cdn.tailwindcss.com"></script>
++    <script>
++        tailwind.config = {
++            theme: {
++                extend: {
++                    colors: {
++                        brand: {
++                            50: '#f5f7f5',
++                            100: '#e3eae3',
++                            500: '#2d6a4f',
++                            600: '#1b4332',
++                            700: '#081c15',
++                        }
++                    }
++                }
++            }
++        }
++    </script>
++    <!-- Google Fonts for professional typography -->
++    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=PT+Sans+Narrow:wght@400;700&display=swap" rel="stylesheet">
++    <!-- React & Babel -->
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
++    <!-- Barcode & QR Code Libraries -->
++    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
++    <style>
++        /* General Web UI styles */
++        body {
++            font-family: 'Inter', sans-serif;
++            background-color: #f1f5f9;
++        }
++
++        /* Figma/Canva Interactive Layer styles */
++        .canvas-layer-wrapper {
++            position: absolute !important;
++            box-sizing: border-box !important;
++            user-select: none !important;
++        }
++        .layer-selected-outline {
++            outline: 2px solid #3b82f6 !important; /* Tailwind Blue 500 */
++            outline-offset: 1px !important;
++            z-index: 100 !important;
++        }
++        .resize-handle {
++            position: absolute !important;
++            width: 8px !important;
++            height: 8px !important;
++            background-color: #3b82f6 !important;
++            border: 1px solid white !important;
++            border-radius: 50% !important;
++            z-index: 200 !important;
++        }
++        /* Position resize handles precisely around selected element */
++        .resize-handle.tl { top: -4px; left: -4px; cursor: nwse-resize; }
++        .resize-handle.tc { top: -4px; left: calc(50% - 4px); cursor: ns-resize; }
++        .resize-handle.tr { top: -4px; right: -4px; cursor: nesw-resize; }
++        .resize-handle.ml { top: calc(50% - 4px); left: -4px; cursor: ew-resize; }
++        .resize-handle.mr { top: calc(50% - 4px); right: -4px; cursor: ew-resize; }
++        .resize-handle.bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
++        .resize-handle.bc { bottom: -4px; left: calc(50% - 4px); cursor: ns-resize; }
++        .resize-handle.br { bottom: -4px; right: -4px; cursor: nwse-resize; }
++
++        /* Style for printing - exact A5 Landscape (1 or 2 per A4 Page) */
++        @media print {
++            body {
++                background: white !important;
++                margin: 0 !important;
++                padding: 0 !important;
++            }
++            .no-print {
++                display: none !important;
++            }
++            .print-container {
++                display: block !important;
++                margin: 0 auto !important;
++                padding: 0 !important;
++                box-sizing: border-box !important;
++                page-break-after: avoid !important;
++                page-break-before: avoid !important;
++            }
++            .custom-active {
++                display: block !important;
++                page-break-after: avoid !important;
++                page-break-before: avoid !important;
++            }
++            .custom-print-grid {
++                display: grid !important;
++                page-break-inside: avoid !important;
++            }
++
++            /* Basic landscape A5 page styling */
++            .print-label {
++                box-sizing: border-box !important;
++                border: 1px dashed #ccc !important;
++                position: relative !important;
++                page-break-inside: avoid !important;
++                overflow: hidden !important;
++                background: white !important;
++            }
++
++            /* Layout: 1 horizontal */
++            .print-layout-h1 {
++                width: 210mm !important;
++                height: 297mm !important;
++                display: flex !important;
++                align-items: center !important;
++                justify-content: center !important;
++            }
++            .print-layout-h1 .print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++            }
++
++            /* Layout: 2 horizontal */
++            .print-layout-h2 {
++                width: 210mm !important;
++                height: 297mm !important;
++            }
++            .print-layout-h2 .print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++                margin-bottom: 0.5mm !important;
++            }
++
++            /* Layout: 2 vertical (side-by-side) on landscape A4 */
++            .print-layout-v2 {
++                width: 297mm !important;
++                height: 210mm !important;
++            }
++            .flex-landscape-container {
++                display: flex !important;
++                flex-direction: row !important;
++                width: 297mm !important;
++                height: 210mm !important;
++            }
++            .vertical-print-col {
++                width: 148.5mm !important;
++                height: 210mm !important;
++                position: relative !important;
++                overflow: hidden !important;
++                box-sizing: border-box !important;
++                border-right: 1px dashed #ccc !important;
++            }
++            .rotated-print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++                transform: rotate(90deg) translate(0, -210mm) !important;
++                transform-origin: top left !important;
++            }
++
++            /* Layout: 3 vertical (side-by-side) on landscape A4 */
++            .print-layout-v3 {
++                width: 297mm !important;
++                height: 210mm !important;
++            }
++            .flex-landscape-container-v3 {
++                display: flex !important;
++                flex-direction: row !important;
++                width: 297mm !important;
++                height: 210mm !important;
++            }
++            .vertical-print-col-v3 {
++                width: 99mm !important;
++                height: 210mm !important;
++                position: relative !important;
++                overflow: hidden !important;
++                box-sizing: border-box !important;
++                border-right: 1px dashed #ccc !important;
++            }
++            .rotated-print-label-v3 {
++                width: 210mm !important;
++                height: 148mm !important;
++                transform: scale(0.66) rotate(90deg) translate(0, -210mm) !important;
++                transform-origin: top left !important;
++            }
++
++            /* Layout: 4 grid items (2x2) */
++            .print-layout-grid4 {
++                width: 210mm !important;
++                height: 297mm !important;
++            }
++            .grid-4-container {
++                display: grid !important;
++                grid-template-columns: 105mm 105mm !important;
++                grid-template-rows: 148.5mm 148.5mm !important;
++                width: 210mm !important;
++                height: 297mm !important;
++                box-sizing: border-box !important;
++            }
++            .grid-item-wrapper {
++                width: 105mm !important;
++                height: 148.5mm !important;
++                position: relative !important;
++                overflow: hidden !important;
++                box-sizing: border-box !important;
++                border: 1px dashed #ccc !important;
++            }
++            .grid-item-wrapper .print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++                transform: scale(0.5) !important;
++                transform-origin: top left !important;
++            }
++
++            /* Layout: 6 grid items (2x3) */
++            .print-layout-grid6 {
++                width: 210mm !important;
++                height: 297mm !important;
++            }
++            .grid-6-container {
++                display: grid !important;
++                grid-template-columns: 105mm 105mm !important;
++                grid-template-rows: 99mm 99mm 99mm !important;
++                width: 210mm !important;
++                height: 297mm !important;
++                box-sizing: border-box !important;
++            }
++            .grid-item-wrapper-6 {
++                width: 105mm !important;
++                height: 99mm !important;
++                position: relative !important;
++                overflow: hidden !important;
++                box-sizing: border-box !important;
++                border: 1px dashed #ccc !important;
++            }
++            .grid-item-wrapper-6 .print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++                transform: scale(0.5) !important;
++                transform-origin: top left !important;
++            }
++
++            /* Layout: 8 grid items (2x4) */
++            .print-layout-grid8 {
++                width: 210mm !important;
++                height: 297mm !important;
++            }
++            .grid-8-container {
++                display: grid !important;
++                grid-template-columns: 105mm 105mm !important;
++                grid-template-rows: 74.25mm 74.25mm 74.25mm 74.25mm !important;
++                width: 210mm !important;
++                height: 297mm !important;
++                box-sizing: border-box !important;
++            }
++            .grid-item-wrapper-8 {
++                width: 105mm !important;
++                height: 74.25mm !important;
++                position: relative !important;
++                overflow: hidden !important;
++                box-sizing: border-box !important;
++                border: 1px dashed #ccc !important;
++            }
++            .grid-item-wrapper-8 .print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++                transform: scale(0.5) !important;
++                transform-origin: top left !important;
++            }
++
++            /* Layout: 12 grid items (3x4) */
++            .print-layout-grid12 {
++                width: 210mm !important;
++                height: 297mm !important;
++            }
++            .grid-12-container {
++                display: grid !important;
++                grid-template-columns: 70mm 70mm 70mm !important;
++                grid-template-rows: 74.25mm 74.25mm 74.25mm 74.25mm !important;
++                width: 210mm !important;
++                height: 297mm !important;
++                box-sizing: border-box !important;
++            }
++            .grid-item-wrapper-12 {
++                width: 70mm !important;
++                height: 74.25mm !important;
++                position: relative !important;
++                overflow: hidden !important;
++                box-sizing: border-box !important;
++                border: 1px dashed #ccc !important;
++            }
++            .grid-item-wrapper-12 .print-label {
++                width: 210mm !important;
++                height: 148mm !important;
++                transform: scale(0.333) !important;
++                transform-origin: top left !important;
++            }
++        }
++
++        /* Live Editor Zoom & Scroll adjustments */
++        .label-preview-container {
++            width: 210mm;
++            height: 148mm;
++            background: white;
++            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
++            position: relative;
++            overflow: hidden;
++            transform-origin: top left;
++        }
++
++        /* High-quality narrow font for technical details (saves space, matches real labels) */
++        .font-narrow {
++            font-family: 'PT Sans Narrow', sans-serif;
++        }
++
++        /* Helper styling for draggable blocks in editor */
++        .draggable-element {
++            cursor: grab;
++            transition: outline-color 0.15s, background-color 0.15s;
++        }
++        .draggable-element:active {
++            cursor: grabbing;
++        }
++        .draggable-element:hover {
++            outline: 1px dashed #10b981;
++            background-color: rgba(16, 185, 129, 0.04);
++        }
++        .draggable-selected {
++            outline: 2px solid #3b82f6 !important;
++            background-color: rgba(59, 130, 246, 0.06) !important;
++            z-index: 50 !important;
++        }
++
++        /* Grid Background pattern */
++        .grid-background {
++            background-size: 5mm 5mm;
++            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
++                              linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
++        }
++
++        /* Ruler styling */
++        .ruler-container {
++            position: relative;
++            padding-top: 25px;
++            padding-left: 25px;
++            box-sizing: content-box;
++        }
++        .hr-ruler {
++            position: absolute;
++            top: 0;
++            left: 25px;
++            width: 210mm;
++            height: 25px;
++            background: #f8fafc;
++            border-bottom: 1px solid #cbd5e1;
++            box-sizing: border-box;
++        }
++        .vr-ruler {
++            position: absolute;
++            top: 25px;
++            left: 0;
++            width: 25px;
++            height: 148mm;
++            background: #f8fafc;
++            border-right: 1px solid #cbd5e1;
++            box-sizing: border-box;
++        }
++        .ruler-tick {
++            position: absolute;
++            background-color: #94a3b8;
++        }
++        .ruler-label {
++            position: absolute;
++            font-size: 7.5px;
++            color: #64748b;
++            font-weight: 600;
++            line-height: 1;
++            font-family: 'Inter', sans-serif;
++        }
++    </style>
++</head>
++<body>
++    <div id="root"></div>
++
++    <script type="text/babel">
++        const { useState, useEffect, useRef } = React;
++
++        // Custom High-Quality SVG Icons
++        const Icon = ({ name, className = "w-5 h-5" }) => {
++            const icons = {
++                beer: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M17 11h1a3 3 0 0 1 0 6h-1" />
++                        <path d="M9 12v6" />
++                        <path d="M13 12v6" />
++                        <path d="M14 7.5a2.5 2.5 0 0 0-5 0v11a1.5 1.5 0 0 0 1.5 1.5h5a1.5 1.5 0 0 0 1.5-1.5V7.5z" />
++                        <path d="M8 22h8" />
++                    </svg>
++                ),
++                printer: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <polyline points="6 9 6 2 18 2 18 9" />
++                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
++                        <rect x="6" y="14" width="12" height="8" />
++                    </svg>
++                ),
++                alertCircle: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <circle cx="12" cy="12" r="10" />
++                        <line x1="12" y1="8" x2="12" y2="12" />
++                        <line x1="12" y1="16" x2="12.01" y2="16" />
++                    </svg>
++                ),
++                checkCircle: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
++                        <polyline points="22 4 12 14.01 9 11.01" />
++                    </svg>
++                ),
++                download: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
++                        <polyline points="7 10 12 15 17 10" />
++                        <line x1="12" y1="15" x2="12" y2="3" />
++                    </svg>
++                ),
++                upload: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
++                        <polyline points="17 8 12 3 7 8" />
++                        <line x1="12" y1="3" x2="12" y2="15" />
++                    </svg>
++                ),
++                save: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
++                        <polyline points="17 21 17 13 7 13 7 21" />
++                        <polyline points="7 3 7 8 15 8" />
++                    </svg>
++                ),
++                trash: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <polyline points="3 6 5 6 21 6" />
++                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
++                    </svg>
++                ),
++                fileText: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
++                        <polyline points="14 2 14 8 20 8" />
++                        <line x1="16" y1="13" x2="8" y2="13" />
++                        <line x1="16" y1="17" x2="8" y2="17" />
++                        <polyline points="10 9 9 9 8 9" />
++                    </svg>
++                ),
++                cog: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <circle cx="12" cy="12" r="3" />
++                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
++                    </svg>
++                ),
++                undo: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M3 7v6h6" />
++                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
++                    </svg>
++                ),
++                redo: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <path d="M21 7v6h-6" />
++                        <path d="M3 17a9 9 0 0 1 9-9 9 9 0 1 1 6 2.3l3 2.7" />
++                    </svg>
++                ),
++                grid: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <rect x="3" y="3" width="18" height="18" rx="2" />
++                        <line x1="9" y1="3" x2="9" y2="21" />
++                        <line x1="15" y1="3" x2="15" y2="21" />
++                        <line x1="3" y1="9" x2="21" y2="9" />
++                        <line x1="3" y1="15" x2="21" y2="15" />
++                    </svg>
++                ),
++                image: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
++                        <circle cx="9" cy="9" r="2" />
++                        <path d="M21 15l-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
++                    </svg>
++                ),
++                plus: (
++                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
++                        <line x1="12" y1="5" x2="12" y2="19" />
++                        <line x1="5" y1="12" x2="19" y2="12" />
++                    </svg>
++                )
++            };
++            return icons[name] || <span className="text-red-500">?</span>;
++        };
++
++        // Static standard configurations using unified layers schema
++        const PRESETS = [
++            {
++                id: 'cider',
++                name: 'Сидр Традиционный Сухой (СТБ)',
++                warningHeightPercent: 12,
++                layers: [
++                    {
++                        id: 'header',
++                        type: 'text',
++                        name: 'Шапка бренда',
++                        x: 105,
++                        y: 4,
++                        width: 200,
++                        height: 6,
++                        size: 10,
++                        text: 'МИНСК КРИСТАЛЛ ГРУПП',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'title',
++                        type: 'text',
++                        name: 'Вид продукции',
++                        x: 105,
++                        y: 11,
++                        width: 200,
++                        height: 12,
++                        size: 34,
++                        text: 'СИДР',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'subtitle',
++                        type: 'text',
++                        name: 'Наименование / Подзаголовок',
++                        x: 105,
++                        y: 24,
++                        width: 200,
++                        height: 10,
++                        size: 8,
++                        text: 'ФРУКТОВО-ЯГОДНЫЙ ГАЗИРОВАННЫЙ ПОЛУСЛАДКИЙ «Эпл Бум» («Apple Boom»)',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'standard',
++                        type: 'text',
++                        name: 'Стандарт (СТБ / ГОСТ)',
++                        x: 105,
++                        y: 33,
++                        width: 200,
++                        height: 6,
++                        size: 7.2,
++                        text: 'СТБ 1861-2008 | ТИ ВУ 690277551.026-2023',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'stats',
++                        type: 'stats',
++                        name: 'Характеристики (Спирт, сахар, объем)',
++                        x: 4,
++                        y: 10,
++                        width: 34,
++                        height: 38,
++                        size: 12,
++                        visible: true,
++                        alcohol: '5,7%',
++                        sugar: '50 г/л',
++                        volume: '30 л'
++                    },
++                    {
++                        id: 'icons',
++                        type: 'icons',
++                        name: 'Значки соответствия (EAC, PET...)',
++                        x: 178,
++                        y: 5,
++                        width: 26,
++                        height: 38,
++                        size: 38,
++                        visible: true,
++                        eacActive: true,
++                        foodActive: true,
++                        petActive: true
++                    },
++                    {
++                        id: 'body',
++                        type: 'body',
++                        name: 'Описание, состав и изготовитель',
++                        x: 6,
++                        y: 48,
++                        width: 125,
++                        height: 40,
++                        size: 6.2,
++                        ingredients: 'Состав: виноматериал яблочный натуральный столовый, вода питьевая, сахар, пищевые добавки: регулятор кислотности лимонная кислота, антиокислитель E224, консервант E202. Пищевая ценность 100 мл продукта: углеводы - 5 г; энергетическая ценность - 55 ккал/100 мл (220 кДж/100 мл). Алкоголь противопоказан детям и подросткам до 18 лет, беременным и кормящим женщинам, лицам с заболеваниями нервной системы и внутренних органов.',
++                        nutrition: 'Хранить в условиях, исключающих воздействие прямого солнечного света, при температуре от 5 °С до 20 °С. После подключения ПЭТ- КЕГ к оборудованию для розлива, сидр следует хранить под давлением двуокиси углерода в течение 10 суток при температуре от 5 °С до 20 °С.',
++                        storage: 'Изготовитель: ОАО "Пищевой комбинат "Веселово", 222132, Республика Беларусь, Минская обл., Борисовский р-н, д. Веселово, ул. Заводская, 24. Тел.:(0177)933-400, e-mail:info@alco.by, www.alco.by',
++                        expiration: 'СРОК ГОДНОСТИ: 4 МЕСЯЦА С ДАТЫ РОЗЛИВА.',
++                        visible: true
++                    },
++                    {
++                        id: 'barcode',
++                        type: 'barcode',
++                        name: 'Штрих-код',
++                        x: 135,
++                        y: 84,
++                        width: 45,
++                        height: 25,
++                        size: 40,
++                        text: '4811173002052',
++                        meta: 'EAN13',
++                        visible: true
++                    },
++                    {
++                        id: 'qrcode',
++                        type: 'qrcode',
++                        name: 'QR-код',
++                        x: 182,
++                        y: 15,
++                        width: 22,
++                        height: 22,
++                        size: 22,
++                        text: 'https://iz.by/cider-apple-boom-30l',
++                        visible: true
++                    },
++                    {
++                        id: 'warning',
++                        type: 'warning',
++                        name: 'Предупреждающая надпись',
++                        x: 0,
++                        y: 130,
++                        width: 210,
++                        height: 18,
++                        size: 9.5,
++                        text: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
++                        visible: true
++                    }
++                ]
++            },
++            {
++                id: 'beer',
++                name: 'Пиво Светлое Классическое (ГОСТ)',
++                warningHeightPercent: 12,
++                layers: [
++                    {
++                        id: 'header',
++                        type: 'text',
++                        name: 'Шапка бренда',
++                        x: 105,
++                        y: 4,
++                        width: 200,
++                        height: 6,
++                        size: 10,
++                        text: 'БРЕСТСКОЕ ПИВО',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'title',
++                        type: 'text',
++                        name: 'Вид продукции',
++                        x: 105,
++                        y: 11,
++                        width: 200,
++                        height: 12,
++                        size: 34,
++                        text: 'ПИВО',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'subtitle',
++                        type: 'text',
++                        name: 'Наименование / Подзаголовок',
++                        x: 105,
++                        y: 24,
++                        width: 200,
++                        height: 10,
++                        size: 8,
++                        text: 'СВЕТЛОЕ ПАСТЕРИЗОВАННОЕ ФИЛЬТРОВАННОЕ «КЛАССИЧЕСКОЕ»',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'standard',
++                        type: 'text',
++                        name: 'Стандарт (СТБ / ГОСТ)',
++                        x: 105,
++                        y: 33,
++                        width: 200,
++                        height: 6,
++                        size: 7.2,
++                        text: 'ГОСТ 31711-2012 | ТИ BY 200020111.002-2022',
++                        bold: true,
++                        italic: false,
++                        visible: true
++                    },
++                    {
++                        id: 'stats',
++                        type: 'stats',
++                        name: 'Характеристики (Спирт, сахар, объем)',
++                        x: 4,
++                        y: 10,
++                        width: 34,
++                        height: 38,
++                        size: 12,
++                        visible: true,
++                        alcohol: '4,5%',
++                        sugar: '0 г/л',
++                        volume: '30 л'
++                    },
++                    {
++                        id: 'icons',
++                        type: 'icons',
++                        name: 'Значки соответствия (EAC, PET...)',
++                        x: 178,
++                        y: 5,
++                        width: 26,
++                        height: 38,
++                        size: 38,
++                        visible: true,
++                        eacActive: true,
++                        foodActive: true,
++                        petActive: true
++                    },
++                    {
++                        id: 'body',
++                        type: 'body',
++                        name: 'Описание, состав и изготовитель',
++                        x: 6,
++                        y: 48,
++                        width: 125,
++                        height: 40,
++                        size: 6.2,
++                        ingredients: 'Состав: вода питьевая, солод пивоваренный ячменный светлый, хмель прессованный, хмелепродукты. Пищевая ценность 100 мл пива: углеводы - не более 4.6 г; энергетическая ценность - 42 ккал / 170 кДж.',
++                        nutrition: 'Хранить в затемненных помещениях при температуре от 2 °С до 12 °С. После вскрытия кега хранить пиво под избыточным давлением углекислого газа не более 7 суток.',
++                        storage: 'Изготовитель: ОАО "Брестское пиво", 224014, Республика Беларусь, г. Брест, ул. Писателя Смирнова, 168. Тел.: +375 (162) 24-51-12, info@brestbeer.by',
++                        expiration: 'СРОК ГОДНОСТИ: 180 СУТОК С ДАТЫ РОЗЛИВА.',
++                        visible: true
++                    },
++                    {
++                        id: 'barcode',
++                        type: 'barcode',
++                        name: 'Штрих-код',
++                        x: 135,
++                        y: 84,
++                        width: 45,
++                        height: 25,
++                        size: 40,
++                        text: '4810123456789',
++                        meta: 'EAN13',
++                        visible: true
++                    },
++                    {
++                        id: 'qrcode',
++                        type: 'qrcode',
++                        name: 'QR-код',
++                        x: 182,
++                        y: 15,
++                        width: 22,
++                        height: 22,
++                        size: 22,
++                        text: 'https://brestbeer.by/classic-keg-30',
++                        visible: true
++                    },
++                    {
++                        id: 'warning',
++                        type: 'warning',
++                        name: 'Предупреждающая надпись',
++                        x: 0,
++                        y: 130,
++                        width: 210,
++                        height: 18,
++                        size: 9.5,
++                        text: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
++                        visible: true
++                    }
++                ]
++            }
++        ];
++
++        const ELEMENT_NAMES_RU = {
++            header: 'Шапка (Производитель)',
++            title: 'Название продукта (Тип)',
++            subtitle: 'Подзаголовок / Описание',
++            stats: 'Характеристики (Алк, Сахар, Объем)',
++            icons: 'Значки соответствия (EAC, PET...)',
++            body: 'Основной текст (Состав, условия...)',
++            barcode: 'Штрих-код',
++            qrcode: 'Генератор QR-кода'
++        };
++
++        function App() {
++            const [form, setForm] = useState({ ...PRESETS[0] });
++            const [savedTemplates, setSavedTemplates] = useState([]);
++            const [activeTab, setActiveTab] = useState('editor'); // editor | templates
++            const [customName, setCustomName] = useState('');
++            const [zoom, setZoom] = useState(0.85);
++            const [selectedElementId, setSelectedElementId] = useState(null); // ID of currently clicked canvas element
++            const [showGrid, setShowGrid] = useState(false);
++            const [printLayout, setPrintLayout] = useState('h2'); // h1, h2, v2, grid4
++            const [customPrintConfig, setCustomPrintConfig] = useState({
++                active: false,
++                columns: 2,
++                rows: 3,
++                gap: 1.0,
++                scale: 0.5,
++                pageOrientation: 'portrait',
++                labelCount: 6
++            });
++
++            // Checklist requirements СТБ 1100-2016
++            const [checklist, setChecklist] = useState({
++                manufacturer: true,
++                expiration: true,
++                ingredients: true,
++                legalWarning: true,
++                stbStandard: true
++            });
++
++            // Simple Undo/Redo Stacks
++            const [history, setHistory] = useState([]);
++            const [historyIndex, setHistoryIndex] = useState(-1);
++
++            // Load templates from server PHP endpoint
++            const fetchTemplates = () => {
++                fetch('index.php?action=get_templates')
++                    .then(res => res.json())
++                    .then(data => {
++                        if (Array.isArray(data)) {
++                            setSavedTemplates(data);
++                        }
++                    })
++                    .catch(err => console.error('Failed to load templates', err));
++            };
++
++            useEffect(() => {
++                fetchTemplates();
++            }, []);
++
++            // Save history snapshot helper
++            const recordHistory = (newState) => {
++                const cleanState = JSON.parse(JSON.stringify(newState));
++                const newHistory = history.slice(0, historyIndex + 1);
++                newHistory.push(cleanState);
++                if (newHistory.length > 20) newHistory.shift();
++                setHistory(newHistory);
++                setHistoryIndex(newHistory.length - 1);
++            };
++
++            const updateFormWithHistory = (updater) => {
++                setForm(prev => {
++                    const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
++                    recordHistory(next);
++                    return next;
++                });
++            };
++
++            // Undo/Redo handlers
++            const handleUndo = () => {
++                if (historyIndex > 0) {
++                    const nextIndex = historyIndex - 1;
++                    setHistoryIndex(nextIndex);
++                    setForm(JSON.parse(JSON.stringify(history[nextIndex])));
++                }
++            };
++
++            const handleRedo = () => {
++                if (historyIndex < history.length - 1) {
++                    const nextIndex = historyIndex + 1;
++                    setHistoryIndex(nextIndex);
++                    setForm(JSON.parse(JSON.stringify(history[nextIndex])));
++                }
++            };
++
++            // Initialize first history frame
++            useEffect(() => {
++                if (history.length === 0) {
++                    recordHistory(form);
++                }
++            }, []);
++
++            // Keyboard navigation listener (1mm step or 5mm with Shift)
++            useEffect(() => {
++                const handleKeyDown = (e) => {
++                    if (!selectedElementId) return;
++
++                    // If focusing on inputs/textareas, skip moving elements
++                    const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
++                    if (tag === 'input' || tag === 'textarea' || document.activeElement.isContentEditable) {
++                        return;
++                    }
++
++                    const step = e.shiftKey ? 5 : 1;
++                    let dx = 0;
++                    let dy = 0;
++
++                    if (e.key === 'ArrowUp') {
++                        dy = -step;
++                        e.preventDefault();
++                    } else if (e.key === 'ArrowDown') {
++                        dy = step;
++                        e.preventDefault();
++                    } else if (e.key === 'ArrowLeft') {
++                        dx = -step;
++                        e.preventDefault();
++                    } else if (e.key === 'ArrowRight') {
++                        dx = step;
++                        e.preventDefault();
++                    }
++
++                    if (dx !== 0 || dy !== 0) {
++                        const targetLayer = (form.layers || []).find(l => l.id === selectedElementId);
++                        if (targetLayer) {
++                            handleCanvasElementDrag(selectedElementId, 'drag', dx, dy, targetLayer);
++                        }
++                    }
++                };
++
++                window.addEventListener('keydown', handleKeyDown);
++                return () => window.removeEventListener('keydown', handleKeyDown);
++            }, [selectedElementId, form.layers]);
++
++            const applyPreset = (preset) => {
++                setForm({ ...preset });
++                setSelectedElementId(null);
++                recordHistory(preset);
++            };
++
++            const handleFieldChange = (key, val) => {
++                updateFormWithHistory(prev => ({ ...prev, [key]: val }));
++            };
++
++            // Inspector value modifications
++            const updateElementAttribute = (elementId, attribute, value) => {
++                updateFormWithHistory(prev => ({
++                    ...prev,
++                    layers: (prev.layers || []).map(l => l.id === elementId ? { ...l, [attribute]: value } : l)
++                }));
++            };
++
++            // Direct Canvas Drag and Resize offset updates (Figma/Canva engine)
++            const handleCanvasElementDrag = (elementId, type, dx, dy, startLayer) => {
++                updateFormWithHistory(prev => {
++                    const updated = { ...prev };
++                    updated.layers = (updated.layers || []).map(l => {
++                        if (l.id !== elementId) return l;
++                        const next = { ...l };
++                        if (type === 'drag') {
++                            next.x = Math.max(0, Math.min(210, Math.round((startLayer.x + dx) * 10) / 10));
++                            next.y = Math.max(0, Math.min(148, Math.round((startLayer.y + dy) * 10) / 10));
++                        } else {
++                            // Resizing delta transforms
++                            const dWidth = dx;
++                            const dHeight = dy;
++                            if (type.includes('r')) {
++                                next.width = Math.max(5, Math.min(210, Math.round((startLayer.width + dWidth) * 10) / 10));
++                            }
++                            if (type.includes('b')) {
++                                next.height = Math.max(5, Math.min(148, Math.round((startLayer.height + dHeight) * 10) / 10));
++                            }
++                            if (type.includes('l')) {
++                                const newX = Math.max(0, Math.min(210, startLayer.x + dx));
++                                const newWidth = Math.max(5, startLayer.width - dx);
++                                next.x = Math.round(newX * 10) / 10;
++                                next.width = Math.round(newWidth * 10) / 10;
++                            }
++                            if (type.includes('t')) {
++                                const newY = Math.max(0, Math.min(148, startLayer.y + dy));
++                                const newHeight = Math.max(5, startLayer.height - dy);
++                                next.y = Math.round(newY * 10) / 10;
++                                next.height = Math.round(newHeight * 10) / 10;
++                            }
++                            if (next.type === 'text') {
++                                if (type.includes('b') || type.includes('t')) {
++                                    const scaleRatio = next.height / startLayer.height;
++                                    next.size = Math.max(5, Math.min(120, Math.round(startLayer.size * scaleRatio * 10) / 10));
++                                }
++                            }
++                        }
++                        return next;
++                    });
++                    return updated;
++                });
++            };
++
++            // Element Centering Tools
++            const centerElementHorizontally = (elementId) => {
++                if (!elementId) return;
++                updateElementAttribute(elementId, 'x', 105);
++            };
++
++            const centerElementVertically = (elementId) => {
++                if (!elementId) return;
++                updateElementAttribute(elementId, 'y', 74);
++            };
++
++            // Image uploader handler (converts to Base64)
++            const handleImageUpload = (event) => {
++                const file = event.target.files[0];
++                if (!file) return;
++                const reader = new FileReader();
++                reader.onload = (e) => {
++                    const base64Data = e.target.result;
++                    const newImage = {
++                        id: `custom-img-${Date.now()}`,
++                        type: 'image',
++                        name: 'Изображение (Логотип)',
++                        src: base64Data,
++                        x: 85,
++                        y: 54,
++                        width: 40,
++                        height: 40,
++                        opacity: 1,
++                        visible: true
++                    };
++                    updateFormWithHistory(prev => ({
++                        ...prev,
++                        layers: [...(prev.layers || []), newImage]
++                    }));
++                    setSelectedElementId(newImage.id);
++                };
++                reader.readAsDataURL(file);
++            };
++
++            // Add custom text block
++            const addCustomText = () => {
++                const newText = {
++                    id: `custom-txt-${Date.now()}`,
++                    type: 'text',
++                    name: 'Пользовательский текст',
++                    text: 'Новый текст',
++                    x: 105,
++                    y: 60,
++                    width: 80,
++                    height: 10,
++                    size: 12,
++                    bold: false,
++                    italic: false,
++                    visible: true
++                };
++                updateFormWithHistory(prev => ({
++                    ...prev,
++                    layers: [...(prev.layers || []), newText]
++                }));
++                setSelectedElementId(newText.id);
++            };
++
++            // Delete selected custom text block
++            const deleteCustomText = (txtId) => {
++                updateFormWithHistory(prev => ({
++                    ...prev,
++                    layers: (prev.layers || []).filter(l => l.id !== txtId)
++                }));
++                setSelectedElementId(null);
++            };
++
++            // Delete selected custom image
++            const deleteCustomImage = (imgId) => {
++                updateFormWithHistory(prev => ({
++                    ...prev,
++                    layers: (prev.layers || []).filter(l => l.id !== imgId)
++                }));
++                setSelectedElementId(null);
++            };
++
++            // Clean compliance verification checks (including 5mm margins check)
++            const verifyCompliance = (data) => {
++                const reports = [];
++                let score = 100;
++
++                const isWarningSizeValid = data.warningHeightPercent >= 10;
++                if (!isWarningSizeValid) {
++                    score -= 25;
++                    reports.push({
++                        status: 'error',
++                        text: `Предупреждающая надпись занимает всего ${data.warningHeightPercent}%. По закону РБ площадь должна быть не менее 10%!`
++                    });
++                } else {
++                    reports.push({
++                        status: 'success',
++                        text: `Предупреждающий баннер занимает ${data.warningHeightPercent}% (соответствует требованиям Минздрава РБ).`
++                    });
++                }
++
++                const cleanedWarning = data.warningText ? data.warningText.toUpperCase().trim() : '';
++                const exactPhrase = "ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ";
++                if (cleanedWarning !== exactPhrase) {
++                    score -= 20;
++                    reports.push({
++                        status: 'error',
++                        text: `Текст предупреждения должен точно соответствовать закону: "${exactPhrase}".`
++                    });
++                } else {
++                    reports.push({
++                        status: 'success',
++                        text: 'Предупреждающий текст полностью идентичен официальному регламенту РБ.'
++                    });
++                }
++
++                if (!data.eacActive) {
++                    score -= 15;
++                    reports.push({
++                        status: 'warning',
++                        text: 'Маркировка знаком Евразийского соответствия EAC обязательна по ТР ТС 022/2011.'
++                    });
++                }
++
++                // Check 5mm print-safe margin boundaries
++                let marginViolation = false;
++                if (data.elements) {
++                    Object.entries(data.elements).forEach(([key, value]) => {
++                        if (value.visible !== false) {
++                            // Elements are absolute positioned, some are centered so they can slightly exceed bounds
++                            // For security checks, we verify that X & Y are placed reasonably within 5mm to 205mm / 5mm to 143mm
++                            if (value.y < 5 || value.y > (148 - 5)) {
++                                marginViolation = true;
++                            }
++                        }
++                    });
++                }
++                if (marginViolation) {
++                    score -= 10;
++                    reports.push({
++                        status: 'warning',
++                        text: 'Внимание: некоторые элементы размещены ближе чем 5 мм от границы обрезки этикетки.'
++                    });
++                } else {
++                    reports.push({
++                        status: 'success',
++                        text: 'Все ключевые элементы расположены внутри 5-миллиметрового поля безопасности.'
++                    });
++                }
++
++                if (data.barcode) {
++                    const trimmed = data.barcode.trim();
++                    let isEan13Valid = false;
++                    if (/^\d{13}$/.test(trimmed)) {
++                        let sum = 0;
++                        for (let i = 0; i < 12; i++) {
++                            sum += parseInt(trimmed[i], 10) * (i % 2 === 0 ? 1 : 3);
++                        }
++                        const calculatedChecksum = (10 - (sum % 10)) % 10;
++                        isEan13Valid = calculatedChecksum === parseInt(trimmed[12], 10);
++                    }
++
++                    let isEan8Valid = false;
++                    if (/^\d{8}$/.test(trimmed)) {
++                        let sum = 0;
++                        for (let i = 0; i < 7; i++) {
++                            sum += parseInt(trimmed[i], 10) * (i % 2 === 0 ? 3 : 1);
++                        }
++                        const calculatedChecksum = (10 - (sum % 10)) % 10;
++                        isEan8Valid = calculatedChecksum === parseInt(trimmed[7], 10);
++                    }
++
++                    if (data.barcodeFormat === 'EAN13' && !isEan13Valid) {
++                        score -= 15;
++                        reports.push({
++                            status: 'error',
++                            text: 'Неверный формат или контрольная сумма штрих-кода EAN-13.'
++                        });
++                    } else if (data.barcodeFormat === 'EAN8' && !isEan8Valid) {
++                        score -= 15;
++                        reports.push({
++                            status: 'error',
++                            text: 'Неверный формат или контрольная сумма штрих-кода EAN-8.'
++                        });
++                    } else {
++                        reports.push({
++                            status: 'success',
++                            text: `Штрихкод ${data.barcodeFormat || 'EAN13'} успешно валидирован.`
++                        });
++                    }
++                }
++
++                return { score: Math.max(0, score), reports };
++            };
++
++            const compliance = verifyCompliance(form);
++
++            // Get configuration details of currently selected element
++            const getSelectedElementData = () => {
++                if (!selectedElementId) return null;
++                if (selectedElementId.startsWith('custom-img-')) {
++                    return (form.customImages || []).find(img => img.id === selectedElementId) || null;
++                }
++                if (selectedElementId.startsWith('custom-txt-')) {
++                    return (form.customTexts || []).find(txt => txt.id === selectedElementId) || null;
++                }
++                return form.elements[selectedElementId] ? { id: selectedElementId, ...form.elements[selectedElementId] } : null;
++            };
++
++            const selectedElement = getSelectedElementData();
++
++            // Save template using PHP Backend API
++            const saveTemplate = () => {
++                if (!customName.trim()) {
++                    alert('Пожалуйста, укажите наименование шаблона для сохранения!');
++                    return;
++                }
++                const newTemplate = {
++                    ...form,
++                    id: Date.now().toString(),
++                    name: customName
++                };
++
++                fetch('index.php?action=save_template', {
++                    method: 'POST',
++                    headers: { 'Content-Type': 'application/json' },
++                    body: JSON.stringify(newTemplate)
++                })
++                .then(res => res.json())
++                .then(data => {
++                    if (data.success) {
++                        setSavedTemplates(data.templates);
++                        setCustomName('');
++                        alert('Шаблон успешно сохранен в базу данных PHP!');
++                    } else {
++                        alert('Ошибка сохранения: ' + data.error);
++                    }
++                })
++                .catch(err => {
++                    console.error(err);
++                    alert('Сервер недоступен при сохранении.');
++                });
++            };
++
++            const deleteTemplate = (id) => {
++                if (confirm('Вы уверены, что хотите удалить этот шаблон?')) {
++                    fetch('index.php?action=delete_template', {
++                        method: 'POST',
++                        headers: { 'Content-Type': 'application/json' },
++                        body: JSON.stringify({ id })
++                    })
++                    .then(res => res.json())
++                    .then(data => {
++                        if (data.success) {
++                            setSavedTemplates(data.templates);
++                            alert('Шаблон удален!');
++                        } else {
++                            alert('Ошибка удаления: ' + data.error);
++                        }
++                    })
++                    .catch(err => console.error(err));
++                }
++            };
++
++            const exportTemplates = () => {
++                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(form));
++                const downloadAnchor = document.createElement('a');
++                downloadAnchor.setAttribute("href", dataStr);
++                downloadAnchor.setAttribute("download", `этикетка_конструктор_${form.productType}.json`);
++                document.body.appendChild(downloadAnchor);
++                downloadAnchor.click();
++                downloadAnchor.remove();
++            };
++
++            const exportAsImage = () => {
++                const container = document.querySelector('.label-preview-container');
++                if (!container) return;
++
++                html2canvas(container, {
++                    scale: 2.5, // High resolution
++                    useCORS: true,
++                    allowTaint: true,
++                    backgroundColor: '#ffffff'
++                }).then(canvas => {
++                    const dataUrl = canvas.toDataURL('image/png');
++                    const link = document.createElement('a');
++                    link.download = `этикетка_${form.productType || 'напиток'}.png`;
++                    link.href = dataUrl;
++                    document.body.appendChild(link);
++                    link.click();
++                    link.remove();
++                }).catch(err => {
++                    console.error("Failed to generate image", err);
++                    alert("Ошибка при экспорте изображения.");
++                });
++            };
++
++            const exportAsWord = () => {
++                const container = document.querySelector('.label-preview-container');
++                if (!container) return;
++
++                html2canvas(container, {
++                    scale: 2.5, // High resolution
++                    useCORS: true,
++                    allowTaint: true,
++                    backgroundColor: '#ffffff'
++                }).then(canvas => {
++                    const pngDataUri = canvas.toDataURL('image/png');
++
++                    const wordHtml = `
++                    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
++                    <head>
++                        <title>Этикетка на кегу - ${form.productType}</title>
++                        <!--[if gte mso 9]>
++                        <xml>
++                            <w:WordDocument>
++                                <w:View>Print</w:View>
++                                <w:Zoom>100</w:Zoom>
++                                <w:DoNotOptimizeForBrowser/>
++                            </w:WordDocument>
++                        </xml>
++                        <![endif]-->
++                        <style>
++                            @page {
++                                size: 210mm 148mm;
++                                margin: 10mm;
++                            }
++                            body {
++                                font-family: "Arial", sans-serif;
++                                text-align: center;
++                                background-color: #ffffff;
++                                padding: 20px;
++                            }
++                            h2 {
++                                font-family: "Arial", sans-serif;
++                                margin-bottom: 5px;
++                                color: #333333;
++                            }
++                            p {
++                                font-family: "Arial", sans-serif;
++                                font-size: 11px;
++                                color: #666666;
++                                margin-bottom: 20px;
++                            }
++                            .image-container {
++                                text-align: center;
++                                margin-top: 10px;
++                            }
++                            img {
++                                max-width: 100%;
++                                height: auto;
++                                border: 1px solid #cccccc;
++                            }
++                        </style>
++                    </head>
++                    <body>
++                        <h2>Этикетка на кегу - ${form.brandName || 'Бренд'} ${form.productType}</h2>
++                        <p>${form.subtitle}</p>
++                        <div class="image-container">
++                            <img src="${pngDataUri}" alt="Этикетка" />
++                        </div>
++                    </body>
++                    </html>
++                    `;
++
++                    const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8' });
++                    const link = document.createElement('a');
++                    link.href = URL.createObjectURL(blob);
++                    link.download = `этикетка_${form.productType || 'напиток'}.doc`;
++                    document.body.appendChild(link);
++                    link.click();
++                    link.remove();
++                }).catch(err => {
++                    console.error("Failed to generate Word document", err);
++                    alert("Ошибка при экспорте в MS Word.");
++                });
++            };
++
++            const handleImport = (event) => {
++                const file = event.target.files[0];
++                if (!file) return;
++                const reader = new FileReader();
++                reader.onload = (e) => {
++                    try {
++                        const imported = JSON.parse(e.target.result);
++                        if (imported && imported.productType) {
++                            setForm(imported);
++                            alert('Шаблон успешно импортирован!');
++                        } else {
++                            alert('Неверная структура шаблона.');
++                        }
++                    } catch (err) {
++                        alert('Не удалось прочесть файл JSON.');
++                    }
++                };
++                reader.readAsText(file);
++            };
++
++            const isLandscape = customPrintConfig.active
++                ? customPrintConfig.pageOrientation === 'landscape'
++                : (printLayout === 'v2' || printLayout === 'v3');
++
++            const dynamicPageSizeStyle = isLandscape
++                ? `@media print { @page { size: A4 landscape !important; margin: 0 !important; } }`
++                : `@media print { @page { size: A4 portrait !important; margin: 0 !important; } }`;
++
++            return (
++                <div className="min-h-screen flex flex-col bg-slate-50">
++                    <style dangerouslySetInnerHTML={{ __html: dynamicPageSizeStyle }} />
++                    <div className="no-print min-h-screen flex flex-col">
++                        {/* Figma/Canva Header */}
++                        <header className="bg-slate-900 text-white border-b border-slate-800 shadow-lg px-6 py-3 flex justify-between items-center shrink-0">
++                            <div className="flex items-center space-x-3">
++                                <div className="p-2 bg-brand-600 rounded-lg">
++                                    <Icon name="cog" className="w-6 h-6 text-emerald-300 animate-pulse" />
++                                </div>
++                                <div>
++                                    <h1 className="text-lg font-black tracking-wider Montserrat flex items-center space-x-1.5">
++                                        <span>КЕГ-ДИЗАЙНЕР PRO</span>
++                                        <span className="text-[10px] bg-brand-600 text-white font-bold px-1.5 py-0.5 rounded">СТБ РБ</span>
++                                    </h1>
++                                    <p className="text-[11px] text-slate-400">Figma-style Конструктор • Стандарты СТБ 1100-2016 • Интегрированная база шаблонов</p>
++                                </div>
++                            </div>
++
++                            <div className="flex items-center space-x-3">
++                                <button
++                                    onClick={() => window.print()}
++                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all flex items-center space-x-2 border border-emerald-500"
++                                >
++                                    <Icon name="printer" className="w-4 h-4" />
++                                    <span>Запустить печать А4</span>
++                                </button>
++                            </div>
++                        </header>
++
++                        {/* Canva/Figma Three-Column Layout */}
++                        <main className="flex-1 w-full grid grid-cols-1 xl:grid-cols-12 gap-0 overflow-hidden">
++
++                            {/* Left Column (3/12): Layers & Saved Templates */}
++                            <div className="xl:col-span-3 border-r border-slate-200 bg-white flex flex-col h-[calc(100vh-62px)] overflow-y-auto">
++                                <div className="p-4 border-b border-slate-100 bg-slate-50/50">
++                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Библиотека шаблонов</h3>
++
++                                    {/* Presets Grid */}
++                                    <div className="grid grid-cols-2 gap-2 mb-4">
++                                        {PRESETS.map((p) => (
++                                            <button
++                                                key={p.id}
++                                                onClick={() => applyPreset(p)}
++                                                className={`px-3 py-2 rounded-lg text-xs font-bold border transition text-left ${
++                                                    form.id === p.id
++                                                        ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
++                                                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
++                                                }`}
++                                            >
++                                                {p.productType}
++                                            </button>
++                                        ))}
++                                    </div>
++
++                                    {/* User Saved Templates list */}
++                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase mb-2">Ваши шаблоны ({savedTemplates.length})</h4>
++                                    {savedTemplates.length === 0 ? (
++                                        <p className="text-[11px] text-slate-400 italic bg-white p-3 border rounded-lg text-center">Нет сохраненных шаблонов</p>
++                                    ) : (
++                                        <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
++                                            {savedTemplates.map((t) => (
++                                                <div key={t.id} className="p-2 border border-slate-100 rounded-lg hover:shadow-sm bg-white flex items-center justify-between">
++                                                    <button
++                                                        onClick={() => setForm({ ...t })}
++                                                        className="flex-1 text-left truncate text-xs font-semibold text-slate-700"
++                                                    >
++                                                        {t.name}
++                                                    </button>
++                                                    <button
++                                                        onClick={() => deleteTemplate(t.id)}
++                                                        className="text-red-500 hover:text-red-700 p-1"
++                                                    >
++                                                        <Icon name="trash" className="w-3.5 h-3.5" />
++                                                    </button>
++                                                </div>
++                                            ))}
++                                        </div>
++                                    )}
++                                </div>
++
++                                {/* Figma Layer Manager */}
++                                <div className="p-4 flex-1 flex flex-col">
++                                    <div className="flex justify-between items-center mb-3">
++                                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Слои холста (Figma Layers)</h3>
++                                        <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-bold">{(form.layers || []).length} слоев</span>
++                                    </div>
++
++                                    <div className="space-y-1 overflow-y-auto flex-1 max-h-[420px] pr-1">
++                                        {(form.layers || []).map((layer) => {
++                                            const isSelected = selectedElementId === layer.id;
++                                            return (
++                                                <div
++                                                    key={layer.id}
++                                                    onClick={() => setSelectedElementId(layer.id)}
++                                                    className={`group p-2 rounded-lg flex items-center justify-between cursor-pointer border transition text-xs ${
++                                                        isSelected
++                                                            ? 'bg-brand-50 border-brand-200 text-brand-900 font-bold'
++                                                            : 'bg-white border-transparent text-slate-700 hover:bg-slate-50'
++                                                    }`}
++                                                >
++                                                    <div className="flex items-center space-x-2 truncate">
++                                                        <span className="text-slate-400">
++                                                            {layer.type === 'text' && <Icon name="fileText" className="w-3.5 h-3.5" />}
++                                                            {layer.type === 'barcode' && <Icon name="grid" className="w-3.5 h-3.5" />}
++                                                            {layer.type === 'qrcode' && <Icon name="grid" className="w-3.5 h-3.5" />}
++                                                            {layer.type === 'image' && <Icon name="image" className="w-3.5 h-3.5" />}
++                                                            {layer.type === 'stats' && <Icon name="cog" className="w-3.5 h-3.5" />}
++                                                            {layer.type === 'body' && <Icon name="fileText" className="w-3.5 h-3.5" />}
++                                                            {layer.type === 'warning' && <Icon name="alertCircle" className="w-3.5 h-3.5" />}
++                                                        </span>
++                                                        <span className="truncate">{layer.name}</span>
++                                                    </div>
++
++                                                    <div className="flex items-center space-x-1.5 opacity-85 group-hover:opacity-100">
++                                                        {/* Visibility Eye icon */}
++                                                        <button
++                                                            onClick={(e) => {
++                                                                e.stopPropagation();
++                                                                updateElementAttribute(layer.id, 'visible', layer.visible === false ? true : false);
++                                                            }}
++                                                            className="text-slate-400 hover:text-slate-700 p-0.5"
++                                                            title={layer.visible !== false ? "Скрыть" : "Показать"}
++                                                        >
++                                                            {layer.visible !== false ? (
++                                                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
++                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
++                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
++                                                                </svg>
++                                                            ) : (
++                                                                <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
++                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
++                                                                </svg>
++                                                            )}
++                                                        </button>
++                                                    </div>
++                                                </div>
++                                            );
++                                        })}
++                                    </div>
++                                </div>
++                            </div>
++
++                            {/* Middle Column (6/12): Canvas Workspace, Zoom, Rulers & Compliance reports */}
++                            <div className="xl:col-span-6 bg-slate-100 flex flex-col h-[calc(100vh-62px)]">
++
++                                {/* Sleek Central Toolbar */}
++                                <div className="p-3 bg-white border-b border-slate-200 flex justify-between items-center shadow-sm shrink-0">
++                                    <div className="flex items-center space-x-2">
++                                        <button
++                                            onClick={handleUndo}
++                                            disabled={historyIndex <= 0}
++                                            className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded border disabled:opacity-40 transition"
++                                            title="Отменить (Ctrl+Z)"
++                                        >
++                                            <Icon name="undo" className="w-4 h-4" />
++                                        </button>
++                                        <button
++                                            onClick={handleRedo}
++                                            disabled={historyIndex >= history.length - 1}
++                                            className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded border disabled:opacity-40 transition"
++                                            title="Повторить"
++                                        >
++                                            <Icon name="redo" className="w-4 h-4" />
++                                        </button>
++                                        <span className="h-6 w-px bg-slate-200 mx-2"></span>
++                                        <button
++                                            onClick={() => setShowGrid(!showGrid)}
++                                            className={`px-3 py-1.5 rounded text-xs font-bold transition flex items-center space-x-1.5 ${
++                                                showGrid ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border'
++                                            }`}
++                                        >
++                                            <Icon name="grid" className="w-3.5 h-3.5" />
++                                            <span>Сетка (5мм)</span>
++                                        </button>
++                                    </div>
++
++                                    <div className="text-[11px] text-slate-400 font-semibold hidden md:inline-block">
++                                        Стрелочки: 1мм • +Shift: 5мм • Мышь: 8-точечное растягивание
++                                    </div>
++
++                                    {/* Scale slider */}
++                                    <div className="flex items-center space-x-2">
++                                        <span className="text-[11px] text-slate-500 font-bold">Масштаб:</span>
++                                        <input
++                                            type="range"
++                                            min="0.5"
++                                            max="1.2"
++                                            step="0.05"
++                                            value={zoom}
++                                            onChange={(e) => setZoom(parseFloat(e.target.value))}
++                                            className="w-24 accent-brand-600 h-1.5 bg-slate-200 rounded cursor-pointer"
++                                        />
++                                        <span className="text-xs font-extrabold text-slate-700 min-w-[36px]">
++                                            {Math.round(zoom * 100)}%
++                                        </span>
++                                    </div>
++                                </div>
++
++                                {/* Main Zoomable Rulers Workspace */}
++                                <div className="flex-1 overflow-auto p-6 flex justify-center items-start min-h-0 relative">
++                                    <div style={{ transform: `scale(${zoom})` }} className="origin-top-left transition-transform duration-75 relative">
++                                        <div className="ruler-container shadow-2xl">
++                                            {/* Horizontal Ruler (210mm) */}
++                                            <div className="hr-ruler">
++                                                {Array.from({ length: 22 }).map((_, i) => {
++                                                    const mm = i * 10;
++                                                    const leftPos = mm * 3.779;
++                                                    return (
++                                                        <React.Fragment key={i}>
++                                                            <div className="ruler-tick h-3 w-px" style={{ left: `${leftPos}px`, bottom: 0 }}></div>
++                                                            {mm % 20 === 0 && (
++                                                                <span className="ruler-label" style={{ left: `${leftPos + 2}px`, bottom: '14px' }}>
++                                                                    {mm}
++                                                                </span>
++                                                            )}
++                                                        </React.Fragment>
++                                                    );
++                                                })}
++                                                {Array.from({ length: 42 }).map((_, i) => {
++                                                    const mm = i * 5;
++                                                    if (mm % 10 === 0) return null;
++                                                    const leftPos = mm * 3.779;
++                                                    return (
++                                                        <div key={i} className="ruler-tick h-1.5 w-px" style={{ left: `${leftPos}px`, bottom: 0 }}></div>
++                                                    );
++                                                })}
++                                            </div>
++
++                                            {/* Vertical Ruler (148mm) */}
++                                            <div className="vr-ruler">
++                                                {Array.from({ length: 16 }).map((_, i) => {
++                                                    const mm = i * 10;
++                                                    const topPos = mm * 3.779;
++                                                    return (
++                                                        <React.Fragment key={i}>
++                                                            <div className="ruler-tick w-3 h-px" style={{ top: `${topPos}px`, right: 0 }}></div>
++                                                            {mm % 20 === 0 && (
++                                                                <span className="ruler-label" style={{ top: `${topPos + 2}px`, right: '14px' }}>
++                                                                    {mm}
++                                                                </span>
++                                                            )}
++                                                        </React.Fragment>
++                                                    );
++                                                })}
++                                                {Array.from({ length: 30 }).map((_, i) => {
++                                                    const mm = i * 5;
++                                                    if (mm % 10 === 0) return null;
++                                                    const topPos = mm * 3.779;
++                                                    return (
++                                                        <div key={i} className="ruler-tick w-1.5 h-px" style={{ top: `${topPos}px`, right: 0 }}></div>
++                                                    );
++                                                })}
++                                            </div>
++
++                                            {/* The designer workspace canvas */}
++                                            <LabelPreview
++                                                data={form}
++                                                selectedId={selectedElementId}
++                                                onSelectElement={setSelectedElementId}
++                                                onDragElement={handleCanvasElementDrag}
++                                                showGrid={showGrid}
++                                            />
++                                        </div>
++                                    </div>
++                                </div>
++
++                                {/* Compliance Index Reports overlay */}
++                                <div className="p-4 bg-white border-t border-slate-200 shrink-0">
++                                    <div className="flex items-center justify-between border-b pb-2 mb-2">
++                                        <h3 className="font-bold text-xs text-slate-700 flex items-center space-x-2">
++                                            <Icon name="checkCircle" className="w-4 h-4 text-emerald-600" />
++                                            <span>СТБ 1100-2016 РБ Валидатор легальности</span>
++                                        </h3>
++                                        <div className="flex items-center space-x-1.5">
++                                            <span className="text-[10px] font-bold text-slate-400">Индекс легальности:</span>
++                                            <span className={`px-2 py-0.5 rounded text-[11px] font-black ${
++                                                compliance.score >= 90 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
++                                            }`}>
++                                                {compliance.score}%
++                                            </span>
++                                        </div>
++                                    </div>
++
++                                    <div className="flex space-x-2 overflow-x-auto py-1 max-h-[64px]">
++                                        {compliance.reports.map((r, idx) => (
++                                            <div key={idx} className={`p-1.5 rounded-lg text-[10px] flex items-center space-x-1.5 border shrink-0 whitespace-nowrap ${
++                                                r.status === 'success' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
++                                            }`}>
++                                                {r.status === 'success' ? <Icon name="checkCircle" className="w-3 h-3 text-emerald-600" /> : <Icon name="alertCircle" className="w-3 h-3 text-red-600" />}
++                                                <span className="font-semibold">{r.text}</span>
++                                            </div>
++                                        ))}
++                                    </div>
++                                </div>
++                            </div>
++
++                            {/* Right Column (3/12): Properties Inspector & Printing / Export Card */}
++                            <div className="xl:col-span-3 border-l border-slate-200 bg-white flex flex-col h-[calc(100vh-62px)] overflow-y-auto">
++
++                                {/* Selected Element Inspector Panel */}
++                                {selectedElement ? (
++                                    <div className="p-4 border-b border-blue-100 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 space-y-3">
++                                        <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
++                                            <span className="text-xs font-black text-blue-900 uppercase flex items-center space-x-1">
++                                                <Icon name="cog" className="w-3.5 h-3.5 text-blue-700" />
++                                                <span>Параметры: {selectedElement.id.startsWith('custom-img-') ? 'Логотип' : (ELEMENT_NAMES_RU[selectedElement.id] || selectedElement.name || selectedElement.id)}</span>
++                                            </span>
++                                            <button
++                                                onClick={() => setSelectedElementId(null)}
++                                                className="text-[10px] text-blue-600 hover:text-blue-950 font-bold bg-white px-2 py-0.5 rounded border border-blue-200 shadow-sm"
++                                            >
++                                                Снять выбор
++                                            </button>
++                                        </div>
++
++                                        {/* Alignment tools */}
++                                        <div className="flex space-x-2">
++                                            <button
++                                                onClick={() => centerElementHorizontally(selectedElement.id)}
++                                                className="flex-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold transition shadow-sm"
++                                            >
++                                                Центр по X (105мм)
++                                            </button>
++                                            <button
++                                                onClick={() => centerElementVertically(selectedElement.id)}
++                                                className="flex-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold transition shadow-sm"
++                                            >
++                                                Центр по Y (74мм)
++                                            </button>
++                                        </div>
++
++                                        <div className="grid grid-cols-2 gap-3">
++                                            <div>
++                                                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Позиция X (мм)</label>
++                                                <input
++                                                    type="range" min="0" max="210" step="1"
++                                                    value={selectedElement.x}
++                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'x', parseInt(e.target.value))}
++                                                    className="w-full accent-blue-600 cursor-pointer"
++                                                />
++                                                <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.x} мм</div>
++                                            </div>
++                                            <div>
++                                                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Позиция Y (мм)</label>
++                                                <input
++                                                    type="range" min="0" max="148" step="1"
++                                                    value={selectedElement.y}
++                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'y', parseInt(e.target.value))}
++                                                    className="w-full accent-blue-600 cursor-pointer"
++                                                />
++                                                <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.y} мм</div>
++                                            </div>
++                                        </div>
++
++                                        <div className="grid grid-cols-2 gap-3">
++                                            {selectedElement.type === 'image' ? (
++                                                <>
++                                                    <div>
++                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ширина (мм)</label>
++                                                        <input
++                                                            type="range" min="5" max="150" step="1"
++                                                            value={selectedElement.width || 20}
++                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'width', parseInt(e.target.value))}
++                                                            className="w-full accent-blue-600 cursor-pointer"
++                                                        />
++                                                        <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.width || 20} мм</div>
++                                                    </div>
++                                                    <div>
++                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Высота (мм)</label>
++                                                        <input
++                                                            type="range" min="5" max="150" step="1"
++                                                            value={selectedElement.height || 20}
++                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'height', parseInt(e.target.value))}
++                                                            className="w-full accent-blue-600 cursor-pointer"
++                                                        />
++                                                        <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.height || 20} мм</div>
++                                                    </div>
++                                                </>
++                                            ) : selectedElement.type === 'text' ? (
++                                                <>
++                                                    {selectedElement.id.startsWith('custom-txt-') && (
++                                                        <div className="col-span-2">
++                                                            <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Текст надписи</label>
++                                                            <input
++                                                                type="text"
++                                                                value={selectedElement.text}
++                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'text', e.target.value)}
++                                                                className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
++                                                            />
++                                                        </div>
++                                                    )}
++                                                    <div>
++                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Размер шрифта</label>
++                                                        <input
++                                                            type="range" min="6" max="72" step="1"
++                                                            value={selectedElement.size || 12}
++                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseInt(e.target.value))}
++                                                            className="w-full accent-blue-600 cursor-pointer"
++                                                        />
++                                                        <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.size || 12} px</div>
++                                                    </div>
++                                                    <div className="flex items-center space-x-2 justify-around border rounded bg-white py-1">
++                                                        <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer select-none">
++                                                            <input
++                                                                type="checkbox"
++                                                                checked={selectedElement.bold || false}
++                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'bold', e.target.checked)}
++                                                                className="rounded text-blue-600 w-4 h-4 cursor-pointer"
++                                                            />
++                                                            <span>Ж</span>
++                                                        </label>
++                                                        <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer select-none">
++                                                            <input
++                                                                type="checkbox"
++                                                                checked={selectedElement.italic || false}
++                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'italic', e.target.checked)}
++                                                                className="rounded text-blue-600 w-4 h-4 cursor-pointer"
++                                                            />
++                                                            <span>К</span>
++                                                        </label>
++                                                    </div>
++                                                </>
++                                            ) : (selectedElement.type === 'barcode' || selectedElement.type === 'qrcode') ? (
++                                                <div className="col-span-2">
++                                                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ширина элемента (мм)</label>
++                                                    <input
++                                                        type="range" min="10" max="150" step="1"
++                                                        value={selectedElement.width || (selectedElement.type === 'barcode' ? 45 : 22)}
++                                                        onChange={(e) => {
++                                                            updateElementAttribute(selectedElement.id, 'width', parseInt(e.target.value));
++                                                            if (selectedElement.type === 'qrcode') {
++                                                                updateElementAttribute(selectedElement.id, 'height', parseInt(e.target.value));
++                                                            }
++                                                        }}
++                                                        className="w-full accent-blue-600 cursor-pointer"
++                                                    />
++                                                    <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.width || (selectedElement.type === 'barcode' ? 45 : 22)} мм</div>
++                                                </div>
++                                            ) : (
++                                                <div className="col-span-2">
++                                                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Размер шрифта содержимого</label>
++                                                    <input
++                                                        type="range" min="5" max="32" step="0.5"
++                                                        value={selectedElement.size || 6.2}
++                                                        onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseFloat(e.target.value))}
++                                                        className="w-full accent-blue-600 cursor-pointer"
++                                                    />
++                                                    <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.size || 6.2} px</div>
++                                                </div>
++                                            )}
++                                        </div>
++
++                                        <div className="flex justify-between items-center pt-1 border-t border-blue-100">
++                                            <label className="flex items-center space-x-1.5 text-xs font-semibold text-blue-900 cursor-pointer select-none">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={selectedElement.visible !== false}
++                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'visible', e.target.checked)}
++                                                    className="rounded text-blue-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Показывать слой</span>
++                                            </label>
++
++                                            {(selectedElement.id.startsWith('custom-img-') || selectedElement.id.startsWith('custom-txt-')) && (
++                                                <button
++                                                    onClick={() => selectedElement.id.startsWith('custom-img-') ? deleteCustomImage(selectedElement.id) : deleteCustomText(selectedElement.id)}
++                                                    className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-[10px] font-bold flex items-center space-x-1"
++                                                >
++                                                    <Icon name="trash" className="w-3.5 h-3.5" />
++                                                    <span>Удалить слой</span>
++                                                </button>
++                                            )}
++                                        </div>
++                                    </div>
++                                ) : (
++                                    <div className="p-4 border-b border-slate-100 bg-slate-50/50 text-center py-6 text-slate-400 text-xs font-medium">
++                                        <Icon name="cog" className="w-8 h-8 text-slate-300 mx-auto mb-2 animate-bounce" />
++                                        Выберите любой элемент на холсте для точной настройки размеров и шрифтов
++                                    </div>
++                                )}
++
++                                {/* Form settings inputs */}
++                                <div className="p-4 space-y-4 flex-1">
++
++                                    {/* Quick Adder Block */}
++                                    <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl p-3 space-y-2">
++                                        <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Добавить на холст</h4>
++                                        <div className="grid grid-cols-2 gap-2">
++                                            <label className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold cursor-pointer flex items-center justify-center space-x-1 transition shadow-sm">
++                                                <Icon name="image" className="w-3.5 h-3.5" />
++                                                <span>Загрузить фото</span>
++                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
++                                            </label>
++                                            <button
++                                                onClick={addCustomText}
++                                                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-lg text-xs font-bold flex items-center justify-center space-x-1 transition shadow-sm"
++                                            >
++                                                <Icon name="plus" className="w-3.5 h-3.5" />
++                                                <span>Свой текст</span>
++                                            </button>
++                                        </div>
++                                    </div>
++
++                                    {/* Main Fields Inspector Cards */}
++                                    <div className="space-y-3">
++                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pb-1 border-b">Содержимое этикетки</h3>
++
++                                        <div className="grid grid-cols-2 gap-2">
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Бренд (Шапка)</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.brandName}
++                                                    onChange={(e) => handleFieldChange('brandName', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
++                                                />
++                                            </div>
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Вид продукции</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.productType}
++                                                    onChange={(e) => handleFieldChange('productType', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
++                                                />
++                                            </div>
++                                        </div>
++
++                                        <div>
++                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Наименование/Подзаголовок</label>
++                                            <textarea
++                                                rows="2"
++                                                value={form.subtitle}
++                                                onChange={(e) => handleFieldChange('subtitle', e.target.value)}
++                                                className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
++                                            />
++                                        </div>
++
++                                        <div className="grid grid-cols-3 gap-1.5">
++                                            <div>
++                                                <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Объем</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.volume}
++                                                    onChange={(e) => handleFieldChange('volume', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-bold bg-white text-center"
++                                                />
++                                            </div>
++                                            <div>
++                                                <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Алкоголь</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.alcohol}
++                                                    onChange={(e) => handleFieldChange('alcohol', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-bold bg-white text-center"
++                                                />
++                                            </div>
++                                            <div>
++                                                <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Сахар</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.sugar}
++                                                    onChange={(e) => handleFieldChange('sugar', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-bold bg-white text-center"
++                                                />
++                                            </div>
++                                        </div>
++
++                                        <div className="grid grid-cols-2 gap-2">
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">ГОСТ / СТБ</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.standard}
++                                                    onChange={(e) => handleFieldChange('standard', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 bg-white"
++                                                />
++                                            </div>
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">ТИ / ТУ</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.tiNumber}
++                                                    onChange={(e) => handleFieldChange('tiNumber', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 bg-white"
++                                                />
++                                            </div>
++                                        </div>
++
++                                        <hr />
++
++                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pb-1 pt-1">Маркировочные данные</h3>
++                                        <div>
++                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Состав сырья</label>
++                                            <textarea
++                                                rows="2"
++                                                value={form.ingredients}
++                                                onChange={(e) => handleFieldChange('ingredients', e.target.value)}
++                                                className="w-full text-[10px] border border-slate-300 rounded p-1 font-narrow bg-white leading-tight"
++                                            />
++                                        </div>
++                                        <div>
++                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Условия хранения</label>
++                                            <textarea
++                                                rows="2"
++                                                value={form.nutrition}
++                                                onChange={(e) => handleFieldChange('nutrition', e.target.value)}
++                                                className="w-full text-[10px] border border-slate-300 rounded p-1 font-narrow bg-white leading-tight"
++                                            />
++                                        </div>
++                                        <div>
++                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Производитель / Изготовитель</label>
++                                            <textarea
++                                                rows="2"
++                                                value={form.storage}
++                                                onChange={(e) => handleFieldChange('storage', e.target.value)}
++                                                className="w-full text-[10px] border border-slate-300 rounded p-1 font-narrow bg-white leading-tight"
++                                            />
++                                        </div>
++                                        <div className="grid grid-cols-2 gap-2">
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Срок годности</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.expiration}
++                                                    onChange={(e) => handleFieldChange('expiration', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-bold bg-white"
++                                                />
++                                            </div>
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Код штрихкода</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.barcode}
++                                                    onChange={(e) => handleFieldChange('barcode', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-mono bg-white"
++                                                />
++                                            </div>
++                                        </div>
++
++                                        <div className="grid grid-cols-2 gap-2">
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">QR-код данные</label>
++                                                <input
++                                                    type="text"
++                                                    value={form.qrCode}
++                                                    onChange={(e) => handleFieldChange('qrCode', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-mono bg-white"
++                                                />
++                                            </div>
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Формат штрихкода</label>
++                                                <select
++                                                    value={form.barcodeFormat || 'EAN13'}
++                                                    onChange={(e) => handleFieldChange('barcodeFormat', e.target.value)}
++                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold text-slate-700 bg-white"
++                                                >
++                                                    <option value="EAN13">EAN-13</option>
++                                                    <option value="EAN8">EAN-8</option>
++                                                    <option value="CODE128">Code-128</option>
++                                                </select>
++                                            </div>
++                                        </div>
++
++                                        <hr />
++
++                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pb-1">Баннер & Знаки (РБ)</h3>
++                                        <div>
++                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Текст предупреждения</label>
++                                            <input
++                                                type="text"
++                                                value={form.warningText}
++                                                onChange={(e) => handleFieldChange('warningText', e.target.value)}
++                                                className="w-full text-xs border border-slate-300 rounded p-1.5 font-bold bg-white"
++                                            />
++                                        </div>
++
++                                        <div>
++                                            <div className="flex justify-between text-[11px] font-semibold text-slate-600 mb-0.5">
++                                                <span>Высота баннера (мин. 10% высоты холста)</span>
++                                                <span className={`font-bold ${form.warningHeightPercent >= 10 ? 'text-emerald-600' : 'text-red-500'}`}>
++                                                    {form.warningHeightPercent}%
++                                                </span>
++                                            </div>
++                                            <input
++                                                type="range" min="6" max="25" step="1"
++                                                value={form.warningHeightPercent}
++                                                onChange={(e) => handleFieldChange('warningHeightPercent', parseInt(e.target.value, 10))}
++                                                className="w-full accent-brand-600 cursor-pointer"
++                                            />
++                                        </div>
++
++                                        <div className="bg-slate-50 p-2 border rounded-lg grid grid-cols-3 gap-1">
++                                            <label className="flex items-center space-x-1 text-[11px] font-medium cursor-pointer select-none justify-center">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={form.eacActive}
++                                                    onChange={(e) => handleFieldChange('eacActive', e.target.checked)}
++                                                    className="rounded text-brand-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>EAC</span>
++                                            </label>
++                                            <label className="flex items-center space-x-1 text-[11px] font-medium cursor-pointer select-none justify-center">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={form.foodActive}
++                                                    onChange={(e) => handleFieldChange('foodActive', e.target.checked)}
++                                                    className="rounded text-brand-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Бокал</span>
++                                            </label>
++                                            <label className="flex items-center space-x-1 text-[11px] font-medium cursor-pointer select-none justify-center">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={form.petActive}
++                                                    onChange={(e) => handleFieldChange('petActive', e.target.checked)}
++                                                    className="rounded text-brand-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>PET 01</span>
++                                            </label>
++                                        </div>
++                                    </div>
++
++                                    {/* СТБ 1100-2016 Interactive Checklist */}
++                                    <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3 space-y-1.5">
++                                        <h4 className="text-[11px] font-bold text-emerald-800 mb-1 flex items-center space-x-1">
++                                            <Icon name="checkCircle" className="w-4 h-4 text-emerald-600" />
++                                            <span>СТБ 1100-2016 Обязательный чек-лист</span>
++                                        </h4>
++                                        <div className="space-y-1 text-[11px] text-slate-700">
++                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={checklist.manufacturer}
++                                                    onChange={(e) => setChecklist(prev => ({ ...prev, manufacturer: e.target.checked }))}
++                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Изготовитель / Адрес импортера</span>
++                                            </label>
++                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={checklist.expiration}
++                                                    onChange={(e) => setChecklist(prev => ({ ...prev, expiration: e.target.checked }))}
++                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Срок годности / Температура хранения</span>
++                                            </label>
++                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={checklist.ingredients}
++                                                    onChange={(e) => setChecklist(prev => ({ ...prev, ingredients: e.target.checked }))}
++                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Состав (Красители, аллергены)</span>
++                                            </label>
++                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={checklist.legalWarning}
++                                                    onChange={(e) => setChecklist(prev => ({ ...prev, legalWarning: e.target.checked }))}
++                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Размер предупреждения мин. 10% высоты</span>
++                                            </label>
++                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
++                                                <input
++                                                    type="checkbox"
++                                                    checked={checklist.stbStandard}
++                                                    onChange={(e) => setChecklist(prev => ({ ...prev, stbStandard: e.target.checked }))}
++                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
++                                                />
++                                                <span>Номер государственного стандарта РБ</span>
++                                            </label>
++                                        </div>
++                                    </div>
++
++                                    {/* Print Page Customization */}
++                                    <div className="space-y-3">
++                                        <div className="flex justify-between items-center pb-1 border-b">
++                                            <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Макет Печати А4</h4>
++                                            <label className="flex items-center space-x-1 cursor-pointer select-none">
++                                                <span className="text-[10px] font-bold text-slate-500 uppercase">Свой макет:</span>
++                                                <input
++                                                    type="checkbox"
++                                                    checked={customPrintConfig.active}
++                                                    onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, active: e.target.checked }))}
++                                                    className="w-4 h-4 text-brand-600 rounded cursor-pointer"
++                                                />
++                                            </label>
++                                        </div>
++
++                                        {!customPrintConfig.active ? (
++                                            <div>
++                                                <label className="block text-[11px] font-semibold text-slate-600 mb-2">Размещение этикеток:</label>
++                                                <div className="grid grid-cols-2 gap-1.5">
++                                                    {[
++                                                        { id: 'h1', name: '1 горизонтально', sub: 'A5 Альбомная' },
++                                                        { id: 'h2', name: '2 горизонтально', sub: 'A5 x 2 Портрет' },
++                                                        { id: 'v2', name: '2 вертикально', sub: 'A5 x 2 Ландшафт' },
++                                                        { id: 'v3', name: '3 вертикально', sub: 'A5 x 3 Ландшафт' },
++                                                        { id: 'grid4', name: '4 на листе (2х2)', sub: 'A6 x 4 Портрет' },
++                                                        { id: 'grid6', name: '6 на листе (2х3)', sub: 'Малый х 6 Портрет' },
++                                                        { id: 'grid8', name: '8 на листе (2х4)', sub: 'Малый х 8 Портрет' },
++                                                        { id: 'grid12', name: '12 на листе (3х4)', sub: 'Мини х 12 Портрет' }
++                                                    ].map(opt => (
++                                                        <button
++                                                            key={opt.id}
++                                                            onClick={() => setPrintLayout(opt.id)}
++                                                            className={`p-1.5 rounded border text-left transition ${
++                                                                printLayout === opt.id
++                                                                    ? 'bg-brand-600 text-white border-brand-600 shadow'
++                                                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
++                                                            }`}
++                                                        >
++                                                            <div className="text-[10px] font-bold truncate">{opt.name}</div>
++                                                            <div className="text-[8px] opacity-80 truncate">{opt.sub}</div>
++                                                        </button>
++                                                    ))}
++                                                </div>
++                                            </div>
++                                        ) : (
++                                            <div className="bg-slate-50 border rounded-xl p-3 space-y-2">
++                                                <div className="text-[11px] font-bold text-slate-700 border-b pb-1 flex justify-between items-center uppercase">
++                                                    <span>Конфигуратор размещения</span>
++                                                    <span className="text-[9px] text-brand-600">Активен</span>
++                                                </div>
++
++                                                <div className="grid grid-cols-2 gap-2">
++                                                    <div>
++                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Колонки (1-5)</label>
++                                                        <input
++                                                            type="number" min="1" max="5"
++                                                            value={customPrintConfig.columns}
++                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, columns: Math.max(1, Math.min(5, parseInt(e.target.value) || 1)) }))}
++                                                            className="w-full text-xs border rounded p-1 font-bold text-center bg-white"
++                                                        />
++                                                    </div>
++                                                    <div>
++                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Строки (1-8)</label>
++                                                        <input
++                                                            type="number" min="1" max="8"
++                                                            value={customPrintConfig.rows}
++                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, rows: Math.max(1, Math.min(8, parseInt(e.target.value) || 1)) }))}
++                                                            className="w-full text-xs border rounded p-1 font-bold text-center bg-white"
++                                                        />
++                                                    </div>
++                                                </div>
++
++                                                <div className="grid grid-cols-2 gap-2">
++                                                    <div>
++                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Разрыв (мм)</label>
++                                                        <input
++                                                            type="range" min="0" max="15" step="0.5"
++                                                            value={customPrintConfig.gap}
++                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, gap: parseFloat(e.target.value) }))}
++                                                            className="w-full accent-brand-600 cursor-pointer"
++                                                        />
++                                                        <div className="text-right text-[9px] font-bold text-slate-500">{customPrintConfig.gap} мм</div>
++                                                    </div>
++                                                    <div>
++                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Масштаб этикетки</label>
++                                                        <input
++                                                            type="range" min="0.1" max="1.5" step="0.05"
++                                                            value={customPrintConfig.scale}
++                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, scale: parseFloat(e.target.value) }))}
++                                                            className="w-full accent-brand-600 cursor-pointer"
++                                                        />
++                                                        <div className="text-right text-[9px] font-bold text-slate-500">{Math.round(customPrintConfig.scale * 100)}%</div>
++                                                    </div>
++                                                </div>
++
++                                                <div className="grid grid-cols-2 gap-2">
++                                                    <div>
++                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Ориентация А4</label>
++                                                        <select
++                                                            value={customPrintConfig.pageOrientation}
++                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, pageOrientation: e.target.value }))}
++                                                            className="w-full text-xs border rounded p-1 bg-white font-bold"
++                                                        >
++                                                            <option value="portrait">Портретная</option>
++                                                            <option value="landscape">Альбомная</option>
++                                                        </select>
++                                                    </div>
++                                                    <div>
++                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Количество (шт)</label>
++                                                        <input
++                                                            type="number" min="1" max="40"
++                                                            value={customPrintConfig.labelCount}
++                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, labelCount: Math.max(1, Math.min(40, parseInt(e.target.value) || 1)) }))}
++                                                            className="w-full text-xs border rounded p-1 font-bold text-center bg-white"
++                                                        />
++                                                    </div>
++                                                </div>
++                                            </div>
++                                        )}
++                                    </div>
++
++                                    {/* Global Export & Save Actions */}
++                                    <div className="pt-3 border-t border-slate-200 space-y-2 pb-6">
++                                        <div className="flex space-x-1">
++                                            <input
++                                                type="text"
++                                                placeholder="Имя нового шаблона..."
++                                                value={customName}
++                                                onChange={(e) => setCustomName(e.target.value)}
++                                                className="flex-1 text-xs border rounded p-2 bg-white font-semibold"
++                                            />
++                                            <button
++                                                onClick={saveTemplate}
++                                                className="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded text-xs flex items-center space-x-1 shadow-sm"
++                                            >
++                                                <Icon name="save" className="w-3.5 h-3.5" />
++                                                <span>Сохранить в PHP</span>
++                                            </button>
++                                        </div>
++
++                                        <div className="grid grid-cols-2 gap-2">
++                                            <button
++                                                onClick={exportAsImage}
++                                                className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-emerald-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-sm"
++                                                title="Скачать этикетку в виде качественного PNG изображения"
++                                            >
++                                                <Icon name="image" className="w-3.5 h-3.5" />
++                                                <span>Скачать PNG</span>
++                                            </button>
++                                            <button
++                                                onClick={exportAsWord}
++                                                className="px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-sm"
++                                                title="Экспортировать этикетку как встроенный рисунок в документ Microsoft Word"
++                                            >
++                                                <Icon name="fileText" className="w-3.5 h-3.5" />
++                                                <span>В MS Word (.doc)</span>
++                                            </button>
++                                        </div>
++
++                                        <div className="flex justify-between items-center pt-1">
++                                            <button
++                                                onClick={exportTemplates}
++                                                className="px-2.5 py-1.5 bg-slate-50 border rounded text-slate-700 font-bold text-[10px] flex items-center space-x-1 hover:bg-slate-100"
++                                            >
++                                                <Icon name="download" className="w-3 h-3" />
++                                                <span>Экспорт шаблона</span>
++                                            </button>
++
++                                            <label className="px-2.5 py-1.5 bg-slate-50 border rounded text-slate-700 font-bold text-[10px] flex items-center space-x-1 cursor-pointer hover:bg-slate-100">
++                                                <Icon name="upload" className="w-3 h-3" />
++                                                <span>Импорт шаблона</span>
++                                                <input type="file" accept=".json" onChange={handleImport} className="hidden" />
++                                            </label>
++                                        </div>
++                                    </div>
++                                </div>
++                            </div>
++                        </main>
++                    </div>
++
++                    {/* Print outputs layout */}
++                    <div className={`hidden print:block print-container ${customPrintConfig.active ? 'custom-active' : `print-layout-${printLayout}`}`}>
++                        {customPrintConfig.active ? (
++                            (() => {
++                                const pageWidth = customPrintConfig.pageOrientation === 'landscape' ? 297 : 210;
++                                const pageHeight = customPrintConfig.pageOrientation === 'landscape' ? 210 : 297;
++                                const cellWidth = (pageWidth - (customPrintConfig.columns - 1) * customPrintConfig.gap) / customPrintConfig.columns;
++                                const cellHeight = (pageHeight - (customPrintConfig.rows - 1) * customPrintConfig.gap) / customPrintConfig.rows;
++                                return (
++                                    <div
++                                        className="custom-print-grid"
++                                        style={{
++                                            display: 'grid',
++                                            gridTemplateColumns: `repeat(${customPrintConfig.columns}, ${cellWidth}mm)`,
++                                            gridTemplateRows: `repeat(${customPrintConfig.rows}, ${cellHeight}mm)`,
++                                            gap: `${customPrintConfig.gap}mm`,
++                                            width: `${pageWidth}mm`,
++                                            height: `${pageHeight}mm`,
++                                            boxSizing: 'border-box'
++                                        }}
++                                    >
++                                        {Array.from({ length: customPrintConfig.labelCount }).map((_, i) => (
++                                            <div
++                                                key={i}
++                                                style={{
++                                                    width: `${cellWidth}mm`,
++                                                    height: `${cellHeight}mm`,
++                                                    position: 'relative',
++                                                    overflow: 'hidden',
++                                                    boxSizing: 'border-box',
++                                                    border: '1px dashed #ccc'
++                                                }}
++                                            >
++                                                <div
++                                                    className="print-label"
++                                                    style={{
++                                                        width: '210mm',
++                                                        height: '148mm',
++                                                        transform: `scale(${customPrintConfig.scale})`,
++                                                        transformOrigin: 'top left',
++                                                        position: 'absolute'
++                                                    }}
++                                                >
++                                                    <LabelPreview data={form} selectedId={null} />
++                                                </div>
++                                            </div>
++                                        ))}
++                                    </div>
++                                );
++                            })()
++                        ) : (
++                            <>
++                                {printLayout === 'h1' && (
++                                    <div className="print-label">
++                                        <LabelPreview data={form} selectedId={null} />
++                                    </div>
++                                )}
++                                {printLayout === 'h2' && (
++                                    <>
++                                        <div className="print-label">
++                                            <LabelPreview data={form} selectedId={null} />
++                                        </div>
++                                        <div className="print-label">
++                                            <LabelPreview data={form} selectedId={null} />
++                                        </div>
++                                    </>
++                                )}
++                                {printLayout === 'v2' && (
++                                    <div className="flex-landscape-container">
++                                        <div className="vertical-print-col">
++                                            <div className="print-label rotated-print-label">
++                                                <LabelPreview data={form} selectedId={null} />
++                                            </div>
++                                        </div>
++                                        <div className="vertical-print-col">
++                                            <div className="print-label rotated-print-label">
++                                                <LabelPreview data={form} selectedId={null} />
++                                            </div>
++                                        </div>
++                                    </div>
++                                )}
++                                {printLayout === 'v3' && (
++                                    <div className="flex-landscape-container-v3">
++                                        <div className="vertical-print-col-v3">
++                                            <div className="print-label rotated-print-label-v3">
++                                                <LabelPreview data={form} selectedId={null} />
++                                            </div>
++                                        </div>
++                                        <div className="vertical-print-col-v3">
++                                            <div className="print-label rotated-print-label-v3">
++                                                <LabelPreview data={form} selectedId={null} />
++                                            </div>
++                                        </div>
++                                        <div className="vertical-print-col-v3">
++                                            <div className="print-label rotated-print-label-v3">
++                                                <LabelPreview data={form} selectedId={null} />
++                                            </div>
++                                        </div>
++                                    </div>
++                                )}
++                                {printLayout === 'grid4' && (
++                                    <div className="grid-4-container">
++                                        {Array.from({ length: 4 }).map((_, i) => (
++                                            <div key={i} className="grid-item-wrapper">
++                                                <div className="print-label">
++                                                    <LabelPreview data={form} selectedId={null} />
++                                                </div>
++                                            </div>
++                                        ))}
++                                    </div>
++                                )}
++                                {printLayout === 'grid6' && (
++                                    <div className="grid-6-container">
++                                        {Array.from({ length: 6 }).map((_, i) => (
++                                            <div key={i} className="grid-item-wrapper-6">
++                                                <div className="print-label">
++                                                    <LabelPreview data={form} selectedId={null} />
++                                                </div>
++                                            </div>
++                                        ))}
++                                    </div>
++                                )}
++                                {printLayout === 'grid8' && (
++                                    <div className="grid-8-container">
++                                        {Array.from({ length: 8 }).map((_, i) => (
++                                            <div key={i} className="grid-item-wrapper-8">
++                                                <div className="print-label">
++                                                    <LabelPreview data={form} selectedId={null} />
++                                                </div>
++                                            </div>
++                                        ))}
++                                    </div>
++                                )}
++                                {printLayout === 'grid12' && (
++                                    <div className="grid-12-container">
++                                        {Array.from({ length: 12 }).map((_, i) => (
++                                            <div key={i} className="grid-item-wrapper-12">
++                                                <div className="print-label">
++                                                    <LabelPreview data={form} selectedId={null} />
++                                                </div>
++                                            </div>
++                                        ))}
++                                    </div>
++                                )}
++                            </>
++                        )}
++                    </div>
++                </div>
++            );
++        }
++
++        // Complete Label layout renderer with dynamic layers & 8-point mouse resizing
++        function LabelPreview({ data, selectedId, onSelectElement, onDragElement, showGrid = false }) {
++            const barcodeRef = useRef(null);
++            const qrcodeRef = useRef(null);
++            const dragInfo = useRef({ active: false, elementId: null, handleType: 'drag', startX: 0, startY: 0, startLayer: null });
++
++            useEffect(() => {
++                const barcodeLayer = (data.layers || []).find(l => l.type === 'barcode');
++                if (barcodeRef.current && barcodeLayer && barcodeLayer.text && barcodeLayer.text.trim().length > 0) {
++                    try {
++                        const fmt = barcodeLayer.meta || "EAN13";
++                        JsBarcode(barcodeRef.current, barcodeLayer.text, {
++                            format: fmt,
++                            width: 1.1,
++                            height: 30,
++                            displayValue: true,
++                            font: "PT Sans Narrow",
++                            fontSize: 10,
++                            margin: 1
++                        });
++                    } catch (e) {
++                        console.error(e);
++                    }
++                }
++            }, [data.layers]);
++
++            useEffect(() => {
++                const qrcodeLayer = (data.layers || []).find(l => l.type === 'qrcode');
++                if (qrcodeRef.current && qrcodeLayer && qrcodeLayer.text) {
++                    qrcodeRef.current.innerHTML = "";
++                    try {
++                        new QRCode(qrcodeRef.current, {
++                            text: qrcodeLayer.text,
++                            width: 38,
++                            height: 38,
++                            colorDark: "#000000",
++                            colorLight: "#ffffff",
++                            correctLevel: QRCode.CorrectLevel.M
++                        });
++                    } catch (e) {
++                        console.error(e);
++                    }
++                }
++            }, [data.layers]);
++
++            const handleMouseDown = (e, elementId, handleType = 'drag') => {
++                if (!onDragElement || !onSelectElement) return;
++
++                e.stopPropagation();
++                e.preventDefault();
++
++                onSelectElement(elementId);
++                const currentLayer = (data.layers || []).find(l => l.id === elementId);
++                if (!currentLayer) return;
++
++                dragInfo.current = {
++                    active: true,
++                    elementId,
++                    handleType,
++                    startX: e.clientX,
++                    startY: e.clientY,
++                    startLayer: { ...currentLayer }
++                };
++                document.addEventListener('mousemove', handleMouseMove);
++                document.addEventListener('mouseup', handleMouseUp);
++            };
++
++            const handleMouseMove = (e) => {
++                if (!dragInfo.current.active) return;
++                const dx = (e.clientX - dragInfo.current.startX) / 3.779;
++                const dy = (e.clientY - dragInfo.current.startY) / 3.779;
++
++                onDragElement(
++                    dragInfo.current.elementId,
++                    dragInfo.current.handleType,
++                    dx,
++                    dy,
++                    dragInfo.current.startLayer
++                );
++            };
++
++            const handleMouseUp = (e) => {
++                if (dragInfo.current.active) {
++                    dragInfo.current.active = false;
++                }
++                document.removeEventListener('mousemove', handleMouseMove);
++                document.removeEventListener('mouseup', handleMouseUp);
++            };
++
++            const isSel = (id) => selectedId === id;
++
++            // Bounding box for 8-point overlay
++            const selectedLayer = (data.layers || []).find(l => l.id === selectedId);
++            let overlayLeft = 0;
++            let overlayTop = 0;
++            let overlayWidth = 0;
++            let overlayHeight = 0;
++            let hasOverlay = false;
++
++            if (selectedLayer && selectedLayer.visible !== false) {
++                hasOverlay = true;
++                const isCentered = selectedLayer.id === 'header' || selectedLayer.id === 'title' || selectedLayer.id === 'subtitle' || selectedLayer.id === 'standard';
++                overlayWidth = selectedLayer.width || (selectedLayer.type === 'barcode' ? 45 : (selectedLayer.type === 'qrcode' ? 22 : 50));
++                overlayHeight = selectedLayer.height || (selectedLayer.type === 'barcode' ? 25 : (selectedLayer.type === 'qrcode' ? 22 : 12));
++                overlayLeft = isCentered ? (selectedLayer.x - overlayWidth / 2) : selectedLayer.x;
++                overlayTop = selectedLayer.y;
++            }
++
++            return (
++                <div
++                    className={`label-preview-container select-none text-black relative border border-slate-300 bg-white ${showGrid ? 'grid-background' : ''}`}
++                    onMouseDown={() => onSelectElement && onSelectElement(null)}
++                >
++                    {(data.layers || []).map(layer => {
++                        if (layer.visible === false) return null;
++
++                        if (layer.type === 'text') {
++                            const isCentered = layer.id === 'header' || layer.id === 'title' || layer.id === 'subtitle' || layer.id === 'standard';
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: layer.width ? `${layer.width}mm` : 'auto',
++                                        height: layer.height ? `${layer.height}mm` : 'auto',
++                                        transform: isCentered ? 'translateX(-50%)' : 'none',
++                                        zIndex: selectedId === layer.id ? 45 : 10,
++                                        fontSize: `${layer.size || 12}px`,
++                                        fontWeight: layer.bold ? 'bold' : 'normal',
++                                        fontStyle: layer.italic ? 'italic' : 'normal',
++                                        textAlign: 'center',
++                                        whiteSpace: layer.width ? 'normal' : 'nowrap'
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    {layer.id === 'header' && (
++                                        <div className="flex items-center justify-center space-x-1.5 leading-none">
++                                            <svg className="w-3.5 h-3.5 text-black shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
++                                                <circle cx="12" cy="12" r="10" />
++                                                <path d="M12 2v20M2 12h20M6 6l12 12M6 18L18 6" />
++                                            </svg>
++                                            <span className="font-bold tracking-[0.25em] font-narrow uppercase shrink-0 leading-none">{layer.text || data.brandName}</span>
++                                        </div>
++                                    )}
++                                    {layer.id === 'title' && (
++                                        <h2 style={{ fontSize: `${layer.size || 34}px` }} className="font-black tracking-[0.1em] leading-none font-narrow m-0 py-0 uppercase">
++                                            {layer.text || data.productType}
++                                        </h2>
++                                    )}
++                                    {layer.id === 'subtitle' && (
++                                        <div className="w-full text-center">
++                                            <p style={{ fontSize: `${layer.size || 8}px` }} className="font-bold uppercase tracking-wide leading-tight text-center">
++                                                {layer.text || data.subtitle}
++                                            </p>
++                                        </div>
++                                    )}
++                                    {layer.id === 'standard' && (
++                                        <p style={{ fontSize: `${layer.size || 7.2}px` }} className="font-bold text-center mt-0.5 font-narrow">
++                                            {layer.text || `${data.standard} ${data.tiNumber ? `| ${data.tiNumber}` : ''}`}
++                                        </p>
++                                    )}
++                                    {layer.id.startsWith('custom-txt-') && layer.text}
++                                </div>
++                            );
++                        }
++
++                        if (layer.type === 'stats') {
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: `${layer.width || 34}mm`,
++                                        height: `${layer.height || 38}mm`,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute flex flex-col font-narrow border-t border-black/30 pt-1 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    <div className="pb-1 border-b border-black/30">
++                                        <span className="text-[7px] uppercase tracking-wider block font-bold leading-tight">Объем / Volume</span>
++                                        <span className="text-[14px] font-black tracking-tight leading-none block">{layer.volume || data.volume}</span>
++                                    </div>
++                                    <div className="py-1 border-b border-black/30">
++                                        <span className="text-[7px] uppercase tracking-wider block font-bold leading-tight">Спирт / Alcohol</span>
++                                        <span className="text-[14px] font-black tracking-tight leading-none block">{layer.alcohol || data.alcohol}</span>
++                                    </div>
++                                    <div className="pt-1">
++                                        <span className="text-[7px] uppercase tracking-wider block font-bold leading-tight">Сахар / Sugar</span>
++                                        <span className="text-[14px] font-black tracking-tight leading-none block">{layer.sugar || data.sugar}</span>
++                                    </div>
++                                </div>
++                            );
++                        }
++
++                        if (layer.type === 'icons') {
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: `${layer.width || 26}mm`,
++                                        height: `${layer.height || 38}mm`,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute flex flex-col items-center space-y-1.5 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    {data.eacActive && (
++                                        <span className="font-bold text-[14px] tracking-tight border border-black/90 px-1 rounded font-mono leading-none">
++                                            EAC
++                                        </span>
++                                    )}
++                                    <div className="flex items-center space-x-1.5">
++                                        {data.foodActive && (
++                                            <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
++                                                <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
++                                                <path d="M12 14v6M8 20h8" />
++                                            </svg>
++                                        )}
++                                        {data.petActive && (
++                                            <div className="flex flex-col items-center relative">
++                                                <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
++                                                    <path d="M12 2l8 14H4L12 2z" />
++                                                </svg>
++                                                <span className="text-[5.5px] font-black absolute top-1.5 font-mono">1</span>
++                                                <span className="text-[4.5px] font-bold tracking-tighter font-mono uppercase">PET</span>
++                                            </div>
++                                        )}
++                                    </div>
++                                </div>
++                            );
++                        }
++
++                        if (layer.type === 'body') {
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: `${layer.width || 125}mm`,
++                                        height: `${layer.height || 40}mm`,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute grid grid-cols-12 gap-3 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    <div className="col-span-8 flex flex-col space-y-0.5 font-narrow text-left">
++                                        <p style={{ fontSize: `${layer.size || 6.2}px` }} className="leading-[1.2] text-justify font-semibold">
++                                            {layer.ingredients || data.ingredients}
++                                        </p>
++                                        <p style={{ fontSize: `${layer.size || 6.2}px` }} className="leading-[1.2] text-justify font-semibold text-slate-800">
++                                            {layer.nutrition || data.nutrition}
++                                        </p>
++                                        <p style={{ fontSize: `${layer.size || 6.2}px` }} className="leading-[1.2] text-justify font-semibold text-slate-900">
++                                            {layer.storage || data.storage}
++                                        </p>
++                                        <p style={{ fontSize: `${(layer.size || 6.2) * 1.1}px` }} className="font-bold text-left tracking-wider pt-0.5 uppercase">
++                                            {layer.expiration || data.expiration}
++                                        </p>
++                                    </div>
++                                    <div className="col-span-4 flex flex-col items-end space-y-1 pr-1 justify-end pb-1">
++                                        <div className="w-full pl-3 space-y-0.5 font-narrow">
++                                            <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
++                                                <span className="font-bold">Дата розлива</span>
++                                                <span className="w-14 border-b border-black h-1.5"></span>
++                                            </div>
++                                            <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
++                                                <span className="font-bold">Дата подключения</span>
++                                                <span className="w-14 border-b border-black h-1.5"></span>
++                                            </div>
++                                        </div>
++                                    </div>
++                                </div>
++                            );
++                        }
++
++                        if (layer.type === 'barcode') {
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: `${layer.width || 45}mm`,
++                                        height: `${layer.height || 25}mm`,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute flex flex-col items-center justify-center draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    <svg ref={barcodeRef} style={{ width: '100%', height: 'auto' }}></svg>
++                                </div>
++                            );
++                        }
++
++                        if (layer.type === 'qrcode') {
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: `${layer.width || 22}mm`,
++                                        height: `${layer.height || 22}mm`,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute flex flex-col items-center justify-center bg-white p-0.5 border border-black/30 rounded draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    <span className="text-[4px] font-bold tracking-tighter uppercase mb-0.5 leading-none font-sans">BY BEER/WINE</span>
++                                    <div ref={qrcodeRef} className="w-full h-full flex items-center justify-center overflow-hidden"></div>
++                                </div>
++                            );
++                        }
++
++                        if (layer.type === 'image') {
++                            return (
++                                <img
++                                    key={layer.id}
++                                    src={layer.src}
++                                    style={{
++                                        left: `${layer.x}mm`,
++                                        top: `${layer.y}mm`,
++                                        width: `${layer.width || 20}mm`,
++                                        height: `${layer.height || 20}mm`,
++                                        opacity: layer.opacity !== undefined ? layer.opacity : 1,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                    alt="Custom user logo"
++                                />
++                            );
++                        }
++
++                        if (layer.type === 'warning') {
++                            return (
++                                <div
++                                    key={layer.id}
++                                    style={{
++                                        left: '0mm',
++                                        top: `${148 - data.warningHeightPercent}mm`,
++                                        width: '210mm',
++                                        height: `${data.warningHeightPercent}mm`,
++                                        zIndex: selectedId === layer.id ? 45 : 10
++                                    }}
++                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
++                                    onClick={(e) => e.stopPropagation()}
++                                    className={`absolute border-t-2 border-black bg-white flex items-center justify-center px-4 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
++                                >
++                                    <h4 className="text-[9.5px] font-black tracking-wider leading-none text-center uppercase text-black font-narrow">
++                                        {layer.text || 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ'}
++                                    </h4>
++                                </div>
++                            );
++                        }
++
++                        return null;
++                    })}
++
++                    {/* Resizing handles overlay */}
++                    {hasOverlay && (
++                        <div
++                            data-html2canvas-ignore="true"
++                            className="absolute border-2 border-dashed border-blue-500 pointer-events-auto z-50"
++                            style={{
++                                left: `${overlayLeft}mm`,
++                                top: `${overlayTop}mm`,
++                                width: `${overlayWidth}mm`,
++                                height: `${overlayHeight}mm`
++                            }}
++                        >
++                            {[
++                                { type: 'tl', cursor: 'nwse-resize', style: { left: '-4px', top: '-4px' } },
++                                { type: 'tc', cursor: 'ns-resize', style: { left: 'calc(50% - 4px)', top: '-4px' } },
++                                { type: 'tr', cursor: 'nesw-resize', style: { right: '-4px', top: '-4px' } },
++                                { type: 'ml', cursor: 'ew-resize', style: { left: '-4px', top: 'calc(50% - 4px)' } },
++                                { type: 'mr', cursor: 'ew-resize', style: { right: '-4px', top: 'calc(50% - 4px)' } },
++                                { type: 'bl', cursor: 'nesw-resize', style: { left: '-4px', bottom: '-4px' } },
++                                { type: 'bc', cursor: 'ns-resize', style: { left: 'calc(50% - 4px)', bottom: '-4px' } },
++                                { type: 'br', cursor: 'nwse-resize', style: { right: '-4px', bottom: '-4px' } }
++                            ].map(h => (
++                                <div
++                                    key={h.type}
++                                    onMouseDown={(e) => handleMouseDown(e, selectedLayer.id, h.type)}
++                                    style={{
++                                        width: '8px',
++                                        height: '8px',
++                                        backgroundColor: '#3b82f6',
++                                        border: '1px solid white',
++                                        position: 'absolute',
++                                        cursor: h.cursor,
++                                        ...h.style
++                                    }}
++                                    title={`Растянуть (${h.type.toUpperCase()})`}
++                                />
++                            ))}
++                        </div>
++                    )}
++                </div>
++            );
++        }
++
++        const container = document.getElementById('root');
++        const root = ReactDOM.createRoot(container);
++        root.render(<App />);
++    </script>
++</body>
++</html>

@@ -141,6 +141,37 @@ if (isset($_GET['action'])) {
             font-family: 'Inter', sans-serif;
             background-color: #f1f5f9;
         }
+
+        /* Figma/Canva Interactive Layer styles */
+        .canvas-layer-wrapper {
+            position: absolute !important;
+            box-sizing: border-box !important;
+            user-select: none !important;
+        }
+        .layer-selected-outline {
+            outline: 2px solid #3b82f6 !important; /* Tailwind Blue 500 */
+            outline-offset: 1px !important;
+            z-index: 100 !important;
+        }
+        .resize-handle {
+            position: absolute !important;
+            width: 8px !important;
+            height: 8px !important;
+            background-color: #3b82f6 !important;
+            border: 1px solid white !important;
+            border-radius: 50% !important;
+            z-index: 200 !important;
+        }
+        /* Position resize handles precisely around selected element */
+        .resize-handle.tl { top: -4px; left: -4px; cursor: nwse-resize; }
+        .resize-handle.tc { top: -4px; left: calc(50% - 4px); cursor: ns-resize; }
+        .resize-handle.tr { top: -4px; right: -4px; cursor: nesw-resize; }
+        .resize-handle.ml { top: calc(50% - 4px); left: -4px; cursor: ew-resize; }
+        .resize-handle.mr { top: calc(50% - 4px); right: -4px; cursor: ew-resize; }
+        .resize-handle.bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
+        .resize-handle.bc { bottom: -4px; left: calc(50% - 4px); cursor: ns-resize; }
+        .resize-handle.br { bottom: -4px; right: -4px; cursor: nwse-resize; }
+
         /* Style for printing - exact A5 Landscape (1 or 2 per A4 Page) */
         @media print {
             body {
@@ -568,77 +599,381 @@ if (isset($_GET['action'])) {
             return icons[name] || <span className="text-red-500">?</span>;
         };
 
-        // Static standard configurations
+        // Static standard configurations using unified layers schema
         const PRESETS = [
             {
                 id: 'cider',
                 name: 'Сидр Традиционный Сухой (СТБ)',
-                brandName: 'МИНСК КРИСТАЛЛ ГРУПП',
                 productType: 'СИДР',
-                subtitle: 'ФРУКТОВО-ЯГОДНЫЙ ГАЗИРОВАННЫЙ ПОЛУСЛАДКИЙ «Эпл Бум» («Apple Boom»)',
-                standard: 'СТБ 1861-2008',
-                tiNumber: 'ТИ ВУ 690277551.026-2023',
-                alcohol: '5,7%',
-                sugar: '50 г/л',
-                volume: '30 л',
-                ingredients: 'Состав: виноматериал яблочный натуральный столовый, вода питьевая, сахар, пищевые добавки: регулятор кислотности лимонная кислота, антиокислитель E224, консервант E202. Пищевая ценность 100 мл продукта: углеводы - 5 г; энергетическая ценность - 55 ккал/100 мл (220 кДж/100 мл). Алкоголь противопоказан детям и подросткам до 18 лет, беременным и кормящим женщинам, лицам с заболеваниями нервной системы и внутренних органов.',
-                nutrition: 'Хранить в условиях, исключающих воздействие прямого солнечного света, при температуре от 5 °С до 20 °С. После подключения ПЭТ- КЕГ к оборудованию для розлива, сидр следует хранить под давлением двуокиси углерода в течение 10 суток при температуре от 5 °С до 20 °С.',
-                storage: 'Изготовитель: ОАО "Пищевой комбинат "Веселово", 222132, Республика Беларусь, Минская обл., Борисовский р-н, д. Веселово, ул. Заводская, 24. Тел.:(0177)933-400, e-mail:info@alco.by, www.alco.by',
-                expiration: 'СРОК ГОДНОСТИ: 4 МЕСЯЦА С ДАТЫ РОЗЛИВА.',
-                warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
-                barcode: '4811173002052',
-                barcodeFormat: 'EAN13',
-                qrCode: 'https://iz.by/cider-apple-boom-30l',
-                eacActive: true,
-                foodActive: true,
-                petActive: true,
                 warningHeightPercent: 12,
-                customImages: [], // Holds array of { id, src, x, y, width, height, opacity }
-                elements: {
-                    header: { x: 105, y: 4, size: 10, visible: true, bold: true },
-                    title: { x: 105, y: 12, size: 34, visible: true, bold: true },
-                    subtitle: { x: 105, y: 26, size: 8, visible: true, bold: true },
-                    stats: { x: 4, y: 10, size: 12, visible: true },
-                    icons: { x: 178, y: 5, size: 38, visible: true },
-                    body: { x: 6, y: 52, size: 6.5, visible: true },
-                    barcode: { x: 140, y: 88, size: 40, visible: true },
-                    qrcode: { x: 182, y: 15, size: 22, visible: true }
-                }
+                layers: [
+                    {
+                        id: 'header',
+                        type: 'text',
+                        name: 'Шапка бренда',
+                        x: 105,
+                        y: 4,
+                        width: 200,
+                        height: 6,
+                        size: 10,
+                        text: 'МИНСК КРИСТАЛЛ ГРУПП',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'title',
+                        type: 'text',
+                        name: 'Вид продукции',
+                        x: 105,
+                        y: 11,
+                        width: 200,
+                        height: 12,
+                        size: 34,
+                        text: 'СИДР',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'subtitle',
+                        type: 'text',
+                        name: 'Наименование / Подзаголовок',
+                        x: 105,
+                        y: 24,
+                        width: 200,
+                        height: 10,
+                        size: 8,
+                        text: 'ФРУКТОВО-ЯГОДНЫЙ ГАЗИРОВАННЫЙ ПОЛУСЛАДКИЙ «Эпл Бум» («Apple Boom»)',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'standard',
+                        type: 'text',
+                        name: 'Стандарт (СТБ / ГОСТ)',
+                        x: 105,
+                        y: 33,
+                        width: 200,
+                        height: 6,
+                        size: 7.2,
+                        text: 'СТБ 1861-2008 | ТИ ВУ 690277551.026-2023',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'stats',
+                        type: 'stats',
+                        name: 'Характеристики (Спирт, сахар, объем)',
+                        x: 4,
+                        y: 10,
+                        width: 34,
+                        height: 38,
+                        size: 12,
+                        visible: true,
+                        alcohol: '5,7%',
+                        sugar: '50 г/л',
+                        volume: '30 л'
+                    },
+                    {
+                        id: 'eac_icon',
+                        type: 'icon',
+                        icon: 'eac',
+                        name: 'Знак EAC',
+                        x: 178,
+                        y: 5,
+                        width: 12,
+                        height: 12,
+                        visible: true
+                    },
+                    {
+                        id: 'food_grade_icon',
+                        type: 'icon',
+                        icon: 'food_grade',
+                        name: 'Знак Бокал-Вилка',
+                        x: 192,
+                        y: 5,
+                        width: 11,
+                        height: 11,
+                        visible: true
+                    },
+                    {
+                        id: 'pet01_icon',
+                        type: 'icon',
+                        icon: 'pet01',
+                        name: 'Знак ПЭТ 01',
+                        x: 192,
+                        y: 18,
+                        width: 11,
+                        height: 11,
+                        visible: true
+                    },
+                    {
+                        id: 'body',
+                        type: 'body',
+                        name: 'Описание, состав и изготовитель',
+                        x: 6,
+                        y: 48,
+                        width: 125,
+                        height: 40,
+                        size: 6.2,
+                        ingredients: 'Состав: виноматериал яблочный натуральный столовый, вода питьевая, сахар, пищевые добавки: регулятор кислотности лимонная кислота, антиокислитель E224, консервант E202. Пищевая ценность 100 мл продукта: углеводы - 5 г; энергетическая ценность - 55 ккал/100 мл (220 кДж/100 мл). Алкоголь противопоказан детям и подросткам до 18 лет, беременным и кормящим женщинам, лицам с заболеваниями нервной системы и внутренних органов.',
+                        nutrition: 'Хранить в условиях, исключающих воздействие прямого солнечного света, при температуре от 5 °С до 20 °С. После подключения ПЭТ- КЕГ к оборудованию для розлива, сидр следует хранить под давлением двуокиси углерода в течение 10 суток при температуре от 5 °С до 20 °С.',
+                        storage: 'Изготовитель: ОАО "Пищевой комбинат "Веселово", 222132, Республика Беларусь, Минская обл., Борисовский р-н, д. Веселово, ул. Заводская, 24. Тел.:(0177)933-400, e-mail:info@alco.by, www.alco.by',
+                        expiration: 'СРОК ГОДНОСТИ: 4 МЕСЯЦА С ДАТЫ РОЗЛИВА.',
+                        visible: true
+                    },
+                    {
+                        id: 'barcode',
+                        type: 'barcode',
+                        name: 'Штрих-код',
+                        x: 135,
+                        y: 84,
+                        width: 45,
+                        height: 25,
+                        size: 40,
+                        text: '4811173002052',
+                        meta: 'EAN13',
+                        visible: true
+                    },
+                    {
+                        id: 'qrcode',
+                        type: 'qrcode',
+                        name: 'QR-код',
+                        x: 182,
+                        y: 15,
+                        width: 22,
+                        height: 22,
+                        size: 22,
+                        text: 'https://iz.by/cider-apple-boom-30l',
+                        visible: true
+                    },
+                    {
+                        id: 'bottling_date',
+                        type: 'date_field',
+                        name: 'Дата розлива',
+                        x: 135,
+                        y: 48,
+                        width: 70,
+                        height: 8,
+                        size: 8,
+                        text: 'Дата розлива',
+                        visible: true
+                    },
+                    {
+                        id: 'connection_date',
+                        type: 'date_field',
+                        name: 'Дата подключения',
+                        x: 135,
+                        y: 58,
+                        width: 70,
+                        height: 8,
+                        size: 8,
+                        text: 'Дата подключения',
+                        visible: true
+                    },
+                    {
+                        id: 'warning',
+                        type: 'warning',
+                        name: 'Предупреждающая надпись',
+                        x: 0,
+                        y: 130,
+                        width: 210,
+                        height: 18,
+                        size: 9.5,
+                        text: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
+                        visible: true
+                    }
+                ]
             },
             {
                 id: 'beer',
                 name: 'Пиво Светлое Классическое (ГОСТ)',
-                brandName: 'БРЕСТСКОЕ ПИВО',
                 productType: 'ПИВО',
-                subtitle: 'СВЕТЛОЕ ПАСТЕРИЗОВАННОЕ ФИЛЬТРОВАННОЕ «КЛАССИЧЕСКОЕ»',
-                standard: 'ГОСТ 31711-2012',
-                tiNumber: 'ТИ BY 200020111.002-2022',
-                alcohol: '4,5%',
-                sugar: '0 г/л',
-                volume: '30 л',
-                ingredients: 'Состав: вода питьевая, солод пивоваренный ячменный светлый, хмель прессованный, хмелепродукты. Пищевая ценность 100 мл пива: углеводы - не более 4.6 г; энергетическая ценность - 42 ккал / 170 кДж.',
-                nutrition: 'Хранить в затемненных помещениях при температуре от 2 °С до 12 °С. После вскрытия кега хранить пиво под избыточным давлением углекислого газа не более 7 суток.',
-                storage: 'Изготовитель: ОАО "Брестское пиво", 224014, Республика Беларусь, г. Брест, ул. Писателя Смирнова, 168. Тел.: +375 (162) 24-51-12, info@brestbeer.by',
-                expiration: 'СРОК ГОДНОСТИ: 180 СУТОК С ДАТЫ РОЗЛИВА.',
-                warningText: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
-                barcode: '4810123456789',
-                barcodeFormat: 'EAN13',
-                qrCode: 'https://brestbeer.by/classic-keg-30',
-                eacActive: true,
-                foodActive: true,
-                petActive: true,
                 warningHeightPercent: 12,
-                customImages: [],
-                elements: {
-                    header: { x: 105, y: 4, size: 10, visible: true, bold: true },
-                    title: { x: 105, y: 12, size: 34, visible: true, bold: true },
-                    subtitle: { x: 105, y: 26, size: 8, visible: true, bold: true },
-                    stats: { x: 4, y: 10, size: 12, visible: true },
-                    icons: { x: 178, y: 5, size: 38, visible: true },
-                    body: { x: 6, y: 52, size: 6.5, visible: true },
-                    barcode: { x: 140, y: 88, size: 40, visible: true },
-                    qrcode: { x: 182, y: 15, size: 22, visible: true }
-                }
+                layers: [
+                    {
+                        id: 'header',
+                        type: 'text',
+                        name: 'Шапка бренда',
+                        x: 105,
+                        y: 4,
+                        width: 200,
+                        height: 6,
+                        size: 10,
+                        text: 'БРЕСТСКОЕ ПИВО',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'title',
+                        type: 'text',
+                        name: 'Вид продукции',
+                        x: 105,
+                        y: 11,
+                        width: 200,
+                        height: 12,
+                        size: 34,
+                        text: 'ПИВО',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'subtitle',
+                        type: 'text',
+                        name: 'Наименование / Подзаголовок',
+                        x: 105,
+                        y: 24,
+                        width: 200,
+                        height: 10,
+                        size: 8,
+                        text: 'СВЕТЛОЕ ПАСТЕРИЗОВАННОЕ ФИЛЬТРОВАННОЕ «КЛАССИЧЕСКОЕ»',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'standard',
+                        type: 'text',
+                        name: 'Стандарт (СТБ / ГОСТ)',
+                        x: 105,
+                        y: 33,
+                        width: 200,
+                        height: 6,
+                        size: 7.2,
+                        text: 'ГОСТ 31711-2012 | ТИ BY 200020111.002-2022',
+                        bold: true,
+                        italic: false,
+                        visible: true
+                    },
+                    {
+                        id: 'stats',
+                        type: 'stats',
+                        name: 'Характеристики (Спирт, сахар, объем)',
+                        x: 4,
+                        y: 10,
+                        width: 34,
+                        height: 38,
+                        size: 12,
+                        visible: true,
+                        alcohol: '4,5%',
+                        sugar: '0 г/л',
+                        volume: '30 л'
+                    },
+                    {
+                        id: 'eac_icon',
+                        type: 'icon',
+                        icon: 'eac',
+                        name: 'Знак EAC',
+                        x: 178,
+                        y: 5,
+                        width: 12,
+                        height: 12,
+                        visible: true
+                    },
+                    {
+                        id: 'food_grade_icon',
+                        type: 'icon',
+                        icon: 'food_grade',
+                        name: 'Знак Бокал-Вилка',
+                        x: 192,
+                        y: 5,
+                        width: 11,
+                        height: 11,
+                        visible: true
+                    },
+                    {
+                        id: 'pet01_icon',
+                        type: 'icon',
+                        icon: 'pet01',
+                        name: 'Знак ПЭТ 01',
+                        x: 192,
+                        y: 18,
+                        width: 11,
+                        height: 11,
+                        visible: true
+                    },
+                    {
+                        id: 'body',
+                        type: 'body',
+                        name: 'Описание, состав и изготовитель',
+                        x: 6,
+                        y: 48,
+                        width: 125,
+                        height: 40,
+                        size: 6.2,
+                        ingredients: 'Состав: вода питьевая, солод пивоваренный ячменный светлый, хмель прессованный, хмелепродукты. Пищевая ценность 100 мл пива: углеводы - не более 4.6 г; энергетическая ценность - 42 ккал / 170 кДж.',
+                        nutrition: 'Хранить в затемненных помещениях при температуре от 2 °С до 12 °С. После вскрытия кега хранить пиво под избыточным давлением углекислого газа не более 7 суток.',
+                        storage: 'Изготовитель: ОАО "Брестское пиво", 224014, Республика Беларусь, г. Брест, ул. Писателя Смирнова, 168. Тел.: +375 (162) 24-51-12, info@brestbeer.by',
+                        expiration: 'СРОК ГОДНОСТИ: 180 СУТОК С ДАТЫ РОЗЛИВА.',
+                        visible: true
+                    },
+                    {
+                        id: 'barcode',
+                        type: 'barcode',
+                        name: 'Штрих-код',
+                        x: 135,
+                        y: 84,
+                        width: 45,
+                        height: 25,
+                        size: 40,
+                        text: '4810123456789',
+                        meta: 'EAN13',
+                        visible: true
+                    },
+                    {
+                        id: 'qrcode',
+                        type: 'qrcode',
+                        name: 'QR-код',
+                        x: 182,
+                        y: 15,
+                        width: 22,
+                        height: 22,
+                        size: 22,
+                        text: 'https://brestbeer.by/classic-keg-30',
+                        visible: true
+                    },
+                    {
+                        id: 'bottling_date',
+                        type: 'date_field',
+                        name: 'Дата розлива',
+                        x: 135,
+                        y: 48,
+                        width: 70,
+                        height: 8,
+                        size: 8,
+                        text: 'Дата розлива',
+                        visible: true
+                    },
+                    {
+                        id: 'connection_date',
+                        type: 'date_field',
+                        name: 'Дата подключения',
+                        x: 135,
+                        y: 58,
+                        width: 70,
+                        height: 8,
+                        size: 8,
+                        text: 'Дата подключения',
+                        visible: true
+                    },
+                    {
+                        id: 'warning',
+                        type: 'warning',
+                        name: 'Предупреждающая надпись',
+                        x: 0,
+                        y: 130,
+                        width: 210,
+                        height: 18,
+                        size: 9.5,
+                        text: 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ',
+                        visible: true
+                    }
+                ]
             }
         ];
 
@@ -650,11 +985,44 @@ if (isset($_GET['action'])) {
             icons: 'Значки соответствия (EAC, PET...)',
             body: 'Основной текст (Состав, условия...)',
             barcode: 'Штрих-код',
-            qrcode: 'Генератор QR-кода'
+            qrcode: 'Генератор QR-кода',
+            bottling_date: 'Дата розлива',
+            connection_date: 'Дата подключения'
+        };
+
+        const getFormFromPreset = (preset) => {
+            const headerLayer = (preset.layers || []).find(l => l.id === 'header');
+            const titleLayer = (preset.layers || []).find(l => l.id === 'title');
+            const subtitleLayer = (preset.layers || []).find(l => l.id === 'subtitle');
+            const standardLayer = (preset.layers || []).find(l => l.id === 'standard');
+            const statsLayer = (preset.layers || []).find(l => l.id === 'stats');
+            const bodyLayer = (preset.layers || []).find(l => l.id === 'body');
+            const barcodeLayer = (preset.layers || []).find(l => l.type === 'barcode');
+            const qrcodeLayer = (preset.layers || []).find(l => l.type === 'qrcode');
+            const warningLayer = (preset.layers || []).find(l => l.type === 'warning');
+
+            return {
+                ...preset,
+                brandName: headerLayer?.text || '',
+                productType: titleLayer?.text || '',
+                subtitle: subtitleLayer?.text || '',
+                standard: standardLayer?.text ? standardLayer.text.split(' | ')[0] : '',
+                tiNumber: standardLayer?.text && standardLayer.text.includes(' | ') ? standardLayer.text.split(' | ')[1] : '',
+                volume: statsLayer?.volume || '30 л',
+                alcohol: statsLayer?.alcohol || '5,7%',
+                sugar: statsLayer?.sugar || '50 г/л',
+                ingredients: bodyLayer?.ingredients || '',
+                nutrition: bodyLayer?.nutrition || '',
+                storage: bodyLayer?.storage || '',
+                expiration: bodyLayer?.expiration || '',
+                barcode: barcodeLayer?.text || '',
+                qrCode: qrcodeLayer?.text || '',
+                warningText: warningLayer?.text || 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ'
+            };
         };
 
         function App() {
-            const [form, setForm] = useState({ ...PRESETS[0] });
+            const [form, setForm] = useState(() => getFormFromPreset(PRESETS[0]));
             const [savedTemplates, setSavedTemplates] = useState([]);
             const [activeTab, setActiveTab] = useState('editor'); // editor | templates
             const [customName, setCustomName] = useState('');
@@ -773,18 +1141,22 @@ if (isset($_GET['action'])) {
                     }
 
                     if (dx !== 0 || dy !== 0) {
-                        handleCanvasElementDrag(selectedElementId, dx, dy);
+                        const targetLayer = (form.layers || []).find(l => l.id === selectedElementId);
+                        if (targetLayer) {
+                            handleCanvasElementDrag(selectedElementId, 'drag', dx, dy, targetLayer);
+                        }
                     }
                 };
 
                 window.addEventListener('keydown', handleKeyDown);
                 return () => window.removeEventListener('keydown', handleKeyDown);
-            }, [selectedElementId]);
+            }, [selectedElementId, form.layers]);
 
             const applyPreset = (preset) => {
-                setForm({ ...preset });
+                const loadedForm = getFormFromPreset(preset);
+                setForm(loadedForm);
                 setSelectedElementId(null);
-                recordHistory(preset);
+                recordHistory(loadedForm);
             };
 
             const handleFieldChange = (key, val) => {
@@ -793,65 +1165,53 @@ if (isset($_GET['action'])) {
 
             // Inspector value modifications
             const updateElementAttribute = (elementId, attribute, value) => {
-                updateFormWithHistory(prev => {
-                    const updated = { ...prev };
-                    if (elementId.startsWith('custom-img-')) {
-                        updated.customImages = (updated.customImages || []).map(img => {
-                            if (img.id === elementId) {
-                                return { ...img, [attribute]: value };
-                            }
-                            return img;
-                        });
-                    } else if (elementId.startsWith('custom-txt-')) {
-                        updated.customTexts = (updated.customTexts || []).map(txt => {
-                            if (txt.id === elementId) {
-                                return { ...txt, [attribute]: value };
-                            }
-                            return txt;
-                        });
-                    } else if (updated.elements[elementId]) {
-                        updated.elements[elementId] = {
-                            ...updated.elements[elementId],
-                            [attribute]: value
-                        };
-                    }
-                    return updated;
-                });
+                updateFormWithHistory(prev => ({
+                    ...prev,
+                    layers: (prev.layers || []).map(l => l.id === elementId ? { ...l, [attribute]: value } : l)
+                }));
             };
 
-            // Direct Canvas Drag offset updates
-            const handleCanvasElementDrag = (elementId, deltaX, deltaY) => {
+            // Direct Canvas Drag and Resize offset updates (Figma/Canva engine)
+            const handleCanvasElementDrag = (elementId, type, dx, dy, startLayer) => {
                 updateFormWithHistory(prev => {
                     const updated = { ...prev };
-                    if (elementId.startsWith('custom-img-')) {
-                        updated.customImages = (updated.customImages || []).map(img => {
-                            if (img.id === elementId) {
-                                return {
-                                    ...img,
-                                    x: Math.max(0, Math.min(210, img.x + deltaX)),
-                                    y: Math.max(0, Math.min(148, img.y + deltaY))
-                                };
+                    updated.layers = (updated.layers || []).map(l => {
+                        if (l.id !== elementId) return l;
+                        const next = { ...l };
+                        if (type === 'drag') {
+                            next.x = Math.max(0, Math.min(210, Math.round((startLayer.x + dx) * 10) / 10));
+                            next.y = Math.max(0, Math.min(148, Math.round((startLayer.y + dy) * 10) / 10));
+                        } else {
+                            // Resizing delta transforms
+                            const dWidth = dx;
+                            const dHeight = dy;
+                            if (type.includes('r')) {
+                                next.width = Math.max(5, Math.min(210, Math.round((startLayer.width + dWidth) * 10) / 10));
                             }
-                            return img;
-                        });
-                    } else if (elementId.startsWith('custom-txt-')) {
-                        updated.customTexts = (updated.customTexts || []).map(txt => {
-                            if (txt.id === elementId) {
-                                return {
-                                    ...txt,
-                                    x: Math.max(0, Math.min(210, txt.x + deltaX)),
-                                    y: Math.max(0, Math.min(148, txt.y + deltaY))
-                                };
+                            if (type.includes('b')) {
+                                next.height = Math.max(5, Math.min(148, Math.round((startLayer.height + dHeight) * 10) / 10));
                             }
-                            return txt;
-                        });
-                    } else if (updated.elements[elementId]) {
-                        updated.elements[elementId] = {
-                            ...updated.elements[elementId],
-                            x: Math.max(0, Math.min(210, updated.elements[elementId].x + deltaX)),
-                            y: Math.max(0, Math.min(148, updated.elements[elementId].y + deltaY))
-                        };
-                    }
+                            if (type.includes('l')) {
+                                const newX = Math.max(0, Math.min(210, startLayer.x + dx));
+                                const newWidth = Math.max(5, startLayer.width - dx);
+                                next.x = Math.round(newX * 10) / 10;
+                                next.width = Math.round(newWidth * 10) / 10;
+                            }
+                            if (type.includes('t')) {
+                                const newY = Math.max(0, Math.min(148, startLayer.y + dy));
+                                const newHeight = Math.max(5, startLayer.height - dy);
+                                next.y = Math.round(newY * 10) / 10;
+                                next.height = Math.round(newHeight * 10) / 10;
+                            }
+                            if (next.type === 'text') {
+                                if (type.includes('b') || type.includes('t')) {
+                                    const scaleRatio = next.height / startLayer.height;
+                                    next.size = Math.max(5, Math.min(120, Math.round(startLayer.size * scaleRatio * 10) / 10));
+                                }
+                            }
+                        }
+                        return next;
+                    });
                     return updated;
                 });
             };
@@ -876,6 +1236,8 @@ if (isset($_GET['action'])) {
                     const base64Data = e.target.result;
                     const newImage = {
                         id: `custom-img-${Date.now()}`,
+                        type: 'image',
+                        name: 'Изображение (Логотип)',
                         src: base64Data,
                         x: 85,
                         y: 54,
@@ -886,7 +1248,7 @@ if (isset($_GET['action'])) {
                     };
                     updateFormWithHistory(prev => ({
                         ...prev,
-                        customImages: [...(prev.customImages || []), newImage]
+                        layers: [...(prev.layers || []), newImage]
                     }));
                     setSelectedElementId(newImage.id);
                 };
@@ -897,9 +1259,13 @@ if (isset($_GET['action'])) {
             const addCustomText = () => {
                 const newText = {
                     id: `custom-txt-${Date.now()}`,
+                    type: 'text',
+                    name: 'Пользовательский текст',
                     text: 'Новый текст',
                     x: 105,
                     y: 60,
+                    width: 80,
+                    height: 10,
                     size: 12,
                     bold: false,
                     italic: false,
@@ -907,27 +1273,48 @@ if (isset($_GET['action'])) {
                 };
                 updateFormWithHistory(prev => ({
                     ...prev,
-                    customTexts: [...(prev.customTexts || []), newText]
+                    layers: [...(prev.layers || []), newText]
                 }));
                 setSelectedElementId(newText.id);
             };
 
-            // Delete selected custom text block
-            const deleteCustomText = (txtId) => {
+            // Add predefined standard compliance icon layer
+            const addStandardIcon = (iconType, labelName) => {
+                const newIcon = {
+                    id: `custom-icon-${iconType}-${Date.now()}`,
+                    type: 'icon',
+                    icon: iconType,
+                    name: labelName,
+                    x: 105,
+                    y: 60,
+                    width: 12,
+                    height: 12,
+                    visible: true
+                };
                 updateFormWithHistory(prev => ({
                     ...prev,
-                    customTexts: (prev.customTexts || []).filter(txt => txt.id !== txtId)
+                    layers: [...(prev.layers || []), newIcon]
+                }));
+                setSelectedElementId(newIcon.id);
+            };
+
+            // Unified custom layer deleter
+            const deleteCustomLayer = (layerId) => {
+                updateFormWithHistory(prev => ({
+                    ...prev,
+                    layers: (prev.layers || []).filter(l => l.id !== layerId)
                 }));
                 setSelectedElementId(null);
             };
 
+            // Delete selected custom text block
+            const deleteCustomText = (txtId) => {
+                deleteCustomLayer(txtId);
+            };
+
             // Delete selected custom image
             const deleteCustomImage = (imgId) => {
-                updateFormWithHistory(prev => ({
-                    ...prev,
-                    customImages: prev.customImages.filter(img => img.id !== imgId)
-                }));
-                setSelectedElementId(null);
+                deleteCustomLayer(imgId);
             };
 
             // Clean compliance verification checks (including 5mm margins check)
@@ -974,12 +1361,12 @@ if (isset($_GET['action'])) {
 
                 // Check 5mm print-safe margin boundaries
                 let marginViolation = false;
-                if (data.elements) {
-                    Object.entries(data.elements).forEach(([key, value]) => {
-                        if (value.visible !== false) {
+                if (data.layers) {
+                    data.layers.forEach(layer => {
+                        if (layer.visible !== false) {
                             // Elements are absolute positioned, some are centered so they can slightly exceed bounds
                             // For security checks, we verify that X & Y are placed reasonably within 5mm to 205mm / 5mm to 143mm
-                            if (value.y < 5 || value.y > (148 - 5)) {
+                            if (layer.y < 5 || layer.y > (148 - 5)) {
                                 marginViolation = true;
                             }
                         }
@@ -1048,13 +1435,7 @@ if (isset($_GET['action'])) {
             // Get configuration details of currently selected element
             const getSelectedElementData = () => {
                 if (!selectedElementId) return null;
-                if (selectedElementId.startsWith('custom-img-')) {
-                    return (form.customImages || []).find(img => img.id === selectedElementId) || null;
-                }
-                if (selectedElementId.startsWith('custom-txt-')) {
-                    return (form.customTexts || []).find(txt => txt.id === selectedElementId) || null;
-                }
-                return form.elements[selectedElementId] ? { id: selectedElementId, ...form.elements[selectedElementId] } : null;
+                return (form.layers || []).find(l => l.id === selectedElementId) || null;
             };
 
             const selectedElement = getSelectedElementData();
@@ -1255,228 +1636,53 @@ if (isset($_GET['action'])) {
                 : `@media print { @page { size: A4 portrait !important; margin: 0 !important; } }`;
 
             return (
-                <div className="min-h-screen flex flex-col">
+                <div className="min-h-screen flex flex-col bg-slate-50">
                     <style dangerouslySetInnerHTML={{ __html: dynamicPageSizeStyle }} />
                     <div className="no-print min-h-screen flex flex-col">
-                        {/* Header */}
-                        <header className="bg-gradient-to-r from-brand-700 to-brand-500 text-white shadow-md">
-                        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+                        {/* Figma/Canva Header */}
+                        <header className="bg-slate-900 text-white border-b border-slate-800 shadow-lg px-6 py-3 flex justify-between items-center shrink-0">
                             <div className="flex items-center space-x-3">
-                                <div className="p-2 bg-white/10 rounded-lg">
-                                    <Icon name="beer" className="w-8 h-8 text-emerald-300" />
+                                <div className="p-2 bg-brand-600 rounded-lg">
+                                    <Icon name="cog" className="w-6 h-6 text-emerald-300 animate-pulse" />
                                 </div>
                                 <div>
-                                    <h1 className="text-xl font-bold tracking-tight Montserrat">
-                                        Этикетки Кег PHP 3.5 <span className="text-emerald-300">РБ</span>
+                                    <h1 className="text-lg font-black tracking-wider Montserrat flex items-center space-x-1.5">
+                                        <span>КЕГ-ДИЗАЙНЕР PRO</span>
+                                        <span className="text-[10px] bg-brand-600 text-white font-bold px-1.5 py-0.5 rounded">СТБ РБ</span>
                                     </h1>
-                                    <p className="text-xs text-brand-100 font-medium">
-                                        Сет СТБ 1100-2016 • Генератор EAN-13/EAN-8/Code-128 • Физические линейки в мм
-                                    </p>
+                                    <p className="text-[11px] text-slate-400">Figma-style Конструктор • Стандарты СТБ 1100-2016 • Интегрированная база шаблонов</p>
                                 </div>
                             </div>
 
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => setActiveTab('editor')}
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-1.5 ${
-                                        activeTab === 'editor' ? 'bg-white text-brand-700 shadow-md' : 'text-white hover:bg-white/10'
-                                    }`}
-                                >
-                                    <Icon name="cog" className="w-4 h-4" />
-                                    <span>Конструктор</span>
-                                </button>
-                                <button
-                                    onClick={() => setActiveTab('templates')}
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center space-x-1.5 ${
-                                        activeTab === 'templates' ? 'bg-white text-brand-700 shadow-md' : 'text-white hover:bg-white/10'
-                                    }`}
-                                >
-                                    <Icon name="fileText" className="w-4 h-4" />
-                                    <span>Библиотека</span>
-                                </button>
+                            <div className="flex items-center space-x-3">
                                 <button
                                     onClick={() => window.print()}
-                                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-md transition-all flex items-center space-x-1.5 border border-emerald-400"
+                                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all flex items-center space-x-2 border border-emerald-500"
                                 >
                                     <Icon name="printer" className="w-4 h-4" />
-                                    <span>Печать</span>
+                                    <span>Запустить печать А4</span>
                                 </button>
                             </div>
-                        </div>
-                    </header>
+                        </header>
 
-                    {/* Main workspace */}
-                    <main className="flex-1 max-w-[1680px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
-                        {activeTab === 'editor' && (
-                            <>
-                                {/* Canvas panel */}
-                                <div className="xl:col-span-7 flex flex-col space-y-4">
-                                    <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200">
-                                        <div className="flex flex-wrap justify-between items-center gap-3 mb-3 pb-3 border-b">
-                                            {/* Toolbar actions */}
-                                            <div className="flex items-center space-x-2">
-                                                <button
-                                                    onClick={handleUndo}
-                                                    disabled={historyIndex <= 0}
-                                                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded disabled:opacity-40 transition"
-                                                    title="Отменить (Ctrl+Z)"
-                                                >
-                                                    <Icon name="undo" className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={handleRedo}
-                                                    disabled={historyIndex >= history.length - 1}
-                                                    className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded disabled:opacity-40 transition"
-                                                    title="Повторить"
-                                                >
-                                                    <Icon name="redo" className="w-4 h-4" />
-                                                </button>
-                                                <span className="h-6 w-px bg-slate-200"></span>
-                                                <button
-                                                    onClick={() => setShowGrid(!showGrid)}
-                                                    className={`p-2 rounded transition flex items-center space-x-1 ${
-                                                        showGrid ? 'bg-brand-100 text-brand-800 font-bold' : 'bg-slate-100 text-slate-700'
-                                                    }`}
-                                                    title="Сетка"
-                                                >
-                                                    <Icon name="grid" className="w-4 h-4" />
-                                                    <span className="text-xs hidden sm:inline">Сетка (5мм)</span>
-                                                </button>
-                                            </div>
+                        {/* Canva/Figma Three-Column Layout */}
+                        <main className="flex-1 w-full grid grid-cols-1 xl:grid-cols-12 gap-0 overflow-hidden">
 
-                                            <div className="text-xs text-slate-400 font-medium">
-                                                Перемещайте стрелочками клавиатуры (1мм, +Shift = 5мм)
-                                            </div>
+                            {/* Left Column (3/12): Layers & Saved Templates */}
+                            <div className="xl:col-span-3 border-r border-slate-200 bg-white flex flex-col h-[calc(100vh-62px)] overflow-y-auto">
+                                <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Библиотека шаблонов</h3>
 
-                                            {/* Scale sliders */}
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-xs text-slate-500">Масштаб:</span>
-                                                <input
-                                                    type="range"
-                                                    min="0.5"
-                                                    max="1.2"
-                                                    step="0.05"
-                                                    value={zoom}
-                                                    onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                                    className="w-24 accent-brand-500 h-1.5 bg-slate-200 rounded"
-                                                />
-                                                <span className="text-xs font-semibold text-slate-700 w-8">
-                                                    {Math.round(zoom * 100)}%
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {/* Canvas Wrapper with Rulers */}
-                                        <div className="overflow-auto bg-slate-100 p-4 rounded-lg border border-slate-300 flex justify-center items-start min-h-[500px]">
-                                            <div style={{ transform: `scale(${zoom})` }} className="origin-top-left transition-transform duration-75">
-                                                <div className="ruler-container">
-                                                    {/* Horizontal Ruler (210mm) */}
-                                                    <div className="hr-ruler">
-                                                        {Array.from({ length: 22 }).map((_, i) => {
-                                                            const mm = i * 10;
-                                                            const leftPos = mm * 3.779;
-                                                            return (
-                                                                <React.Fragment key={i}>
-                                                                    <div className="ruler-tick h-3 w-px" style={{ left: `${leftPos}px`, bottom: 0 }}></div>
-                                                                    {mm % 20 === 0 && (
-                                                                        <span className="ruler-label" style={{ left: `${leftPos + 2}px`, bottom: '14px' }}>
-                                                                            {mm}
-                                                                        </span>
-                                                                    )}
-                                                                </React.Fragment>
-                                                            );
-                                                        })}
-                                                        {Array.from({ length: 42 }).map((_, i) => {
-                                                            const mm = i * 5;
-                                                            if (mm % 10 === 0) return null;
-                                                            const leftPos = mm * 3.779;
-                                                            return (
-                                                                <div key={i} className="ruler-tick h-1.5 w-px" style={{ left: `${leftPos}px`, bottom: 0 }}></div>
-                                                            );
-                                                        })}
-                                                    </div>
-
-                                                    {/* Vertical Ruler (148mm) */}
-                                                    <div className="vr-ruler">
-                                                        {Array.from({ length: 16 }).map((_, i) => {
-                                                            const mm = i * 10;
-                                                            const topPos = mm * 3.779;
-                                                            return (
-                                                                <React.Fragment key={i}>
-                                                                    <div className="ruler-tick w-3 h-px" style={{ top: `${topPos}px`, right: 0 }}></div>
-                                                                    {mm % 20 === 0 && (
-                                                                        <span className="ruler-label" style={{ top: `${topPos + 2}px`, right: '14px' }}>
-                                                                            {mm}
-                                                                        </span>
-                                                                    )}
-                                                                </React.Fragment>
-                                                            );
-                                                        })}
-                                                        {Array.from({ length: 30 }).map((_, i) => {
-                                                            const mm = i * 5;
-                                                            if (mm % 10 === 0) return null;
-                                                            const topPos = mm * 3.779;
-                                                            return (
-                                                                <div key={i} className="ruler-tick w-1.5 h-px" style={{ top: `${topPos}px`, right: 0 }}></div>
-                                                            );
-                                                        })}
-                                                    </div>
-
-                                                    {/* The core workspace */}
-                                                    <LabelPreview
-                                                        data={form}
-                                                        selectedId={selectedElementId}
-                                                        onSelectElement={setSelectedElementId}
-                                                        onDragElement={handleCanvasElementDrag}
-                                                        showGrid={showGrid}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Compliance index & error listings */}
-                                    <div className="bg-white rounded-xl shadow-md p-4 border border-slate-200">
-                                        <div className="flex items-center justify-between border-b pb-2 mb-3">
-                                            <h3 className="font-bold text-slate-800 flex items-center space-x-2">
-                                                <span>Индикатор маркировки РБ (СТБ 1100-2016)</span>
-                                            </h3>
-                                            <div className="flex items-center space-x-1.5">
-                                                <span className="text-xs font-bold text-slate-500">Индекс легальности:</span>
-                                                <span className={`px-2 py-0.5 rounded text-xs font-bold ${
-                                                    compliance.score >= 90 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                    {compliance.score}%
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2 max-h-[140px] overflow-y-auto pr-1">
-                                            {compliance.reports.map((r, idx) => (
-                                                <div key={idx} className={`p-2 rounded-lg text-xs flex items-start space-x-2 border ${
-                                                    r.status === 'success' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
-                                                }`}>
-                                                    <span className="mt-0.5 shrink-0">
-                                                        {r.status === 'success' ? <Icon name="checkCircle" className="w-4 h-4 text-emerald-600" /> : <Icon name="alertCircle" className="w-4 h-4 text-red-600" />}
-                                                    </span>
-                                                    <span className="font-medium">{r.text}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Form settings / inspector side panel */}
-                                <div className="xl:col-span-5 bg-white rounded-xl shadow-md border border-slate-200 flex flex-col">
-                                    {/* Top Preset selector */}
-                                    <div className="p-3 bg-brand-50 border-b border-slate-200 flex items-center space-x-2 overflow-x-auto">
-                                        <span className="text-xs font-bold text-slate-500 shrink-0">Предустановки:</span>
+                                    {/* Presets Grid */}
+                                    <div className="grid grid-cols-2 gap-2 mb-4">
                                         {PRESETS.map((p) => (
                                             <button
                                                 key={p.id}
                                                 onClick={() => applyPreset(p)}
-                                                className={`px-3 py-1 rounded-full text-xs font-semibold shrink-0 transition-all ${
-                                                    form.id === p.id ? 'bg-brand-600 text-white' : 'bg-white text-brand-700 hover:bg-brand-100 border border-brand-200'
+                                                className={`px-3 py-2 rounded-lg text-xs font-bold border transition text-left ${
+                                                    form.id === p.id
+                                                        ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                                                 }`}
                                             >
                                                 {p.productType}
@@ -1484,684 +1690,914 @@ if (isset($_GET['action'])) {
                                         ))}
                                     </div>
 
-                                    {/* Form tabs */}
-                                    <div className="flex-1 p-4 space-y-4 overflow-y-auto max-h-[580px]">
-
-                                        {/* Inspector block if element is selected */}
-                                        {selectedElement && (
-                                            <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-3 space-y-3">
-                                                <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
-                                                    <span className="text-xs font-bold text-blue-900 uppercase">
-                                                        Настройки: {selectedElement.id.startsWith('custom-img-') ? 'Пользовательское изображение' : (ELEMENT_NAMES_RU[selectedElement.id] || selectedElement.id)}
-                                                    </span>
+                                    {/* User Saved Templates list */}
+                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase mb-2">Ваши шаблоны ({savedTemplates.length})</h4>
+                                    {savedTemplates.length === 0 ? (
+                                        <p className="text-[11px] text-slate-400 italic bg-white p-3 border rounded-lg text-center">Нет сохраненных шаблонов</p>
+                                    ) : (
+                                        <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                                            {savedTemplates.map((t) => (
+                                                <div key={t.id} className="p-2 border border-slate-100 rounded-lg hover:shadow-sm bg-white flex items-center justify-between">
                                                     <button
-                                                        onClick={() => setSelectedElementId(null)}
-                                                        className="text-xs text-blue-600 hover:text-blue-900 font-semibold"
+                                                        onClick={() => setForm({ ...t })}
+                                                        className="flex-1 text-left truncate text-xs font-semibold text-slate-700"
                                                     >
-                                                        Снять выбор
+                                                        {t.name}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteTemplate(t.id)}
+                                                        className="text-red-500 hover:text-red-700 p-1"
+                                                    >
+                                                        <Icon name="trash" className="w-3.5 h-3.5" />
                                                     </button>
                                                 </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
 
-                                                {/* Alignment Shortcuts */}
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => centerElementHorizontally(selectedElement.id)}
-                                                        className="flex-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold transition"
-                                                    >
-                                                        Центр по X (105мм)
-                                                    </button>
-                                                    <button
-                                                        onClick={() => centerElementVertically(selectedElement.id)}
-                                                        className="flex-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold transition"
-                                                    >
-                                                        Центр по Y (74мм)
-                                                    </button>
-                                                </div>
+                                {/* Figma Layer Manager */}
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Слои холста (Figma Layers)</h3>
+                                        <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-bold">{(form.layers || []).length} слоев</span>
+                                    </div>
 
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div>
-                                                        <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Координата X (мм)</label>
-                                                        <input
-                                                            type="range" min="0" max="210" step="1"
-                                                            value={selectedElement.x}
-                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'x', parseInt(e.target.value))}
-                                                            className="w-full accent-blue-600"
-                                                        />
-                                                        <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.x} мм</div>
+                                    <div className="space-y-1 overflow-y-auto flex-1 max-h-[420px] pr-1">
+                                        {(form.layers || []).map((layer) => {
+                                            const isSelected = selectedElementId === layer.id;
+                                            return (
+                                                <div
+                                                    key={layer.id}
+                                                    onClick={() => setSelectedElementId(layer.id)}
+                                                    className={`group p-2 rounded-lg flex items-center justify-between cursor-pointer border transition text-xs ${
+                                                        isSelected
+                                                            ? 'bg-brand-50 border-brand-200 text-brand-900 font-bold'
+                                                            : 'bg-white border-transparent text-slate-700 hover:bg-slate-50'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center space-x-2 truncate">
+                                                        <span className="text-slate-400">
+                                                            {layer.type === 'text' && <Icon name="fileText" className="w-3.5 h-3.5" />}
+                                                            {layer.type === 'barcode' && <Icon name="grid" className="w-3.5 h-3.5" />}
+                                                            {layer.type === 'qrcode' && <Icon name="grid" className="w-3.5 h-3.5" />}
+                                                            {layer.type === 'image' && <Icon name="image" className="w-3.5 h-3.5" />}
+                                                            {layer.type === 'stats' && <Icon name="cog" className="w-3.5 h-3.5" />}
+                                                            {layer.type === 'body' && <Icon name="fileText" className="w-3.5 h-3.5" />}
+                                                            {layer.type === 'warning' && <Icon name="alertCircle" className="w-3.5 h-3.5" />}
+                                                        </span>
+                                                        <span className="truncate">{layer.name}</span>
                                                     </div>
-                                                    <div>
-                                                        <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Координата Y (мм)</label>
-                                                        <input
-                                                            type="range" min="0" max="148" step="1"
-                                                            value={selectedElement.y}
-                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'y', parseInt(e.target.value))}
-                                                            className="w-full accent-blue-600"
-                                                        />
-                                                        <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.y} мм</div>
+
+                                                    <div className="flex items-center space-x-1.5 opacity-85 group-hover:opacity-100">
+                                                        {/* Visibility Eye icon */}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                updateElementAttribute(layer.id, 'visible', layer.visible === false ? true : false);
+                                                            }}
+                                                            className="text-slate-400 hover:text-slate-700 p-0.5"
+                                                            title={layer.visible !== false ? "Скрыть" : "Показать"}
+                                                        >
+                                                            {layer.visible !== false ? (
+                                                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                                </svg>
+                                                            ) : (
+                                                                <svg className="w-3.5 h-3.5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                                </svg>
+                                                            )}
+                                                        </button>
                                                     </div>
                                                 </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
 
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    {selectedElement.id.startsWith('custom-img-') ? (
-                                                        <>
-                                                            <div>
-                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Ширина (мм)</label>
-                                                                <input
-                                                                    type="range" min="5" max="150" step="1"
-                                                                    value={selectedElement.width}
-                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'width', parseInt(e.target.value))}
-                                                                    className="w-full accent-blue-600"
-                                                                />
-                                                                <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.width} мм</div>
-                                                            </div>
-                                                            <div>
-                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Высота (мм)</label>
-                                                                <input
-                                                                    type="range" min="5" max="150" step="1"
-                                                                    value={selectedElement.height}
-                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'height', parseInt(e.target.value))}
-                                                                    className="w-full accent-blue-600"
-                                                                />
-                                                                <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.height} мм</div>
-                                                            </div>
-                                                        </>
-                                                    ) : selectedElement.id.startsWith('custom-txt-') ? (
-                                                        <>
-                                                            <div className="col-span-2">
-                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Текст элемента</label>
-                                                                <input
-                                                                    type="text"
-                                                                    value={selectedElement.text}
-                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'text', e.target.value)}
-                                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-semibold"
-                                                                />
-                                                            </div>
-                                                            <div>
-                                                                <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер шрифта</label>
-                                                                <input
-                                                                    type="range" min="6" max="72" step="1"
-                                                                    value={selectedElement.size || 12}
-                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseInt(e.target.value))}
-                                                                    className="w-full accent-blue-600"
-                                                                />
-                                                                <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.size || 12} px</div>
-                                                            </div>
-                                                            <div className="flex items-center space-x-2 pt-4 justify-around border rounded bg-slate-50">
-                                                                <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={selectedElement.bold || false}
-                                                                        onChange={(e) => updateElementAttribute(selectedElement.id, 'bold', e.target.checked)}
-                                                                        className="rounded text-blue-600 w-4 h-4"
-                                                                    />
-                                                                    <span>Жирный</span>
-                                                                </label>
-                                                                <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={selectedElement.italic || false}
-                                                                        onChange={(e) => updateElementAttribute(selectedElement.id, 'italic', e.target.checked)}
-                                                                        className="rounded text-blue-600 w-4 h-4"
-                                                                    />
-                                                                    <span>Курсив</span>
-                                                                </label>
-                                                            </div>
-                                                        </>
-                                                    ) : (selectedElement.id === 'barcode' || selectedElement.id === 'qrcode') ? (
-                                                        <div>
-                                                            <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер / Ширина (мм)</label>
-                                                            <input
-                                                                type="range" min="10" max="150" step="1"
-                                                                value={selectedElement.size || (selectedElement.id === 'barcode' ? 40 : 22)}
-                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseFloat(e.target.value))}
-                                                                className="w-full accent-blue-600"
-                                                            />
-                                                            <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.size || (selectedElement.id === 'barcode' ? 40 : 22)} мм</div>
-                                                        </div>
-                                                    ) : (
-                                                        <div>
-                                                            <label className="block text-[11px] font-bold text-slate-600 mb-0.5">Размер шрифта / иконок</label>
-                                                            <input
-                                                                type="range" min="5" max="64" step="0.5"
-                                                                value={selectedElement.size}
-                                                                onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseFloat(e.target.value))}
-                                                                className="w-full accent-blue-600"
-                                                            />
-                                                            <div className="text-right text-[10px] font-bold text-slate-500">{selectedElement.size} единиц</div>
-                                                        </div>
-                                                    )}
-                                                </div>
+                            {/* Middle Column (6/12): Canvas Workspace, Zoom, Rulers & Compliance reports */}
+                            <div className="xl:col-span-6 bg-slate-100 flex flex-col h-[calc(100vh-62px)]">
 
-                                                <div className="flex justify-between items-center pt-2">
-                                                    <label className="flex items-center space-x-2 text-xs font-semibold text-slate-700 cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedElement.visible !== false}
-                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'visible', e.target.checked)}
-                                                            className="rounded text-blue-600 w-4 h-4"
-                                                        />
-                                                        <span>Отображать элемент</span>
-                                                    </label>
+                                {/* Sleek Central Toolbar */}
+                                <div className="p-3 bg-white border-b border-slate-200 flex justify-between items-center shadow-sm shrink-0">
+                                    <div className="flex items-center space-x-2">
+                                        <button
+                                            onClick={handleUndo}
+                                            disabled={historyIndex <= 0}
+                                            className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded border disabled:opacity-40 transition"
+                                            title="Отменить (Ctrl+Z)"
+                                        >
+                                            <Icon name="undo" className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={handleRedo}
+                                            disabled={historyIndex >= history.length - 1}
+                                            className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded border disabled:opacity-40 transition"
+                                            title="Повторить"
+                                        >
+                                            <Icon name="redo" className="w-4 h-4" />
+                                        </button>
+                                        <span className="h-6 w-px bg-slate-200 mx-2"></span>
+                                        <button
+                                            onClick={() => setShowGrid(!showGrid)}
+                                            className={`px-3 py-1.5 rounded text-xs font-bold transition flex items-center space-x-1.5 ${
+                                                showGrid ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border'
+                                            }`}
+                                        >
+                                            <Icon name="grid" className="w-3.5 h-3.5" />
+                                            <span>Сетка (5мм)</span>
+                                        </button>
+                                    </div>
 
-                                                    {selectedElement.id.startsWith('custom-img-') && (
-                                                        <button
-                                                            onClick={() => deleteCustomImage(selectedElement.id)}
-                                                            className="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-bold flex items-center space-x-1"
-                                                        >
-                                                            <Icon name="trash" className="w-3.5 h-3.5" />
-                                                            <span>Удалить изображение</span>
-                                                        </button>
-                                                    )}
+                                    <div className="text-[11px] text-slate-400 font-semibold hidden md:inline-block">
+                                        Стрелочки: 1мм • +Shift: 5мм • Мышь: 8-точечное растягивание
+                                    </div>
 
-                                                    {selectedElement.id.startsWith('custom-txt-') && (
-                                                        <button
-                                                            onClick={() => deleteCustomText(selectedElement.id)}
-                                                            className="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-bold flex items-center space-x-1"
-                                                        >
-                                                            <Icon name="trash" className="w-3.5 h-3.5" />
-                                                            <span>Удалить текст</span>
-                                                        </button>
-                                                    )}
-                                                </div>
+                                    {/* Scale slider */}
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-[11px] text-slate-500 font-bold">Масштаб:</span>
+                                        <input
+                                            type="range"
+                                            min="0.5"
+                                            max="1.2"
+                                            step="0.05"
+                                            value={zoom}
+                                            onChange={(e) => setZoom(parseFloat(e.target.value))}
+                                            className="w-24 accent-brand-600 h-1.5 bg-slate-200 rounded cursor-pointer"
+                                        />
+                                        <span className="text-xs font-extrabold text-slate-700 min-w-[36px]">
+                                            {Math.round(zoom * 100)}%
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Main Zoomable Rulers Workspace */}
+                                <div className="flex-1 overflow-auto p-6 flex justify-center items-start min-h-0 relative">
+                                    <div style={{ transform: `scale(${zoom})` }} className="origin-top-left transition-transform duration-75 relative">
+                                        <div className="ruler-container shadow-2xl">
+                                            {/* Horizontal Ruler (210mm) */}
+                                            <div className="hr-ruler">
+                                                {Array.from({ length: 22 }).map((_, i) => {
+                                                    const mm = i * 10;
+                                                    const leftPos = mm * 3.779;
+                                                    return (
+                                                        <React.Fragment key={i}>
+                                                            <div className="ruler-tick h-3 w-px" style={{ left: `${leftPos}px`, bottom: 0 }}></div>
+                                                            {mm % 20 === 0 && (
+                                                                <span className="ruler-label" style={{ left: `${leftPos + 2}px`, bottom: '14px' }}>
+                                                                    {mm}
+                                                                </span>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                })}
+                                                {Array.from({ length: 42 }).map((_, i) => {
+                                                    const mm = i * 5;
+                                                    if (mm % 10 === 0) return null;
+                                                    const leftPos = mm * 3.779;
+                                                    return (
+                                                        <div key={i} className="ruler-tick h-1.5 w-px" style={{ left: `${leftPos}px`, bottom: 0 }}></div>
+                                                    );
+                                                })}
                                             </div>
-                                        )}
 
-                                        {/* СТБ 1100-2016 Checklist regulations */}
-                                        <div className="bg-emerald-50/50 border border-emerald-200 rounded-xl p-3">
-                                            <h4 className="text-xs font-bold text-emerald-800 mb-2 flex items-center space-x-1">
-                                                <Icon name="checkCircle" className="w-4 h-4" />
-                                                <span>СТБ 1100-2016 Требования к маркировке</span>
-                                            </h4>
-                                            <div className="space-y-1.5 text-xs text-slate-700">
-                                                <label className="flex items-center space-x-2 cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checklist.manufacturer}
-                                                        onChange={(e) => setChecklist(prev => ({ ...prev, manufacturer: e.target.checked }))}
-                                                        className="rounded text-emerald-600 w-4 h-4"
-                                                    />
-                                                    <span>Информация об изготовителе (РБ / Импортер)</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2 cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checklist.expiration}
-                                                        onChange={(e) => setChecklist(prev => ({ ...prev, expiration: e.target.checked }))}
-                                                        className="rounded text-emerald-600 w-4 h-4"
-                                                    />
-                                                    <span>Срок годности и условия хранения</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2 cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checklist.ingredients}
-                                                        onChange={(e) => setChecklist(prev => ({ ...prev, ingredients: e.target.checked }))}
-                                                        className="rounded text-emerald-600 w-4 h-4"
-                                                    />
-                                                    <span>Состав сырья, красители, консерванты</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2 cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checklist.legalWarning}
-                                                        onChange={(e) => setChecklist(prev => ({ ...prev, legalWarning: e.target.checked }))}
-                                                        className="rounded text-emerald-600 w-4 h-4"
-                                                    />
-                                                    <span>Минздрав Предупреждение (мин. 10% высоты)</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2 cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checklist.stbStandard}
-                                                        onChange={(e) => setChecklist(prev => ({ ...prev, stbStandard: e.target.checked }))}
-                                                        className="rounded text-emerald-600 w-4 h-4"
-                                                    />
-                                                    <span>Номер стандарта (ГОСТ или СТБ)</span>
-                                                </label>
+                                            {/* Vertical Ruler (148mm) */}
+                                            <div className="vr-ruler">
+                                                {Array.from({ length: 16 }).map((_, i) => {
+                                                    const mm = i * 10;
+                                                    const topPos = mm * 3.779;
+                                                    return (
+                                                        <React.Fragment key={i}>
+                                                            <div className="ruler-tick w-3 h-px" style={{ top: `${topPos}px`, right: 0 }}></div>
+                                                            {mm % 20 === 0 && (
+                                                                <span className="ruler-label" style={{ top: `${topPos + 2}px`, right: '14px' }}>
+                                                                    {mm}
+                                                                </span>
+                                                            )}
+                                                        </React.Fragment>
+                                                    );
+                                                })}
+                                                {Array.from({ length: 30 }).map((_, i) => {
+                                                    const mm = i * 5;
+                                                    if (mm % 10 === 0) return null;
+                                                    const topPos = mm * 3.779;
+                                                    return (
+                                                        <div key={i} className="ruler-tick w-1.5 h-px" style={{ top: `${topPos}px`, right: 0 }}></div>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            {/* The designer workspace canvas */}
+                                            <LabelPreview
+                                                data={form}
+                                                selectedId={selectedElementId}
+                                                onSelectElement={setSelectedElementId}
+                                                onDragElement={handleCanvasElementDrag}
+                                                showGrid={showGrid}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Compliance Index Reports overlay */}
+                                <div className="p-4 bg-white border-t border-slate-200 shrink-0">
+                                    <div className="flex items-center justify-between border-b pb-2 mb-2">
+                                        <h3 className="font-bold text-xs text-slate-700 flex items-center space-x-2">
+                                            <Icon name="checkCircle" className="w-4 h-4 text-emerald-600" />
+                                            <span>СТБ 1100-2016 РБ Валидатор легальности</span>
+                                        </h3>
+                                        <div className="flex items-center space-x-1.5">
+                                            <span className="text-[10px] font-bold text-slate-400">Индекс легальности:</span>
+                                            <span className={`px-2 py-0.5 rounded text-[11px] font-black ${
+                                                compliance.score >= 90 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {compliance.score}%
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex space-x-2 overflow-x-auto py-1 max-h-[64px]">
+                                        {compliance.reports.map((r, idx) => (
+                                            <div key={idx} className={`p-1.5 rounded-lg text-[10px] flex items-center space-x-1.5 border shrink-0 whitespace-nowrap ${
+                                                r.status === 'success' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                                            }`}>
+                                                {r.status === 'success' ? <Icon name="checkCircle" className="w-3 h-3 text-emerald-600" /> : <Icon name="alertCircle" className="w-3 h-3 text-red-600" />}
+                                                <span className="font-semibold">{r.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right Column (3/12): Properties Inspector & Printing / Export Card */}
+                            <div className="xl:col-span-3 border-l border-slate-200 bg-white flex flex-col h-[calc(100vh-62px)] overflow-y-auto">
+
+                                {/* Selected Element Inspector Panel */}
+                                {selectedElement ? (
+                                    <div className="p-4 border-b border-blue-100 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 space-y-3">
+                                        <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
+                                            <span className="text-xs font-black text-blue-900 uppercase flex items-center space-x-1">
+                                                <Icon name="cog" className="w-3.5 h-3.5 text-blue-700" />
+                                                <span>Параметры: {selectedElement.id.startsWith('custom-img-') ? 'Логотип' : (ELEMENT_NAMES_RU[selectedElement.id] || selectedElement.name || selectedElement.id)}</span>
+                                            </span>
+                                            <button
+                                                onClick={() => setSelectedElementId(null)}
+                                                className="text-[10px] text-blue-600 hover:text-blue-950 font-bold bg-white px-2 py-0.5 rounded border border-blue-200 shadow-sm"
+                                            >
+                                                Снять выбор
+                                            </button>
+                                        </div>
+
+                                        {/* Alignment tools */}
+                                        <div className="flex space-x-2">
+                                            <button
+                                                onClick={() => centerElementHorizontally(selectedElement.id)}
+                                                className="flex-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold transition shadow-sm"
+                                            >
+                                                Центр по X (105мм)
+                                            </button>
+                                            <button
+                                                onClick={() => centerElementVertically(selectedElement.id)}
+                                                className="flex-1 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-[10px] font-bold transition shadow-sm"
+                                            >
+                                                Центр по Y (74мм)
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Позиция X (мм)</label>
+                                                <input
+                                                    type="range" min="0" max="210" step="1"
+                                                    value={selectedElement.x}
+                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'x', parseInt(e.target.value))}
+                                                    className="w-full accent-blue-600 cursor-pointer"
+                                                />
+                                                <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.x} мм</div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Позиция Y (мм)</label>
+                                                <input
+                                                    type="range" min="0" max="148" step="1"
+                                                    value={selectedElement.y}
+                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'y', parseInt(e.target.value))}
+                                                    className="w-full accent-blue-600 cursor-pointer"
+                                                />
+                                                <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.y} мм</div>
                                             </div>
                                         </div>
 
-                                        {/* External custom element adder */}
-                                        <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-4 flex flex-col items-center justify-center space-y-3">
-                                            <div className="text-center">
-                                                <p className="text-xs font-bold text-slate-700">Добавление элементов на холст</p>
-                                                <p className="text-[10px] text-slate-400">Добавьте произвольные логотипы, гербы или новые надписи</p>
-                                            </div>
-                                            <div className="flex space-x-2 w-full justify-center">
-                                                <label className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-lg text-xs font-bold cursor-pointer flex items-center space-x-1 transition flex-1 justify-center">
-                                                    <Icon name="image" className="w-3.5 h-3.5" />
-                                                    <span>Загрузить фото</span>
-                                                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                                                </label>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {selectedElement.type === 'image' ? (
+                                                <>
+                                                    <div>
+                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ширина (мм)</label>
+                                                        <input
+                                                            type="range" min="5" max="150" step="1"
+                                                            value={selectedElement.width || 20}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'width', parseInt(e.target.value))}
+                                                            className="w-full accent-blue-600 cursor-pointer"
+                                                        />
+                                                        <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.width || 20} мм</div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Высота (мм)</label>
+                                                        <input
+                                                            type="range" min="5" max="150" step="1"
+                                                            value={selectedElement.height || 20}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'height', parseInt(e.target.value))}
+                                                            className="w-full accent-blue-600 cursor-pointer"
+                                                        />
+                                                        <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.height || 20} мм</div>
+                                                    </div>
+                                                </>
+                                            ) : (selectedElement.type === 'text' || selectedElement.type === 'date_field') ? (
+                                                <>
+                                                    <div className="col-span-2">
+                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Текст надписи / Поля</label>
+                                                        <input
+                                                            type="text"
+                                                            value={selectedElement.text}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'text', e.target.value)}
+                                                            className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Размер шрифта</label>
+                                                        <input
+                                                            type="range" min="6" max="72" step="1"
+                                                            value={selectedElement.size || 12}
+                                                            onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseInt(e.target.value))}
+                                                            className="w-full accent-blue-600 cursor-pointer"
+                                                        />
+                                                        <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.size || 12} px</div>
+                                                    </div>
+                                                    {selectedElement.type === 'text' && (
+                                                        <div className="flex items-center space-x-2 justify-around border rounded bg-white py-1">
+                                                            <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedElement.bold || false}
+                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'bold', e.target.checked)}
+                                                                    className="rounded text-blue-600 w-4 h-4 cursor-pointer"
+                                                                />
+                                                                <span>Ж</span>
+                                                            </label>
+                                                            <label className="flex items-center space-x-1 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedElement.italic || false}
+                                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'italic', e.target.checked)}
+                                                                    className="rounded text-blue-600 w-4 h-4 cursor-pointer"
+                                                                />
+                                                                <span>К</span>
+                                                            </label>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (selectedElement.type === 'barcode' || selectedElement.type === 'qrcode') ? (
+                                                <div className="col-span-2">
+                                                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ширина элемента (мм)</label>
+                                                    <input
+                                                        type="range" min="10" max="150" step="1"
+                                                        value={selectedElement.width || (selectedElement.type === 'barcode' ? 45 : 22)}
+                                                        onChange={(e) => {
+                                                            updateElementAttribute(selectedElement.id, 'width', parseInt(e.target.value));
+                                                            if (selectedElement.type === 'qrcode') {
+                                                                updateElementAttribute(selectedElement.id, 'height', parseInt(e.target.value));
+                                                            }
+                                                        }}
+                                                        className="w-full accent-blue-600 cursor-pointer"
+                                                    />
+                                                    <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.width || (selectedElement.type === 'barcode' ? 45 : 22)} мм</div>
+                                                </div>
+                                            ) : (
+                                                <div className="col-span-2">
+                                                    <label className="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Размер шрифта содержимого</label>
+                                                    <input
+                                                        type="range" min="5" max="32" step="0.5"
+                                                        value={selectedElement.size || 6.2}
+                                                        onChange={(e) => updateElementAttribute(selectedElement.id, 'size', parseFloat(e.target.value))}
+                                                        className="w-full accent-blue-600 cursor-pointer"
+                                                    />
+                                                    <div className="text-right text-[10px] font-bold text-slate-600">{selectedElement.size || 6.2} px</div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex justify-between items-center pt-1 border-t border-blue-100">
+                                            <label className="flex items-center space-x-1.5 text-xs font-semibold text-blue-900 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedElement.visible !== false}
+                                                    onChange={(e) => updateElementAttribute(selectedElement.id, 'visible', e.target.checked)}
+                                                    className="rounded text-blue-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Показывать слой</span>
+                                            </label>
+
+                                            {!['header', 'title', 'subtitle', 'standard', 'stats', 'body', 'barcode', 'qrcode', 'warning', 'bottling_date', 'connection_date'].includes(selectedElement.id) && (
                                                 <button
-                                                    onClick={addCustomText}
-                                                    className="px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 rounded-lg text-xs font-bold flex items-center space-x-1 transition flex-1 justify-center"
+                                                    onClick={() => deleteCustomLayer(selectedElement.id)}
+                                                    className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-[10px] font-bold flex items-center space-x-1"
                                                 >
-                                                    <Icon name="plus" className="w-3.5 h-3.5" />
-                                                    <span>Добавить текст</span>
+                                                    <Icon name="trash" className="w-3.5 h-3.5" />
+                                                    <span>Удалить слой</span>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-4 border-b border-slate-100 bg-slate-50/50 text-center py-6 text-slate-400 text-xs font-medium">
+                                        <Icon name="cog" className="w-8 h-8 text-slate-300 mx-auto mb-2 animate-bounce" />
+                                        Выберите любой элемент на холсте для точной настройки размеров и шрифтов
+                                    </div>
+                                )}
+
+                                {/* Form settings inputs */}
+                                <div className="p-4 space-y-4 flex-1">
+
+                                    {/* Quick Adder Block */}
+                                    <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl p-3 space-y-3">
+                                        <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Добавить на холст</h4>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <label className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-bold cursor-pointer flex items-center justify-center space-x-1 transition shadow-sm" title="Загрузить логотип бренда или свой собственный знак соответствия">
+                                                <Icon name="image" className="w-3.5 h-3.5" />
+                                                <span>Свой логотип/знак</span>
+                                                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                                            </label>
+                                            <button
+                                                onClick={addCustomText}
+                                                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 rounded-lg text-xs font-bold flex items-center justify-center space-x-1 transition shadow-sm"
+                                            >
+                                                <Icon name="plus" className="w-3.5 h-3.5" />
+                                                <span>Свой текст</span>
+                                            </button>
+                                        </div>
+
+                                        {/* Standard compliance badges library */}
+                                        <div className="pt-2 border-t border-slate-200">
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase mb-1.5 tracking-wider">Значки соответствия (ГОСТ / СТБ)</div>
+                                            <div className="grid grid-cols-4 gap-1.5">
+                                                <button
+                                                    onClick={() => addStandardIcon('eac', 'Знак EAC')}
+                                                    className="p-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition shadow-sm"
+                                                    title="Добавить Евразийское Соответствие"
+                                                >
+                                                    EAC
+                                                </button>
+                                                <button
+                                                    onClick={() => addStandardIcon('food_grade', 'Знак Бокал-Вилка')}
+                                                    className="p-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition shadow-sm flex items-center justify-center"
+                                                    title="Добавить Пищевой Пластик (Бокал-Вилка)"
+                                                >
+                                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
+                                                        <path d="M12 14v6M8 20h8" />
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    onClick={() => addStandardIcon('pet01', 'Знак ПЭТ 01')}
+                                                    className="p-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition shadow-sm flex items-center justify-center space-x-0.5"
+                                                    title="Добавить Знак ПЭТ 01 (Рециркуляция)"
+                                                >
+                                                    <span>♻️</span>
+                                                    <span>PET1</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => addStandardIcon('organic', 'Знак Органик')}
+                                                    className="p-1 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition shadow-sm flex items-center justify-center space-x-0.5"
+                                                    title="Добавить Экологический Знак (Organic)"
+                                                >
+                                                    <span>🌱</span>
+                                                    <span>Eco</span>
                                                 </button>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Основная информация</h4>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Бренд (Шапка)</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.brandName}
-                                                        onChange={(e) => handleFieldChange('brandName', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Вид продукции</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.productType}
-                                                        onChange={(e) => handleFieldChange('productType', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
-                                            </div>
+                                    {/* Main Fields Inspector Cards */}
+                                    <div className="space-y-3">
+                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pb-1 border-b">Содержимое этикетки</h3>
 
+                                        <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Наименование/Подзаголовок</label>
-                                                <textarea
-                                                    rows="2"
-                                                    value={form.subtitle}
-                                                    onChange={(e) => handleFieldChange('subtitle', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2"
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Бренд (Шапка)</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.brandName}
+                                                    onChange={(e) => handleFieldChange('brandName', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
                                                 />
                                             </div>
-
-                                            <div className="grid grid-cols-3 gap-3">
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Объем</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.volume}
-                                                        onChange={(e) => handleFieldChange('volume', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Алкоголь</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.alcohol}
-                                                        onChange={(e) => handleFieldChange('alcohol', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Сахар</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.sugar}
-                                                        onChange={(e) => handleFieldChange('sugar', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Вид продукции</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.productType}
+                                                    onChange={(e) => handleFieldChange('productType', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
+                                                />
                                             </div>
+                                        </div>
 
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">ГОСТ / СТБ</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.standard}
-                                                        onChange={(e) => handleFieldChange('standard', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">ТИ / ТУ</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.tiNumber}
-                                                        onChange={(e) => handleFieldChange('tiNumber', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2"
-                                                    />
-                                                </div>
+                                        <div>
+                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Наименование/Подзаголовок</label>
+                                            <textarea
+                                                rows="2"
+                                                value={form.subtitle}
+                                                onChange={(e) => handleFieldChange('subtitle', e.target.value)}
+                                                className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold bg-white"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-1.5">
+                                            <div>
+                                                <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Объем</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.volume}
+                                                    onChange={(e) => handleFieldChange('volume', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-bold bg-white text-center"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Алкоголь</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.alcohol}
+                                                    onChange={(e) => handleFieldChange('alcohol', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-bold bg-white text-center"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Сахар</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.sugar}
+                                                    onChange={(e) => handleFieldChange('sugar', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1 font-bold bg-white text-center"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">ГОСТ / СТБ</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.standard}
+                                                    onChange={(e) => handleFieldChange('standard', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 bg-white"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">ТИ / ТУ</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.tiNumber}
+                                                    onChange={(e) => handleFieldChange('tiNumber', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 bg-white"
+                                                />
                                             </div>
                                         </div>
 
                                         <hr />
 
-                                        {/* Description parameters */}
-                                        <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Маркировочные данные</h4>
+                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pb-1 pt-1">Маркировочные данные</h3>
+                                        <div>
+                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Состав сырья</label>
+                                            <textarea
+                                                rows="2"
+                                                value={form.ingredients}
+                                                onChange={(e) => handleFieldChange('ingredients', e.target.value)}
+                                                className="w-full text-[10px] border border-slate-300 rounded p-1 font-narrow bg-white leading-tight"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Условия хранения</label>
+                                            <textarea
+                                                rows="2"
+                                                value={form.nutrition}
+                                                onChange={(e) => handleFieldChange('nutrition', e.target.value)}
+                                                className="w-full text-[10px] border border-slate-300 rounded p-1 font-narrow bg-white leading-tight"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Производитель / Изготовитель</label>
+                                            <textarea
+                                                rows="2"
+                                                value={form.storage}
+                                                onChange={(e) => handleFieldChange('storage', e.target.value)}
+                                                className="w-full text-[10px] border border-slate-300 rounded p-1 font-narrow bg-white leading-tight"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Состав</label>
-                                                <textarea
-                                                    rows="3"
-                                                    value={form.ingredients}
-                                                    onChange={(e) => handleFieldChange('ingredients', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 font-narrow"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Условия хранения</label>
-                                                <textarea
-                                                    rows="2"
-                                                    value={form.nutrition}
-                                                    onChange={(e) => handleFieldChange('nutrition', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 font-narrow"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Изготовитель / Производитель</label>
-                                                <textarea
-                                                    rows="2"
-                                                    value={form.storage}
-                                                    onChange={(e) => handleFieldChange('storage', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 font-narrow"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Срок годности</label>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Срок годности</label>
                                                 <input
                                                     type="text"
                                                     value={form.expiration}
                                                     onChange={(e) => handleFieldChange('expiration', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 font-bold"
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-bold bg-white"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Код штрихкода</label>
+                                                <input
+                                                    type="text"
+                                                    value={form.barcode}
+                                                    onChange={(e) => handleFieldChange('barcode', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-mono bg-white"
                                                 />
                                             </div>
                                         </div>
 
-                                        <hr />
-
-                                        {/* Codes, Warnings & Options */}
-                                        <div className="space-y-3">
-                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Коды, Предупреждения и Знаки</h4>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                <div className="col-span-2">
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Код (Штрихкод)</label>
-                                                    <input
-                                                        type="text"
-                                                        value={form.barcode}
-                                                        onChange={(e) => handleFieldChange('barcode', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 font-mono"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-1">Формат</label>
-                                                    <select
-                                                        value={form.barcodeFormat || 'EAN13'}
-                                                        onChange={(e) => handleFieldChange('barcodeFormat', e.target.value)}
-                                                        className="w-full text-xs border border-slate-300 rounded-lg p-2 font-semibold text-slate-700"
-                                                    >
-                                                        <option value="EAN13">EAN-13</option>
-                                                        <option value="EAN8">EAN-8</option>
-                                                        <option value="CODE128">Code-128</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
+                                        <div className="grid grid-cols-2 gap-2">
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">QR-код (Ссылка или данные)</label>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">QR-код данные</label>
                                                 <input
                                                     type="text"
                                                     value={form.qrCode}
                                                     onChange={(e) => handleFieldChange('qrCode', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 font-mono"
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-mono bg-white"
                                                 />
                                             </div>
-
                                             <div>
-                                                <label className="block text-xs font-semibold text-slate-600 mb-1">Предупреждающий баннер</label>
-                                                <input
-                                                    type="text"
-                                                    value={form.warningText}
-                                                    onChange={(e) => handleFieldChange('warningText', e.target.value)}
-                                                    className="w-full text-xs border border-slate-300 rounded-lg p-2 font-bold"
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <div className="flex justify-between text-xs font-semibold text-slate-600 mb-1">
-                                                    <span>Высота баннера предупреждения</span>
-                                                    <span className={`font-bold ${form.warningHeightPercent >= 10 ? 'text-emerald-600' : 'text-red-500'}`}>
-                                                        {form.warningHeightPercent}% (РБ: >= 10%)
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="range" min="6" max="25" step="1"
-                                                    value={form.warningHeightPercent}
-                                                    onChange={(e) => handleFieldChange('warningHeightPercent', parseInt(e.target.value, 10))}
-                                                    className="w-full accent-brand-500"
-                                                />
-                                            </div>
-
-                                            <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 grid grid-cols-3 gap-2">
-                                                <label className="flex items-center space-x-2 text-xs font-medium cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={form.eacActive}
-                                                        onChange={(e) => handleFieldChange('eacActive', e.target.checked)}
-                                                        className="rounded text-brand-600 w-4 h-4"
-                                                    />
-                                                    <span>Знак EAC</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2 text-xs font-medium cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={form.foodActive}
-                                                        onChange={(e) => handleFieldChange('foodActive', e.target.checked)}
-                                                        className="rounded text-brand-600 w-4 h-4"
-                                                    />
-                                                    <span>Бокал-Вилка</span>
-                                                </label>
-                                                <label className="flex items-center space-x-2 text-xs font-medium cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={form.petActive}
-                                                        onChange={(e) => handleFieldChange('petActive', e.target.checked)}
-                                                        className="rounded text-brand-600 w-4 h-4"
-                                                    />
-                                                    <span>ПЭТ 01</span>
-                                                </label>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Формат штрихкода</label>
+                                                <select
+                                                    value={form.barcodeFormat || 'EAN13'}
+                                                    onChange={(e) => handleFieldChange('barcodeFormat', e.target.value)}
+                                                    className="w-full text-xs border border-slate-300 rounded p-1.5 font-semibold text-slate-700 bg-white"
+                                                >
+                                                    <option value="EAN13">EAN-13</option>
+                                                    <option value="EAN8">EAN-8</option>
+                                                    <option value="CODE128">Code-128</option>
+                                                </select>
                                             </div>
                                         </div>
 
                                         <hr />
 
-                                        {/* Print Page Customization */}
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-center pb-1 border-b border-slate-200">
-                                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Макет Печати (А4)</h4>
-                                                <label className="flex items-center space-x-1.5 cursor-pointer select-none">
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase">Свой макет:</span>
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={customPrintConfig.active}
-                                                        onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, active: e.target.checked }))}
-                                                        className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500"
-                                                    />
-                                                </label>
+                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider pb-1">Баннер & Знаки (РБ)</h3>
+                                        <div>
+                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Текст предупреждения</label>
+                                            <input
+                                                type="text"
+                                                value={form.warningText}
+                                                onChange={(e) => handleFieldChange('warningText', e.target.value)}
+                                                className="w-full text-xs border border-slate-300 rounded p-1.5 font-bold bg-white"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <div className="flex justify-between text-[11px] font-semibold text-slate-600 mb-0.5">
+                                                <span>Высота баннера (мин. 10% высоты холста)</span>
+                                                <span className={`font-bold ${form.warningHeightPercent >= 10 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                                    {form.warningHeightPercent}%
+                                                </span>
                                             </div>
+                                            <input
+                                                type="range" min="6" max="25" step="1"
+                                                value={form.warningHeightPercent}
+                                                onChange={(e) => handleFieldChange('warningHeightPercent', parseInt(e.target.value, 10))}
+                                                className="w-full accent-brand-600 cursor-pointer"
+                                            />
+                                        </div>
 
-                                            {!customPrintConfig.active ? (
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-slate-600 mb-2">Формат раскладки на листе:</label>
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <button
-                                                            onClick={() => setPrintLayout('h1')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'h1' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>1 горизонтально</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">A5 Альбомная (Центр)</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('h2')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'h2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>2 горизонтально</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">А5 x 2 Портрет</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('v2')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'v2' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>2 вертикально</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">А5 х 2 Ландшафт</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('v3')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'v3' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>3 вертикально</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">А5 х 3 Ландшафт</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('grid4')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'grid4' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>4 на листе (2х2)</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">A6 x 4 Портрет</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('grid6')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'grid6' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>6 на листе (2х3)</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">Малый х 6 Портрет</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('grid8')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'grid8' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>8 на листе (2х4)</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">Малый х 8 Портрет</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setPrintLayout('grid12')}
-                                                            className={`p-2 rounded text-xs font-bold border transition text-left flex flex-col justify-between h-16 ${
-                                                                printLayout === 'grid12' ? 'bg-brand-600 text-white border-brand-600 shadow' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                                                            }`}
-                                                        >
-                                                            <span>12 на листе (3х4)</span>
-                                                            <span className="text-[10px] opacity-80 font-normal">Мини х 12 Портрет</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-3">
-                                                    <div className="text-xs font-bold text-slate-700 border-b pb-1 mb-2 uppercase tracking-wide flex justify-between items-center">
-                                                        <span>Конфигуратор размещения</span>
-                                                        <span className="text-[10px] text-brand-600">Активен</span>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <div>
-                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Колонки (1-5)</label>
-                                                            <input
-                                                                type="number" min="1" max="5"
-                                                                value={customPrintConfig.columns}
-                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, columns: Math.max(1, Math.min(5, parseInt(e.target.value) || 1)) }))}
-                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold text-center"
-                                                            />
-                                                        </div>
-                                                        <div>
-                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Строки (1-8)</label>
-                                                            <input
-                                                                type="number" min="1" max="8"
-                                                                value={customPrintConfig.rows}
-                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, rows: Math.max(1, Math.min(8, parseInt(e.target.value) || 1)) }))}
-                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold text-center"
-                                                            />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <div>
-                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Разрыв (мм)</label>
-                                                            <input
-                                                                type="range" min="0" max="15" step="0.5"
-                                                                value={customPrintConfig.gap}
-                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, gap: parseFloat(e.target.value) }))}
-                                                                className="w-full accent-brand-600"
-                                                            />
-                                                            <div className="text-right text-[10px] font-bold text-slate-500">{customPrintConfig.gap} мм</div>
-                                                        </div>
-                                                        <div>
-                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Масштаб этикетки</label>
-                                                            <input
-                                                                type="range" min="0.1" max="1.5" step="0.05"
-                                                                value={customPrintConfig.scale}
-                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, scale: parseFloat(e.target.value) }))}
-                                                                className="w-full accent-brand-600"
-                                                            />
-                                                            <div className="text-right text-[10px] font-bold text-slate-500">{Math.round(customPrintConfig.scale * 100)}%</div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <div>
-                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Ориентация А4</label>
-                                                            <select
-                                                                value={customPrintConfig.pageOrientation}
-                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, pageOrientation: e.target.value }))}
-                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold"
-                                                            >
-                                                                <option value="portrait">Портретная</option>
-                                                                <option value="landscape">Альбомная</option>
-                                                            </select>
-                                                        </div>
-                                                        <div>
-                                                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">Количество (шт)</label>
-                                                            <input
-                                                                type="number" min="1" max="40"
-                                                                value={customPrintConfig.labelCount}
-                                                                onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, labelCount: Math.max(1, Math.min(40, parseInt(e.target.value) || 1)) }))}
-                                                                className="w-full text-xs border border-slate-300 rounded p-1 font-bold text-center"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
+                                        <div className="bg-slate-50 p-2 border rounded-lg grid grid-cols-3 gap-1">
+                                            <label className="flex items-center space-x-1 text-[11px] font-medium cursor-pointer select-none justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={form.eacActive}
+                                                    onChange={(e) => handleFieldChange('eacActive', e.target.checked)}
+                                                    className="rounded text-brand-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>EAC</span>
+                                            </label>
+                                            <label className="flex items-center space-x-1 text-[11px] font-medium cursor-pointer select-none justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={form.foodActive}
+                                                    onChange={(e) => handleFieldChange('foodActive', e.target.checked)}
+                                                    className="rounded text-brand-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Бокал</span>
+                                            </label>
+                                            <label className="flex items-center space-x-1 text-[11px] font-medium cursor-pointer select-none justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={form.petActive}
+                                                    onChange={(e) => handleFieldChange('petActive', e.target.checked)}
+                                                    className="rounded text-brand-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>PET 01</span>
+                                            </label>
                                         </div>
                                     </div>
 
-                                    {/* Footer save/export items */}
-                                    <div className="p-4 border-t border-slate-200 bg-slate-50/70 rounded-b-xl flex flex-col space-y-3">
-                                        <div className="flex space-y-2 sm:space-y-0 sm:space-x-2 flex-col sm:flex-row">
+                                    {/* СТБ 1100-2016 Interactive Checklist */}
+                                    <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-3 space-y-1.5">
+                                        <h4 className="text-[11px] font-bold text-emerald-800 mb-1 flex items-center space-x-1">
+                                            <Icon name="checkCircle" className="w-4 h-4 text-emerald-600" />
+                                            <span>СТБ 1100-2016 Обязательный чек-лист</span>
+                                        </h4>
+                                        <div className="space-y-1 text-[11px] text-slate-700">
+                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checklist.manufacturer}
+                                                    onChange={(e) => setChecklist(prev => ({ ...prev, manufacturer: e.target.checked }))}
+                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Изготовитель / Адрес импортера</span>
+                                            </label>
+                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checklist.expiration}
+                                                    onChange={(e) => setChecklist(prev => ({ ...prev, expiration: e.target.checked }))}
+                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Срок годности / Температура хранения</span>
+                                            </label>
+                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checklist.ingredients}
+                                                    onChange={(e) => setChecklist(prev => ({ ...prev, ingredients: e.target.checked }))}
+                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Состав (Красители, аллергены)</span>
+                                            </label>
+                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checklist.legalWarning}
+                                                    onChange={(e) => setChecklist(prev => ({ ...prev, legalWarning: e.target.checked }))}
+                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Размер предупреждения мин. 10% высоты</span>
+                                            </label>
+                                            <label className="flex items-center space-x-2 cursor-pointer select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checklist.stbStandard}
+                                                    onChange={(e) => setChecklist(prev => ({ ...prev, stbStandard: e.target.checked }))}
+                                                    className="rounded text-emerald-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span>Номер государственного стандарта РБ</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Print Page Customization */}
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center pb-1 border-b">
+                                            <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Макет Печати А4</h4>
+                                            <label className="flex items-center space-x-1 cursor-pointer select-none">
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase">Свой макет:</span>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={customPrintConfig.active}
+                                                    onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, active: e.target.checked }))}
+                                                    className="w-4 h-4 text-brand-600 rounded cursor-pointer"
+                                                />
+                                            </label>
+                                        </div>
+
+                                        {!customPrintConfig.active ? (
+                                            <div>
+                                                <label className="block text-[11px] font-semibold text-slate-600 mb-2">Размещение этикеток:</label>
+                                                <div className="grid grid-cols-2 gap-1.5">
+                                                    {[
+                                                        { id: 'h1', name: '1 горизонтально', sub: 'A5 Альбомная' },
+                                                        { id: 'h2', name: '2 горизонтально', sub: 'A5 x 2 Портрет' },
+                                                        { id: 'v2', name: '2 вертикально', sub: 'A5 x 2 Ландшафт' },
+                                                        { id: 'v3', name: '3 вертикально', sub: 'A5 x 3 Ландшафт' },
+                                                        { id: 'grid4', name: '4 на листе (2х2)', sub: 'A6 x 4 Портрет' },
+                                                        { id: 'grid6', name: '6 на листе (2х3)', sub: 'Малый х 6 Портрет' },
+                                                        { id: 'grid8', name: '8 на листе (2х4)', sub: 'Малый х 8 Портрет' },
+                                                        { id: 'grid12', name: '12 на листе (3х4)', sub: 'Мини х 12 Портрет' }
+                                                    ].map(opt => (
+                                                        <button
+                                                            key={opt.id}
+                                                            onClick={() => setPrintLayout(opt.id)}
+                                                            className={`p-1.5 rounded border text-left transition ${
+                                                                printLayout === opt.id
+                                                                    ? 'bg-brand-600 text-white border-brand-600 shadow'
+                                                                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                                                            }`}
+                                                        >
+                                                            <div className="text-[10px] font-bold truncate">{opt.name}</div>
+                                                            <div className="text-[8px] opacity-80 truncate">{opt.sub}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-slate-50 border rounded-xl p-3 space-y-2">
+                                                <div className="text-[11px] font-bold text-slate-700 border-b pb-1 flex justify-between items-center uppercase">
+                                                    <span>Конфигуратор размещения</span>
+                                                    <span className="text-[9px] text-brand-600">Активен</span>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Колонки (1-5)</label>
+                                                        <input
+                                                            type="number" min="1" max="5"
+                                                            value={customPrintConfig.columns}
+                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, columns: Math.max(1, Math.min(5, parseInt(e.target.value) || 1)) }))}
+                                                            className="w-full text-xs border rounded p-1 font-bold text-center bg-white"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Строки (1-8)</label>
+                                                        <input
+                                                            type="number" min="1" max="8"
+                                                            value={customPrintConfig.rows}
+                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, rows: Math.max(1, Math.min(8, parseInt(e.target.value) || 1)) }))}
+                                                            className="w-full text-xs border rounded p-1 font-bold text-center bg-white"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Разрыв (мм)</label>
+                                                        <input
+                                                            type="range" min="0" max="15" step="0.5"
+                                                            value={customPrintConfig.gap}
+                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, gap: parseFloat(e.target.value) }))}
+                                                            className="w-full accent-brand-600 cursor-pointer"
+                                                        />
+                                                        <div className="text-right text-[9px] font-bold text-slate-500">{customPrintConfig.gap} мм</div>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Масштаб этикетки</label>
+                                                        <input
+                                                            type="range" min="0.1" max="1.5" step="0.05"
+                                                            value={customPrintConfig.scale}
+                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, scale: parseFloat(e.target.value) }))}
+                                                            className="w-full accent-brand-600 cursor-pointer"
+                                                        />
+                                                        <div className="text-right text-[9px] font-bold text-slate-500">{Math.round(customPrintConfig.scale * 100)}%</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Ориентация А4</label>
+                                                        <select
+                                                            value={customPrintConfig.pageOrientation}
+                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, pageOrientation: e.target.value }))}
+                                                            className="w-full text-xs border rounded p-1 bg-white font-bold"
+                                                        >
+                                                            <option value="portrait">Портретная</option>
+                                                            <option value="landscape">Альбомная</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-semibold text-slate-600 mb-0.5">Количество (шт)</label>
+                                                        <input
+                                                            type="number" min="1" max="40"
+                                                            value={customPrintConfig.labelCount}
+                                                            onChange={(e) => setCustomPrintConfig(prev => ({ ...prev, labelCount: Math.max(1, Math.min(40, parseInt(e.target.value) || 1)) }))}
+                                                            className="w-full text-xs border rounded p-1 font-bold text-center bg-white"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Global Export & Save Actions */}
+                                    <div className="pt-3 border-t border-slate-200 space-y-2 pb-6">
+                                        <div className="flex space-x-1">
                                             <input
                                                 type="text"
                                                 placeholder="Имя нового шаблона..."
                                                 value={customName}
                                                 onChange={(e) => setCustomName(e.target.value)}
-                                                className="flex-1 text-xs border border-slate-300 rounded-lg p-2"
+                                                className="flex-1 text-xs border rounded p-2 bg-white font-semibold"
                                             />
                                             <button
                                                 onClick={saveTemplate}
-                                                className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs flex items-center justify-center space-x-1.5 shadow"
+                                                className="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded text-xs flex items-center space-x-1 shadow-sm"
                                             >
-                                                <Icon name="save" className="w-4 h-4" />
+                                                <Icon name="save" className="w-3.5 h-3.5" />
                                                 <span>Сохранить в PHP</span>
                                             </button>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200/50">
+                                        <div className="grid grid-cols-2 gap-2">
                                             <button
                                                 onClick={exportAsImage}
-                                                className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-emerald-800 font-bold text-xs flex items-center justify-center space-x-1 transition"
+                                                className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-emerald-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-sm"
                                                 title="Скачать этикетку в виде качественного PNG изображения"
                                             >
                                                 <Icon name="image" className="w-3.5 h-3.5" />
@@ -2169,7 +2605,7 @@ if (isset($_GET['action'])) {
                                             </button>
                                             <button
                                                 onClick={exportAsWord}
-                                                className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-bold text-xs flex items-center justify-center space-x-1 transition"
+                                                className="px-3 py-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-blue-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition shadow-sm"
                                                 title="Экспортировать этикетку как встроенный рисунок в документ Microsoft Word"
                                             >
                                                 <Icon name="fileText" className="w-3.5 h-3.5" />
@@ -2177,75 +2613,24 @@ if (isset($_GET['action'])) {
                                             </button>
                                         </div>
 
-                                        <div className="flex justify-between items-center pt-2">
+                                        <div className="flex justify-between items-center pt-1">
                                             <button
                                                 onClick={exportTemplates}
-                                                className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs flex items-center space-x-1"
+                                                className="px-2.5 py-1.5 bg-slate-50 border rounded text-slate-700 font-bold text-[10px] flex items-center space-x-1 hover:bg-slate-100"
                                             >
-                                                <Icon name="download" className="w-3.5 h-3.5" />
+                                                <Icon name="download" className="w-3 h-3" />
                                                 <span>Экспорт шаблона</span>
                                             </button>
 
-                                            <label className="px-3 py-1.5 bg-slate-100 border rounded-lg text-slate-700 font-semibold text-xs flex items-center space-x-1 cursor-pointer">
-                                                <Icon name="upload" className="w-3.5 h-3.5" />
+                                            <label className="px-2.5 py-1.5 bg-slate-50 border rounded text-slate-700 font-bold text-[10px] flex items-center space-x-1 cursor-pointer hover:bg-slate-100">
+                                                <Icon name="upload" className="w-3 h-3" />
                                                 <span>Импорт шаблона</span>
                                                 <input type="file" accept=".json" onChange={handleImport} className="hidden" />
                                             </label>
                                         </div>
                                     </div>
                                 </div>
-                            </>
-                        )}
-
-                            {activeTab === 'templates' && (
-                                <div className="col-span-12 bg-white rounded-xl shadow-md p-6 border border-slate-200">
-                                    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center space-x-2">
-                                        <Icon name="fileText" className="w-5 h-5 text-brand-600" />
-                                        <span>Ваши сохраненные шаблоны (База JSON PHP)</span>
-                                    </h3>
-
-                                    {savedTemplates.length === 0 ? (
-                                        <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                                            <p className="text-slate-500 font-medium">У вас пока нет сохраненных шаблонов в templates.json.</p>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {savedTemplates.map((t) => (
-                                                <div key={t.id} className="p-4 border border-slate-200 rounded-xl hover:shadow-md transition bg-slate-50 flex flex-col justify-between">
-                                                    <div>
-                                                        <div className="flex justify-between items-start mb-2">
-                                                            <h4 className="font-bold text-slate-800 truncate pr-2">{t.name}</h4>
-                                                            <span className="text-[10px] bg-brand-100 text-brand-800 px-2 py-0.5 rounded-full font-bold">
-                                                                {t.productType}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-xs text-slate-500 mb-1 truncate">{t.subtitle}</p>
-                                                        <p className="text-xs text-slate-400">Спирт: {t.alcohol} | Сахар: {t.sugar}</p>
-                                                    </div>
-                                                    <div className="flex justify-end space-x-2 mt-4 pt-3 border-t border-slate-200/60">
-                                                        <button
-                                                            onClick={() => {
-                                                                setForm({ ...t });
-                                                                setActiveTab('editor');
-                                                            }}
-                                                            className="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white rounded text-xs font-bold flex items-center space-x-1"
-                                                        >
-                                                            <Icon name="cog" className="w-3.5 h-3.5" />
-                                                            <span>Открыть</span>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => deleteTemplate(t.id)}
-                                                            className="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-semibold"
-                                                        >
-                                                            <Icon name="trash" className="w-3.5 h-3.5" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            </div>
                         </main>
                     </div>
 
@@ -2400,17 +2785,18 @@ if (isset($_GET['action'])) {
             );
         }
 
-        // Complete Label layout renderer
+        // Complete Label layout renderer with dynamic layers & 8-point mouse resizing
         function LabelPreview({ data, selectedId, onSelectElement, onDragElement, showGrid = false }) {
             const barcodeRef = useRef(null);
             const qrcodeRef = useRef(null);
-            const dragInfo = useRef({ active: false, elementId: null, startX: 0, startY: 0 });
+            const dragInfo = useRef({ active: false, elementId: null, handleType: 'drag', startX: 0, startY: 0, startLayer: null });
 
             useEffect(() => {
-                if (barcodeRef.current && data.barcode && data.barcode.trim().length > 0) {
+                const barcodeLayer = (data.layers || []).find(l => l.type === 'barcode');
+                if (barcodeRef.current && barcodeLayer && barcodeLayer.text && barcodeLayer.text.trim().length > 0) {
                     try {
-                        const fmt = data.barcodeFormat || "EAN13";
-                        JsBarcode(barcodeRef.current, data.barcode, {
+                        const fmt = barcodeLayer.meta || "EAN13";
+                        JsBarcode(barcodeRef.current, barcodeLayer.text, {
                             format: fmt,
                             width: 1.1,
                             height: 30,
@@ -2423,14 +2809,15 @@ if (isset($_GET['action'])) {
                         console.error(e);
                     }
                 }
-            }, [data.barcode, data.barcodeFormat]);
+            }, [data.layers]);
 
             useEffect(() => {
-                if (qrcodeRef.current && data.qrCode) {
+                const qrcodeLayer = (data.layers || []).find(l => l.type === 'qrcode');
+                if (qrcodeRef.current && qrcodeLayer && qrcodeLayer.text) {
                     qrcodeRef.current.innerHTML = "";
                     try {
                         new QRCode(qrcodeRef.current, {
-                            text: data.qrCode,
+                            text: qrcodeLayer.text,
                             width: 38,
                             height: 38,
                             colorDark: "#000000",
@@ -2441,21 +2828,25 @@ if (isset($_GET['action'])) {
                         console.error(e);
                     }
                 }
-            }, [data.qrCode]);
+            }, [data.layers]);
 
-            const handleMouseDown = (e, elementId) => {
+            const handleMouseDown = (e, elementId, handleType = 'drag') => {
                 if (!onDragElement || !onSelectElement) return;
 
-                // Prevent trigger deselect click on parent container
                 e.stopPropagation();
                 e.preventDefault();
 
                 onSelectElement(elementId);
+                const currentLayer = (data.layers || []).find(l => l.id === elementId);
+                if (!currentLayer) return;
+
                 dragInfo.current = {
                     active: true,
                     elementId,
+                    handleType,
                     startX: e.clientX,
-                    startY: e.clientY
+                    startY: e.clientY,
+                    startLayer: { ...currentLayer }
                 };
                 document.addEventListener('mousemove', handleMouseMove);
                 document.addEventListener('mouseup', handleMouseUp);
@@ -2465,11 +2856,14 @@ if (isset($_GET['action'])) {
                 if (!dragInfo.current.active) return;
                 const dx = (e.clientX - dragInfo.current.startX) / 3.779;
                 const dy = (e.clientY - dragInfo.current.startY) / 3.779;
-                if (Math.abs(dx) >= 0.5 || Math.abs(dy) >= 0.5) {
-                    onDragElement(dragInfo.current.elementId, dx, dy);
-                    dragInfo.current.startX = e.clientX;
-                    dragInfo.current.startY = e.clientY;
-                }
+
+                onDragElement(
+                    dragInfo.current.elementId,
+                    dragInfo.current.handleType,
+                    dx,
+                    dy,
+                    dragInfo.current.startLayer
+                );
             };
 
             const handleMouseUp = (e) => {
@@ -2480,255 +2874,341 @@ if (isset($_GET['action'])) {
                 document.removeEventListener('mouseup', handleMouseUp);
             };
 
-            const el = {
-                header: { x: 105, y: 4, size: 10, visible: true, ...(data.elements?.header || {}) },
-                title: { x: 105, y: 12, size: 34, visible: true, ...(data.elements?.title || {}) },
-                subtitle: { x: 105, y: 26, size: 8, visible: true, ...(data.elements?.subtitle || {}) },
-                stats: { x: 4, y: 10, size: 12, visible: true, ...(data.elements?.stats || {}) },
-                icons: { x: 178, y: 5, size: 38, visible: true, ...(data.elements?.icons || {}) },
-                body: { x: 6, y: 52, size: 6.5, visible: true, ...(data.elements?.body || {}) },
-                barcode: { x: 140, y: 88, size: 40, visible: true, ...(data.elements?.barcode || {}) },
-                qrcode: { x: 182, y: 15, size: 22, visible: true, ...(data.elements?.qrcode || {}) }
-            };
-
             const isSel = (id) => selectedId === id;
+
+            // Bounding box for 8-point overlay
+            const selectedLayer = (data.layers || []).find(l => l.id === selectedId);
+            let overlayLeft = 0;
+            let overlayTop = 0;
+            let overlayWidth = 0;
+            let overlayHeight = 0;
+            let hasOverlay = false;
+
+            if (selectedLayer && selectedLayer.visible !== false) {
+                hasOverlay = true;
+                const isCentered = selectedLayer.id === 'header' || selectedLayer.id === 'title' || selectedLayer.id === 'subtitle' || selectedLayer.id === 'standard';
+                overlayWidth = selectedLayer.width || (selectedLayer.type === 'barcode' ? 45 : (selectedLayer.type === 'qrcode' ? 22 : 50));
+                overlayHeight = selectedLayer.height || (selectedLayer.type === 'barcode' ? 25 : (selectedLayer.type === 'qrcode' ? 22 : 12));
+                overlayLeft = isCentered ? (selectedLayer.x - overlayWidth / 2) : selectedLayer.x;
+                overlayTop = selectedLayer.y;
+            }
 
             return (
                 <div
                     className={`label-preview-container select-none text-black relative border border-slate-300 bg-white ${showGrid ? 'grid-background' : ''}`}
                     onMouseDown={() => onSelectElement && onSelectElement(null)}
                 >
-                    {/* Brand header */}
-                    {el.header.visible !== false && (
-                        <div
-                            style={{ left: `${el.header.x}mm`, top: `${el.header.y}mm`, fontSize: `${el.header.size}px` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'header')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute -translate-x-1/2 text-center flex items-center justify-center space-x-1.5 draggable-element ${isSel('header') ? 'draggable-selected' : ''}`}
-                        >
-                            <svg className="w-3.5 h-3.5 text-black shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 2v20M2 12h20M6 6l12 12M6 18L18 6" />
-                            </svg>
-                            <span className="font-bold tracking-[0.25em] font-narrow uppercase shrink-0 leading-none">{data.brandName || 'БРЕНД'}</span>
-                        </div>
-                    )}
+                    {(data.layers || []).map(layer => {
+                        if (layer.visible === false) return null;
 
-                    {/* Main Category */}
-                    {el.title.visible !== false && (
-                        <div
-                            style={{ left: `${el.title.x}mm`, top: `${el.title.y}mm` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'title')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute -translate-x-1/2 text-center draggable-element ${isSel('title') ? 'draggable-selected' : ''}`}
-                        >
-                            <h2 style={{ fontSize: `${el.title.size}px` }} className="font-black tracking-[0.1em] leading-none font-narrow m-0 py-0 uppercase">
-                                {data.productType || 'НАПИТОК'}
-                            </h2>
-                        </div>
-                    )}
+                        if (layer.type === 'text') {
+                            const isCentered = layer.id === 'header' || layer.id === 'title' || layer.id === 'subtitle' || layer.id === 'standard';
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: layer.width ? `${layer.width}mm` : 'auto',
+                                        height: layer.height ? `${layer.height}mm` : 'auto',
+                                        transform: isCentered ? 'translateX(-50%)' : 'none',
+                                        zIndex: selectedId === layer.id ? 45 : 10,
+                                        fontSize: `${layer.size || 12}px`,
+                                        fontWeight: layer.bold ? 'bold' : 'normal',
+                                        fontStyle: layer.italic ? 'italic' : 'normal',
+                                        textAlign: 'center',
+                                        whiteSpace: layer.width ? 'normal' : 'nowrap'
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    {layer.id === 'header' && (
+                                        <div className="flex items-center justify-center space-x-1.5 leading-none">
+                                            <svg className="w-3.5 h-3.5 text-black shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <path d="M12 2v20M2 12h20M6 6l12 12M6 18L18 6" />
+                                            </svg>
+                                            <span className="font-bold tracking-[0.25em] font-narrow uppercase shrink-0 leading-none">{layer.text || data.brandName}</span>
+                                        </div>
+                                    )}
+                                    {layer.id === 'title' && (
+                                        <h2 style={{ fontSize: `${layer.size || 34}px` }} className="font-black tracking-[0.1em] leading-none font-narrow m-0 py-0 uppercase">
+                                            {layer.text || data.productType}
+                                        </h2>
+                                    )}
+                                    {layer.id === 'subtitle' && (
+                                        <div className="w-full text-center">
+                                            <p style={{ fontSize: `${layer.size || 8}px` }} className="font-bold uppercase tracking-wide leading-tight text-center">
+                                                {layer.text || data.subtitle}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {layer.id === 'standard' && (
+                                        <p style={{ fontSize: `${layer.size || 7.2}px` }} className="font-bold text-center mt-0.5 font-narrow">
+                                            {layer.text || `${data.standard} ${data.tiNumber ? `| ${data.tiNumber}` : ''}`}
+                                        </p>
+                                    )}
+                                    {layer.id.startsWith('custom-txt-') && layer.text}
+                                </div>
+                            );
+                        }
 
-                    {/* Subtitle / Standards */}
-                    {el.subtitle.visible !== false && (
-                        <div
-                            style={{ left: `${el.subtitle.x}mm`, top: `${el.subtitle.y}mm` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'subtitle')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute -translate-x-1/2 w-[85%] text-center draggable-element ${isSel('subtitle') ? 'draggable-selected' : ''}`}
-                        >
-                            <p style={{ fontSize: `${el.subtitle.size}px` }} className="font-bold uppercase tracking-wide leading-tight text-center">
-                                {data.subtitle || 'Описание'}
-                            </p>
-                            <p style={{ fontSize: `${el.subtitle.size * 0.9}px` }} className="font-bold text-center mt-0.5 font-narrow">
-                                {data.standard} {data.tiNumber ? `| ${data.tiNumber}` : ''}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Left stats parameters */}
-                    {el.stats.visible !== false && (
-                        <div
-                            style={{ left: `${el.stats.x}mm`, top: `${el.stats.y}mm` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'stats')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute w-[34mm] flex flex-col font-narrow border-t border-black/30 pt-1 draggable-element ${isSel('stats') ? 'draggable-selected' : ''}`}
-                        >
-                            <div className="pb-1 border-b border-black/30">
-                                <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">СПИРТ</div>
-                                <div style={{ fontSize: `${el.stats.size}px` }} className="font-black leading-tight mt-0.5">{data.alcohol || '0'}</div>
-                            </div>
-                            <div className="py-1 border-b border-black/30">
-                                <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">ОБЪЕМ</div>
-                                <div style={{ fontSize: `${el.stats.size}px` }} className="font-black leading-tight mt-0.5">{data.volume || '0 л'}</div>
-                            </div>
-                            <div className="pt-1">
-                                <div className="text-[6.5px] font-bold uppercase tracking-wider text-slate-700 leading-none">САХАР</div>
-                                <div style={{ fontSize: `${el.stats.size}px` }} className="font-black leading-tight mt-0.5">{data.sugar || '0'}</div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Right regulatory icons */}
-                    {el.icons.visible !== false && (
-                        <div
-                            style={{ left: `${el.icons.x}mm`, top: `${el.icons.y}mm` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'icons')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute w-[26mm] flex flex-col items-center space-y-1.5 draggable-element ${isSel('icons') ? 'draggable-selected' : ''}`}
-                        >
-                            {data.eacActive && (
-                                <span className="font-bold text-[14px] tracking-tight border border-black/90 px-1 rounded font-mono leading-none">
-                                    EAC
-                                </span>
-                            )}
-
-                            <div className="flex items-center space-x-1.5">
-                                {data.foodActive && (
-                                    <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                        <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
-                                        <path d="M12 14v6M8 20h8" />
-                                    </svg>
-                                )}
-
-                                {data.petActive && (
-                                    <div className="flex flex-col items-center relative">
-                                        <svg className="w-4 h-4 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                            <path d="M12 2l8 14H4L12 2z" />
-                                        </svg>
-                                        <span className="text-[5.5px] font-black absolute top-1.5 font-mono">1</span>
-                                        <span className="text-[4.5px] font-bold tracking-tighter font-mono uppercase">PET</span>
+                        if (layer.type === 'stats') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 34}mm`,
+                                        height: `${layer.height || 38}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute flex flex-col font-narrow border-t border-black/30 pt-1 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    <div className="pb-1 border-b border-black/30">
+                                        <span className="text-[7px] uppercase tracking-wider block font-bold leading-tight">Объем / Volume</span>
+                                        <span className="text-[14px] font-black tracking-tight leading-none block">{layer.volume || data.volume}</span>
                                     </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Custom base64 uploaded images */}
-                    {data.customImages && data.customImages.map(img => (
-                        <img
-                            key={img.id}
-                            src={img.src}
-                            style={{
-                                left: `${img.x}mm`,
-                                top: `${img.y}mm`,
-                                width: `${img.width}mm`,
-                                height: `${img.height}mm`,
-                                opacity: img.opacity !== undefined ? img.opacity : 1,
-                                display: img.visible !== false ? 'block' : 'none'
-                            }}
-                            onMouseDown={(e) => handleMouseDown(e, img.id)}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute draggable-element ${isSel(img.id) ? 'draggable-selected' : ''}`}
-                            alt="Custom user element"
-                        />
-                    ))}
-
-                    {/* Custom added text blocks */}
-                    {data.customTexts && data.customTexts.map(txt => (
-                        <div
-                            key={txt.id}
-                            style={{
-                                left: `${txt.x}mm`,
-                                top: `${txt.y}mm`,
-                                fontSize: `${txt.size || 12}px`,
-                                fontWeight: txt.bold ? 'bold' : 'normal',
-                                fontStyle: txt.italic ? 'italic' : 'normal',
-                                display: txt.visible !== false ? 'block' : 'none',
-                                whiteSpace: 'nowrap'
-                            }}
-                            onMouseDown={(e) => handleMouseDown(e, txt.id)}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute draggable-element ${isSel(txt.id) ? 'draggable-selected' : ''} font-sans leading-none`}
-                        >
-                            {txt.text}
-                        </div>
-                    ))}
-
-                    {/* Standalone Barcode Element */}
-                    {el.barcode && el.barcode.visible !== false && data.barcode && (
-                        <div
-                            style={{
-                                left: `${el.barcode.x}mm`,
-                                top: `${el.barcode.y}mm`,
-                                width: `${el.barcode.size || 40}mm`
-                            }}
-                            onMouseDown={(e) => handleMouseDown(e, 'barcode')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute flex flex-col items-center justify-center draggable-element ${isSel('barcode') ? 'draggable-selected' : ''}`}
-                        >
-                            <svg ref={barcodeRef} style={{ width: '100%', height: 'auto' }}></svg>
-                        </div>
-                    )}
-
-                    {/* Standalone QR Code Element */}
-                    {el.qrcode && el.qrcode.visible !== false && data.qrCode && (
-                        <div
-                            style={{
-                                left: `${el.qrcode.x}mm`,
-                                top: `${el.qrcode.y}mm`,
-                                width: `${el.qrcode.size || 22}mm`,
-                                height: `${el.qrcode.size || 22}mm`
-                            }}
-                            onMouseDown={(e) => handleMouseDown(e, 'qrcode')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute flex flex-col items-center justify-center bg-white p-0.5 border border-black/30 rounded draggable-element ${isSel('qrcode') ? 'draggable-selected' : ''}`}
-                        >
-                            <span className="text-[4px] font-bold tracking-tighter uppercase mb-0.5 leading-none font-sans">BY BEER/WINE</span>
-                            <div ref={qrcodeRef} className="w-full h-full flex items-center justify-center overflow-hidden"></div>
-                        </div>
-                    )}
-
-                    {/* Body columns / Composition */}
-                    {el.body.visible !== false && (
-                        <div
-                            style={{ left: `${el.body.x}mm`, top: `${el.body.y}mm` }}
-                            onMouseDown={(e) => handleMouseDown(e, 'body')}
-                            onClick={(e) => e.stopPropagation()}
-                            className={`absolute w-[94%] grid grid-cols-12 gap-3 draggable-element ${isSel('body') ? 'draggable-selected' : ''}`}
-                        >
-                            <div className="col-span-8 flex flex-col space-y-0.5 font-narrow">
-                                <p style={{ fontSize: `${el.body.size}px` }} className="leading-[1.2] text-justify font-semibold">
-                                    {data.ingredients}
-                                </p>
-                                <p style={{ fontSize: `${el.body.size}px` }} className="leading-[1.2] text-justify font-semibold text-slate-800">
-                                    {data.nutrition}
-                                </p>
-                                <p style={{ fontSize: `${el.body.size}px` }} className="leading-[1.2] text-justify font-semibold text-slate-900">
-                                    {data.storage}
-                                </p>
-                                <p style={{ fontSize: `${el.body.size * 1.1}px` }} className="font-bold text-left tracking-wider pt-0.5 uppercase">
-                                    {data.expiration}
-                                </p>
-                            </div>
-
-                            {/* Dates columns */}
-                            <div className="col-span-4 flex flex-col items-end space-y-1 pr-1 justify-end">
-                                <div className="w-full pl-3 space-y-0.5 font-narrow">
-                                    <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
-                                        <span className="font-bold">Дата розлива</span>
-                                        <span className="w-14 border-b border-black h-1.5"></span>
+                                    <div className="py-1 border-b border-black/30">
+                                        <span className="text-[7px] uppercase tracking-wider block font-bold leading-tight">Спирт / Alcohol</span>
+                                        <span className="text-[14px] font-black tracking-tight leading-none block">{layer.alcohol || data.alcohol}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-[7px] border-b border-black/40 pb-px">
-                                        <span className="font-bold">Дата подключения</span>
-                                        <span className="w-14 border-b border-black h-1.5"></span>
+                                    <div className="pt-1">
+                                        <span className="text-[7px] uppercase tracking-wider block font-bold leading-tight">Сахар / Sugar</span>
+                                        <span className="text-[14px] font-black tracking-tight leading-none block">{layer.sugar || data.sugar}</span>
                                     </div>
                                 </div>
-                            </div>
+                            );
+                        }
+
+                        if (layer.type === 'icon') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 12}mm`,
+                                        height: `${layer.height || 12}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute flex items-center justify-center draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    {layer.icon === 'eac' && (
+                                        <div className="border border-black font-black font-mono leading-none flex items-center justify-center text-center select-none bg-white" style={{ width: '100%', height: '100%', fontSize: `${(layer.width || 12) * 0.3}mm` }}>
+                                            EAC
+                                        </div>
+                                    )}
+                                    {layer.icon === 'food_grade' && (
+                                        <svg className="text-black bg-white p-0.5 rounded border border-black/10 shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '100%', height: '100%' }}>
+                                            <path d="M7 3v7a4 4 0 0 0 8 0V3M11 3v7" />
+                                            <path d="M12 14v6M8 20h8" />
+                                        </svg>
+                                    )}
+                                    {layer.icon === 'pet01' && (
+                                        <div className="flex flex-col items-center justify-center relative select-none bg-white p-0.5 rounded border border-black/10 shadow-sm" style={{ width: '100%', height: '100%' }}>
+                                            <svg className="text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '100%', height: '100%' }}>
+                                                <path d="M12 2l8 14H4L12 2z" />
+                                            </svg>
+                                            <span className="font-mono font-black absolute text-black" style={{ fontSize: `${(layer.width || 12) * 0.28}mm`, top: '35%' }}>1</span>
+                                            <span className="font-mono font-bold absolute tracking-tighter uppercase text-black" style={{ fontSize: `${(layer.width || 12) * 0.22}mm`, bottom: '-15%' }}>PET</span>
+                                        </div>
+                                    )}
+                                    {layer.icon === 'organic' && (
+                                        <svg className="text-black bg-white p-0.5 rounded border border-black/10 shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '100%', height: '100%' }}>
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                                        </svg>
+                                    )}
+                                </div>
+                            );
+                        }
+
+                        if (layer.type === 'body') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 125}mm`,
+                                        height: `${layer.height || 40}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute flex flex-col space-y-0.5 font-narrow text-left draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    <p style={{ fontSize: `${layer.size || 6.2}px` }} className="leading-[1.2] text-justify font-semibold">
+                                        {layer.ingredients || data.ingredients}
+                                    </p>
+                                    <p style={{ fontSize: `${layer.size || 6.2}px` }} className="leading-[1.2] text-justify font-semibold text-slate-800">
+                                        {layer.nutrition || data.nutrition}
+                                    </p>
+                                    <p style={{ fontSize: `${layer.size || 6.2}px` }} className="leading-[1.2] text-justify font-semibold text-slate-900">
+                                        {layer.storage || data.storage}
+                                    </p>
+                                    <p style={{ fontSize: `${(layer.size || 6.2) * 1.1}px` }} className="font-bold text-left tracking-wider pt-0.5 uppercase">
+                                        {layer.expiration || data.expiration}
+                                    </p>
+                                </div>
+                            );
+                        }
+
+                        if (layer.type === 'date_field') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 70}mm`,
+                                        height: `${layer.height || 8}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute flex justify-between items-end border-b border-black/50 pb-0.5 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    <span style={{ fontSize: `${layer.size || 8}px` }} className="font-bold font-narrow leading-none">
+                                        {layer.text}
+                                    </span>
+                                    <span className="w-16 border-b border-black h-1 pb-1"></span>
+                                </div>
+                            );
+                        }
+
+                        if (layer.type === 'barcode') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 45}mm`,
+                                        height: `${layer.height || 25}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute flex flex-col items-center justify-center draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    <svg ref={barcodeRef} style={{ width: '100%', height: 'auto' }}></svg>
+                                </div>
+                            );
+                        }
+
+                        if (layer.type === 'qrcode') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 22}mm`,
+                                        height: `${layer.height || 22}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute flex flex-col items-center justify-center bg-white p-0.5 border border-black/30 rounded draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    <span className="text-[4px] font-bold tracking-tighter uppercase mb-0.5 leading-none font-sans">BY BEER/WINE</span>
+                                    <div ref={qrcodeRef} className="w-full h-full flex items-center justify-center overflow-hidden"></div>
+                                </div>
+                            );
+                        }
+
+                        if (layer.type === 'image') {
+                            return (
+                                <img
+                                    key={layer.id}
+                                    src={layer.src}
+                                    style={{
+                                        left: `${layer.x}mm`,
+                                        top: `${layer.y}mm`,
+                                        width: `${layer.width || 20}mm`,
+                                        height: `${layer.height || 20}mm`,
+                                        opacity: layer.opacity !== undefined ? layer.opacity : 1,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                    alt="Custom user logo"
+                                />
+                            );
+                        }
+
+                        if (layer.type === 'warning') {
+                            return (
+                                <div
+                                    key={layer.id}
+                                    style={{
+                                        left: '0mm',
+                                        top: `${148 - data.warningHeightPercent}mm`,
+                                        width: '210mm',
+                                        height: `${data.warningHeightPercent}mm`,
+                                        zIndex: selectedId === layer.id ? 45 : 10
+                                    }}
+                                    onMouseDown={(e) => handleMouseDown(e, layer.id, 'drag')}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className={`absolute border-t-2 border-black bg-white flex items-center justify-center px-4 draggable-element ${isSel(layer.id) ? 'draggable-selected' : ''}`}
+                                >
+                                    <h4 className="text-[9.5px] font-black tracking-wider leading-none text-center uppercase text-black font-narrow">
+                                        {layer.text || 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ'}
+                                    </h4>
+                                </div>
+                            );
+                        }
+
+                        return null;
+                    })}
+
+                    {/* Resizing handles overlay */}
+                    {hasOverlay && (
+                        <div
+                            data-html2canvas-ignore="true"
+                            className="absolute border-2 border-dashed border-blue-500 pointer-events-auto z-50"
+                            style={{
+                                left: `${overlayLeft}mm`,
+                                top: `${overlayTop}mm`,
+                                width: `${overlayWidth}mm`,
+                                height: `${overlayHeight}mm`
+                            }}
+                        >
+                            {[
+                                { type: 'tl', cursor: 'nwse-resize', style: { left: '-4px', top: '-4px' } },
+                                { type: 'tc', cursor: 'ns-resize', style: { left: 'calc(50% - 4px)', top: '-4px' } },
+                                { type: 'tr', cursor: 'nesw-resize', style: { right: '-4px', top: '-4px' } },
+                                { type: 'ml', cursor: 'ew-resize', style: { left: '-4px', top: 'calc(50% - 4px)' } },
+                                { type: 'mr', cursor: 'ew-resize', style: { right: '-4px', top: 'calc(50% - 4px)' } },
+                                { type: 'bl', cursor: 'nesw-resize', style: { left: '-4px', bottom: '-4px' } },
+                                { type: 'bc', cursor: 'ns-resize', style: { left: 'calc(50% - 4px)', bottom: '-4px' } },
+                                { type: 'br', cursor: 'nwse-resize', style: { right: '-4px', bottom: '-4px' } }
+                            ].map(h => (
+                                <div
+                                    key={h.type}
+                                    onMouseDown={(e) => handleMouseDown(e, selectedLayer.id, h.type)}
+                                    style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        backgroundColor: '#3b82f6',
+                                        border: '1px solid white',
+                                        position: 'absolute',
+                                        cursor: h.cursor,
+                                        ...h.style
+                                    }}
+                                    title={`Растянуть (${h.type.toUpperCase()})`}
+                                />
+                            ))}
                         </div>
                     )}
-
-                    {/* Legal health warning footer */}
-                    <div
-                        style={{
-                            height: `${data.warningHeightPercent}%`,
-                            top: `${100 - data.warningHeightPercent}%`
-                        }}
-                        className="absolute left-0 w-full bg-white border-t-2 border-black flex items-center justify-center px-4"
-                    >
-                        <h4 className="text-[9.5px] font-black tracking-wider leading-none text-center uppercase text-black font-narrow">
-                            {data.warningText || 'ЧРЕЗМЕРНОЕ УПОТРЕБЛЕНИЕ АЛКОГОЛЯ ВРЕДИТ ВАШЕМУ ЗДОРОВЬЮ'}
-                        </h4>
-                    </div>
                 </div>
             );
         }
