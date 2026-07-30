@@ -6,7 +6,8 @@
         "full_name": "Администратор",
         "role": "Administrator",
         "department": "IT",
-        "email": "admin@example.com"
+        "email": "admin@example.com",
+        "last_seen": 1785403700
     },
     {
         "username": "tech1",

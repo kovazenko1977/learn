@@ -1,8 +1,8 @@
-const CACHE_NAME = 'belhos-crm-v1';
+const CACHE_NAME = 'belhos-crm-v2';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/assets/js/app.js',
+  './',
+  'index.html',
+  'assets/js/app.js',
   'https://unpkg.com/vue@3/dist/vue.global.js',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js',
@@ -39,7 +39,9 @@ self.addEventListener('fetch', (e) => {
   }
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
-      return cachedResponse || fetch(e.request);
+      return cachedResponse || fetch(e.request).catch(() => {
+        // Fallback or ignore
+      });
     })
   );
 });

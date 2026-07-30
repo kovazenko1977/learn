@@ -1,0 +1,20 @@
+[
+    {
+        "sender_id": "admin-1",
+        "recipient_id": null,
+        "message": "Привет всем! Новая система BELHOS CRM запущена!",
+        "attachment_url": null,
+        "attachment_name": null,
+        "created_at": "2026-07-30 09:21:06",
+        "id": "fc047103f9bfe34ee952804474827853"
+    },
+    {
+        "sender_id": "admin-1",
+        "recipient_id": null,
+        "message": "Привет всем! Новая система BELHOS CRM запущена!",
+        "attachment_url": null,
+        "attachment_name": null,
+        "created_at": "2026-07-30 09:28:19",
+        "id": "2f0cb3f30df361adc3fc86d531ad3c98"
+    }
+]

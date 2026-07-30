@@ -49,6 +49,8 @@ class Storage {
                 department VARCHAR(50),
                 email VARCHAR(100),
                 telegram_id VARCHAR(50),
+                last_seen INT DEFAULT 0,
+                banned TINYINT DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )",
             "CREATE TABLE IF NOT EXISTS tasks (
@@ -79,6 +81,15 @@ class Storage {
                 id VARCHAR(36) PRIMARY KEY,
                 user_id VARCHAR(36),
                 expires DATETIME
+            )",
+            "CREATE TABLE IF NOT EXISTS chat (
+                id VARCHAR(36) PRIMARY KEY,
+                sender_id VARCHAR(36),
+                recipient_id VARCHAR(36) NULL,
+                message TEXT,
+                attachment_url VARCHAR(255) NULL,
+                attachment_name VARCHAR(255) NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )"
         ];
         foreach ($queries as $q) {

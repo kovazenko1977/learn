@@ -31,7 +31,7 @@ const translations = {
         help: "Справка и обучение",
         help_title: "Справка по системе BELHOS",
         training_title: "Обучение работе в программе",
-        tools: "Инструменты"
+        chat: "Чат"
     },
     en: {
         login: "Login",
@@ -64,7 +64,7 @@ const translations = {
         help: "Help & Training",
         help_title: "BELHOS System Help",
         training_title: "Interactive Software Training",
-        tools: "Logical Tools"
+        chat: "Chat"
     }
 };
 
@@ -142,12 +142,19 @@ const App = {
             view.value = 'login';
         };
 
+        const sendPing = async () => {
+            if (!user.value) return;
+            try {
+                await api('users.php?ping=1', 'POST');
+            } catch (e) {}
+        };
+
         const initData = async () => {
             if (!user.value) return;
             const [s, t, u, st] = await Promise.all([
                 api('settings.php'),
                 api('tasks.php'),
-                user.value.role === 'Administrator' ? api('users.php') : Promise.resolve([]),
+                api('users.php'),
                 (user.value.role === 'Administrator' || user.value.role === 'Department Head') ? api('analytics.php') : Promise.resolve(null)
             ]);
             settings.value = s || {};
@@ -158,7 +165,16 @@ const App = {
 
         onMounted(() => {
             if (darkMode.value) document.documentElement.classList.add('dark');
-            if (user.value) initData();
+            if (user.value) {
+                initData();
+                sendPing();
+            }
+            setInterval(() => {
+                if (user.value) {
+                    sendPing();
+                    initData();
+                }
+            }, 10000);
         });
 
         return {
@@ -182,10 +198,10 @@ const App = {
                         <div class="hidden md:flex space-x-1">
                             <nav-link :active="view === 'dashboard'" @click="view = 'dashboard'">{{ t('dashboard') }}</nav-link>
                             <nav-link :active="view === 'tasks'" @click="view = 'tasks'">{{ t('tasks') }}</nav-link>
-                            <nav-link v-if="user.role === 'Administrator'" :active="view === 'users'" @click="view = 'users'">{{ t('users') }}</nav-link>
+                            <nav-link :active="view === 'users'" @click="view = 'users'">{{ t('users') }}</nav-link>
+                            <nav-link :active="view === 'chat'" @click="view = 'chat'">{{ t('chat') }}</nav-link>
                             <nav-link v-if="user.role === 'Administrator'" :active="view === 'settings'" @click="view = 'settings'">{{ t('settings') }}</nav-link>
                             <nav-link :active="view === 'help'" @click="view = 'help'">{{ t('help') }}</nav-link>
-                            <nav-link :active="view === 'tools'" @click="view = 'tools'">{{ t('tools') }}</nav-link>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -207,12 +223,12 @@ const App = {
                 <!-- Content -->
                 <main class="flex-1 overflow-auto p-6">
                     <dashboard-view v-if="view === 'dashboard'" :stats="stats" :t="t" :format-duration="formatDuration"></dashboard-view>
-                    <tasks-view v-if="view === 'tasks'" :tasks="tasks" :users="users" :settings="settings" :user="user" :t="t" @refresh="initData" :api="api"></tasks-view>
-                    <users-view v-if="view === 'users'" :users="users" :t="t" @refresh="initData" :api="api"></users-view>
+                    <tasks-view v-if="view === 'tasks'" :tasks="tasks" :users="users" :settings="settings" :user="user" :t="t" @refresh="initData" :api="api" @start-chat="view = 'chat'"></tasks-view>
+                    <users-view v-if="view === 'users'" :users="users" :t="t" @refresh="initData" :api="api" :user="user" @start-chat="view = 'chat'"></users-view>
+                    <chat-view v-if="view === 'chat'" :user="user" :users="users" :t="t" :api="api"></chat-view>
                     <settings-view v-if="view === 'settings'" :settings="settings" :t="t" @refresh="initData" :api="api"></settings-view>
                     <profile-view v-if="view === 'profile'" :user="user" :t="t" @refresh="initData" :api="api"></profile-view>
                     <help-view v-if="view === 'help'" :t="t"></help-view>
-                    <tools-view v-if="view === 'tools'" :t="t"></tools-view>
                 </main>
             </div>
         </div>
@@ -625,7 +641,17 @@ app.component('task-modal', {
             emit('refresh');
         };
 
-        return { comment, saveComment, changeStatus, assign, isAdminOrHead };
+        const isImage = (url) => {
+            if (!url) return false;
+            const ext = url.split('.').pop().toLowerCase();
+            return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+        };
+
+        const openAttachment = (url) => {
+            window.open(url, '_blank');
+        };
+
+        return { comment, saveComment, changeStatus, assign, isAdminOrHead, isImage, openAttachment };
     },
     template: `
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -645,11 +671,19 @@ app.component('task-modal', {
                             <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ task.description }}</p>
                         </div>
                         <div v-if="task.attachments && task.attachments.length" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-                             <h4 class="font-bold mb-2 dark:text-gray-200">Вложения</h4>
-                             <div class="flex flex-wrap gap-2">
-                                <a v-for="a in task.attachments" :key="a.url" :href="a.url" target="_blank" class="text-sm text-primary hover:underline bg-white dark:bg-gray-800 px-3 py-1 rounded shadow-sm">
-                                    <i class="fas fa-file-download mr-1"></i>{{ a.name }}
-                                </a>
+                             <h4 class="font-bold mb-2 dark:text-gray-200">Вложения и Фото</h4>
+                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <div v-for="a in task.attachments" :key="a.url" class="border border-gray-200 dark:border-gray-700 rounded-md p-1 bg-white dark:bg-gray-800 flex flex-col justify-between shadow-sm">
+                                    <div class="flex items-center justify-center p-1 bg-gray-50 dark:bg-gray-950 rounded mb-1 h-20 overflow-hidden" v-if="isImage(a.url)">
+                                        <img :src="a.url" class="max-h-full max-w-full rounded object-contain cursor-pointer hover:scale-105 transition-all" @click="openAttachment(a.url)">
+                                    </div>
+                                    <div class="flex items-center justify-center p-1 bg-gray-50 dark:bg-gray-950 rounded mb-1 h-20" v-else>
+                                        <i class="fas fa-file-alt text-2xl text-gray-400"></i>
+                                    </div>
+                                    <a :href="a.url" target="_blank" class="text-[11px] text-primary hover:underline text-center truncate block font-medium mt-1">
+                                        <i class="fas fa-file-download mr-1"></i>{{ a.name }}
+                                    </a>
+                                </div>
                              </div>
                         </div>
                         <div v-if="task.custom_fields && Object.keys(task.custom_fields).length" class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
@@ -707,7 +741,7 @@ app.component('task-modal', {
 });
 
 app.component('users-view', {
-    props: ['users', 't', 'api'],
+    props: ['users', 't', 'api', 'user'],
     setup(props, { emit }) {
         const showForm = ref(false);
         const editingUser = ref(null);
@@ -719,18 +753,35 @@ app.component('users-view', {
             full_name: '',
             role: 'Executor',
             department: '',
-            email: ''
+            email: '',
+            banned: 0
         });
+
+        const isOnline = (lastSeen) => {
+            if (!lastSeen) return false;
+            const now = Math.floor(Date.now() / 1000);
+            return (now - parseInt(lastSeen)) < 30; // Active in last 30 seconds
+        };
+
+        const formatLastSeen = (u) => {
+            if (u.banned == 1) return 'Заблокирован';
+            if (isOnline(u.last_seen)) return 'В сети';
+            if (!u.last_seen || u.last_seen == 0) return 'Не в сети';
+            const date = new Date(u.last_seen * 1000);
+            return 'Был в сети: ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + date.toLocaleDateString();
+        };
 
         const edit = (u) => {
             editingUser.value = u;
             Object.assign(form, u);
             form.password = '';
+            form.banned = u.banned ? 1 : 0;
             showForm.value = true;
         };
 
         const save = async () => {
             const url = editingUser.value ? `users.php?id=${editingUser.value.id}` : 'users.php';
+            form.banned = form.banned ? 1 : 0;
             await props.api(url, 'POST', form);
             showForm.value = false;
             editingUser.value = null;
@@ -738,60 +789,142 @@ app.component('users-view', {
         };
 
         const remove = async (id) => {
-            if (confirm('Delete user?')) {
+            if (confirm('Удалить пользователя?')) {
                 await props.api(`users.php?id=${id}`, 'DELETE');
                 emit('refresh');
             }
         };
 
-        return { showForm, editingUser, roles, form, edit, save, remove };
+        const toggleBan = async (u) => {
+            const updated = { ...u, banned: u.banned == 1 ? 0 : 1 };
+            await props.api(`users.php?id=${u.id}`, 'POST', updated);
+            emit('refresh');
+        };
+
+        const startPrivateChat = (u) => {
+            localStorage.setItem('chat_target_user_id', u.id);
+            emit('start-chat');
+        };
+
+        return { showForm, editingUser, roles, form, edit, save, remove, isOnline, formatLastSeen, toggleBan, startPrivateChat };
     },
     template: `
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
             <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-                <h2 class="text-xl font-bold dark:text-white">{{ t('users') }}</h2>
-                <button @click="editingUser = null; showForm = true" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600">Добавить</button>
+                <div>
+                    <h2 class="text-xl font-bold dark:text-white">Справочник пользователей и статусы</h2>
+                    <p class="text-xs text-gray-500 mt-1">Всего зарегистрировано: {{ users.length }} сотрудников</p>
+                </div>
+                <button v-if="user.role === 'Administrator'" @click="editingUser = null; Object.assign(form, { username: '', password: '', full_name: '', role: 'Executor', department: '', email: '', banned: 0 }); showForm = true" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600">Добавить</button>
             </div>
-            <table class="w-full text-left">
-                <thead class="bg-gray-50 dark:bg-gray-900 text-gray-500 uppercase text-xs">
-                    <tr>
-                        <th class="px-6 py-3">User</th>
-                        <th class="px-6 py-3">Role</th>
-                        <th class="px-6 py-3">Department</th>
-                        <th class="px-6 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                    <tr v-for="u in users" :key="u.id" class="hover:bg-gray-50 dark:hover:bg-gray-900 dark:text-gray-200">
-                        <td class="px-6 py-4">
-                            <div class="font-bold">{{ u.full_name }}</div>
-                            <div class="text-xs text-gray-400">@{{ u.username }}</div>
-                        </td>
-                        <td class="px-6 py-4 text-sm">{{ u.role }}</td>
-                        <td class="px-6 py-4 text-sm">{{ u.department }}</td>
-                        <td class="px-6 py-4">
-                            <button @click="edit(u)" class="text-blue-500 mr-3"><i class="fas fa-edit"></i></button>
-                            <button @click="remove(u.id)" class="text-red-500"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 dark:bg-gray-900 text-gray-500 uppercase text-[11px] font-bold">
+                        <tr>
+                            <th class="px-6 py-3">Пользователь</th>
+                            <th class="px-6 py-3">Роль / Отдел</th>
+                            <th class="px-6 py-3">Статус в сети</th>
+                            <th class="px-6 py-3">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        <tr v-for="u in users" :key="u.id" class="hover:bg-gray-50 dark:hover:bg-gray-900 dark:text-gray-200">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900 text-primary dark:text-blue-300 flex items-center justify-center font-bold text-sm">
+                                        {{ u.full_name ? u.full_name[0].toUpperCase() : u.username[0].toUpperCase() }}
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-gray-800 dark:text-gray-100">{{ u.full_name || u.username }}</div>
+                                        <div class="text-xs text-gray-400">@{{ u.username }} | {{ u.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                                      :class="{
+                                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': u.role === 'Administrator',
+                                          'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': u.role === 'Department Head',
+                                          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': u.role === 'Executor',
+                                          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200': u.role === 'Responsible Employee'
+                                      }">
+                                    {{ u.role }}
+                                </span>
+                                <div class="text-xs text-gray-500 mt-1">{{ u.department || 'Без отдела' }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-2.5 h-2.5 rounded-full"
+                                          :class="{
+                                              'bg-green-500 animate-pulse': u.banned != 1 && isOnline(u.last_seen),
+                                              'bg-gray-400': u.banned != 1 && !isOnline(u.last_seen),
+                                              'bg-red-500': u.banned == 1
+                                          }"></span>
+                                    <span class="text-xs" :class="u.banned == 1 ? 'text-red-500 font-bold' : 'text-gray-600 dark:text-gray-300'">
+                                        {{ formatLastSeen(u) }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-2">
+                                    <button v-if="u.id !== user.id" @click="startPrivateChat(u)" class="bg-blue-50 hover:bg-blue-100 dark:bg-gray-700 dark:hover:bg-gray-600 text-primary dark:text-blue-300 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 transition-all">
+                                        <i class="fab fa-viber text-purple-500"></i>
+                                        <span>Чат</span>
+                                    </button>
+                                    <template v-if="user.role === 'Administrator'">
+                                        <button @click="edit(u)" class="text-blue-500 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" title="Редактировать"><i class="fas fa-edit"></i></button>
+                                        <button @click="toggleBan(u)" :class="u.banned == 1 ? 'text-green-500' : 'text-orange-500'" class="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" :title="u.banned == 1 ? 'Разблокировать' : 'Заблокировать'">
+                                            <i class="fas" :class="u.banned == 1 ? 'fa-user-check' : 'fa-user-slash'"></i>
+                                        </button>
+                                        <button v-if="u.id !== user.id" @click="remove(u.id)" class="text-red-500 p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" title="Удалить"><i class="fas fa-trash"></i></button>
+                                    </template>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-            <div v-if="showForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <!-- Add/Edit form Modal -->
+            <div v-if="showForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-md">
-                    <h3 class="text-xl font-bold mb-4 dark:text-white">{{ editingUser ? 'Edit' : 'Add' }} User</h3>
+                    <h3 class="text-xl font-bold mb-4 dark:text-white">{{ editingUser ? 'Редактировать сотрудника' : 'Добавить сотрудника' }}</h3>
                     <form @submit.prevent="save" class="space-y-4">
-                        <input v-model="form.username" placeholder="Username" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required>
-                        <input v-model="form.password" type="password" placeholder="Password" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" :required="!editingUser">
-                        <input v-model="form.full_name" placeholder="Full Name" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required>
-                        <select v-model="form.role" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
-                            <option v-for="r in roles" :value="r">{{ r }}</option>
-                        </select>
-                        <input v-model="form.department" placeholder="Department" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <input v-model="form.email" type="email" placeholder="Email" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="flex justify-end space-x-2">
-                            <button type="button" @click="showForm = false" class="text-gray-500">Cancel</button>
-                            <button type="submit" class="bg-primary text-white px-4 py-2 rounded">Save</button>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Имя пользователя (Логин)</label>
+                            <input v-model="form.username" placeholder="Логин для входа" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Пароль</label>
+                            <input v-model="form.password" type="password" placeholder="Оставьте пустым, чтобы не менять" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" :required="!editingUser">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">ФИО сотрудника</label>
+                            <input v-model="form.full_name" placeholder="ФИО" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Роль в системе</label>
+                            <select v-model="form.role" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                                <option v-for="r in roles" :value="r">{{ r }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Отдел / Сектор</label>
+                            <input v-model="form.department" placeholder="Например: IT, Бухгалтерия, Снабжение" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Электронная почта</label>
+                            <input v-model="form.email" type="email" placeholder="email@example.com" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        </div>
+                        <div v-if="editingUser">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" v-model="form.banned" :true-value="1" :false-value="0">
+                                <span class="text-sm dark:text-white font-bold text-red-500 font-bold">Заблокировать доступ</span>
+                            </label>
+                        </div>
+                        <div class="flex justify-end space-x-2 pt-2">
+                            <button type="button" @click="showForm = false" class="px-4 py-2 text-gray-500">Отмена</button>
+                            <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg">Сохранить</button>
                         </div>
                     </form>
                 </div>
@@ -965,700 +1098,262 @@ app.component('profile-view', {
     `
 });
 
-app.component('tools-view', {
-    props: ['t'],
-    setup() {
-        const search = ref('');
-        const activeTool = ref(1);
+app.component('chat-view', {
+    props: ['user', 'users', 't', 'api'],
+    setup(props) {
+        const activeTarget = ref('general'); // 'general' or user_id
+        const messages = ref([]);
+        const messageText = ref('');
+        const searchQuery = ref('');
+        const chatContainer = ref(null);
+        const isUploading = ref(false);
+        const attachedPhoto = ref(null);
 
-        // Interactive States for 30 Helper Tools
-        // 1. SLA Calc
-        const slaHours = ref(24);
-        const slaResult = computed(() => {
-            const days = (slaHours.value / 24).toFixed(1);
-            return `${days} дн.`;
+        const filteredUsers = computed(() => {
+            return props.users.filter(u => {
+                if (u.id === props.user.id) return false;
+                const search = searchQuery.value.toLowerCase();
+                return (u.full_name || '').toLowerCase().includes(search) ||
+                       (u.username || '').toLowerCase().includes(search);
+            });
         });
-        // 2. Temp Convert
-        const tempC = ref(25);
-        const tempF = computed(() => (tempC.value * 9/5 + 32).toFixed(1));
-        const tempK = computed(() => (parseFloat(tempC.value) + 273.15).toFixed(1));
-        // 3. BMI Calc
-        const weight = ref(70);
-        const height = ref(175);
-        const bmi = computed(() => {
-            const hM = height.value / 100;
-            return (weight.value / (hM * hM)).toFixed(1);
+
+        const activeTargetUser = computed(() => {
+            if (activeTarget.value === 'general') return null;
+            return props.users.find(u => u.id === activeTarget.value);
         });
-        // 4. Currency Convert
-        const byn = ref(10);
-        const usdRate = 3.25;
-        const rubRate = 0.035;
-        const usdVal = computed(() => (byn.value / usdRate).toFixed(2));
-        const rubVal = computed(() => (byn.value / rubRate).toFixed(2));
-        // 5. Password Generator
-        const passLen = ref(12);
-        const generatedPass = ref('');
-        const genPass = () => {
-            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
-            let res = '';
-            for (let i = 0; i < passLen.value; i++) {
-                res += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            generatedPass.value = res;
+
+        const isOnline = (lastSeen) => {
+            if (!lastSeen) return false;
+            const now = Math.floor(Date.now() / 1000);
+            return (now - parseInt(lastSeen)) < 30;
         };
-        // 6. Pomodoro Timer
-        const pomoTime = ref(1500); // 25 mins
-        const pomoInterval = ref(null);
-        const startPomo = () => {
-            if (pomoInterval.value) return;
-            pomoInterval.value = setInterval(() => {
-                if (pomoTime.value > 0) pomoTime.value--;
-                else stopPomo();
-            }, 1000);
+
+        const loadMessages = async () => {
+            const res = await props.api(`chat.php?recipient_id=${activeTarget.value}`);
+            messages.value = res || [];
+            scrollToBottom();
         };
-        const stopPomo = () => {
-            clearInterval(pomoInterval.value);
-            pomoInterval.value = null;
+
+        const selectTarget = (targetId) => {
+            activeTarget.value = targetId;
+            attachedPhoto.value = null;
+            loadMessages();
         };
-        const resetPomo = () => {
-            stopPomo();
-            pomoTime.value = 1500;
+
+        const scrollToBottom = () => {
+            nextTick(() => {
+                if (chatContainer.value) {
+                    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+                }
+            });
         };
-        // 7. Stopwatch
-        const swTime = ref(0);
-        const swInterval = ref(null);
-        const startSw = () => {
-            if (swInterval.value) return;
-            swInterval.value = setInterval(() => { swTime.value += 10; }, 10);
-        };
-        const stopSw = () => {
-            clearInterval(swInterval.value);
-            swInterval.value = null;
-        };
-        const resetSw = () => {
-            stopSw();
-            swTime.value = 0;
-        };
-        // 8. Water Tracker
-        const waterLogged = ref(parseInt(localStorage.getItem('water_logged') || '0'));
-        const addWater = () => {
-            waterLogged.value += 250;
-            localStorage.setItem('water_logged', waterLogged.value);
-        };
-        const resetWater = () => {
-            waterLogged.value = 0;
-            localStorage.setItem('water_logged', '0');
-        };
-        // 9. Text Analyzer
-        const textToAnalyze = ref('');
-        const textStats = computed(() => {
-            const charCount = textToAnalyze.value.length;
-            const wordCount = textToAnalyze.value.trim() ? textToAnalyze.value.trim().split(/\s+/).length : 0;
-            return { charCount, wordCount };
-        });
-        // 10. Habit list
-        const habits = ref(JSON.parse(localStorage.getItem('habits') || '[]'));
-        const newHabit = ref('');
-        const addHabit = () => {
-            if (!newHabit.value.trim()) return;
-            habits.value.push({ text: newHabit.value, done: false });
-            newHabit.value = '';
-            localStorage.setItem('habits', JSON.stringify(habits.value));
-        };
-        const toggleHabit = (idx) => {
-            habits.value[idx].done = !habits.value[idx].done;
-            localStorage.setItem('habits', JSON.stringify(habits.value));
-        };
-        const removeHabit = (idx) => {
-            habits.value.splice(idx, 1);
-            localStorage.setItem('habits', JSON.stringify(habits.value));
-        };
-        // 11. Expense Tracker
-        const expenses = ref(JSON.parse(localStorage.getItem('expenses') || '[]'));
-        const expenseName = ref('');
-        const expenseAmount = ref(0);
-        const addExpense = () => {
-            if (!expenseName.value || expenseAmount.value <= 0) return;
-            expenses.value.push({ name: expenseName.value, amount: expenseAmount.value });
-            expenseName.value = '';
-            expenseAmount.value = 0;
-            localStorage.setItem('expenses', JSON.stringify(expenses.value));
-        };
-        const totalExpenses = computed(() => expenses.value.reduce((sum, e) => sum + parseFloat(e.amount), 0));
-        // 12. Debts Tracker
-        const debts = ref(JSON.parse(localStorage.getItem('debts') || '[]'));
-        const debtName = ref('');
-        const debtAmount = ref(0);
-        const debtType = ref('взял'); // 'дал' or 'взял'
-        const addDebt = () => {
-            if (!debtName.value || debtAmount.value <= 0) return;
-            debts.value.push({ name: debtName.value, amount: debtAmount.value, type: debtType.value });
-            debtName.value = '';
-            debtAmount.value = 0;
-            localStorage.setItem('debts', JSON.stringify(debts.value));
-        };
-        const clearDebts = () => {
-            debts.value = [];
-            localStorage.setItem('debts', '[]');
-        };
-        // 13. Random Number
-        const randMin = ref(1);
-        const randMax = ref(100);
-        const randRes = ref(null);
-        const genRand = () => {
-            randRes.value = Math.floor(Math.random() * (randMax.value - randMin.value + 1)) + parseInt(randMin.value);
-        };
-        // 14. Math Trainer
-        const mathQ = ref('5 + 3');
-        const mathAns = ref(8);
-        const mathUserAns = ref('');
-        const mathScore = ref(0);
-        const checkMath = () => {
-            if (parseInt(mathUserAns.value) === mathAns.value) {
-                mathScore.value++;
-                const a = Math.floor(Math.random() * 10) + 1;
-                const b = Math.floor(Math.random() * 10) + 1;
-                mathQ.value = `${a} * ${b}`;
-                mathAns.value = a * b;
-            } else {
-                alert('Неверно! Попробуйте еще раз.');
-            }
-            mathUserAns.value = '';
-        };
-        // 15. Breathing Guide
-        const breatheState = ref('Вдох'); // 'Вдох', 'Задержка', 'Выдох'
-        const startBreathe = () => {
-            let cycle = 0;
-            setInterval(() => {
-                cycle = (cycle + 1) % 3;
-                breatheState.value = cycle === 0 ? 'Вдох' : (cycle === 1 ? 'Задержка' : 'Выдох');
-            }, 4000);
-        };
-        // 16. Length Converter
-        const lenMeters = ref(1);
-        const lenKm = computed(() => (lenMeters.value / 1000).toFixed(4));
-        const lenMiles = computed(() => (lenMeters.value * 0.000621371).toFixed(4));
-        // 17. Weight Converter
-        const weightKg = ref(1);
-        const weightLbs = computed(() => (weightKg.value * 2.20462).toFixed(2));
-        const weightOz = computed(() => (weightKg.value * 35.274).toFixed(2));
-        // 18. Simulated QR Code
-        const qrInput = ref('http://wes.by');
-        const qrSim = computed(() => `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrInput.value)}`);
-        // 19. Reaction Tester
-        const reactColor = ref('bg-red-500');
-        const reactText = ref('Ждите зеленого...');
-        const reactTimer = ref(null);
-        const reactStart = ref(0);
-        const reactionTime = ref(null);
-        const runReactTest = () => {
-            reactColor.value = 'bg-red-500';
-            reactText.value = 'Ждите зеленого...';
-            reactionTime.value = null;
-            const delay = Math.floor(Math.random() * 3000) + 2000;
-            reactTimer.value = setTimeout(() => {
-                reactColor.value = 'bg-green-500';
-                reactText.value = 'КЛИКАЙ!';
-                reactStart.value = Date.now();
-            }, delay);
-        };
-        const reactClick = () => {
-            if (reactColor.value === 'bg-green-500') {
-                reactionTime.value = Date.now() - reactStart.value;
-                reactText.value = `Время реакции: ${reactionTime.value} мс!`;
-                reactColor.value = 'bg-blue-500';
-                clearTimeout(reactTimer.value);
-            } else {
-                reactText.value = 'Слишком рано!';
-                clearTimeout(reactTimer.value);
-            }
-        };
-        // 20. VAT Calc
-        const vatPrice = ref(100);
-        const vatRate = ref(20);
-        const vatVal = computed(() => (vatPrice.value * (vatRate.value / 100)).toFixed(2));
-        const vatTotal = computed(() => (parseFloat(vatPrice.value) + parseFloat(vatVal.value)).toFixed(2));
-        // 21. Mood Log
-        const currentMood = ref('Neutral');
-        const moodLogs = ref(JSON.parse(localStorage.getItem('moods') || '[]'));
-        const logMood = () => {
-            moodLogs.value.push({ date: new Date().toLocaleDateString(), mood: currentMood.value });
-            localStorage.setItem('moods', JSON.stringify(moodLogs.value));
-        };
-        // 22. Color Converter
-        const rColor = ref(255);
-        const gColor = ref(0);
-        const bColor = ref(0);
-        const rgbToHex = computed(() => {
-            const toHex = (c) => {
-                const hex = Math.min(255, Math.max(0, parseInt(c))).toString(16);
-                return hex.length === 1 ? '0' + hex : hex;
+
+        const sendMessage = async () => {
+            if (!messageText.value.trim() && !attachedPhoto.value) return;
+
+            const payload = {
+                recipient_id: activeTarget.value === 'general' ? null : activeTarget.value,
+                message: messageText.value,
+                attachment_url: attachedPhoto.value ? attachedPhoto.value.url : null,
+                attachment_name: attachedPhoto.value ? attachedPhoto.value.name : null
             };
-            return '#' + toHex(rColor.value) + toHex(gColor.value) + toHex(bColor.value);
-        });
-        // 23. Cigarette Tracker
-        const cigCount = ref(parseInt(localStorage.getItem('cig_count') || '0'));
-        const cigPrice = ref(5.0); // Packet price BYN
-        const cigCountInPack = ref(20);
-        const addCig = () => { cigCount.value++; localStorage.setItem('cig_count', cigCount.value); };
-        const cigMoneyWaste = computed(() => ((cigCount.value / cigCountInPack.value) * cigPrice.value).toFixed(2));
-        // 24. Smart Notepad
-        const noteText = ref(localStorage.getItem('smart_note') || '');
-        const saveNote = () => { localStorage.setItem('smart_note', noteText.value); alert('Заметка сохранена!'); };
-        // 25. Hash Generator
-        const hashText = ref('BELHOS');
-        const hashRes = computed(() => {
-            let hash = 0;
-            for (let i = 0; i < hashText.value.length; i++) {
-                const char = hashText.value.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
-            }
-            return Math.abs(hash).toString(16);
-        });
-        // 26. Tip Calc
-        const billAmount = ref(50);
-        const tipPercent = ref(10);
-        const tipVal = computed(() => (billAmount.value * (tipPercent.value / 100)).toFixed(2));
-        // 27. Pulse Simulator
-        const pulseRate = ref(75);
-        const simulatedBeats = ref([]);
-        const simBeat = () => {
-            simulatedBeats.value.push(Date.now());
-            if (simulatedBeats.value.length > 5) simulatedBeats.value.shift();
+
+            await props.api('chat.php', 'POST', payload);
+            messageText.value = '';
+            attachedPhoto.value = null;
+            await loadMessages();
         };
-        // 28. Age Calculator
-        const birthDate = ref('2000-01-01');
-        const calculatedAge = computed(() => {
-            if (!birthDate.value) return 0;
-            const diff = Date.now() - new Date(birthDate.value).getTime();
-            return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-        });
-        // 29. Timezone Converter
-        const selectedTz = ref('GMT');
-        const currentTzTime = computed(() => {
-            const date = new Date();
-            if (selectedTz.value === 'EST') return new Date(date.getTime() - 5*3600*1000).toLocaleTimeString();
-            if (selectedTz.value === 'MSK') return new Date(date.getTime() + 3*3600*1000).toLocaleTimeString();
-            return date.toLocaleTimeString();
-        });
-        // 30. White Noise Simulator
-        const noisePlaying = ref(false);
-        const noiseContext = ref(null);
-        const toggleNoise = () => {
-            noisePlaying.value = !noisePlaying.value;
-            if (noisePlaying.value) {
-                // Synthesize white noise via Web Audio API
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                noiseContext.value = new AudioContext();
-                const bufferSize = 2 * noiseContext.value.sampleRate,
-                noiseBuffer = noiseContext.value.createBuffer(1, bufferSize, noiseContext.value.sampleRate),
-                output = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    output[i] = Math.random() * 2 - 1;
+
+        const uploadChatPhoto = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            isUploading.value = true;
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+                const res = await fetch('api/uploads.php', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                    body: formData
+                });
+                const result = await res.json();
+                if (result.success) {
+                    attachedPhoto.value = { url: result.url, name: result.name };
                 }
-                const whiteNoise = noiseContext.value.createBufferSource();
-                whiteNoise.buffer = noiseBuffer;
-                whiteNoise.loop = true;
-                whiteNoise.connect(noiseContext.value.destination);
-                whiteNoise.start();
-                noiseContext.value.node = whiteNoise;
-            } else {
-                if (noiseContext.value) {
-                    noiseContext.value.node.stop();
-                    noiseContext.value.close();
-                }
+            } catch (err) {
+                alert('Ошибка при загрузке фото');
+            } finally {
+                isUploading.value = false;
             }
         };
 
-        const allToolsList = [
-            { id: 1, name: "Калькулятор SLA", desc: "Расчет срока выполнения" },
-            { id: 2, name: "Конвертер температур", desc: "Шкалы Цельсия, Фаренгейта, Кельвина" },
-            { id: 3, name: "Калькулятор ИМТ", desc: "Индекс массы тела" },
-            { id: 4, name: "Конвертер валют", desc: "Курсы BYN, USD, RUB" },
-            { id: 5, name: "Генератор паролей", desc: "Безопасные случайные пароли" },
-            { id: 6, name: "Помодоро таймер", desc: "Таймер продуктивности 25 минут" },
-            { id: 7, name: "Секундомер", desc: "Высокоточный секундомер" },
-            { id: 8, name: "Водный трекер", desc: "Учет дневного потребления воды" },
-            { id: 9, name: "Анализатор текста", desc: "Подсчет слов и знаков" },
-            { id: 10, name: "Каталог привычек", desc: "Отслеживание полезных привычек" },
-            { id: 11, name: "Учет расходов", desc: "Планировщик бюджета" },
-            { id: 12, name: "Трекер долгов", desc: "Логирование заемных средств" },
-            { id: 13, name: "Случайные числа", desc: "Генерация случайных значений" },
-            { id: 14, name: "Мат-тренажер", desc: "Логические примеры" },
-            { id: 15, name: "Дыхательный гид", desc: "Медитативные циклы" },
-            { id: 16, name: "Конвертер длины", desc: "Метры, мили, километры" },
-            { id: 17, name: "Конвертер веса", desc: "Килограммы, фунты, унции" },
-            { id: 18, name: "Генератор QR", desc: "Симуляция ссылок QR" },
-            { id: 19, name: "Тест реакции", desc: "Измерение скорости реакции" },
-            { id: 20, name: "Калькулятор НДС", desc: "Выделение и начисление НДС" },
-            { id: 21, name: "Лог настроения", desc: "Ежедневный дневник" },
-            { id: 22, name: "Цветовой RGB-Hex", desc: "Конвертер цвета" },
-            { id: 23, name: "Борьба с курением", desc: "Счетчик и финансовый урон" },
-            { id: 24, name: "Умный блокнот", desc: "Быстрое сохранение заметок" },
-            { id: 25, name: "Хэш-генератор", desc: "Генерация HEX хэшей" },
-            { id: 26, name: "Калькулятор чаевых", desc: "Расчет процента" },
-            { id: 27, name: "Симулятор пульса", desc: "Запись биений сердца" },
-            { id: 28, name: "Калькулятор возраста", desc: "Расчет в годах" },
-            { id: 29, name: "Конвертер зон времени", desc: "Конвертер часовых поясов" },
-            { id: 30, name: "Белый шум", desc: "Звуковой фон концентрации" }
-        ];
+        const getSenderName = (senderId) => {
+            const u = props.users.find(u => u.id === senderId);
+            return u ? u.full_name : 'Сотрудник';
+        };
 
-        const filteredTools = computed(() => {
-            return allToolsList.filter(t => t.name.toLowerCase().includes(search.value.toLowerCase()) || t.desc.toLowerCase().includes(search.value.toLowerCase()));
-        });
+        const openAttachment = (url) => {
+            window.open(url, '_blank');
+        };
 
         onMounted(() => {
-            startBreathe();
+            const targetId = localStorage.getItem('chat_target_user_id');
+            if (targetId) {
+                activeTarget.value = targetId;
+                localStorage.removeItem('chat_target_user_id');
+            }
+            loadMessages();
+            const interval = setInterval(() => {
+                loadMessages();
+            }, 3000);
         });
 
         return {
-            search, activeTool, filteredTools, allToolsList,
-            slaHours, slaResult, tempC, tempF, tempK, weight, height, bmi,
-            byn, usdRate, rubRate, usdVal, rubVal, passLen, generatedPass, genPass,
-            pomoTime, pomoInterval, startPomo, stopPomo, resetPomo, swTime, startSw, stopSw, resetSw,
-            waterLogged, addWater, resetWater, textToAnalyze, textStats, habits, newHabit, addHabit, toggleHabit, removeHabit,
-            expenses, expenseName, expenseAmount, addExpense, totalExpenses, debts, debtName, debtAmount, debtType, addDebt, clearDebts,
-            randMin, randMax, randRes, genRand, mathQ, mathAns, mathUserAns, mathScore, checkMath, breatheState,
-            lenMeters, lenKm, lenMiles, weightKg, weightLbs, weightOz, qrInput, qrSim,
-            reactColor, reactText, reactionTime, runReactTest, reactClick, vatPrice, vatRate, vatVal, vatTotal,
-            currentMood, logMood, moodLogs, rColor, gColor, bColor, rgbToHex, cigCount, cigPrice, cigCountInPack, addCig, cigMoneyWaste,
-            noteText, saveNote, hashText, hashRes, billAmount, tipPercent, tipVal, pulseRate, simBeat, simulatedBeats,
-            birthDate, calculatedAge, selectedTz, currentTzTime, noisePlaying, toggleNoise
+            activeTarget,
+            messages,
+            messageText,
+            searchQuery,
+            filteredUsers,
+            activeTargetUser,
+            isOnline,
+            selectTarget,
+            sendMessage,
+            uploadChatPhoto,
+            isUploading,
+            attachedPhoto,
+            getSenderName,
+            chatContainer,
+            openAttachment
         };
     },
     template: `
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <!-- Sidebar Panel: Tools list -->
-            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm space-y-4">
-                <h3 class="font-bold text-lg text-primary">Полнофункциональный набор (30 логических утилит)</h3>
-                <input v-model="search" placeholder="Поиск утилит..." class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white text-sm mb-2">
-                <div class="space-y-1 max-h-[60vh] overflow-y-auto">
-                    <button v-for="t in filteredTools" :key="t.id" @click="activeTool = t.id" :class="['w-full text-left px-3 py-2 rounded text-xs transition-colors flex flex-col', activeTool === t.id ? 'bg-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300']">
-                        <span class="font-bold">{{ t.id }}. {{ t.name }}</span>
-                        <span class="opacity-75">{{ t.desc }}</span>
+        <div class="flex h-[calc(100vh-120px)] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div class="w-80 border-r border-gray-100 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-900">
+                <div class="p-4 border-b border-gray-100 dark:border-gray-700">
+                    <div class="relative">
+                        <input v-model="searchQuery" type="text" placeholder="Поиск контактов..." class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-primary dark:text-white">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-2 space-y-1">
+                    <div class="text-xs font-bold text-gray-400 px-3 py-1 uppercase tracking-wider">Каналы</div>
+
+                    <button @click="selectTarget('general')"
+                            :class="activeTarget === 'general' ? 'bg-primary text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-150 dark:hover:bg-gray-800'"
+                            class="w-full text-left px-3 py-2.5 rounded-lg flex items-center space-x-3 transition-all">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-primary dark:text-blue-300 flex items-center justify-center">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-xs">Общий чат (Viber)</div>
+                            <div class="text-[10px] opacity-75 truncate">Общие вопросы и объявления</div>
+                        </div>
                     </button>
+
+                    <div class="text-xs font-bold text-gray-400 px-3 py-2 uppercase tracking-wider mt-4">Личные переписки</div>
+
+                    <button v-for="u in filteredUsers" :key="u.id"
+                            @click="selectTarget(u.id)"
+                            :class="activeTarget === u.id ? 'bg-primary text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+                            class="w-full text-left px-3 py-2 rounded-lg flex items-center space-x-3 transition-all">
+                        <div class="relative">
+                            <div class="w-8 h-8 rounded-full bg-blue-150 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center font-bold text-xs uppercase">
+                                {{ u.full_name ? u.full_name[0].toUpperCase() : u.username[0].toUpperCase() }}
+                            </div>
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-gray-900"
+                                  :class="u.banned == 1 ? 'bg-red-500' : (isOnline(u.last_seen) ? 'bg-green-500' : 'bg-gray-400')"></span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-bold text-xs truncate">{{ u.full_name || u.username }}</div>
+                            <div class="text-[10px] opacity-75 truncate">{{ u.role }} | {{ u.department || 'Без отдела' }}</div>
+                        </div>
+                    </button>
+
+                    <div v-if="filteredUsers.length === 0" class="text-center py-4 text-xs text-gray-400">
+                        Никого не найдено
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Panel: Active utility details -->
-            <div class="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm min-h-[450px] flex flex-col justify-between">
-                <div>
-                    <!-- Render Active Tool -->
-                    <div v-if="activeTool === 1" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">1. Калькулятор SLA (срок выполнения)</h4>
-                        <label class="block text-xs dark:text-gray-300">Введите время SLA (в часах):</label>
-                        <input type="number" v-model.number="slaHours" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm">Результат в днях: <strong class="text-primary">{{ slaResult }}</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 2" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">2. Конвертер температур</h4>
-                        <input type="number" v-model="tempC" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm space-y-1">
-                            <div>Шкала Фаренгейта: <strong>{{ tempF }} °F</strong></div>
-                            <div>Шкала Кельвина: <strong>{{ tempK }} K</strong></div>
+            <div class="flex-1 flex flex-col">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-900">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                            <i v-if="activeTarget === 'general'" class="fas fa-comments text-lg"></i>
+                            <span v-else>{{ activeTargetUser ? activeTargetUser.full_name[0].toUpperCase() : '?' }}</span>
                         </div>
-                    </div>
-
-                    <div v-if="activeTool === 3" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">3. Интерактивный калькулятор ИМТ</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs">Вес (кг):</label>
-                                <input type="number" v-model="weight" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs">Рост (см):</label>
-                                <input type="number" v-model="height" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                        <div>
+                            <h3 class="font-bold text-sm dark:text-white">
+                                {{ activeTarget === 'general' ? 'Общий корпоративный чат BELHOS' : (activeTargetUser ? activeTargetUser.full_name : 'Сотрудник') }}
+                            </h3>
+                            <div class="text-xs text-gray-500 flex items-center space-x-1.5">
+                                <template v-if="activeTarget === 'general'">
+                                    <span>Доступно всем сотрудникам компании</span>
+                                </template>
+                                <template v-else-if="activeTargetUser">
+                                    <span class="w-2 h-2 rounded-full" :class="activeTargetUser.banned == 1 ? 'bg-red-500' : (isOnline(activeTargetUser.last_seen) ? 'bg-green-500' : 'bg-gray-400')"></span>
+                                    <span>{{ activeTargetUser.banned == 1 ? 'Заблокирован' : (isOnline(activeTargetUser.last_seen) ? 'В сети' : 'Не в сети') }}</span>
+                                </template>
                             </div>
                         </div>
-                        <div class="text-sm">Ваш индекс массы тела (ИМТ): <strong class="text-primary">{{ bmi }}</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 4" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">4. Конвертер валют</h4>
-                        <label class="block text-xs">BYN (Белорусский рубль):</label>
-                        <input type="number" v-model="byn" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm space-y-1">
-                            <div>Эквивалент USD (курс {{ usdRate }}): <strong>{{ usdVal }} $</strong></div>
-                            <div>Эквивалент RUB (курс {{ rubRate }}): <strong>{{ rubVal }} ₽</strong></div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 5" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">5. Генератор паролей</h4>
-                        <label class="block text-xs">Длина пароля:</label>
-                        <input type="number" v-model="passLen" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <button @click="genPass" class="bg-primary text-white px-4 py-2 rounded-lg block">Сгенерировать</button>
-                        <div v-if="generatedPass" class="p-2 bg-gray-50 dark:bg-gray-900 border rounded font-mono select-all">{{ generatedPass }}</div>
-                    </div>
-
-                    <div v-if="activeTool === 6" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">6. Таймер Помодоро</h4>
-                        <div class="text-4xl font-mono text-center">{{ Math.floor(pomoTime/60) }}:{{ (pomoTime%60).toString().padStart(2, '0') }}</div>
-                        <div class="flex justify-center space-x-2">
-                            <button @click="startPomo" class="bg-green-500 text-white px-4 py-2 rounded">Старт</button>
-                            <button @click="stopPomo" class="bg-yellow-500 text-white px-4 py-2 rounded">Пауза</button>
-                            <button @click="resetPomo" class="bg-red-500 text-white px-4 py-2 rounded">Сброс</button>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 7" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">7. Секундомер</h4>
-                        <div class="text-4xl font-mono text-center">{{ (swTime/1000).toFixed(2) }} сек</div>
-                        <div class="flex justify-center space-x-2">
-                            <button @click="startSw" class="bg-green-500 text-white px-4 py-2 rounded">Старт</button>
-                            <button @click="stopSw" class="bg-yellow-500 text-white px-4 py-2 rounded">Пауза</button>
-                            <button @click="resetSw" class="bg-red-500 text-white px-4 py-2 rounded">Сброс</button>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 8" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">8. Водный трекер</h4>
-                        <div class="text-2xl font-bold text-center text-blue-500">{{ waterLogged }} мл / 2000 мл</div>
-                        <div class="flex justify-center space-x-2">
-                            <button @click="addWater" class="bg-blue-500 text-white px-4 py-2 rounded">+250 мл</button>
-                            <button @click="resetWater" class="bg-red-500 text-white px-4 py-2 rounded">Сброс</button>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 9" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">9. Анализатор текста</h4>
-                        <textarea v-model="textToAnalyze" rows="4" placeholder="Введите ваш текст..." class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"></textarea>
-                        <div class="text-sm space-y-1">
-                            <div>Символов: <strong>{{ textStats.charCount }}</strong></div>
-                            <div>Слов: <strong>{{ textStats.wordCount }}</strong></div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 10" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">10. Список полезных привычек</h4>
-                        <div class="flex space-x-2">
-                            <input v-model="newHabit" placeholder="Новая привычка..." class="flex-1 border p-2 rounded dark:bg-gray-700 dark:text-white">
-                            <button @click="addHabit" class="bg-primary text-white px-4 py-2 rounded">Добавить</button>
-                        </div>
-                        <div class="space-y-1 max-h-[200px] overflow-y-auto">
-                            <div v-for="(h, idx) in habits" :key="idx" class="flex justify-between items-center p-2 border rounded dark:border-gray-700">
-                                <span :class="{ 'line-through text-gray-400': h.done }">{{ h.text }}</span>
-                                <div class="space-x-1">
-                                    <button @click="toggleHabit(idx)" class="text-green-500 text-xs"><i class="fas fa-check"></i></button>
-                                    <button @click="removeHabit(idx)" class="text-red-500 text-xs"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 11" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">11. Учет и планировщик расходов</h4>
-                        <div class="flex space-x-2">
-                            <input v-model="expenseName" placeholder="Название расхода..." class="border p-2 rounded dark:bg-gray-700 dark:text-white flex-1">
-                            <input type="number" v-model="expenseAmount" placeholder="Сумма" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-24">
-                            <button @click="addExpense" class="bg-primary text-white px-4 py-2 rounded">Добавить</button>
-                        </div>
-                        <div class="text-sm">Всего потрачено: <strong class="text-red-500">{{ totalExpenses }} BYN</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 12" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">12. Список долгов и займов</h4>
-                        <div class="flex space-x-2">
-                            <input v-model="debtName" placeholder="ФИО должника..." class="border p-2 rounded dark:bg-gray-700 dark:text-white flex-1">
-                            <input type="number" v-model="debtAmount" placeholder="Сумма" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-24">
-                            <select v-model="debtType" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                                <option value="взял">Взял</option>
-                                <option value="дал">Дал</option>
-                            </select>
-                            <button @click="addDebt" class="bg-primary text-white px-4 py-2 rounded">Записать</button>
-                        </div>
-                        <div class="space-y-1">
-                            <div v-for="d in debts" class="text-xs p-1.5 border rounded flex justify-between">
-                                <span>{{ d.name }}</span>
-                                <span class="font-bold" :class="d.type === 'дал' ? 'text-green-500' : 'text-red-500'">{{ d.type }} {{ d.amount }} BYN</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 13" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">13. Генератор случайных чисел</h4>
-                        <div class="flex space-x-2">
-                            <input type="number" v-model="randMin" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-20">
-                            <span>-</span>
-                            <input type="number" v-model="randMax" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-20">
-                            <button @click="genRand" class="bg-primary text-white px-4 py-2 rounded">Генерация</button>
-                        </div>
-                        <div v-if="randRes !== null" class="text-3xl font-bold text-center text-primary">{{ randRes }}</div>
-                    </div>
-
-                    <div v-if="activeTool === 14" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">14. Математический тренажер</h4>
-                        <div class="text-lg font-bold text-center">Сколько будет: {{ mathQ }} ?</div>
-                        <div class="flex space-x-2 justify-center">
-                            <input type="number" v-model="mathUserAns" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-24">
-                            <button @click="checkMath" class="bg-primary text-white px-4 py-2 rounded">Проверить</button>
-                        </div>
-                        <div class="text-sm text-center">Очки: <strong>{{ mathScore }}</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 15" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">15. Дыхательный таймер</h4>
-                        <div class="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-700 mx-auto animate-pulse">
-                            {{ breatheState }}
-                        </div>
-                        <p class="text-xs text-center text-gray-500">Помогает расслабиться и восстановить ритм дыхания. Циклы меняются каждые 4 секунды.</p>
-                    </div>
-
-                    <div v-if="activeTool === 16" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">16. Конвертер длины</h4>
-                        <label class="block text-xs">Метры:</label>
-                        <input type="number" v-model="lenMeters" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm space-y-1">
-                            <div>Километры: <strong>{{ lenKm }} км</strong></div>
-                            <div>Мили: <strong>{{ lenMiles }} миль</strong></div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 17" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">17. Конвертер веса</h4>
-                        <label class="block text-xs">Килограммы:</label>
-                        <input type="number" v-model="weightKg" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm space-y-1">
-                            <div>Фунты: <strong>{{ weightLbs }} lbs</strong></div>
-                            <div>Унции: <strong>{{ weightOz }} oz</strong></div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 18" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">18. Имитатор QR-кода</h4>
-                        <input v-model="qrInput" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="flex justify-center">
-                            <img :src="qrSim" class="border p-2 rounded bg-white shadow-sm" alt="QR-код">
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 19" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">19. Тестер скорости реакции</h4>
-                        <div @click="reactClick" :class="[reactColor, 'h-32 rounded-xl flex items-center justify-center text-white font-bold text-lg cursor-pointer transition-all select-none']">
-                            {{ reactText }}
-                        </div>
-                        <button @click="runReactTest" class="bg-primary text-white px-4 py-2 rounded block mx-auto">Начать тест</button>
-                    </div>
-
-                    <div v-if="activeTool === 20" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">20. Калькулятор НДС</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs">Сумма (без НДС):</label>
-                                <input type="number" v-model="vatPrice" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs">Ставка (%):</label>
-                                <input type="number" v-model="vatRate" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
-                            </div>
-                        </div>
-                        <div class="text-sm space-y-1">
-                            <div>НДС составит: <strong>{{ vatVal }} BYN</strong></div>
-                            <div>Итого с НДС: <strong>{{ vatTotal }} BYN</strong></div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 21" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">21. Логгер настроения</h4>
-                        <div class="flex space-x-2">
-                            <select v-model="currentMood" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                                <option value="Happy">Отлично 😊</option>
-                                <option value="Neutral">Нормально 😐</option>
-                                <option value="Sad">Грустно 😔</option>
-                            </select>
-                            <button @click="logMood" class="bg-primary text-white px-4 py-2 rounded">Записать</button>
-                        </div>
-                        <div class="text-xs space-y-1">
-                            <div v-for="m in moodLogs" class="p-1 border rounded dark:border-gray-700">{{ m.date }}: {{ m.mood }}</div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 22" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">22. Цветовой RGB-Hex конвертер</h4>
-                        <div class="grid grid-cols-3 gap-2">
-                            <input type="number" v-model="rColor" placeholder="R" class="border p-1 rounded dark:bg-gray-700 text-xs">
-                            <input type="number" v-model="gColor" placeholder="G" class="border p-1 rounded dark:bg-gray-700 text-xs">
-                            <input type="number" v-model="bColor" placeholder="B" class="border p-1 rounded dark:bg-gray-700 text-xs">
-                        </div>
-                        <div class="text-sm flex items-center space-x-4">
-                            <span>Код цвета: <strong>{{ rgbToHex }}</strong></span>
-                            <div class="w-8 h-8 rounded border shadow" :style="{ backgroundColor: rgbToHex }"></div>
-                        </div>
-                    </div>
-
-                    <div v-if="activeTool === 23" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">23. Борьба с курением</h4>
-                        <div class="text-center font-bold">Выкурено сигарет: {{ cigCount }} шт.</div>
-                        <div class="flex justify-center space-x-2">
-                            <button @click="addCig" class="bg-red-500 text-white px-4 py-2 rounded">Выкурил сигарету 🚬</button>
-                        </div>
-                        <div class="text-sm text-center text-red-400 font-bold">Потрачено денег впустую: {{ cigMoneyWaste }} BYN</div>
-                    </div>
-
-                    <div v-if="activeTool === 24" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">24. Умный блокнот быстрых записей</h4>
-                        <textarea v-model="noteText" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" rows="4"></textarea>
-                        <button @click="saveNote" class="bg-primary text-white px-4 py-2 rounded block">Сохранить</button>
-                    </div>
-
-                    <div v-if="activeTool === 25" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">25. Хэш-генератор</h4>
-                        <input v-model="hashText" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm">HEX Хэш: <strong class="text-primary font-mono">{{ hashRes }}</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 26" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">26. Калькулятор чаевых</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs">Счет (BYN):</label>
-                                <input type="number" v-model="billAmount" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs">Чаевые (%):</label>
-                                <input type="number" v-model="tipPercent" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
-                            </div>
-                        </div>
-                        <div class="text-sm">Сумма чаевых: <strong class="text-green-500">{{ tipVal }} BYN</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 27" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">27. Симулятор пульса</h4>
-                        <button @click="simBeat" class="bg-red-500 text-white px-4 py-2 rounded animate-bounce"><i class="fas fa-heart mr-2"></i>Стук сердца</button>
-                        <div class="text-xs">Записанные удары: {{ simulatedBeats.length }} ударов.</div>
-                    </div>
-
-                    <div v-if="activeTool === 28" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">28. Калькулятор точного возраста</h4>
-                        <input type="date" v-model="birthDate" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                        <div class="text-sm">Возраст в годах: <strong>{{ calculatedAge }} лет</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 29" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">29. Конвертер часовых поясов</h4>
-                        <select v-model="selectedTz" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
-                            <option value="EST">Нью-Йорк (EST)</option>
-                            <option value="MSK">Минск/Москва (MSK)</option>
-                            <option value="GMT">Лондон (GMT)</option>
-                        </select>
-                        <div class="text-sm">Время в зоне {{ selectedTz }}: <strong>{{ currentTzTime }}</strong></div>
-                    </div>
-
-                    <div v-if="activeTool === 30" class="space-y-4">
-                        <h4 class="text-xl font-bold text-primary">30. Генератор белого шума</h4>
-                        <button @click="toggleNoise" class="bg-primary text-white px-6 py-2 rounded-lg font-bold">
-                            {{ noisePlaying ? 'Остановить фоновый шум' : 'Запустить белый шум' }}
-                        </button>
-                        <p class="text-xs text-gray-400">Синтезирует акустические волны белого шума для полной концентрации в офисе.</p>
                     </div>
                 </div>
 
-                <div class="border-t pt-4 mt-6 flex justify-between text-xs text-gray-400">
-                    <span>Служебная логика BELHOS CRM</span>
-                    <span>30/30 функций утилит</span>
+                <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-950">
+                    <div v-for="m in messages" :key="m.id"
+                         :class="m.sender_id === user.id ? 'justify-end' : 'justify-start'"
+                         class="flex">
+                        <div :class="m.sender_id === user.id ? 'bg-primary text-white rounded-br-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none'"
+                             class="max-w-md p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col space-y-1">
+
+                            <span v-if="activeTarget === 'general' && m.sender_id !== user.id" class="text-[10px] font-bold text-indigo-500 dark:text-indigo-300">
+                                {{ getSenderName(m.sender_id) }}
+                            </span>
+
+                            <p class="text-xs whitespace-pre-wrap leading-relaxed">{{ m.message }}</p>
+
+                            <div v-if="m.attachment_url" class="pt-1">
+                                <img :src="m.attachment_url" class="max-h-60 rounded-lg object-contain cursor-pointer hover:opacity-95 transition-all" @click="openAttachment(m.attachment_url)">
+                            </div>
+
+                            <span class="text-[9px] text-right self-end opacity-70">
+                                {{ m.created_at ? m.created_at.split(' ')[1].slice(0,5) : '' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div v-if="messages.length === 0" class="h-full flex flex-col items-center justify-center text-gray-400 space-y-2">
+                        <i class="fab fa-viber text-5xl opacity-40"></i>
+                        <p class="text-xs">Сообщений пока нет. Напишите первым!</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900">
+                    <div v-if="attachedPhoto" class="mb-2 p-2 bg-blue-50 dark:bg-blue-900 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <img :src="attachedPhoto.url" class="w-10 h-10 rounded object-cover">
+                            <span class="text-xs text-gray-700 dark:text-gray-200 truncate max-w-xs">{{ attachedPhoto.name }}</span>
+                        </div>
+                        <button @click="attachedPhoto = null" type="button" class="text-red-500 hover:text-red-700 text-sm p-1"><i class="fas fa-times-circle"></i></button>
+                    </div>
+
+                    <form @submit.prevent="sendMessage" class="flex items-center space-x-2">
+                        <label class="cursor-pointer text-gray-400 hover:text-primary p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all relative">
+                            <i class="fas fa-camera text-sm"></i>
+                            <input type="file" accept="image/*" @change="uploadChatPhoto" class="hidden">
+                            <span v-if="isUploading" class="absolute inset-0 bg-white dark:bg-gray-900 bg-opacity-75 flex items-center justify-center rounded-full">
+                                <i class="fas fa-spinner animate-spin text-primary"></i>
+                            </span>
+                        </label>
+
+                        <input v-model="messageText" type="text" placeholder="Напишите сообщение..." class="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-primary dark:text-white" :required="!attachedPhoto">
+
+                        <button type="submit" class="bg-primary hover:bg-blue-600 text-white p-2.5 rounded-full shadow-md transition-all flex items-center justify-center">
+                            <i class="fas fa-paper-plane text-xs"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

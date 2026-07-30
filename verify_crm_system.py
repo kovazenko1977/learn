@@ -32,37 +32,33 @@ def run_cuj(page):
     page.wait_for_selector("text=Всего заявок")
     page.wait_for_timeout(1000)
 
-    # Navigate to Logical Tools view
-    print("Navigating to Logical Tools view...")
-    page.click("text=Инструменты")
-    page.wait_for_timeout(1000)
+    # Navigate to Users view
+    print("Navigating to Users view...")
+    page.click("text=Пользователи")
+    page.wait_for_timeout(1500)
+    page.wait_for_selector("text=Справочник пользователей")
 
-    # Verify logical tools tab exists and list of 30 utilities are present
-    print("Verifying Tools panel...")
-    page.wait_for_selector("text=Полнофункциональный набор")
-    page.wait_for_selector("text=Калькулятор SLA")
-    page.wait_for_selector("text=Водный трекер")
+    # Navigate to Chat view
+    print("Navigating to Chat view...")
+    page.click("text=Чат")
+    page.wait_for_timeout(1500)
+    page.wait_for_selector("text=Общий чат (Viber)")
+
+    # Send a message
+    print("Sending message in Viber general chat...")
+    page.fill("input[placeholder='Напишите сообщение...']", "Привет всем! Новая система BELHOS CRM запущена!")
     page.wait_for_timeout(500)
+    page.click("button[type='submit']")
+    page.wait_for_timeout(1500)
 
-    # Let's interact with Temperature Converter (id 2)
-    print("Switching to temperature converter...")
-    page.click("text=2. Конвертер температур")
-    page.wait_for_timeout(1000)
-    page.wait_for_selector("text=Шкала Фаренгейта")
+    # Verify message appears in scroll
+    page.wait_for_selector("text=Привет всем!")
 
-    # Let's interact with Water Tracker (id 8)
-    print("Switching to water tracker...")
-    page.click("text=8. Водный трекер")
-    page.wait_for_timeout(1000)
-    page.click("button:has-text('+250 мл')")
-    page.wait_for_timeout(1000)
-    page.wait_for_selector("text=250 мл")
-
-    # Take screenshot of the logical tools panel
-    print("Taking verification screenshot of tools layout...")
+    # Take screenshot of the chat panel
+    print("Taking verification screenshot of Viber chat layout...")
     page.screenshot(path="/home/jules/verification/screenshots/verification.png")
     page.wait_for_timeout(1000)
-    print("E2E Playwright verification of PWA and Tools finished successfully!")
+    print("E2E Playwright verification of PWA, Users directory and Viber Chat finished successfully!")
 
 if __name__ == "__main__":
     with sync_playwright() as p:

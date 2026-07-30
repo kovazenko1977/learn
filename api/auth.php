@@ -14,6 +14,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'login') {
     $users = $storage->getAll('users');
     foreach ($users as $user) {
         if ($user['username'] === $username && password_verify($password, $user['password'])) {
+            if (!empty($user['banned']) && $user['banned'] == 1) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Ваш аккаунт заблокирован администратором']);
+                exit;
+            }
             unset($user['password']);
             $token = TokenProvider::generateToken($user);
             echo json_encode(['success' => true, 'token' => $token, 'user' => $user]);
