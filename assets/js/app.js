@@ -68,6 +68,13 @@ const translations = {
     }
 };
 
+const roleTranslations = {
+    'Administrator': 'Администратор',
+    'Responsible Employee': 'Ответственный сотрудник',
+    'Department Head': 'Начальник отдела',
+    'Executor': 'Исполнитель (мастер, техник)'
+};
+
 const { createApp, ref, reactive, onMounted, computed, watch, nextTick } = Vue;
 
 const App = {
@@ -243,7 +250,7 @@ const App = {
         return {
             user, token, lang, darkMode, view, t, formatDuration, toggleDarkMode, toggleLang,
             login, logout, api, settings, tasks, users, stats, initData,
-            activeNewAssignment, dismissAssignment, viewAssignment
+            activeNewAssignment, dismissAssignment, viewAssignment, roleTranslations
         };
     },
     template: `
@@ -302,7 +309,7 @@ const App = {
                 </nav>
 
                 <!-- Content -->
-                <main class="flex-1 overflow-auto p-6">
+                <main class="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">
                     <dashboard-view v-if="view === 'dashboard'" :stats="stats" :t="t" :format-duration="formatDuration"></dashboard-view>
                     <tasks-view v-if="view === 'tasks'" :tasks="tasks" :users="users" :settings="settings" :user="user" :t="t" @refresh="initData" :api="api" @start-chat="view = 'chat'"></tasks-view>
                     <users-view v-if="view === 'users'" :users="users" :t="t" @refresh="initData" :api="api" :user="user" @start-chat="view = 'chat'"></users-view>
@@ -311,6 +318,34 @@ const App = {
                     <profile-view v-if="view === 'profile'" :user="user" :t="t" @refresh="initData" :api="api"></profile-view>
                     <help-view v-if="view === 'help'" :t="t"></help-view>
                 </main>
+
+                <!-- Mobile Bottom Nav -->
+                <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center py-2 px-1 z-40 shadow-lg no-print">
+                    <button @click="view = 'dashboard'" :class="view === 'dashboard' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" class="flex-1 flex flex-col items-center">
+                        <i class="fas fa-chart-pie text-lg"></i>
+                        <span class="text-[9px] mt-0.5">Дашборд</span>
+                    </button>
+                    <button @click="view = 'tasks'" :class="view === 'tasks' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" class="flex-1 flex flex-col items-center">
+                        <i class="fas fa-tasks text-lg"></i>
+                        <span class="text-[9px] mt-0.5">Заявки</span>
+                    </button>
+                    <button @click="view = 'users'" :class="view === 'users' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" class="flex-1 flex flex-col items-center">
+                        <i class="fas fa-users text-lg"></i>
+                        <span class="text-[9px] mt-0.5">Контакты</span>
+                    </button>
+                    <button @click="view = 'chat'" :class="view === 'chat' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" class="flex-1 flex flex-col items-center relative">
+                        <i class="fas fa-comments text-lg"></i>
+                        <span class="text-[9px] mt-0.5">Чат</span>
+                    </button>
+                    <button v-if="user.role === 'Administrator'" @click="view = 'settings'" :class="view === 'settings' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" class="flex-1 flex flex-col items-center">
+                        <i class="fas fa-cog text-lg"></i>
+                        <span class="text-[9px] mt-0.5">Настройки</span>
+                    </button>
+                    <button @click="view = 'help'" :class="view === 'help' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'" class="flex-1 flex flex-col items-center">
+                        <i class="fas fa-graduation-cap text-lg"></i>
+                        <span class="text-[9px] mt-0.5">Справка</span>
+                    </button>
+                </div>
             </div>
         </div>
     `
@@ -919,7 +954,7 @@ app.component('users-view', {
             emit('start-chat');
         };
 
-        return { showForm, editingUser, roles, form, edit, save, remove, isOnline, formatLastSeen, toggleBan, startPrivateChat };
+        return { showForm, editingUser, roles, form, edit, save, remove, isOnline, formatLastSeen, toggleBan, startPrivateChat, roleTranslations };
     },
     template: `
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
@@ -961,7 +996,7 @@ app.component('users-view', {
                                           'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': u.role === 'Executor',
                                           'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200': u.role === 'Responsible Employee'
                                       }">
-                                    {{ u.role }}
+                                    {{ roleTranslations[u.role] || u.role }}
                                 </span>
                                 <div class="text-xs text-gray-500 mt-1">{{ u.department || 'Без отдела' }}</div>
                             </td>
@@ -1018,7 +1053,7 @@ app.component('users-view', {
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Роль в системе</label>
                             <select v-model="form.role" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
-                                <option v-for="r in roles" :value="r">{{ r }}</option>
+                                <option v-for="r in roles" :value="r">{{ roleTranslations[r] || r }}</option>
                             </select>
                         </div>
                         <div>
@@ -1214,7 +1249,7 @@ app.component('profile-view', {
 app.component('chat-view', {
     props: ['user', 'users', 't', 'api'],
     setup(props) {
-        const activeTarget = ref('general'); // 'general' or user_id
+        const activeTarget = ref(null); // 'general' or user_id or null
         const messages = ref([]);
         const messageText = ref('');
         const searchQuery = ref('');
@@ -1337,12 +1372,15 @@ app.component('chat-view', {
             attachedPhoto,
             getSenderName,
             chatContainer,
-            openAttachment
+            openAttachment,
+            roleTranslations
         };
     },
     template: `
         <div class="flex h-[calc(100vh-120px)] bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div class="w-80 border-r border-gray-100 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-900">
+            <!-- Sidebar (Contacts / Channels) -->
+            <div :class="{'hidden md:flex': activeTarget !== null, 'flex w-full md:w-80': activeTarget === null, 'w-80': activeTarget !== null}"
+                 class="border-r border-gray-100 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-gray-900">
                 <div class="p-4 border-b border-gray-100 dark:border-gray-700">
                     <div class="relative">
                         <input v-model="searchQuery" type="text" placeholder="Поиск контактов..." class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-primary dark:text-white">
@@ -1380,7 +1418,7 @@ app.component('chat-view', {
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="font-bold text-xs truncate">{{ u.full_name || u.username }}</div>
-                            <div class="text-[10px] opacity-75 truncate">{{ u.role }} | {{ u.department || 'Без отдела' }}</div>
+                            <div class="text-[10px] opacity-75 truncate">{{ roleTranslations[u.role] || u.role }} | {{ u.department || 'Без отдела' }}</div>
                         </div>
                     </button>
 
@@ -1390,9 +1428,19 @@ app.component('chat-view', {
                 </div>
             </div>
 
-            <div class="flex-1 flex flex-col">
+            <!-- Empty Desktop Placeholder -->
+            <div v-if="activeTarget === null" class="hidden md:flex flex-1 flex-col items-center justify-center text-gray-400 space-y-4 bg-gray-50 dark:bg-gray-950">
+                <i class="fab fa-viber text-6xl opacity-35 text-primary"></i>
+                <p class="text-xs font-semibold">Выберите контакт или канал для начала общения</p>
+            </div>
+
+            <div v-else :class="{'hidden md:flex': activeTarget === null, 'flex flex-1': activeTarget !== null}" class="flex flex-col">
                 <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between bg-gray-50 dark:bg-gray-900">
                     <div class="flex items-center space-x-3">
+                        <!-- Back button for Mobile -->
+                        <button @click="selectTarget(null)" class="md:hidden text-primary hover:text-blue-600 mr-2 p-1">
+                            <i class="fas fa-chevron-left text-lg"></i>
+                        </button>
                         <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
                             <i v-if="activeTarget === 'general'" class="fas fa-comments text-lg"></i>
                             <span v-else>{{ activeTargetUser ? activeTargetUser.full_name[0].toUpperCase() : '?' }}</span>

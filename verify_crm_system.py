@@ -3,6 +3,9 @@ import time
 from playwright.sync_api import sync_playwright
 
 def run_cuj(page):
+    # Log console messages
+    page.on("console", lambda msg: print(f"CONSOLE: {msg.text}"))
+
     # Navigate to local PHP server running on port 8000
     print("Navigating to http://127.0.0.1:8000 ...")
     page.goto("http://127.0.0.1:8000")
@@ -42,7 +45,14 @@ def run_cuj(page):
     print("Navigating to Chat view...")
     page.click("text=Чат")
     page.wait_for_timeout(1500)
-    page.wait_for_selector("text=Общий чат (Viber)")
+
+    # Take error state screenshot
+    page.screenshot(path="/home/jules/verification/screenshots/error.png")
+
+    # Select General Chat explicitly
+    print("Clicking on general chat tab...")
+    page.click("text=Общий чат (Viber)")
+    page.wait_for_timeout(1500)
 
     # Send a message
     print("Sending message in Viber general chat...")
