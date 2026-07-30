@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js"></script>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         [v-cloak] { display: none; }
@@ -38,8 +39,66 @@
     </script>
 </head>
 <body class="bg-gray-100 font-sans transition-colors duration-200">
+    <!-- PWA Install Prompt Banner -->
+    <div id="pwa-install-banner" class="fixed bottom-4 right-4 bg-white dark:bg-gray-800 border border-primary p-4 rounded-xl shadow-2xl max-w-sm hidden z-50 flex flex-col space-y-3">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center font-bold text-lg shadow-inner">B</div>
+            <div>
+                <h4 class="font-bold text-sm text-gray-800 dark:text-white">Установите BELHOS CRM</h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Быстрый доступ с экрана вашего мобильного устройства или ПК!</p>
+            </div>
+        </div>
+        <div class="flex justify-end space-x-2 text-xs">
+            <button id="pwa-btn-dismiss" class="text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-all">Позже</button>
+            <button id="pwa-btn-install" class="bg-primary text-white px-4 py-1.5 rounded-lg shadow-sm font-semibold hover:bg-blue-600 transition-all">Установить</button>
+        </div>
+    </div>
+
     <div id="app" v-cloak></div>
 
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('ServiceWorker registered:', reg.scope))
+                    .catch(err => console.log('ServiceWorker registration failed:', err));
+            });
+        }
+
+        // PWA Installation handling
+        let deferredPrompt;
+        const banner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-btn-install');
+        const dismissBtn = document.getElementById('pwa-btn-dismiss');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Update UI notify the user they can install the PWA
+            if (localStorage.getItem('pwa-dismissed') !== 'true') {
+                banner.classList.remove('hidden');
+            }
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            banner.classList.add('hidden');
+        });
+
+        dismissBtn.addEventListener('click', () => {
+            localStorage.setItem('pwa-dismissed', 'true');
+            banner.classList.add('hidden');
+        });
+    </script>
     <script src="assets/js/app.js" type="module"></script>
 </body>
 </html>

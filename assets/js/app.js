@@ -30,7 +30,8 @@ const translations = {
         export: "Экспорт CSV",
         help: "Справка и обучение",
         help_title: "Справка по системе BELHOS",
-        training_title: "Обучение работе в программе"
+        training_title: "Обучение работе в программе",
+        tools: "Инструменты"
     },
     en: {
         login: "Login",
@@ -62,7 +63,8 @@ const translations = {
         export: "Export CSV",
         help: "Help & Training",
         help_title: "BELHOS System Help",
-        training_title: "Interactive Software Training"
+        training_title: "Interactive Software Training",
+        tools: "Logical Tools"
     }
 };
 
@@ -183,6 +185,7 @@ const App = {
                             <nav-link v-if="user.role === 'Administrator'" :active="view === 'users'" @click="view = 'users'">{{ t('users') }}</nav-link>
                             <nav-link v-if="user.role === 'Administrator'" :active="view === 'settings'" @click="view = 'settings'">{{ t('settings') }}</nav-link>
                             <nav-link :active="view === 'help'" @click="view = 'help'">{{ t('help') }}</nav-link>
+                            <nav-link :active="view === 'tools'" @click="view = 'tools'">{{ t('tools') }}</nav-link>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -209,6 +212,7 @@ const App = {
                     <settings-view v-if="view === 'settings'" :settings="settings" :t="t" @refresh="initData" :api="api"></settings-view>
                     <profile-view v-if="view === 'profile'" :user="user" :t="t" @refresh="initData" :api="api"></profile-view>
                     <help-view v-if="view === 'help'" :t="t"></help-view>
+                    <tools-view v-if="view === 'tools'" :t="t"></tools-view>
                 </main>
             </div>
         </div>
@@ -957,6 +961,706 @@ app.component('profile-view', {
                 </div>
                 <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600">{{ t('save') }}</button>
             </form>
+        </div>
+    `
+});
+
+app.component('tools-view', {
+    props: ['t'],
+    setup() {
+        const search = ref('');
+        const activeTool = ref(1);
+
+        // Interactive States for 30 Helper Tools
+        // 1. SLA Calc
+        const slaHours = ref(24);
+        const slaResult = computed(() => {
+            const days = (slaHours.value / 24).toFixed(1);
+            return `${days} дн.`;
+        });
+        // 2. Temp Convert
+        const tempC = ref(25);
+        const tempF = computed(() => (tempC.value * 9/5 + 32).toFixed(1));
+        const tempK = computed(() => (parseFloat(tempC.value) + 273.15).toFixed(1));
+        // 3. BMI Calc
+        const weight = ref(70);
+        const height = ref(175);
+        const bmi = computed(() => {
+            const hM = height.value / 100;
+            return (weight.value / (hM * hM)).toFixed(1);
+        });
+        // 4. Currency Convert
+        const byn = ref(10);
+        const usdRate = 3.25;
+        const rubRate = 0.035;
+        const usdVal = computed(() => (byn.value / usdRate).toFixed(2));
+        const rubVal = computed(() => (byn.value / rubRate).toFixed(2));
+        // 5. Password Generator
+        const passLen = ref(12);
+        const generatedPass = ref('');
+        const genPass = () => {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+            let res = '';
+            for (let i = 0; i < passLen.value; i++) {
+                res += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            generatedPass.value = res;
+        };
+        // 6. Pomodoro Timer
+        const pomoTime = ref(1500); // 25 mins
+        const pomoInterval = ref(null);
+        const startPomo = () => {
+            if (pomoInterval.value) return;
+            pomoInterval.value = setInterval(() => {
+                if (pomoTime.value > 0) pomoTime.value--;
+                else stopPomo();
+            }, 1000);
+        };
+        const stopPomo = () => {
+            clearInterval(pomoInterval.value);
+            pomoInterval.value = null;
+        };
+        const resetPomo = () => {
+            stopPomo();
+            pomoTime.value = 1500;
+        };
+        // 7. Stopwatch
+        const swTime = ref(0);
+        const swInterval = ref(null);
+        const startSw = () => {
+            if (swInterval.value) return;
+            swInterval.value = setInterval(() => { swTime.value += 10; }, 10);
+        };
+        const stopSw = () => {
+            clearInterval(swInterval.value);
+            swInterval.value = null;
+        };
+        const resetSw = () => {
+            stopSw();
+            swTime.value = 0;
+        };
+        // 8. Water Tracker
+        const waterLogged = ref(parseInt(localStorage.getItem('water_logged') || '0'));
+        const addWater = () => {
+            waterLogged.value += 250;
+            localStorage.setItem('water_logged', waterLogged.value);
+        };
+        const resetWater = () => {
+            waterLogged.value = 0;
+            localStorage.setItem('water_logged', '0');
+        };
+        // 9. Text Analyzer
+        const textToAnalyze = ref('');
+        const textStats = computed(() => {
+            const charCount = textToAnalyze.value.length;
+            const wordCount = textToAnalyze.value.trim() ? textToAnalyze.value.trim().split(/\s+/).length : 0;
+            return { charCount, wordCount };
+        });
+        // 10. Habit list
+        const habits = ref(JSON.parse(localStorage.getItem('habits') || '[]'));
+        const newHabit = ref('');
+        const addHabit = () => {
+            if (!newHabit.value.trim()) return;
+            habits.value.push({ text: newHabit.value, done: false });
+            newHabit.value = '';
+            localStorage.setItem('habits', JSON.stringify(habits.value));
+        };
+        const toggleHabit = (idx) => {
+            habits.value[idx].done = !habits.value[idx].done;
+            localStorage.setItem('habits', JSON.stringify(habits.value));
+        };
+        const removeHabit = (idx) => {
+            habits.value.splice(idx, 1);
+            localStorage.setItem('habits', JSON.stringify(habits.value));
+        };
+        // 11. Expense Tracker
+        const expenses = ref(JSON.parse(localStorage.getItem('expenses') || '[]'));
+        const expenseName = ref('');
+        const expenseAmount = ref(0);
+        const addExpense = () => {
+            if (!expenseName.value || expenseAmount.value <= 0) return;
+            expenses.value.push({ name: expenseName.value, amount: expenseAmount.value });
+            expenseName.value = '';
+            expenseAmount.value = 0;
+            localStorage.setItem('expenses', JSON.stringify(expenses.value));
+        };
+        const totalExpenses = computed(() => expenses.value.reduce((sum, e) => sum + parseFloat(e.amount), 0));
+        // 12. Debts Tracker
+        const debts = ref(JSON.parse(localStorage.getItem('debts') || '[]'));
+        const debtName = ref('');
+        const debtAmount = ref(0);
+        const debtType = ref('взял'); // 'дал' or 'взял'
+        const addDebt = () => {
+            if (!debtName.value || debtAmount.value <= 0) return;
+            debts.value.push({ name: debtName.value, amount: debtAmount.value, type: debtType.value });
+            debtName.value = '';
+            debtAmount.value = 0;
+            localStorage.setItem('debts', JSON.stringify(debts.value));
+        };
+        const clearDebts = () => {
+            debts.value = [];
+            localStorage.setItem('debts', '[]');
+        };
+        // 13. Random Number
+        const randMin = ref(1);
+        const randMax = ref(100);
+        const randRes = ref(null);
+        const genRand = () => {
+            randRes.value = Math.floor(Math.random() * (randMax.value - randMin.value + 1)) + parseInt(randMin.value);
+        };
+        // 14. Math Trainer
+        const mathQ = ref('5 + 3');
+        const mathAns = ref(8);
+        const mathUserAns = ref('');
+        const mathScore = ref(0);
+        const checkMath = () => {
+            if (parseInt(mathUserAns.value) === mathAns.value) {
+                mathScore.value++;
+                const a = Math.floor(Math.random() * 10) + 1;
+                const b = Math.floor(Math.random() * 10) + 1;
+                mathQ.value = `${a} * ${b}`;
+                mathAns.value = a * b;
+            } else {
+                alert('Неверно! Попробуйте еще раз.');
+            }
+            mathUserAns.value = '';
+        };
+        // 15. Breathing Guide
+        const breatheState = ref('Вдох'); // 'Вдох', 'Задержка', 'Выдох'
+        const startBreathe = () => {
+            let cycle = 0;
+            setInterval(() => {
+                cycle = (cycle + 1) % 3;
+                breatheState.value = cycle === 0 ? 'Вдох' : (cycle === 1 ? 'Задержка' : 'Выдох');
+            }, 4000);
+        };
+        // 16. Length Converter
+        const lenMeters = ref(1);
+        const lenKm = computed(() => (lenMeters.value / 1000).toFixed(4));
+        const lenMiles = computed(() => (lenMeters.value * 0.000621371).toFixed(4));
+        // 17. Weight Converter
+        const weightKg = ref(1);
+        const weightLbs = computed(() => (weightKg.value * 2.20462).toFixed(2));
+        const weightOz = computed(() => (weightKg.value * 35.274).toFixed(2));
+        // 18. Simulated QR Code
+        const qrInput = ref('http://wes.by');
+        const qrSim = computed(() => `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrInput.value)}`);
+        // 19. Reaction Tester
+        const reactColor = ref('bg-red-500');
+        const reactText = ref('Ждите зеленого...');
+        const reactTimer = ref(null);
+        const reactStart = ref(0);
+        const reactionTime = ref(null);
+        const runReactTest = () => {
+            reactColor.value = 'bg-red-500';
+            reactText.value = 'Ждите зеленого...';
+            reactionTime.value = null;
+            const delay = Math.floor(Math.random() * 3000) + 2000;
+            reactTimer.value = setTimeout(() => {
+                reactColor.value = 'bg-green-500';
+                reactText.value = 'КЛИКАЙ!';
+                reactStart.value = Date.now();
+            }, delay);
+        };
+        const reactClick = () => {
+            if (reactColor.value === 'bg-green-500') {
+                reactionTime.value = Date.now() - reactStart.value;
+                reactText.value = `Время реакции: ${reactionTime.value} мс!`;
+                reactColor.value = 'bg-blue-500';
+                clearTimeout(reactTimer.value);
+            } else {
+                reactText.value = 'Слишком рано!';
+                clearTimeout(reactTimer.value);
+            }
+        };
+        // 20. VAT Calc
+        const vatPrice = ref(100);
+        const vatRate = ref(20);
+        const vatVal = computed(() => (vatPrice.value * (vatRate.value / 100)).toFixed(2));
+        const vatTotal = computed(() => (parseFloat(vatPrice.value) + parseFloat(vatVal.value)).toFixed(2));
+        // 21. Mood Log
+        const currentMood = ref('Neutral');
+        const moodLogs = ref(JSON.parse(localStorage.getItem('moods') || '[]'));
+        const logMood = () => {
+            moodLogs.value.push({ date: new Date().toLocaleDateString(), mood: currentMood.value });
+            localStorage.setItem('moods', JSON.stringify(moodLogs.value));
+        };
+        // 22. Color Converter
+        const rColor = ref(255);
+        const gColor = ref(0);
+        const bColor = ref(0);
+        const rgbToHex = computed(() => {
+            const toHex = (c) => {
+                const hex = Math.min(255, Math.max(0, parseInt(c))).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+            return '#' + toHex(rColor.value) + toHex(gColor.value) + toHex(bColor.value);
+        });
+        // 23. Cigarette Tracker
+        const cigCount = ref(parseInt(localStorage.getItem('cig_count') || '0'));
+        const cigPrice = ref(5.0); // Packet price BYN
+        const cigCountInPack = ref(20);
+        const addCig = () => { cigCount.value++; localStorage.setItem('cig_count', cigCount.value); };
+        const cigMoneyWaste = computed(() => ((cigCount.value / cigCountInPack.value) * cigPrice.value).toFixed(2));
+        // 24. Smart Notepad
+        const noteText = ref(localStorage.getItem('smart_note') || '');
+        const saveNote = () => { localStorage.setItem('smart_note', noteText.value); alert('Заметка сохранена!'); };
+        // 25. Hash Generator
+        const hashText = ref('BELHOS');
+        const hashRes = computed(() => {
+            let hash = 0;
+            for (let i = 0; i < hashText.value.length; i++) {
+                const char = hashText.value.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16);
+        });
+        // 26. Tip Calc
+        const billAmount = ref(50);
+        const tipPercent = ref(10);
+        const tipVal = computed(() => (billAmount.value * (tipPercent.value / 100)).toFixed(2));
+        // 27. Pulse Simulator
+        const pulseRate = ref(75);
+        const simulatedBeats = ref([]);
+        const simBeat = () => {
+            simulatedBeats.value.push(Date.now());
+            if (simulatedBeats.value.length > 5) simulatedBeats.value.shift();
+        };
+        // 28. Age Calculator
+        const birthDate = ref('2000-01-01');
+        const calculatedAge = computed(() => {
+            if (!birthDate.value) return 0;
+            const diff = Date.now() - new Date(birthDate.value).getTime();
+            return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+        });
+        // 29. Timezone Converter
+        const selectedTz = ref('GMT');
+        const currentTzTime = computed(() => {
+            const date = new Date();
+            if (selectedTz.value === 'EST') return new Date(date.getTime() - 5*3600*1000).toLocaleTimeString();
+            if (selectedTz.value === 'MSK') return new Date(date.getTime() + 3*3600*1000).toLocaleTimeString();
+            return date.toLocaleTimeString();
+        });
+        // 30. White Noise Simulator
+        const noisePlaying = ref(false);
+        const noiseContext = ref(null);
+        const toggleNoise = () => {
+            noisePlaying.value = !noisePlaying.value;
+            if (noisePlaying.value) {
+                // Synthesize white noise via Web Audio API
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                noiseContext.value = new AudioContext();
+                const bufferSize = 2 * noiseContext.value.sampleRate,
+                noiseBuffer = noiseContext.value.createBuffer(1, bufferSize, noiseContext.value.sampleRate),
+                output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+                const whiteNoise = noiseContext.value.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+                whiteNoise.loop = true;
+                whiteNoise.connect(noiseContext.value.destination);
+                whiteNoise.start();
+                noiseContext.value.node = whiteNoise;
+            } else {
+                if (noiseContext.value) {
+                    noiseContext.value.node.stop();
+                    noiseContext.value.close();
+                }
+            }
+        };
+
+        const allToolsList = [
+            { id: 1, name: "Калькулятор SLA", desc: "Расчет срока выполнения" },
+            { id: 2, name: "Конвертер температур", desc: "Шкалы Цельсия, Фаренгейта, Кельвина" },
+            { id: 3, name: "Калькулятор ИМТ", desc: "Индекс массы тела" },
+            { id: 4, name: "Конвертер валют", desc: "Курсы BYN, USD, RUB" },
+            { id: 5, name: "Генератор паролей", desc: "Безопасные случайные пароли" },
+            { id: 6, name: "Помодоро таймер", desc: "Таймер продуктивности 25 минут" },
+            { id: 7, name: "Секундомер", desc: "Высокоточный секундомер" },
+            { id: 8, name: "Водный трекер", desc: "Учет дневного потребления воды" },
+            { id: 9, name: "Анализатор текста", desc: "Подсчет слов и знаков" },
+            { id: 10, name: "Каталог привычек", desc: "Отслеживание полезных привычек" },
+            { id: 11, name: "Учет расходов", desc: "Планировщик бюджета" },
+            { id: 12, name: "Трекер долгов", desc: "Логирование заемных средств" },
+            { id: 13, name: "Случайные числа", desc: "Генерация случайных значений" },
+            { id: 14, name: "Мат-тренажер", desc: "Логические примеры" },
+            { id: 15, name: "Дыхательный гид", desc: "Медитативные циклы" },
+            { id: 16, name: "Конвертер длины", desc: "Метры, мили, километры" },
+            { id: 17, name: "Конвертер веса", desc: "Килограммы, фунты, унции" },
+            { id: 18, name: "Генератор QR", desc: "Симуляция ссылок QR" },
+            { id: 19, name: "Тест реакции", desc: "Измерение скорости реакции" },
+            { id: 20, name: "Калькулятор НДС", desc: "Выделение и начисление НДС" },
+            { id: 21, name: "Лог настроения", desc: "Ежедневный дневник" },
+            { id: 22, name: "Цветовой RGB-Hex", desc: "Конвертер цвета" },
+            { id: 23, name: "Борьба с курением", desc: "Счетчик и финансовый урон" },
+            { id: 24, name: "Умный блокнот", desc: "Быстрое сохранение заметок" },
+            { id: 25, name: "Хэш-генератор", desc: "Генерация HEX хэшей" },
+            { id: 26, name: "Калькулятор чаевых", desc: "Расчет процента" },
+            { id: 27, name: "Симулятор пульса", desc: "Запись биений сердца" },
+            { id: 28, name: "Калькулятор возраста", desc: "Расчет в годах" },
+            { id: 29, name: "Конвертер зон времени", desc: "Конвертер часовых поясов" },
+            { id: 30, name: "Белый шум", desc: "Звуковой фон концентрации" }
+        ];
+
+        const filteredTools = computed(() => {
+            return allToolsList.filter(t => t.name.toLowerCase().includes(search.value.toLowerCase()) || t.desc.toLowerCase().includes(search.value.toLowerCase()));
+        });
+
+        onMounted(() => {
+            startBreathe();
+        });
+
+        return {
+            search, activeTool, filteredTools, allToolsList,
+            slaHours, slaResult, tempC, tempF, tempK, weight, height, bmi,
+            byn, usdRate, rubRate, usdVal, rubVal, passLen, generatedPass, genPass,
+            pomoTime, pomoInterval, startPomo, stopPomo, resetPomo, swTime, startSw, stopSw, resetSw,
+            waterLogged, addWater, resetWater, textToAnalyze, textStats, habits, newHabit, addHabit, toggleHabit, removeHabit,
+            expenses, expenseName, expenseAmount, addExpense, totalExpenses, debts, debtName, debtAmount, debtType, addDebt, clearDebts,
+            randMin, randMax, randRes, genRand, mathQ, mathAns, mathUserAns, mathScore, checkMath, breatheState,
+            lenMeters, lenKm, lenMiles, weightKg, weightLbs, weightOz, qrInput, qrSim,
+            reactColor, reactText, reactionTime, runReactTest, reactClick, vatPrice, vatRate, vatVal, vatTotal,
+            currentMood, logMood, moodLogs, rColor, gColor, bColor, rgbToHex, cigCount, cigPrice, cigCountInPack, addCig, cigMoneyWaste,
+            noteText, saveNote, hashText, hashRes, billAmount, tipPercent, tipVal, pulseRate, simBeat, simulatedBeats,
+            birthDate, calculatedAge, selectedTz, currentTzTime, noisePlaying, toggleNoise
+        };
+    },
+    template: `
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Sidebar Panel: Tools list -->
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm space-y-4">
+                <h3 class="font-bold text-lg text-primary">Полнофункциональный набор (30 логических утилит)</h3>
+                <input v-model="search" placeholder="Поиск утилит..." class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white text-sm mb-2">
+                <div class="space-y-1 max-h-[60vh] overflow-y-auto">
+                    <button v-for="t in filteredTools" :key="t.id" @click="activeTool = t.id" :class="['w-full text-left px-3 py-2 rounded text-xs transition-colors flex flex-col', activeTool === t.id ? 'bg-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300']">
+                        <span class="font-bold">{{ t.id }}. {{ t.name }}</span>
+                        <span class="opacity-75">{{ t.desc }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Panel: Active utility details -->
+            <div class="lg:col-span-3 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm min-h-[450px] flex flex-col justify-between">
+                <div>
+                    <!-- Render Active Tool -->
+                    <div v-if="activeTool === 1" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">1. Калькулятор SLA (срок выполнения)</h4>
+                        <label class="block text-xs dark:text-gray-300">Введите время SLA (в часах):</label>
+                        <input type="number" v-model.number="slaHours" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm">Результат в днях: <strong class="text-primary">{{ slaResult }}</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 2" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">2. Конвертер температур</h4>
+                        <input type="number" v-model="tempC" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm space-y-1">
+                            <div>Шкала Фаренгейта: <strong>{{ tempF }} °F</strong></div>
+                            <div>Шкала Кельвина: <strong>{{ tempK }} K</strong></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 3" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">3. Интерактивный калькулятор ИМТ</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs">Вес (кг):</label>
+                                <input type="number" v-model="weight" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs">Рост (см):</label>
+                                <input type="number" v-model="height" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                            </div>
+                        </div>
+                        <div class="text-sm">Ваш индекс массы тела (ИМТ): <strong class="text-primary">{{ bmi }}</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 4" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">4. Конвертер валют</h4>
+                        <label class="block text-xs">BYN (Белорусский рубль):</label>
+                        <input type="number" v-model="byn" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm space-y-1">
+                            <div>Эквивалент USD (курс {{ usdRate }}): <strong>{{ usdVal }} $</strong></div>
+                            <div>Эквивалент RUB (курс {{ rubRate }}): <strong>{{ rubVal }} ₽</strong></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 5" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">5. Генератор паролей</h4>
+                        <label class="block text-xs">Длина пароля:</label>
+                        <input type="number" v-model="passLen" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <button @click="genPass" class="bg-primary text-white px-4 py-2 rounded-lg block">Сгенерировать</button>
+                        <div v-if="generatedPass" class="p-2 bg-gray-50 dark:bg-gray-900 border rounded font-mono select-all">{{ generatedPass }}</div>
+                    </div>
+
+                    <div v-if="activeTool === 6" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">6. Таймер Помодоро</h4>
+                        <div class="text-4xl font-mono text-center">{{ Math.floor(pomoTime/60) }}:{{ (pomoTime%60).toString().padStart(2, '0') }}</div>
+                        <div class="flex justify-center space-x-2">
+                            <button @click="startPomo" class="bg-green-500 text-white px-4 py-2 rounded">Старт</button>
+                            <button @click="stopPomo" class="bg-yellow-500 text-white px-4 py-2 rounded">Пауза</button>
+                            <button @click="resetPomo" class="bg-red-500 text-white px-4 py-2 rounded">Сброс</button>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 7" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">7. Секундомер</h4>
+                        <div class="text-4xl font-mono text-center">{{ (swTime/1000).toFixed(2) }} сек</div>
+                        <div class="flex justify-center space-x-2">
+                            <button @click="startSw" class="bg-green-500 text-white px-4 py-2 rounded">Старт</button>
+                            <button @click="stopSw" class="bg-yellow-500 text-white px-4 py-2 rounded">Пауза</button>
+                            <button @click="resetSw" class="bg-red-500 text-white px-4 py-2 rounded">Сброс</button>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 8" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">8. Водный трекер</h4>
+                        <div class="text-2xl font-bold text-center text-blue-500">{{ waterLogged }} мл / 2000 мл</div>
+                        <div class="flex justify-center space-x-2">
+                            <button @click="addWater" class="bg-blue-500 text-white px-4 py-2 rounded">+250 мл</button>
+                            <button @click="resetWater" class="bg-red-500 text-white px-4 py-2 rounded">Сброс</button>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 9" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">9. Анализатор текста</h4>
+                        <textarea v-model="textToAnalyze" rows="4" placeholder="Введите ваш текст..." class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white"></textarea>
+                        <div class="text-sm space-y-1">
+                            <div>Символов: <strong>{{ textStats.charCount }}</strong></div>
+                            <div>Слов: <strong>{{ textStats.wordCount }}</strong></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 10" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">10. Список полезных привычек</h4>
+                        <div class="flex space-x-2">
+                            <input v-model="newHabit" placeholder="Новая привычка..." class="flex-1 border p-2 rounded dark:bg-gray-700 dark:text-white">
+                            <button @click="addHabit" class="bg-primary text-white px-4 py-2 rounded">Добавить</button>
+                        </div>
+                        <div class="space-y-1 max-h-[200px] overflow-y-auto">
+                            <div v-for="(h, idx) in habits" :key="idx" class="flex justify-between items-center p-2 border rounded dark:border-gray-700">
+                                <span :class="{ 'line-through text-gray-400': h.done }">{{ h.text }}</span>
+                                <div class="space-x-1">
+                                    <button @click="toggleHabit(idx)" class="text-green-500 text-xs"><i class="fas fa-check"></i></button>
+                                    <button @click="removeHabit(idx)" class="text-red-500 text-xs"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 11" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">11. Учет и планировщик расходов</h4>
+                        <div class="flex space-x-2">
+                            <input v-model="expenseName" placeholder="Название расхода..." class="border p-2 rounded dark:bg-gray-700 dark:text-white flex-1">
+                            <input type="number" v-model="expenseAmount" placeholder="Сумма" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-24">
+                            <button @click="addExpense" class="bg-primary text-white px-4 py-2 rounded">Добавить</button>
+                        </div>
+                        <div class="text-sm">Всего потрачено: <strong class="text-red-500">{{ totalExpenses }} BYN</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 12" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">12. Список долгов и займов</h4>
+                        <div class="flex space-x-2">
+                            <input v-model="debtName" placeholder="ФИО должника..." class="border p-2 rounded dark:bg-gray-700 dark:text-white flex-1">
+                            <input type="number" v-model="debtAmount" placeholder="Сумма" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-24">
+                            <select v-model="debtType" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                                <option value="взял">Взял</option>
+                                <option value="дал">Дал</option>
+                            </select>
+                            <button @click="addDebt" class="bg-primary text-white px-4 py-2 rounded">Записать</button>
+                        </div>
+                        <div class="space-y-1">
+                            <div v-for="d in debts" class="text-xs p-1.5 border rounded flex justify-between">
+                                <span>{{ d.name }}</span>
+                                <span class="font-bold" :class="d.type === 'дал' ? 'text-green-500' : 'text-red-500'">{{ d.type }} {{ d.amount }} BYN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 13" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">13. Генератор случайных чисел</h4>
+                        <div class="flex space-x-2">
+                            <input type="number" v-model="randMin" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-20">
+                            <span>-</span>
+                            <input type="number" v-model="randMax" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-20">
+                            <button @click="genRand" class="bg-primary text-white px-4 py-2 rounded">Генерация</button>
+                        </div>
+                        <div v-if="randRes !== null" class="text-3xl font-bold text-center text-primary">{{ randRes }}</div>
+                    </div>
+
+                    <div v-if="activeTool === 14" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">14. Математический тренажер</h4>
+                        <div class="text-lg font-bold text-center">Сколько будет: {{ mathQ }} ?</div>
+                        <div class="flex space-x-2 justify-center">
+                            <input type="number" v-model="mathUserAns" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-24">
+                            <button @click="checkMath" class="bg-primary text-white px-4 py-2 rounded">Проверить</button>
+                        </div>
+                        <div class="text-sm text-center">Очки: <strong>{{ mathScore }}</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 15" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">15. Дыхательный таймер</h4>
+                        <div class="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-700 mx-auto animate-pulse">
+                            {{ breatheState }}
+                        </div>
+                        <p class="text-xs text-center text-gray-500">Помогает расслабиться и восстановить ритм дыхания. Циклы меняются каждые 4 секунды.</p>
+                    </div>
+
+                    <div v-if="activeTool === 16" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">16. Конвертер длины</h4>
+                        <label class="block text-xs">Метры:</label>
+                        <input type="number" v-model="lenMeters" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm space-y-1">
+                            <div>Километры: <strong>{{ lenKm }} км</strong></div>
+                            <div>Мили: <strong>{{ lenMiles }} миль</strong></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 17" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">17. Конвертер веса</h4>
+                        <label class="block text-xs">Килограммы:</label>
+                        <input type="number" v-model="weightKg" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm space-y-1">
+                            <div>Фунты: <strong>{{ weightLbs }} lbs</strong></div>
+                            <div>Унции: <strong>{{ weightOz }} oz</strong></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 18" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">18. Имитатор QR-кода</h4>
+                        <input v-model="qrInput" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="flex justify-center">
+                            <img :src="qrSim" class="border p-2 rounded bg-white shadow-sm" alt="QR-код">
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 19" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">19. Тестер скорости реакции</h4>
+                        <div @click="reactClick" :class="[reactColor, 'h-32 rounded-xl flex items-center justify-center text-white font-bold text-lg cursor-pointer transition-all select-none']">
+                            {{ reactText }}
+                        </div>
+                        <button @click="runReactTest" class="bg-primary text-white px-4 py-2 rounded block mx-auto">Начать тест</button>
+                    </div>
+
+                    <div v-if="activeTool === 20" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">20. Калькулятор НДС</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs">Сумма (без НДС):</label>
+                                <input type="number" v-model="vatPrice" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs">Ставка (%):</label>
+                                <input type="number" v-model="vatRate" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                            </div>
+                        </div>
+                        <div class="text-sm space-y-1">
+                            <div>НДС составит: <strong>{{ vatVal }} BYN</strong></div>
+                            <div>Итого с НДС: <strong>{{ vatTotal }} BYN</strong></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 21" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">21. Логгер настроения</h4>
+                        <div class="flex space-x-2">
+                            <select v-model="currentMood" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                                <option value="Happy">Отлично 😊</option>
+                                <option value="Neutral">Нормально 😐</option>
+                                <option value="Sad">Грустно 😔</option>
+                            </select>
+                            <button @click="logMood" class="bg-primary text-white px-4 py-2 rounded">Записать</button>
+                        </div>
+                        <div class="text-xs space-y-1">
+                            <div v-for="m in moodLogs" class="p-1 border rounded dark:border-gray-700">{{ m.date }}: {{ m.mood }}</div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 22" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">22. Цветовой RGB-Hex конвертер</h4>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" v-model="rColor" placeholder="R" class="border p-1 rounded dark:bg-gray-700 text-xs">
+                            <input type="number" v-model="gColor" placeholder="G" class="border p-1 rounded dark:bg-gray-700 text-xs">
+                            <input type="number" v-model="bColor" placeholder="B" class="border p-1 rounded dark:bg-gray-700 text-xs">
+                        </div>
+                        <div class="text-sm flex items-center space-x-4">
+                            <span>Код цвета: <strong>{{ rgbToHex }}</strong></span>
+                            <div class="w-8 h-8 rounded border shadow" :style="{ backgroundColor: rgbToHex }"></div>
+                        </div>
+                    </div>
+
+                    <div v-if="activeTool === 23" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">23. Борьба с курением</h4>
+                        <div class="text-center font-bold">Выкурено сигарет: {{ cigCount }} шт.</div>
+                        <div class="flex justify-center space-x-2">
+                            <button @click="addCig" class="bg-red-500 text-white px-4 py-2 rounded">Выкурил сигарету 🚬</button>
+                        </div>
+                        <div class="text-sm text-center text-red-400 font-bold">Потрачено денег впустую: {{ cigMoneyWaste }} BYN</div>
+                    </div>
+
+                    <div v-if="activeTool === 24" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">24. Умный блокнот быстрых записей</h4>
+                        <textarea v-model="noteText" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" rows="4"></textarea>
+                        <button @click="saveNote" class="bg-primary text-white px-4 py-2 rounded block">Сохранить</button>
+                    </div>
+
+                    <div v-if="activeTool === 25" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">25. Хэш-генератор</h4>
+                        <input v-model="hashText" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm">HEX Хэш: <strong class="text-primary font-mono">{{ hashRes }}</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 26" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">26. Калькулятор чаевых</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs">Счет (BYN):</label>
+                                <input type="number" v-model="billAmount" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs">Чаевые (%):</label>
+                                <input type="number" v-model="tipPercent" class="border p-2 rounded dark:bg-gray-700 dark:text-white w-full">
+                            </div>
+                        </div>
+                        <div class="text-sm">Сумма чаевых: <strong class="text-green-500">{{ tipVal }} BYN</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 27" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">27. Симулятор пульса</h4>
+                        <button @click="simBeat" class="bg-red-500 text-white px-4 py-2 rounded animate-bounce"><i class="fas fa-heart mr-2"></i>Стук сердца</button>
+                        <div class="text-xs">Записанные удары: {{ simulatedBeats.length }} ударов.</div>
+                    </div>
+
+                    <div v-if="activeTool === 28" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">28. Калькулятор точного возраста</h4>
+                        <input type="date" v-model="birthDate" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                        <div class="text-sm">Возраст в годах: <strong>{{ calculatedAge }} лет</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 29" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">29. Конвертер часовых поясов</h4>
+                        <select v-model="selectedTz" class="border p-2 rounded dark:bg-gray-700 dark:text-white">
+                            <option value="EST">Нью-Йорк (EST)</option>
+                            <option value="MSK">Минск/Москва (MSK)</option>
+                            <option value="GMT">Лондон (GMT)</option>
+                        </select>
+                        <div class="text-sm">Время в зоне {{ selectedTz }}: <strong>{{ currentTzTime }}</strong></div>
+                    </div>
+
+                    <div v-if="activeTool === 30" class="space-y-4">
+                        <h4 class="text-xl font-bold text-primary">30. Генератор белого шума</h4>
+                        <button @click="toggleNoise" class="bg-primary text-white px-6 py-2 rounded-lg font-bold">
+                            {{ noisePlaying ? 'Остановить фоновый шум' : 'Запустить белый шум' }}
+                        </button>
+                        <p class="text-xs text-gray-400">Синтезирует акустические волны белого шума для полной концентрации в офисе.</p>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4 mt-6 flex justify-between text-xs text-gray-400">
+                    <span>Служебная логика BELHOS CRM</span>
+                    <span>30/30 функций утилит</span>
+                </div>
+            </div>
         </div>
     `
 });

@@ -8,6 +8,14 @@ def run_cuj(page):
     page.goto("http://127.0.0.1:8000")
     page.wait_for_timeout(1000)
 
+    # Assert PWA manifest exists in HTML
+    manifest = page.locator("link[rel='manifest']")
+    if manifest.count() > 0:
+        print("PWA manifest link found successfully!")
+    else:
+        print("Error: PWA manifest link not found")
+        sys.exit(1)
+
     # Fill in login form
     print("Logging in as admin...")
     page.fill("input[placeholder='Имя пользователя'], input[type='text']", "admin")
@@ -24,59 +32,37 @@ def run_cuj(page):
     page.wait_for_selector("text=Всего заявок")
     page.wait_for_timeout(1000)
 
-    # Navigate to Help & Training Tab
-    print("Navigating to Help and Training view...")
-    page.click("text=Справка и обучение")
+    # Navigate to Logical Tools view
+    print("Navigating to Logical Tools view...")
+    page.click("text=Инструменты")
     page.wait_for_timeout(1000)
 
-    # Verify reference manual is displayed
-    print("Verifying Справка manual contents...")
-    page.wait_for_selector("text=Справка по системе BELHOS")
-    page.wait_for_selector("text=Жизненный цикл заявки")
-    page.wait_for_timeout(1000)
-
-    # Switch to Training tab
-    print("Switching to interactive training simulator...")
-    page.click("text=Интерактивное обучение")
-    page.wait_for_timeout(1000)
-
-    # Verify simulator step 1 loaded
-    page.wait_for_selector("text=Шаг 1: Выберите вашу роль")
+    # Verify logical tools tab exists and list of 30 utilities are present
+    print("Verifying Tools panel...")
+    page.wait_for_selector("text=Полнофункциональный набор")
+    page.wait_for_selector("text=Калькулятор SLA")
+    page.wait_for_selector("text=Водный трекер")
     page.wait_for_timeout(500)
 
-    # Choose Responsible Employee role
-    print("Selecting Employee role simulator...")
-    page.click("text=Сотрудник")
+    # Let's interact with Temperature Converter (id 2)
+    print("Switching to temperature converter...")
+    page.click("text=2. Конвертер температур")
     page.wait_for_timeout(1000)
+    page.wait_for_selector("text=Шкала Фаренгейта")
 
-    # Fill title in simulator
-    print("Filling simulator fields...")
-    page.fill("input[placeholder='Введите название (например: Поломка лифта)']", "Обучение: Проверка крана")
-    page.wait_for_timeout(500)
-    page.fill("textarea[placeholder='Введите описание проблемы']", "Кран подтекает в кухонном блоке.")
-    page.wait_for_timeout(500)
-
-    # Click Submit in simulator to proceed to quiz (Step 3)
-    page.click("button:has-text('Отправить заявку')")
+    # Let's interact with Water Tracker (id 8)
+    print("Switching to water tracker...")
+    page.click("text=8. Водный трекер")
     page.wait_for_timeout(1000)
-
-    # Verify quiz step
-    print("Answering the educational quiz...")
-    page.select_option("select:near(label:has-text('Какая роль имеет доступ к полным настройкам'))", "Administrator")
-    page.wait_for_timeout(500)
-    page.select_option("select:near(label:has-text('Генерирует ли СУБД MySQL схемы'))", "yes")
-    page.wait_for_timeout(500)
-
-    # Click check answers
-    print("Submitting quiz answers...")
-    page.click("button:has-text('Проверить ответы')")
+    page.click("button:has-text('+250 мл')")
     page.wait_for_timeout(1000)
+    page.wait_for_selector("text=250 мл")
 
-    # Take screenshot of successful simulator completion
-    print("Taking verification screenshot of training complete...")
+    # Take screenshot of the logical tools panel
+    print("Taking verification screenshot of tools layout...")
     page.screenshot(path="/home/jules/verification/screenshots/verification.png")
     page.wait_for_timeout(1000)
-    print("E2E Playwright Help/Training verification finished successfully!")
+    print("E2E Playwright verification of PWA and Tools finished successfully!")
 
 if __name__ == "__main__":
     with sync_playwright() as p:
