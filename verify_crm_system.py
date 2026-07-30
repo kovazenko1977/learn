@@ -24,42 +24,59 @@ def run_cuj(page):
     page.wait_for_selector("text=Всего заявок")
     page.wait_for_timeout(1000)
 
-    # Click tasks view link
-    print("Navigating to tasks page...")
-    page.click("text=Заявки")
+    # Navigate to Help & Training Tab
+    print("Navigating to Help and Training view...")
+    page.click("text=Справка и обучение")
     page.wait_for_timeout(1000)
 
-    # Open task creation modal
-    print("Opening create task form...")
-    page.click("button:has-text('Новая заявка')")
+    # Verify reference manual is displayed
+    print("Verifying Справка manual contents...")
+    page.wait_for_selector("text=Справка по системе BELHOS")
+    page.wait_for_selector("text=Жизненный цикл заявки")
     page.wait_for_timeout(1000)
 
-    # Fill task creation fields
-    print("Filling task info...")
-    # Form title input selector based on template
-    page.fill("input[required]", "Автотест: Ремонт кондиционера")
+    # Switch to Training tab
+    print("Switching to interactive training simulator...")
+    page.click("text=Интерактивное обучение")
+    page.wait_for_timeout(1000)
+
+    # Verify simulator step 1 loaded
+    page.wait_for_selector("text=Шаг 1: Выберите вашу роль")
     page.wait_for_timeout(500)
 
-    # Fill in custom required fields (like Кабинет/Номер)
-    # The first custom input is Кабинет/Номер
-    page.fill("input[type='text']:near(label:has-text('Кабинет/Номер'))", "Кабинет 305")
+    # Choose Responsible Employee role
+    print("Selecting Employee role simulator...")
+    page.click("text=Сотрудник")
+    page.wait_for_timeout(1000)
+
+    # Fill title in simulator
+    print("Filling simulator fields...")
+    page.fill("input[placeholder='Введите название (например: Поломка лифта)']", "Обучение: Проверка крана")
     page.wait_for_timeout(500)
-    page.fill("input[type='tel']", "+375291234567")
+    page.fill("textarea[placeholder='Введите описание проблемы']", "Кран подтекает в кухонном блоке.")
     page.wait_for_timeout(500)
 
-    page.fill("textarea", "Необходимо произвести диагностику и ремонт кондиционера в главном холле.")
+    # Click Submit in simulator to proceed to quiz (Step 3)
+    page.click("button:has-text('Отправить заявку')")
+    page.wait_for_timeout(1000)
+
+    # Verify quiz step
+    print("Answering the educational quiz...")
+    page.select_option("select:near(label:has-text('Какая роль имеет доступ к полным настройкам'))", "Administrator")
+    page.wait_for_timeout(500)
+    page.select_option("select:near(label:has-text('Генерирует ли СУБД MySQL схемы'))", "yes")
     page.wait_for_timeout(500)
 
-    # Submit task form
-    print("Submitting task...")
-    page.click("button:has-text('Сохранить'), button[type='submit']")
-    page.wait_for_timeout(2000)
+    # Click check answers
+    print("Submitting quiz answers...")
+    page.click("button:has-text('Проверить ответы')")
+    page.wait_for_timeout(1000)
 
-    # Take screenshot at key moment
-    print("Taking verification screenshot...")
+    # Take screenshot of successful simulator completion
+    print("Taking verification screenshot of training complete...")
     page.screenshot(path="/home/jules/verification/screenshots/verification.png")
     page.wait_for_timeout(1000)
-    print("Cuj finished successfully!")
+    print("E2E Playwright Help/Training verification finished successfully!")
 
 if __name__ == "__main__":
     with sync_playwright() as p:
@@ -71,7 +88,7 @@ if __name__ == "__main__":
         try:
             run_cuj(page)
         except Exception as e:
-            print(f"Error occurred: {e}")
+            print(f"Error occurred during E2E run: {e}")
             sys.exit(1)
         finally:
             context.close()

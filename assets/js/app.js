@@ -27,7 +27,10 @@ const translations = {
         assign: "Назначить",
         categories: "Категории",
         history: "История",
-        export: "Экспорт CSV"
+        export: "Экспорт CSV",
+        help: "Справка и обучение",
+        help_title: "Справка по системе BELHOS",
+        training_title: "Обучение работе в программе"
     },
     en: {
         login: "Login",
@@ -56,7 +59,10 @@ const translations = {
         assign: "Assign",
         categories: "Categories",
         history: "History",
-        export: "Export CSV"
+        export: "Export CSV",
+        help: "Help & Training",
+        help_title: "BELHOS System Help",
+        training_title: "Interactive Software Training"
     }
 };
 
@@ -176,6 +182,7 @@ const App = {
                             <nav-link :active="view === 'tasks'" @click="view = 'tasks'">{{ t('tasks') }}</nav-link>
                             <nav-link v-if="user.role === 'Administrator'" :active="view === 'users'" @click="view = 'users'">{{ t('users') }}</nav-link>
                             <nav-link v-if="user.role === 'Administrator'" :active="view === 'settings'" @click="view = 'settings'">{{ t('settings') }}</nav-link>
+                            <nav-link :active="view === 'help'" @click="view = 'help'">{{ t('help') }}</nav-link>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -201,6 +208,7 @@ const App = {
                     <users-view v-if="view === 'users'" :users="users" :t="t" @refresh="initData" :api="api"></users-view>
                     <settings-view v-if="view === 'settings'" :settings="settings" :t="t" @refresh="initData" :api="api"></settings-view>
                     <profile-view v-if="view === 'profile'" :user="user" :t="t" @refresh="initData" :api="api"></profile-view>
+                    <help-view v-if="view === 'help'" :t="t"></help-view>
                 </main>
             </div>
         </div>
@@ -949,6 +957,265 @@ app.component('profile-view', {
                 </div>
                 <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-600">{{ t('save') }}</button>
             </form>
+        </div>
+    `
+});
+
+app.component('help-view', {
+    props: ['t'],
+    setup() {
+        const activeTab = ref('help'); // 'help' or 'training'
+        const simStep = ref(1);
+        const simRole = ref('Responsible Employee');
+        const testUser = ref('Иван Петров');
+        const simTaskTitle = ref('');
+        const simTaskDesc = ref('');
+        const simStatus = ref('new');
+        const simAnswers = reactive({ q1: '', q2: '' });
+        const simResult = ref('');
+        const completedTraining = ref(false);
+
+        const resetSimulator = () => {
+            simStep.value = 1;
+            simTaskTitle.value = '';
+            simTaskDesc.value = '';
+            simStatus.value = 'new';
+            simAnswers.q1 = '';
+            simAnswers.q2 = '';
+            simResult.value = '';
+            completedTraining.value = false;
+        };
+
+        const checkQuiz = () => {
+            if (simAnswers.q1 === 'Administrator' && simAnswers.q2 === 'yes') {
+                simResult.value = 'success';
+                completedTraining.value = true;
+                simStep.value = 4;
+            } else {
+                simResult.value = 'fail';
+            }
+        };
+
+        return {
+            activeTab,
+            simStep,
+            simRole,
+            testUser,
+            simTaskTitle,
+            simTaskDesc,
+            simStatus,
+            simAnswers,
+            simResult,
+            completedTraining,
+            resetSimulator,
+            checkQuiz
+        };
+    },
+    template: `
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Navigation Tab -->
+            <div class="flex space-x-4 border-b pb-4 dark:border-gray-700">
+                <button @click="activeTab = 'help'" :class="['px-4 py-2 font-bold rounded-lg transition-colors', activeTab === 'help' ? 'bg-primary text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800']">
+                    <i class="fas fa-book-open mr-2"></i>Справка
+                </button>
+                <button @click="activeTab = 'training'" :class="['px-4 py-2 font-bold rounded-lg transition-colors', activeTab === 'training' ? 'bg-primary text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800']">
+                    <i class="fas fa-graduation-cap mr-2"></i>Интерактивное обучение
+                </button>
+            </div>
+
+            <!-- Reference Manual View -->
+            <div v-if="activeTab === 'help'" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm space-y-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-primary mb-4">{{ t('help_title') }}</h2>
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Добро пожаловать в справочную систему **BELHOS** — CRM-платформы для автоматизации создания, распределения и контроля выполнения заявок на ремонт и обслуживание.
+                    </p>
+                </div>
+
+                <div class="border-t pt-6 dark:border-gray-700 space-y-4">
+                    <h3 class="text-xl font-bold dark:text-white"><i class="fas fa-user-shield text-blue-500 mr-2"></i>1. Роли и права пользователей</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <span class="font-bold text-blue-600 dark:text-blue-400">Администратор</span>
+                            <p class="text-xs text-gray-500 mt-1">Полный доступ: управление пользователями, категориями, приоритетами, SLA-контроль, конструктор форм и переключение баз данных.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <span class="font-bold text-yellow-600 dark:text-yellow-400">Начальник отдела</span>
+                            <p class="text-xs text-gray-500 mt-1">Курирование: просмотр всех заявок, назначение ответственных исполнителей (вручную и через drag-and-drop), смена статусов и комментирование.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <span class="font-bold text-green-600 dark:text-green-400">Ответственный сотрудник</span>
+                            <p class="text-xs text-gray-500 mt-1">Создатель: регистрация заявок, заполнение настраиваемых полей конструктора, прикрепление фото и файлов.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <span class="font-bold text-indigo-600 dark:text-indigo-400">Исполнитель (мастер, техник)</span>
+                            <p class="text-xs text-gray-500 mt-1">Реализатор: просмотр назначенных ему задач, изменение статуса (В работе / Выполнено) и добавление отчетов-комментариев.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-6 dark:border-gray-700 space-y-4">
+                    <h3 class="text-xl font-bold dark:text-white"><i class="fas fa-tasks text-yellow-500 mr-2"></i>2. Жизненный цикл заявки</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Каждая заявка последовательно проходит следующие стадии:
+                    </p>
+                    <ul class="list-disc pl-6 text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                        <li><strong>Новая (new):</strong> Заявка создана ответственным лицом, но исполнитель еще не назначен.</li>
+                        <li><strong>Назначена (assigned):</strong> Начальник отдела выбрал техника для выполнения.</li>
+                        <li><strong>В работе (in_work):</strong> Техник приступил к выполнению задачи.</li>
+                        <li><strong>Выполнено (done):</strong> Мастер завершил работу и прикрепил отчет. Заявка отправляется в архив.</li>
+                        <li><strong>Отклонено (rejected):</strong> Заявка закрыта по объективным причинам.</li>
+                    </ul>
+                </div>
+
+                <div class="border-t pt-6 dark:border-gray-700 space-y-4">
+                    <h3 class="text-xl font-bold dark:text-white"><i class="fas fa-database text-green-500 mr-2"></i>3. Смена режима хранения (JSON ↔ MySQL)</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Система поддерживает гибридное хранилище. Администратор может переключить режим в настройках:
+                    </p>
+                    <ul class="list-disc pl-6 text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                        <li><strong>Режим JSON:</strong> Отличная скорость и переносимость, не требует настройки СУБД (данные в файлах JSON).</li>
+                        <li><strong>Режим MySQL:</strong> Промышленная база данных. При переходе на MySQL система автоматически сгенерирует все таблицы и базовые роли.</li>
+                    </ul>
+                </div>
+
+                <div class="border-t pt-6 dark:border-gray-700 space-y-4">
+                    <h3 class="text-xl font-bold dark:text-white"><i class="fas fa-tools text-purple-500 mr-2"></i>4. Дополнительные возможности</h3>
+                    <ul class="list-disc pl-6 text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                        <li><strong>Конструктор форм:</strong> Администратор может динамически менять поля (текст, номер, дата, телефон) при создании заявок с помощью удобного drag-and-drop перетаскивания.</li>
+                        <li><strong>Массовое назначение:</strong> Быстрое назначение одного мастера на множество выбранных заявок.</li>
+                        <li><strong>SLA контроль:</strong> Автоматический расчет планового дедлайна выполнения в зависимости от выбранной категории срочности.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Interactive Training Simulator -->
+            <div v-if="activeTab === 'training'" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm space-y-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-primary mb-2">{{ t('training_title') }}</h2>
+                    <p class="text-gray-500 dark:text-gray-400">Пройдите практическое интерактивное руководство по работе в системе</p>
+                </div>
+
+                <!-- Step 1: Role Selection -->
+                <div v-if="simStep === 1" class="space-y-4">
+                    <h3 class="text-lg font-bold dark:text-white text-center">Шаг 1: Выберите вашу роль для симуляции обучения</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button @click="simRole = 'Responsible Employee'; simStep = 2" class="p-6 border rounded-xl hover:border-primary text-center dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-900 transition-all">
+                            <i class="fas fa-edit text-2xl text-green-500 mb-2"></i>
+                            <div class="font-bold dark:text-white">Сотрудник</div>
+                            <div class="text-[10px] text-gray-400 mt-1">Создание новых заявок</div>
+                        </button>
+                        <button @click="simRole = 'Department Head'; simStep = 2" class="p-6 border rounded-xl hover:border-primary text-center dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-900 transition-all">
+                            <i class="fas fa-users-cog text-2xl text-yellow-500 mb-2"></i>
+                            <div class="font-bold dark:text-white">Начальник отдела</div>
+                            <div class="text-[10px] text-gray-400 mt-1">Распределение исполнителей</div>
+                        </button>
+                        <button @click="simRole = 'Executor'; simStep = 2" class="p-6 border rounded-xl hover:border-primary text-center dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-900 transition-all">
+                            <i class="fas fa-wrench text-2xl text-indigo-500 mb-2"></i>
+                            <div class="font-bold dark:text-white">Исполнитель</div>
+                            <div class="text-[10px] text-gray-400 mt-1">Выполнение работ</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Interactive simulator actions -->
+                <div v-if="simStep === 2" class="space-y-4">
+                    <div class="flex justify-between items-center bg-blue-50 dark:bg-blue-950 p-3 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+                        <span>Симуляция роли: <strong>{{ simRole }}</strong></span>
+                        <button @click="simStep = 1" class="text-xs underline hover:text-blue-800">Изменить</button>
+                    </div>
+
+                    <!-- Simulator Content based on Role -->
+                    <div v-if="simRole === 'Responsible Employee'" class="space-y-4">
+                        <p class="text-sm dark:text-gray-300">Ваша задача — заполнить поля ниже, чтобы создать тестовую заявку на починку лифта.</p>
+                        <div class="space-y-2 max-w-md">
+                            <input v-model="simTaskTitle" placeholder="Введите название (например: Поломка лифта)" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                            <textarea v-model="simTaskDesc" placeholder="Введите описание проблемы" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" rows="2"></textarea>
+                            <button @click="simStep = 3" :disabled="!simTaskTitle" class="bg-primary text-white px-4 py-2 rounded-lg disabled:opacity-50">Отправить заявку</button>
+                        </div>
+                    </div>
+
+                    <div v-if="simRole === 'Department Head'" class="space-y-4">
+                        <p class="text-sm dark:text-gray-300">Симуляция распределения: перетащите задачу или назначьте исполнителя из списка ниже.</p>
+                        <div class="border rounded-lg p-4 bg-gray-50 dark:bg-gray-900 space-y-3">
+                            <div class="p-3 bg-white dark:bg-gray-800 shadow rounded flex justify-between items-center">
+                                <div>
+                                    <div class="font-bold dark:text-white">Сломался бойлер в корпусе 2</div>
+                                    <div class="text-xs text-red-500">Дедлайн: сегодня</div>
+                                </div>
+                                <select @change="simStep = 3" class="border p-1 rounded dark:bg-gray-700 dark:text-white text-xs">
+                                    <option>Выберите...</option>
+                                    <option>Техник Иван</option>
+                                    <option>Электрик Сергей</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="simRole === 'Executor'" class="space-y-4">
+                        <p class="text-sm dark:text-gray-300">Вам назначена заявка «Замена светильника». Поменяйте ее статус на «В работе» или «Выполнено».</p>
+                        <div class="p-4 border rounded-lg bg-gray-50 dark:bg-gray-900 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold dark:text-white">Замена светильника</span>
+                                <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">Текущий статус: {{ simStatus }}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button @click="simStatus = 'in_work'; simStep = 3" class="bg-yellow-500 text-white px-3 py-1 text-xs rounded">В работу</button>
+                                <button @click="simStatus = 'done'; simStep = 3" class="bg-green-500 text-white px-3 py-1 text-xs rounded">Выполнить</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Interactive Quiz -->
+                <div v-if="simStep === 3" class="space-y-6">
+                    <h3 class="text-lg font-bold dark:text-white text-center">Финальный тест знаний</h3>
+                    <p class="text-sm text-gray-500 text-center">Чтобы подтвердить завершение обучения, ответьте на два вопроса:</p>
+
+                    <div class="space-y-4 max-w-md mx-auto">
+                        <div>
+                            <label class="block text-sm font-medium dark:text-gray-300">1. Какая роль имеет доступ к полным настройкам и СУБД?</label>
+                            <select v-model="simAnswers.q1" class="mt-1 block w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                                <option value="">Выберите...</option>
+                                <option value="Executor">Исполнитель</option>
+                                <option value="Department Head">Начальник отдела</option>
+                                <option value="Administrator">Администратор</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium dark:text-gray-300">2. Генерирует ли СУБД MySQL схемы таблиц автоматически при переходе?</label>
+                            <select v-model="simAnswers.q2" class="mt-1 block w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                                <option value="">Выберите...</option>
+                                <option value="yes">Да, автоматически</option>
+                                <option value="no">Нет, нужно создавать руками</option>
+                            </select>
+                        </div>
+
+                        <div class="pt-4 flex justify-between">
+                            <button @click="simStep = 2" class="text-sm text-gray-500">Назад</button>
+                            <button @click="checkQuiz" class="bg-primary text-white px-6 py-2 rounded-lg">Проверить ответы</button>
+                        </div>
+
+                        <!-- Failure display -->
+                        <div v-if="simResult === 'fail'" class="p-3 bg-red-100 text-red-800 text-sm rounded text-center">
+                            Ответы неверны. Попробуйте еще раз!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Finished simulation -->
+                <div v-if="simStep === 4" class="text-center space-y-4">
+                    <div class="inline-flex w-16 h-16 bg-green-100 text-green-600 rounded-full items-center justify-center text-2xl mb-2">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="text-xl font-bold dark:text-white">Поздравляем с завершением обучения!</h3>
+                    <p class="text-sm text-gray-500 max-w-md mx-auto">Вы успешно освоили ключевые принципы работы, ролевые особенности и прошли квалификационное тестирование.</p>
+                    <div class="pt-4 space-x-2">
+                        <button @click="resetSimulator" class="bg-primary text-white px-6 py-2 rounded-lg">Начать заново</button>
+                    </div>
+                </div>
+            </div>
         </div>
     `
 });
