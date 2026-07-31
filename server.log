@@ -1,0 +1,70 @@
+[Fri Jul 31 01:41:22 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Fri Jul 31 01:42:51 2026] 127.0.0.1:39570 Accepted
+[Fri Jul 31 01:42:51 2026] 127.0.0.1:39570 [200]: HEAD /
+[Fri Jul 31 01:42:51 2026] 127.0.0.1:39570 Closing
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39584 Accepted
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39584 [200]: GET /
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39584 Closing
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39588 Accepted
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39588 [200]: GET /assets/js/app.js
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39588 Closing
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39600 Accepted
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39600 [200]: GET /sw.js
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39600 Closing
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39608 Accepted
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39608 [200]: GET /
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39608 Closing
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39610 Accepted
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39624 Accepted
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39610 [200]: GET /index.html
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39624 [200]: GET /assets/js/app.js
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39610 Closing
+[Fri Jul 31 01:42:52 2026] 127.0.0.1:39624 Closing
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39628 Accepted
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39628 [200]: POST /api/auth.php?action=login
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39628 Closing
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39630 Accepted
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39640 Accepted
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39646 Accepted
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39656 Accepted
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39630 [200]: GET /api/settings.php
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39630 Closing
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39640 [200]: GET /api/tasks.php
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39640 Closing
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39646 [200]: GET /api/users.php
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39646 Closing
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39656 [200]: GET /api/analytics.php
+[Fri Jul 31 01:42:55 2026] 127.0.0.1:39656 Closing
+[Fri Jul 31 01:42:59 2026] 127.0.0.1:38736 Accepted
+[Fri Jul 31 01:42:59 2026] 127.0.0.1:38736 [200]: GET /api/chat.php?recipient_id=null
+[Fri Jul 31 01:42:59 2026] 127.0.0.1:38736 Closing
+[Fri Jul 31 01:43:01 2026] 127.0.0.1:38742 Accepted
+[Fri Jul 31 01:43:01 2026] 127.0.0.1:38742 [200]: GET /api/chat.php?recipient_id=general
+[Fri Jul 31 01:43:01 2026] 127.0.0.1:38742 Closing
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38746 Accepted
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38746 [200]: GET /api/chat.php?recipient_id=general
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38746 Closing
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38752 Accepted
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38764 Accepted
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38774 Accepted
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38782 Accepted
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38798 Accepted
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38752 [200]: POST /api/users.php?ping=1
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38752 Closing
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38764 [200]: GET /api/settings.php
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38764 Closing
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38774 [200]: GET /api/tasks.php
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38774 Closing
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38782 [200]: GET /api/users.php
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38782 Closing
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38798 [200]: GET /api/analytics.php
+[Fri Jul 31 01:43:02 2026] 127.0.0.1:38798 Closing
+[Fri Jul 31 01:43:03 2026] 127.0.0.1:38810 Accepted
+[Fri Jul 31 01:43:03 2026] 127.0.0.1:38810 [200]: POST /api/chat.php
+[Fri Jul 31 01:43:03 2026] 127.0.0.1:38810 Closing
+[Fri Jul 31 01:43:03 2026] 127.0.0.1:38824 Accepted
+[Fri Jul 31 01:43:03 2026] 127.0.0.1:38824 [200]: GET /api/chat.php?recipient_id=general
+[Fri Jul 31 01:43:03 2026] 127.0.0.1:38824 Closing
+[Fri Jul 31 01:43:05 2026] 127.0.0.1:38838 Accepted
+[Fri Jul 31 01:43:05 2026] 127.0.0.1:38838 [200]: GET /api/chat.php?recipient_id=general
+[Fri Jul 31 01:43:05 2026] 127.0.0.1:38838 Closing
