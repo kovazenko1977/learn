@@ -34,5 +34,14 @@
         "attachment_name": null,
         "created_at": "2026-07-30 14:22:18",
         "id": "cdcc94cf9ef670ba56275ce9dc306084"
+    },
+    {
+        "sender_id": "admin-1",
+        "recipient_id": null,
+        "message": "Привет всем! Новая система BELHOS CRM запущена!",
+        "attachment_url": null,
+        "attachment_name": null,
+        "created_at": "2026-07-31 16:20:21",
+        "id": "4197c645989007224f30b129992016bd"
     }
 ]

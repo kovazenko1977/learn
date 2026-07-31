@@ -90,6 +90,12 @@ class Storage {
                 attachment_url VARCHAR(255) NULL,
                 attachment_name VARCHAR(255) NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )",
+            "CREATE TABLE IF NOT EXISTS groups (
+                id VARCHAR(36) PRIMARY KEY,
+                name VARCHAR(100),
+                permissions JSON,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )"
         ];
         foreach ($queries as $q) {
@@ -105,6 +111,7 @@ class Storage {
                 return array_map(function($row) {
                     if (isset($row['custom_fields'])) $row['custom_fields'] = json_decode($row['custom_fields'], true);
                     if (isset($row['attachments'])) $row['attachments'] = json_decode($row['attachments'], true);
+                    if (isset($row['permissions'])) $row['permissions'] = json_decode($row['permissions'], true);
                     return $row;
                 }, $results);
             } catch (PDOException $e) {
@@ -124,6 +131,7 @@ class Storage {
             if ($row) {
                 if (isset($row['custom_fields'])) $row['custom_fields'] = json_decode($row['custom_fields'], true);
                 if (isset($row['attachments'])) $row['attachments'] = json_decode($row['attachments'], true);
+                if (isset($row['permissions'])) $row['permissions'] = json_decode($row['permissions'], true);
             }
             return $row;
         } else {

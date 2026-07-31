@@ -88,6 +88,7 @@ const App = {
         const tasks = ref([]);
         const users = ref([]);
         const stats = ref(null);
+        const groups = ref([]);
 
         const t = (key) => translations[lang.value][key] || key;
 
@@ -212,16 +213,18 @@ const App = {
 
         const initData = async () => {
             if (!user.value) return;
-            const [s, t, u, st] = await Promise.all([
+            const [s, t, u, st, gr] = await Promise.all([
                 api('settings.php'),
                 api('tasks.php'),
                 api('users.php'),
-                (user.value.role === 'Administrator' || user.value.role === 'Department Head') ? api('analytics.php') : Promise.resolve(null)
+                (user.value.role === 'Administrator' || user.value.role === 'Department Head') ? api('analytics.php') : Promise.resolve(null),
+                api('groups.php')
             ]);
             settings.value = s || {};
             tasks.value = t || [];
             users.value = u || [];
             stats.value = st;
+            groups.value = gr || [];
             checkNewAssignments();
         };
 
@@ -250,7 +253,7 @@ const App = {
         return {
             user, token, lang, darkMode, view, t, formatDuration, toggleDarkMode, toggleLang,
             login, logout, api, settings, tasks, users, stats, initData,
-            activeNewAssignment, dismissAssignment, viewAssignment, roleTranslations
+            activeNewAssignment, dismissAssignment, viewAssignment, roleTranslations, groups
         };
     },
     template: `
@@ -312,7 +315,7 @@ const App = {
                 <main class="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">
                     <dashboard-view v-if="view === 'dashboard'" :stats="stats" :t="t" :format-duration="formatDuration"></dashboard-view>
                     <tasks-view v-if="view === 'tasks'" :tasks="tasks" :users="users" :settings="settings" :user="user" :t="t" @refresh="initData" :api="api" @start-chat="view = 'chat'"></tasks-view>
-                    <users-view v-if="view === 'users'" :users="users" :t="t" @refresh="initData" :api="api" :user="user" @start-chat="view = 'chat'"></users-view>
+                    <users-view v-if="view === 'users'" :users="users" :t="t" @refresh="initData" :api="api" :user="user" :groups="groups" @start-chat="view = 'chat'"></users-view>
                     <chat-view v-if="view === 'chat'" :user="user" :users="users" :t="t" :api="api"></chat-view>
                     <settings-view v-if="view === 'settings'" :settings="settings" :t="t" @refresh="initData" :api="api"></settings-view>
                     <profile-view v-if="view === 'profile'" :user="user" :t="t" @refresh="initData" :api="api"></profile-view>
@@ -889,7 +892,7 @@ app.component('task-modal', {
 });
 
 app.component('users-view', {
-    props: ['users', 't', 'api', 'user'],
+    props: ['users', 't', 'api', 'user', 'groups'],
     setup(props, { emit }) {
         const showForm = ref(false);
         const editingUser = ref(null);
@@ -902,7 +905,8 @@ app.component('users-view', {
             role: 'Executor',
             department: '',
             email: '',
-            banned: 0
+            banned: 0,
+            group_id: ''
         });
 
         const isOnline = (lastSeen) => {
@@ -924,6 +928,7 @@ app.component('users-view', {
             Object.assign(form, u);
             form.password = '';
             form.banned = u.banned ? 1 : 0;
+            form.group_id = u.group_id || '';
             showForm.value = true;
         };
 
@@ -954,7 +959,13 @@ app.component('users-view', {
             emit('start-chat');
         };
 
-        return { showForm, editingUser, roles, form, edit, save, remove, isOnline, formatLastSeen, toggleBan, startPrivateChat, roleTranslations };
+        const getGroupName = (groupId) => {
+            if (!props.groups || !groupId) return '';
+            const g = props.groups.find(g => g.id === groupId);
+            return g ? g.name : '';
+        };
+
+        return { showForm, editingUser, roles, form, edit, save, remove, isOnline, formatLastSeen, toggleBan, startPrivateChat, roleTranslations, getGroupName };
     },
     template: `
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
@@ -999,6 +1010,7 @@ app.component('users-view', {
                                     {{ roleTranslations[u.role] || u.role }}
                                 </span>
                                 <div class="text-xs text-gray-500 mt-1">{{ u.department || 'Без отдела' }}</div>
+                                <div v-if="u.group_id" class="text-xs text-primary font-bold mt-1.5"><i class="fas fa-shield-alt mr-1"></i>{{ getGroupName(u.group_id) }}</div>
                             </td>
                             <td class="px-6 py-4 text-sm">
                                 <div class="flex items-center space-x-2">
@@ -1057,6 +1069,13 @@ app.component('users-view', {
                             </select>
                         </div>
                         <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Группа прав доступа (необязательно)</label>
+                            <select v-model="form.group_id" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
+                                <option value="">По умолчанию (согласно роли)</option>
+                                <option v-for="g in groups" :key="g.id" :value="g.id">{{ g.name }}</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Отдел / Сектор</label>
                             <input v-model="form.department" placeholder="Например: IT, Бухгалтерия, Снабжение" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white">
                         </div>
@@ -1085,6 +1104,70 @@ app.component('settings-view', {
     props: ['settings', 't', 'api'],
     setup(props, { emit }) {
         const localSettings = reactive(JSON.parse(JSON.stringify(props.settings)));
+        const groups = ref([]);
+        const showGroupForm = ref(false);
+        const editingGroup = ref(null);
+
+        const groupForm = reactive({
+            name: '',
+            permissions: {
+                can_view_all_tasks: false,
+                can_create_tasks: false,
+                can_assign_executors: false,
+                can_comment_tasks: false,
+                can_edit_tasks: false,
+                can_delete_tasks: false,
+                can_access_chat: false,
+                can_view_analytics: false
+            }
+        });
+
+        const permissionLabels = {
+            can_view_all_tasks: 'Просмотр всех заявок',
+            can_create_tasks: 'Создание заявок',
+            can_assign_executors: 'Назначение исполнителей',
+            can_comment_tasks: 'Комментирование заявок',
+            can_edit_tasks: 'Редактирование заявок',
+            can_delete_tasks: 'Удаление заявок',
+            can_access_chat: 'Использование чатов',
+            can_view_analytics: 'Просмотр аналитики'
+        };
+
+        const loadGroups = async () => {
+            const res = await props.api('groups.php');
+            groups.value = res || [];
+        };
+
+        const editGroup = (g) => {
+            editingGroup.value = g;
+            groupForm.name = g.name;
+            Object.keys(groupForm.permissions).forEach(k => {
+                groupForm.permissions[k] = !!(g.permissions && g.permissions[k]);
+            });
+            showGroupForm.value = true;
+        };
+
+        const saveGroup = async () => {
+            if (!groupForm.name.trim()) return;
+            const payload = {
+                name: groupForm.name,
+                permissions: { ...groupForm.permissions }
+            };
+            if (editingGroup.value) {
+                payload.id = editingGroup.value.id;
+            }
+            await props.api('groups.php', 'POST', payload);
+            showGroupForm.value = false;
+            editingGroup.value = null;
+            loadGroups();
+        };
+
+        const removeGroup = async (id) => {
+            if (confirm('Удалить эту группу пользователей?')) {
+                await props.api(`groups.php?id=${id}`, 'DELETE');
+                loadGroups();
+            }
+        };
 
         const save = async () => {
             await props.api('settings.php', 'POST', localSettings);
@@ -1095,7 +1178,15 @@ app.component('settings-view', {
         const addCategory = () => localSettings.categories.push('Новая категория');
         const addField = () => localSettings.form_fields.push({ id: 'f' + Date.now(), label: 'Новое поле', type: 'text', required: false });
 
-        return { localSettings, save, addCategory, addField };
+        onMounted(() => {
+            loadGroups();
+        });
+
+        return {
+            localSettings, save, addCategory, addField,
+            groups, showGroupForm, editingGroup, groupForm, permissionLabels,
+            editGroup, saveGroup, removeGroup
+        };
     },
     template: `
         <div class="max-w-4xl mx-auto space-y-6">
@@ -1191,9 +1282,63 @@ app.component('settings-view', {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Groups & Permissions Section -->
+                    <div class="border-t dark:border-gray-700 pt-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold dark:text-gray-300">Группы сотрудников и права доступа</h3>
+                            <button @click="editingGroup = null; groupForm.name = ''; Object.keys(groupForm.permissions).forEach(k => groupForm.permissions[k] = false); showGroupForm = true" type="button" class="bg-primary hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">+ Создать группу</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div v-for="g in groups" :key="g.id" class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl bg-gray-50 dark:bg-gray-900 flex flex-col justify-between space-y-4">
+                                <div>
+                                    <div class="flex justify-between items-start">
+                                        <h4 class="font-bold text-sm text-gray-800 dark:text-white">{{ g.name }}</h4>
+                                        <div class="flex space-x-1">
+                                            <button @click="editGroup(g)" type="button" class="text-blue-500 hover:bg-gray-200 dark:hover:bg-gray-800 p-1 rounded text-xs"><i class="fas fa-edit"></i></button>
+                                            <button @click="removeGroup(g.id)" type="button" class="text-red-500 hover:bg-gray-200 dark:hover:bg-gray-800 p-1 rounded text-xs"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1.5 mt-3">
+                                        <span v-for="(val, key) in g.permissions" :key="key" v-show="val" class="bg-blue-100 dark:bg-blue-900 text-primary dark:text-blue-200 px-2 py-0.5 rounded text-[10px] font-semibold">
+                                            {{ permissionLabels[key] || key }}
+                                        </span>
+                                        <span v-if="!g.permissions || Object.values(g.permissions).filter(Boolean).length === 0" class="text-xs text-gray-400 italic">Нет назначенных прав</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="mt-8 pt-6 border-t dark:border-gray-700">
                     <button @click="save" class="bg-primary text-white px-6 py-2 rounded-md font-bold">Сохранить все настройки</button>
+                </div>
+            </div>
+
+            <!-- Group Creation/Editing Modal -->
+            <div v-if="showGroupForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-lg">
+                    <h3 class="text-xl font-bold mb-4 dark:text-white">{{ editingGroup ? 'Редактировать группу' : 'Создать новую группу' }}</h3>
+                    <form @submit.prevent="saveGroup" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Название группы</label>
+                            <input v-model="groupForm.name" placeholder="Например: Мастера, Менеджеры, Поддержка" class="w-full border p-2 rounded dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-2">Назначить права доступа</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1">
+                                <label v-for="(label, key) in permissionLabels" :key="key" class="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
+                                    <input type="checkbox" v-model="groupForm.permissions[key]" class="rounded text-primary focus:ring-primary">
+                                    <span class="text-xs dark:text-gray-200">{{ label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-2 pt-2 border-t dark:border-gray-700">
+                            <button type="button" @click="showGroupForm = false" class="px-4 py-2 text-gray-500">Отмена</button>
+                            <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg font-bold">Сохранить группу</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

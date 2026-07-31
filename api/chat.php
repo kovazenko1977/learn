@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/../includes/Storage.php';
 require_once __DIR__ . '/../includes/TokenProvider.php';
+require_once __DIR__ . '/../includes/Permissions.php';
 
 $storage = new Storage();
 $currentUser = TokenProvider::getCurrentUser();
@@ -17,6 +18,13 @@ $currentUserFull = $storage->getById('users', $currentUser['id']);
 if ($currentUserFull && !empty($currentUserFull['banned'])) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'User is banned']);
+    exit;
+}
+
+// Check chat permission
+if (!Permissions::check($currentUserFull, 'can_access_chat', $storage)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'У вас нет доступа к чату']);
     exit;
 }
 
