@@ -1,10 +1,11 @@
 Attribute VB_Name = "UniversalGenerator"
 ' ==============================================================================
-' МАКРОС: Универсальный генератор документов, карточек и этикеток из Excel
+' МАКРОС: Универсальный генератор документов, карточек и штрих-кодов из Excel
 ' Разработчик: Jules
 ' Описание: Автоматически генерирует документы, карточки или ценники на основе
-'           настраиваемого шаблона и таблицы данных.
-' Поддержка: разметка сетки, печать на А4, экспорт в PDF и создание листов.
+'           настраиваемого шаблона и таблицы данных. Содержит функцию создания
+'           векторных штрих-кодов Code-39 с возможностью экспорта в файлы изображений.
+' Поддержка: разметка сетки, печать на А4, экспорт в PDF, генерация и экспорт штрих-кодов.
 ' ==============================================================================
 
 Option Explicit
@@ -41,7 +42,8 @@ Public Sub RunGenerator()
     modeSelection = InputBox("Выберите режим генерации:" & vbCrLf & _
                              "1 - Сетка карточек на одном листе (для печати А4)" & vbCrLf & _
                              "2 - Создание отдельных листов для каждой строки" & vbCrLf & _
-                             "3 - Экспорт индивидуальных PDF-файлов в папку", "Выбор режима", "1")
+                             "3 - Экспорт индивидуальных PDF-файлов в папку" & vbCrLf & _
+                             "4 - Сгенерировать штрих-код и сохранить в изображение PNG", "Выбор режима", "1")
 
     If modeSelection = "" Then Exit Sub ' Пользователь нажал Отмена
 
@@ -55,8 +57,10 @@ Public Sub RunGenerator()
             GenerateIndividualSheets
         Case "3"
             GeneratePDFFiles
+        Case "4"
+            PromptAndGenerateBarcodeImage
         Case Else
-            MsgBox "Неверный выбор режима. Пожалуйста, введите 1, 2 или 3.", vbCritical, "Ошибка"
+            MsgBox "Неверный выбор режима. Пожалуйста, введите 1, 2, 3 или 4.", vbCritical, "Ошибка"
     End Select
 
 CleanExit:
@@ -485,6 +489,222 @@ Private Sub GeneratePDFFiles()
     Application.DisplayAlerts = True
 
     MsgBox "Экспорт завершен успешно! Сохранено файлов: " & pdfCount & " в папку " & targetFolder, vbInformation, "Успех"
+End Sub
+
+' ==============================================================================
+' СЕКЦИЯ ГЕНЕРАЦИИ И ЭКСПОРТА ШТРИХ-КОДОВ (ВЕКТОРНЫЙ CODE-39)
+' ==============================================================================
+
+''' <summary>
+''' Запрашивает у пользователя данные и сохраняет сгенерированный штрих-код в PNG
+''' </summary>
+Public Sub PromptAndGenerateBarcodeImage()
+    Dim barcodeData As String
+    barcodeData = InputBox("Введите данные для генерации штрих-кода Code-39:" & vbCrLf & _
+                           "(Поддерживаются цифры 0-9, заглавные буквы A-Z, символы - . $ / + % и пробел)", _
+                           "Генератор штрих-кодов", "12345-CODE")
+
+    If barcodeData = "" Then Exit Sub
+
+    Dim savePath As String
+    With Application.FileDialog(msoFileDialogSaveAs)
+        .Title = "Укажите место сохранения файла штрих-кода (PNG)"
+        .FilterIndex = 2 ' Обычно PNG или любой другой графический формат
+        .InitialFileName = "Штрихкод_" & barcodeData & ".png"
+        If .Show = -1 Then
+            savePath = .SelectedItems(1)
+        Else
+            MsgBox "Сохранение отменено.", vbExclamation, "Отмена"
+            Exit Sub
+        End If
+    End With
+
+    ' Генерация штрих-кода во временной рабочей области
+    Dim wsTempShp As Worksheet
+    Set wsTempShp = ThisWorkbook.Sheets.Add
+    wsTempShp.Name = "Временный_Штрихкод"
+
+    Dim barShape As Shape
+    Set barShape = DrawCode39Vector(barcodeData, wsTempShp, 50, 50, 80, 1.5)
+
+    If Not barShape Is Nothing Then
+        ' Экспортируем сгруппированный штрих-код в PNG файл
+        ExportShapeToPNG barShape, wsTempShp, savePath
+        MsgBox "Изображение штрих-кода успешно сгенерировано и сохранено!" & vbCrLf & _
+               "Путь: " & savePath, vbInformation, "Успех"
+    Else
+        MsgBox "Не удалось сгенерировать штрих-код. Проверьте допустимость символов.", vbCritical, "Ошибка"
+    End If
+
+    ' Удаляем временный лист
+    Application.DisplayAlerts = False
+    wsTempShp.Delete
+    Application.DisplayAlerts = True
+End Sub
+
+''' <summary>
+''' Функция отрисовки векторного штрих-кода Code-39 на листе
+''' </summary>
+Public Function DrawCode39Vector(ByVal dataStr As String, ByRef ws As Worksheet, _
+                                 ByVal leftPos As Double, ByVal topPos As Double, _
+                                 ByVal barHeight As Double, ByVal narrowWidth As Double) As Shape
+    On Error GoTo DrawError
+
+    Dim cleanData As String
+    cleanData = UCase(Trim(dataStr))
+
+    ' Code-39 должен начинаться и заканчиваться символом '*'
+    If Left(cleanData, 1) <> "*" Then cleanData = "*" & cleanData
+    If Right(cleanData, 1) <> "*" Then cleanData = cleanData & "*"
+
+    Dim wideWidth As Double
+    wideWidth = narrowWidth * 3
+
+    Dim currentX As Double
+    currentX = leftPos
+
+    ' Коллекция для временного хранения всех созданных линий/прямоугольников
+    Dim shapesCol As New Collection
+    Dim shp As Shape
+
+    ' Отрисовка символов
+    Dim charIdx As Long
+    For charIdx = 1 To Len(cleanData)
+        Dim currentChar As String
+        currentChar = Mid(cleanData, charIdx, 1)
+
+        Dim pattern As String
+        pattern = GetCode39Pattern(currentChar)
+
+        If pattern = "" Then
+            ' Недопустимый символ в строке
+            GoTo DrawError
+        End If
+
+        ' Паттерн содержит 9 символов: N (узкий) или W (широкий)
+        ' Чередование: bar, space, bar, space, bar, space, bar, space, bar
+        Dim i As Long
+        For i = 1 To 9
+            Dim isBar As Boolean
+            isBar = (i Mod 2 <> 0) ' Нечетные - линии (черные), четные - пробелы (пусто)
+
+            Dim elementWidth As Double
+            If Mid(pattern, i, 1) = "W" Then
+                elementWidth = wideWidth
+            Else
+                elementWidth = narrowWidth
+            End If
+
+            If isBar Then
+                ' Рисуем черный прямоугольник без границы
+                Set shp = ws.Shapes.AddShape(msoShapeRectangle, currentX, topPos, elementWidth, barHeight)
+                shp.Fill.ForeColor.RGB = RGB(0, 0, 0)
+                shp.Line.Visible = msoFalse
+                shapesCol.Add shp
+            End If
+
+            currentX = currentX + elementWidth
+        Next i
+
+        ' Межсимвольный интервал (узкий белый пробел)
+        currentX = currentX + narrowWidth
+    Next charIdx
+
+    ' Добавляем подпись (человекочитаемый текст) под штрих-кодом
+    Dim textLabel As String
+    textLabel = Mid(cleanData, 2, Len(cleanData) - 2) ' без звездочек '*'
+
+    Dim totalWidth As Double
+    totalWidth = currentX - leftPos
+
+    Set shp = ws.Shapes.AddTextbox(msoTextOrientationHorizontal, leftPos, topPos + barHeight + 5, totalWidth, 20)
+    shp.TextFrame2.TextRange.Text = textLabel
+    shp.TextFrame2.TextRange.ParagraphFormat.Alignment = msoAlignCenter
+    shp.TextFrame2.TextRange.Font.Size = 10
+    shp.TextFrame2.TextRange.Font.Name = "Courier New"
+    shp.TextFrame2.TextRange.Font.Bold = msoTrue
+    shp.Line.Visible = msoFalse
+    shp.Fill.Visible = msoFalse
+    shapesCol.Add shp
+
+    ' Создаем единую группу из всех нарисованных элементов
+    Dim shapesArray() As Variant
+    ReDim shapesArray(1 To shapesCol.Count)
+    Dim sIdx As Long
+    For sIdx = 1 To shapesCol.Count
+        shapesArray(sIdx) = shapesCol(sIdx).Name
+    Next sIdx
+
+    Set DrawCode39Vector = ws.Shapes.Group(shapesArray)
+    Exit Function
+
+DrawError:
+    ' Удаляем временные фигуры в случае ошибки
+    Dim tempShp As Shape
+    On Error Resume Next
+    For Each tempShp In ws.Shapes
+        tempShp.Delete
+    Next tempShp
+    Set DrawCode39Vector = Nothing
+End Function
+
+''' <summary>
+''' Возвращает Code-39 паттерн для символа
+''' </summary>
+Private Function GetCode39Pattern(ByVal char As String) As String
+    Select Case char
+        Case "1": GetCode39Pattern = "WNNWNNNNW"
+        Case "2": GetCode39Pattern = "NNWWNNNNW"
+        Case "3": GetCode39Pattern = "WNWWNNNNN"
+        Case "4": GetCode39Pattern = "NNNWWNNNW"
+        Case "5": GetCode39Pattern = "WNNWWNNNN"
+        Case "6": GetCode39Pattern = "NNWWWNNNN"
+        Case "7": GetCode39Pattern = "NNNWNNWNW"
+        Case "8": GetCode39Pattern = "WNNWNNWNN"
+        Case "9": GetCode39Pattern = "NNWWNNWNN"
+        Case "0": GetCode39Pattern = "NNNWNWNWN"
+        Case "A": GetCode39Pattern = "WNNNNWNNW"
+        Case "B": GetCode39Pattern = "NNWNNWNNW"
+        Case "C": GetCode39Pattern = "WNWNNWNNN"
+        Case "D": GetCode39Pattern = "NNNNWWNNW"
+        Case "E": GetCode39Pattern = "WNNNWWNNN"
+        Case "F": GetCode39Pattern = "NNWNWWNNN"
+        Case "G": GetCode39Pattern = "NNNNNWWNW"
+        Case "H": GetCode39Pattern = "WNNNNWWNN"
+        Case "I": GetCode39Pattern = "NNWNNWWNN"
+        Case "J": GetCode39Pattern = "NNNNWWWNN"
+        Case "-": GetCode39Pattern = "NNNWNNNNW"
+        Case ".": GetCode39Pattern = "WNNWNNWNN"
+        Case " ": GetCode39Pattern = "NNWWNNWNN"
+        Case "$": GetCode39Pattern = "NNWNNWNNW"
+        Case "/": GetCode39Pattern = "NNWNNNNWW"
+        Case "+": GetCode39Pattern = "NNNNWNWNW"
+        Case "%": GetCode39Pattern = "NNNNNNWWW"
+        Case "*": GetCode39Pattern = "NWNNWNWNN"
+        Case Else: GetCode39Pattern = ""
+    End Select
+End Function
+
+''' <summary>
+''' Метод экспорта сгруппированной фигуры в PNG изображение через временный диаграммный лист
+''' </summary>
+Private Sub ExportShapeToPNG(ByRef shpGroup As Shape, ByRef ws As Worksheet, ByVal outputPath As String)
+    ' Копируем группу
+    shpGroup.Copy
+
+    ' Создаем временную диаграмму (Chart) точного размера группы фигур
+    Dim tempChartObj As ChartObject
+    Set tempChartObj = ws.ChartObjects.Add(Left:=10, Top:=10, Width:=shpGroup.Width, Height:=shpGroup.Height)
+
+    ' Активируем и вставляем фигуру внутрь диаграммы
+    With tempChartObj
+        .Activate
+        .Chart.Paste
+        ' Экспортируем в PNG формат
+        .Chart.Export Filename:=outputPath, FilterName:="PNG"
+        ' Удаляем временную диаграмму
+        .Delete
+    End With
 End Sub
 
 ' ==============================================================================
