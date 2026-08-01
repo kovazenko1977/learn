@@ -1,0 +1,21 @@
+[
+    {
+        "id": "admin-1",
+        "username": "admin",
+        "password": "$2y$10$4okZli8sKfKfrFJbs3ltFOvtuqLpVINJluIwGomOn2NBRH6VrdODO",
+        "full_name": "Администратор",
+        "role": "Administrator",
+        "department": "IT",
+        "email": "admin@example.com",
+        "last_seen": 1785546528
+    },
+    {
+        "username": "tech1",
+        "password": "$2y$10$htYw6oytFlHgAU5.OFykLOdMlsnjEtlPHjJC9NG\/aB3HmTry75kV.",
+        "full_name": "Техник Иван",
+        "role": "Executor",
+        "department": "",
+        "email": "",
+        "id": "ec5f741717d52b73a7ed760b0d06b69a"
+    }
+]
