@@ -1,0 +1,15 @@
+{
+    "categories": ["Сантехника", "Электрика", "Мебель", "Оборудование", "ИТ", "Клининг"],
+    "priorities": ["low", "medium", "high", "urgent"],
+    "storage_mode": "json",
+    "sla_rules": {
+        "low": 72,
+        "medium": 48,
+        "high": 24,
+        "urgent": 4
+    },
+    "form_fields": [],
+    "admin_email": "admin@example.com",
+    "telegram_bot_token": "",
+    "telegram_chat_id": ""
+}
