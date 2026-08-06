@@ -1,0 +1,12 @@
+{
+    "storage_type": "sql",
+    "sql_driver": "sqlite",
+    "mysql_host": "127.0.0.1",
+    "mysql_dbname": "travelline_clone",
+    "mysql_user": "root",
+    "mysql_pass": "",
+    "hotel_name": "TravelLine Resort & Spa",
+    "hotel_address": "ул. Первомайская, 166, Йошкар-Ола",
+    "hotel_phone": "+7 (8362) 63-00-98",
+    "hotel_email": "welcome@travelline-clone.ru"
+}

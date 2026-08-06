@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Стандартный Одноместный",
+        "type": "Standard Single",
+        "price": 3500,
+        "capacity": 1,
+        "image": "https:\/\/images.unsplash.com\/photo-1505691938895-1758d7feb511?w=800&auto=format&fit=crop&q=60",
+        "description": "Уютный одноместный номер, идеально подходящий для деловых поездок. Бесплатный Wi-Fi, рабочая зона."
+    },
+    {
+        "id": 2,
+        "name": "Улучшенный Двухместный (Double\/Twin)",
+        "type": "Superior Double",
+        "price": 5200,
+        "capacity": 2,
+        "image": "https:\/\/images.unsplash.com\/photo-1590490360182-c33d57733427?w=800&auto=format&fit=crop&q=60",
+        "description": "Просторный номер с большой двуспальной кроватью или двумя раздельными кроватями. Отличный вид на город."
+    },
+    {
+        "id": 3,
+        "name": "Семейный Полулюкс",
+        "type": "Junior Suite",
+        "price": 7800,
+        "capacity": 4,
+        "image": "https:\/\/images.unsplash.com\/photo-1566665797739-1674de7a421a?w=800&auto=format&fit=crop&q=60",
+        "description": "Комфортабельный двухкомнатный номер для семейного отдыха. Дополнительный диван-кровать."
+    },
+    {
+        "id": 4,
+        "name": "Представительский Люкс",
+        "type": "Executive Suite",
+        "price": 12500,
+        "capacity": 2,
+        "image": "https:\/\/images.unsplash.com\/photo-1582719478250-c89cae4dc85b?w=800&auto=format&fit=crop&q=60",
+        "description": "Роскошный люкс премиум-класса с собственной гостиной, гидромассажной ванной и панорамными окнами."
+    }
+]
