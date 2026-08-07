@@ -1,0 +1,63 @@
+[
+    {
+        "title": "Тестовая заявка",
+        "description": "Описание тестовой заявки",
+        "category": "Сантехника",
+        "priority": "Средний",
+        "custom_fields": {
+            "f1": "404"
+        },
+        "creator_id": "admin-1",
+        "status": "new",
+        "created_at": "2026-06-19 01:37:16",
+        "deadline": "2026-06-20 01:37:16",
+        "id": "e86d86b2b77b53db9f1fdcd6927c7837"
+    },
+    {
+        "title": "Починить кран",
+        "description": "Течет кран в ванной",
+        "category": "Сантехника",
+        "priority": "Средний",
+        "custom_fields": {
+            "f1": "101"
+        },
+        "creator_id": "admin-1",
+        "status": "assigned",
+        "created_at": "2026-06-19 01:37:43",
+        "deadline": "2026-06-20 01:37:43",
+        "id": "6692bc771536c5678a5b60c88411a015",
+        "executor_id": "ec5f741717d52b73a7ed760b0d06b69a"
+    },
+    {
+        "title": "Автотест: Ремонт кондиционера",
+        "description": "Необходимо произвести диагностику и ремонт кондиционера в главном холле.",
+        "category": "Сантехника",
+        "priority": "Средний",
+        "custom_fields": {
+            "f1": "Кабинет 305",
+            "f2": "+375291234567"
+        },
+        "attachments": [],
+        "creator_id": "admin-1",
+        "status": "new",
+        "created_at": "2026-07-30 07:22:40",
+        "deadline": "2026-07-31 07:22:40",
+        "id": "d36ed1b93a9ae1d04d32d9af17d63897"
+    },
+    {
+        "title": "Автотест: Ремонт кондиционера",
+        "description": "Необходимо произвести диагностику и ремонт кондиционера в главном холле.",
+        "category": "Сантехника",
+        "priority": "Средний",
+        "custom_fields": {
+            "f1": "Кабинет 305",
+            "f2": "+375291234567"
+        },
+        "attachments": [],
+        "creator_id": "admin-1",
+        "status": "new",
+        "created_at": "2026-07-30 07:39:06",
+        "deadline": "2026-07-31 07:39:06",
+        "id": "cad87fb485e8cc9138b1e9eea71614f5"
+    }
+]
