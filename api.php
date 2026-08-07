@@ -81,6 +81,7 @@ function get_default_settings() {
         'widget_offset_x' => 20,
         'widget_offset_y' => 20,
         'widget_icon' => 'bubble', // bubble, support, bot, wave
+        'widget_avatar_url' => '', // Empty for default icon or custom logo URL
         'widget_badge_text' => 'Есть вопросы? Задайте их нам! 😊',
         'widget_badge_bg' => '#10b981', // Emerald-500
         'widget_badge_color' => '#ffffff',
@@ -386,6 +387,7 @@ switch ($action) {
             'widget_badge_color' => $settings['widget_badge_color'],
             'widget_badge_animation' => $settings['widget_badge_animation'],
             'typing_speed' => $settings['typing_speed'],
+            'widget_avatar_url' => $settings['widget_avatar_url'],
             'extra_greetings' => $settings['extra_greetings'],
             'sound_enabled' => $settings['sound_enabled'],
             'exit_intent_enabled' => $settings['exit_intent_enabled'],

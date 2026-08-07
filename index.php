@@ -225,6 +225,10 @@
                                         </select>
                                     </div>
                                     <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Ссылка на логотип (аватар) бота</label>
+                                        <input v-model="settings.widget_avatar_url" type="text" placeholder="Пусто для дефолтной иконки" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
                                         <label class="block text-xs font-bold text-slate-600 mb-1.5">Расположение значка</label>
                                         <select v-model="settings.widget_position" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                             <option value="bottom-right">Справа внизу</option>
@@ -306,7 +310,10 @@
                                     <div class="w-full max-w-[320px] bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200 text-slate-800 animate__animated animate__fadeIn">
                                         <!-- Header mock -->
                                         <div :style="{ backgroundColor: settings.widget_color }" class="p-4 text-white flex items-center gap-3">
-                                            <div class="h-9 w-9 bg-white/20 rounded-full flex items-center justify-center text-lg">
+                                            <div v-if="settings.widget_avatar_url" class="h-9 w-9 rounded-full overflow-hidden flex-shrink-0">
+                                                <img :src="settings.widget_avatar_url" class="h-full w-full object-cover">
+                                            </div>
+                                            <div v-else class="h-9 w-9 bg-white/20 rounded-full flex items-center justify-center text-lg flex-shrink-0">
                                                 <i v-if="settings.widget_icon === 'bubble'" class="fa-solid fa-comment"></i>
                                                 <i v-else-if="settings.widget_icon === 'support'" class="fa-solid fa-headset"></i>
                                                 <i v-else-if="settings.widget_icon === 'bot'" class="fa-solid fa-robot"></i>
@@ -321,7 +328,10 @@
                                         <!-- Messages flow mock -->
                                         <div class="p-4 space-y-3 h-48 overflow-y-auto custom-scrollbar text-[11px]">
                                             <div class="flex gap-2">
-                                                <div :style="{ backgroundColor: settings.widget_color }" class="h-6 w-6 rounded-full flex items-center justify-center text-white text-[10px] flex-shrink-0">
+                                                <div v-if="settings.widget_avatar_url" class="h-6 w-6 rounded-full overflow-hidden flex-shrink-0">
+                                                    <img :src="settings.widget_avatar_url" class="h-full w-full object-cover">
+                                                </div>
+                                                <div v-else :style="{ backgroundColor: settings.widget_color }" class="h-6 w-6 rounded-full flex items-center justify-center text-white text-[10px] flex-shrink-0">
                                                     <i class="fa-solid fa-robot"></i>
                                                 </div>
                                                 <div class="bg-slate-100 p-2.5 rounded-2xl rounded-tl-none font-medium text-slate-700 max-w-[85%]">
@@ -364,11 +374,14 @@
                                             {{ settings.widget_badge_text }}
                                         </div>
                                         <!-- Launcher icon -->
-                                        <div :style="{ backgroundColor: settings.widget_color }" class="h-12 w-12 rounded-full flex items-center justify-center text-white text-xl shadow-lg cursor-pointer">
-                                            <i v-if="settings.widget_icon === 'bubble'" class="fa-solid fa-comment"></i>
-                                            <i v-else-if="settings.widget_icon === 'support'" class="fa-solid fa-headset"></i>
-                                            <i v-else-if="settings.widget_icon === 'bot'" class="fa-solid fa-robot"></i>
-                                            <i v-else-if="settings.widget_icon === 'wave'" class="fa-solid fa-hand-wave"></i>
+                                        <div :style="{ backgroundColor: settings.widget_color }" class="h-12 w-12 rounded-full flex items-center justify-center text-white text-xl shadow-lg cursor-pointer overflow-hidden">
+                                            <img v-if="settings.widget_avatar_url" :src="settings.widget_avatar_url" class="h-full w-full object-cover">
+                                            <template v-else>
+                                                <i v-if="settings.widget_icon === 'bubble'" class="fa-solid fa-comment"></i>
+                                                <i v-else-if="settings.widget_icon === 'support'" class="fa-solid fa-headset"></i>
+                                                <i v-else-if="settings.widget_icon === 'bot'" class="fa-solid fa-robot"></i>
+                                                <i v-else-if="settings.widget_icon === 'wave'" class="fa-solid fa-hand-wave"></i>
+                                            </template>
                                         </div>
                                     </div>
                                     <span class="text-[10px] text-slate-500 font-bold">Расположение: {{ settings.widget_position }}</span>
@@ -879,6 +892,7 @@
                         widget_offset_x: 20,
                         widget_offset_y: 20,
                         widget_icon: 'bubble',
+                        widget_avatar_url: '',
                         widget_badge_text: '',
                         widget_badge_bg: '',
                         widget_badge_color: '',

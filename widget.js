@@ -565,9 +565,15 @@
         launcherBtn.className = 'launcher-btn';
         launcherBtn.style.backgroundColor = config.widget_color || '#2563eb';
 
-        const launcherIcon = document.createElement('i');
-        launcherIcon.className = getIconClassName(config.widget_icon);
-        launcherBtn.appendChild(launcherIcon);
+        let launcherIcon = null;
+        if (config.widget_avatar_url) {
+            launcherBtn.style.overflow = 'hidden';
+            launcherBtn.innerHTML = `<img src="${config.widget_avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+            launcherIcon = document.createElement('i');
+            launcherIcon.className = getIconClassName(config.widget_icon);
+            launcherBtn.appendChild(launcherIcon);
+        }
 
         // Text Badge bubble beside button
         let badgeBubble = null;
@@ -723,11 +729,19 @@
                 textInput.focus();
                 // Hide badge on open
                 if (badgeBubble) badgeBubble.style.display = 'none';
-                launcherIcon.className = 'fa-solid fa-chevron-down';
+                if (config.widget_avatar_url) {
+                    launcherBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+                } else {
+                    if (launcherIcon) launcherIcon.className = 'fa-solid fa-chevron-down';
+                }
             } else {
                 chatWindow.style.display = 'none';
                 if (badgeBubble) badgeBubble.style.display = 'block';
-                launcherIcon.className = getIconClassName(config.widget_icon);
+                if (config.widget_avatar_url) {
+                    launcherBtn.innerHTML = `<img src="${config.widget_avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                } else {
+                    if (launcherIcon) launcherIcon.className = getIconClassName(config.widget_icon);
+                }
 
                 // Show Rating stars if enabled
                 if (config.chat_rating_enabled) {
@@ -759,7 +773,12 @@
 
                 const av = document.createElement('div');
                 av.className = 'msg-avatar';
-                av.innerHTML = '<i class="fa-solid fa-robot"></i>';
+                if (config.widget_avatar_url) {
+                    av.style.overflow = 'hidden';
+                    av.innerHTML = `<img src="${config.widget_avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                } else {
+                    av.innerHTML = '<i class="fa-solid fa-robot"></i>';
+                }
 
                 const bubble = document.createElement('div');
                 bubble.className = 'msg-bubble';
