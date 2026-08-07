@@ -1,0 +1,151 @@
+{
+    "admin_password": "admin123",
+    "widget_enabled": true,
+    "widget_title": "Онлайн Консультант",
+    "widget_subtitle": "Ответим на любые ваши вопросы",
+    "widget_color": "#2563eb",
+    "widget_position": "bottom-right",
+    "widget_offset_x": 20,
+    "widget_offset_y": 20,
+    "widget_icon": "bubble",
+    "widget_badge_text": "Есть вопросы? Задайте их нам! 😊",
+    "widget_badge_bg": "#10b981",
+    "widget_badge_color": "#ffffff",
+    "widget_badge_animation": "pulse",
+    "typing_speed": 30,
+    "ai_enabled": false,
+    "ai_api_key": "",
+    "ai_model": "Qwen\/Qwen2.5-7B-Instruct",
+    "dead_end_threshold": 2,
+    "fallback_action": "show_button",
+    "fallback_form_id": "feedback",
+    "email_destination": "",
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "extra_greetings": "Привет! Рад вас приветствовать. О чем вы хотите спросить?\nУ нас есть разделы: контакты, график работы, услуги.",
+    "sound_enabled": true,
+    "exit_intent_enabled": false,
+    "custom_css": "",
+    "chat_rating_enabled": true,
+    "schedule": [
+        {
+            "day": "Понедельник",
+            "enabled": true,
+            "from": "09:00",
+            "to": "18:00"
+        },
+        {
+            "day": "Вторник",
+            "enabled": true,
+            "from": "09:00",
+            "to": "18:00"
+        },
+        {
+            "day": "Среда",
+            "enabled": true,
+            "from": "09:00",
+            "to": "18:00"
+        },
+        {
+            "day": "Четверг",
+            "enabled": true,
+            "from": "09:00",
+            "to": "18:00"
+        },
+        {
+            "day": "Пятница",
+            "enabled": true,
+            "from": "00:00",
+            "to": "23:59"
+        },
+        {
+            "day": "Суббота",
+            "enabled": false,
+            "from": "10:00",
+            "to": "15:00"
+        },
+        {
+            "day": "Воскресенье",
+            "enabled": false,
+            "from": "10:00",
+            "to": "15:00"
+        }
+    ],
+    "schedule_offline_msg": "Извините, сейчас у нас нерабочее время, но вы можете заполнить форму ниже, и мы свяжемся с вами в ближайшее время!",
+    "forms": [
+        {
+            "id": "feedback",
+            "title": "Оставить заявку",
+            "fields": [
+                {
+                    "id": "f_name",
+                    "label": "Ваше имя",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "id": "f_phone",
+                    "label": "Номер телефона",
+                    "type": "tel",
+                    "required": true
+                },
+                {
+                    "id": "f_message",
+                    "label": "Сообщение",
+                    "type": "textarea",
+                    "required": false
+                }
+            ],
+            "destination": "both"
+        },
+        {
+            "id": "booking",
+            "title": "Запись на консультацию",
+            "fields": [
+                {
+                    "id": "b_name",
+                    "label": "Ваше имя",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "id": "b_email",
+                    "label": "E-mail",
+                    "type": "email",
+                    "required": true
+                },
+                {
+                    "id": "b_date",
+                    "label": "Желаемая дата",
+                    "type": "date",
+                    "required": true
+                },
+                {
+                    "id": "b_time",
+                    "label": "Удобное время",
+                    "type": "time",
+                    "required": true
+                }
+            ],
+            "destination": "both"
+        }
+    ],
+    "auto_responders": [
+        {
+            "trigger": "привет",
+            "response": "Здравствуйте! Чем я могу вам помочь сегодня?"
+        },
+        {
+            "trigger": "пока",
+            "response": "До свидания! Если появятся вопросы, пишите."
+        },
+        {
+            "trigger": "контакты",
+            "response": "Наши контакты: Телефон +375333533971, Email: info@wes.by. Разработано WES.BY!"
+        },
+        {
+            "trigger": "адрес",
+            "response": "Мы находимся в г. Минск. Подробнее по телефону +375333533971"
+        }
+    ]
+}
