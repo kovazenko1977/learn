@@ -296,7 +296,20 @@
                                 </div>
 
                                 <div class="border-t border-slate-100 pt-6 mt-6">
-                                    <h4 class="text-sm font-bold text-indigo-950 mb-3"><i class="fa-solid fa-palette text-indigo-600"></i> Цветовая палитра диалогов и сообщений</h4>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="text-sm font-bold text-indigo-950"><i class="fa-solid fa-palette text-indigo-600"></i> Цветовая палитра диалогов и сообщений</h4>
+                                        <!-- Interactive Preset Palette Picker -->
+                                        <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200/50">
+                                            <span class="text-[9px] font-bold text-slate-500 uppercase px-1">Готовые темы:</span>
+                                            <button @click="applyThemePreset('#2563eb', '#f8fafc', '#ffffff', '#1e293b', '#2563eb', '#ffffff')" title="Классический Синий" class="h-5 w-5 rounded-full bg-blue-600 border border-white hover:scale-110 transition-transform"></button>
+                                            <button @click="applyThemePreset('#059669', '#f0fdf4', '#ffffff', '#064e3b', '#059669', '#ffffff')" title="Изумрудный Зеленый" class="h-5 w-5 rounded-full bg-emerald-600 border border-white hover:scale-110 transition-transform"></button>
+                                            <button @click="applyThemePreset('#7c3aed', '#faf5ff', '#ffffff', '#2e1065', '#7c3aed', '#ffffff')" title="Аметистовый Фиолетовый" class="h-5 w-5 rounded-full bg-violet-600 border border-white hover:scale-110 transition-transform"></button>
+                                            <button @click="applyThemePreset('#ea580c', '#fff7ed', '#ffffff', '#431407', '#ea580c', '#ffffff')" title="Апельсиновый Оранжевый" class="h-5 w-5 rounded-full bg-orange-600 border border-white hover:scale-110 transition-transform"></button>
+                                            <button @click="applyThemePreset('#e11d48', '#fff1f2', '#ffffff', '#4c0519', '#e11d48', '#ffffff')" title="Малиновый Красный" class="h-5 w-5 rounded-full bg-rose-600 border border-white hover:scale-110 transition-transform"></button>
+                                            <button @click="applyThemePreset('#1e293b', '#f1f5f9', '#ffffff', '#0f172a', '#334155', '#ffffff')" title="Глубокий Темный" class="h-5 w-5 rounded-full bg-slate-800 border border-white hover:scale-110 transition-transform"></button>
+                                        </div>
+                                    </div>
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         <div>
                                             <label class="block text-xs font-bold text-slate-600 mb-1.5">Фон чата</label>
@@ -848,42 +861,48 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                                 <!-- 1. Predefined Greetings trigger -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 1</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Предзаданные кнопки (Быстрые ответы)</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Отображает быстрые темы в начале диалога (например, контакты, адрес, запись).</p>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Быстрые кнопки ответов</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Показывает быстрые темы-кнопки (Контакты, Запись, Формы) внизу чата. Помогает клиентам находить информацию в один клик без ввода текста.
+                                        </p>
                                     </div>
-                                    <div class="mt-4">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded ml-1.5"><i class="fa-solid fa-check"></i> Интегрировано</span>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Интегрировано</span>
+                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded"><i class="fa-solid fa-check"></i> Активно</span>
                                     </div>
                                 </div>
 
                                 <!-- 2. Custom CSS Injector -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 2</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Кастомные стили (Custom CSS)</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Встройте собственный CSS код для стилизации виджета под цветовую палитру сайта.</p>
-                                        <textarea v-model="settings.custom_css" placeholder=".wes-chat-launcher { border-radius: 4px; }" class="w-full mt-2 bg-white border border-slate-200 p-1.5 text-[10px] rounded font-mono h-16"></textarea>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Свои CSS Стили</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Позволяет переопределять шрифты, скругления, тени и размеры любых блоков виджета. Введите CSS код ниже:
+                                        </p>
+                                        <textarea v-model="settings.custom_css" placeholder=".launcher-btn { border-radius: 8px !important; }" class="w-full mt-2 bg-slate-50 border border-slate-200 p-2 text-[10px] rounded-lg font-mono h-20 focus:outline-none"></textarea>
                                     </div>
-                                    <div class="mt-2">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded ml-1.5"><i class="fa-solid fa-check"></i> Активно</span>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Статус</span>
+                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded"><i class="fa-solid fa-code"></i> CSS Готов</span>
                                     </div>
                                 </div>
 
                                 <!-- 3. Exit Intent Popup Tracker -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 3</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Удержание при выходе (Exit Intent)</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Автоматически всплывает при попытке ухода мыши за пределы экрана браузера.</p>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Захват лидов при выходе</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Удерживает посетителя! Если мышь уходит за верхнюю границу экрана браузера, виджет автоматически открывается и предлагает заполнить форму.
+                                        </p>
                                     </div>
-                                    <div class="mt-4 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <select v-model="settings.exit_intent_enabled" class="px-2 py-1 border border-slate-200 rounded text-xs">
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Активация</span>
+                                        <select v-model="settings.exit_intent_enabled" class="px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none">
                                             <option :value="true">Включено</option>
                                             <option :value="false">Выключено</option>
                                         </select>
@@ -891,65 +910,81 @@
                                 </div>
 
                                 <!-- 4. Sound Alert Customization -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 4</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Звуковые эффекты диалога</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Издает приятный легкий звук при отправке и получении ответа от чат-бота.</p>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Звуковые сигналы</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Приятное звуковое сопровождение при получении ответа от бота. Выберите тип звука и статус:
+                                        </p>
+                                        <select v-model="settings.sound_type" class="w-full mt-2 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-semibold focus:outline-none">
+                                            <option value="synth">Тональный синтезатор</option>
+                                            <option value="alert">Звук триггера (Alert)</option>
+                                            <option value="chime">Колокольчик (Chime)</option>
+                                        </select>
                                     </div>
-                                    <div class="mt-4">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded ml-1.5"><i class="fa-solid fa-circle-check"></i> Включено</span>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Звук</span>
+                                        <select v-model="settings.sound_enabled" class="px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none">
+                                            <option :value="true">Включен</option>
+                                            <option :value="false">Без звука</option>
+                                        </select>
                                     </div>
                                 </div>
 
                                 <!-- 5. Rating System & Evaluation -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 5</span>
                                         <h4 class="font-bold text-sm text-slate-900 mt-2">Оценка качества (Stars Rating)</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Предлагает клиенту оценить диалог звездами (от 1 до 5) перед закрытием чата.</p>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            При закрытии окна чата пользователю предлагается оценить работу консультанта звездами (от 1 до 5). Настройте текст:
+                                        </p>
+                                        <input v-model="settings.chat_rating_text" type="text" class="w-full mt-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] focus:outline-none">
                                     </div>
-                                    <div class="mt-4 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <select v-model="settings.chat_rating_enabled" class="px-2 py-1 border border-slate-200 rounded text-xs">
-                                            <option :value="true">Включено</option>
-                                            <option :value="false">Выключено</option>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Система оценки</span>
+                                        <select v-model="settings.chat_rating_enabled" class="px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none">
+                                            <option :value="true">Активна</option>
+                                            <option :value="false">Отключена</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <!-- 6. Global Widget Switcher Toggle -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 6</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Глобальное отключение чата</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Один клик для полного сокрытия виджета на сайте во время тех. работ.</p>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Глобальный выключатель</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Позволяет полностью скрыть виджет чата с вашего сайта одним щелчком, не удаляя код интеграции со страниц. Удобно при проведении тех. работ.
+                                        </p>
                                     </div>
-                                    <div class="mt-4 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <select v-model="settings.widget_enabled" class="px-2 py-1 border border-slate-200 rounded text-xs">
-                                            <option :value="true">Отображать на сайте</option>
-                                            <option :value="false">Скрыть с сайта</option>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Показ виджета</span>
+                                        <select v-model="settings.widget_enabled" class="px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none">
+                                            <option :value="true">Отображать</option>
+                                            <option :value="false">Скрыть</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <!-- 7. AI Brain Core Model Toggle -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 7</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Интеграция ИИ (Hugging Face API)</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Позволяет подключить современные нейросети бесплатно без БД.</p>
-
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Искусственный Интеллект ИИ</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Подключает бесплатный API сервер нейросетей от Hugging Face. Бот сможет рассуждать и общаться свободно как человек при сложных вопросах.
+                                        </p>
                                         <div class="mt-2 space-y-1.5" v-if="settings.ai_enabled">
-                                            <input v-model="settings.ai_api_key" type="password" placeholder="Huggingface API token" class="w-full px-2 py-1.5 rounded border border-slate-200 text-xs">
-                                            <input v-model="settings.ai_model" type="text" placeholder="Model path" class="w-full px-2 py-1.5 rounded border border-slate-200 text-xs">
+                                            <input v-model="settings.ai_api_key" type="password" placeholder="Ключ API Hugging Face" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
+                                            <input v-model="settings.ai_model" type="text" placeholder="Модель (например: Qwen/Qwen2.5-7B)" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs">
                                         </div>
                                     </div>
-                                    <div class="mt-4 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-500">Статус ИИ:</span>
-                                        <select v-model="settings.ai_enabled" class="px-2 py-1 border border-slate-200 rounded text-xs">
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Режим ИИ</span>
+                                        <select v-model="settings.ai_enabled" class="px-2 py-1 border border-slate-200 rounded-lg text-xs font-semibold focus:outline-none">
                                             <option :value="true">Включен</option>
                                             <option :value="false">Отключен</option>
                                         </select>
@@ -957,51 +992,56 @@
                                 </div>
 
                                 <!-- 8. Auto-responder Mapper rules -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 8</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Быстрые триггеры / Ключевые слова</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Мгновенный подбор ответа при нахождении совпадения триггера в тексте.</p>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Мгновенные авто-ответы</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Таблица быстрых авто-ответов по ключевым словам. Бот мгновенно выдаст заданный текст, если найдет совпадение в запросе клиента.
+                                        </p>
                                     </div>
-                                    <div class="mt-4 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-500">Настроек:</span>
-                                        <span class="text-xs font-bold text-slate-600 bg-slate-200 px-2 py-0.5 rounded">{{ settings.auto_responders.length }} триггеров</span>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Количество триггеров</span>
+                                        <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">{{ settings.auto_responders.length }} шт.</span>
                                     </div>
                                 </div>
 
                                 <!-- 9. Dead-end Deadlock Protection -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 9</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Анти-тупиковая система</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Если бот подряд не понимает вопросы, вызывается форма обратной связи.</p>
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Защита от глупых ответов (Лидогенератор)</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Если бот подряд не понимает вопросы клиента несколько раз, он не будет надоедать, а мягко предложит форму обратной связи для перезвона.
+                                        </p>
                                         <div class="mt-2 flex items-center gap-2">
-                                            <span class="text-[10px] text-slate-500">Порог тупика:</span>
-                                            <input v-model.number="settings.dead_end_threshold" type="number" min="1" max="5" class="w-12 px-1.5 py-1 text-xs border rounded bg-white">
+                                            <span class="text-[10px] text-slate-500">Порог ошибок:</span>
+                                            <input v-model.number="settings.dead_end_threshold" type="number" min="1" max="5" class="w-12 px-2 py-1 text-xs border rounded-lg bg-slate-50 focus:outline-none">
                                         </div>
                                     </div>
-                                    <div class="mt-4">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded ml-1.5"><i class="fa-solid fa-shield-halved"></i> Защищено</span>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Защита</span>
+                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded ml-1.5"><i class="fa-solid fa-shield-halved"></i> Активна</span>
                                     </div>
                                 </div>
 
                                 <!-- 10. Telegram / Email Lead Forwarder -->
-                                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-200 transition-all flex flex-col justify-between">
+                                <div class="p-5 rounded-2xl border border-slate-200 bg-white hover:border-indigo-300 transition-all flex flex-col justify-between shadow-sm">
                                     <div>
                                         <span class="text-[9px] bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded uppercase">Приложение 10</span>
-                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Мгновенные уведомления о заявках</h4>
-                                        <p class="text-[11px] text-slate-400 mt-1">Оповещения в Телеграм канал/группу бота и на ваш почтовый ящик.</p>
-
-                                        <div class="mt-2 space-y-1">
-                                            <input v-model="settings.email_destination" type="email" placeholder="E-mail получателя" class="w-full px-2 py-1 text-xs border rounded">
-                                            <input v-model="settings.telegram_bot_token" type="password" placeholder="Telegram Bot Token" class="w-full px-2 py-1 text-xs border rounded">
-                                            <input v-model="settings.telegram_chat_id" type="text" placeholder="Telegram Chat ID" class="w-full px-2 py-1 text-xs border rounded">
+                                        <h4 class="font-bold text-sm text-slate-900 mt-2">Мгновенное оповещение администраторов</h4>
+                                        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                                            Как только клиент заполняет форму в чате, данные сразу отправляются на вашу электронную почту и в Telegram-группу! Заполните параметры:
+                                        </p>
+                                        <div class="mt-2 space-y-1.5">
+                                            <input v-model="settings.email_destination" type="email" placeholder="E-mail получателя" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none">
+                                            <input v-model="settings.telegram_bot_token" type="password" placeholder="Токен Telegram Бота" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none">
+                                            <input v-model="settings.telegram_chat_id" type="text" placeholder="ID Чата Telegram" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none">
                                         </div>
                                     </div>
-                                    <div class="mt-2">
-                                        <span class="text-xs font-bold text-slate-500">Статус:</span>
-                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded ml-1.5"><i class="fa-solid fa-satellite-dish"></i> Настроено</span>
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-500">Уведомления</span>
+                                        <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded"><i class="fa-solid fa-satellite-dish"></i> Настроены</span>
                                     </div>
                                 </div>
 
@@ -1421,6 +1461,14 @@
                 },
                 deleteSmartRule(rIdx) {
                     this.settings.smart_rules.splice(rIdx, 1);
+                },
+                applyThemePreset(primary, bg, botBg, botColor, userBg, userColor) {
+                    this.settings.widget_color = primary;
+                    this.settings.chat_bg_color = bg;
+                    this.settings.bot_bubble_bg = botBg;
+                    this.settings.bot_bubble_color = botColor;
+                    this.settings.user_bubble_bg = userBg;
+                    this.settings.user_bubble_color = userColor;
                 },
                 addFormField() {
                     if (this.settings.forms[this.selectedFormIndex]) {
