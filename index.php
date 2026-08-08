@@ -254,6 +254,62 @@
                                         <input v-model.number="settings.widget_offset_y" type="number" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                     </div>
                                 </div>
+
+                                <div class="border-t border-slate-100 pt-6 mt-6">
+                                    <h4 class="text-sm font-bold text-indigo-950 mb-3"><i class="fa-solid fa-palette text-indigo-600"></i> Цветовая палитра диалогов и сообщений</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Фон чата</label>
+                                            <div class="flex gap-2">
+                                                <input v-model="settings.chat_bg_color" type="color" class="h-10 w-12 rounded-xl border border-slate-200 cursor-pointer">
+                                                <input v-model="settings.chat_bg_color" type="text" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Баббл бота (фон)</label>
+                                            <div class="flex gap-2">
+                                                <input v-model="settings.bot_bubble_bg" type="color" class="h-10 w-12 rounded-xl border border-slate-200 cursor-pointer">
+                                                <input v-model="settings.bot_bubble_bg" type="text" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Текст бота (цвет)</label>
+                                            <div class="flex gap-2">
+                                                <input v-model="settings.bot_bubble_color" type="color" class="h-10 w-12 rounded-xl border border-slate-200 cursor-pointer">
+                                                <input v-model="settings.bot_bubble_color" type="text" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Баббл пользователя (фон)</label>
+                                            <div class="flex gap-2">
+                                                <input v-model="settings.user_bubble_bg" type="color" class="h-10 w-12 rounded-xl border border-slate-200 cursor-pointer">
+                                                <input v-model="settings.user_bubble_bg" type="text" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Текст пользователя (цвет)</label>
+                                            <div class="flex gap-2">
+                                                <input v-model="settings.user_bubble_color" type="color" class="h-10 w-12 rounded-xl border border-slate-200 cursor-pointer">
+                                                <input v-model="settings.user_bubble_color" type="text" class="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-slate-100 pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Тип звукового уведомления</label>
+                                        <select v-model="settings.sound_type" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none">
+                                            <option value="synth">Синтезатор тональный (Synth)</option>
+                                            <option value="alert">Звук оповещения (Alert)</option>
+                                            <option value="chime">Элегантный колокольчик (Chime)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Заголовок оценки рейтинга (Stars)</label>
+                                        <input v-model="settings.chat_rating_text" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none">
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Floating badge customization -->
@@ -966,6 +1022,13 @@
                         widget_offset_y: 20,
                         widget_icon: 'bubble',
                         widget_avatar_url: '',
+                        chat_bg_color: '#f8fafc',
+                        bot_bubble_bg: '#ffffff',
+                        bot_bubble_color: '#1e293b',
+                        user_bubble_bg: '#2563eb',
+                        user_bubble_color: '#ffffff',
+                        sound_type: 'synth',
+                        chat_rating_text: 'Оцените качество нашей консультации:',
                         widget_badge_text: '',
                         widget_badge_bg: '',
                         widget_badge_color: '',

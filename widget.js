@@ -240,7 +240,7 @@
                 flex: 1;
                 padding: 16px;
                 overflow-y: auto;
-                background-color: #f8fafc;
+                background-color: ${config.chat_bg_color || '#f8fafc'};
                 display: flex;
                 flex-direction: column;
                 gap: 12px;
@@ -300,14 +300,14 @@
                 word-break: break-word;
             }
             .msg-bot .msg-bubble {
-                background-color: #ffffff;
-                color: #1e293b;
+                background-color: ${config.bot_bubble_bg || '#ffffff'};
+                color: ${config.bot_bubble_color || '#1e293b'};
                 border: 1px solid #e2e8f0;
                 border-bottom-left-radius: 4px;
             }
             .msg-user .msg-bubble {
-                background-color: ${config.widget_color || '#2563eb'};
-                color: #ffffff;
+                background-color: ${config.user_bubble_bg || config.widget_color || '#2563eb'};
+                color: ${config.user_bubble_color || '#ffffff'};
                 border-bottom-right-radius: 4px;
             }
 
@@ -705,18 +705,36 @@
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
 
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-                osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.1); // A5
-
-                gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-
+                const sound_type = config.sound_type || 'synth';
                 osc.connect(gain);
                 gain.connect(ctx.destination);
 
-                osc.start();
-                osc.stop(ctx.currentTime + 0.35);
+                if (sound_type === 'synth') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                    osc.frequency.setValueAtTime(880.00, ctx.currentTime + 0.1); // A5
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.35);
+                } else if (sound_type === 'alert') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440.00, ctx.currentTime); // A4
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime + 0.08); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.16); // E5
+                    gain.gain.setValueAtTime(0.06, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
+                } else if (sound_type === 'chime') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(987.77, ctx.currentTime); // B5
+                    osc.frequency.setValueAtTime(1318.51, ctx.currentTime + 0.06); // E6
+                    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.5);
+                }
             } catch (e) {
                 // Ignore silent browser restrictions
             }
@@ -1011,7 +1029,7 @@
             ratingCard.style.zIndex = '99999';
 
             ratingCard.innerHTML = `
-                <div class="form-card-title" style="justify-content:center;">⭐ Оцените нашу работу!</div>
+                <div class="form-card-title" style="justify-content:center;">⭐ ${config.chat_rating_text || 'Оцените нашу работу!'}</div>
                 <div class="rating-row">
                     <i class="fa-solid fa-star star-icon" data-val="1"></i>
                     <i class="fa-solid fa-star star-icon" data-val="2"></i>
