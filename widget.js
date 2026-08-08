@@ -822,8 +822,10 @@
             }, typingDuration);
         }
 
-        // Output quick-button topics
+        // Output quick-button topics dynamically from custom quick_buttons builder
         function appendQuickReplies() {
+            if (!config.quick_buttons || config.quick_buttons.length === 0) return;
+
             // Remove existing quicks to prevent duplicate clusters
             const oldQuicks = chatBody.querySelectorAll('.quick-actions');
             oldQuicks.forEach(q => q.remove());
@@ -831,22 +833,15 @@
             const quickRow = document.createElement('div');
             quickRow.className = 'quick-actions';
 
-            const topics = [
-                { title: '📞 Контакты', msg: 'Какие у вас контакты?' },
-                { title: '⏰ График работы', msg: 'Какой у вас график работы?' },
-                { title: '📝 Оставить заявку', form: 'feedback' },
-                { title: '🗓 Запись на прием', form: 'booking' }
-            ];
-
-            topics.forEach(t => {
+            config.quick_buttons.forEach(t => {
                 const btn = document.createElement('button');
                 btn.className = 'quick-btn';
                 btn.textContent = t.title;
                 btn.addEventListener('click', () => {
-                    if (t.form) {
-                        appendInlineForm(t.form);
+                    if (t.action === 'form') {
+                        appendInlineForm(t.payload);
                     } else {
-                        textInput.value = t.msg;
+                        textInput.value = t.payload;
                         handleSendMessage();
                     }
                 });
@@ -1058,7 +1053,7 @@
             });
         }
 
-        // Exit intent integration popup triggers
+        // Exit intent integration popup triggers with dynamic delay and custom text
         if (config.exit_intent_enabled) {
             document.addEventListener('mouseleave', handleExitIntent);
         }
@@ -1068,8 +1063,13 @@
                 // Only trigger once to avoid annoying spam
                 document.removeEventListener('mouseleave', handleExitIntent);
                 if (!isOpened) {
-                    toggleChat();
-                    showTypingAndReply('Подождите! Не уходите с пустыми руками. 😊 Оставьте нам вопрос или контактные данные, и наш менеджер свяжется с вами с лучшим предложением!', false, 'feedback');
+                    const delayMs = (parseInt(config.exit_intent_delay) || 2) * 1000;
+                    setTimeout(() => {
+                        if (!isOpened) {
+                            toggleChat();
+                            showTypingAndReply(config.exit_intent_text || 'Подождите! Не уходите с пустыми руками. 😊 Оставьте нам вопрос или контактные данные, и наш менеджер свяжется с вами!', false, 'feedback');
+                        }
+                    }, delayMs);
                 }
             }
         }

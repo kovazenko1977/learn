@@ -399,6 +399,39 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Constructor: Quick Buttons Answers -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                                    <div>
+                                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-tags text-indigo-600"></i> Быстрые кнопки</h3>
+                                        <p class="text-[10px] text-slate-400 font-medium">Конструктор кнопок на старте диалога</p>
+                                    </div>
+                                    <button @click="addQuickButton" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-xs font-bold transition-all"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+
+                                <div class="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
+                                    <div v-for="(btn, bIdx) in settings.quick_buttons" :key="bIdx" class="p-3 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <input v-model="btn.title" type="text" placeholder="Текст на кнопке" class="flex-1 px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold">
+                                            <button @click="deleteQuickButton(bIdx)" class="text-red-500 hover:bg-red-50 p-1 rounded-lg"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <select v-model="btn.action" class="px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-semibold">
+                                                <option value="message">Отправить фразу</option>
+                                                <option value="form">Открыть форму</option>
+                                            </select>
+                                            <select v-if="btn.action === 'form'" v-model="btn.payload" class="px-2 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-semibold">
+                                                <option v-for="f in settings.forms" :key="f.id" :value="f.id">{{ f.title }}</option>
+                                            </select>
+                                            <input v-else v-model="btn.payload" type="text" placeholder="Текст фразы" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-medium">
+                                        </div>
+                                    </div>
+                                    <div v-if="!settings.quick_buttons || settings.quick_buttons.length === 0" class="text-center py-4 text-xs text-slate-400 font-semibold">
+                                        Кнопок пока нет. Добавьте первую!
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- LIVE PREVIEW PANEL (Interactive Mock) -->
@@ -899,6 +932,16 @@
                                         <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
                                             Удерживает посетителя! Если мышь уходит за верхнюю границу экрана браузера, виджет автоматически открывается и предлагает заполнить форму.
                                         </p>
+                                        <div class="mt-2 space-y-1.5" v-if="settings.exit_intent_enabled">
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-500 mb-1">Задержка показа (сек)</label>
+                                                <input v-model.number="settings.exit_intent_delay" type="number" min="0" max="10" class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-500 mb-1">Текст удержания</label>
+                                                <textarea v-model="settings.exit_intent_text" class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-md text-xs h-12 resize-none"></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
                                         <span class="text-xs font-bold text-slate-500">Активация</span>
@@ -1229,13 +1272,16 @@
                         extra_greetings: '',
                         sound_enabled: true,
                         exit_intent_enabled: false,
+                        exit_intent_delay: 2,
+                        exit_intent_text: '',
                         custom_css: '',
                         chat_rating_enabled: true,
                         schedule: [],
                         schedule_offline_msg: '',
                         forms: [],
                         auto_responders: [],
-                        smart_rules: []
+                        smart_rules: [],
+                        quick_buttons: []
                     },
                     tabs: [
                         { id: 'general', name: 'Внешний вид & Чат', icon: 'fa-solid fa-palette' },
@@ -1469,6 +1515,19 @@
                     this.settings.bot_bubble_color = botColor;
                     this.settings.user_bubble_bg = userBg;
                     this.settings.user_bubble_color = userColor;
+                },
+                addQuickButton() {
+                    if (!this.settings.quick_buttons) {
+                        this.settings.quick_buttons = [];
+                    }
+                    this.settings.quick_buttons.push({
+                        title: 'Новая кнопка',
+                        action: 'message',
+                        payload: 'Текст вашего сообщения для отправки'
+                    });
+                },
+                deleteQuickButton(bIdx) {
+                    this.settings.quick_buttons.splice(bIdx, 1);
                 },
                 addFormField() {
                     if (this.settings.forms[this.selectedFormIndex]) {
