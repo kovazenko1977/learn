@@ -201,6 +201,46 @@
                                         </select>
                                     </div>
                                 </div>
+
+                                <div class="border-t border-slate-100 pt-6 mt-6">
+                                    <h4 class="text-sm font-bold text-indigo-950 mb-3"><i class="fa-solid fa-address-book text-indigo-600"></i> Контактная информация компании</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Телефон компании</label>
+                                            <input v-model="settings.contact_phone" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">E-mail компании</label>
+                                            <input v-model="settings.contact_email" type="email" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Адрес / Офис</label>
+                                            <input v-model="settings.contact_address" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-slate-100 pt-6 mt-6">
+                                    <h4 class="text-sm font-bold text-indigo-950 mb-3"><i class="fa-solid fa-circle-info text-indigo-600"></i> Настройки копирайта разработчика (в футере)</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Название разработчика</label>
+                                            <input v-model="settings.dev_name" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Телефон</label>
+                                            <input v-model="settings.dev_phone" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Сайт разработчика</label>
+                                            <input v-model="settings.dev_site" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Описание / Деятельность</label>
+                                            <input v-model="settings.dev_desc" type="text" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Appearance Customization -->
@@ -969,13 +1009,109 @@
                         </div>
                     </div>
 
+                    <!-- TAB 8: DETAILED INTERACTIVE HELP GUIDE -->
+                    <div v-if="activeTab === 'help'" class="max-w-5xl mx-auto space-y-8 animate__animated animate__fadeIn">
+
+                        <!-- Header Banner -->
+                        <div class="bg-gradient-to-r from-indigo-900 to-blue-700 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_40%)]"></div>
+                            <div class="relative z-10 space-y-2">
+                                <span class="text-xs bg-indigo-500 text-white font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">База знаний и руководство</span>
+                                <h2 class="text-3xl font-black tracking-tight">Полное руководство пользователя WES.BOT</h2>
+                                <p class="text-sm text-indigo-100/90 font-medium max-w-2xl">Здесь подробно описаны все разделы программы, возможности кастомизации, интеграции уведомлений и алгоритмы работы чат-бота.</p>
+                            </div>
+                        </div>
+
+                        <!-- Manual Sections Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <!-- 1. Основные настройки -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-palette"></i></div>
+                                    <h3 class="font-extrabold text-slate-900 text-sm">1. Внешний вид & Основные настройки</h3>
+                                </div>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    В этом разделе настраивается визуальное оформление чат-виджета на вашем сайте. Вы можете установить **Заголовок** (например, имя компании) и **Подзаголовок**, настроить **Приветственное сообщение**, которое бот выдаёт сразу при открытии окна. Также можно задать аватар (логотип) бота по URL-ссылке или использовать один из предустановленных наборов векторных иконок.
+                                </p>
+                            </div>
+
+                            <!-- 2. График работы -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-clock"></i></div>
+                                    <h3 class="font-extrabold text-slate-900 text-sm">2. Гибкий график работы</h3>
+                                </div>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Позволяет настроить рабочее время компании по дням недели. Если посетитель пишет в нерабочее время (выходной или ночь), бот вежливо сообщит, что операторы сейчас отдыхают (сообщение настраивается), и **автоматически покажет форму обратной связи**, чтобы клиент мог оставить свои данные для связи.
+                                </p>
+                            </div>
+
+                            <!-- 3. Конструктор форм -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-list-check"></i></div>
+                                    <h3 class="font-extrabold text-slate-900 text-sm">3. Конструктор форм & Сбор данных</h3>
+                                </div>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Уникальный инструмент, позволяющий создавать любые интерактивные формы обратной связи прямо в чате! Вы можете добавлять неограниченное число полей (Текст, Телефон, Email, Число, Выбор даты/времени). Для каждой формы настраивается направление отправки: на E-mail, в Телеграм или только в локальный журнал админки.
+                                </p>
+                            </div>
+
+                            <!-- 4. База знаний & Сканер -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-graduation-cap"></i></div>
+                                    <h3 class="font-extrabold text-slate-900 text-sm">4. Обучение бота & Сканер страниц (Crawler)</h3>
+                                </div>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Бот обучается на Q&A-парах (Вопрос / Ответ). Вы можете добавлять их вручную, импортировать списком в текстовом формате (через Q: и A:) или запустить **Сканер веб-страниц (Crawler)**: укажите ссылку на любую страницу вашего сайта, и алгоритм сам проанализирует текст, разобьет его на смысловые Q&A блоки и сгенерирует ключевые слова!
+                                </p>
+                            </div>
+
+                            <!-- 5. Умные правила -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-brain"></i></div>
+                                    <h3 class="font-extrabold text-slate-900 text-sm">5. Логические правила и выполнение скриптов</h3>
+                                </div>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Позволяет настраивать реакцию бота на конкретные слова в сообщениях. Бот умеет не только отвечать текстом, но и совершать действия на клиенте (скрипты): открыть новую вкладку (URL) при слове "купить" или показать нативный Alert-диалог, либо автоматически вызвать любую форму из конструктора.
+                                </p>
+                            </div>
+
+                            <!-- 6. 10+ Приложений -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-cubes"></i></div>
+                                    <h3 class="font-extrabold text-slate-900 text-sm">6. Пакет 10+ Дополнительных приложений</h3>
+                                </div>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Включает умные триггеры удержания при попытке уйти с сайта (Exit Intent), звуковое сопровождение (3 типа звуков: Synth, Alert, Chime), систему оценки диалога звёздами (Stars Rating), интеграцию нейросетей ИИ (Hugging Face API), анти-тупиковую защиту и мгновенные уведомления в Telegram.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- Integration Manual Card -->
+                        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 space-y-4">
+                            <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-circle-nodes text-indigo-500"></i> Как установить чат на ваш сайт?</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">Установка занимает менее 1 минуты и не требует специальных навыков:</p>
+                            <ol class="list-decimal list-inside text-xs text-slate-400 space-y-1.5 font-medium">
+                                <li>Скопируйте короткий код интеграции из нижнего угла левого сайдбара панели.</li>
+                                <li>Вставьте скопированный тег в код вашего сайта перед закрывающим тегом <code class="text-indigo-300 font-mono">&lt;/body&gt;</code>.</li>
+                                <li>Все настройки цвета, графика, форм и правил будут применяться на вашем сайте автоматически в режиме реального времени сразу после нажатия кнопки «Сохранить настройки» в панели управления!</li>
+                            </ol>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- FOOTER WITH CREDITS -->
                 <footer class="bg-white border-t border-slate-200 py-6 px-8 flex flex-col sm:flex-row items-center justify-between text-slate-400 text-xs font-semibold gap-3">
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 bg-indigo-500 rounded-full"></span>
-                        <span>Разработано <span class="text-indigo-900 font-bold">WES.BY</span> +375333533971 (Разработка сайтов и приложений)</span>
+                        <span>Разработано <a :href="'tel:'+settings.dev_phone" class="text-indigo-900 font-bold hover:underline">{{ settings.dev_name }}</a> {{ settings.dev_phone }} ({{ settings.dev_desc }})</span>
                     </div>
                     <div>
                         <span>&copy; {{ new Date().getFullYear() }} Все права защищены</span>
@@ -1029,6 +1165,13 @@
                         user_bubble_color: '#ffffff',
                         sound_type: 'synth',
                         chat_rating_text: 'Оцените качество нашей консультации:',
+                        contact_phone: '+375333533971',
+                        contact_email: 'info@wes.by',
+                        contact_address: 'г. Минск',
+                        dev_name: 'WES.BY',
+                        dev_phone: '+375333533971',
+                        dev_site: 'https://wes.by',
+                        dev_desc: 'Разработка сайтов и приложений',
                         widget_badge_text: '',
                         widget_badge_bg: '',
                         widget_badge_color: '',
@@ -1061,7 +1204,8 @@
                         { id: 'knowledge', name: 'База знаний', icon: 'fa-solid fa-graduation-cap' },
                         { id: 'dialogues', name: 'История чатов', icon: 'fa-solid fa-comments' },
                         { id: 'submissions', name: 'Лиды и Заявки', icon: 'fa-solid fa-users-line' },
-                        { id: 'features', name: '10+ Приложений', icon: 'fa-solid fa-cubes' }
+                        { id: 'features', name: '10+ Приложений', icon: 'fa-solid fa-cubes' },
+                        { id: 'help', name: 'Справка & Инструкция', icon: 'fa-solid fa-circle-question' }
                     ]
                 };
             },

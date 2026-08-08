@@ -77,6 +77,13 @@ function get_default_settings() {
         'widget_title' => 'Онлайн Консультант',
         'widget_subtitle' => 'Ответим на любые ваши вопросы',
         'widget_color' => '#2563eb', // Blue-600
+        'contact_phone' => '+375333533971',
+        'contact_email' => 'info@wes.by',
+        'contact_address' => 'г. Минск',
+        'dev_name' => 'WES.BY',
+        'dev_phone' => '+375333533971',
+        'dev_site' => 'https://wes.by',
+        'dev_desc' => 'Разработка сайтов и приложений',
         'chat_bg_color' => '#f8fafc',
         'bot_bubble_bg' => '#ffffff',
         'bot_bubble_color' => '#1e293b',
@@ -514,7 +521,14 @@ switch ($action) {
             'forms' => $settings['forms'],
             'schedule' => $settings['schedule'],
             'schedule_offline_msg' => $settings['schedule_offline_msg'],
-            'smart_rules' => isset($settings['smart_rules']) ? $settings['smart_rules'] : []
+            'smart_rules' => isset($settings['smart_rules']) ? $settings['smart_rules'] : [],
+            'contact_phone' => isset($settings['contact_phone']) ? $settings['contact_phone'] : '+375333533971',
+            'contact_email' => isset($settings['contact_email']) ? $settings['contact_email'] : 'info@wes.by',
+            'contact_address' => isset($settings['contact_address']) ? $settings['contact_address'] : 'г. Минск',
+            'dev_name' => isset($settings['dev_name']) ? $settings['dev_name'] : 'WES.BY',
+            'dev_phone' => isset($settings['dev_phone']) ? $settings['dev_phone'] : '+375333533971',
+            'dev_site' => isset($settings['dev_site']) ? $settings['dev_site'] : 'https://wes.by',
+            'dev_desc' => isset($settings['dev_desc']) ? $settings['dev_desc'] : 'Разработка сайтов и приложений'
         ];
         echo json_encode($public_settings);
         exit;
