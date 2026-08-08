@@ -77,6 +77,11 @@ function get_default_settings() {
         'widget_title' => 'Онлайн Консультант',
         'widget_subtitle' => 'Ответим на любые ваши вопросы',
         'widget_color' => '#2563eb', // Blue-600
+        'chat_bg_color' => '#f8fafc',
+        'bot_bubble_bg' => '#ffffff',
+        'bot_bubble_color' => '#1e293b',
+        'user_bubble_bg' => '#2563eb',
+        'user_bubble_color' => '#ffffff',
         'widget_position' => 'bottom-right', // bottom-right, bottom-left, bottom-center, top-right, top-left
         'widget_offset_x' => 20,
         'widget_offset_y' => 20,
@@ -98,9 +103,11 @@ function get_default_settings() {
         'telegram_chat_id' => '',
         'extra_greetings' => "Привет! Рад вас приветствовать. О чем вы хотите спросить?\nУ нас есть разделы: контакты, график работы, услуги.",
         'sound_enabled' => true,
+        'sound_type' => 'synth', // synth, alert, chime
         'exit_intent_enabled' => false,
         'custom_css' => '',
         'chat_rating_enabled' => true,
+        'chat_rating_text' => 'Оцените качество нашей консультации:',
         'schedule' => [
             ['day' => 'Понедельник', 'enabled' => true, 'from' => '09:00', 'to' => '18:00'],
             ['day' => 'Вторник', 'enabled' => true, 'from' => '09:00', 'to' => '18:00'],
@@ -318,6 +325,102 @@ switch ($action) {
         echo json_encode(['success' => true, 'count' => count($kb), 'kb' => $kb]);
         exit;
 
+    case 'scan_page':
+        check_auth_or_die();
+        header('Content-Type: application/json');
+        $raw = file_get_contents('php://input');
+        $data = json_decode($raw, true);
+        $url = isset($data['url']) ? trim($data['url']) : '';
+        $mode = isset($data['mode']) ? $data['mode'] : 'append'; // replace or append
+
+        if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+            echo json_encode(['success' => false, 'error' => 'Укажите корректный URL для сканирования']);
+            exit;
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) WES.BOT Page Scanner');
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $html = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($http_code !== 200 || !$html) {
+            echo json_encode(['success' => false, 'error' => 'Не удалось загрузить страницу. HTTP Code: ' . $http_code]);
+            exit;
+        }
+
+        // Remove style & scripts
+        $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', "", $html);
+        $html = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', "", $html);
+
+        // Match headers and next paragraph elements
+        preg_match_all('/<(h[1-6]|p|li|div)\b[^>]*>(.*?)<\/\1>/is', $html, $matches);
+
+        $kb = [];
+        $current_header = '';
+        $current_text = '';
+
+        if (!empty($matches[2])) {
+            foreach ($matches[2] as $index => $node) {
+                $tag = $matches[1][$index];
+                $node_text = trim(strip_tags($node));
+                $node_text = preg_replace('/\s+/', ' ', $node_text);
+
+                if (empty($node_text) || strlen($node_text) < 10) continue;
+
+                if (strpos($tag, 'h') === 0) {
+                    if (!empty($current_header) && !empty($current_text)) {
+                        $cleaned_q = rtrim($current_header, '?') . '?';
+                        $kb[] = [
+                            'id' => uniqid('kb_scan_'),
+                            'question' => $cleaned_q,
+                            'answer' => $current_text,
+                            'keywords' => array_filter(array_map('trim', explode(' ', preg_replace('/[^\w\sа-яё]/ui', '', $cleaned_q))))
+                        ];
+                        $current_text = '';
+                    }
+                    $current_header = $node_text;
+                } else {
+                    if (empty($current_header)) {
+                        // If no header yet, make a short snippet of paragraph the header
+                        $words = explode(' ', $node_text);
+                        $current_header = implode(' ', array_slice($words, 0, 5)) . '...';
+                        $current_text = $node_text;
+                    } else {
+                        $current_text .= ($current_text ? ' ' : '') . $node_text;
+                    }
+                }
+            }
+        }
+
+        if (!empty($current_header) && !empty($current_text)) {
+            $cleaned_q = rtrim($current_header, '?') . '?';
+            $kb[] = [
+                'id' => uniqid('kb_scan_'),
+                'question' => $cleaned_q,
+                'answer' => $current_text,
+                'keywords' => array_filter(array_map('trim', explode(' ', preg_replace('/[^\w\sа-яё]/ui', '', $cleaned_q))))
+            ];
+        }
+
+        if (empty($kb)) {
+            echo json_encode(['success' => false, 'error' => 'Не удалось выделить полезные текстовые блоки на странице']);
+            exit;
+        }
+
+        if ($mode === 'append') {
+            $existing = read_json_file(KNOWLEDGE_FILE, []);
+            $kb = array_merge($existing, $kb);
+        }
+
+        write_json_file(KNOWLEDGE_FILE, $kb);
+        echo json_encode(['success' => true, 'count' => count($kb), 'kb' => $kb]);
+        exit;
+
     case 'get_dialogues':
         check_auth_or_die();
         header('Content-Type: application/json');
@@ -386,6 +489,11 @@ switch ($action) {
             'widget_title' => $settings['widget_title'],
             'widget_subtitle' => $settings['widget_subtitle'],
             'widget_color' => $settings['widget_color'],
+            'chat_bg_color' => isset($settings['chat_bg_color']) ? $settings['chat_bg_color'] : '#f8fafc',
+            'bot_bubble_bg' => isset($settings['bot_bubble_bg']) ? $settings['bot_bubble_bg'] : '#ffffff',
+            'bot_bubble_color' => isset($settings['bot_bubble_color']) ? $settings['bot_bubble_color'] : '#1e293b',
+            'user_bubble_bg' => isset($settings['user_bubble_bg']) ? $settings['user_bubble_bg'] : $settings['widget_color'],
+            'user_bubble_color' => isset($settings['user_bubble_color']) ? $settings['user_bubble_color'] : '#ffffff',
             'widget_position' => $settings['widget_position'],
             'widget_offset_x' => $settings['widget_offset_x'],
             'widget_offset_y' => $settings['widget_offset_y'],
@@ -398,12 +506,15 @@ switch ($action) {
             'widget_avatar_url' => $settings['widget_avatar_url'],
             'extra_greetings' => $settings['extra_greetings'],
             'sound_enabled' => $settings['sound_enabled'],
+            'sound_type' => isset($settings['sound_type']) ? $settings['sound_type'] : 'synth',
             'exit_intent_enabled' => $settings['exit_intent_enabled'],
             'custom_css' => $settings['custom_css'],
             'chat_rating_enabled' => $settings['chat_rating_enabled'],
+            'chat_rating_text' => isset($settings['chat_rating_text']) ? $settings['chat_rating_text'] : 'Оцените качество нашей консультации:',
             'forms' => $settings['forms'],
             'schedule' => $settings['schedule'],
             'schedule_offline_msg' => $settings['schedule_offline_msg'],
+            'smart_rules' => isset($settings['smart_rules']) ? $settings['smart_rules'] : []
         ];
         echo json_encode($public_settings);
         exit;
@@ -461,20 +572,34 @@ switch ($action) {
         $smart_action_triggered = null;
         $smart_form_id = null;
 
-        // Heuristic A1: Smart Keyword/Action Rules (e.g. trigger forms automatically on words like "телефон", "запись")
+        // Heuristic A1: Smart Keyword/Action Rules with multiple keywords count and command execution
+        $best_rule = null;
+        $max_kw_matches = 0;
+
         if (isset($settings['smart_rules']) && is_array($settings['smart_rules'])) {
             foreach ($settings['smart_rules'] as $rule) {
-                $kw = mb_strtolower($rule['keyword'], 'UTF-8');
-                if (mb_strpos($norm_msg, $kw) !== false) {
-                    $bot_reply = $rule['response'];
-                    $matched = true;
-                    if ($rule['action'] === 'trigger_form') {
-                        $smart_action_triggered = 'trigger_form';
-                        $smart_form_id = $rule['payload'];
+                // Support multiple comma-separated keywords per rule
+                $keywords = array_filter(array_map('trim', explode(',', mb_strtolower($rule['keyword'], 'UTF-8'))));
+                $matches_count = 0;
+
+                foreach ($keywords as $kw) {
+                    if (mb_strpos($norm_msg, $kw) !== false) {
+                        $matches_count++;
                     }
-                    break;
+                }
+
+                if ($matches_count > $max_kw_matches) {
+                    $max_kw_matches = $matches_count;
+                    $best_rule = $rule;
                 }
             }
+        }
+
+        if ($max_kw_matches > 0 && $best_rule) {
+            $bot_reply = $best_rule['response'];
+            $matched = true;
+            $smart_action_triggered = $best_rule['action']; // trigger_form, open_url, alert
+            $smart_form_id = $best_rule['payload'];
         }
 
         // Heuristic A2: Auto-responders (Exact & Keyword triggers)
@@ -566,7 +691,9 @@ switch ($action) {
             'reply' => $bot_reply,
             'dead_end' => $is_dead_end,
             'dead_end_count' => $dead_end_count,
-            'trigger_form' => $smart_action_triggered === 'trigger_form' ? $smart_form_id : ($is_dead_end ? $settings['fallback_form_id'] : null)
+            'trigger_form' => $smart_action_triggered === 'trigger_form' ? $smart_form_id : ($is_dead_end ? $settings['fallback_form_id'] : null),
+            'smart_action' => $smart_action_triggered !== 'trigger_form' ? $smart_action_triggered : null,
+            'smart_payload' => $smart_action_triggered !== 'trigger_form' ? $smart_form_id : null
         ]);
         exit;
 

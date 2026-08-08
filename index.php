@@ -540,13 +540,16 @@
                                             <label class="block text-[10px] font-bold text-slate-500 mb-1">Действие</label>
                                             <select v-model="rule.action" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold bg-white focus:outline-none">
                                                 <option value="trigger_form">Показать форму</option>
+                                                <option value="open_url">Открыть страницу</option>
+                                                <option value="alert">Всплывающее окно (Alert)</option>
                                             </select>
                                         </div>
                                         <div class="md:col-span-2">
-                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Какую форму открыть?</label>
-                                            <select v-model="rule.payload" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold bg-white focus:outline-none">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Параметр действия (Payload)</label>
+                                            <select v-if="rule.action === 'trigger_form'" v-model="rule.payload" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold bg-white focus:outline-none">
                                                 <option v-for="f in settings.forms" :key="f.id" :value="f.id">{{ f.title }}</option>
                                             </select>
+                                            <input v-else v-model="rule.payload" type="text" placeholder="URL или сообщение" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold bg-white focus:outline-none">
                                         </div>
                                         <div class="md:col-span-1 text-right pt-4">
                                             <button @click="deleteSmartRule(rIdx)" class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg"><i class="fa-solid fa-trash-can text-sm"></i></button>
@@ -579,6 +582,30 @@
                                         </button>
                                         <button @click="importKnowledge('append')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition-all">
                                             Добавить к текущей
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Crawler Page Scanner Block -->
+                                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center gap-2"><i class="fa-solid fa-spider text-indigo-600"></i> Сканер веб-страниц (Crawler)</h3>
+                                    <p class="text-[11px] text-slate-400 font-medium mb-4">Укажите адрес любой страницы вашего сайта. Наша умная система проанализирует её контент, автоматически сгенерирует Q&A-пары и подберёт ключевые слова.</p>
+
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Адрес страницы (URL)</label>
+                                            <input v-model="scanUrl" type="url" placeholder="https://wes.by/about" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Режим импорта</label>
+                                            <select v-model="scanMode" class="w-full px-2 py-2 rounded-xl border border-slate-200 text-[11px] font-semibold bg-white focus:outline-none">
+                                                <option value="append">Добавить к текущей базе знаний</option>
+                                                <option value="replace">Заменить всю базу знаний</option>
+                                            </select>
+                                        </div>
+                                        <button @click="startUrlScanner" :disabled="scanningPage" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 disabled:opacity-50">
+                                            <i v-if="scanningPage" class="fa-solid fa-circle-notch fa-spin"></i>
+                                            <span v-else><i class="fa-solid fa-radar"></i> Запустить сканирование</span>
                                         </button>
                                     </div>
                                 </div>
@@ -922,6 +949,9 @@
                     selectedDialogueIndex: 0,
                     kbSearch: '',
                     importText: '',
+                    scanUrl: '',
+                    scanMode: 'append',
+                    scanningPage: false,
                     knowledgeBase: [],
                     dialogues: [],
                     submissions: [],
@@ -1103,6 +1133,34 @@
                         if (data.success) {
                             alert('База знаний успешно обновлена!');
                         }
+                    });
+                },
+                startUrlScanner() {
+                    if (!this.scanUrl.trim()) {
+                        alert('Пожалуйста, введите URL адрес страницы');
+                        return;
+                    }
+                    this.scanningPage = true;
+                    fetch('api.php?action=scan_page', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: this.scanUrl, mode: this.scanMode })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`Успешно просканировано! Импортировано ${data.count} пар(ы) из содержимого страницы.`);
+                            this.knowledgeBase = data.kb;
+                            this.scanUrl = '';
+                        } else {
+                            alert(data.error || 'Ошибка при сканировании страницы');
+                        }
+                    })
+                    .catch(() => {
+                        alert('Ошибка подключения к серверу сканирования');
+                    })
+                    .finally(() => {
+                        this.scanningPage = false;
                     });
                 },
                 importKnowledge(mode) {

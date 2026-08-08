@@ -978,6 +978,17 @@
                 }
 
                 showTypingAndReply(data.reply, data.dead_end, data.trigger_form);
+
+                // Execute Smart command script triggers if returned
+                if (data.smart_action) {
+                    setTimeout(() => {
+                        if (data.smart_action === 'open_url') {
+                            window.open(data.smart_payload, '_blank');
+                        } else if (data.smart_action === 'alert') {
+                            alert(data.smart_payload);
+                        }
+                    }, 1000);
+                }
             })
             .catch(err => {
                 console.error('Messaging server error', err);
