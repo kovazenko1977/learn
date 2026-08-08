@@ -139,6 +139,14 @@ function get_default_settings() {
             ['trigger' => 'пока', 'response' => 'До свидания! Если появятся вопросы, пишите.'],
             ['trigger' => 'контакты', 'response' => 'Наши контакты: Телефон +375333533971, Email: info@wes.by. Разработано WES.BY!'],
             ['trigger' => 'адрес', 'response' => 'Мы находимся в г. Минск. Подробнее по телефону +375333533971'],
+        ],
+        'smart_rules' => [
+            ['keyword' => 'телефон', 'action' => 'trigger_form', 'payload' => 'feedback', 'response' => 'Уже открываю форму для обратного звонка. Пожалуйста, укажите ваш телефон!'],
+            ['keyword' => 'номер', 'action' => 'trigger_form', 'payload' => 'feedback', 'response' => 'Пожалуйста, введите ваш номер телефона в форме ниже, и наш специалист перезвонит вам.'],
+            ['keyword' => 'звонок', 'action' => 'trigger_form', 'payload' => 'feedback', 'response' => 'Конечно! Пожалуйста, оставьте ваш телефон в форме, мы перезвоним в течение 10 минут.'],
+            ['keyword' => 'запись', 'action' => 'trigger_form', 'payload' => 'booking', 'response' => 'Отличная идея! Заполните форму ниже для выбора удобной даты и времени консультации.'],
+            ['keyword' => 'записаться', 'action' => 'trigger_form', 'payload' => 'booking', 'response' => 'Открываю календарь записи на консультацию. Ждем вас!'],
+            ['keyword' => 'купить', 'action' => 'trigger_form', 'payload' => 'feedback', 'response' => 'Оставьте заявку, и мы обсудим условия покупки и специальные скидки!'],
         ]
     ];
 }
@@ -449,14 +457,35 @@ switch ($action) {
         $bot_reply = '';
         $matched = false;
 
-        // Heuristic A: Auto-responders (Exact & Keyword triggers)
         $norm_msg = mb_strtolower($user_msg, 'UTF-8');
-        foreach ($settings['auto_responders'] as $ar) {
-            $trigger = mb_strtolower($ar['trigger'], 'UTF-8');
-            if (mb_strpos($norm_msg, $trigger) !== false) {
-                $bot_reply = $ar['response'];
-                $matched = true;
-                break;
+        $smart_action_triggered = null;
+        $smart_form_id = null;
+
+        // Heuristic A1: Smart Keyword/Action Rules (e.g. trigger forms automatically on words like "телефон", "запись")
+        if (isset($settings['smart_rules']) && is_array($settings['smart_rules'])) {
+            foreach ($settings['smart_rules'] as $rule) {
+                $kw = mb_strtolower($rule['keyword'], 'UTF-8');
+                if (mb_strpos($norm_msg, $kw) !== false) {
+                    $bot_reply = $rule['response'];
+                    $matched = true;
+                    if ($rule['action'] === 'trigger_form') {
+                        $smart_action_triggered = 'trigger_form';
+                        $smart_form_id = $rule['payload'];
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Heuristic A2: Auto-responders (Exact & Keyword triggers)
+        if (!$matched) {
+            foreach ($settings['auto_responders'] as $ar) {
+                $trigger = mb_strtolower($ar['trigger'], 'UTF-8');
+                if (mb_strpos($norm_msg, $trigger) !== false) {
+                    $bot_reply = $ar['response'];
+                    $matched = true;
+                    break;
+                }
             }
         }
 
@@ -537,7 +566,7 @@ switch ($action) {
             'reply' => $bot_reply,
             'dead_end' => $is_dead_end,
             'dead_end_count' => $dead_end_count,
-            'trigger_form' => $is_dead_end ? $settings['fallback_form_id'] : null
+            'trigger_form' => $smart_action_triggered === 'trigger_form' ? $smart_form_id : ($is_dead_end ? $settings['fallback_form_id'] : null)
         ]);
         exit;
 

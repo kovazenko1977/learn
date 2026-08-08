@@ -515,6 +515,49 @@
                             <div v-else class="text-center p-12 bg-white rounded-2xl border border-dashed border-slate-300">
                                 <p class="text-slate-400 font-semibold">Выберите или создайте форму для начала конструирования</p>
                             </div>
+
+                            <!-- Smart Keyword-Action Rules Builder -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mt-6">
+                                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                                    <div>
+                                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-brain text-indigo-600"></i> Умные правила (Распознавание ключевых слов)</h3>
+                                        <p class="text-[11px] text-slate-400 font-medium mt-0.5">Если клиент напишет любое из этих слов (например, "телефон" или "запись"), бот мгновенно откроет нужную форму обратной связи.</p>
+                                    </div>
+                                    <button @click="addSmartRule" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-xs font-bold transition-all"><i class="fa-solid fa-plus-circle"></i> Добавить правило</button>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div v-for="(rule, rIdx) in settings.smart_rules" :key="rIdx" class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center p-4 rounded-xl border border-slate-100 bg-slate-50/50">
+                                        <div class="md:col-span-3">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Ключевое слово (содержит)</label>
+                                            <input v-model="rule.keyword" type="text" placeholder="Например: телефон" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold bg-white focus:outline-none">
+                                        </div>
+                                        <div class="md:col-span-4">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Фраза-ответ бота перед формой</label>
+                                            <input v-model="rule.response" type="text" placeholder="Открываю форму..." class="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold bg-white focus:outline-none">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Действие</label>
+                                            <select v-model="rule.action" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold bg-white focus:outline-none">
+                                                <option value="trigger_form">Показать форму</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-[10px] font-bold text-slate-500 mb-1">Какую форму открыть?</label>
+                                            <select v-model="rule.payload" class="w-full px-2 py-1.5 rounded-lg border border-slate-200 text-[11px] font-semibold bg-white focus:outline-none">
+                                                <option v-for="f in settings.forms" :key="f.id" :value="f.id">{{ f.title }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-1 text-right pt-4">
+                                            <button @click="deleteSmartRule(rIdx)" class="text-red-500 hover:bg-red-50 p-1.5 rounded-lg"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                                        </div>
+                                    </div>
+                                    <div v-if="!settings.smart_rules || settings.smart_rules.length === 0" class="text-center py-6 text-slate-400 font-semibold text-xs">
+                                        Список умных правил пуст. Добавьте первое правило для автоматизации!
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -915,7 +958,8 @@
                         schedule: [],
                         schedule_offline_msg: '',
                         forms: [],
-                        auto_responders: []
+                        auto_responders: [],
+                        smart_rules: []
                     },
                     tabs: [
                         { id: 'general', name: 'Внешний вид & Чат', icon: 'fa-solid fa-palette' },
@@ -1098,6 +1142,20 @@
                     if (this.selectedFormIndex >= this.settings.forms.length) {
                         this.selectedFormIndex = 0;
                     }
+                },
+                addSmartRule() {
+                    if (!this.settings.smart_rules) {
+                        this.settings.smart_rules = [];
+                    }
+                    this.settings.smart_rules.push({
+                        keyword: 'новое слово',
+                        action: 'trigger_form',
+                        payload: 'feedback',
+                        response: 'Пожалуйста, введите ваши контактные данные в форме ниже!'
+                    });
+                },
+                deleteSmartRule(rIdx) {
+                    this.settings.smart_rules.splice(rIdx, 1);
                 },
                 addFormField() {
                     if (this.settings.forms[this.selectedFormIndex]) {
