@@ -176,11 +176,38 @@ function get_default_settings() {
     ];
 }
 
+// Helper to detect if an array is sequential/list
+function is_sequential_array($arr) {
+    if (!is_array($arr)) return false;
+    if (empty($arr)) return true;
+    $keys = array_keys($arr);
+    return $keys === array_keys($keys);
+}
+
+// Safe recursive merge that replaces sequential lists instead of merging them element-by-element
+function safe_merge_settings($old, $new) {
+    if (!is_array($old) || !is_array($new)) {
+        return $new;
+    }
+    if (is_sequential_array($old) || is_sequential_array($new)) {
+        return $new;
+    }
+    $merged = $old;
+    foreach ($new as $key => $value) {
+        if (array_key_exists($key, $old) && is_array($old[$key]) && is_array($value)) {
+            $merged[$key] = safe_merge_settings($old[$key], $value);
+        } else {
+            $merged[$key] = $value;
+        }
+    }
+    return $merged;
+}
+
 // Retrieve settings with automatic fallbacks
 function get_settings() {
     $defaults = get_default_settings();
     $current = read_json_file(SETTINGS_FILE, $defaults);
-    return array_replace_recursive($defaults, $current);
+    return safe_merge_settings($defaults, $current);
 }
 
 // Authentication Check Helper
@@ -253,7 +280,7 @@ switch ($action) {
             $data['admin_password'] = $settings['admin_password'];
         }
 
-        $new_settings = array_replace_recursive($settings, $data);
+        $new_settings = safe_merge_settings($settings, $data);
         if (write_json_file(SETTINGS_FILE, $new_settings)) {
             echo json_encode(['success' => true, 'settings' => $new_settings]);
         } else {
@@ -561,6 +588,27 @@ switch ($action) {
             exit;
         }
 
+        // Check if operator is active for this session
+        $dialogues = read_json_file(DIALOGUES_FILE, []);
+        $operator_active = false;
+        foreach ($dialogues as $d) {
+            if ($d['session_id'] === $session_id && !empty($d['operator_active'])) {
+                $operator_active = true;
+                break;
+            }
+        }
+
+        if ($operator_active) {
+            save_dialogue_message($session_id, $user_msg, 'user');
+            echo json_encode([
+                'reply' => null,
+                'operator_active' => true,
+                'dead_end' => false,
+                'dead_end_count' => 0
+            ]);
+            exit;
+        }
+
         $settings = get_settings();
         $is_offline = false;
 
@@ -815,6 +863,98 @@ switch ($action) {
         ]);
         exit;
 
+    case 'toggle_operator_active':
+        check_auth_or_die();
+        header('Content-Type: application/json');
+        $raw = file_get_contents('php://input');
+        $data = json_decode($raw, true);
+        $session_id = isset($data['session_id']) ? $data['session_id'] : '';
+        $active = isset($data['active']) ? (bool)$data['active'] : false;
+
+        if (empty($session_id)) {
+            echo json_encode(['error' => 'Session ID is required']);
+            exit;
+        }
+
+        $dialogues = read_json_file(DIALOGUES_FILE, []);
+        $updated = false;
+        foreach ($dialogues as &$d) {
+            if ($d['session_id'] === $session_id) {
+                $d['operator_active'] = $active;
+                $d['updated_at'] = date('Y-m-d H:i:s');
+                $updated = true;
+                break;
+            }
+        }
+
+        if ($updated) {
+            write_json_file(DIALOGUES_FILE, $dialogues);
+            echo json_encode(['success' => true, 'operator_active' => $active]);
+        } else {
+            echo json_encode(['error' => 'Dialogue session not found']);
+        }
+        exit;
+
+    case 'operator_reply':
+        check_auth_or_die();
+        header('Content-Type: application/json');
+        $raw = file_get_contents('php://input');
+        $data = json_decode($raw, true);
+        $session_id = isset($data['session_id']) ? $data['session_id'] : '';
+        $msg = isset($data['message']) ? trim($data['message']) : '';
+
+        if (empty($session_id) || empty($msg)) {
+            echo json_encode(['error' => 'Session ID and message are required']);
+            exit;
+        }
+
+        save_dialogue_message($session_id, $msg, 'bot');
+
+        // Ensure operator_active is enabled
+        $dialogues = read_json_file(DIALOGUES_FILE, []);
+        foreach ($dialogues as &$d) {
+            if ($d['session_id'] === $session_id) {
+                $d['operator_active'] = true;
+                $d['updated_at'] = date('Y-m-d H:i:s');
+                break;
+            }
+        }
+        write_json_file(DIALOGUES_FILE, $dialogues);
+
+        echo json_encode(['success' => true]);
+        exit;
+
+    case 'client_poll':
+        header('Content-Type: application/json');
+        $session_id = isset($_GET['session_id']) ? $_GET['session_id'] : '';
+
+        if (empty($session_id)) {
+            echo json_encode(['error' => 'Session ID is required']);
+            exit;
+        }
+
+        $dialogues = read_json_file(DIALOGUES_FILE, []);
+        $found = null;
+        foreach ($dialogues as $d) {
+            if ($d['session_id'] === $session_id) {
+                $found = $d;
+                break;
+            }
+        }
+
+        if ($found) {
+            echo json_encode([
+                'operator_active' => !empty($found['operator_active']),
+                'messages' => $found['messages']
+            ]);
+        } else {
+            echo json_encode([
+                'operator_active' => false,
+                'messages' => []
+            ]);
+        }
+        exit;
+
     default:
         http_response_code(400);
         header('Content-Type: application/json');
@@ -825,7 +965,7 @@ switch ($action) {
 /**
  * Dialogue history logger
  */
-function save_dialogue_log($session_id, $user_msg, $bot_reply) {
+function save_dialogue_message($session_id, $text, $sender) {
     $dialogues = read_json_file(DIALOGUES_FILE, []);
     $found_index = -1;
 
@@ -837,41 +977,32 @@ function save_dialogue_log($session_id, $user_msg, $bot_reply) {
     }
 
     $now = date('Y-m-d H:i:s');
+    $msg = [
+        'sender' => $sender,
+        'text' => $text,
+        'time' => date('H:i')
+    ];
 
     if ($found_index !== -1) {
         $dialogues[$found_index]['updated_at'] = $now;
-        $dialogues[$found_index]['messages'][] = [
-            'sender' => 'user',
-            'text' => $user_msg,
-            'time' => date('H:i')
-        ];
-        $dialogues[$found_index]['messages'][] = [
-            'sender' => 'bot',
-            'text' => $bot_reply,
-            'time' => date('H:i')
-        ];
+        $dialogues[$found_index]['messages'][] = $msg;
     } else {
         $dialogues[] = [
             'id' => uniqid('diag_'),
             'session_id' => $session_id,
             'created_at' => $now,
             'updated_at' => $now,
-            'messages' => [
-                [
-                    'sender' => 'user',
-                    'text' => $user_msg,
-                    'time' => date('H:i')
-                ],
-                [
-                    'sender' => 'bot',
-                    'text' => $bot_reply,
-                    'time' => date('H:i')
-                ]
-            ]
+            'operator_active' => false,
+            'messages' => [$msg]
         ];
     }
 
     write_json_file(DIALOGUES_FILE, $dialogues);
+}
+
+function save_dialogue_log($session_id, $user_msg, $bot_reply) {
+    save_dialogue_message($session_id, $user_msg, 'user');
+    save_dialogue_message($session_id, $bot_reply, 'bot');
 }
 
 /**

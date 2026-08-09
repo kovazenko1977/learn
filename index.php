@@ -819,19 +819,32 @@
                                 <!-- Active dialogue viewer -->
                                 <div class="lg:col-span-7 flex flex-col justify-between max-h-[450px]">
                                     <div v-if="dialogues[selectedDialogueIndex]" class="flex-1 flex flex-col justify-between bg-slate-50 rounded-2xl p-4 border border-slate-200">
-                                        <div class="border-b border-slate-200 pb-2 mb-3 flex justify-between items-center text-xs font-bold text-slate-600">
-                                            <span>Сессия: {{ dialogues[selectedDialogueIndex].session_id }}</span>
-                                            <span>{{ dialogues[selectedDialogueIndex].created_at }}</span>
+                                        <div class="border-b border-slate-200 pb-2 mb-3 flex justify-between items-center text-xs font-bold text-slate-600 gap-2">
+                                            <div class="flex items-center gap-1 min-w-0">
+                                                <span class="truncate">Сессия: {{ dialogues[selectedDialogueIndex].session_id }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 flex-shrink-0">
+                                                <button @click="toggleOperatorActive(dialogues[selectedDialogueIndex])" :class="dialogues[selectedDialogueIndex].operator_active ? 'bg-emerald-500 text-white shadow-emerald-500/20 shadow-md' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'" class="px-2 py-1.5 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1">
+                                                    <i class="fa-solid" :class="dialogues[selectedDialogueIndex].operator_active ? 'fa-user-check' : 'fa-robot'"></i>
+                                                    {{ dialogues[selectedDialogueIndex].operator_active ? 'Оператор на связи' : 'Бот отвечает' }}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <!-- Messages flow -->
-                                        <div class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 max-h-[300px]">
+                                        <div id="admin-chat-flow" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 max-h-[220px] mb-3">
                                             <div v-for="(msg, mIdx) in dialogues[selectedDialogueIndex].messages" :key="mIdx" class="flex" :class="msg.sender === 'user' ? 'justify-end' : 'justify-start'">
                                                 <div class="max-w-[85%] rounded-2xl p-3 text-xs font-medium relative" :class="msg.sender === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'">
                                                     <p>{{ msg.text }}</p>
                                                     <span class="text-[8px] absolute bottom-1 right-2" :class="msg.sender === 'user' ? 'text-white/70' : 'text-slate-400'">{{ msg.time }}</span>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <!-- Operator Input Form -->
+                                        <div class="flex gap-2 border-t border-slate-200 pt-3">
+                                            <input type="text" v-model="operatorReplyText" @keyup.enter="sendOperatorReply" placeholder="Введите ответ оператора..." class="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                                            <button @click="sendOperatorReply" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all"><i class="fa-solid fa-paper-plane"></i></button>
                                         </div>
                                     </div>
                                     <div v-else class="flex-1 flex items-center justify-center p-12 bg-slate-50 border border-slate-200 rounded-2xl text-slate-400 font-semibold text-xs">
@@ -1099,92 +1112,130 @@
                         <div class="bg-gradient-to-r from-indigo-900 to-blue-700 rounded-3xl p-8 text-white shadow-xl relative overflow-hidden">
                             <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_40%)]"></div>
                             <div class="relative z-10 space-y-2">
-                                <span class="text-xs bg-indigo-500 text-white font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">База знаний и руководство</span>
-                                <h2 class="text-3xl font-black tracking-tight">Полное руководство пользователя WES.BOT</h2>
-                                <p class="text-sm text-indigo-100/90 font-medium max-w-2xl">Здесь подробно описаны все разделы программы, возможности кастомизации, интеграции уведомлений и алгоритмы работы чат-бота.</p>
+                                <span class="text-xs bg-indigo-500 text-white font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Документация и примеры</span>
+                                <h2 class="text-3xl font-black tracking-tight">Полное руководство WES.BOT (10 страниц)</h2>
+                                <p class="text-sm text-indigo-100/90 font-medium max-w-2xl">Подробное описание работы системы с реальными примерами для санаториев, гостиниц и бизнеса.</p>
                             </div>
                         </div>
 
-                        <!-- Manual Sections Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Manual Pages -->
+                        <div class="space-y-6">
 
-                            <!-- 1. Основные настройки -->
+                            <!-- Page 1: Введение и архитектура -->
                             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-palette"></i></div>
-                                    <h3 class="font-extrabold text-slate-900 text-sm">1. Внешний вид & Основные настройки</h3>
-                                </div>
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 1: Введение и архитектура решения</h3>
                                 <p class="text-xs text-slate-500 leading-relaxed">
-                                    В этом разделе настраивается визуальное оформление чат-виджета на вашем сайте. Вы можете установить **Заголовок** (например, имя компании) и **Подзаголовок**, настроить **Приветственное сообщение**, которое бот выдаёт сразу при открытии окна. Также можно задать аватар (логотип) бота по URL-ссылке или использовать один из предустановленных наборов векторных иконок.
+                                    **WES.BOT** — это современная, быстрая диалоговая платформа, работающая без использования громоздких баз данных SQL (полностью на защищённых файлах JSON). Платформа состоит из трех компонентов:
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-slate-500 space-y-1 pl-2">
+                                    <li>**Админ-панель (index.php)** — визуальный конструктор и аналитика.</li>
+                                    <li>**API Контроллер (api.php)** — обрабатывает запросы, логгирует диалоги, отправляет лиды на почту и в Telegram.</li>
+                                    <li>**Встраиваемый виджет (widget.js)** — легкий скрипт, работающий внутри Shadow DOM (полная защита от конфликтов стилей со сторонними сайтами).</li>
+                                </ul>
+                            </div>
+
+                            <!-- Page 2: Управление внешним видом -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 2: Управление дизайном и цветовой гаммой</h3>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Вы можете полностью перекрасить чат под свой брендбук. На выбор доступны **Готовые пресетные темы** (Классический синий, изумрудно-зеленый санаторный, глубокий темный и т.д.) или ручной выбор цветов для фона чата, сообщений бота и сообщений пользователя. Также здесь задаются горизонтальные и вертикальные отступы значка запуска в пикселях.
+                                </p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-mono text-slate-600">
+                                    Пример настройки: Цвет виджета: #059669 (Санаторный изумруд), Иконка: Support (🎧), Отступ по горизонтали: 30px, Отступ по вертикали: 30px.
+                                </div>
+                            </div>
+
+                            <!-- Page 3: Быстрые кнопки на старте -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 3: Конструктор Быстрых Кнопок Ответов</h3>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Быстрые кнопки отображаются в начале диалога, подталкивая клиента совершить целевое действие без необходимости писать текст. Кнопки могут имитировать отправку текстовой фразы боту (например, "Цены на путевки") или мгновенно запускать форму из Конструктора Форм (например, "Оставить заявку").
+                                </p>
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-mono text-slate-600">
+                                    Пример 1: Кнопка "💰 Цены на путевки" -> Действие: Отправить фразу -> "Какие цены на путевки?"<br>
+                                    Пример 2: Кнопка "📝 Забронировать" -> Действие: Открыть форму -> "booking"
+                                </div>
+                            </div>
+
+                            <!-- Page 4: Календарь и график работы -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 4: График работы и ночной лидогенератор</h3>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Для каждого дня недели задаются рабочие часы (например, с 09:00 до 18:00). Если посетитель пишет в нерабочее время, бот вежливо извиняется и выводит специальное сообщение (например: "Сейчас мы не в сети, но вы можете заполнить быструю форму ниже!"). В этот же момент под сообщением **автоматически открывается форма обратной связи**. Вы никогда не упустите ночного клиента!
                                 </p>
                             </div>
 
-                            <!-- 2. График работы -->
+                            <!-- Page 5: Конструктор интерактивных форм -->
                             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-clock"></i></div>
-                                    <h3 class="font-extrabold text-slate-900 text-sm">2. Гибкий график работы</h3>
-                                </div>
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 5: Конструктор Форм и сбор заявок</h3>
                                 <p class="text-xs text-slate-500 leading-relaxed">
-                                    Позволяет настроить рабочее время компании по дням недели. Если посетитель пишет в нерабочее время (выходной или ночь), бот вежливо сообщит, что операторы сейчас отдыхают (сообщение настраивается), и **автоматически покажет форму обратной связи**, чтобы клиент мог оставить свои данные для связи.
+                                    Позволяет создавать формы любой сложности. Поддерживаемые типы полей:
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-slate-500 space-y-1 pl-2">
+                                    <li>**Текст / Число** — для ввода имени или количества человек.</li>
+                                    <li>**Телефон / Email** — для контактных данных (с автоматической валидацией).</li>
+                                    <li>**Дата / Время** — для выбора желаемой даты заезда или времени звонка.</li>
+                                    <li>**Область текста** — для подробных пожеланий клиента.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Page 6: База знаний и Crawler -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 6: Обучение бота и автоматический Краулер страниц</h3>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Бот ищет совпадения по ключевым словам. Чтобы не писать базу знаний вручную, используйте **Сканер страниц (Crawler)**. Просто вставьте URL страницы вашего сайта (например, `https://wes.by/about`) и нажмите «Запустить». Сканер загрузит страницу, уберет лишние скрипты, разобьет статьи на логические пары "Вопрос-Ответ" и сгенерирует ключевые слова автоматически!
                                 </p>
                             </div>
 
-                            <!-- 3. Конструктор форм -->
+                            <!-- Page 7: Умные правила и Скрипты -->
                             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-list-check"></i></div>
-                                    <h3 class="font-extrabold text-slate-900 text-sm">3. Конструктор форм & Сбор данных</h3>
-                                </div>
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 7: Умные логические триггеры и выполнение скриптов</h3>
                                 <p class="text-xs text-slate-500 leading-relaxed">
-                                    Уникальный инструмент, позволяющий создавать любые интерактивные формы обратной связи прямо в чате! Вы можете добавлять неограниченное число полей (Текст, Телефон, Email, Число, Выбор даты/времени). Для каждой формы настраивается направление отправки: на E-mail, в Телеграм или только в локальный журнал админки.
+                                    Умные правила позволяют реагировать на слово или словосочетание в сообщении. Бот поддерживает запуск следующих скриптов на стороне клиента:
+                                </p>
+                                <ul class="list-disc list-inside text-xs text-slate-500 space-y-1 pl-2">
+                                    <li>**Показать форму** — бот автоматически откроет выбранную форму обратной связи (например, "Заявка на путевку" при слове "купить").</li>
+                                    <li>**Открыть страницу** — бот перенаправит клиента на новую страницу сайта (например, на страницу бронирования при слове "цены").</li>
+                                    <li>**Всплывающее окно (Alert)** — покажет нативное браузерное сообщение.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Page 8: Настройка оповещений Telegram & Email -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 8: Мгновенные оповещения в Telegram и на E-mail</h3>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Для мгновенного получения заявок настройте Приложение 10:
+                                </p>
+                                <ol class="list-decimal list-inside text-xs text-slate-500 space-y-1 pl-2">
+                                    <li>**E-mail получателя** — введите адрес вашей почты (заявки отправляются через стандартный PHP mail).</li>
+                                    <li>**Токен Telegram Бота** — создайте бота в Telegram через @BotFather и вставьте его токен.</li>
+                                    <li>**ID Чата Telegram** — укажите ID вашего чата или группы (куда бот должен отправлять заполненные лиды).</li>
+                                </ol>
+                            </div>
+
+                            <!-- Page 9: Журнал диалогов и лидов -->
+                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 9: Управление журналом диалогов и лидами</h3>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Все заполненные лиды и подробная история переписки с каждым посетителем сохраняются во вкладках **«История чатов»** и **«Лиды и Заявки»**. Администратор может читать сообщения клиентов, смотреть какие правила сработали, анализировать проблемные вопросы и удалять ненужные диалоги одной кнопкой.
                                 </p>
                             </div>
 
-                            <!-- 4. База знаний & Сканер -->
+                            <!-- Page 10: Техническая поддержка WES.BY -->
                             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-graduation-cap"></i></div>
-                                    <h3 class="font-extrabold text-slate-900 text-sm">4. Обучение бота & Сканер страниц (Crawler)</h3>
-                                </div>
+                                <h3 class="font-extrabold text-slate-900 text-sm border-b pb-2 text-indigo-600">Страница 10: Техническая поддержка и копирайты</h3>
                                 <p class="text-xs text-slate-500 leading-relaxed">
-                                    Бот обучается на Q&A-парах (Вопрос / Ответ). Вы можете добавлять их вручную, импортировать списком в текстовом формате (через Q: и A:) или запустить **Сканер веб-страниц (Crawler)**: укажите ссылку на любую страницу вашего сайта, и алгоритм сам проанализирует текст, разобьет его на смысловые Q&A блоки и сгенерирует ключевые слова!
+                                    Данный программный продукт разработан веб-студией **WES.BY**. Мы занимаемся профессиональной разработкой сайтов, интернет-магазинов, CRM систем и чат-ботов любой сложности.
                                 </p>
+                                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 text-xs font-semibold text-indigo-950">
+                                    📞 Контакты разработчика:<br>
+                                    Телефон: +375333533971<br>
+                                    E-mail: info@wes.by<br>
+                                    Сайт: https://wes.by<br>
+                                    Разработано с заботой о вашем бизнесе! 😊
+                                </div>
                             </div>
 
-                            <!-- 5. Умные правила -->
-                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-brain"></i></div>
-                                    <h3 class="font-extrabold text-slate-900 text-sm">5. Логические правила и выполнение скриптов</h3>
-                                </div>
-                                <p class="text-xs text-slate-500 leading-relaxed">
-                                    Позволяет настраивать реакцию бота на конкретные слова в сообщениях. Бот умеет не только отвечать текстом, но и совершать действия на клиенте (скрипты): открыть новую вкладку (URL) при слове "купить" или показать нативный Alert-диалог, либо автоматически вызвать любую форму из конструктора.
-                                </p>
-                            </div>
-
-                            <!-- 6. 10+ Приложений -->
-                            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-cubes"></i></div>
-                                    <h3 class="font-extrabold text-slate-900 text-sm">6. Пакет 10+ Дополнительных приложений</h3>
-                                </div>
-                                <p class="text-xs text-slate-500 leading-relaxed">
-                                    Включает умные триггеры удержания при попытке уйти с сайта (Exit Intent), звуковое сопровождение (3 типа звуков: Synth, Alert, Chime), систему оценки диалога звёздами (Stars Rating), интеграцию нейросетей ИИ (Hugging Face API), анти-тупиковую защиту и мгновенные уведомления в Telegram.
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <!-- Integration Manual Card -->
-                        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md border border-slate-800 space-y-4">
-                            <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-circle-nodes text-indigo-500"></i> Как установить чат на ваш сайт?</h3>
-                            <p class="text-xs text-slate-300 leading-relaxed">Установка занимает менее 1 минуты и не требует специальных навыков:</p>
-                            <ol class="list-decimal list-inside text-xs text-slate-400 space-y-1.5 font-medium">
-                                <li>Скопируйте короткий код интеграции из нижнего угла левого сайдбара панели.</li>
-                                <li>Вставьте скопированный тег в код вашего сайта перед закрывающим тегом <code class="text-indigo-300 font-mono">&lt;/body&gt;</code>.</li>
-                                <li>Все настройки цвета, графика, форм и правил будут применяться на вашем сайте автоматически в режиме реального времени сразу после нажатия кнопки «Сохранить настройки» в панели управления!</li>
-                            </ol>
                         </div>
                     </div>
 
@@ -1229,6 +1280,8 @@
                     scanningPage: false,
                     knowledgeBase: [],
                     dialogues: [],
+                    operatorReplyText: '',
+                    pollingInterval: null,
                     submissions: [],
                     settings: {
                         admin_password: '',
@@ -1315,8 +1368,71 @@
             },
             mounted() {
                 this.checkAuth();
+                this.startDialoguePolling();
             },
             methods: {
+                startDialoguePolling() {
+                    if (this.pollingInterval) clearInterval(this.pollingInterval);
+                    this.pollingInterval = setInterval(() => {
+                        if (this.authenticated && this.activeTab === 'dialogues') {
+                            this.loadDialogues(true);
+                        }
+                    }, 3000);
+                },
+                toggleOperatorActive(diag) {
+                    const newStatus = !diag.operator_active;
+                    fetch('api.php?action=toggle_operator_active', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ session_id: diag.session_id, active: newStatus })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            diag.operator_active = res.operator_active;
+                        } else {
+                            alert(res.error || 'Ошибка изменения статуса');
+                        }
+                    })
+                    .catch(err => {
+                        alert('Ошибка сети при переключении режима оператора');
+                    });
+                },
+                sendOperatorReply() {
+                    const diag = this.dialogues[this.selectedDialogueIndex];
+                    if (!diag || !this.operatorReplyText.trim()) return;
+
+                    const msgText = this.operatorReplyText.trim();
+                    fetch('api.php?action=operator_reply', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ session_id: diag.session_id, message: msgText })
+                    })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success) {
+                            this.operatorReplyText = '';
+                            this.loadDialogues(true);
+                            // Scroll to bottom of chat flow on next tick
+                            this.$nextTick(() => {
+                                const el = document.getElementById('admin-chat-flow');
+                                if (el) el.scrollTop = el.scrollHeight;
+                            });
+                        } else {
+                            alert(res.error || 'Ошибка отправки ответа');
+                        }
+                    })
+                    .catch(err => {
+                        alert('Ошибка отправки ответа');
+                    });
+                },
+                loadDialogues(keepSelection = false) {
+                    fetch('api.php?action=get_dialogues')
+                        .then(res => res.json())
+                        .then(data => {
+                            this.dialogues = data;
+                        });
+                },
                 checkAuth() {
                     fetch('api.php?action=check_auth')
                         .then(res => res.json())

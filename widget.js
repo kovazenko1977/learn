@@ -34,6 +34,10 @@
         });
 
     function initializeWidget(config, baseUrl, session_id) {
+        let localMessagesCount = 0;
+        let operatorActive = false;
+        let operatorPollInterval = null;
+
         // Create widget container element on main DOM
         const container = document.createElement('div');
         container.id = 'wes-bot-widget-root';
@@ -150,7 +154,7 @@
                 display: none;
                 flex-direction: column;
                 overflow: hidden;
-                border: 1px border-slate-100;
+                border: 1px solid #e2e8f0;
                 animation: pop-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             }
 
@@ -161,7 +165,7 @@
             }
             .pos-center .chat-window {
                 left: 50%;
-                transform: translateX(-50%);
+                margin-left: -180px;
                 right: auto;
             }
             .pos-top .chat-window {
@@ -535,7 +539,10 @@
                     left: 0px;
                 }
                 .pos-center .chat-window {
-                    left: 50%;
+                    left: 16px;
+                    right: 16px;
+                    margin-left: 0;
+                    width: calc(100vw - 32px);
                 }
                 .pos-top .chat-window {
                     top: 10px;
@@ -694,8 +701,105 @@
             }
         });
 
-        // Initialize first welcoming greetings from bot
-        appendBotGreeting();
+        function updateOperatorUI() {
+            if (operatorActive) {
+                titleH4.textContent = '👨‍💻 Оператор на связи';
+                subtitleP.textContent = 'Отвечает в реальном времени';
+                avatar.innerHTML = '<i class="fa-solid fa-user-tie"></i>';
+            } else {
+                titleH4.textContent = config.widget_title;
+                subtitleP.textContent = config.widget_subtitle;
+                avatar.innerHTML = '<i class="fa-solid fa-robot"></i>';
+            }
+        }
+
+        function restoreSessionAndStartPolling() {
+            fetch(baseUrl + 'api.php?action=client_poll&session_id=' + session_id)
+            .then(res => res.json())
+            .then(data => {
+                operatorActive = !!data.operator_active;
+                updateOperatorUI();
+
+                if (data.messages && data.messages.length > 0) {
+                    // Restore chat history instantly
+                    data.messages.forEach(msg => {
+                        const msgWrap = document.createElement('div');
+                        if (msg.sender === 'user') {
+                            msgWrap.className = 'msg msg-user';
+                            const bubble = document.createElement('div');
+                            bubble.className = 'msg-bubble';
+                            bubble.textContent = msg.text;
+                            msgWrap.appendChild(bubble);
+                        } else {
+                            msgWrap.className = 'msg msg-bot';
+
+                            const av = document.createElement('div');
+                            av.className = 'msg-avatar';
+                            if (config.widget_avatar_url) {
+                                av.style.overflow = 'hidden';
+                                av.innerHTML = `<img src="${config.widget_avatar_url}" style="width:100%;height:100%;object-fit:cover;">`;
+                            } else {
+                                av.innerHTML = '<i class="fa-solid fa-robot"></i>';
+                            }
+
+                            const bubble = document.createElement('div');
+                            bubble.className = 'msg-bubble';
+                            bubble.innerHTML = msg.text.replace(/\n/g, '<br>');
+
+                            msgWrap.appendChild(av);
+                            msgWrap.appendChild(bubble);
+                        }
+                        chatBody.insertBefore(msgWrap, typingIndicator);
+                    });
+                    localMessagesCount = data.messages.length;
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                } else {
+                    // Fresh session, show bot greeting
+                    appendBotGreeting();
+                }
+
+                // Start polling interval
+                startClientPolling();
+            })
+            .catch(err => {
+                console.error('Session restore error', err);
+                appendBotGreeting();
+                startClientPolling();
+            });
+        }
+
+        function startClientPolling() {
+            if (operatorPollInterval) clearInterval(operatorPollInterval);
+            operatorPollInterval = setInterval(() => {
+                fetch(baseUrl + 'api.php?action=client_poll&session_id=' + session_id)
+                .then(res => res.json())
+                .then(data => {
+                    if (!!data.operator_active !== operatorActive) {
+                        operatorActive = !!data.operator_active;
+                        updateOperatorUI();
+                    }
+
+                    if (data.messages && data.messages.length > localMessagesCount) {
+                        const newMsgs = data.messages.slice(localMessagesCount);
+                        newMsgs.forEach(msg => {
+                            if (msg.sender === 'bot') {
+                                // Real-time operator reply typed effect
+                                showTypingAndReply(msg.text, false);
+                            } else {
+                                // If user message was synced from another source, increment count
+                                localMessagesCount++;
+                            }
+                        });
+                        // Ensure we align count properly
+                        localMessagesCount = data.messages.length;
+                    }
+                })
+                .catch(err => console.error('Poll error', err));
+            }, 3000);
+        }
+
+        // Initialize session restore and polling
+        restoreSessionAndStartPolling();
 
         // Audio notification synthesizer trigger
         function playAudioAlert() {
@@ -807,6 +911,7 @@
                 chatBody.insertBefore(msgWrap, typingIndicator);
                 chatBody.scrollTop = chatBody.scrollHeight;
 
+                localMessagesCount++;
                 playAudioAlert();
 
                 // If anti-dead end form triggers
@@ -972,6 +1077,8 @@
             chatBody.insertBefore(msgWrap, typingIndicator);
             chatBody.scrollTop = chatBody.scrollHeight;
 
+            localMessagesCount++;
+
             // Call AJAX messaging API
             fetch(baseUrl + 'api.php?action=send_message', {
                 method: 'POST',
@@ -990,7 +1097,9 @@
                     deadEndCount = data.dead_end_count;
                 }
 
-                showTypingAndReply(data.reply, data.dead_end, data.trigger_form);
+                if (data.reply) {
+                    showTypingAndReply(data.reply, data.dead_end, data.trigger_form);
+                }
 
                 // Execute Smart command script triggers if returned
                 if (data.smart_action) {
