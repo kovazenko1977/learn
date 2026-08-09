@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom styles for dnd and animations */
+.ghost-ticket {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+/* Print CSS Styles */
+@media print {
+  aside, header, button, select, input, .no-print, .bulk-action-panel {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  body, html {
+    background: white !important;
+    color: black !important;
+  }
+}
