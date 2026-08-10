@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1",
+    "username": "admin",
+    "password": "$2a$10$xY7HRB8/KqXsHeMNWtDAYeXeaPa9sPIYUH0VRhtqvhJUV6iLyF9YW",
+    "fullName": "Администратор Системы",
+    "email": "admin@crm.local",
+    "role": "admin",
+    "created_at": "2026-07-19T01:24:23.214Z"
+  },
+  {
+    "id": "2",
+    "username": "responsible",
+    "password": "$2a$10$/qHn/ITR69FSNiPjqBza1OqyKEyQMBxVbm96qXMeyGimrldUMs97y",
+    "fullName": "Иван Иванов (Ответственный)",
+    "email": "resp@crm.local",
+    "role": "responsible",
+    "created_at": "2026-07-19T01:24:23.319Z"
+  },
+  {
+    "id": "3",
+    "username": "head",
+    "password": "$2a$10$/qHn/ITR69FSNiPjqBza1OVaVxvxVktd0ORAoCOAqXfwMOILCiqNK",
+    "fullName": "Петр Петров (Начальник)",
+    "email": "head@crm.local",
+    "role": "head",
+    "created_at": "2026-07-19T01:24:23.423Z"
+  },
+  {
+    "id": "4",
+    "username": "executor",
+    "password": "$2a$10$/qHn/ITR69FSNiPjqBza1OUwv.Rs6NWa61zh.JoTs4fehXDr0IEg2",
+    "fullName": "Сидор Сидоров (Исполнитель)",
+    "email": "exec@crm.local",
+    "role": "executor",
+    "created_at": "2026-07-19T01:24:23.527Z"
+  }
+]
