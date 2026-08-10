@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom styles for dnd and animations */
+.ghost-ticket {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+/* Print Styles optimization */
+@media print {
+  .no-print,
+  aside,
+  header,
+  button,
+  select,
+  input,
+  .no-print-important {
+    display: none !important;
+  }
+
+  body, main, html {
+    background: white !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-full-width {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+  }
+}
