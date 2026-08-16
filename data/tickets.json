@@ -1,0 +1,48 @@
+[
+  {
+    "title": "Тестовая заявка: Сбой сетевого коммутатора",
+    "description": "Не работает порт №12 в серверной комнате #2",
+    "category": "IT",
+    "priority": "High",
+    "status": "completed",
+    "creator_id": "2",
+    "assignee_id": "4",
+    "created_at": "2026-08-16T01:34:09.732Z",
+    "updated_at": "2026-08-16T01:34:09.741Z",
+    "deadline": "2026-08-16T09:34:09.732Z",
+    "custom_fields": {
+      "serial_number": "SN-998811"
+    },
+    "attachments": [
+      {
+        "filepath": "/uploads/demo.png",
+        "filename": "demo.png"
+      }
+    ],
+    "id": 1,
+    "completed_at": "2026-08-16T01:34:09.741Z"
+  },
+  {
+    "title": "Тестовая заявка: Сбой сетевого коммутатора",
+    "description": "Не работает порт №12 в серверной комнате #2",
+    "category": "IT",
+    "priority": "High",
+    "status": "completed",
+    "creator_id": "2",
+    "assignee_id": "4",
+    "created_at": "2026-08-16T01:41:24.697Z",
+    "updated_at": "2026-08-16T01:41:24.711Z",
+    "deadline": "2026-08-16T09:41:24.697Z",
+    "custom_fields": {
+      "serial_number": "SN-998811"
+    },
+    "attachments": [
+      {
+        "filepath": "/uploads/demo.png",
+        "filename": "demo.png"
+      }
+    ],
+    "id": 2,
+    "completed_at": "2026-08-16T01:41:24.711Z"
+  }
+]
