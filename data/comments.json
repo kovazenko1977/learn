@@ -1,0 +1,30 @@
+[
+  {
+    "ticket_id": 1,
+    "user_id": "4",
+    "text": "Принял в работу. Закажу картридж.",
+    "created_at": "2026-07-19T01:17:47.729Z",
+    "attachments": [],
+    "id": 1
+  },
+  {
+    "ticket_id": 1,
+    "user_id": "4",
+    "username": "executor",
+    "user_fullName": "Сидор Сидоров (Исполнитель)",
+    "text": "Работы успешно выполнены, заменен патч-корд.",
+    "created_at": "2026-08-16T01:34:09.744Z",
+    "attachments": [],
+    "id": 2
+  },
+  {
+    "ticket_id": 2,
+    "user_id": "4",
+    "username": "executor",
+    "user_fullName": "Сидор Сидоров (Исполнитель)",
+    "text": "Работы успешно выполнены, заменен патч-корд.",
+    "created_at": "2026-08-16T01:41:24.715Z",
+    "attachments": [],
+    "id": 3
+  }
+]
