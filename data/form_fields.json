@@ -1,0 +1,22 @@
+[
+  {
+    "id": "serial_number_1786844049728",
+    "name": "serial_number",
+    "label": "Серийный номер оборудования",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": true,
+    "sort_order": 1
+  },
+  {
+    "id": "serial_number_1786844484692",
+    "name": "serial_number",
+    "label": "Серийный номер оборудования",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": true,
+    "sort_order": 1
+  }
+]
