@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Не работает ПК в бухгалтерии",
+    "description": "Компьютер не включается после грозы.",
+    "category": "IT",
+    "priority": "High",
+    "status": "new",
+    "creator_id": "1",
+    "assignee_id": null,
+    "created_at": "2026-08-23T01:19:44.468Z",
+    "updated_at": "2026-08-23T01:19:44.468Z",
+    "deadline": "2026-08-23T09:19:44.468Z",
+    "custom_fields": {},
+    "attachments": [],
+    "id": 1
+  },
+  {
+    "title": "Не работает ПК в бухгалтерии",
+    "description": "Компьютер не включается после грозы.",
+    "category": "IT",
+    "priority": "High",
+    "status": "new",
+    "creator_id": "1",
+    "assignee_id": null,
+    "created_at": "2026-08-23T01:20:14.618Z",
+    "updated_at": "2026-08-23T01:20:14.618Z",
+    "deadline": "2026-08-23T09:20:14.618Z",
+    "custom_fields": {},
+    "attachments": [],
+    "id": 2
+  }
+]
