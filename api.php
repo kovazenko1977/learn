@@ -27,6 +27,39 @@ $inputData = json_decode($inputRaw, true) ?? $_POST;
 
 switch ($action) {
 
+    // --- PIN SECURITY SYSTEM ---
+    case 'verify_pin':
+        $pin = $inputData['pin'] ?? '';
+        $settings = $storage->getItem('settings', 'app_security');
+        $storedPin = $settings['pin'] ?? '1111';
+        if ($pin === $storedPin) {
+            sendJson(['success' => true, 'message' => 'PIN verified']);
+        } else {
+            sendJson(['error' => 'Неверный PIN-код'], 401);
+        }
+        break;
+
+    case 'change_pin':
+        $currentPin = $inputData['current_pin'] ?? '';
+        $newPin = $inputData['new_pin'] ?? '';
+
+        if (strlen($newPin) < 4) {
+            sendJson(['error' => 'PIN-код должен состоять минимум из 4 цифр'], 400);
+        }
+
+        $settings = $storage->getItem('settings', 'app_security') ?? ['id' => 'app_security'];
+        $storedPin = $settings['pin'] ?? '1111';
+
+        if ($currentPin !== $storedPin) {
+            sendJson(['error' => 'Текущий PIN-код указан неверно'], 401);
+        }
+
+        $settings['pin'] = $newPin;
+        $storage->saveItem('settings', $settings);
+        sendJson(['success' => true, 'message' => 'PIN-код успешно изменен']);
+        break;
+
+
     // --- TASKS MODULE ---
     case 'get_tasks':
         $tasks = $storage->getCollection('tasks');
@@ -48,6 +81,7 @@ switch ($action) {
             'due_time' => $inputData['due_time'] ?? null, // HH:MM
             'subtasks' => is_array($inputData['subtasks'] ?? null) ? $inputData['subtasks'] : [],
             'reminder' => !empty($inputData['reminder']),
+            'reminder_sound' => $inputData['reminder_sound'] ?? 'chime',
             'voice_note_url' => $inputData['voice_note_url'] ?? null
         ];
         $saved = $storage->saveItem('tasks', $task);
@@ -279,6 +313,7 @@ switch ($action) {
             'planner' => $storage->getCollection('planner'),
             'habits' => $storage->getCollection('habits'),
             'notes' => $storage->getCollection('notes'),
+            'settings' => $storage->getCollection('settings'),
             'export_date' => date('Y-m-d H:i:s')
         ];
         sendJson(['success' => true, 'data' => $data]);
@@ -300,6 +335,9 @@ switch ($action) {
         }
         if (isset($importData['notes']) && is_array($importData['notes'])) {
             $storage->saveCollection('notes', $importData['notes']);
+        }
+        if (isset($importData['settings']) && is_array($importData['settings'])) {
+            $storage->saveCollection('settings', $importData['settings']);
         }
         sendJson(['success' => true, 'message' => 'Data imported successfully']);
         break;

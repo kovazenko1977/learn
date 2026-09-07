@@ -1,8 +1,75 @@
 /**
  * Main Application Controller
- * Handles UI interactions, API calls, state management, views switching,
+ * Handles UI interactions, API calls, state management, view switching,
+ * PIN security lock, Web Audio synthesized sounds, live task countdowns,
  * tasks, planner/timeline, notes, habits, analytics, and voice integration.
  */
+
+class SoundEngine {
+    constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.selectedTone = 'chime';
+    }
+
+    initCtx() {
+        if (!this.ctx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                this.ctx = new AudioContext();
+            }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    playTone(type = 'chime') {
+        if (!this.enabled) return;
+        this.initCtx();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        if (type === 'complete') {
+            // Pleasant double beep / ding
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        } else if (type === 'alarm') {
+            // Triple urgent alarm chime
+            for (let i = 0; i < 3; i++) {
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                o.connect(g);
+                g.connect(this.ctx.destination);
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(880, now + i * 0.2); // A5
+                g.gain.setValueAtTime(0.4, now + i * 0.2);
+                g.gain.exponentialRampToValueAtTime(0.01, now + i * 0.2 + 0.15);
+                o.start(now + i * 0.2);
+                o.stop(now + i * 0.2 + 0.15);
+            }
+        } else {
+            // Soft standard chime
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+        }
+    }
+}
 
 class AppController {
     constructor() {
@@ -17,14 +84,142 @@ class AppController {
         this.selectedDate = new Date().toISOString().split('T')[0];
         this.recognizedCommandData = null;
 
+        // PIN Security
+        this.pinBuffer = '';
+        this.isUnlocked = false;
+
+        // Sound
+        this.soundEngine = new SoundEngine();
+        this.triggeredReminders = new Set();
+
         this.init();
     }
 
     async init() {
         this.bindEvents();
+        this.bindPinEvents();
         this.registerServiceWorker();
         this.checkNotificationPermission();
+
+        // Start Live Countdown Interval
+        setInterval(() => this.updateLiveCountdowns(), 10000);
+
+        // Check if unlocked state stored in session
+        if (sessionStorage.getItem('organizer_unlocked') === 'true') {
+            this.unlockApp();
+        } else {
+            document.getElementById('pinLockOverlay').classList.remove('hidden');
+        }
+    }
+
+    bindPinEvents() {
+        const dots = document.querySelectorAll('.pin-dot');
+        const errorMsg = document.getElementById('pinErrorMessage');
+
+        document.querySelectorAll('.key-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const key = btn.getAttribute('data-key');
+                const action = btn.getAttribute('data-action');
+
+                this.soundEngine.initCtx(); // Resume AudioContext on touch
+
+                if (key !== null && this.pinBuffer.length < 4) {
+                    this.pinBuffer += key;
+                } else if (action === 'clear') {
+                    this.pinBuffer = '';
+                } else if (action === 'backspace') {
+                    this.pinBuffer = this.pinBuffer.slice(0, -1);
+                }
+
+                // Update UI dots
+                dots.forEach((dot, index) => {
+                    if (index < this.pinBuffer.length) {
+                        dot.classList.add('filled');
+                    } else {
+                        dot.classList.remove('filled');
+                    }
+                });
+
+                errorMsg.classList.add('hidden');
+
+                // Auto-verify when 4 digits entered
+                if (this.pinBuffer.length === 4) {
+                    try {
+                        const res = await fetch('api.php?action=verify_pin', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pin: this.pinBuffer })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            sessionStorage.setItem('organizer_unlocked', 'true');
+                            this.unlockApp();
+                        } else {
+                            errorMsg.classList.remove('hidden');
+                            this.pinBuffer = '';
+                            dots.forEach(d => d.classList.remove('filled'));
+                            this.soundEngine.playTone('alarm');
+                        }
+                    } catch (e) {
+                        errorMsg.innerText = 'Ошибка соединения';
+                        errorMsg.classList.remove('hidden');
+                    }
+                }
+            });
+        });
+
+        // Lock App button in header
+        document.getElementById('btnLockApp').addEventListener('click', () => {
+            sessionStorage.removeItem('organizer_unlocked');
+            this.pinBuffer = '';
+            document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('filled'));
+            document.getElementById('pinLockOverlay').classList.remove('hidden');
+            this.isUnlocked = false;
+        });
+
+        // PIN Change Modal
+        document.getElementById('btnOpenChangePinModal').addEventListener('click', () => {
+            document.getElementById('changePinModal').classList.remove('hidden');
+        });
+        document.getElementById('btnCloseChangePinModal').addEventListener('click', () => {
+            document.getElementById('changePinModal').classList.add('hidden');
+        });
+        document.getElementById('btnSaveNewPin').addEventListener('click', () => this.handleChangePin());
+    }
+
+    async unlockApp() {
+        this.isUnlocked = true;
+        document.getElementById('pinLockOverlay').classList.add('hidden');
         await this.loadAllData();
+    }
+
+    async handleChangePin() {
+        const currentPin = document.getElementById('inputCurrentPin').value;
+        const newPin = document.getElementById('inputNewPin').value;
+
+        if (!currentPin || !newPin) {
+            this.showToast('Заполните оба поля PIN-кода', 'error');
+            return;
+        }
+
+        try {
+            const res = await fetch('api.php?action=change_pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_pin: currentPin, new_pin: newPin })
+            });
+            const data = await res.json();
+            if (data.success) {
+                this.showToast('PIN-код успешно изменен!');
+                document.getElementById('changePinModal').classList.add('hidden');
+                document.getElementById('inputCurrentPin').value = '';
+                document.getElementById('inputNewPin').value = '';
+            } else {
+                this.showToast(data.error || 'Ошибка смены PIN', 'error');
+            }
+        } catch (err) {
+            this.showToast('Ошибка сети при смене PIN', 'error');
+        }
     }
 
     bindEvents() {
@@ -191,6 +386,16 @@ class AppController {
         });
 
         // --- SETTINGS BINDINGS ---
+        document.getElementById('soundEnabledToggle').addEventListener('change', (e) => {
+            this.soundEngine.enabled = e.target.checked;
+            this.showToast(`Звуковые сигналы ${e.target.checked ? 'включены' : 'выключены'}`);
+        });
+
+        document.getElementById('alarmToneSelect').addEventListener('change', (e) => {
+            this.soundEngine.selectedTone = e.target.value;
+            this.soundEngine.playTone('alarm');
+        });
+
         document.getElementById('voiceLangSelect').addEventListener('change', (e) => {
             window.voiceEngine.setLanguage(e.target.value);
             this.showToast(`Язык голоса изменен на ${e.target.value}`);
@@ -237,6 +442,7 @@ class AppController {
             this.loadPlannerData(),
             this.loadNotesData()
         ]);
+        this.updateLiveCountdowns();
     }
 
     // --- DATA LOADERS ---
@@ -314,7 +520,7 @@ class AppController {
         }
     }
 
-    // --- RENDER FUNCTIONS ---
+    // --- RENDER FUNCTIONS WITH LIVE COUNTDOWNS ---
     renderTasks() {
         const container = document.getElementById('taskList');
         container.innerHTML = '';
@@ -346,6 +552,7 @@ class AppController {
             card.className = `task-card ${task.completed ? 'completed' : ''}`;
 
             const dueDisplay = task.due_date ? `📅 ${task.due_date} ${task.due_time || ''}` : '';
+            const countdownInfo = this.calculateCountdown(task.due_date, task.due_time, task.completed);
 
             card.innerHTML = `
                 <div class="task-checkbox" data-id="${task.id}">
@@ -359,6 +566,7 @@ class AppController {
                         ${dueDisplay ? `<span>${dueDisplay}</span>` : ''}
                         ${task.voice_note_url ? `<span>🎙️ Аудио</span>` : ''}
                     </div>
+                    ${countdownInfo.html}
                 </div>
                 <div class="task-actions">
                     <button class="btn-icon-danger" data-id="${task.id}" title="Удалить">
@@ -373,6 +581,65 @@ class AppController {
             card.querySelector('.btn-icon-danger').addEventListener('click', () => this.deleteTask(task.id));
 
             container.appendChild(card);
+        });
+    }
+
+    calculateCountdown(dueDate, dueTime, completed) {
+        if (!dueDate || completed) return { html: '' };
+
+        const timeStr = dueTime || '23:59';
+        const targetStr = `${dueDate}T${timeStr}:00`;
+        const targetDate = new Date(targetStr);
+        const now = new Date();
+        const diffMs = targetDate - now;
+
+        if (isNaN(diffMs)) return { html: '' };
+
+        if (diffMs <= 0) {
+            return {
+                html: `<div class="task-countdown overdue">⚠️ Просрочено!</div>`
+            };
+        }
+
+        const totalMinutes = Math.floor(diffMs / (1000 * 60));
+        const days = Math.floor(totalMinutes / (60 * 24));
+        const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+        const mins = totalMinutes % 60;
+
+        let parts = [];
+        if (days > 0) parts.push(`${days} дн.`);
+        if (hours > 0) parts.push(`${hours} ч.`);
+        parts.push(`${mins} мин.`);
+
+        const isUrgentSoon = totalMinutes <= 30;
+
+        return {
+            html: `<div class="task-countdown ${isUrgentSoon ? 'urgent-soon' : ''}">⏱️ Осталось: ${parts.join(' ')}</div>`
+        };
+    }
+
+    updateLiveCountdowns() {
+        if (this.currentView === 'viewTasks') {
+            this.renderTasks();
+        }
+
+        // Check task due alarms
+        const now = new Date();
+        this.tasks.forEach(t => {
+            if (t.completed || !t.due_date) return;
+            const targetStr = `${t.due_date}T${t.due_time || '23:59'}:00`;
+            const targetDate = new Date(targetStr);
+            const diffMs = targetDate - now;
+
+            // Trigger alarm tone if due within 1 minute
+            if (diffMs >= 0 && diffMs <= 60000 && !this.triggeredReminders.has(t.id)) {
+                this.triggeredReminders.add(t.id);
+                this.soundEngine.playTone('alarm');
+                this.showToast(`🔔 Напоминание: ${t.title}`);
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Voice Organizer', { body: `Срок задачи: ${t.title}` });
+                }
+            }
         });
     }
 
@@ -529,6 +796,7 @@ class AppController {
             if (result.success) {
                 this.tasks.unshift(result.task);
                 this.renderTasks();
+                this.soundEngine.playTone('chime');
                 titleInput.value = '';
                 document.getElementById('taskOptions').classList.add('hidden');
                 this.showToast('Задача успешно добавлена!');
@@ -549,6 +817,9 @@ class AppController {
             if (data.success) {
                 const index = this.tasks.findIndex(t => t.id === id);
                 if (index >= 0) this.tasks[index] = data.task;
+                if (data.task.completed) {
+                    this.soundEngine.playTone('complete');
+                }
                 this.renderTasks();
             }
         } catch (err) {
@@ -591,6 +862,7 @@ class AppController {
             if (data.success) {
                 this.plannerEvents.push(data.event);
                 this.renderPlanner();
+                this.soundEngine.playTone('chime');
                 this.showToast('Событие добавлено в расписание!');
             }
         } catch (err) {
@@ -627,6 +899,7 @@ class AppController {
             if (data.success) {
                 this.habits.push(data.habit);
                 this.renderHabits();
+                this.soundEngine.playTone('chime');
                 document.getElementById('habitModal').classList.add('hidden');
                 document.getElementById('habitTitleInput').value = '';
                 this.showToast('Новая привычка создана!');
@@ -647,6 +920,7 @@ class AppController {
             if (data.success) {
                 const index = this.habits.findIndex(h => h.id === id);
                 if (index >= 0) this.habits[index] = data.habit;
+                this.soundEngine.playTone('complete');
                 this.renderHabits();
             }
         } catch (err) {
@@ -728,6 +1002,7 @@ class AppController {
                     this.notes.unshift(data.note);
                 }
                 this.renderNotes();
+                this.soundEngine.playTone('chime');
                 document.getElementById('noteModal').classList.add('hidden');
                 if (btnRecAudio) btnRecAudio._recordedBlob = null;
                 this.showToast('Заметка сохранена!');
@@ -758,6 +1033,7 @@ class AppController {
         const confirmBtn = document.getElementById('btnConfirmVoiceAction');
         const statusText = document.getElementById('voiceModalStatus');
 
+        this.soundEngine.playTone('chime');
         transcriptText.innerText = 'Слушаю...';
         confirmBtn.classList.add('hidden');
         statusText.innerText = 'Слушаю... Говорите!';
@@ -813,6 +1089,7 @@ class AppController {
             });
             await this.loadNotesData();
             this.switchView('viewNotes');
+            this.soundEngine.playTone('complete');
             this.showToast('Заметка создана голосом!');
         } else if (data.type === 'planner') {
             await fetch('api.php?action=save_planner_event', {
@@ -826,6 +1103,7 @@ class AppController {
             });
             await this.loadPlannerData();
             this.switchView('viewPlanner');
+            this.soundEngine.playTone('complete');
             this.showToast('Событие добавлено в ежедневник!');
         } else {
             // Task creation
@@ -842,6 +1120,7 @@ class AppController {
             });
             await this.loadTasksData();
             this.switchView('viewTasks');
+            this.soundEngine.playTone('complete');
             this.showToast('Задача добавлена голосом!');
         }
 

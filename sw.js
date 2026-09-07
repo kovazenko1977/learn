@@ -1,4 +1,4 @@
-const CACHE_NAME = 'organizer-pwa-v1';
+const CACHE_NAME = 'organizer-pwa-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.php',

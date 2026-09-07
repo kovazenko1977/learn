@@ -21,6 +21,18 @@ def main():
             assert data["success"] is True
             print("API Status 200 OK:", data)
 
+        # Test PIN verification endpoint
+        print("Testing PIN verification API ...")
+        req = urllib.request.Request(
+            "http://127.0.0.1:8089/api.php?action=verify_pin",
+            data=json.dumps({"pin": "1111"}).encode('utf-8'),
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req) as resp:
+            pin_data = json.loads(resp.read().decode('utf-8'))
+            assert pin_data["success"] is True
+            print("PIN Verification 1111 OK:", pin_data)
+
         # Test UI with Playwright in mobile viewport
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
@@ -32,24 +44,38 @@ def main():
 
             print("Navigating to http://127.0.0.1:8089/index.php ...")
             page.goto("http://127.0.0.1:8089/index.php")
-            page.wait_for_selector("#headerTitle")
 
-            title_text = page.inner_text("#headerTitle")
-            print("App Title:", title_text)
-            assert "Задачи" in title_text
+            # Check PIN screen visible
+            print("Verifying PIN Lock Overlay...")
+            page.wait_for_selector("#pinLockOverlay")
+            assert not page.locator("#pinLockOverlay").is_hidden()
 
-            # Test adding a task via UI
-            print("Adding task via UI...")
-            page.fill("#taskTitleInput", "Купить продукты по голосу")
+            # Click PIN keypad '1', '1', '1', '1'
+            print("Entering PIN 1111 via keypad...")
+            for _ in range(4):
+                page.click('.key-btn[data-key="1"]')
+                time.sleep(0.2)
+
+            time.sleep(1)
+            # Verify PIN lock overlay unlocked
+            assert page.locator("#pinLockOverlay").is_hidden()
+            print("App successfully unlocked via PIN 1111!")
+
+            # Add a task with due date to test dynamic countdown timer
+            print("Adding task with due date...")
+            page.fill("#taskTitleInput", "Подготовить отчет с таймером")
+            page.click("#taskTitleInput") # Focus
+            page.fill("#taskDueDateInput", "2030-12-31")
+            page.fill("#taskDueTimeInput", "18:00")
             page.click("#btnAddTask")
             time.sleep(1)
 
-            # Verify task rendered
-            task_card = page.locator(".task-card").first
-            assert "Купить продукты по голосу" in task_card.inner_text()
-            print("Task created successfully on UI!")
+            # Check dynamic countdown badge rendered
+            countdown_badge = page.locator(".task-countdown").first
+            assert "Осталось" in countdown_badge.inner_text() or "Просрочено" in countdown_badge.inner_text()
+            print("Task countdown timer badge verified:", countdown_badge.inner_text())
 
-            # Take Task View Mobile Verification Screenshot (Default Dark Mode)
+            # Take Mobile Verification Screenshot
             screenshot_path = "verification_mobile_app.png"
             page.screenshot(path=screenshot_path)
             print(f"Captured UI Screenshot to {screenshot_path}")

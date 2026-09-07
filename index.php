@@ -15,6 +15,42 @@
 <body>
     <div id="app" class="app-container">
 
+        <!-- Fullscreen PIN Lock Overlay -->
+        <div id="pinLockOverlay" class="pin-lock-screen">
+            <div class="pin-card">
+                <div class="pin-avatar">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h2>Введите PIN-код</h2>
+                <p class="pin-subtitle">По умолчанию PIN: <strong>1111</strong></p>
+
+                <div class="pin-dots-container">
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                </div>
+
+                <div id="pinErrorMessage" class="pin-error hidden">Неверный PIN-код</div>
+
+                <!-- Touch Numeric Keypad -->
+                <div class="pin-keypad">
+                    <button class="key-btn" data-key="1">1</button>
+                    <button class="key-btn" data-key="2">2</button>
+                    <button class="key-btn" data-key="3">3</button>
+                    <button class="key-btn" data-key="4">4</button>
+                    <button class="key-btn" data-key="5">5</button>
+                    <button class="key-btn" data-key="6">6</button>
+                    <button class="key-btn" data-key="7">7</button>
+                    <button class="key-btn" data-key="8">8</button>
+                    <button class="key-btn" data-key="9">9</button>
+                    <button class="key-btn key-clear" data-action="clear"><i class="fa-solid fa-xmark"></i></button>
+                    <button class="key-btn" data-key="0">0</button>
+                    <button class="key-btn key-back" data-action="backspace"><i class="fa-solid fa-delete-left"></i></button>
+                </div>
+            </div>
+        </div>
+
         <!-- Top Header Bar -->
         <header class="app-header">
             <div class="header-left">
@@ -25,6 +61,9 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button id="btnLockApp" class="icon-btn" title="Заблокировать">
+                    <i class="fa-solid fa-lock"></i>
+                </button>
                 <button id="btnToggleTheme" class="icon-btn" title="Сменить тему">
                     <i class="fa-solid fa-moon"></i>
                 </button>
@@ -190,6 +229,39 @@
             <!-- TAB 5: SETTINGS & BACKUP VIEW -->
             <section id="viewSettings" class="view-section hidden">
                 <div class="settings-group">
+                    <div class="settings-header">Безопасность и PIN-код</div>
+                    <div class="setting-item">
+                        <div class="setting-text">
+                            <div class="setting-title">Защита PIN-кодом (по умолч. 1111)</div>
+                            <div class="setting-desc">Изменить код доступа к приложению</div>
+                        </div>
+                        <button id="btnOpenChangePinModal" class="btn-small-outline"><i class="fa-solid fa-key"></i> Сменить PIN</button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <div class="settings-header">Звуки и Напоминания</div>
+                    <div class="setting-item">
+                        <div class="setting-text">
+                            <div class="setting-title">Звуковые сигналы</div>
+                            <div class="setting-desc">Проигрывать звук при завершении задач и таймерах</div>
+                        </div>
+                        <input type="checkbox" id="soundEnabledToggle" checked class="mobile-switch">
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-text">
+                            <div class="setting-title">Мелодия напоминания</div>
+                            <div class="setting-desc">Выберите звук будильника</div>
+                        </div>
+                        <select id="alarmToneSelect" class="setting-select">
+                            <option value="chime">Колокольчик (Chime)</option>
+                            <option value="pulse">Импульс (Pulse)</option>
+                            <option value="marimba">Маримба (Marimba)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-group">
                     <div class="settings-header">Настройки Голоса и Распознавания</div>
                     <div class="setting-item">
                         <div class="setting-text">
@@ -211,7 +283,7 @@
                 </div>
 
                 <div class="settings-group">
-                    <div class="settings-header">Уведомления и Напоминания</div>
+                    <div class="settings-header">Уведомления</div>
                     <div class="setting-item">
                         <div class="setting-text">
                             <div class="setting-title">Браузерные push-уведомления</div>
@@ -299,6 +371,23 @@
                     <button id="btnConfirmVoiceAction" class="btn-primary-mobile hidden">
                         <i class="fa-solid fa-check"></i> Сохранить
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change PIN Modal -->
+        <div id="changePinModal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3>Изменение PIN-кода</h3>
+                    <button id="btnCloseChangePinModal" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <input type="password" id="inputCurrentPin" placeholder="Текущий PIN (по умолч. 1111)" class="modal-input-title" maxlength="8">
+                    <input type="password" id="inputNewPin" placeholder="Новый PIN-код (мин. 4 цифры)" class="modal-input-title" maxlength="8">
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSaveNewPin" class="btn-primary-mobile">Сохранить новый PIN</button>
                 </div>
             </div>
         </div>
