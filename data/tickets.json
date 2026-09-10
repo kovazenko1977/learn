@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Не работает МФУ на 3 этаже",
+    "description": "МФУ HP LaserJet печатает с полосами. Требуется замена картриджа или обслуживание.",
+    "category": "IT",
+    "priority": "Medium",
+    "status": "new",
+    "creator_id": "1",
+    "assignee_id": null,
+    "created_at": "2026-09-08T01:22:08.038Z",
+    "updated_at": "2026-09-08T01:22:08.038Z",
+    "deadline": "2026-09-09T01:22:08.038Z",
+    "custom_fields": {},
+    "attachments": [],
+    "id": 1
+  },
+  {
+    "title": "Тестовая заявка на ремонт",
+    "description": "Описание проблемы с оборудованием",
+    "category": "IT",
+    "priority": "High",
+    "status": "new",
+    "creator_id": "1",
+    "assignee_id": null,
+    "created_at": "2026-09-10T01:37:57.944Z",
+    "updated_at": "2026-09-10T01:37:57.944Z",
+    "deadline": "2026-09-10T09:37:57.944Z",
+    "custom_fields": {},
+    "attachments": [],
+    "id": 2
+  }
+]
