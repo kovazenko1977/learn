@@ -1,0 +1,50 @@
+[
+  {
+    "ticket_id": 1,
+    "user_id": "4",
+    "text": "Принял в работу. Закажу картридж.",
+    "created_at": "2026-07-19T01:17:47.729Z",
+    "attachments": [],
+    "id": 1
+  },
+  {
+    "ticket_id": 1,
+    "user_id": "4",
+    "username": "executor",
+    "user_fullName": "Сидор Сидоров (Исполнитель)",
+    "text": "Приступил к ремонту, замена ролика подачи",
+    "created_at": "2026-09-13T01:27:19.656Z",
+    "attachments": [],
+    "id": 2
+  },
+  {
+    "ticket_id": 2,
+    "user_id": "4",
+    "username": "executor",
+    "user_fullName": "Сидор Сидоров (Исполнитель)",
+    "text": "Приступил к ремонту, замена ролика подачи",
+    "created_at": "2026-09-13T01:27:31.949Z",
+    "attachments": [],
+    "id": 3
+  },
+  {
+    "ticket_id": 3,
+    "user_id": "4",
+    "username": "executor",
+    "user_fullName": "Сидор Сидоров (Исполнитель)",
+    "text": "Приступил к ремонту, замена ролика подачи",
+    "created_at": "2026-09-13T01:27:48.579Z",
+    "attachments": [],
+    "id": 4
+  },
+  {
+    "ticket_id": 4,
+    "user_id": "4",
+    "username": "executor",
+    "user_fullName": "Сидор Сидоров (Исполнитель)",
+    "text": "Приступил к ремонту, замена ролика подачи",
+    "created_at": "2026-09-13T01:32:06.716Z",
+    "attachments": [],
+    "id": 5
+  }
+]

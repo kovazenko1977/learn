@@ -1,0 +1,42 @@
+[
+  {
+    "id": "room_number_1789262839638",
+    "name": "room_number",
+    "label": "Номер кабинета",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": true,
+    "sort_order": 1
+  },
+  {
+    "id": "room_number_1789262851931",
+    "name": "room_number",
+    "label": "Номер кабинета",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": true,
+    "sort_order": 1
+  },
+  {
+    "id": "room_number_1789262868561",
+    "name": "room_number",
+    "label": "Номер кабинета",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": true,
+    "sort_order": 1
+  },
+  {
+    "id": "room_number_1789263126700",
+    "name": "room_number",
+    "label": "Номер кабинета",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": true,
+    "sort_order": 1
+  }
+]
