@@ -400,12 +400,26 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
     }
   };
 
-  const handleDropToExecutor = (e: React.DragEvent, executorId: string) => {
+  const handleDropToExecutor = async (e: React.DragEvent, executorId: string) => {
     e.preventDefault();
     const id = Number(e.dataTransfer.getData('text/plain'));
     if (!isNaN(id)) {
-      handleUpdateTicketValue(id, 'assignee_id', executorId);
-      handleUpdateTicketValue(id, 'status', 'assigned');
+      try {
+        const token = localStorage.getItem('crm_token');
+        const res = await fetch(`/api/tickets/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ assignee_id: executorId, status: 'assigned' })
+        });
+        if (res.ok) {
+          fetchTickets();
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 

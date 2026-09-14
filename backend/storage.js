@@ -169,6 +169,7 @@ class Storage {
           assignee_id VARCHAR(50) NULL,
           created_at VARCHAR(50) NOT NULL,
           updated_at VARCHAR(50) NOT NULL,
+          completed_at VARCHAR(50) NULL,
           deadline VARCHAR(50) NULL,
           custom_fields TEXT NULL,
           attachments TEXT NULL,
@@ -509,10 +510,10 @@ class Storage {
   // --- Comments Table Functions ---
   async getComments(ticketId = null) {
     if (this.mode === 'MySQL' && this.pool) {
-      let query = 'SELECT * FROM comments';
+      let query = 'SELECT c.*, u.username, u.fullName as user_fullName FROM comments c LEFT JOIN users u ON c.user_id = u.id';
       const params = [];
       if (ticketId) {
-        query += ' WHERE ticket_id = ?';
+        query += ' WHERE c.ticket_id = ?';
         params.push(ticketId);
       }
       const [rows] = await this.pool.query(query, params);
