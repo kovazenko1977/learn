@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Спецакция: Ремонт АКПП с тонкой регулировкой и диагностикой</title>
+  <title>Спецакция: Ремонт АКПП</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
       --secondary: #ffb703;
       --accent-blue: #00f0ff;
       --bg-dark: #0b0f19;
-      --card-bg: rgba(20, 27, 45, 0.85);
+      --card-bg: rgba(20, 27, 45, 0.88);
       --card-border: rgba(255, 255, 255, 0.12);
       --text-main: #ffffff;
       --text-muted: #a0aec0;
@@ -38,17 +38,17 @@
       justify-content: center;
       overflow-x: hidden;
       position: relative;
-      padding: 12px;
+      padding: 16px;
       background-image:
-        radial-gradient(circle at 10% 20%, rgba(255, 42, 42, 0.18) 0%, transparent 50%),
-        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 10% 20%, rgba(255, 42, 42, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.18) 0%, transparent 50%),
         radial-gradient(circle at 50% 50%, rgba(20, 27, 45, 0.95) 0%, #0b0f19 100%);
     }
 
     /* Background animated gears */
     .bg-gear {
       position: absolute;
-      opacity: 0.04;
+      opacity: 0.05;
       pointer-events: none;
       animation: rotateGear 40s linear infinite;
       z-index: 0;
@@ -78,7 +78,7 @@
     /* Container */
     .banner-container {
       width: 100%;
-      max-width: 960px;
+      max-width: 650px;
       margin: 0 auto;
       position: relative;
       z-index: 2;
@@ -93,8 +93,8 @@
       border: 1px solid var(--card-border);
       backdrop-filter: blur(12px);
       border-radius: 40px;
-      padding: 10px 20px;
-      margin-bottom: 16px;
+      padding: 10px 24px;
+      margin-bottom: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
@@ -103,7 +103,7 @@
       align-items: center;
       gap: 10px;
       font-weight: 900;
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       letter-spacing: 1px;
       color: #fff;
       text-transform: uppercase;
@@ -125,11 +125,12 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       backdrop-filter: blur(16px);
-      border-radius: 20px;
-      padding: 28px 20px;
+      border-radius: 24px;
+      padding: 32px 24px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      text-align: center;
     }
 
     /* Light Sweep Effect */
@@ -143,7 +144,7 @@
       background: linear-gradient(
         45deg,
         transparent 45%,
-        rgba(255, 255, 255, 0.03) 50%,
+        rgba(255, 255, 255, 0.035) 50%,
         transparent 55%
       );
       animation: sweep 7s infinite linear;
@@ -162,20 +163,20 @@
       gap: 8px;
       background: linear-gradient(90deg, #ff2a2a, #ff7b00);
       color: #fff;
-      padding: 6px 16px;
+      padding: 8px 18px;
       border-radius: 30px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1.2px;
-      box-shadow: 0 4px 15px var(--primary-glow);
-      margin-bottom: 16px;
+      box-shadow: 0 4px 18px var(--primary-glow);
+      margin-bottom: 20px;
       animation: badgePulse 1.8s infinite alternate;
     }
 
     @keyframes badgePulse {
       0% { transform: scale(1); box-shadow: 0 4px 12px var(--primary-glow); }
-      100% { transform: scale(1.03); box-shadow: 0 6px 22px rgba(255, 42, 42, 0.85); }
+      100% { transform: scale(1.04); box-shadow: 0 6px 25px rgba(255, 42, 42, 0.85); }
     }
 
     .urgency-badge .dot {
@@ -193,10 +194,10 @@
 
     /* Main Title */
     .main-title {
-      font-size: clamp(1.4rem, 4vw, 2.3rem);
+      font-size: clamp(1.5rem, 5.5vw, 2.4rem);
       font-weight: 900;
       line-height: 1.25;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #ff2a2a 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -211,41 +212,33 @@
     }
 
     .subtitle {
-      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      font-size: clamp(0.92rem, 3vw, 1.1rem);
       color: var(--text-muted);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       line-height: 1.5;
-    }
-
-    /* Grid Layout */
-    .content-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      align-items: start;
     }
 
     /* Timer Box */
     .timer-section {
-      background: rgba(10, 14, 26, 0.9);
-      border: 1px solid rgba(255, 42, 42, 0.35);
-      border-radius: 16px;
-      padding: 20px 16px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(255, 42, 42, 0.1);
+      background: rgba(10, 14, 26, 0.92);
+      border: 1.5px solid rgba(255, 42, 42, 0.4);
+      border-radius: 20px;
+      padding: 24px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 42, 42, 0.12);
       text-align: center;
     }
 
     .timer-title {
-      font-size: 0.88rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #fff;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      margin-bottom: 14px;
+      gap: 8px;
+      margin-bottom: 16px;
     }
 
     .timer-title svg {
@@ -256,8 +249,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      margin: 10px 0;
+      gap: 12px;
+      margin: 12px 0;
     }
 
     .time-unit {
@@ -268,224 +261,59 @@
 
     .time-box {
       font-family: 'Orbitron', monospace;
-      font-size: clamp(2.2rem, 7vw, 3.2rem);
+      font-size: clamp(2.6rem, 9vw, 3.8rem);
       font-weight: 900;
       background: linear-gradient(180deg, #1f273d 0%, #111625 100%);
       color: #ffffff;
-      padding: 10px 16px;
-      border-radius: 10px;
-      min-width: 75px;
+      padding: 12px 20px;
+      border-radius: 14px;
+      min-width: 85px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 240, 255, 0.15);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(0, 240, 255, 0.18);
     }
 
     .time-label {
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-top: 6px;
+      margin-top: 8px;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
     }
 
     .time-separator {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-size: clamp(2rem, 7vw, 3rem);
       font-weight: 800;
       color: var(--primary);
       animation: blink 1s infinite;
-      margin-top: -15px;
+      margin-top: -18px;
     }
 
     .timer-footnote {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #cbd5e1;
-      margin-top: 14px;
+      margin-top: 18px;
       font-weight: 600;
       line-height: 1.4;
     }
 
-    /* Form Card */
-    .form-card {
-      background: linear-gradient(160deg, rgba(25, 34, 56, 0.95) 0%, rgba(14, 20, 36, 0.98) 100%);
-      border: 2px solid rgba(255, 42, 42, 0.4);
-      border-radius: 16px;
-      padding: 20px 18px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 42, 42, 0.12);
-    }
-
-    .form-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      margin-bottom: 6px;
-      text-align: center;
-      color: #fff;
-    }
-
-    .form-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .input-group {
-      margin-bottom: 12px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-      color: #cbd5e1;
-    }
-
-    .input-group input, .input-group select {
-      width: 100%;
-      background: rgba(10, 14, 26, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      padding: 12px 14px;
-      color: #fff;
-      font-size: 0.9rem;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.25s ease;
-    }
-
-    .input-group input:focus, .input-group select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 10px rgba(255, 42, 42, 0.4);
-      background: rgba(15, 22, 40, 0.95);
-    }
-
-    .btn-submit {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(90deg, #ff2a2a 0%, #ff6b00 100%);
-      border: none;
-      border-radius: 10px;
-      color: #ffffff;
-      font-size: 0.95rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(255, 42, 42, 0.5);
-      transition: all 0.25s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    .btn-submit:hover, .btn-submit:active {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 25px rgba(255, 42, 42, 0.7);
-      background: linear-gradient(90deg, #ff3b3b 0%, #ff7b1a 100%);
-    }
-
-    /* Modal Styling */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(5, 8, 15, 0.88);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s ease;
-      padding: 16px;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-box {
-      background: var(--card-bg);
-      border: 2px solid var(--primary);
-      border-radius: 16px;
-      padding: 28px 20px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 42, 42, 0.3);
-      transform: scale(0.85);
-      transition: all 0.3s ease;
-    }
-
-    .modal-overlay.active .modal-box {
-      transform: scale(1);
-    }
-
-    .modal-icon {
-      width: 58px;
-      height: 58px;
-      background: rgba(0, 240, 255, 0.15);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      color: var(--accent-blue);
-      border: 1px solid var(--accent-blue);
-    }
-
-    .modal-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .modal-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.45;
-      margin-bottom: 20px;
-    }
-
-    .btn-close {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .content-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
+    /* Responsive */
+    @media (max-width: 480px) {
       .hero-card {
-        padding: 20px 14px;
+        padding: 24px 16px;
       }
       .time-box {
-        min-width: 65px;
-        padding: 8px 12px;
+        min-width: 70px;
+        padding: 10px 14px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Animated Gear Backgrounds -->
+  <!-- Background Animated Gears -->
   <svg class="bg-gear bg-gear-1" viewBox="0 0 100 100">
     <path fill="#ffffff" d="M50 35c-8.3 0-15 6.7-15 15s6.7 15 15 15 15-6.7 15-15-6.7-15-15-15zm38 12.5l-6.8-1.1c-.6-2.5-1.6-4.9-2.9-7.1l4.1-5.5c.8-1.1.7-2.6-.2-3.5l-5.7-5.7c-.9-.9-2.4-1-3.5-.2l-5.5 4.1c-2.2-1.3-4.6-2.3-7.1-2.9L59 18.8C58.8 17.3 57.5 16 56 16h-8c-1.5 0-2.8 1.3-3 2.8l-1.1 6.8c-2.5.6-4.9 1.6-7.1 2.9l-5.5-4.1c-1.1-.8-2.6-.7-3.5.2l-5.7 5.7c-.9.9-1 2.4-.2 3.5l4.1 5.5c-1.3 2.2-2.3 4.6-2.9 7.1L16.2 47.5C14.7 47.7 13.5 49 13.5 50.5v8c0 1.5 1.2 2.8 2.7 3l6.8 1.1c.6 2.5 1.6 4.9 2.9 7.1l-4.1 5.5c-.8 1.1-.7 2.6.2 3.5l5.7 5.7c.9.9 2.4 1 3.5.2l5.5-4.1c2.2 1.3 4.6 2.3 7.1 2.9l1.1 6.8c.2 1.5 1.5 2.8 3 2.8h8c1.5 0 2.8-1.3 3-2.8l1.1-6.8c2.5-.6 4.9-1.6 7.1-2.9l5.5 4.1c1.1.8 2.6.7 3.5-.2l5.7-5.7c.9-.9 1-2.4.2-3.5l-4.1-5.5c1.3-2.2 2.3-4.6 2.9-7.1l6.8-1.1c1.5-.2 2.8-1.5 2.8-3v-8c0-1.5-1.3-2.8-2.8-3z"/>
   </svg>
@@ -505,7 +333,7 @@
     <!-- Main Hero Banner -->
     <main class="hero-card">
       <div class="urgency-badge">
-        <span class="dot"></span> Ограниченная акция
+        <span class="dot"></span> Ограниченное предложение
       </div>
 
       <h1 class="main-title">
@@ -513,68 +341,31 @@
       </h1>
 
       <p class="subtitle">
-        Зафиксируйте условия спецакции до истечения таймера прямо сейчас!
+        Спецакция на диагностику и запасные части действует до завершения таймера!
       </p>
 
-      <div class="content-grid">
-        <!-- Countdown Timer -->
-        <div class="timer-section">
-          <div class="timer-title">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            До окончания акции осталось:
-          </div>
-
-          <div class="countdown-display" id="countdown">
-            <div class="time-unit">
-              <div class="time-box" id="minutes">20</div>
-              <div class="time-label">минут</div>
-            </div>
-            <div class="time-separator">:</div>
-            <div class="time-unit">
-              <div class="time-box" id="seconds">00</div>
-              <div class="time-label">секунд</div>
-            </div>
-          </div>
-
-          <p class="timer-footnote">⏱️ Успейте забронировать предложение, пока тикает таймер!</p>
+      <!-- Countdown Timer -->
+      <div class="timer-section">
+        <div class="timer-title">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          До окончания акции осталось:
         </div>
 
-        <!-- Form -->
-        <div class="form-card">
-          <h2 class="form-title">Получить условия акции</h2>
-          <p class="form-subtitle">Заполните форму для фиксации предложения</p>
-
-          <form id="leadForm" onsubmit="handleFormSubmit(event)">
-            <div class="input-group">
-              <label for="carModel">Марка и модель авто</label>
-              <input type="text" id="carModel" placeholder="например: Toyota Camry" required />
-            </div>
-
-            <div class="input-group">
-              <label for="phone">Ваш номер телефона</label>
-              <input type="tel" id="phone" placeholder="+7 (___) ___-__-__" required />
-            </div>
-
-            <button type="submit" class="btn-submit">
-              <span>Зафиксировать акцию</span>
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-          </form>
+        <div class="countdown-display" id="countdown">
+          <div class="time-unit">
+            <div class="time-box" id="minutes">20</div>
+            <div class="time-label">минут</div>
+          </div>
+          <div class="time-separator">:</div>
+          <div class="time-unit">
+            <div class="time-box" id="seconds">00</div>
+            <div class="time-label">секунд</div>
+          </div>
         </div>
+
+        <p class="timer-footnote">⏱️ Успейте воспользоваться спецпредложением!</p>
       </div>
     </main>
-  </div>
-
-  <!-- Success Modal -->
-  <div class="modal-overlay" id="successModal">
-    <div class="modal-box">
-      <div class="modal-icon">
-        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      </div>
-      <h3 class="modal-title">Заявка принята!</h3>
-      <p class="modal-desc">Условия акции успешно забронированы за вашим номером. Мы перезвоним вам в ближайшее время!</p>
-      <button class="btn-close" onclick="closeModal()">Отлично</button>
-    </div>
   </div>
 
   <script>
@@ -615,24 +406,6 @@
 
     setInterval(updateTimer, 500);
     updateTimer();
-
-    function handleFormSubmit(e) {
-      e.preventDefault();
-      const car = document.getElementById('carModel').value;
-      const phone = document.getElementById('phone').value;
-
-      if (!car || !phone) return;
-
-      const modal = document.getElementById('successModal');
-      modal.classList.add('active');
-
-      document.getElementById('leadForm').reset();
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('successModal');
-      modal.classList.remove('active');
-    }
   </script>
 </body>
 </html>
