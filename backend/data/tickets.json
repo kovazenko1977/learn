@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Замена сетевого адаптера на 2 этаже",
+    "description": "Постоянно обрывается сетевое подключение. Требуется замена адаптера.",
+    "category": "IT",
+    "priority": "High",
+    "status": "new",
+    "creator_id": "1",
+    "assignee_id": null,
+    "created_at": "2026-07-19T01:26:43.085Z",
+    "updated_at": "2026-07-19T01:26:43.085Z",
+    "deadline": "2026-07-19T09:26:43.085Z",
+    "custom_fields": {},
+    "attachments": [],
+    "id": 1
+  }
+]
