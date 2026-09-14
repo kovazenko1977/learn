@@ -2,8 +2,8 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Спецпредложение: Ремонт АКПП со скидкой и бесплатной диагностикой</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Спецакция: Ремонт АКПП с тонкой регулировкой и диагностикой</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
       --secondary: #ffb703;
       --accent-blue: #00f0ff;
       --bg-dark: #0b0f19;
-      --card-bg: rgba(20, 27, 45, 0.75);
+      --card-bg: rgba(20, 27, 45, 0.85);
       --card-border: rgba(255, 255, 255, 0.12);
       --text-main: #ffffff;
       --text-muted: #a0aec0;
@@ -24,10 +24,11 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
       min-height: 100vh;
@@ -37,35 +38,36 @@
       justify-content: center;
       overflow-x: hidden;
       position: relative;
+      padding: 12px;
       background-image:
-        radial-gradient(circle at 10% 20%, rgba(255, 42, 42, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.12) 0%, transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(20, 27, 45, 0.9) 0%, #0b0f19 100%);
+        radial-gradient(circle at 10% 20%, rgba(255, 42, 42, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(20, 27, 45, 0.95) 0%, #0b0f19 100%);
     }
 
-    /* Animated background gear particles */
+    /* Background animated gears */
     .bg-gear {
       position: absolute;
-      opacity: 0.05;
+      opacity: 0.04;
       pointer-events: none;
       animation: rotateGear 40s linear infinite;
       z-index: 0;
     }
 
     .bg-gear-1 {
-      top: -100px;
-      left: -100px;
-      width: 450px;
-      height: 450px;
+      top: -80px;
+      left: -80px;
+      width: 320px;
+      height: 320px;
     }
 
     .bg-gear-2 {
-      bottom: -150px;
-      right: -100px;
-      width: 600px;
-      height: 600px;
+      bottom: -100px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
       animation-direction: reverse;
-      animation-duration: 60s;
+      animation-duration: 55s;
     }
 
     @keyframes rotateGear {
@@ -73,36 +75,35 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Main Container */
+    /* Container */
     .banner-container {
       width: 100%;
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 20px;
+      max-width: 960px;
+      margin: 0 auto;
       position: relative;
       z-index: 2;
     }
 
-    /* Top Announcement Bar */
+    /* Minimalist Header */
     .top-bar {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
       backdrop-filter: blur(12px);
-      border-radius: 50px;
-      padding: 12px 28px;
-      margin-bottom: 25px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-radius: 40px;
+      padding: 10px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     .brand-logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       font-weight: 900;
-      font-size: 1.4rem;
+      font-size: 1.25rem;
       letter-spacing: 1px;
       color: #fff;
       text-transform: uppercase;
@@ -113,30 +114,10 @@
     }
 
     .brand-logo svg {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       fill: var(--primary);
-      filter: drop-shadow(0 0 8px var(--primary));
-    }
-
-    .hotline {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .hotline-icon {
-      width: 38px;
-      height: 38px;
-      background: rgba(255, 42, 42, 0.15);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--primary);
-      animation: pulseGlow 2s infinite;
+      filter: drop-shadow(0 0 6px var(--primary));
     }
 
     /* Hero Banner Box */
@@ -144,11 +125,11 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       backdrop-filter: blur(16px);
-      border-radius: 24px;
-      padding: 40px;
+      border-radius: 20px;
+      padding: 28px 20px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     /* Light Sweep Effect */
@@ -165,7 +146,7 @@
         rgba(255, 255, 255, 0.03) 50%,
         transparent 55%
       );
-      animation: sweep 8s infinite linear;
+      animation: sweep 7s infinite linear;
       pointer-events: none;
     }
 
@@ -181,20 +162,20 @@
       gap: 8px;
       background: linear-gradient(90deg, #ff2a2a, #ff7b00);
       color: #fff;
-      padding: 8px 20px;
+      padding: 6px 16px;
       border-radius: 30px;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      box-shadow: 0 4px 20px var(--primary-glow);
-      margin-bottom: 20px;
-      animation: badgePulse 2s infinite alternate;
+      letter-spacing: 1.2px;
+      box-shadow: 0 4px 15px var(--primary-glow);
+      margin-bottom: 16px;
+      animation: badgePulse 1.8s infinite alternate;
     }
 
     @keyframes badgePulse {
-      0% { transform: scale(1); box-shadow: 0 4px 15px var(--primary-glow); }
-      100% { transform: scale(1.04); box-shadow: 0 6px 28px rgba(255, 42, 42, 0.9); }
+      0% { transform: scale(1); box-shadow: 0 4px 12px var(--primary-glow); }
+      100% { transform: scale(1.03); box-shadow: 0 6px 22px rgba(255, 42, 42, 0.85); }
     }
 
     .urgency-badge .dot {
@@ -212,88 +193,71 @@
 
     /* Main Title */
     .main-title {
-      font-size: 2.8rem;
+      font-size: clamp(1.4rem, 4vw, 2.3rem);
       font-weight: 900;
       line-height: 1.25;
-      margin-bottom: 15px;
-      background: linear-gradient(135deg, #ffffff 0%, #e0e6ed 50%, #ff2a2a 100%);
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #ff2a2a 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-transform: uppercase;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.3px;
     }
 
     .main-title .highlight {
       background: linear-gradient(90deg, #ffb703, #ff2a2a);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      position: relative;
     }
 
     .subtitle {
-      font-size: 1.15rem;
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
       color: var(--text-muted);
-      margin-bottom: 30px;
-      max-width: 750px;
-      line-height: 1.6;
+      margin-bottom: 24px;
+      line-height: 1.5;
     }
 
-    /* Grid Layout for Timer & Features */
+    /* Grid Layout */
     .content-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 30px;
-      align-items: center;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
     }
 
     /* Timer Box */
     .timer-section {
-      background: rgba(10, 14, 26, 0.85);
-      border: 1px solid rgba(255, 42, 42, 0.3);
-      border-radius: 20px;
-      padding: 25px 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 42, 42, 0.1);
-      position: relative;
-    }
-
-    .timer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 12px;
+      background: rgba(10, 14, 26, 0.9);
+      border: 1px solid rgba(255, 42, 42, 0.35);
+      border-radius: 16px;
+      padding: 20px 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(255, 42, 42, 0.1);
+      text-align: center;
     }
 
     .timer-title {
-      font-size: 1rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: #fff;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 14px;
     }
 
     .timer-title svg {
       color: var(--secondary);
     }
 
-    .timer-discount {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--secondary);
-      text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
-    }
-
     .countdown-display {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
-      margin: 15px 0;
+      gap: 10px;
+      margin: 10px 0;
     }
 
     .time-unit {
@@ -304,204 +268,126 @@
 
     .time-box {
       font-family: 'Orbitron', monospace;
-      font-size: 3.2rem;
+      font-size: clamp(2.2rem, 7vw, 3.2rem);
       font-weight: 900;
       background: linear-gradient(180deg, #1f273d 0%, #111625 100%);
       color: #ffffff;
-      padding: 12px 18px;
-      border-radius: 12px;
-      min-width: 85px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      min-width: 75px;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(0, 240, 255, 0.15);
-      position: relative;
-    }
-
-    .time-box::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 10px rgba(0, 240, 255, 0.15);
     }
 
     .time-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin-top: 8px;
-      font-weight: 600;
+      margin-top: 6px;
+      font-weight: 700;
       letter-spacing: 1px;
     }
 
     .time-separator {
       font-family: 'Orbitron', sans-serif;
-      font-size: 2.8rem;
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
       font-weight: 800;
       color: var(--primary);
       animation: blink 1s infinite;
-      margin-top: -20px;
+      margin-top: -15px;
     }
 
     .timer-footnote {
-      font-size: 0.82rem;
-      color: #8c9ba5;
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    /* Benefits List */
-    .benefits-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin-top: 25px;
-    }
-
-    .benefit-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.3s ease;
-    }
-
-    .benefit-item:hover {
-      transform: translateY(-3px);
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(0, 240, 255, 0.4);
-      box-shadow: 0 5px 15px rgba(0, 240, 255, 0.1);
-    }
-
-    .benefit-icon {
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, rgba(255, 42, 42, 0.2), rgba(0, 240, 255, 0.2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent-blue);
-    }
-
-    .benefit-text {
-      font-size: 0.88rem;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      margin-top: 14px;
       font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .benefit-text span {
-      display: block;
-      color: var(--secondary);
-      font-weight: 800;
+      line-height: 1.4;
     }
 
     /* Form Card */
     .form-card {
       background: linear-gradient(160deg, rgba(25, 34, 56, 0.95) 0%, rgba(14, 20, 36, 0.98) 100%);
       border: 2px solid rgba(255, 42, 42, 0.4);
-      border-radius: 20px;
-      padding: 30px 25px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 42, 42, 0.15);
-      position: relative;
+      border-radius: 16px;
+      padding: 20px 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 42, 42, 0.12);
     }
 
     .form-title {
-      font-size: 1.35rem;
+      font-size: 1.15rem;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       text-align: center;
       color: #fff;
     }
 
     .form-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 16px;
     }
 
     .input-group {
-      margin-bottom: 16px;
-      position: relative;
+      margin-bottom: 12px;
     }
 
     .input-group label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       color: #cbd5e1;
     }
 
     .input-group input, .input-group select {
       width: 100%;
-      background: rgba(10, 14, 26, 0.8);
+      background: rgba(10, 14, 26, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
-      padding: 14px 16px;
+      border-radius: 8px;
+      padding: 12px 14px;
       color: #fff;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-family: inherit;
       outline: none;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
     }
 
     .input-group input:focus, .input-group select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 12px rgba(255, 42, 42, 0.4);
+      box-shadow: 0 0 10px rgba(255, 42, 42, 0.4);
       background: rgba(15, 22, 40, 0.95);
     }
 
     .btn-submit {
       width: 100%;
-      padding: 16px;
+      padding: 14px;
       background: linear-gradient(90deg, #ff2a2a 0%, #ff6b00 100%);
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       color: #ffffff;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       cursor: pointer;
-      box-shadow: 0 8px 25px rgba(255, 42, 42, 0.5);
-      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(255, 42, 42, 0.5);
+      transition: all 0.25s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-      position: relative;
-      overflow: hidden;
+      gap: 8px;
+      margin-top: 16px;
     }
 
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(255, 42, 42, 0.7);
+    .btn-submit:hover, .btn-submit:active {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(255, 42, 42, 0.7);
       background: linear-gradient(90deg, #ff3b3b 0%, #ff7b1a 100%);
-    }
-
-    .btn-submit:active {
-      transform: translateY(1px);
-    }
-
-    .form-guarantee {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 0.75rem;
-      color: #718096;
-      margin-top: 14px;
     }
 
     /* Modal Styling */
@@ -511,7 +397,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(5, 8, 15, 0.85);
+      background: rgba(5, 8, 15, 0.88);
       backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
@@ -520,6 +406,7 @@
       opacity: 0;
       pointer-events: none;
       transition: all 0.3s ease;
+      padding: 16px;
     }
 
     .modal-overlay.active {
@@ -530,13 +417,13 @@
     .modal-box {
       background: var(--card-bg);
       border: 2px solid var(--primary);
-      border-radius: 20px;
-      padding: 35px 30px;
-      max-width: 440px;
-      width: 90%;
+      border-radius: 16px;
+      padding: 28px 20px;
+      max-width: 400px;
+      width: 100%;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 42, 42, 0.3);
-      transform: scale(0.8);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 42, 42, 0.3);
+      transform: scale(0.85);
       transition: all 0.3s ease;
     }
 
@@ -545,82 +432,53 @@
     }
 
     .modal-icon {
-      width: 70px;
-      height: 70px;
+      width: 58px;
+      height: 58px;
       background: rgba(0, 240, 255, 0.15);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
+      margin: 0 auto 16px;
       color: var(--accent-blue);
       border: 1px solid var(--accent-blue);
     }
 
     .modal-title {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 800;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .modal-desc {
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 25px;
+      line-height: 1.45;
+      margin-bottom: 20px;
     }
 
     .btn-close {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.12);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 12px 28px;
-      border-radius: 10px;
+      padding: 10px 24px;
+      border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .btn-close:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Pulse Glow Animation */
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 rgba(255, 42, 42, 0.5); }
-      70% { box-shadow: 0 0 0 12px rgba(255, 42, 42, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(255, 42, 42, 0); }
-    }
-
-    /* Responsive */
-    @media (max-width: 992px) {
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
       .content-grid {
         grid-template-columns: 1fr;
-      }
-      .main-title {
-        font-size: 2.1rem;
-      }
-    }
-
-    @media (max-width: 576px) {
-      .top-bar {
-        flex-direction: column;
-        gap: 12px;
-        border-radius: 20px;
+        gap: 16px;
       }
       .hero-card {
-        padding: 24px 16px;
-      }
-      .benefits-grid {
-        grid-template-columns: 1fr;
+        padding: 20px 14px;
       }
       .time-box {
-        font-size: 2.3rem;
         min-width: 65px;
-        padding: 8px 10px;
-      }
-      .main-title {
-        font-size: 1.6rem;
+        padding: 8px 12px;
       }
     }
   </style>
@@ -636,24 +494,18 @@
   </svg>
 
   <div class="banner-container">
-    <!-- Header Navigation -->
+    <!-- Header -->
     <header class="top-bar">
       <div class="brand-logo">
         <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         АКПП<span>-ПРОФИ</span>
-      </div>
-      <div class="hotline">
-        <div class="hotline-icon">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        </div>
-        <span>+7 (800) 555-35-77</span>
       </div>
     </header>
 
     <!-- Main Hero Banner -->
     <main class="hero-card">
       <div class="urgency-badge">
-        <span class="dot"></span> Акция сгорает через 20 минут
+        <span class="dot"></span> Ограниченная акция
       </div>
 
       <h1 class="main-title">
@@ -661,122 +513,53 @@
       </h1>
 
       <p class="subtitle">
-        Специализированный техцентр по восстановлению автоматических трансмиссий всех видов. Зафиксируйте спеццену на ремонт и получи бесплатную диагностику прямо сейчас!
+        Зафиксируйте условия спецакции до истечения таймера прямо сейчас!
       </p>
 
       <div class="content-grid">
-        <!-- Left Side: Timer & Benefits -->
-        <div class="left-col">
-          <div class="timer-section">
-            <div class="timer-header">
-              <div class="timer-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                До конца акции осталось:
-              </div>
-              <div class="timer-discount">СКИДКА -30%</div>
-            </div>
-
-            <div class="countdown-display" id="countdown">
-              <div class="time-unit">
-                <div class="time-box" id="minutes">20</div>
-                <div class="time-label">минут</div>
-              </div>
-              <div class="time-separator">:</div>
-              <div class="time-unit">
-                <div class="time-box" id="seconds">00</div>
-                <div class="time-label">секунд</div>
-              </div>
-              <div class="time-separator">:</div>
-              <div class="time-unit">
-                <div class="time-box" id="ms">99</div>
-                <div class="time-label">сотых</div>
-              </div>
-            </div>
-
-            <p class="timer-footnote">🔥 При бронировании в течение таймера — бесплатный эвакуатор и диагностика 0 ₽!</p>
+        <!-- Countdown Timer -->
+        <div class="timer-section">
+          <div class="timer-title">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            До окончания акции осталось:
           </div>
 
-          <div class="benefits-grid">
-            <div class="benefit-item">
-              <div class="benefit-icon">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              </div>
-              <div class="benefit-text">
-                Компьютерная диагностика
-                <span>Бесплатно (0 ₽)</span>
-              </div>
+          <div class="countdown-display" id="countdown">
+            <div class="time-unit">
+              <div class="time-box" id="minutes">20</div>
+              <div class="time-label">минут</div>
             </div>
-
-            <div class="benefit-item">
-              <div class="benefit-icon">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              </div>
-              <div class="benefit-text">
-                Эвакуатор до автосервиса
-                <span>Бесплатно</span>
-              </div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="benefit-icon">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div class="benefit-text">
-                Официальная гарантия
-                <span>До 2 лет или 60 000 км</span>
-              </div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="benefit-icon">
-                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-              </div>
-              <div class="benefit-text">
-                Запасные части в наличии
-                <span>Скидка до 30%</span>
-              </div>
+            <div class="time-separator">:</div>
+            <div class="time-unit">
+              <div class="time-box" id="seconds">00</div>
+              <div class="time-label">секунд</div>
             </div>
           </div>
+
+          <p class="timer-footnote">⏱️ Успейте забронировать предложение, пока тикает таймер!</p>
         </div>
 
-        <!-- Right Side: Conversion Form -->
-        <div class="right-col">
-          <div class="form-card">
-            <h2 class="form-title">Зафиксировать скидку</h2>
-            <p class="form-subtitle">Заполните форму, чтобы закрепить скидку на диагностику и запчасти</p>
+        <!-- Form -->
+        <div class="form-card">
+          <h2 class="form-title">Получить условия акции</h2>
+          <p class="form-subtitle">Заполните форму для фиксации предложения</p>
 
-            <form id="leadForm" onsubmit="handleFormSubmit(event)">
-              <div class="input-group">
-                <label for="carModel">Марка и модель авто</label>
-                <input type="text" id="carModel" placeholder="Например: Toyota Camry / Audi A6" required />
-              </div>
+          <form id="leadForm" onsubmit="handleFormSubmit(event)">
+            <div class="input-group">
+              <label for="carModel">Марка и модель авто</label>
+              <input type="text" id="carModel" placeholder="например: Toyota Camry" required />
+            </div>
 
-              <div class="input-group">
-                <label for="phone">Ваш номер телефона</label>
-                <input type="tel" id="phone" placeholder="+7 (___) ___-__-__" required />
-              </div>
+            <div class="input-group">
+              <label for="phone">Ваш номер телефона</label>
+              <input type="tel" id="phone" placeholder="+7 (___) ___-__-__" required />
+            </div>
 
-              <div class="input-group">
-                <label for="serviceType">Тип коробки передач</label>
-                <select id="serviceType">
-                  <option value="akpp">Автомат (АКПП)</option>
-                  <option value="variator">Вариатор (CVT)</option>
-                  <option value="dsg">Робот (DSG / PowerShift)</option>
-                  <option value="not_sure">Не знаю / Нужна консультация</option>
-                </select>
-              </div>
-
-              <button type="submit" class="btn-submit">
-                <span>Получить скидку и диагностику</span>
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-              </button>
-
-              <div class="form-guarantee">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
-                Ваши данные в безопасности. Мы не передаем контакты третьим лицам.
-              </div>
-            </form>
-          </div>
+            <button type="submit" class="btn-submit">
+              <span>Зафиксировать акцию</span>
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </form>
         </div>
       </div>
     </main>
@@ -786,20 +569,19 @@
   <div class="modal-overlay" id="successModal">
     <div class="modal-box">
       <div class="modal-icon">
-        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </div>
       <h3 class="modal-title">Заявка принята!</h3>
-      <p class="modal-desc">Спеццена и бесплатная диагностика успешно забронированы за вашим номером. Мастер-приемщик свяжется с вами в течение 3 минут!</p>
+      <p class="modal-desc">Условия акции успешно забронированы за вашим номером. Мы перезвоним вам в ближайшее время!</p>
       <button class="btn-close" onclick="closeModal()">Отлично</button>
     </div>
   </div>
 
   <script>
-    // 20-minute timer logic
+    // 20-minute countdown logic (MM:SS)
     const DURATION_MINUTES = 20;
-    let totalMs = DURATION_MINUTES * 60 * 1000;
+    const totalMs = DURATION_MINUTES * 60 * 1000;
 
-    // Check if end timestamp exists in localStorage, otherwise create new
     const savedEndTime = localStorage.getItem('akpp_offer_end_time');
     const now = Date.now();
 
@@ -813,7 +595,6 @@
 
     const minEl = document.getElementById('minutes');
     const secEl = document.getElementById('seconds');
-    const msEl = document.getElementById('ms');
 
     function updateTimer() {
       const currentTime = Date.now();
@@ -822,23 +603,19 @@
       if (remaining <= 0) {
         minEl.textContent = '00';
         secEl.textContent = '00';
-        msEl.textContent = '00';
         return;
       }
 
       const minutes = Math.floor((remaining / (1000 * 60)) % 60);
       const seconds = Math.floor((remaining / 1000) % 60);
-      const milliseconds = Math.floor((remaining % 1000) / 10);
 
       minEl.textContent = minutes.toString().padStart(2, '0');
       secEl.textContent = seconds.toString().padStart(2, '0');
-      msEl.textContent = milliseconds.toString().padStart(2, '0');
     }
 
-    setInterval(updateTimer, 30);
+    setInterval(updateTimer, 500);
     updateTimer();
 
-    // Form Handling
     function handleFormSubmit(e) {
       e.preventDefault();
       const car = document.getElementById('carModel').value;
