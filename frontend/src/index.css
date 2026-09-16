@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom styles for dnd and animations */
+.ghost-ticket {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+/* Print / PDF stylesheet rules */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  aside,
+  header,
+  .no-print,
+  button,
+  select,
+  input,
+  .backdrop-blur-sm {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 8px !important;
+    color: #000 !important;
+  }
+}
