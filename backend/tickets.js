@@ -48,7 +48,13 @@ router.post('/upload', authenticateToken, upload.single('file'), (req, res) => {
 // Export Tickets to CSV (Excel compatible with BOM for Cyrillic support)
 router.get('/export', authenticateToken, async (req, res) => {
   try {
-    const tickets = await storage.getTickets();
+    let tickets = await storage.getTickets();
+    if (req.user.role === 'executor') {
+      tickets = tickets.filter(t => t.assignee_id === req.user.id);
+    } else if (req.user.role === 'responsible') {
+      tickets = tickets.filter(t => t.creator_id === req.user.id);
+    }
+
     const users = await storage.getUsers();
     const userMap = new Map(users.map(u => [u.id, u.fullName]));
 
@@ -204,9 +210,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
     if (req.user.role === 'responsible' && ticket.creator_id !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    // 2. Executor can only update the status or add comment (handled in executor endpoint, but here we can restrict what they update)
+    // 2. Executor can only update the status or add comment
     if (req.user.role === 'executor') {
-      // executor can only update status to complete or in-progress
+      if (ticket.assignee_id !== req.user.id) {
+        return res.status(403).json({ error: 'Access denied: You can only update tickets assigned to you' });
+      }
       const allowedKeys = ['status', 'updated_at'];
       const keys = Object.keys(req.body);
       const isAllowed = keys.every(k => allowedKeys.includes(k));

@@ -27,10 +27,10 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static uploaded files
-app.use('/uploads', express.static(path.resolve('uploads')));
+app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
 
 // Serve compiled frontend assets
-const frontendPublicPath = path.resolve('public');
+const frontendPublicPath = path.resolve(__dirname, 'public');
 if (!fs.existsSync(frontendPublicPath)) {
   fs.mkdirSync(frontendPublicPath, { recursive: true });
 }

@@ -2,9 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
+import { fileURLToPath } from 'url';
 
-const DATA_DIR = path.resolve('data');
-const UPLOADS_DIR = path.resolve('uploads');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const DATA_DIR = path.resolve(__dirname, 'data');
+const UPLOADS_DIR = path.resolve(__dirname, 'uploads');
 
 // Ensure directories exist
 if (!fs.existsSync(DATA_DIR)) {

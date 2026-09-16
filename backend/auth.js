@@ -93,8 +93,7 @@ router.post('/recover-password', async (req, res) => {
     const recoveryLink = `/reset-password?token=${recoveryToken}`;
 
     res.json({
-      message: 'Recovery instructions generated successfully.',
-      recoveryLink, // Returned for simulated demonstration
+      message: 'Recovery instructions sent to registered email.',
       sentTo: user.email
     });
   } catch (error) {
