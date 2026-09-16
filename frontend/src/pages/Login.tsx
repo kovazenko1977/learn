@@ -34,6 +34,11 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         body: JSON.stringify({ username, password })
       });
 
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Ошибка сервера: Сервер вернул недействительный ответ (HTML вместо JSON). Проверьте запуск бэкенда.');
+      }
+
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Login failed');
