@@ -112,7 +112,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
   const fetchSettings = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/settings', {
+      const res = await fetch('api/admin/settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -128,7 +128,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
   const fetchTickets = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/tickets', {
+      const res = await fetch('api/tickets', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -144,7 +144,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
     try {
       const token = localStorage.getItem('crm_token');
       // Admin form fields can be read by anyone when creating/viewing ticket
-      const res = await fetch('/api/admin/form-fields', {
+      const res = await fetch('api/admin/form-fields', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -159,7 +159,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/users', {
+      const res = await fetch('api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -214,7 +214,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/tickets/upload', {
+      const res = await fetch('api/tickets/upload', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -249,7 +249,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/tickets', {
+      const res = await fetch('api/tickets', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -277,7 +277,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
     // Fetch comments
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch(`/api/tickets/${ticket.id}/comments`, {
+      const res = await fetch(`api/tickets/${ticket.id}/comments`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -295,7 +295,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch(`/api/tickets/${selectedTicket.id}/comments`, {
+      const res = await fetch(`api/tickets/${selectedTicket.id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -322,7 +322,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
   const handleUpdateTicketValue = async (id: number, key: string, val: any) => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch(`/api/tickets/${id}`, {
+      const res = await fetch(`api/tickets/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -346,7 +346,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
 
   const handleExportCSV = () => {
     const token = localStorage.getItem('crm_token');
-    window.open(`/api/tickets/export?token=${token}`, '_blank');
+    window.open(`api/tickets/export?token=${token}`, '_blank');
   };
 
   // --- Mass Action (Bulk Assign) State ---
@@ -365,7 +365,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
     try {
       const token = localStorage.getItem('crm_token');
       for (const id of selectedTicketIds) {
-        await fetch(`/api/tickets/${id}`, {
+        await fetch(`api/tickets/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -406,7 +406,7 @@ export const Tickets: React.FC<{ currentUser: any }> = ({ currentUser }) => {
     if (!isNaN(id)) {
       try {
         const token = localStorage.getItem('crm_token');
-        const res = await fetch(`/api/tickets/${id}`, {
+        const res = await fetch(`api/tickets/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

@@ -38,7 +38,7 @@ export const Settings: React.FC = () => {
   const fetchSettings = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/settings', {
+      const res = await fetch('api/admin/settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -62,7 +62,7 @@ export const Settings: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/users', {
+      const res = await fetch('api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -83,7 +83,7 @@ export const Settings: React.FC = () => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/settings', {
+      const res = await fetch('api/admin/settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ export const Settings: React.FC = () => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/settings/storage-mode', {
+      const res = await fetch('api/admin/settings/storage-mode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ export const Settings: React.FC = () => {
   const handleCreateOrUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('crm_token');
-    const url = editUserId ? `/api/admin/users/${editUserId}` : '/api/admin/users';
+    const url = editUserId ? `api/admin/users/${editUserId}` : 'api/admin/users';
     const method = editUserId ? 'PUT' : 'POST';
 
     const payload = {
@@ -214,7 +214,7 @@ export const Settings: React.FC = () => {
     if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
       try {
         const token = localStorage.getItem('crm_token');
-        const res = await fetch(`/api/admin/users/${id}`, {
+        const res = await fetch(`api/admin/users/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });

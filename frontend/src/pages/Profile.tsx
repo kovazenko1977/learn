@@ -18,7 +18,7 @@ export const Profile: React.FC = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/auth/profile', {
+      const res = await fetch('api/auth/profile', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -41,7 +41,7 @@ export const Profile: React.FC = () => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/auth/profile', {
+      const res = await fetch('api/auth/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

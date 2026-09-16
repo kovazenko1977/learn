@@ -46,7 +46,7 @@ export const Dashboard: React.FC = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/analytics/dashboard', {
+      const res = await fetch('api/analytics/dashboard', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

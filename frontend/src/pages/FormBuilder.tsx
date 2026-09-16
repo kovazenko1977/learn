@@ -35,7 +35,7 @@ export const FormBuilder: React.FC = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/settings', {
+      const res = await fetch('api/admin/settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -53,7 +53,7 @@ export const FormBuilder: React.FC = () => {
   const fetchFields = async () => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/form-fields', {
+      const res = await fetch('api/admin/form-fields', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -83,7 +83,7 @@ export const FormBuilder: React.FC = () => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch('/api/admin/form-fields', {
+      const res = await fetch('api/admin/form-fields', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export const FormBuilder: React.FC = () => {
   const handleDeleteField = async (id: string) => {
     try {
       const token = localStorage.getItem('crm_token');
-      const res = await fetch(`/api/admin/form-fields/${id}`, {
+      const res = await fetch(`api/admin/form-fields/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -141,7 +141,7 @@ export const FormBuilder: React.FC = () => {
 
     try {
       const token = localStorage.getItem('crm_token');
-      await fetch('/api/admin/form-fields', {
+      await fetch('api/admin/form-fields', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export const FormBuilder: React.FC = () => {
         body: JSON.stringify({ ...field, sort_order: targetSort })
       });
 
-      await fetch('/api/admin/form-fields', {
+      await fetch('api/admin/form-fields', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
