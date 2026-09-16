@@ -5,17 +5,13 @@ import { authenticateToken, requireRole } from './auth.js';
 
 const router = express.Router();
 
-// Apply admin role verification to all routes in this file
+// Apply authentication middleware
 router.use(authenticateToken);
-router.use(requireRole(['admin']));
 
-// --- User Management ---
-
-// GET /api/admin/users
+// GET /api/admin/users - Accessible to all logged-in users to get assignee names
 router.get('/users', async (req, res) => {
   try {
     const users = await storage.getUsers();
-    // Do not return password hashes
     const sanitized = users.map(u => ({
       id: u.id,
       username: u.username,
@@ -29,6 +25,31 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// GET /api/admin/form-fields - Accessible to all logged-in users
+router.get('/form-fields', async (req, res) => {
+  try {
+    const fields = await storage.getFormFields();
+    res.json(fields);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/settings - Accessible to all logged-in users
+router.get('/settings', async (req, res) => {
+  try {
+    const settings = await storage.getSettings();
+    res.json(settings);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Restrict modification endpoints to Admin role only
+router.use(requireRole(['admin']));
+
+// --- Admin-only User Management ---
 
 // POST /api/admin/users
 router.post('/users', async (req, res) => {
@@ -114,17 +135,7 @@ router.delete('/users/:id', async (req, res) => {
   }
 });
 
-// --- Dynamic Form Builder ---
-
-// GET /api/admin/form-fields
-router.get('/form-fields', async (req, res) => {
-  try {
-    const fields = await storage.getFormFields();
-    res.json(fields);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// --- Admin-only Dynamic Form Builder ---
 
 // POST /api/admin/form-fields
 router.post('/form-fields', async (req, res) => {
@@ -158,18 +169,6 @@ router.delete('/form-fields/:id', async (req, res) => {
   try {
     await storage.deleteFormField(req.params.id);
     res.json({ message: 'Form field deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// --- Settings Management & SLA Configuration ---
-
-// GET /api/admin/settings
-router.get('/settings', async (req, res) => {
-  try {
-    const settings = await storage.getSettings();
-    res.json(settings);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
