@@ -850,6 +850,22 @@ try {
 
         $sub = $segments[1] ?? '';
 
+        if ($sub === 'settings' || $endpoint === 'settings') {
+            if ($method === 'GET') {
+                jsonResponse($settingsData);
+            }
+            if ($method === 'PUT' || $method === 'POST') {
+                $input = getJsonInput();
+                foreach (['hospital_name', 'hospital_phone', 'hospital_email', 'hospital_address', 'emergency_contact', 'sla_emergency_mins', 'sla_normal_hours', 'max_upload_mb', 'pwa_theme_color', 'auto_assign_services'] as $field) {
+                    if (isset($input[$field])) {
+                        $settingsData[$field] = $input[$field];
+                    }
+                }
+                $storage->saveCollection('settings', [$settingsData]);
+                jsonResponse(['success' => true, 'message' => 'Настройки системы обновлены', 'settings' => $settingsData]);
+            }
+        }
+
         if ($sub === 'backup') {
             if ($method === 'GET') {
                 $backupData = [

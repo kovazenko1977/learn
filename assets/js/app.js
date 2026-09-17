@@ -217,6 +217,7 @@ class MedServiceApp {
         if (viewName === 'services') this.loadServicesManager();
         if (viewName === 'notifications') this.loadNotifications();
         if (viewName === 'analytics') this.loadAnalytics();
+        if (viewName === 'settings') this.loadAdminSettings();
     }
 
     // ==========================================
@@ -870,6 +871,69 @@ class MedServiceApp {
             this.selectChat(data.chat.id, data.chat.title);
         } else {
             alert('Ошибка создания личного чата');
+        }
+    }
+
+    // ==========================================
+    // SETTINGS & AUDIT LOGS
+    // ==========================================
+    async loadAdminSettings() {
+        const data = await this.apiFetch('settings');
+        if (data) {
+            if (document.getElementById('settingHospitalName')) document.getElementById('settingHospitalName').value = data.hospital_name || '';
+            if (document.getElementById('settingHospitalPhone')) document.getElementById('settingHospitalPhone').value = data.hospital_phone || '';
+            if (document.getElementById('settingEmergencyContact')) document.getElementById('settingEmergencyContact').value = data.emergency_contact || '';
+            if (document.getElementById('settingHospitalAddress')) document.getElementById('settingHospitalAddress').value = data.hospital_address || '';
+            if (document.getElementById('settingSlaEmergencyMins')) document.getElementById('settingSlaEmergencyMins').value = data.sla_emergency_mins || 10;
+            if (document.getElementById('settingSlaNormalHours')) document.getElementById('settingSlaNormalHours').value = data.sla_normal_hours || 24;
+            if (document.getElementById('settingMaxUploadMb')) document.getElementById('settingMaxUploadMb').value = data.max_upload_mb || 10;
+        }
+    }
+
+    async saveAdminSettings(e) {
+        if (e) e.preventDefault();
+        const payload = {
+            hospital_name: document.getElementById('settingHospitalName').value,
+            hospital_phone: document.getElementById('settingHospitalPhone').value,
+            emergency_contact: document.getElementById('settingEmergencyContact').value,
+            hospital_address: document.getElementById('settingHospitalAddress').value,
+            sla_emergency_mins: parseInt(document.getElementById('settingSlaEmergencyMins').value) || 10,
+            sla_normal_hours: parseInt(document.getElementById('settingSlaNormalHours').value) || 24,
+            max_upload_mb: parseInt(document.getElementById('settingMaxUploadMb').value) || 10
+        };
+
+        const res = await this.apiFetch('admin/settings', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        if (res && res.success) {
+            alert('Настройки системы успешно сохранены');
+        } else {
+            alert(res.error || 'Ошибка при сохранении настроек');
+        }
+    }
+
+    async loadAuditLogs() {
+        const container = document.getElementById('auditLogsContainer');
+        if (!container) return;
+        container.style.display = 'block';
+        container.innerHTML = 'Загрузка журнала аудита...';
+
+        const logs = await this.apiFetch('admin/audit');
+        if (Array.isArray(logs)) {
+            if (logs.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted)">Записи аудита отсутствуют</p>';
+                return;
+            }
+            container.innerHTML = logs.map(l => `
+                <div style="padding:6px; border-bottom:1px solid var(--border-color)">
+                    <strong style="color:var(--primary)">${l.timestamp || ''}</strong> [${l.user_name || 'Система'}]: ${l.action || ''} (${l.details || ''})
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<p style="color:#ef4444">Ошибка загрузки аудита</p>';
         }
     }
 

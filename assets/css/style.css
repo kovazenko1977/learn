@@ -63,7 +63,6 @@ body {
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  overscroll-behavior-y: none;
 }
 
 input, textarea, select {
@@ -733,6 +732,10 @@ h1, h2, h3, h4, h5, h6, p, span, div, td, th, label, a {
   border-bottom-right-radius: 4px;
 }
 
+.message-bubble.mine .message-author {
+  color: #e0f2fe;
+}
+
 .message-bubble.other {
   align-self: flex-start;
   background-color: var(--bg-main);
@@ -797,11 +800,54 @@ th {
   color: var(--text-muted);
 }
 
-/* Animations */
+/* Animations & Micro-interactions */
 @keyframes pulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.02); }
   100% { transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.app-view {
+  animation: fadeInUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-overlay.active .modal-container {
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.stat-card, .service-card, .request-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+
+.stat-card:hover, .service-card:hover, .request-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn, .mobile-nav-item, .nav-item {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Mobile Devices Optimization (< 600px) */
@@ -821,7 +867,7 @@ th {
     width: 100vw;
     max-width: 100vw;
     padding: 12px;
-    padding-bottom: 95px;
+    padding-bottom: 120px;
     box-sizing: border-box;
     overflow-x: hidden;
   }

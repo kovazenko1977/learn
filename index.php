@@ -360,21 +360,64 @@
             <!-- VIEW 10: SETTINGS & BACKUP -->
             <section id="view-settings" class="app-view" style="display:none;">
                 <div class="section-title">
-                    <span>⚙ Настройки системы</span>
+                    <span>⚙ Расширенные настройки системы</span>
                 </div>
-                <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:700px; width:100%;">
-                    <h3>Резервное копирование</h3>
-                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-                        Создание и восстановление полных копий JSON-базы данных
-                    </p>
-                    <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
-                        <button class="btn btn-primary" onclick="app.downloadBackup()">💾 Скачать резервную копию</button>
-                    </div>
+                <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:800px; width:100%;">
+                    <form id="adminSettingsForm" onsubmit="app.saveAdminSettings(event)">
+                        <h3 style="margin-bottom:12px;">🏥 Информация об учреждении</h3>
+                        <div class="form-group">
+                            <label class="form-label">Название больницы / учреждения</label>
+                            <input type="text" id="settingHospitalName" class="form-input" required placeholder="ГКБ №1 МедСервис">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Телефон справочной</label>
+                                <input type="text" id="settingHospitalPhone" class="form-input" placeholder="+375 17 222-33-44">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Аварийный номер</label>
+                                <input type="text" id="settingEmergencyContact" class="form-input" placeholder="+375 29 111-00-00">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Адрес учреждения</label>
+                            <input type="text" id="settingHospitalAddress" class="form-input" placeholder="г. Минск, ул. Больничная 10">
+                        </div>
 
-                    <h3>Первоначальная настройка</h3>
+                        <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+
+                        <h3 style="margin-bottom:12px;">⏱ Параметры SLA и Регламента</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Реакция на аварийную заявку (мин)</label>
+                                <input type="number" id="settingSlaEmergencyMins" class="form-input" value="10" min="1" max="120">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Время выполнения обычной заявки (часов)</label>
+                                <input type="number" id="settingSlaNormalHours" class="form-input" value="24" min="1" max="168">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Макс. размер файла фото (МБ)</label>
+                            <input type="number" id="settingMaxUploadMb" class="form-input" value="10" min="1" max="50">
+                        </div>
+
+                        <div style="margin-top:16px;">
+                            <button type="submit" class="btn btn-primary">💾 Сохранить параметры</button>
+                        </div>
+                    </form>
+
+                    <hr style="border:none; border-top:1px solid var(--border-color); margin:24px 0;">
+
+                    <h3>💾 Резервное копирование и аудит</h3>
                     <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-                        Сброс установки или редактирование параметров больницы
+                        Экспорт и восстановление базы данных JSON
                     </p>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button class="btn btn-primary" onclick="app.downloadBackup()">💾 Скачать бэкап JSON</button>
+                        <button class="btn btn-secondary" onclick="app.loadAuditLogs()">📜 Журнал аудита</button>
+                    </div>
+                    <div id="auditLogsContainer" style="margin-top:16px; font-size:12px; max-height:200px; overflow-y:auto; display:none;"></div>
                 </div>
             </section>
 
