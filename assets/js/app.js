@@ -287,10 +287,10 @@ class MedServiceApp {
                 </div>
                 <div class="request-desc">${r.description}</div>
                 <div class="request-meta">
-                    <span>📍 ${r.location_text}</span>
-                    <span>🏢 ${r.service_name}</span>
-                    <span>👤 ${r.author_name}</span>
-                    <span>🕒 ${r.created_at}</span>
+                    <span class="meta-pill">📍 ${r.location_text}</span>
+                    <span class="meta-pill">🏢 ${r.service_name}</span>
+                    <span class="meta-pill">👤 ${r.author_name}</span>
+                    <span class="meta-pill">🕒 ${r.created_at}</span>
                 </div>
             </div>
         `;
