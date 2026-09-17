@@ -13,7 +13,7 @@
         "hide_phone": false,
         "is_blocked": false,
         "created_at": "2026-09-17 07:23:11",
-        "last_active": "2026-09-17 07:49:26",
+        "last_active": "2026-09-17 07:58:24",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -23,8 +23,8 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "token": "bb9434ab5ffc0b45f080642aa16a6a835b2267b16add5976dc6d4ec7271ebd12",
-        "updated_at": "2026-09-17 07:49:26"
+        "token": "1dec50c3e70d16960ab9e06af04400a286ffcab548d72d50a172d4fccebdf6b0",
+        "updated_at": "2026-09-17 07:58:24"
     },
     {
         "id": 2,

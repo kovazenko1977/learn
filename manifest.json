@@ -1,13 +1,19 @@
 {
-  "name": "МедСервис - Корпоративное приложение больницы",
+  "id": "medservice-hospital-pwa",
+  "name": "МедСервис — Корпоративное Приложение Больницы",
   "short_name": "МедСервис",
-  "description": "Приложение для обслуживания больницы, приема и выполнения заявок, связи и коммуникации персонала",
+  "description": "Официальное корпоративное PWA-приложение больницы для приема заявок, связи служб и контроля хозяйственной деятельности",
+  "lang": "ru-RU",
+  "dir": "ltr",
   "start_url": "./index.php",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "orientation": "portrait-primary",
-  "background_color": "#f8fafc",
+  "background_color": "#0284c7",
   "theme_color": "#0284c7",
+  "prefer_related_applications": false,
+  "categories": ["medical", "business", "productivity"],
   "icons": [
     {
       "src": "assets/icons/icon-192.png",
@@ -26,13 +32,22 @@
     {
       "name": "Создать заявку",
       "short_name": "+ Заявка",
+      "description": "Быстрое создание заявки",
       "url": "./index.php?action=create",
       "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Авария",
+      "name": "🚨 АВАРИЯ",
       "short_name": "🚨 Авария",
+      "description": "Экстренный вызов службы",
       "url": "./index.php?action=emergency",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Справочник служб",
+      "short_name": "☎ Справочник",
+      "description": "Телефонный справочник",
+      "url": "./index.php?action=directory",
       "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]

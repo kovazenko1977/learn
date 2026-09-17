@@ -1,4 +1,4 @@
-const CACHE_NAME = 'medservice-v1';
+const CACHE_NAME = 'medservice-pwa-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.php',
@@ -30,7 +30,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Network first for API requests, Cache first for static assets
+  // Network first for API endpoints, Cache first for static shell
   if (event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request).catch(() => {
@@ -46,7 +46,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cached and fetch update in background
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
@@ -59,15 +58,35 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Deep Push Notification Handlers
 self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : { title: 'МедСервис', body: 'Новое уведомление' };
+  let data = { title: 'МедСервис', body: 'Новое уведомление в больнице', url: './index.php' };
+
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
   const options = {
     body: data.body || data.message,
     icon: 'assets/icons/icon-192.png',
     badge: 'assets/icons/icon-192.png',
-    vibrate: [200, 100, 200],
-    data: { url: data.url || './index.php' }
+    vibrate: [300, 100, 300, 100, 300],
+    tag: data.tag || 'medservice-notification',
+    renotify: true,
+    data: { url: data.url || './index.php' },
+    actions: [
+      { action: 'open', title: '📱 Открыть приложение' },
+      { action: 'dismiss', title: 'Закрыть' }
+    ]
   };
+
+  if ('setAppBadge' in self.navigator) {
+    self.navigator.setAppBadge(1).catch(() => {});
+  }
 
   event.waitUntil(
     self.registration.showNotification(data.title || 'МедСервис', options)
@@ -76,7 +95,21 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+
+  if (event.action === 'dismiss') return;
+
+  const targetUrl = event.notification.data.url || './index.php';
+
   event.waitUntil(
-    clients.openWindow(event.notification.data.url || './index.php')
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes('index.php') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
   );
 });

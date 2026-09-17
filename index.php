@@ -24,6 +24,33 @@
         ⚠️ Нет подключения к интернету. Работает в автономном режиме.
     </div>
 
+    <!-- PWA Installation Banner -->
+    <div id="pwaInstallBanner" style="display:none; background:linear-gradient(135deg, #0284c7, #2563eb); color:white; padding:12px 16px; align-items:center; justify-content:space-between; box-shadow:0 4px 12px rgba(2,132,199,0.3); z-index:900; position:sticky; top:0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:24px;">📲</div>
+            <div>
+                <div style="font-weight:bold; font-size:14px;">Установить «МедСервис» на телефон</div>
+                <div style="font-size:11px; opacity:0.9;">Быстрый доступ с экрана Домой и работа без лагов</div>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn" style="background:white; color:#0284c7; padding:6px 14px; font-size:13px;" onclick="app.promptPwaInstall()">Установите</button>
+            <button class="btn" style="background:transparent; color:white; border:none; font-size:18px;" onclick="document.getElementById('pwaInstallBanner').style.display='none'">×</button>
+        </div>
+    </div>
+
+    <!-- PWA Push Notification Request Banner -->
+    <div id="pwaNotificationBanner" style="display:none; background-color:#3b82f6; color:white; padding:10px 16px; align-items:center; justify-content:space-between; z-index:899; position:sticky; top:0;">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:20px;">🔔</div>
+            <div style="font-size:13px;">Включите Push-уведомления для мгновенного оповещения о новых заявках и авариях</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn" style="background:white; color:#3b82f6; padding:4px 10px; font-size:12px;" onclick="app.requestNotificationPermission()">Включить</button>
+            <button class="btn" style="background:transparent; color:white; border:none; font-size:16px;" onclick="document.getElementById('pwaNotificationBanner').style.display='none'">×</button>
+        </div>
+    </div>
+
     <div class="app-container">
 
         <!-- PC Sidebar Navigation -->

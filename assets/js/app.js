@@ -10,6 +10,13 @@ class MedServiceApp {
         this.chats = [];
         this.activeChatId = 1; // 1 = General Chat
         this.pollInterval = null;
+        this.deferredPrompt = null;
+    }
+
+    vibrate(pattern = [80, 40, 80]) {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(pattern);
+        }
     }
 
     async apiFetch(endpoint, options = {}) {
@@ -45,6 +52,7 @@ class MedServiceApp {
 
     async init() {
         this.setupNavigation();
+        this.setupPwaInstall();
 
         const setup = await this.apiFetch('setup');
         if (setup.installed === false) {
@@ -53,6 +61,72 @@ class MedServiceApp {
         }
 
         await this.checkAuth();
+    }
+
+    setupPwaInstall() {
+        // Listen for Chrome / Android PWA installation event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) banner.style.display = 'flex';
+        });
+
+        // Check if iOS Safari
+        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+        if (isIos && !isStandalone) {
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) banner.style.display = 'flex';
+        }
+    }
+
+    promptPwaInstall() {
+        this.vibrate();
+        if (this.deferredPrompt) {
+            this.deferredPrompt.prompt();
+            this.deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    document.getElementById('pwaInstallBanner').style.display = 'none';
+                }
+                this.deferredPrompt = null;
+            });
+        } else {
+            alert('📱 Для установки на iPhone/iPad:\n\n1. Нажмите кнопку «Поделиться» (квадрат со стрелкой вверх) в нижней панели Safari.\n2. Выберите «На экран «Домой»».');
+        }
+    }
+
+    async requestNotificationPermission() {
+        this.vibrate();
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                alert('🔔 Push-уведомления успешно включены!');
+                document.getElementById('pwaNotificationBanner').style.display = 'none';
+                this.subscribePush();
+            } else {
+                alert('Разрешение на уведомления отклонено в настройках браузера');
+            }
+        }
+    }
+
+    async subscribePush() {
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                if (sub) {
+                    await this.apiFetch('push/subscribe', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(sub)
+                    });
+                }
+            } catch (e) {
+                console.error('Push subscribe error:', e);
+            }
+        }
     }
 
     async checkAuth() {
