@@ -1,0 +1,54 @@
+[
+    {
+        "name": "Сергей Администратор",
+        "phone": "+375291234567",
+        "department_id": 1,
+        "department_name": "Администрация",
+        "position": "Главный администратор",
+        "role": "Admin",
+        "service_id": 0,
+        "password": "$2y$10$k1z3yHBGCRrbHIfAwkZUO.BDqyDz\/nMUBmGJaQQ.saqJVxNgLHzk.",
+        "avatar": "",
+        "hide_phone": false,
+        "is_blocked": false,
+        "created_at": "2026-09-17 06:38:37",
+        "last_active": "2026-09-17 06:45:38",
+        "notification_settings": {
+            "new_requests": true,
+            "status_change": true,
+            "private_messages": true,
+            "general_chat": true,
+            "assignments": true,
+            "emergency_alerts": true,
+            "sla_overdue": true
+        },
+        "id": 1,
+        "token": "511a5ccc7d3a134243454dea74570d156bab9e8628df0c60a5ea17795c09eecf",
+        "updated_at": "2026-09-17 06:45:38"
+    },
+    {
+        "name": "Диспетчерская служба",
+        "phone": "+375292222222",
+        "department_id": 1,
+        "department_name": "Приемное отделение",
+        "position": "Старший диспетчер",
+        "role": "Dispatcher",
+        "service_id": 0,
+        "password": "$2y$10$nCBo5cEN5hJIIAzDJ6lrqO234k9NJUdmUZazr9Xqj\/7gb6qOPDQIW",
+        "avatar": "",
+        "hide_phone": false,
+        "is_blocked": false,
+        "created_at": "2026-09-17 06:38:37",
+        "last_active": "2026-09-17 06:38:37",
+        "notification_settings": {
+            "new_requests": true,
+            "status_change": true,
+            "private_messages": true,
+            "general_chat": true,
+            "assignments": true,
+            "emergency_alerts": true,
+            "sla_overdue": true
+        },
+        "id": 2
+    }
+]

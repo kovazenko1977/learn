@@ -1,0 +1,142 @@
+[
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Сергей Администратор",
+        "timestamp": "2026-09-17 06:38:20",
+        "id": 1,
+        "created_at": "2026-09-17 06:38:20"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Диспетчерская служба",
+        "timestamp": "2026-09-17 06:38:20",
+        "id": 2,
+        "created_at": "2026-09-17 06:38:20"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Сергей Администратор",
+        "timestamp": "2026-09-17 06:38:37",
+        "id": 3,
+        "created_at": "2026-09-17 06:38:37"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Диспетчерская служба",
+        "timestamp": "2026-09-17 06:38:37",
+        "id": 4,
+        "created_at": "2026-09-17 06:38:37"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:38:37",
+        "id": 5,
+        "created_at": "2026-09-17 06:38:37"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Created request №000150",
+        "timestamp": "2026-09-17 06:38:57",
+        "id": 6,
+        "created_at": "2026-09-17 06:38:57"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:42:13",
+        "id": 7,
+        "created_at": "2026-09-17 06:42:13"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:43:03",
+        "id": 8,
+        "created_at": "2026-09-17 06:43:03"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000151",
+        "timestamp": "2026-09-17 06:43:05",
+        "id": 9,
+        "created_at": "2026-09-17 06:43:05"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:44:15",
+        "id": 10,
+        "created_at": "2026-09-17 06:44:15"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000152",
+        "timestamp": "2026-09-17 06:44:16",
+        "id": 11,
+        "created_at": "2026-09-17 06:44:16"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:45:03",
+        "id": 12,
+        "created_at": "2026-09-17 06:45:03"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000153",
+        "timestamp": "2026-09-17 06:45:05",
+        "id": 13,
+        "created_at": "2026-09-17 06:45:05"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:45:38",
+        "id": 14,
+        "created_at": "2026-09-17 06:45:38"
+    }
+]

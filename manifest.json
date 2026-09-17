@@ -1,0 +1,39 @@
+{
+  "name": "МедСервис - Корпоративное приложение больницы",
+  "short_name": "МедСервис",
+  "description": "Приложение для обслуживания больницы, приема и выполнения заявок, связи и коммуникации персонала",
+  "start_url": "./index.php",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Создать заявку",
+      "short_name": "+ Заявка",
+      "url": "./index.php?action=create",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Авария",
+      "short_name": "🚨 Авария",
+      "url": "./index.php?action=emergency",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
