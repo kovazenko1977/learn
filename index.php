@@ -117,13 +117,13 @@
                 </div>
 
                 <div class="header-actions">
-                    <button class="btn btn-outline" id="themeToggleBtn" onclick="app.toggleTheme()">
+                    <button class="btn btn-outline btn-sm" id="themeToggleBtn" onclick="app.toggleTheme()">
                         🌙 Темная тема
                     </button>
-                    <button class="btn btn-outline" onclick="app.openProfileModal()">
+                    <button class="btn btn-outline btn-sm" onclick="app.openProfileModal()">
                         👤 <span id="headerUserName">Профиль</span>
                     </button>
-                    <button class="btn btn-secondary" onclick="app.logout()">
+                    <button class="btn btn-secondary btn-sm" onclick="app.logout()">
                         🚪 Выход
                     </button>
                 </div>
@@ -178,7 +178,7 @@
                 <!-- Recent Requests List -->
                 <div class="section-title" style="margin-top:20px;">
                     <span>Последние заявки</span>
-                    <button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="app.switchView('create-request')">+ Создать заявку</button>
+                    <button class="btn btn-primary btn-sm" onclick="app.switchView('create-request')">+ Создать заявку</button>
                 </div>
                 <div id="recentRequestsContainer">
                     <!-- Request cards rendered dynamically -->
@@ -189,12 +189,12 @@
             <section id="view-requests" class="app-view" style="display:none;">
                 <div class="section-title">
                     <span>📋 Список заявок</span>
-                    <button class="btn btn-primary" onclick="app.switchView('create-request')">+ Создать заявку</button>
+                    <button class="btn btn-primary btn-sm" onclick="app.switchView('create-request')">+ Создать заявку</button>
                 </div>
 
                 <!-- Filters -->
-                <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
-                    <select id="filterStatus" class="form-select" style="width:auto;" onchange="app.loadRequests()">
+                <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; width:100%;">
+                    <select id="filterStatus" class="form-select" style="width:auto; flex:1; min-width:140px;" onchange="app.loadRequests()">
                         <option value="">Все статусы</option>
                         <option value="Новая">🔵 Новые</option>
                         <option value="Принято">🟡 Принято</option>
@@ -202,7 +202,7 @@
                         <option value="Выполнено">🟢 Выполнено</option>
                     </select>
 
-                    <select id="filterPriority" class="form-select" style="width:auto;" onchange="app.loadRequests()">
+                    <select id="filterPriority" class="form-select" style="width:auto; flex:1; min-width:140px;" onchange="app.loadRequests()">
                         <option value="">Все приоритеты</option>
                         <option value="Обычный">Обычный</option>
                         <option value="Важный">Важный</option>
@@ -224,7 +224,7 @@
                     <span>➕ Создание заявки</span>
                 </div>
 
-                <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:700px;">
+                <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:700px; width:100%;">
                     <form id="createRequestForm" onsubmit="app.submitCreateRequest(event)">
 
                         <div class="form-group">
@@ -300,24 +300,19 @@
                     <span>💬 Чаты и сообщения</span>
                 </div>
 
-                <div style="display:flex; gap:16px; height:600px;">
-                    <!-- Chat list column -->
-                    <div style="width:280px; background-color:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); overflow-y:auto;" id="chatRoomsList">
-                        <!-- Chat room list -->
+                <div class="chat-window">
+                    <div style="padding:14px; border-bottom:1px solid var(--border-color); font-weight:bold; display:flex; justify-content:space-between; align-items:center;" id="activeChatTitle">
+                        <span>Общий чат сотрудников</span>
+                        <select id="chatRoomSelector" class="form-select" style="width:auto; padding:4px 8px; font-size:12px;" onchange="app.selectChat(this.value, this.options[this.selectedIndex].text)">
+                            <option value="1">Общий чат</option>
+                        </select>
                     </div>
-
-                    <!-- Chat room active view -->
-                    <div style="flex:1;" class="chat-window">
-                        <div style="padding:14px; border-bottom:1px solid var(--border-color); font-weight:bold;" id="activeChatTitle">
-                            Общий чат сотрудников
-                        </div>
-                        <div class="chat-messages" id="chatMessagesArea">
-                            <!-- Messages -->
-                        </div>
-                        <div class="chat-input-bar">
-                            <input type="text" id="chatInputText" class="form-input" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter') app.sendChatMessage()">
-                            <button class="btn btn-primary" onclick="app.sendChatMessage()">Отправить</button>
-                        </div>
+                    <div class="chat-messages" id="chatMessagesArea">
+                        <!-- Messages -->
+                    </div>
+                    <div class="chat-input-bar">
+                        <input type="text" id="chatInputText" class="form-input" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter') app.sendChatMessage()">
+                        <button class="btn btn-primary" onclick="app.sendChatMessage()">Отправить</button>
                     </div>
                 </div>
             </section>
@@ -367,12 +362,12 @@
                 <div class="section-title">
                     <span>⚙ Настройки системы</span>
                 </div>
-                <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:700px;">
+                <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:700px; width:100%;">
                     <h3>Резервное копирование</h3>
                     <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
                         Создание и восстановление полных копий JSON-базы данных
                     </p>
-                    <div style="display:flex; gap:12px; margin-bottom:24px;">
+                    <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
                         <button class="btn btn-primary" onclick="app.downloadBackup()">💾 Скачать резервную копию</button>
                     </div>
 

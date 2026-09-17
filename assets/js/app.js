@@ -254,7 +254,7 @@ class MedServiceApp {
                 <div class="service-card" onclick="app.openServiceCallModal(${s.id})">
                     <div class="service-icon">${s.icon || '⚡'}</div>
                     <div class="service-name">${s.name}</div>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${s.internal_phone ? 'внутр. ' + s.internal_phone : s.phone}</div>
+                    <div class="service-sub">${s.internal_phone ? 'внутр. ' + s.internal_phone : s.phone}</div>
                 </div>
             `).join('');
         }
@@ -385,17 +385,17 @@ class MedServiceApp {
         if (r && r.id) {
             const photosHtml = (r.photos || []).map(p => `
                 <a href="${p}" target="_blank">
-                    <img src="${p}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
+                    <img src="${p}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
                 </a>
             `).join('');
 
             const commentsHtml = (r.comments || []).map(c => `
-                <div style="background-color:var(--bg-main); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
-                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                <div style="background-color:var(--bg-main); padding:10px 12px; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px; flex-wrap:wrap;">
                         <span><b>${c.user_name}</b> (${c.user_role})</span>
                         <span>${c.created_at}</span>
                     </div>
-                    <div>${c.text}</div>
+                    <div style="font-size:13px;">${c.text}</div>
                 </div>
             `).join('');
 
@@ -409,37 +409,37 @@ class MedServiceApp {
 
             const modalHtml = `
                 <div id="requestDetailModal" class="modal-overlay active">
-                    <div class="modal-container" style="max-width:700px;">
+                    <div class="modal-container">
                         <div class="modal-header">
                             <div class="modal-title">${r.number} — ${r.category}</div>
                             <button class="modal-close" onclick="document.getElementById('requestDetailModal').remove()">×</button>
                         </div>
 
-                        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
                             <div><b>Статус:</b> <span class="badge badge-new">${r.status}</span></div>
                             <div><b>Приоритет:</b> <span>${r.priority}</span></div>
                         </div>
 
-                        <div style="margin-bottom:16px;">
+                        <div style="margin-bottom:16px; font-size:13px; display:flex; flex-direction:column; gap:4px;">
                             <div><b>Место:</b> ${r.location_text}</div>
                             <div><b>Автор:</b> ${r.author_name} (${r.author_department}) — 📞 ${r.author_phone}</div>
                             <div><b>Ответственная служба:</b> ${r.service_name}</div>
                             <div><b>Исполнитель:</b> ${r.executor_name}</div>
                         </div>
 
-                        <div style="background-color:var(--primary-light); padding:12px; border-radius:8px; margin-bottom:16px;">
+                        <div style="background-color:var(--primary-light); padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
                             <b>Описание проблемы:</b>
-                            <div>${r.description}</div>
+                            <div style="margin-top:4px;">${r.description}</div>
                         </div>
 
-                        ${photosHtml ? `<div style="margin-bottom:16px;"><b>Фотографии:</b><div style="display:flex; gap:8px; margin-top:6px;">${photosHtml}</div></div>` : ''}
+                        ${photosHtml ? `<div style="margin-bottom:16px;"><b>Фотографии:</b><div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">${photosHtml}</div></div>` : ''}
 
                         <div style="margin-bottom:16px; display:flex; gap:8px; flex-wrap:wrap;">
-                            <a class="btn btn-outline" href="tel:${r.author_phone}">📞 Позвонить автору</a>
-                            <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'Принято')">🟡 Принять</button>
-                            <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'В исполнении')">🟠 В работу</button>
-                            <button class="btn btn-primary" onclick="app.updateRequestStatus(${r.id}, 'Выполнено')">🟢 Выполнено</button>
-                            ${isAdmin ? `<button class="btn btn-danger" onclick="app.deleteRequest(${r.id})">🗑 Удалить заявку</button>` : ''}
+                            <a class="btn btn-outline btn-sm" href="tel:${r.author_phone}">📞 Позвонить автору</a>
+                            <button class="btn btn-secondary btn-sm" onclick="app.updateRequestStatus(${r.id}, 'Принято')">🟡 Принять</button>
+                            <button class="btn btn-secondary btn-sm" onclick="app.updateRequestStatus(${r.id}, 'В исполнении')">🟠 В работу</button>
+                            <button class="btn btn-primary btn-sm" onclick="app.updateRequestStatus(${r.id}, 'Выполнено')">🟢 Выполнено</button>
+                            ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="app.deleteRequest(${r.id})">🗑 Удалить</button>` : ''}
                         </div>
 
                         <hr style="border:none; border-top:1px solid var(--border-color); margin:16px 0;">
@@ -571,21 +571,20 @@ class MedServiceApp {
         const chats = await this.apiFetch('chats');
         if (Array.isArray(chats)) {
             this.chats = chats;
-            const list = document.getElementById('chatRoomsList');
-            list.innerHTML = this.chats.map(c => `
-                <div style="padding:12px; border-bottom:1px solid var(--border-color); cursor:pointer;" onclick="app.selectChat(${c.id}, '${c.title}')">
-                    <div style="font-weight:bold; font-size:14px;">${c.title}</div>
-                    <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.last_message || 'Сообщений нет'}</div>
-                </div>
-            `).join('');
-
+            const selector = document.getElementById('chatRoomSelector');
+            if (selector) {
+                selector.innerHTML = this.chats.map(c => `
+                    <option value="${c.id}" ${c.id == this.activeChatId ? 'selected' : ''}>${c.title}</option>
+                `).join('');
+            }
             this.loadChatMessages(this.activeChatId);
         }
     }
 
     selectChat(chatId, title) {
         this.activeChatId = chatId;
-        document.getElementById('activeChatTitle').innerText = title;
+        const titleEl = document.querySelector('#activeChatTitle span');
+        if (titleEl) titleEl.innerText = title;
         this.loadChatMessages(chatId);
     }
 
@@ -598,10 +597,10 @@ class MedServiceApp {
                 const isMine = m.user_id == this.currentUser.id;
                 return `
                     <div class="message-bubble ${isMine ? 'mine' : 'other'}">
-                        <div style="font-size:11px; font-weight:bold; margin-bottom:2px;">${m.user_name}</div>
+                        <div class="message-author">${m.user_name}</div>
                         <div>${m.text}</div>
                         ${m.photo ? `<img src="${m.photo}" style="max-width:100%; border-radius:6px; margin-top:6px;">` : ''}
-                        <div class="message-meta">${m.created_at.split(' ')[1]}</div>
+                        <div class="message-meta">${m.created_at.split(' ')[1] || m.created_at}</div>
                     </div>
                 `;
             }).join('');
@@ -643,7 +642,7 @@ class MedServiceApp {
             container.innerHTML = `
                 ${isAdmin ? `
                     <div style="margin-bottom:16px;">
-                        <button class="btn btn-primary" onclick="app.openAddEmployeeModal()">+ Добавить сотрудника</button>
+                        <button class="btn btn-primary btn-sm" onclick="app.openAddEmployeeModal()">+ Добавить сотрудника</button>
                     </div>
                 ` : ''}
                 <div class="stats-grid">
@@ -657,11 +656,10 @@ class MedServiceApp {
                             <div style="font-size:12px; margin-top:4px;">📞 ${e.phone}</div>
 
                             <div style="display:flex; gap:6px; margin-top:12px; width:100%; flex-wrap:wrap;">
-                                <a class="btn btn-outline" href="tel:${e.phone}" style="flex:1; text-decoration:none; font-size:12px;">📞 Звонок</a>
-                                <button class="btn btn-secondary" style="flex:1; font-size:12px;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
+                                <a class="btn btn-outline btn-sm" href="tel:${e.phone}" style="flex:1; text-decoration:none; text-align:center;">📞 Звонок</a>
+                                <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
                                 ${isAdmin ? `
-                                    <button class="btn btn-outline" style="font-size:12px;" onclick="app.openEditEmployeeModal(${e.id})">✏️</button>
-                                    <button class="btn btn-danger" style="font-size:12px;" onclick="app.deleteEmployee(${e.id})">🗑</button>
+                                    <button class="btn btn-danger btn-sm" onclick="app.deleteEmployee(${e.id})">🗑</button>
                                 ` : ''}
                             </div>
                         </div>
@@ -765,7 +763,7 @@ class MedServiceApp {
             container.innerHTML = `
                 ${isAdmin ? `
                     <div style="margin-bottom:16px;">
-                        <button class="btn btn-primary" onclick="app.openAddServiceModal()">+ Создать службу</button>
+                        <button class="btn btn-primary btn-sm" onclick="app.openAddServiceModal()">+ Создать службу</button>
                     </div>
                 ` : ''}
                 <div class="stats-grid">
@@ -773,7 +771,7 @@ class MedServiceApp {
                         <div class="stat-card" style="flex-direction:column; align-items:flex-start;">
                             <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
                                 <div style="font-size:24px;">${s.icon || '⚡'}</div>
-                                ${isAdmin ? `<button class="btn btn-outline" style="padding:4px 8px; font-size:12px;" onclick="app.deleteService(${s.id})">🗑 Удалить</button>` : ''}
+                                ${isAdmin ? `<button class="btn btn-outline btn-sm" onclick="app.deleteService(${s.id})">🗑 Удалить</button>` : ''}
                             </div>
                             <div style="font-size:18px; font-weight:700; margin:8px 0;">${s.name}</div>
                             <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">${s.description}</div>
@@ -918,7 +916,7 @@ class MedServiceApp {
     }
 
     hideRegisterModal() {
-        document.getElementById('registerModal').classList.add('active');
+        document.getElementById('registerModal').classList.remove('active');
         document.getElementById('loginModal').classList.add('active');
     }
 
