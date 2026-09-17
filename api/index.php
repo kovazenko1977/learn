@@ -274,20 +274,33 @@ try {
     // SERVICES & DEPARTMENTS
     // ==========================================
     if ($endpoint === 'services') {
+        $servId = isset($segments[1]) && is_numeric($segments[1]) ? (int)$segments[1] : null;
+
         if ($method === 'GET') {
             $servicesList = $storage->getCollection('services');
             jsonResponse($servicesList);
         }
 
-        if (($method === 'POST' || $method === 'PUT') && $currentUser['role'] === Auth::ROLE_ADMIN) {
-            $input = getJsonInput();
+        if ($currentUser['role'] === Auth::ROLE_ADMIN) {
             if ($method === 'POST') {
+                $input = getJsonInput();
                 $created = $storage->insert('services', $input);
+                Auth::auditLog('CREATE_SERVICE', $currentUser['id'], "Created service {$created['name']}");
                 jsonResponse(['success' => true, 'service' => $created]);
-            } else {
-                $servId = (int)($segments[1] ?? $input['id'] ?? 0);
-                $storage->update('services', $servId, $input);
+            }
+
+            if ($method === 'PUT') {
+                $input = getJsonInput();
+                $sId = $servId ?? (int)($input['id'] ?? 0);
+                $storage->update('services', $sId, $input);
+                Auth::auditLog('UPDATE_SERVICE', $currentUser['id'], "Updated service ID {$sId}");
                 jsonResponse(['success' => true, 'message' => 'Служба обновлена']);
+            }
+
+            if ($method === 'DELETE' && $servId !== null) {
+                $storage->delete('services', $servId);
+                Auth::auditLog('DELETE_SERVICE', $currentUser['id'], "Deleted service ID {$servId}");
+                jsonResponse(['success' => true, 'message' => 'Служба удалена']);
             }
         }
     }
@@ -589,6 +602,16 @@ try {
             $updatedReq = $storage->findOne('requests', fn($r) => $r['id'] == $requestId);
             jsonResponse(['success' => true, 'request' => $updatedReq]);
         }
+
+        // DELETE /api/requests/{id} (Admin only)
+        if ($method === 'DELETE' && $requestId !== null) {
+            if ($currentUser['role'] !== Auth::ROLE_ADMIN) {
+                jsonError('Только администратор может удалять заявки', 403);
+            }
+            $storage->delete('requests', $requestId);
+            Auth::auditLog('DELETE_REQUEST', $currentUser['id'], "Deleted request ID {$requestId}");
+            jsonResponse(['success' => true, 'message' => 'Заявка удалена']);
+        }
     }
 
     // ==========================================
@@ -770,14 +793,50 @@ try {
     // EQUIPMENT & LOCATIONS
     // ==========================================
     if ($endpoint === 'equipment') {
+        $eqId = isset($segments[1]) && is_numeric($segments[1]) ? (int)$segments[1] : null;
+
         if ($method === 'GET') {
             jsonResponse($storage->getCollection('equipment'));
+        }
+
+        if ($currentUser['role'] === Auth::ROLE_ADMIN) {
+            $input = getJsonInput();
+            if ($method === 'POST') {
+                $created = $storage->insert('equipment', $input);
+                jsonResponse(['success' => true, 'equipment' => $created]);
+            }
+            if ($method === 'PUT' && $eqId !== null) {
+                $storage->update('equipment', $eqId, $input);
+                jsonResponse(['success' => true, 'message' => 'Оборудование обновлено']);
+            }
+            if ($method === 'DELETE' && $eqId !== null) {
+                $storage->delete('equipment', $eqId);
+                jsonResponse(['success' => true, 'message' => 'Оборудование удалено']);
+            }
         }
     }
 
     if ($endpoint === 'locations') {
+        $locId = isset($segments[1]) && is_numeric($segments[1]) ? (int)$segments[1] : null;
+
         if ($method === 'GET') {
             jsonResponse($storage->getCollection('locations'));
+        }
+
+        if ($currentUser['role'] === Auth::ROLE_ADMIN) {
+            $input = getJsonInput();
+            if ($method === 'POST') {
+                $created = $storage->insert('locations', $input);
+                jsonResponse(['success' => true, 'location' => $created]);
+            }
+            if ($method === 'PUT' && $locId !== null) {
+                $storage->update('locations', $locId, $input);
+                jsonResponse(['success' => true, 'message' => 'Локация обновлена']);
+            }
+            if ($method === 'DELETE' && $locId !== null) {
+                $storage->delete('locations', $locId);
+                jsonResponse(['success' => true, 'message' => 'Локация удалена']);
+            }
         }
     }
 

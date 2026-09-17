@@ -13,7 +13,6 @@ class MedServiceApp {
     }
 
     async apiFetch(endpoint, options = {}) {
-        // Construct full URL pointing to api/index.php/
         let url = endpoint;
         if (!url.startsWith('http') && !url.startsWith('/')) {
             url = `api/index.php/${endpoint.replace(/^api\//, '')}`;
@@ -21,7 +20,6 @@ class MedServiceApp {
 
         options.headers = options.headers || {};
 
-        // Attach persistent Bearer token if saved
         const token = localStorage.getItem('medservice_token');
         if (token) {
             options.headers['Authorization'] = `Bearer ${token}`;
@@ -48,14 +46,12 @@ class MedServiceApp {
     async init() {
         this.setupNavigation();
 
-        // 1. Check if installed
         const setup = await this.apiFetch('setup');
         if (setup.installed === false) {
             document.getElementById('installerModal').classList.add('active');
             return;
         }
 
-        // 2. Check current user session or saved token
         await this.checkAuth();
     }
 
@@ -74,17 +70,27 @@ class MedServiceApp {
         document.getElementById('registerModal').classList.remove('active');
 
         document.getElementById('greetingText').innerText = `Добрый день, ${this.currentUser.name.split(' ')[0]}!`;
-        document.getElementById('headerUserName').innerText = this.currentUser.name;
+        document.getElementById('headerUserName').innerText = `${this.currentUser.name} (${this.getRoleTitle(this.currentUser.role)})`;
 
         // Check onboarding
         if (!localStorage.getItem('medservice_onboarding_done')) {
             document.getElementById('onboardingModal').classList.add('active');
         }
 
-        // Start polling for chats & notifications
         this.startPolling();
         this.loadDashboardData();
         this.loadServices();
+    }
+
+    getRoleTitle(role) {
+        const roles = {
+            'Admin': 'Администратор',
+            'Dispatcher': 'Диспетчер',
+            'Service Head': 'Руководитель службы',
+            'Executor': 'Исполнитель',
+            'Employee': 'Сотрудник'
+        };
+        return roles[role] || role;
     }
 
     startPolling() {
@@ -114,7 +120,6 @@ class MedServiceApp {
     switchView(viewName, params = {}) {
         this.activeView = viewName;
 
-        // Update nav active states
         document.querySelectorAll('.sidebar-nav .nav-item, .mobile-nav .mobile-nav-item').forEach(el => {
             if (el.dataset.view === viewName) {
                 el.classList.add('active');
@@ -123,16 +128,13 @@ class MedServiceApp {
             }
         });
 
-        // Hide all views
         document.querySelectorAll('.app-view').forEach(v => v.style.display = 'none');
 
-        // Show active view
         const targetView = document.getElementById(`view-${viewName}`);
         if (targetView) {
             targetView.style.display = 'block';
         }
 
-        // Trigger view specific loaders
         if (viewName === 'dashboard') this.loadDashboardData();
         if (viewName === 'requests') this.loadRequests(params);
         if (viewName === 'directory') this.loadDirectory();
@@ -223,20 +225,6 @@ class MedServiceApp {
     // ==========================================
     // REQUESTS CREATION & MANAGEMENT
     // ==========================================
-    onCategoryChange(cat) {
-        const categoryMap = {
-            'Электрика': 1,
-            'Сантехника': 2,
-            'Отопление': 3,
-            'Уборка': 4,
-            'Территория': 5,
-            'Ремонт помещений': 6,
-            'Мебель': 6,
-            'Оборудование': 7,
-            'IT': 7
-        };
-    }
-
     async submitCreateRequest(e) {
         e.preventDefault();
 
@@ -343,6 +331,8 @@ class MedServiceApp {
                 </div>
             `).join('');
 
+            const isAdmin = this.currentUser && this.currentUser.role === 'Admin';
+
             const modalHtml = `
                 <div id="requestDetailModal" class="modal-overlay active">
                     <div class="modal-container" style="max-width:700px;">
@@ -370,11 +360,12 @@ class MedServiceApp {
 
                         ${photosHtml ? `<div style="margin-bottom:16px;"><b>Фотографии:</b><div style="display:flex; gap:8px; margin-top:6px;">${photosHtml}</div></div>` : ''}
 
-                        <div style="margin-bottom:16px; display:flex; gap:8px;">
+                        <div style="margin-bottom:16px; display:flex; gap:8px; flex-wrap:wrap;">
                             <a class="btn btn-outline" href="tel:${r.author_phone}">📞 Позвонить автору</a>
                             <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'Принято')">🟡 Принять</button>
                             <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'В исполнении')">🟠 В работу</button>
                             <button class="btn btn-primary" onclick="app.updateRequestStatus(${r.id}, 'Выполнено')">🟢 Выполнено</button>
+                            ${isAdmin ? `<button class="btn btn-danger" onclick="app.deleteRequest(${r.id})">🗑 Удалить заявку</button>` : ''}
                         </div>
 
                         <hr style="border:none; border-top:1px solid var(--border-color); margin:16px 0;">
@@ -411,6 +402,18 @@ class MedServiceApp {
             this.loadRequests();
         } else {
             alert('Ошибка обновления статуса');
+        }
+    }
+
+    async deleteRequest(id) {
+        if (!confirm('Вы уверены, что хотите полностью удалить эту заявку?')) return;
+        const res = await this.apiFetch(`requests/${id}`, { method: 'DELETE' });
+        if (res.success) {
+            alert('Заявка успешно удалена');
+            document.getElementById('requestDetailModal')?.remove();
+            this.loadRequests();
+        } else {
+            alert(res.error || 'Ошибка удаления');
         }
     }
 
@@ -555,27 +558,231 @@ class MedServiceApp {
     }
 
     // ==========================================
-    // EMPLOYEES
+    // EMPLOYEES MANAGEMENT
     // ==========================================
     async loadEmployees() {
         const employees = await this.apiFetch('employees');
         if (Array.isArray(employees)) {
+            const isAdmin = this.currentUser && this.currentUser.role === 'Admin';
             const container = document.getElementById('employeesListContainer');
+
             container.innerHTML = `
+                ${isAdmin ? `
+                    <div style="margin-bottom:16px;">
+                        <button class="btn btn-primary" onclick="app.openAddEmployeeModal()">+ Добавить сотрудника</button>
+                    </div>
+                ` : ''}
                 <div class="stats-grid">
                     ${employees.map(e => `
                         <div class="stat-card" style="flex-direction:column; align-items:flex-start;">
-                            <div style="font-weight:bold; font-size:16px; margin-bottom:4px;">${e.name}</div>
+                            <div style="font-weight:bold; font-size:16px; margin-bottom:4px;">
+                                ${e.name} ${e.is_blocked ? '<span class="badge badge-emergency">Заблокирован</span>' : ''}
+                            </div>
                             <div style="font-size:13px; color:var(--text-muted);">${e.position} — ${e.department_name}</div>
-                            <div style="font-size:12px; margin-top:8px;">📞 ${e.phone}</div>
-                            <div style="display:flex; gap:8px; margin-top:12px; width:100%;">
+                            <div style="font-size:12px; margin-top:4px;"><b>Роль:</b> ${this.getRoleTitle(e.role)}</div>
+                            <div style="font-size:12px; margin-top:4px;">📞 ${e.phone}</div>
+
+                            <div style="display:flex; gap:6px; margin-top:12px; width:100%; flex-wrap:wrap;">
                                 <a class="btn btn-outline" href="tel:${e.phone}" style="flex:1; text-decoration:none; font-size:12px;">📞 Звонок</a>
-                                <button class="btn btn-primary" style="flex:1; font-size:12px;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
+                                <button class="btn btn-secondary" style="flex:1; font-size:12px;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
+                                ${isAdmin ? `
+                                    <button class="btn btn-outline" style="font-size:12px;" onclick="app.openEditEmployeeModal(${e.id})">✏️</button>
+                                    <button class="btn btn-danger" style="font-size:12px;" onclick="app.deleteEmployee(${e.id})">🗑</button>
+                                ` : ''}
                             </div>
                         </div>
                     `).join('')}
                 </div>
             `;
+        }
+    }
+
+    openAddEmployeeModal() {
+        const modalHtml = `
+            <div id="addEmployeeModal" class="modal-overlay active">
+                <div class="modal-container" style="max-width:500px;">
+                    <div class="modal-header">
+                        <div class="modal-title">➕ Добавить сотрудника</div>
+                        <button class="modal-close" onclick="document.getElementById('addEmployeeModal').remove()">×</button>
+                    </div>
+                    <form onsubmit="app.submitAddEmployee(event)">
+                        <div class="form-group">
+                            <label class="form-label">ФИО</label>
+                            <input type="text" id="addEmpName" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Телефон (Логин)</label>
+                            <input type="tel" id="addEmpPhone" class="form-input" placeholder="+375291234567" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Роль в системе</label>
+                            <select id="addEmpRole" class="form-select" required>
+                                <option value="Employee">Сотрудник</option>
+                                <option value="Executor">Исполнитель</option>
+                                <option value="Service Head">Руководитель службы</option>
+                                <option value="Dispatcher">Диспетчер</option>
+                                <option value="Admin">Администратор</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Подразделение</label>
+                            <input type="text" id="addEmpDept" class="form-input" value="Терапевтическое отделение" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Должность</label>
+                            <input type="text" id="addEmpPos" class="form-input" value="Врач" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Пароль (6 цифр)</label>
+                            <input type="password" id="addEmpPassword" class="form-input" value="123456" maxlength="6" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Сохранить сотрудника</button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    async submitAddEmployee(e) {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('addEmpName').value,
+            phone: document.getElementById('addEmpPhone').value,
+            role: document.getElementById('addEmpRole').value,
+            department_name: document.getElementById('addEmpDept').value,
+            position: document.getElementById('addEmpPos').value,
+            password: document.getElementById('addEmpPassword').value
+        };
+
+        const res = await this.apiFetch('employees', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        if (res.success) {
+            alert('Сотрудник успешно добавлен!');
+            document.getElementById('addEmployeeModal')?.remove();
+            this.loadEmployees();
+        } else {
+            alert(res.error || 'Ошибка добавления');
+        }
+    }
+
+    async deleteEmployee(id) {
+        if (!confirm('Заблокировать / удалить этого сотрудника?')) return;
+        const res = await this.apiFetch(`employees/${id}`, { method: 'DELETE' });
+        if (res.success) {
+            alert('Сотрудник заблокирован');
+            this.loadEmployees();
+        }
+    }
+
+    // ==========================================
+    // SERVICES MANAGEMENT
+    // ==========================================
+    async loadServicesManager() {
+        const services = await this.apiFetch('services');
+        if (Array.isArray(services)) {
+            const isAdmin = this.currentUser && this.currentUser.role === 'Admin';
+            const container = document.getElementById('servicesListContainer');
+
+            container.innerHTML = `
+                ${isAdmin ? `
+                    <div style="margin-bottom:16px;">
+                        <button class="btn btn-primary" onclick="app.openAddServiceModal()">+ Создать службу</button>
+                    </div>
+                ` : ''}
+                <div class="stats-grid">
+                    ${services.map(s => `
+                        <div class="stat-card" style="flex-direction:column; align-items:flex-start;">
+                            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                                <div style="font-size:24px;">${s.icon || '⚡'}</div>
+                                ${isAdmin ? `<button class="btn btn-outline" style="padding:4px 8px; font-size:12px;" onclick="app.deleteService(${s.id})">🗑 Удалить</button>` : ''}
+                            </div>
+                            <div style="font-size:18px; font-weight:700; margin:8px 0;">${s.name}</div>
+                            <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">${s.description}</div>
+                            <div style="font-size:12px;">📞 Основной: <b>${s.phone}</b></div>
+                            ${s.emergency_phone ? `<div style="font-size:12px; color:#ef4444;">🚨 Аварийный: <b>${s.emergency_phone}</b></div>` : ''}
+                            <div style="font-size:12px; margin-top:4px; color:var(--text-muted);">SLA: реакция ${s.sla_reaction_minutes || 15} мин, выполнение ${s.sla_completion_hours || 2} ч</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+    }
+
+    openAddServiceModal() {
+        const modalHtml = `
+            <div id="addServiceModal" class="modal-overlay active">
+                <div class="modal-container" style="max-width:500px;">
+                    <div class="modal-header">
+                        <div class="modal-title">🏢 Создание службы</div>
+                        <button class="modal-close" onclick="document.getElementById('addServiceModal').remove()">×</button>
+                    </div>
+                    <form onsubmit="app.submitAddService(event)">
+                        <div class="form-group">
+                            <label class="form-label">Название службы</label>
+                            <input type="text" id="addServName" class="form-input" placeholder="Дежурная служба" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Иконка (Эмодзи)</label>
+                            <input type="text" id="addServIcon" class="form-input" value="🛠" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Телефон</label>
+                            <input type="tel" id="addServPhone" class="form-input" placeholder="+375290000000" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Аварийный телефон</label>
+                            <input type="tel" id="addServEmergency" class="form-input" placeholder="+375290000001">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Описание</label>
+                            <textarea id="addServDesc" class="form-textarea" rows="2" placeholder="Обслуживание задвижек и узлов"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Сохранить службу</button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    async submitAddService(e) {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('addServName').value,
+            icon: document.getElementById('addServIcon').value,
+            phone: document.getElementById('addServPhone').value,
+            emergency_phone: document.getElementById('addServEmergency').value,
+            description: document.getElementById('addServDesc').value,
+            sla_reaction_minutes: 15,
+            sla_completion_hours: 2
+        };
+
+        const res = await this.apiFetch('services', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        if (res.success) {
+            alert('Служба успешно создана!');
+            document.getElementById('addServiceModal')?.remove();
+            this.loadServicesManager();
+        } else {
+            alert(res.error || 'Ошибка создания');
+        }
+    }
+
+    async deleteService(id) {
+        if (!confirm('Удалить эту службу?')) return;
+        const res = await this.apiFetch(`services/${id}`, { method: 'DELETE' });
+        if (res.success) {
+            alert('Служба удалена');
+            this.loadServicesManager();
         }
     }
 

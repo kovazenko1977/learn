@@ -208,5 +208,45 @@
         "timestamp": "2026-09-17 07:33:59",
         "id": 21,
         "created_at": "2026-09-17 07:33:59"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:49:22",
+        "id": 22,
+        "created_at": "2026-09-17 07:49:22"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 3,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Registered new user Елена Петрова",
+        "timestamp": "2026-09-17 07:49:24",
+        "id": 23,
+        "created_at": "2026-09-17 07:49:24"
+    },
+    {
+        "action": "CREATE_SERVICE",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created service Лабораторная служба",
+        "timestamp": "2026-09-17 07:49:25",
+        "id": 24,
+        "created_at": "2026-09-17 07:49:25"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 07:49:56",
+        "id": 25,
+        "created_at": "2026-09-17 07:49:56"
     }
 ]
