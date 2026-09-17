@@ -13,7 +13,7 @@
         "hide_phone": false,
         "is_blocked": false,
         "created_at": "2026-09-17 07:23:11",
-        "last_active": "2026-09-17 07:23:56",
+        "last_active": "2026-09-17 07:33:32",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -23,8 +23,8 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "token": "cdb9c36dff6bb670aee0ea167df8b41087ff52f0949d13a1989a9e265981553e",
-        "updated_at": "2026-09-17 07:23:56"
+        "token": "d196ee099da5bfcab5f4bc33f97d54e605b85a469bc28cf66a8895d04c6681f3",
+        "updated_at": "2026-09-17 07:33:32"
     },
     {
         "id": 2,
@@ -40,7 +40,7 @@
         "hide_phone": false,
         "is_blocked": false,
         "created_at": "2026-09-17 07:23:11",
-        "last_active": "2026-09-17 07:24:39",
+        "last_active": "2026-09-17 07:33:59",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -50,7 +50,7 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "token": "dee1a9bf91c09490ac7006db9265820a719397788be04659e919160cfe0200ba",
-        "updated_at": "2026-09-17 07:24:39"
+        "token": "b64d655106c74d1fe5eec3dc0d8588a44b7b8654d2224f92f87e5d5eef3ce048",
+        "updated_at": "2026-09-17 07:33:59"
     }
 ]

@@ -20,14 +20,15 @@ require_once __DIR__ . '/../includes/Upload.php';
 Auth::initSession();
 $storage = StorageProvider::getInstance();
 
-// Parse URI path
-$requestUri = $_SERVER['REQUEST_URI'] ?? '';
-$path = parse_url($requestUri, PHP_URL_PATH);
-
-// Strip prefix if any (e.g., /api/...)
-$path = preg_replace('#^.*?/api/#', '', $path);
-$path = trim($path, '/');
-$segments = explode('/', $path);
+// Parse URI path with multiple fallback strategies for maximum hosting compatibility
+$route = $_GET['route'] ?? $_SERVER['PATH_INFO'] ?? '';
+if (empty($route)) {
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+    $path = parse_url($requestUri, PHP_URL_PATH);
+    $route = preg_replace('#^.*?api/(index\.php/)?#', '', $path);
+}
+$route = trim($route, '/');
+$segments = explode('/', $route);
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Helper to get JSON body input

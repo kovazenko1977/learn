@@ -178,5 +178,35 @@
         "timestamp": "2026-09-17 07:24:39",
         "id": 18,
         "created_at": "2026-09-17 07:24:39"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "curl\/8.5.0",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:31:51",
+        "id": 19,
+        "created_at": "2026-09-17 07:31:51"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:33:30",
+        "id": 20,
+        "created_at": "2026-09-17 07:33:30"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 07:33:59",
+        "id": 21,
+        "created_at": "2026-09-17 07:33:59"
     }
 ]

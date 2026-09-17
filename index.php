@@ -461,6 +461,10 @@
                     <label class="form-label">Пароль (6 цифр)</label>
                     <input type="password" id="loginPassword" class="form-input" placeholder="123456" required>
                 </div>
+                <div style="margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="loginRememberMe" checked style="width:16px; height:16px; cursor:pointer;">
+                    <label for="loginRememberMe" style="font-size:13px; cursor:pointer; user-select:none;">Запомнить меня</label>
+                </div>
                 <button type="submit" class="btn btn-primary" style="width:100%; padding:12px; margin-bottom:12px;">Войти</button>
             </form>
             <div style="text-align:center;">

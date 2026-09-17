@@ -12,35 +12,59 @@ class MedServiceApp {
         this.pollInterval = null;
     }
 
+    async apiFetch(endpoint, options = {}) {
+        // Construct full URL pointing to api/index.php/
+        let url = endpoint;
+        if (!url.startsWith('http') && !url.startsWith('/')) {
+            url = `api/index.php/${endpoint.replace(/^api\//, '')}`;
+        }
+
+        options.headers = options.headers || {};
+
+        // Attach persistent Bearer token if saved
+        const token = localStorage.getItem('medservice_token');
+        if (token) {
+            options.headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        try {
+            const res = await fetch(url, options);
+            const contentType = res.headers.get('content-type') || '';
+
+            if (contentType.includes('application/json')) {
+                const data = await res.json();
+                data._status = res.status;
+                data._ok = res.ok;
+                return data;
+            } else {
+                const text = await res.text();
+                return { _ok: false, _status: res.status, error: `Ошибка сервера (${res.status})` };
+            }
+        } catch (e) {
+            return { _ok: false, _status: 0, error: 'Ошибка соединения с сервером: ' + e.message };
+        }
+    }
+
     async init() {
         this.setupNavigation();
 
         // 1. Check if installed
-        try {
-            const res = await fetch('api/setup');
-            const setup = await res.json();
-            if (!setup.installed) {
-                document.getElementById('installerModal').classList.add('active');
-                return;
-            }
-        } catch (e) {
-            console.error('Setup check failed:', e);
+        const setup = await this.apiFetch('setup');
+        if (setup.installed === false) {
+            document.getElementById('installerModal').classList.add('active');
+            return;
         }
 
-        // 2. Check current user session
+        // 2. Check current user session or saved token
         await this.checkAuth();
     }
 
     async checkAuth() {
-        try {
-            const res = await fetch('api/user');
-            if (res.ok) {
-                this.currentUser = await res.json();
-                this.onLoginSuccess();
-            } else {
-                document.getElementById('loginModal').classList.add('active');
-            }
-        } catch (e) {
+        const user = await this.apiFetch('user');
+        if (user && user.id && !user.error) {
+            this.currentUser = user;
+            this.onLoginSuccess();
+        } else {
             document.getElementById('loginModal').classList.add('active');
         }
     }
@@ -129,64 +153,48 @@ class MedServiceApp {
     }
 
     async loadStats() {
-        try {
-            const res = await fetch('api/statistics');
-            if (res.ok) {
-                const stats = await res.json();
-                document.getElementById('cntNew').innerText = stats.new;
-                document.getElementById('cntInProgress').innerText = stats.in_progress;
-                document.getElementById('cntCompleted').innerText = stats.completed;
-                document.getElementById('cntEmergency').innerText = stats.emergency;
+        const stats = await this.apiFetch('statistics');
+        if (stats && !stats.error) {
+            document.getElementById('cntNew').innerText = stats.new || 0;
+            document.getElementById('cntInProgress').innerText = stats.in_progress || 0;
+            document.getElementById('cntCompleted').innerText = stats.completed || 0;
+            document.getElementById('cntEmergency').innerText = stats.emergency || 0;
 
-                if (stats.new > 0) {
-                    document.getElementById('badgeRequests').innerText = stats.new;
-                    document.getElementById('badgeRequests').style.display = 'inline-block';
-                } else {
-                    document.getElementById('badgeRequests').style.display = 'none';
-                }
+            if (stats.new > 0) {
+                document.getElementById('badgeRequests').innerText = stats.new;
+                document.getElementById('badgeRequests').style.display = 'inline-block';
+            } else {
+                document.getElementById('badgeRequests').style.display = 'none';
             }
-        } catch (e) {
-            console.error('Failed to load stats', e);
         }
     }
 
     async loadFastServices() {
-        try {
-            const res = await fetch('api/services');
-            if (res.ok) {
-                this.services = await res.json();
-                const container = document.getElementById('fastServicesContainer');
-                container.innerHTML = this.services.map(s => `
-                    <div class="service-card" onclick="app.openServiceCallModal(${s.id})">
-                        <div class="service-icon">${s.icon || '⚡'}</div>
-                        <div class="service-name">${s.name}</div>
-                        <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${s.internal_phone ? 'внутр. ' + s.internal_phone : s.phone}</div>
-                    </div>
-                `).join('');
-            }
-        } catch (e) {
-            console.error('Failed to load services', e);
+        const services = await this.apiFetch('services');
+        if (Array.isArray(services)) {
+            this.services = services;
+            const container = document.getElementById('fastServicesContainer');
+            container.innerHTML = this.services.map(s => `
+                <div class="service-card" onclick="app.openServiceCallModal(${s.id})">
+                    <div class="service-icon">${s.icon || '⚡'}</div>
+                    <div class="service-name">${s.name}</div>
+                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">${s.internal_phone ? 'внутр. ' + s.internal_phone : s.phone}</div>
+                </div>
+            `).join('');
         }
     }
 
     async loadRecentRequests() {
-        try {
-            const res = await fetch('api/requests?limit=5');
-            if (res.ok) {
-                const data = await res.json();
-                const requests = data.data || [];
-                const container = document.getElementById('recentRequestsContainer');
+        const data = await this.apiFetch('requests?limit=5');
+        const requests = (data && data.data) ? data.data : [];
+        const container = document.getElementById('recentRequestsContainer');
 
-                if (requests.length === 0) {
-                    container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Заявок пока нет</div>';
-                    return;
-                }
-
-                container.innerHTML = requests.map(r => this.renderRequestCard(r)).join('');
-            }
-        } catch (e) {
-            console.error('Failed to load recent requests', e);
+        if (requests.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Заявок пока нет</div>';
+            return;
         }
+
+        container.innerHTML = requests.map(r => this.renderRequestCard(r)).join('');
     }
 
     renderRequestCard(r) {
@@ -227,8 +235,6 @@ class MedServiceApp {
             'Оборудование': 7,
             'IT': 7
         };
-        const sId = categoryMap[cat] || 8;
-        // Pre-select priority recommendation if needed
     }
 
     async submitCreateRequest(e) {
@@ -251,22 +257,17 @@ class MedServiceApp {
             }
         }
 
-        try {
-            const res = await fetch('api/requests', {
-                method: 'POST',
-                body: formData
-            });
+        const result = await this.apiFetch('requests', {
+            method: 'POST',
+            body: formData
+        });
 
-            const result = await res.json();
-            if (res.ok && result.success) {
-                alert(`Заявка ${result.request.number} успешно создана!`);
-                form.reset();
-                this.switchView('requests');
-            } else {
-                alert(result.error || 'Ошибка создания заявки');
-            }
-        } catch (err) {
-            alert('Ошибка отправки формы: ' + err.message);
+        if (result.success) {
+            alert(`Заявка ${result.request.number} успешно создана!`);
+            form.reset();
+            this.switchView('requests');
+        } else {
+            alert(result.error || 'Ошибка создания заявки');
         }
     }
 
@@ -289,145 +290,126 @@ class MedServiceApp {
         formData.append('description', '🚨 АВАРИЯ: ' + desc);
         formData.append('priority', 'Аварийный');
 
-        try {
-            const res = await fetch('api/requests', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await res.json();
-            if (res.ok && result.success) {
-                alert(`🚨 Аварийный сигнал зафиксирован! Заявка ${result.request.number} отправлена службы немедленного реагирования.`);
-                this.switchView('requests');
-            }
-        } catch (e) {
-            alert('Ошибка создания аварийного сигнала');
+        const result = await this.apiFetch('requests', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (result.success) {
+            alert(`🚨 Аварийный сигнал зафиксирован! Заявка ${result.request.number} отправлена службы немедленного реагирования.`);
+            this.switchView('requests');
         }
     }
 
     async loadRequests(params = {}) {
-        let url = 'api/requests?page=1&limit=50';
+        let path = 'requests?page=1&limit=50';
         const status = params.status || document.getElementById('filterStatus').value;
         const priority = params.priority || document.getElementById('filterPriority').value;
 
-        if (status) url += `&status=${encodeURIComponent(status)}`;
-        if (priority) url += `&priority=${encodeURIComponent(priority)}`;
+        if (status) path += `&status=${encodeURIComponent(status)}`;
+        if (priority) path += `&priority=${encodeURIComponent(priority)}`;
 
-        try {
-            const res = await fetch(url);
-            if (res.ok) {
-                const data = await res.json();
-                const container = document.getElementById('requestsListContainer');
-                if (data.data.length === 0) {
-                    container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">Заявки с выбранными фильтрами не найдены</div>';
-                    return;
-                }
-                container.innerHTML = data.data.map(r => this.renderRequestCard(r)).join('');
-            }
-        } catch (e) {
-            console.error('Failed to load requests', e);
+        const data = await this.apiFetch(path);
+        const container = document.getElementById('requestsListContainer');
+        if (!data.data || data.data.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">Заявки с выбранными фильтрами не найдены</div>';
+            return;
         }
+        container.innerHTML = data.data.map(r => this.renderRequestCard(r)).join('');
     }
 
     async openRequestDetailModal(id) {
-        try {
-            const res = await fetch(`api/requests/${id}`);
-            if (res.ok) {
-                const r = await res.json();
+        const r = await this.apiFetch(`requests/${id}`);
+        if (r && r.id) {
+            const photosHtml = (r.photos || []).map(p => `
+                <a href="${p}" target="_blank">
+                    <img src="${p}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
+                </a>
+            `).join('');
 
-                const photosHtml = (r.photos || []).map(p => `
-                    <a href="${p}" target="_blank">
-                        <img src="${p}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
-                    </a>
-                `).join('');
+            const commentsHtml = (r.comments || []).map(c => `
+                <div style="background-color:var(--bg-main); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
+                        <span><b>${c.user_name}</b> (${c.user_role})</span>
+                        <span>${c.created_at}</span>
+                    </div>
+                    <div>${c.text}</div>
+                </div>
+            `).join('');
 
-                const commentsHtml = (r.comments || []).map(c => `
-                    <div style="background-color:var(--bg-main); padding:10px 14px; border-radius:8px; margin-bottom:8px;">
-                        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px;">
-                            <span><b>${c.user_name}</b> (${c.user_role})</span>
-                            <span>${c.created_at}</span>
+            const historyHtml = (r.history || []).map(h => `
+                <div style="font-size:12px; color:var(--text-muted); border-left:2px solid var(--primary); padding-left:8px; margin-bottom:6px;">
+                    <b>${h.time}</b> — ${h.author}: ${h.text}
+                </div>
+            `).join('');
+
+            const modalHtml = `
+                <div id="requestDetailModal" class="modal-overlay active">
+                    <div class="modal-container" style="max-width:700px;">
+                        <div class="modal-header">
+                            <div class="modal-title">${r.number} — ${r.category}</div>
+                            <button class="modal-close" onclick="document.getElementById('requestDetailModal').remove()">×</button>
                         </div>
-                        <div>${c.text}</div>
-                    </div>
-                `).join('');
 
-                const historyHtml = (r.history || []).map(h => `
-                    <div style="font-size:12px; color:var(--text-muted); border-left:2px solid var(--primary); padding-left:8px; margin-bottom:6px;">
-                        <b>${h.time}</b> — ${h.author}: ${h.text}
-                    </div>
-                `).join('');
-
-                const modalHtml = `
-                    <div id="requestDetailModal" class="modal-overlay active">
-                        <div class="modal-container" style="max-width:700px;">
-                            <div class="modal-header">
-                                <div class="modal-title">${r.number} — ${r.category}</div>
-                                <button class="modal-close" onclick="document.getElementById('requestDetailModal').remove()">×</button>
-                            </div>
-
-                            <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
-                                <div><b>Статус:</b> <span class="badge badge-new">${r.status}</span></div>
-                                <div><b>Приоритет:</b> <span>${r.priority}</span></div>
-                            </div>
-
-                            <div style="margin-bottom:16px;">
-                                <div><b>Место:</b> ${r.location_text}</div>
-                                <div><b>Автор:</b> ${r.author_name} (${r.author_department}) — 📞 ${r.author_phone}</div>
-                                <div><b>Ответственная служба:</b> ${r.service_name}</div>
-                                <div><b>Исполнитель:</b> ${r.executor_name}</div>
-                            </div>
-
-                            <div style="background-color:var(--primary-light); padding:12px; border-radius:8px; margin-bottom:16px;">
-                                <b>Описание проблемы:</b>
-                                <div>${r.description}</div>
-                            </div>
-
-                            ${photosHtml ? `<div style="margin-bottom:16px;"><b>Фотографии:</b><div style="display:flex; gap:8px; margin-top:6px;">${photosHtml}</div></div>` : ''}
-
-                            <div style="margin-bottom:16px; display:flex; gap:8px;">
-                                <a class="btn btn-outline" href="tel:${r.author_phone}">📞 Позвонить автору</a>
-                                <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'Принято')">🟡 Принять</button>
-                                <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'В исполнении')">🟠 В работу</button>
-                                <button class="btn btn-primary" onclick="app.updateRequestStatus(${r.id}, 'Выполнено')">🟢 Выполнено</button>
-                            </div>
-
-                            <hr style="border:none; border-top:1px solid var(--border-color); margin:16px 0;">
-
-                            <h3>Комментарии</h3>
-                            <div style="max-height:200px; overflow-y:auto; margin-bottom:12px;">
-                                ${commentsHtml || '<div style="color:var(--text-muted); font-size:13px;">Комментариев пока нет</div>'}
-                            </div>
-
-                            <div style="display:flex; gap:8px; margin-bottom:20px;">
-                                <input type="text" id="modalCommentInput" class="form-input" placeholder="Написать комментарий...">
-                                <button class="btn btn-primary" onclick="app.addComment(${r.id})">Отправить</button>
-                            </div>
-
-                            <h3>История изменений</h3>
-                            <div>${historyHtml}</div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:16px;">
+                            <div><b>Статус:</b> <span class="badge badge-new">${r.status}</span></div>
+                            <div><b>Приоритет:</b> <span>${r.priority}</span></div>
                         </div>
-                    </div>
-                `;
 
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
-            }
-        } catch (e) {
-            console.error(e);
+                        <div style="margin-bottom:16px;">
+                            <div><b>Место:</b> ${r.location_text}</div>
+                            <div><b>Автор:</b> ${r.author_name} (${r.author_department}) — 📞 ${r.author_phone}</div>
+                            <div><b>Ответственная служба:</b> ${r.service_name}</div>
+                            <div><b>Исполнитель:</b> ${r.executor_name}</div>
+                        </div>
+
+                        <div style="background-color:var(--primary-light); padding:12px; border-radius:8px; margin-bottom:16px;">
+                            <b>Описание проблемы:</b>
+                            <div>${r.description}</div>
+                        </div>
+
+                        ${photosHtml ? `<div style="margin-bottom:16px;"><b>Фотографии:</b><div style="display:flex; gap:8px; margin-top:6px;">${photosHtml}</div></div>` : ''}
+
+                        <div style="margin-bottom:16px; display:flex; gap:8px;">
+                            <a class="btn btn-outline" href="tel:${r.author_phone}">📞 Позвонить автору</a>
+                            <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'Принято')">🟡 Принять</button>
+                            <button class="btn btn-secondary" onclick="app.updateRequestStatus(${r.id}, 'В исполнении')">🟠 В работу</button>
+                            <button class="btn btn-primary" onclick="app.updateRequestStatus(${r.id}, 'Выполнено')">🟢 Выполнено</button>
+                        </div>
+
+                        <hr style="border:none; border-top:1px solid var(--border-color); margin:16px 0;">
+
+                        <h3>Комментарии</h3>
+                        <div style="max-height:200px; overflow-y:auto; margin-bottom:12px;">
+                            ${commentsHtml || '<div style="color:var(--text-muted); font-size:13px;">Комментариев пока нет</div>'}
+                        </div>
+
+                        <div style="display:flex; gap:8px; margin-bottom:20px;">
+                            <input type="text" id="modalCommentInput" class="form-input" placeholder="Написать комментарий...">
+                            <button class="btn btn-primary" onclick="app.addComment(${r.id})">Отправить</button>
+                        </div>
+
+                        <h3>История изменений</h3>
+                        <div>${historyHtml}</div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
     }
 
     async updateRequestStatus(id, newStatus) {
-        try {
-            const res = await fetch(`api/requests/${id}`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ status: newStatus })
-            });
-            if (res.ok) {
-                alert(`Статус заявки изменен на: ${newStatus}`);
-                document.getElementById('requestDetailModal')?.remove();
-                this.loadRequests();
-            }
-        } catch (e) {
+        const res = await this.apiFetch(`requests/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ status: newStatus })
+        });
+        if (res.success) {
+            alert(`Статус заявки изменен на: ${newStatus}`);
+            document.getElementById('requestDetailModal')?.remove();
+            this.loadRequests();
+        } else {
             alert('Ошибка обновления статуса');
         }
     }
@@ -436,18 +418,16 @@ class MedServiceApp {
         const input = document.getElementById('modalCommentInput');
         if (!input || !input.value.trim()) return;
 
-        try {
-            const res = await fetch(`api/requests/${id}/comments`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ comment: input.value.trim() })
-            });
+        const res = await this.apiFetch(`requests/${id}/comments`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ comment: input.value.trim() })
+        });
 
-            if (res.ok) {
-                document.getElementById('requestDetailModal')?.remove();
-                this.openRequestDetailModal(id);
-            }
-        } catch (e) {
+        if (res.success) {
+            document.getElementById('requestDetailModal')?.remove();
+            this.openRequestDetailModal(id);
+        } else {
             alert('Ошибка добавления комментария');
         }
     }
@@ -456,14 +436,10 @@ class MedServiceApp {
     // DIRECTORY & PHONEBOOK
     // ==========================================
     async loadDirectory() {
-        try {
-            const res = await fetch('api/services');
-            if (res.ok) {
-                this.services = await res.json();
-                this.renderDirectoryGrid(this.services);
-            }
-        } catch (e) {
-            console.error('Failed to load directory', e);
+        const services = await this.apiFetch('services');
+        if (Array.isArray(services)) {
+            this.services = services;
+            this.renderDirectoryGrid(this.services);
         }
     }
 
@@ -515,22 +491,18 @@ class MedServiceApp {
     // CHAT SYSTEM
     // ==========================================
     async loadChats() {
-        try {
-            const res = await fetch('api/chats');
-            if (res.ok) {
-                this.chats = await res.json();
-                const list = document.getElementById('chatRoomsList');
-                list.innerHTML = this.chats.map(c => `
-                    <div style="padding:12px; border-bottom:1px solid var(--border-color); cursor:pointer;" onclick="app.selectChat(${c.id}, '${c.title}')">
-                        <div style="font-weight:bold; font-size:14px;">${c.title}</div>
-                        <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.last_message || 'Сообщений нет'}</div>
-                    </div>
-                `).join('');
+        const chats = await this.apiFetch('chats');
+        if (Array.isArray(chats)) {
+            this.chats = chats;
+            const list = document.getElementById('chatRoomsList');
+            list.innerHTML = this.chats.map(c => `
+                <div style="padding:12px; border-bottom:1px solid var(--border-color); cursor:pointer;" onclick="app.selectChat(${c.id}, '${c.title}')">
+                    <div style="font-weight:bold; font-size:14px;">${c.title}</div>
+                    <div style="font-size:12px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.last_message || 'Сообщений нет'}</div>
+                </div>
+            `).join('');
 
-                this.loadChatMessages(this.activeChatId);
-            }
-        } catch (e) {
-            console.error('Failed to load chats', e);
+            this.loadChatMessages(this.activeChatId);
         }
     }
 
@@ -541,30 +513,25 @@ class MedServiceApp {
     }
 
     async loadChatMessages(chatId, background = false) {
-        try {
-            const res = await fetch(`api/chats/${chatId}`);
-            if (res.ok) {
-                const data = await res.json();
-                const messagesArea = document.getElementById('chatMessagesArea');
+        const data = await this.apiFetch(`chats/${chatId}`);
+        if (data && data.messages) {
+            const messagesArea = document.getElementById('chatMessagesArea');
 
-                messagesArea.innerHTML = data.messages.map(m => {
-                    const isMine = m.user_id == this.currentUser.id;
-                    return `
-                        <div class="message-bubble ${isMine ? 'mine' : 'other'}">
-                            <div style="font-size:11px; font-weight:bold; margin-bottom:2px;">${m.user_name}</div>
-                            <div>${m.text}</div>
-                            ${m.photo ? `<img src="${m.photo}" style="max-width:100%; border-radius:6px; margin-top:6px;">` : ''}
-                            <div class="message-meta">${m.created_at.split(' ')[1]}</div>
-                        </div>
-                    `;
-                }).join('');
+            messagesArea.innerHTML = data.messages.map(m => {
+                const isMine = m.user_id == this.currentUser.id;
+                return `
+                    <div class="message-bubble ${isMine ? 'mine' : 'other'}">
+                        <div style="font-size:11px; font-weight:bold; margin-bottom:2px;">${m.user_name}</div>
+                        <div>${m.text}</div>
+                        ${m.photo ? `<img src="${m.photo}" style="max-width:100%; border-radius:6px; margin-top:6px;">` : ''}
+                        <div class="message-meta">${m.created_at.split(' ')[1]}</div>
+                    </div>
+                `;
+            }).join('');
 
-                if (!background) {
-                    messagesArea.scrollTop = messagesArea.scrollHeight;
-                }
+            if (!background) {
+                messagesArea.scrollTop = messagesArea.scrollHeight;
             }
-        } catch (e) {
-            console.error('Failed chat fetch', e);
         }
     }
 
@@ -573,18 +540,16 @@ class MedServiceApp {
         const text = input.value.trim();
         if (!text) return;
 
-        try {
-            const res = await fetch(`api/chats/${this.activeChatId}/messages`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ text })
-            });
+        const res = await this.apiFetch(`chats/${this.activeChatId}/messages`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ text })
+        });
 
-            if (res.ok) {
-                input.value = '';
-                this.loadChatMessages(this.activeChatId);
-            }
-        } catch (e) {
+        if (res.success) {
+            input.value = '';
+            this.loadChatMessages(this.activeChatId);
+        } else {
             alert('Ошибка отправки сообщения');
         }
     }
@@ -593,45 +558,38 @@ class MedServiceApp {
     // EMPLOYEES
     // ==========================================
     async loadEmployees() {
-        try {
-            const res = await fetch('api/employees');
-            if (res.ok) {
-                const employees = await res.json();
-                const container = document.getElementById('employeesListContainer');
-                container.innerHTML = `
-                    <div class="stats-grid">
-                        ${employees.map(e => `
-                            <div class="stat-card" style="flex-direction:column; align-items:flex-start;">
-                                <div style="font-weight:bold; font-size:16px; margin-bottom:4px;">${e.name}</div>
-                                <div style="font-size:13px; color:var(--text-muted);">${e.position} — ${e.department_name}</div>
-                                <div style="font-size:12px; margin-top:8px;">📞 ${e.phone}</div>
-                                <div style="display:flex; gap:8px; margin-top:12px; width:100%;">
-                                    <a class="btn btn-outline" href="tel:${e.phone}" style="flex:1; text-decoration:none; font-size:12px;">📞 Звонок</a>
-                                    <button class="btn btn-primary" style="flex:1; font-size:12px;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
-                                </div>
+        const employees = await this.apiFetch('employees');
+        if (Array.isArray(employees)) {
+            const container = document.getElementById('employeesListContainer');
+            container.innerHTML = `
+                <div class="stats-grid">
+                    ${employees.map(e => `
+                        <div class="stat-card" style="flex-direction:column; align-items:flex-start;">
+                            <div style="font-weight:bold; font-size:16px; margin-bottom:4px;">${e.name}</div>
+                            <div style="font-size:13px; color:var(--text-muted);">${e.position} — ${e.department_name}</div>
+                            <div style="font-size:12px; margin-top:8px;">📞 ${e.phone}</div>
+                            <div style="display:flex; gap:8px; margin-top:12px; width:100%;">
+                                <a class="btn btn-outline" href="tel:${e.phone}" style="flex:1; text-decoration:none; font-size:12px;">📞 Звонок</a>
+                                <button class="btn btn-primary" style="flex:1; font-size:12px;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
                             </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-        } catch (e) {
-            console.error(e);
+                        </div>
+                    `).join('')}
+                </div>
+            `;
         }
     }
 
     async startDMChat(userId) {
-        try {
-            const res = await fetch('api/chats', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: userId })
-            });
-            if (res.ok) {
-                const data = await res.json();
-                this.switchView('chats');
-                this.selectChat(data.chat.id, data.chat.title);
-            }
-        } catch (e) {
+        const data = await this.apiFetch('chats', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user_id: userId })
+        });
+
+        if (data.success) {
+            this.switchView('chats');
+            this.selectChat(data.chat.id, data.chat.title);
+        } else {
             alert('Ошибка создания личного чата');
         }
     }
@@ -640,11 +598,11 @@ class MedServiceApp {
     // EXPORT & BACKUP
     // ==========================================
     exportRequestsCSV() {
-        window.location.href = 'api/export';
+        window.location.href = 'api/index.php/export';
     }
 
     downloadBackup() {
-        window.location.href = 'api/admin/backup';
+        window.location.href = 'api/index.php/admin/backup';
     }
 
     // ==========================================
@@ -654,23 +612,22 @@ class MedServiceApp {
         e.preventDefault();
         const phone = document.getElementById('loginPhone').value;
         const password = document.getElementById('loginPassword').value;
+        const rememberMe = document.getElementById('loginRememberMe')?.checked;
 
-        try {
-            const res = await fetch('api/auth/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ phone, password })
-            });
+        const data = await this.apiFetch('auth/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ phone, password })
+        });
 
-            const data = await res.json();
-            if (res.ok && data.success) {
-                this.currentUser = data.user;
-                this.onLoginSuccess();
-            } else {
-                alert(data.error || 'Ошибка входа');
+        if (data && data.success && data.user) {
+            this.currentUser = data.user;
+            if (rememberMe && data.user.token) {
+                localStorage.setItem('medservice_token', data.user.token);
             }
-        } catch (err) {
-            alert('Ошибка соединения с сервером');
+            this.onLoginSuccess();
+        } else {
+            alert(data.error || 'Неверный номер телефона или пароль');
         }
     }
 
@@ -680,7 +637,7 @@ class MedServiceApp {
     }
 
     hideRegisterModal() {
-        document.getElementById('registerModal').classList.remove('active');
+        document.getElementById('registerModal').classList.add('active');
         document.getElementById('loginModal').classList.add('active');
     }
 
@@ -692,24 +649,19 @@ class MedServiceApp {
         const position = document.getElementById('regPos').value;
         const password = document.getElementById('regPassword').value;
 
-        try {
-            const res = await fetch('api/auth/register', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ name, phone, department_name, position, password })
-            });
+        const data = await this.apiFetch('auth/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ name, phone, department_name, position, password })
+        });
 
-            const data = await res.json();
-            if (res.ok && data.success) {
-                alert('Регистрация прошла успешно! Выполняется вход...');
-                document.getElementById('loginPhone').value = phone;
-                document.getElementById('loginPassword').value = password;
-                this.submitLogin(e);
-            } else {
-                alert(data.error || 'Ошибка регистрации');
-            }
-        } catch (err) {
-            alert('Ошибка выполнения запроса');
+        if (data && data.success) {
+            alert('Регистрация прошла успешно! Выполняется вход...');
+            document.getElementById('loginPhone').value = phone;
+            document.getElementById('loginPassword').value = password;
+            this.submitLogin(e);
+        } else {
+            alert(data.error || 'Ошибка регистрации');
         }
     }
 
@@ -720,24 +672,22 @@ class MedServiceApp {
         const admin_phone = document.getElementById('setupAdminPhone').value;
         const admin_password = document.getElementById('setupAdminPassword').value;
 
-        try {
-            const res = await fetch('api/setup', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ hospital_name, admin_name, admin_phone, admin_password })
-            });
+        const data = await this.apiFetch('setup', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ hospital_name, admin_name, admin_phone, admin_password })
+        });
 
-            const data = await res.json();
-            if (res.ok && data.success) {
-                alert('Система МедСервис успешно настроена!');
-                document.getElementById('installerModal').classList.remove('active');
-                this.currentUser = data.user;
-                this.onLoginSuccess();
-            } else {
-                alert(data.error || 'Ошибка настройки системы');
+        if (data && data.success) {
+            alert('Система МедСервис успешно настроена!');
+            document.getElementById('installerModal').classList.remove('active');
+            this.currentUser = data.user;
+            if (data.user.token) {
+                localStorage.setItem('medservice_token', data.user.token);
             }
-        } catch (err) {
-            alert(' Ошибка настройки');
+            this.onLoginSuccess();
+        } else {
+            alert(data.error || 'Ошибка настройки системы');
         }
     }
 
@@ -760,7 +710,8 @@ class MedServiceApp {
     }
 
     async logout() {
-        await fetch('api/auth/logout');
+        localStorage.removeItem('medservice_token');
+        await this.apiFetch('auth/logout');
         location.reload();
     }
 }
