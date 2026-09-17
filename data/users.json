@@ -1,0 +1,81 @@
+[
+    {
+        "id": 1,
+        "name": "Сергей Иванов",
+        "phone": "+375333533971",
+        "department_id": 1,
+        "department_name": "Администрация",
+        "position": "Главный администратор",
+        "role": "Admin",
+        "service_id": 0,
+        "password": "$2y$10$BhTLy7iEFmdoYNSgfff.wOZFC44P4REhJrQwopVOrnHc4yOzKTJr2",
+        "avatar": "",
+        "hide_phone": false,
+        "is_blocked": false,
+        "created_at": "2026-09-17 07:23:11",
+        "last_active": "2026-09-17 13:30:22",
+        "notification_settings": {
+            "new_requests": true,
+            "status_change": true,
+            "private_messages": true,
+            "general_chat": true,
+            "assignments": true,
+            "emergency_alerts": true,
+            "sla_overdue": true
+        },
+        "token": "4bdcec3c40bc1d32fd28a9c93b96ede9243ff55b72c4e73b3f9513d6a197acf4",
+        "updated_at": "2026-09-17 13:30:22"
+    },
+    {
+        "id": 2,
+        "name": "Диспетчер Спецслужбы",
+        "phone": "+375291234567",
+        "department_id": 3,
+        "department_name": "Приемное отделение",
+        "position": "Старший диспетчер",
+        "role": "Dispatcher",
+        "service_id": 8,
+        "password": "$2y$10$BhTLy7iEFmdoYNSgfff.wOZFC44P4REhJrQwopVOrnHc4yOzKTJr2",
+        "avatar": "",
+        "hide_phone": false,
+        "is_blocked": false,
+        "created_at": "2026-09-17 07:23:11",
+        "last_active": "2026-09-17 13:30:06",
+        "notification_settings": {
+            "new_requests": true,
+            "status_change": true,
+            "private_messages": true,
+            "general_chat": true,
+            "assignments": true,
+            "emergency_alerts": true,
+            "sla_overdue": true
+        },
+        "token": "ab7c0b40f9a1d24ed2d2e13d88667510609775230cb7a5b628ccfbc71d810b7f",
+        "updated_at": "2026-09-17 13:30:06"
+    },
+    {
+        "name": "Елена Петрова",
+        "phone": "+375293334455",
+        "department_id": 1,
+        "department_name": "Хирургия",
+        "position": "Зав. хирургией",
+        "role": "Service Head",
+        "service_id": 0,
+        "password": "$2y$10$Prsibt0wFABBmb43O0GiB.mfJvPbK.flRNlQ1zk\/NPJEg.pIdhNWK",
+        "avatar": "",
+        "hide_phone": false,
+        "is_blocked": false,
+        "created_at": "2026-09-17 07:49:24",
+        "last_active": "2026-09-17 07:49:24",
+        "notification_settings": {
+            "new_requests": true,
+            "status_change": true,
+            "private_messages": true,
+            "general_chat": true,
+            "assignments": true,
+            "emergency_alerts": true,
+            "sla_overdue": true
+        },
+        "id": 3
+    }
+]

@@ -1,0 +1,250 @@
+[
+    {
+        "number": "№000150",
+        "status": "Новая",
+        "category": "Электрика",
+        "building": "Корпус №1",
+        "floor": "2",
+        "room": "205",
+        "location_text": "Корпус №1, Этаж 2, Кабинет 205",
+        "description": "Не работает свет в кабинете",
+        "priority": "Срочный",
+        "service_id": 1,
+        "service_name": "Электрики",
+        "author_id": 1,
+        "author_name": "Сергей Администратор",
+        "author_phone": "+375291234567",
+        "author_department": "Администрация",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 06:53:57",
+        "sla_completion_deadline": "2026-09-17 08:38:57",
+        "history": [
+            {
+                "time": "2026-09-17 06:38:57",
+                "author": "Сергей Администратор",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 1,
+        "created_at": "2026-09-17 06:38:57"
+    },
+    {
+        "number": "№000151",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 1,
+        "author_name": "Сергей Администратор",
+        "author_phone": "+375291234567",
+        "author_department": "Администрация",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 06:58:05",
+        "sla_completion_deadline": "2026-09-17 08:43:05",
+        "history": [
+            {
+                "time": "2026-09-17 06:43:05",
+                "author": "Сергей Администратор",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 2,
+        "created_at": "2026-09-17 06:43:05"
+    },
+    {
+        "number": "№000152",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 1,
+        "author_name": "Сергей Администратор",
+        "author_phone": "+375291234567",
+        "author_department": "Администрация",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 06:59:16",
+        "sla_completion_deadline": "2026-09-17 08:44:16",
+        "history": [
+            {
+                "time": "2026-09-17 06:44:16",
+                "author": "Сергей Администратор",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 3,
+        "created_at": "2026-09-17 06:44:16"
+    },
+    {
+        "number": "№000153",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 1,
+        "author_name": "Сергей Администратор",
+        "author_phone": "+375291234567",
+        "author_department": "Администрация",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 07:00:05",
+        "sla_completion_deadline": "2026-09-17 08:45:05",
+        "history": [
+            {
+                "time": "2026-09-17 06:45:05",
+                "author": "Сергей Администратор",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 4,
+        "created_at": "2026-09-17 06:45:05"
+    },
+    {
+        "number": "№000154",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 2,
+        "author_name": "Диспетчер Спецслужбы",
+        "author_phone": "+375291234567",
+        "author_department": "Приемное отделение",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 07:39:13",
+        "sla_completion_deadline": "2026-09-17 09:24:13",
+        "history": [
+            {
+                "time": "2026-09-17 07:24:13",
+                "author": "Диспетчер Спецслужбы",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 5,
+        "created_at": "2026-09-17 07:24:13"
+    },
+    {
+        "number": "№000155",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 2,
+        "author_name": "Диспетчер Спецслужбы",
+        "author_phone": "+375291234567",
+        "author_department": "Приемное отделение",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 08:37:42",
+        "sla_completion_deadline": "2026-09-17 10:22:42",
+        "history": [
+            {
+                "time": "2026-09-17 08:22:42",
+                "author": "Диспетчер Спецслужбы",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 6,
+        "created_at": "2026-09-17 08:22:42"
+    },
+    {
+        "number": "№000156",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 2,
+        "author_name": "Диспетчер Спецслужбы",
+        "author_phone": "+375291234567",
+        "author_department": "Приемное отделение",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 12:58:15",
+        "sla_completion_deadline": "2026-09-17 14:43:15",
+        "history": [
+            {
+                "time": "2026-09-17 12:43:15",
+                "author": "Диспетчер Спецслужбы",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 7,
+        "created_at": "2026-09-17 12:43:15"
+    },
+    {
+        "number": "№000157",
+        "status": "Новая",
+        "category": "Сантехника",
+        "building": "Корпус №2 (Хирургия)",
+        "floor": "3",
+        "room": "Операционная 2",
+        "location_text": "Корпус №2 (Хирургия), Этаж 3, Кабинет Операционная 2",
+        "description": "Засор раковины и протечка крана в предоперационной",
+        "priority": "Срочный",
+        "service_id": 2,
+        "service_name": "Сантехническая служба",
+        "author_id": 2,
+        "author_name": "Диспетчер Спецслужбы",
+        "author_phone": "+375291234567",
+        "author_department": "Приемное отделение",
+        "executor_id": 0,
+        "executor_name": "Не назначен",
+        "photos": [],
+        "sla_reaction_deadline": "2026-09-17 13:45:04",
+        "sla_completion_deadline": "2026-09-17 15:30:04",
+        "history": [
+            {
+                "time": "2026-09-17 13:30:04",
+                "author": "Диспетчер Спецслужбы",
+                "text": "Заявка создана. Приоритет: Срочный"
+            }
+        ],
+        "id": 8,
+        "created_at": "2026-09-17 13:30:04"
+    }
+]
