@@ -250,8 +250,8 @@ try {
             }
         }
 
-        // Employee CRUD Operations for Admin
-        if (isset($segments[1]) && is_numeric($segments[1]) && $currentUser['role'] === Auth::ROLE_ADMIN) {
+        // Employee CRUD Operations for Admin & User Managers
+        if (isset($segments[1]) && is_numeric($segments[1]) && Auth::hasPermission($currentUser, 'manage_users')) {
             $empId = (int)$segments[1];
             if ($method === 'PUT') {
                 $input = getJsonInput();
@@ -341,18 +341,19 @@ try {
                     if ($priority && ($r['priority'] ?? '') !== $priority) return false;
                     if ($serviceId && ($r['service_id'] ?? 0) != $serviceId) return false;
 
-                    // Role-based visibility
-                    if ($myRole === Auth::ROLE_EMPLOYEE) {
-                        return ($r['author_id'] ?? 0) == $myUserId;
+                    // Permission-based & Role-based visibility
+                    if (Auth::hasPermission($currentUser, 'view_all_requests')) {
+                        return true;
                     }
                     if ($myRole === Auth::ROLE_EXECUTOR) {
-                        return ($r['executor_id'] ?? 0) == $myUserId || ($r['service_id'] ?? 0) == ($currentUser['service_id'] ?? 0);
+                        return ($r['executor_id'] ?? 0) == $myUserId || ($r['service_id'] ?? 0) == ($currentUser['service_id'] ?? 0) || ($r['author_id'] ?? 0) == $myUserId;
                     }
                     if ($myRole === Auth::ROLE_SERVICE_HEAD) {
                         return ($r['service_id'] ?? 0) == ($currentUser['service_id'] ?? 0) || ($r['author_id'] ?? 0) == $myUserId;
                     }
 
-                    return true; // Dispatcher & Admin see all
+                    // Standard Employee sees only their own requests
+                    return ($r['author_id'] ?? 0) == $myUserId;
                 };
 
                 $sort = function($a, $b) {

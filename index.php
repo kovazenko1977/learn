@@ -539,6 +539,50 @@
     </div>
 
     <!-- MODAL: REGISTRATION -->
+    <!-- Modal 5: Permissions Matrix Modal -->
+    <div id="permissionsModal" class="modal-overlay">
+        <div class="modal-container" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-title">🔑 Управление правами сотрудника</div>
+                <button class="modal-close" onclick="app.hidePermissionsModal()">×</button>
+            </div>
+            <form id="permissionsForm" onsubmit="app.saveUserPermissions(event)">
+                <input type="hidden" id="permUserId">
+                <p id="permUserName" style="font-weight:bold; margin-bottom:12px; color:var(--primary);"></p>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_create_requests"> ➕ Размещать заявки
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_view_all_requests"> 📋 Видеть все заявки (иначе только свои)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_assign_executors"> 👷 Назначать исполнителей
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_change_status"> 🔄 Изменять статусы заявок
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_manage_directories"> 🛠 Управлять службами и оборудованием
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_manage_users"> 👥 Управлять пользователями и правами
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_view_analytics"> 📊 Просматривать аналитику
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_chat_access"> 💬 Доступ к корпоративным чатам
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
+                        <input type="checkbox" id="perm_export_backup"> 💾 Скачивать экспорт и резервные копии
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">💾 Сохранить права</button>
+            </form>
+        </div>
+    </div>
+
     <div id="registerModal" class="modal-overlay">
         <div class="modal-container" style="max-width:480px;">
             <div class="modal-header">

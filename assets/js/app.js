@@ -637,6 +637,7 @@ class MedServiceApp {
     async loadEmployees() {
         const employees = await this.apiFetch('employees');
         if (Array.isArray(employees)) {
+            this.cachedEmployees = employees;
             const isAdmin = this.currentUser && this.currentUser.role === 'Admin';
             const container = document.getElementById('employeesListContainer');
 
@@ -660,6 +661,7 @@ class MedServiceApp {
                                 <a class="btn btn-outline btn-sm" href="tel:${e.phone}" style="flex:1; text-decoration:none; text-align:center;">📞 Звонок</a>
                                 <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
                                 ${isAdmin ? `
+                                    <button class="btn btn-outline btn-sm" onclick="app.openPermissionsModal(${e.id})">🔑 Права</button>
                                     <button class="btn btn-danger btn-sm" onclick="app.deleteEmployee(${e.id})">🗑</button>
                                 ` : ''}
                             </div>
@@ -740,6 +742,54 @@ class MedServiceApp {
             this.loadEmployees();
         } else {
             alert(res.error || 'Ошибка добавления');
+        }
+    }
+
+    openPermissionsModal(empId) {
+        if (!this.cachedEmployees) return;
+        const emp = this.cachedEmployees.find(e => e.id == empId);
+        if (!emp) return;
+
+        document.getElementById('permUserId').value = emp.id;
+        document.getElementById('permUserName').innerText = `${emp.name} (${emp.position})`;
+
+        const perms = emp.permissions || {};
+        const keys = ['create_requests', 'view_all_requests', 'assign_executors', 'change_status', 'manage_directories', 'manage_users', 'view_analytics', 'chat_access', 'export_backup'];
+
+        keys.forEach(k => {
+            const el = document.getElementById(`perm_${k}`);
+            if (el) el.checked = perms[k] !== undefined ? !!perms[k] : (emp.role === 'Admin' || emp.role === 'Dispatcher' || k === 'create_requests' || k === 'chat_access');
+        });
+
+        document.getElementById('permissionsModal').classList.add('active');
+    }
+
+    hidePermissionsModal() {
+        document.getElementById('permissionsModal').classList.remove('active');
+    }
+
+    async saveUserPermissions(e) {
+        if (e) e.preventDefault();
+        const empId = document.getElementById('permUserId').value;
+        const keys = ['create_requests', 'view_all_requests', 'assign_executors', 'change_status', 'manage_directories', 'manage_users', 'view_analytics', 'chat_access', 'export_backup'];
+        const perms = {};
+        keys.forEach(k => {
+            const el = document.getElementById(`perm_${k}`);
+            if (el) perms[k] = el.checked;
+        });
+
+        const res = await this.apiFetch(`employees/${empId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ permissions: perms })
+        });
+
+        if (res && res.success) {
+            alert('Права сотрудника успешно обновлены');
+            this.hidePermissionsModal();
+            this.loadEmployees();
+        } else {
+            alert(res.error || 'Ошибка сохранения прав');
         }
     }
 

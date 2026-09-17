@@ -155,6 +155,84 @@ class Auth {
         session_destroy();
     }
 
+    public static function getDefaultPermissions(string $role): array {
+        if ($role === self::ROLE_ADMIN) {
+            return [
+                'create_requests' => true,
+                'view_all_requests' => true,
+                'assign_executors' => true,
+                'change_status' => true,
+                'manage_directories' => true,
+                'manage_users' => true,
+                'view_analytics' => true,
+                'chat_access' => true,
+                'export_backup' => true
+            ];
+        }
+        if ($role === self::ROLE_DISPATCHER) {
+            return [
+                'create_requests' => true,
+                'view_all_requests' => true,
+                'assign_executors' => true,
+                'change_status' => true,
+                'manage_directories' => true,
+                'manage_users' => false,
+                'view_analytics' => true,
+                'chat_access' => true,
+                'export_backup' => true
+            ];
+        }
+        if ($role === self::ROLE_SERVICE_HEAD) {
+            return [
+                'create_requests' => true,
+                'view_all_requests' => true,
+                'assign_executors' => true,
+                'change_status' => true,
+                'manage_directories' => false,
+                'manage_users' => false,
+                'view_analytics' => true,
+                'chat_access' => true,
+                'export_backup' => false
+            ];
+        }
+        if ($role === self::ROLE_EXECUTOR) {
+            return [
+                'create_requests' => true,
+                'view_all_requests' => false,
+                'assign_executors' => false,
+                'change_status' => true,
+                'manage_directories' => false,
+                'manage_users' => false,
+                'view_analytics' => false,
+                'chat_access' => true,
+                'export_backup' => false
+            ];
+        }
+        // Default Employee
+        return [
+            'create_requests' => true,
+            'view_all_requests' => false,
+            'assign_executors' => false,
+            'change_status' => false,
+            'manage_directories' => false,
+            'manage_users' => false,
+            'view_analytics' => false,
+            'chat_access' => true,
+            'export_backup' => false
+        ];
+    }
+
+    public static function hasPermission(array $user, string $permission): bool {
+        if (($user['role'] ?? '') === self::ROLE_ADMIN) {
+            return true;
+        }
+        if (isset($user['permissions'][$permission])) {
+            return (bool)$user['permissions'][$permission];
+        }
+        $defaults = self::getDefaultPermissions($user['role'] ?? self::ROLE_EMPLOYEE);
+        return !empty($defaults[$permission]);
+    }
+
     public static function auditLog(string $action, $userId = null, string $details = ''): void {
         $storage = StorageProvider::getInstance();
         $storage->insert('audit', [
