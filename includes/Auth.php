@@ -22,12 +22,17 @@ class Auth {
     }
 
     public static function normalizePhone(string $phone): string {
-        $clean = preg_replace('/[^0-9+]/', '', $phone);
-        if (empty($clean)) return '';
-        if ($clean[0] !== '+' && strlen($clean) === 12 && str_starts_with($clean, '375')) {
-            $clean = '+' . $clean;
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+        if (empty($digits)) return '';
+        if (str_starts_with($digits, '80')) {
+            $digits = '375' . substr($digits, 2);
+        } elseif (str_starts_with($digits, '8') && strlen($digits) === 11) {
+            $digits = '375' . substr($digits, 1);
         }
-        return $clean;
+        if (!str_starts_with($digits, '375') && strlen($digits) === 9) {
+            $digits = '375' . $digits;
+        }
+        return '+' . $digits;
     }
 
     public static function hashPassword(string $pincode): string {

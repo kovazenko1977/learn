@@ -1,18 +1,19 @@
 [
     {
-        "name": "Сергей Администратор",
-        "phone": "+375291234567",
+        "id": 1,
+        "name": "Сергей Иванов",
+        "phone": "+375333533971",
         "department_id": 1,
         "department_name": "Администрация",
         "position": "Главный администратор",
         "role": "Admin",
         "service_id": 0,
-        "password": "$2y$10$k1z3yHBGCRrbHIfAwkZUO.BDqyDz\/nMUBmGJaQQ.saqJVxNgLHzk.",
+        "password": "$2y$10$BhTLy7iEFmdoYNSgfff.wOZFC44P4REhJrQwopVOrnHc4yOzKTJr2",
         "avatar": "",
         "hide_phone": false,
         "is_blocked": false,
-        "created_at": "2026-09-17 06:38:37",
-        "last_active": "2026-09-17 06:45:38",
+        "created_at": "2026-09-17 07:23:11",
+        "last_active": "2026-09-17 07:23:56",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -22,24 +23,24 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "id": 1,
-        "token": "511a5ccc7d3a134243454dea74570d156bab9e8628df0c60a5ea17795c09eecf",
-        "updated_at": "2026-09-17 06:45:38"
+        "token": "cdb9c36dff6bb670aee0ea167df8b41087ff52f0949d13a1989a9e265981553e",
+        "updated_at": "2026-09-17 07:23:56"
     },
     {
-        "name": "Диспетчерская служба",
-        "phone": "+375292222222",
-        "department_id": 1,
+        "id": 2,
+        "name": "Диспетчер Спецслужбы",
+        "phone": "+375291234567",
+        "department_id": 3,
         "department_name": "Приемное отделение",
         "position": "Старший диспетчер",
         "role": "Dispatcher",
-        "service_id": 0,
-        "password": "$2y$10$nCBo5cEN5hJIIAzDJ6lrqO234k9NJUdmUZazr9Xqj\/7gb6qOPDQIW",
+        "service_id": 8,
+        "password": "$2y$10$BhTLy7iEFmdoYNSgfff.wOZFC44P4REhJrQwopVOrnHc4yOzKTJr2",
         "avatar": "",
         "hide_phone": false,
         "is_blocked": false,
-        "created_at": "2026-09-17 06:38:37",
-        "last_active": "2026-09-17 06:38:37",
+        "created_at": "2026-09-17 07:23:11",
+        "last_active": "2026-09-17 07:24:39",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -49,6 +50,7 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "id": 2
+        "token": "dee1a9bf91c09490ac7006db9265820a719397788be04659e919160cfe0200ba",
+        "updated_at": "2026-09-17 07:24:39"
     }
 ]
