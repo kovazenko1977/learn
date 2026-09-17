@@ -1,0 +1,22 @@
+[
+  {
+    "id": "serial_num_1784424332491",
+    "name": "serial_num",
+    "label": "Серийный номер устройства",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": false,
+    "sort_order": 0
+  },
+  {
+    "id": "serial_num_1784424397300",
+    "name": "serial_num",
+    "label": "Серийный номер устройства",
+    "type": "text",
+    "category": "IT",
+    "options": [],
+    "required": false,
+    "sort_order": 0
+  }
+]
