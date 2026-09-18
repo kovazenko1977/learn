@@ -857,7 +857,7 @@ try {
             }
             if ($method === 'PUT' || $method === 'POST') {
                 $input = getJsonInput();
-                foreach (['hospital_name', 'hospital_phone', 'hospital_email', 'hospital_address', 'emergency_contact', 'sla_emergency_mins', 'sla_normal_hours', 'max_upload_mb', 'pwa_theme_color', 'auto_assign_services'] as $field) {
+                foreach (['hospital_name', 'hospital_phone', 'hospital_email', 'hospital_address', 'emergency_contact', 'sla_emergency_mins', 'sla_normal_hours', 'max_upload_mb', 'pwa_theme_color', 'auto_assign_services', 'font_family', 'font_size_base', 'border_radius'] as $field) {
                     if (isset($input[$field])) {
                         $settingsData[$field] = $input[$field];
                     }

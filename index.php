@@ -418,21 +418,47 @@
 
                         <hr style="border:none; border-top:1px solid var(--border-color); margin:24px 0;">
 
-                        <!-- Section 3: PWA & Branding Options -->
-                        <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">📱 3. Интерфейс, Тема и PWA Настройки</h3>
+                        <!-- Section 3: PWA & Appearance Options -->
+                        <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">🎨 3. Персонализация: Шрифт, Цвета и Графика</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Цветовая тема по умолчанию</label>
-                                <select id="settingPwaThemeColor" class="form-select">
-                                    <option value="#0284c7">Медицинский синий (#0284c7)</option>
-                                    <option value="#059669">Изумрудно-зеленый (#059669)</option>
-                                    <option value="#7c3aed">Фиолетовый корпоративный (#7c3aed)</option>
+                                <label class="form-label">Шрифт интерфейса (Font Family)</label>
+                                <select id="settingFontFamily" class="form-select" onchange="app.updateUiStylesPreview()">
+                                    <option value="system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif">Системный по умолчанию (System Sans)</option>
+                                    <option value="'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif">SF Pro / Apple Modern</option>
+                                    <option value="'Roboto', 'Segoe UI', Arial, sans-serif">Roboto / Material UI</option>
+                                    <option value="'Inter', system-ui, sans-serif">Inter Clean</option>
+                                    <option value="Georgia, serif">Классический Serif (Georgia)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Автономное offline-кэширование</label>
-                                <select class="form-select" disabled>
-                                    <option>Активно (PWA ServiceWorker)</option>
+                                <label class="form-label">Размер шрифта (Base Font Size)</label>
+                                <select id="settingFontSizeBase" class="form-select" onchange="app.updateUiStylesPreview()">
+                                    <option value="13px">Компактный (13px)</option>
+                                    <option value="14px" selected>Стандартный (14px)</option>
+                                    <option value="15px">Увеличенный (15px)</option>
+                                    <option value="16px">Крупный для пожилых сотрудников (16px)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Основной акцентный цвет (Primary Color)</label>
+                                <select id="settingPwaThemeColor" class="form-select" onchange="app.updateUiStylesPreview()">
+                                    <option value="#0284c7">🏥 Медицинский синий (#0284c7)</option>
+                                    <option value="#059669">🌿 Изумрудно-зеленый (#059669)</option>
+                                    <option value="#7c3aed">🟣 Корпоративный фиолетовый (#7c3aed)</option>
+                                    <option value="#dc2626">🔴 Аварийно-красный (#dc2626)</option>
+                                    <option value="#2563eb">🔵 Классический синий (#2563eb)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Скругление углов (Border Radius)</label>
+                                <select id="settingBorderRadius" class="form-select" onchange="app.updateUiStylesPreview()">
+                                    <option value="8px">Строгие углы (8px)</option>
+                                    <option value="16px" selected>Современное скругление (16px)</option>
+                                    <option value="24px">Максимальное скругление (24px)</option>
                                 </select>
                             </div>
                         </div>

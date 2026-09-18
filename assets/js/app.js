@@ -598,8 +598,8 @@ class MedServiceApp {
                 const isMine = m.user_id == this.currentUser.id;
                 return `
                     <div class="message-bubble ${isMine ? 'mine' : 'other'}">
-                        <div class="message-author">${m.user_name}</div>
-                        <div>${m.text}</div>
+                        <div class="message-author">${this.escapeHtml(m.user_name)}</div>
+                        <div>${this.escapeHtml(m.text)}</div>
                         ${m.photo ? `<img src="${m.photo}" style="max-width:100%; border-radius:6px; margin-top:6px;">` : ''}
                         <div class="message-meta">${m.created_at.split(' ')[1] || m.created_at}</div>
                     </div>
@@ -924,6 +924,16 @@ class MedServiceApp {
         }
     }
 
+    escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     // ==========================================
     // ABOUT APP & LEGAL DISCLAIMER
     // ==========================================
@@ -950,6 +960,36 @@ class MedServiceApp {
             if (document.getElementById('settingSlaEmergencyMins')) document.getElementById('settingSlaEmergencyMins').value = data.sla_emergency_mins || 10;
             if (document.getElementById('settingSlaNormalHours')) document.getElementById('settingSlaNormalHours').value = data.sla_normal_hours || 24;
             if (document.getElementById('settingMaxUploadMb')) document.getElementById('settingMaxUploadMb').value = data.max_upload_mb || 10;
+            if (document.getElementById('settingFontFamily') && data.font_family) document.getElementById('settingFontFamily').value = data.font_family;
+            if (document.getElementById('settingFontSizeBase') && data.font_size_base) document.getElementById('settingFontSizeBase').value = data.font_size_base;
+            if (document.getElementById('settingPwaThemeColor') && data.pwa_theme_color) document.getElementById('settingPwaThemeColor').value = data.pwa_theme_color;
+            if (document.getElementById('settingBorderRadius') && data.border_radius) document.getElementById('settingBorderRadius').value = data.border_radius;
+
+            this.applyCssCustomProperties(data);
+        }
+    }
+
+    updateUiStylesPreview() {
+        const font = document.getElementById('settingFontFamily')?.value;
+        const fontSize = document.getElementById('settingFontSizeBase')?.value;
+        const color = document.getElementById('settingPwaThemeColor')?.value;
+        const radius = document.getElementById('settingBorderRadius')?.value;
+
+        this.applyCssCustomProperties({
+            font_family: font,
+            font_size_base: fontSize,
+            pwa_theme_color: color,
+            border_radius: radius
+        });
+    }
+
+    applyCssCustomProperties(opts) {
+        if (opts.font_family) document.documentElement.style.setProperty('--font-family', opts.font_family);
+        if (opts.font_size_base) document.documentElement.style.setProperty('--font-size-base', opts.font_size_base);
+        if (opts.pwa_theme_color) document.documentElement.style.setProperty('--primary', opts.pwa_theme_color);
+        if (opts.border_radius) {
+            document.documentElement.style.setProperty('--radius-md', opts.border_radius);
+            document.documentElement.style.setProperty('--radius-sm', (parseInt(opts.border_radius) * 0.6) + 'px');
         }
     }
 
@@ -962,7 +1002,11 @@ class MedServiceApp {
             hospital_address: document.getElementById('settingHospitalAddress').value,
             sla_emergency_mins: parseInt(document.getElementById('settingSlaEmergencyMins').value) || 10,
             sla_normal_hours: parseInt(document.getElementById('settingSlaNormalHours').value) || 24,
-            max_upload_mb: parseInt(document.getElementById('settingMaxUploadMb').value) || 10
+            max_upload_mb: parseInt(document.getElementById('settingMaxUploadMb').value) || 10,
+            font_family: document.getElementById('settingFontFamily')?.value || '',
+            font_size_base: document.getElementById('settingFontSizeBase')?.value || '14px',
+            pwa_theme_color: document.getElementById('settingPwaThemeColor')?.value || '#0284c7',
+            border_radius: document.getElementById('settingBorderRadius')?.value || '16px'
         };
 
         const res = await this.apiFetch('admin/settings', {
@@ -972,7 +1016,8 @@ class MedServiceApp {
         });
 
         if (res && res.success) {
-            alert('Настройки системы успешно сохранены');
+            this.applyCssCustomProperties(payload);
+            alert('Настройки системы и графического интерфейса успешно сохранены');
         } else {
             alert(res.error || 'Ошибка при сохранении настроек');
         }
