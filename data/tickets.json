@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Тестовая заявка на ремонт кондиционера",
+    "description": "Необходимо провести плановое ТО и замену фильтра.",
+    "category": "IT",
+    "priority": "Medium",
+    "status": "new",
+    "creator_id": "1",
+    "assignee_id": null,
+    "created_at": "2026-09-18T01:15:39.048Z",
+    "updated_at": "2026-09-18T01:15:39.048Z",
+    "deadline": "2026-09-19T01:15:39.048Z",
+    "custom_fields": {},
+    "attachments": [],
+    "id": 1
+  }
+]
