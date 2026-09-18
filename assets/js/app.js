@@ -661,6 +661,7 @@ class MedServiceApp {
                                 <a class="btn btn-outline btn-sm" href="tel:${e.phone}" style="flex:1; text-decoration:none; text-align:center;">📞 Звонок</a>
                                 <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="app.startDMChat(${e.id})">💬 Чат</button>
                                 ${isAdmin ? `
+                                    <button class="btn btn-outline btn-sm" onclick="app.openEditEmployeeModal(${e.id})">✏️ Редактировать</button>
                                     <button class="btn btn-outline btn-sm" onclick="app.openPermissionsModal(${e.id})">🔑 Права</button>
                                     <button class="btn btn-danger btn-sm" onclick="app.deleteEmployee(${e.id})">🗑</button>
                                 ` : ''}
@@ -717,6 +718,92 @@ class MedServiceApp {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    openEditEmployeeModal(empId) {
+        if (!this.cachedEmployees) return;
+        const emp = this.cachedEmployees.find(e => e.id == empId);
+        if (!emp) return;
+
+        const modalHtml = `
+            <div id="editEmployeeModal" class="modal-overlay active">
+                <div class="modal-container" style="max-width:500px;">
+                    <div class="modal-header">
+                        <div class="modal-title">✏️ Редактирование сотрудника</div>
+                        <button class="modal-close" onclick="document.getElementById('editEmployeeModal').remove()">×</button>
+                    </div>
+                    <form onsubmit="app.submitEditEmployee(event, ${emp.id})">
+                        <div class="form-group">
+                            <label class="form-label">ФИО</label>
+                            <input type="text" id="editEmpName" class="form-input" value="${this.escapeHtml(emp.name)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Телефон (Логин)</label>
+                            <input type="tel" id="editEmpPhone" class="form-input" value="${this.escapeHtml(emp.phone)}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Роль в системе</label>
+                            <select id="editEmpRole" class="form-select" required>
+                                <option value="Employee" ${emp.role === 'Employee' ? 'selected' : ''}>Сотрудник</option>
+                                <option value="Executor" ${emp.role === 'Executor' ? 'selected' : ''}>Исполнитель</option>
+                                <option value="Service Head" ${emp.role === 'Service Head' ? 'selected' : ''}>Руководитель службы</option>
+                                <option value="Dispatcher" ${emp.role === 'Dispatcher' ? 'selected' : ''}>Диспетчер</option>
+                                <option value="Admin" ${emp.role === 'Admin' ? 'selected' : ''}>Администратор</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Подразделение</label>
+                            <input type="text" id="editEmpDept" class="form-input" value="${this.escapeHtml(emp.department_name || '')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Должность</label>
+                            <input type="text" id="editEmpPos" class="form-input" value="${this.escapeHtml(emp.position || '')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Новый пароль (оставьте пустым если не меняете)</label>
+                            <input type="password" id="editEmpPassword" class="form-input" placeholder="Новый пароль (6 цифр)">
+                        </div>
+                        <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" id="editEmpBlocked" ${emp.is_blocked ? 'checked' : ''} style="width:16px; height:16px;">
+                            <label for="editEmpBlocked" style="font-size:13px; cursor:pointer;">Заблокировать доступ пользователя</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Сохранить изменения</button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    async submitEditEmployee(e, empId) {
+        e.preventDefault();
+        const payload = {
+            name: document.getElementById('editEmpName').value,
+            phone: document.getElementById('editEmpPhone').value,
+            role: document.getElementById('editEmpRole').value,
+            department_name: document.getElementById('editEmpDept').value,
+            position: document.getElementById('editEmpPos').value,
+            is_blocked: document.getElementById('editEmpBlocked').checked
+        };
+
+        const pass = document.getElementById('editEmpPassword').value;
+        if (pass && pass.trim() !== '') {
+            payload.password = pass.trim();
+        }
+
+        const res = await this.apiFetch(`employees/${empId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        if (res && res.success) {
+            alert('Данные сотрудника успешно обновлены!');
+            document.getElementById('editEmployeeModal')?.remove();
+            this.loadEmployees();
+        } else {
+            alert(res.error || 'Ошибка при сохранении данных сотрудника');
+        }
     }
 
     async submitAddEmployee(e) {
