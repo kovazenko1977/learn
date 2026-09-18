@@ -360,33 +360,38 @@
             <!-- VIEW 10: SETTINGS & BACKUP -->
             <section id="view-settings" class="app-view" style="display:none;">
                 <div class="section-title">
-                    <span>⚙ Расширенные настройки системы</span>
+                    <span>⚙ Расширенные настройки системы МедСервис Enterprise</span>
+                    <button class="btn btn-outline btn-sm" onclick="app.openAboutModal()">ℹ️ О программе</button>
                 </div>
-                <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:800px; width:100%;">
+
+                <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:850px; width:100%;">
                     <form id="adminSettingsForm" onsubmit="app.saveAdminSettings(event)">
-                        <h3 style="margin-bottom:12px;">🏥 Информация об учреждении</h3>
+
+                        <!-- Section 1: Hospital Metadata -->
+                        <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">🏥 1. Реквизиты и контакты учреждения</h3>
                         <div class="form-group">
-                            <label class="form-label">Название больницы / учреждения</label>
-                            <input type="text" id="settingHospitalName" class="form-input" required placeholder="ГКБ №1 МедСервис">
+                            <label class="form-label">Полное наименование больницы / учреждения</label>
+                            <input type="text" id="settingHospitalName" class="form-input" required placeholder="Городская Клиническая Больница «МедСервис»">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Телефон справочной</label>
+                                <label class="form-label">Телефон справочной службы</label>
                                 <input type="text" id="settingHospitalPhone" class="form-input" placeholder="+375 17 222-33-44">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Аварийный номер</label>
+                                <label class="form-label">Аварийный номер дежурного</label>
                                 <input type="text" id="settingEmergencyContact" class="form-input" placeholder="+375 29 111-00-00">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Адрес учреждения</label>
+                            <label class="form-label">Официальный адрес и корпус</label>
                             <input type="text" id="settingHospitalAddress" class="form-input" placeholder="г. Минск, ул. Больничная 10">
                         </div>
 
-                        <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+                        <hr style="border:none; border-top:1px solid var(--border-color); margin:24px 0;">
 
-                        <h3 style="margin-bottom:12px;">⏱ Параметры SLA и Регламента</h3>
+                        <!-- Section 2: SLA & Workflow Rules -->
+                        <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">⏱ 2. Параметры SLA, Регламента и Заявок</h3>
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Реакция на аварийную заявку (мин)</label>
@@ -397,27 +402,59 @@
                                 <input type="number" id="settingSlaNormalHours" class="form-input" value="24" min="1" max="168">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Макс. размер файла фото (МБ)</label>
-                            <input type="number" id="settingMaxUploadMb" class="form-input" value="10" min="1" max="50">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Макс. размер файла фото (МБ)</label>
+                                <input type="number" id="settingMaxUploadMb" class="form-input" value="10" min="1" max="50">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Авто-назначение дежурной службы</label>
+                                <select id="settingAutoAssignServices" class="form-select">
+                                    <option value="enabled">Включено (по категории проблемы)</option>
+                                    <option value="disabled">Выключено (ручное распределение)</option>
+                                </select>
+                            </div>
                         </div>
 
-                        <div style="margin-top:16px;">
-                            <button type="submit" class="btn btn-primary">💾 Сохранить параметры</button>
+                        <hr style="border:none; border-top:1px solid var(--border-color); margin:24px 0;">
+
+                        <!-- Section 3: PWA & Branding Options -->
+                        <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">📱 3. Интерфейс, Тема и PWA Настройки</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Цветовая тема по умолчанию</label>
+                                <select id="settingPwaThemeColor" class="form-select">
+                                    <option value="#0284c7">Медицинский синий (#0284c7)</option>
+                                    <option value="#059669">Изумрудно-зеленый (#059669)</option>
+                                    <option value="#7c3aed">Фиолетовый корпоративный (#7c3aed)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Автономное offline-кэширование</label>
+                                <select class="form-select" disabled>
+                                    <option>Активно (PWA ServiceWorker)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:20px;">
+                            <button type="submit" class="btn btn-primary" style="padding:12px 24px; font-size:15px;">💾 Сохранить конфигурацию</button>
                         </div>
                     </form>
 
-                    <hr style="border:none; border-top:1px solid var(--border-color); margin:24px 0;">
+                    <hr style="border:none; border-top:1px solid var(--border-color); margin:28px 0;">
 
-                    <h3>💾 Резервное копирование и аудит</h3>
+                    <!-- Section 4: Maintenance, Backup & Legal -->
+                    <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">💾 4. Обслуживание, Бэкап и О программе</h3>
                     <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-                        Экспорт и восстановление базы данных JSON
+                        Резервное копирование данных, аудиторский журнал и сведения о разработчике
                     </p>
                     <div style="display:flex; gap:12px; flex-wrap:wrap;">
                         <button class="btn btn-primary" onclick="app.downloadBackup()">💾 Скачать бэкап JSON</button>
                         <button class="btn btn-secondary" onclick="app.loadAuditLogs()">📜 Журнал аудита</button>
+                        <button class="btn btn-outline" onclick="app.openAboutModal()">ℹ️ О программе и авторские права</button>
                     </div>
-                    <div id="auditLogsContainer" style="margin-top:16px; font-size:12px; max-height:200px; overflow-y:auto; display:none;"></div>
+                    <div id="auditLogsContainer" style="margin-top:16px; font-size:12px; max-height:220px; overflow-y:auto; display:none;"></div>
                 </div>
             </section>
 
@@ -539,6 +576,36 @@
     </div>
 
     <!-- MODAL: REGISTRATION -->
+    <!-- Modal 6: About App & Legal Disclaimer Modal -->
+    <div id="aboutModal" class="modal-overlay">
+        <div class="modal-container" style="max-width:550px;">
+            <div class="modal-header">
+                <div class="modal-title">ℹ️ О программе «МедСервис»</div>
+                <button class="modal-close" onclick="app.hideAboutModal()">×</button>
+            </div>
+            <div style="text-align:center; padding:10px 0;">
+                <div style="font-size:54px; margin-bottom:8px;">🏥</div>
+                <h2 style="font-size:20px; color:var(--primary); font-weight:800;">МедСервис Enterprise PWA</h2>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Версия 2.5.0 Professional Edition</p>
+
+                <div style="background-color:var(--bg-main); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:left; font-size:13px; line-height:1.5; margin-bottom:16px;">
+                    <p style="margin-bottom:8px;"><b>👨‍💻 Разработчик:</b> Коваженко С.Б.</p>
+                    <p style="margin-bottom:8px;"><b>© Авторские права:</b> Все права принадлежат автору.</p>
+                    <p style="color:var(--text-muted);">Система предназначена для автоматизации работы обслуживающего персонала больниц, быстрого приема и контроля исполнения хозяйственно-технических заявок, телефонной справочной и корпоративной связи.</p>
+                </div>
+
+                <div style="background-color:#fff1f2; color:#9f1239; border:1px solid #fecdd3; padding:14px; border-radius:var(--radius-md); text-align:left; font-size:12px; line-height:1.45;">
+                    <div style="font-weight:bold; margin-bottom:4px; font-size:13px;">⚖️ Пользовательское соглашение и отказ от ответственности:</div>
+                    Программное обеспечение предоставляется по принципу «как есть» («as is»). Автор (Коваженко С.Б.) не несет никакой ответственности за любые прямые или косвенные убытки, потерю данных, сбои в работе оборудования или прочие последствия, возникшие в результате использования или невозможности использования данного программного обеспечения.
+                </div>
+
+                <div style="margin-top:20px;">
+                    <button class="btn btn-primary" style="width:100%;" onclick="app.hideAboutModal()">Понятно</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal 5: Permissions Matrix Modal -->
     <div id="permissionsModal" class="modal-overlay">
         <div class="modal-container" style="max-width:520px;">

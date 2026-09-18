@@ -13,7 +13,7 @@
         "hide_phone": false,
         "is_blocked": false,
         "created_at": "2026-09-17 07:23:11",
-        "last_active": "2026-09-17 13:30:22",
+        "last_active": "2026-09-18 12:04:19",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -23,8 +23,8 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "token": "4bdcec3c40bc1d32fd28a9c93b96ede9243ff55b72c4e73b3f9513d6a197acf4",
-        "updated_at": "2026-09-17 13:30:22"
+        "token": "6de4b3e3b9d40802eebada3229e08d22887bb8b2ddc34617e5338781b2751242",
+        "updated_at": "2026-09-18 12:04:19"
     },
     {
         "id": 2,
@@ -40,7 +40,7 @@
         "hide_phone": false,
         "is_blocked": false,
         "created_at": "2026-09-17 07:23:11",
-        "last_active": "2026-09-17 13:30:06",
+        "last_active": "2026-09-18 12:03:59",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -50,8 +50,8 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "token": "ab7c0b40f9a1d24ed2d2e13d88667510609775230cb7a5b628ccfbc71d810b7f",
-        "updated_at": "2026-09-17 13:30:06"
+        "token": "3834f3511fcdddc74b4052d9a65c3e9ab0ec9d917b93c518431d762471dbf26a",
+        "updated_at": "2026-09-18 12:03:59"
     },
     {
         "name": "Елена Петрова",

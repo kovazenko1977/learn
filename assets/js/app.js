@@ -925,6 +925,19 @@ class MedServiceApp {
     }
 
     // ==========================================
+    // ABOUT APP & LEGAL DISCLAIMER
+    // ==========================================
+    openAboutModal() {
+        const modal = document.getElementById('aboutModal');
+        if (modal) modal.classList.add('active');
+    }
+
+    hideAboutModal() {
+        const modal = document.getElementById('aboutModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    // ==========================================
     // SETTINGS & AUDIT LOGS
     // ==========================================
     async loadAdminSettings() {
