@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../LanguageContext';
-import { Database, Users, Trash2, Plus, Edit, ShieldAlert, Key, Settings as SettingsIcon } from 'lucide-react';
+import { Database, Users, Trash2, Plus, Edit, ShieldAlert, Key, Settings as SettingsIcon, Bell, ShieldCheck, FileCode, Info } from 'lucide-react';
 
 export const Settings: React.FC = () => {
   const { t } = useLanguage();
@@ -26,6 +26,15 @@ export const Settings: React.FC = () => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('executor');
   const [editUserId, setEditUserId] = useState<string | null>(null);
+
+  // Additional Professional Settings
+  const [appName, setAppName] = useState('CRM Заявки');
+  const [maxUploadMb, setMaxUploadMb] = useState(10);
+  const [notifyEmail, setNotifyEmail] = useState(true);
+  const [notifyPush, setNotifyPush] = useState(true);
+  const [notifyTelegram, setNotifyTelegram] = useState(false);
+  const [telegramBotToken, setTelegramBotToken] = useState('');
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   // New item helpers
   const [newCategory, setNewCategory] = useState('');
@@ -229,6 +238,74 @@ export const Settings: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      {/* System Banner & About Program Trigger */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/50 dark:border-slate-800/50 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-primary-500" />
+            <span>Панель администрирования CRM</span>
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Конфигурация параметров, управление пользователями, SLA и системными режимами
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsAboutOpen(true)}
+          className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold flex items-center gap-2 transition"
+        >
+          <Info className="w-4 h-4 text-primary-500" />
+          <span>О программе</span>
+        </button>
+      </div>
+
+      {/* About Modal */}
+      {isAboutOpen && (
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200/50 dark:border-slate-800/50 shadow-2xl relative space-y-4">
+            <button
+              onClick={() => setIsAboutOpen(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"
+            >
+              ✕
+            </button>
+            <div className="flex items-center gap-3 border-b pb-3 border-slate-100 dark:border-slate-800">
+              <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-950 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold">
+                HOP
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 dark:text-slate-50 text-base">О программе HOP CRM</h4>
+                <p className="text-[10px] text-slate-400">Версия 2.5 Pro Enterprise</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="font-bold text-slate-900 dark:text-slate-100">
+                Разработчик: Коваженко С.Б.
+              </p>
+              <p>
+                Все права принадлежат автору.
+              </p>
+              <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-xl border border-slate-200/50 dark:border-slate-800/50 space-y-1.5 text-[11px]">
+                <p className="font-bold text-slate-800 dark:text-slate-200">Пользовательское соглашение:</p>
+                <p className="text-slate-500 dark:text-slate-400">
+                  Автор не несет ответственности за использование программы, возможную потерю данных, сбои в работе оборудования или косвенные убытки, возникшие в процессе эксплуатации программного обеспечения.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setIsAboutOpen(false)}
+                className="px-4 py-2 bg-primary-600 text-white rounded-xl text-xs font-bold hover:bg-primary-700 transition"
+              >
+                Понятно
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. Storage & Database Mode Switcher */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200/50 dark:border-slate-800/50 shadow-sm lg:col-span-1 h-fit">
