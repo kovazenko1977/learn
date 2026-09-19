@@ -426,6 +426,7 @@ class MedServiceApp {
                             <div><b>Автор:</b> ${r.author_name} (${r.author_department}) — 📞 ${r.author_phone}</div>
                             <div><b>Ответственная служба:</b> ${r.service_name}</div>
                             <div><b>Исполнитель:</b> ${r.executor_name}</div>
+                            ${r.last_status_changed_by ? `<div style="color:var(--primary); font-size:12px;"><b>Последний изменил статус:</b> ${r.last_status_changed_by} (${r.last_status_changed_at || ''})</div>` : ''}
                         </div>
 
                         <div style="background-color:var(--primary-light); padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
@@ -674,6 +675,8 @@ class MedServiceApp {
     }
 
     openAddEmployeeModal() {
+        const serviceOpts = (this.services || []).map(s => `<option value="${s.id}">${s.icon || '🛠'} ${s.name}</option>`).join('');
+
         const modalHtml = `
             <div id="addEmployeeModal" class="modal-overlay active">
                 <div class="modal-container" style="max-width:500px;">
@@ -701,6 +704,13 @@ class MedServiceApp {
                             </select>
                         </div>
                         <div class="form-group">
+                            <label class="form-label">Привязка к службе (для исполняющего персонала)</label>
+                            <select id="addEmpServiceId" class="form-select">
+                                <option value="0">Без привязки к службе</option>
+                                ${serviceOpts}
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label class="form-label">Подразделение</label>
                             <input type="text" id="addEmpDept" class="form-input" value="Терапевтическое отделение" required>
                         </div>
@@ -724,6 +734,10 @@ class MedServiceApp {
         if (!this.cachedEmployees) return;
         const emp = this.cachedEmployees.find(e => e.id == empId);
         if (!emp) return;
+
+        const serviceOpts = (this.services || []).map(s => `
+            <option value="${s.id}" ${(emp.service_id ?? 0) == s.id ? 'selected' : ''}>${s.icon || '🛠'} ${s.name}</option>
+        `).join('');
 
         const modalHtml = `
             <div id="editEmployeeModal" class="modal-overlay active">
@@ -749,6 +763,13 @@ class MedServiceApp {
                                 <option value="Service Head" ${emp.role === 'Service Head' ? 'selected' : ''}>Руководитель службы</option>
                                 <option value="Dispatcher" ${emp.role === 'Dispatcher' ? 'selected' : ''}>Диспетчер</option>
                                 <option value="Admin" ${emp.role === 'Admin' ? 'selected' : ''}>Администратор</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Привязка к службе (для получающих заявки)</label>
+                            <select id="editEmpServiceId" class="form-select">
+                                <option value="0">Без привязки к службе</option>
+                                ${serviceOpts}
                             </select>
                         </div>
                         <div class="form-group">
@@ -781,6 +802,7 @@ class MedServiceApp {
             name: document.getElementById('editEmpName').value,
             phone: document.getElementById('editEmpPhone').value,
             role: document.getElementById('editEmpRole').value,
+            service_id: parseInt(document.getElementById('editEmpServiceId').value) || 0,
             department_name: document.getElementById('editEmpDept').value,
             position: document.getElementById('editEmpPos').value,
             is_blocked: document.getElementById('editEmpBlocked').checked
@@ -812,6 +834,7 @@ class MedServiceApp {
             name: document.getElementById('addEmpName').value,
             phone: document.getElementById('addEmpPhone').value,
             role: document.getElementById('addEmpRole').value,
+            service_id: parseInt(document.getElementById('addEmpServiceId').value) || 0,
             department_name: document.getElementById('addEmpDept').value,
             position: document.getElementById('addEmpPos').value,
             password: document.getElementById('addEmpPassword').value

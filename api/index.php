@@ -471,15 +471,30 @@ try {
 
             $createdReq = $storage->insert('requests', $newReq);
 
-            // Create notification for dispatchers & service heads
+            // Create broadcast notification
             $storage->insert('notifications', [
-                'user_id' => 0, // Broadcast to service/dispatchers
+                'user_id' => 0, // Broadcast
                 'title' => ($priority === 'Аварийный' ? '🚨 АВАРИЙНАЯ ЗАЯВКА ' : '🔔 Новая заявка ') . $createdReq['number'],
-                'message' => "Категория: {$category}, Место: {$createdReq['location_text']}",
+                'message' => "Служба: {$serviceName}, Категория: {$category}, Место: {$createdReq['location_text']}",
                 'request_id' => $createdReq['id'],
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_read' => false
             ]);
+
+            // Create targeted notifications for employees attached to this service
+            $allUsers = $storage->getCollection('users');
+            foreach ($allUsers as $u) {
+                if (($u['service_id'] ?? 0) == $serviceId && empty($u['is_blocked'])) {
+                    $storage->insert('notifications', [
+                        'user_id' => $u['id'],
+                        'title' => ($priority === 'Аварийный' ? '🚨 АВАРИЯ В ВАШЕЙ СЛУЖБЕ ' : '🔔 Поступила заявка в вашу службу ') . $createdReq['number'],
+                        'message' => "Служба: {$serviceName}. Описание: {$description}",
+                        'request_id' => $createdReq['id'],
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'is_read' => false
+                    ]);
+                }
+            }
 
             Auth::auditLog('CREATE_REQUEST', $currentUser['id'], "Created request {$createdReq['number']}");
 
@@ -561,7 +576,18 @@ try {
             if (isset($input['status']) && $input['status'] !== $req['status']) {
                 $newStatus = $input['status'];
                 $updateFields['status'] = $newStatus;
-                $historyText[] = "Статус изменен на «{$newStatus}»";
+                $updateFields['last_status_changed_by'] = $currentUser['name'];
+                $updateFields['last_status_changed_at'] = date('Y-m-d H:i:s');
+                $historyText[] = "Статус изменен на «{$newStatus}» пользователем «{$currentUser['name']}» ({$currentUser['position']})";
+
+                // Auto-assign current user as executor if unassigned when accepting or starting work
+                if (in_array($newStatus, ['Принято', 'В исполнении', 'Выполнено']) && empty($req['executor_id'])) {
+                    $updateFields['executor_id'] = $currentUser['id'];
+                    $updateFields['executor_name'] = $currentUser['name'];
+                    $historyText[] = "Исполнитель автоматически назначен: {$currentUser['name']}";
+                }
+
+                Auth::auditLog('REQUEST_STATUS_CHANGE', $currentUser['id'], "Request {$req['number']} status changed to {$newStatus}");
             }
 
             if (isset($input['executor_id']) && $input['executor_id'] != $req['executor_id']) {
