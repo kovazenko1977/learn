@@ -1,0 +1,3 @@
+# Prevent directory browsing and direct access to data files
+Order deny,allow
+Deny from all
