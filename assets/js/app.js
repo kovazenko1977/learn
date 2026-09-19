@@ -381,9 +381,31 @@ class MedServiceApp {
         container.innerHTML = data.data.map(r => this.renderRequestCard(r)).join('');
     }
 
+    async assignRequestExecutor(reqId, execId) {
+        const res = await this.apiFetch(`requests/${reqId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ executor_id: parseInt(execId) || 0 })
+        });
+        if (res && res.success) {
+            alert('Исполнитель заявки успешно назначен');
+            document.getElementById('requestDetailModal')?.remove();
+            this.openRequestDetailModal(reqId);
+        } else {
+            alert(res.error || 'Ошибка назначения исполнителя');
+        }
+    }
+
     async openRequestDetailModal(id) {
         const r = await this.apiFetch(`requests/${id}`);
         if (r && r.id) {
+            const employees = await this.apiFetch(`employees?service_id=${r.service_id || 0}`);
+            const serviceEmps = Array.isArray(employees) ? employees : [];
+            const canAssign = this.currentUser && (this.currentUser.role === 'Admin' || this.currentUser.role === 'Dispatcher' || this.currentUser.role === 'Service Head' || (this.currentUser.permissions && this.currentUser.permissions.assign_executors));
+
+            const executorOptions = serviceEmps.map(e => `
+                <option value="${e.id}" ${e.id == r.executor_id ? 'selected' : ''}>${e.name} (${e.position})</option>
+            `).join('');
             const photosHtml = (r.photos || []).map(p => `
                 <a href="${p}" target="_blank">
                     <img src="${p}" style="width:70px; height:70px; object-fit:cover; border-radius:8px; border:1px solid var(--border-color);">
@@ -425,7 +447,12 @@ class MedServiceApp {
                             <div><b>Место:</b> ${r.location_text}</div>
                             <div><b>Автор:</b> ${r.author_name} (${r.author_department}) — 📞 ${r.author_phone}</div>
                             <div><b>Ответственная служба:</b> ${r.service_name}</div>
-                            <div><b>Исполнитель:</b> ${r.executor_name}</div>
+                            <div><b>Исполнитель:</b> ${r.executor_name} ${canAssign ? `
+                                <select class="form-select" style="display:inline-block; width:auto; padding:4px 8px; font-size:12px; margin-left:6px;" onchange="app.assignRequestExecutor(${r.id}, this.value)">
+                                    <option value="0">-- Назначить исполнителя --</option>
+                                    ${executorOptions}
+                                </select>
+                            ` : ''}</div>
                             ${r.last_status_changed_by ? `<div style="color:var(--primary); font-size:12px;"><b>Последний изменил статус:</b> ${r.last_status_changed_by} (${r.last_status_changed_at || ''})</div>` : ''}
                         </div>
 

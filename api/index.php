@@ -596,7 +596,19 @@ try {
                 $execName = $execUser['name'] ?? 'Не назначен';
                 $updateFields['executor_id'] = $execId;
                 $updateFields['executor_name'] = $execName;
-                $historyText[] = "Назначен исполнитель: {$execName}";
+                $historyText[] = "Назначен исполнитель: {$execName} (диспетчером/руководителем {$currentUser['name']})";
+
+                if ($execId > 0) {
+                    $storage->insert('notifications', [
+                        'user_id' => $execId,
+                        'title' => "👷 Вам назначена заявка {$req['number']}",
+                        'message' => "Категория: {$req['category']}. Место: {$req['location_text']}",
+                        'request_id' => $req['id'],
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'is_read' => false
+                    ]);
+                    Auth::auditLog('ASSIGN_EXECUTOR', $currentUser['id'], "Assigned user {$execName} to request {$req['number']}");
+                }
             }
 
             if (isset($input['service_id']) && $input['service_id'] != $req['service_id']) {
