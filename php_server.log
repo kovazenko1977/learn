@@ -1,0 +1,280 @@
+[Sat Sep 19 01:14:42 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8088) started
+[Sat Sep 19 01:14:52 2026] 127.0.0.1:35740 Accepted
+[Sat Sep 19 01:14:52 2026] 127.0.0.1:35740 [200]: HEAD /
+[Sat Sep 19 01:14:52 2026] 127.0.0.1:35740 Closing
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46894 Accepted
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46894 [200]: GET /
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46894 Closing
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46896 Accepted
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46898 Accepted
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46896 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46898 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46896 Closing
+[Sat Sep 19 01:15:35 2026] 127.0.0.1:46898 Closing
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57148 Accepted
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57148 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57148 Closing
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57150 Accepted
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57150 [200]: GET /api/settings.php
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57150 Closing
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57152 Accepted
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57152 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57152 Closing
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57158 Accepted
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57158 [200]: GET /api/tickets.php
+[Sat Sep 19 01:15:36 2026] 127.0.0.1:57158 Closing
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57174 Accepted
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57174 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57174 Closing
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57176 Accepted
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57176 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57176 Closing
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57178 Accepted
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57178 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:15:37 2026] 127.0.0.1:57178 Closing
+[Sat Sep 19 01:15:38 2026] 127.0.0.1:57182 Accepted
+[Sat Sep 19 01:15:38 2026] 127.0.0.1:57182 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:15:38 2026] 127.0.0.1:57182 Closing
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:47984 Accepted
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:47984 [200]: GET /
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:47984 Closing
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:47996 Accepted
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:48008 Accepted
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:47996 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:48008 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:47996 Closing
+[Sat Sep 19 01:16:29 2026] 127.0.0.1:48008 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48024 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48024 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48024 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48028 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48028 [200]: GET /api/settings.php
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48028 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48030 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48030 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48030 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48032 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48032 [200]: GET /api/tickets.php
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48032 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48036 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48036 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48036 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48046 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48046 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48046 Closing
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48060 Accepted
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48060 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:16:30 2026] 127.0.0.1:48060 Closing
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59156 Accepted
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59156 [200]: GET /
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59156 Closing
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59164 Accepted
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59166 Accepted
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59164 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59166 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59164 Closing
+[Sat Sep 19 01:16:53 2026] 127.0.0.1:59166 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59176 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59176 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59176 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59178 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59178 [200]: GET /api/settings.php
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59178 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59190 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59190 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59190 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59192 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59192 [200]: GET /api/tickets.php
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59192 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59194 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59194 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59194 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59196 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59196 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59196 Closing
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59204 Accepted
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59204 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:16:54 2026] 127.0.0.1:59204 Closing
+[Sat Sep 19 01:16:55 2026] 127.0.0.1:59220 Accepted
+[Sat Sep 19 01:16:55 2026] 127.0.0.1:59220 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:16:55 2026] 127.0.0.1:59220 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52488 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52488 [200]: GET /
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52488 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52500 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52516 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52500 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52500 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52516 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52516 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52528 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52528 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52528 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52534 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52534 [200]: GET /api/settings.php
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52534 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52546 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52546 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52546 Closing
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52554 Accepted
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52554 [200]: GET /api/tickets.php
+[Sat Sep 19 01:17:56 2026] 127.0.0.1:52554 Closing
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52556 Accepted
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52556 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52556 Closing
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52562 Accepted
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52562 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52562 Closing
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52572 Accepted
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52572 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:17:57 2026] 127.0.0.1:52572 Closing
+[Sat Sep 19 01:17:58 2026] 127.0.0.1:52582 Accepted
+[Sat Sep 19 01:17:58 2026] 127.0.0.1:52582 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:17:58 2026] 127.0.0.1:52582 Closing
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38898 Accepted
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38898 [200]: GET /
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38898 Closing
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38908 Accepted
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38918 Accepted
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38908 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38918 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38908 Closing
+[Sat Sep 19 01:19:04 2026] 127.0.0.1:38918 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38934 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38934 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38934 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38946 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38946 [200]: GET /api/settings.php
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38946 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38958 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38958 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38958 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38970 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38970 [200]: GET /api/tickets.php
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38970 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38974 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38974 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38974 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38988 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38988 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:38988 Closing
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:39000 Accepted
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:39000 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:19:05 2026] 127.0.0.1:39000 Closing
+[Sat Sep 19 01:19:06 2026] 127.0.0.1:42988 Accepted
+[Sat Sep 19 01:19:06 2026] 127.0.0.1:42988 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:19:06 2026] 127.0.0.1:42988 Closing
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53140 Accepted
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53140 [200]: GET /
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53140 Closing
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53150 Accepted
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53160 Accepted
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53150 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53160 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53150 Closing
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53160 Closing
+[Sat Sep 19 01:19:53 2026] 127.0.0.1:53162 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53162 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53162 Closing
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53178 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53178 [200]: GET /api/settings.php
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53178 Closing
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53186 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53186 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53186 Closing
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53202 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53202 [200]: GET /api/tickets.php
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53202 Closing
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53214 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53214 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53214 Closing
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53222 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53222 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53222 Closing
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53230 Accepted
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53230 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:19:54 2026] 127.0.0.1:53230 Closing
+[Sat Sep 19 01:19:55 2026] 127.0.0.1:53236 Accepted
+[Sat Sep 19 01:19:55 2026] 127.0.0.1:53236 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:19:55 2026] 127.0.0.1:53236 Closing
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33438 Accepted
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33438 [200]: GET /
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33438 Closing
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33454 Accepted
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33466 Accepted
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33454 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33466 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33454 Closing
+[Sat Sep 19 01:20:20 2026] 127.0.0.1:33466 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33468 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33468 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33468 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33474 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33474 [200]: GET /api/settings.php
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33474 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33476 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33476 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33476 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33484 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33484 [200]: GET /api/tickets.php
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33484 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33494 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33494 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33494 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33504 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33504 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33504 Closing
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33506 Accepted
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33506 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:21 2026] 127.0.0.1:33506 Closing
+[Sat Sep 19 01:20:22 2026] 127.0.0.1:33522 Accepted
+[Sat Sep 19 01:20:22 2026] 127.0.0.1:33522 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:22 2026] 127.0.0.1:33522 Closing
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35888 Accepted
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35888 [200]: GET /
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35888 Closing
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35900 Accepted
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35914 Accepted
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35900 [200]: GET /assets/css/style.css
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35914 [200]: GET /assets/js/app.js
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35900 Closing
+[Sat Sep 19 01:20:42 2026] 127.0.0.1:35914 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35920 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35920 [200]: POST /api/auth.php?action=login
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35920 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35926 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35926 [200]: GET /api/settings.php
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35926 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35936 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35936 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35936 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35946 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35946 [200]: GET /api/tickets.php
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35946 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35954 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35954 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35954 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35966 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35966 [200]: POST /api/form-fields.php
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35966 Closing
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35974 Accepted
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35974 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:43 2026] 127.0.0.1:35974 Closing
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:35980 Accepted
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:35980 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:35980 Closing
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:35990 Accepted
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:35990 [200]: POST /api/tickets.php?action=create
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:35990 Closing
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:36006 Accepted
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:36006 [200]: GET /api/form-fields.php
+[Sat Sep 19 01:20:44 2026] 127.0.0.1:36006 Closing
+[Sat Sep 19 01:20:45 2026] 127.0.0.1:36014 Accepted
+[Sat Sep 19 01:20:45 2026] 127.0.0.1:36014 [200]: GET /api/tickets.php?status=&category_id=&priority_id=&archived=0&search=
+[Sat Sep 19 01:20:45 2026] 127.0.0.1:36014 Closing
+[Sat Sep 19 01:20:45 2026] 127.0.0.1:36018 Accepted
+[Sat Sep 19 01:20:45 2026] 127.0.0.1:36018 [200]: GET /api/tickets.php
+[Sat Sep 19 01:20:45 2026] 127.0.0.1:36018 Closing
+[Sat Sep 19 01:20:46 2026] 127.0.0.1:53982 Accepted
+[Sat Sep 19 01:20:46 2026] 127.0.0.1:53982 [200]: GET /api/analytics.php?action=dashboard
+[Sat Sep 19 01:20:46 2026] 127.0.0.1:53982 Closing

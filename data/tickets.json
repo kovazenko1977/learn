@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "number": "REQ-2026-0001",
+        "title": "Замена лампы в офисе 204",
+        "description": "Перегорел потолочный светильник в левой части кабинета.",
+        "category_id": 2,
+        "priority_id": 1,
+        "status": "new",
+        "created_by": 3,
+        "assigned_to": null,
+        "department": "Бухгалтерия",
+        "custom_fields": {
+            "room_number": "204",
+            "inventory_num": "ИНВ-00129",
+            "preferred_date": "2026-03-20"
+        },
+        "attachments": [],
+        "created_at": "2026-03-18 09:15:00",
+        "updated_at": "2026-03-18 09:15:00",
+        "due_date": "2026-03-21 09:15:00",
+        "completed_at": null,
+        "archived": false
+    },
+    {
+        "id": 2,
+        "number": "REQ-2026-0002",
+        "title": "Не работает сетевой принтер HP LaserJet",
+        "description": "Принтер не откликается по сети, горит красная индикация ошибки.",
+        "category_id": 1,
+        "priority_id": 3,
+        "status": "in_progress",
+        "created_by": 3,
+        "assigned_to": 4,
+        "department": "Отдел Главного Механика",
+        "custom_fields": {
+            "room_number": "101",
+            "inventory_num": "ИНВ-99120",
+            "preferred_date": "2026-03-18"
+        },
+        "attachments": [],
+        "created_at": "2026-03-18 10:00:00",
+        "updated_at": "2026-03-18 10:30:00",
+        "due_date": "2026-03-18 18:00:00",
+        "completed_at": null,
+        "archived": false
+    },
+    {
+        "number": "REQ-2026-0003",
+        "title": "Аварийная протечка трубы в цеху 3",
+        "description": "Труба холодного водоснабжения дала течь около станка №4.",
+        "category_id": 1,
+        "priority_id": 1,
+        "status": "new",
+        "created_by": 1,
+        "assigned_to": null,
+        "department": "ИТ и Автоматизация",
+        "custom_fields": {
+            "Номер кабинета \/ помещения": "101",
+            "Инвентарный номер оборудования": "101",
+            "Желаемая дата выполнения": "2026-03-25",
+            "Срочность согласования": "101"
+        },
+        "attachments": [],
+        "created_at": "2026-09-19 01:20:44",
+        "updated_at": "2026-09-19 01:20:44",
+        "due_date": "2026-09-22 01:20:44",
+        "completed_at": null,
+        "archived": false,
+        "id": 3
+    }
+]

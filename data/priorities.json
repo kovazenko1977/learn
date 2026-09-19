@@ -1,0 +1,6 @@
+[
+  { "id": 1, "name": "Низкий", "code": "low", "color": "#10B981", "sla_hours": 72 },
+  { "id": 2, "name": "Средний", "code": "medium", "color": "#3B82F6", "sla_hours": 24 },
+  { "id": 3, "name": "Высокий", "code": "high", "color": "#F59E0B", "sla_hours": 8 },
+  { "id": 4, "name": "Критический", "code": "critical", "color": "#EF4444", "sla_hours": 2 }
+]

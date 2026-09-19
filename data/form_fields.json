@@ -1,0 +1,112 @@
+[
+    {
+        "id": 1,
+        "label": "Номер кабинета \/ помещения",
+        "field_name": "room_number",
+        "field_type": "text",
+        "required": true,
+        "options": [],
+        "placeholder": "Например: Кабинет 304 или Цех №2",
+        "order": 1
+    },
+    {
+        "id": 2,
+        "label": "Инвентарный номер оборудования",
+        "field_name": "inventory_num",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: ИНВ-2024-8841",
+        "order": 2
+    },
+    {
+        "id": 3,
+        "label": "Желаемая дата выполнения",
+        "field_name": "preferred_date",
+        "field_type": "date",
+        "required": false,
+        "options": [],
+        "placeholder": "",
+        "order": 3
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_29e2ec16",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 4,
+        "id": 4
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_d76d84d8",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 5,
+        "id": 5
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_7052058c",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 6,
+        "id": 6
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_685c389a",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 7,
+        "id": 7
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_d101f704",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 8,
+        "id": 8
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_4591c7bd",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 9,
+        "id": 9
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_db478836",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 10,
+        "id": 10
+    },
+    {
+        "label": "Срочность согласования",
+        "field_name": "field_8e239465",
+        "field_type": "text",
+        "required": false,
+        "options": [],
+        "placeholder": "Например: До 15:00",
+        "order": 11,
+        "id": 11
+    }
+]
