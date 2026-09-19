@@ -6,14 +6,14 @@
         "department_id": 1,
         "department_name": "Администрация",
         "position": "Главный администратор",
-        "role": "Admin",
+        "role": "dispatcher",
         "service_id": 0,
         "password": "$2y$10$BhTLy7iEFmdoYNSgfff.wOZFC44P4REhJrQwopVOrnHc4yOzKTJr2",
         "avatar": "",
         "hide_phone": false,
         "is_blocked": false,
         "created_at": "2026-09-17 07:23:11",
-        "last_active": "2026-09-19 07:00:37",
+        "last_active": "2026-09-19 07:59:33",
         "notification_settings": {
             "new_requests": true,
             "status_change": true,
@@ -23,8 +23,8 @@
             "emergency_alerts": true,
             "sla_overdue": true
         },
-        "token": "9caed976856daaecb2ad65c97528d598fb841cfc8ddba585bf792667681671e4",
-        "updated_at": "2026-09-19 07:00:37"
+        "token": "9621ffa8b6ec83e9eeb82e23f8fc4560594ab38a436b3cacef10f2d6105c2f5d",
+        "updated_at": "2026-09-19 07:59:33"
     },
     {
         "id": 2,

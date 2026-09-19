@@ -882,7 +882,83 @@ class MedServiceApp {
         }
     }
 
+    openProfileModal() {
+        if (!this.currentUser) return;
+        this.openEditEmployeeModal(this.currentUser.id);
+    }
+
+    onCategoryChange(category) {
+        const categoryMap = {
+            'Электрика': 1,
+            'Сантехника': 2,
+            'Отопление': 3,
+            'Канализация': 2,
+            'Вентиляция': 3,
+            'Уборка': 4,
+            'Территория': 5,
+            'Ремонт помещений': 6,
+            'Мебель': 6,
+            'Оборудование': 7,
+            'IT': 7
+        };
+        const servId = categoryMap[category] || 0;
+        const serviceSelect = document.getElementById('reqServiceSelect');
+        if (serviceSelect && servId > 0) {
+            serviceSelect.value = servId;
+        }
+    }
+
+    async loadNotifications() {
+        const container = document.getElementById('notificationsList');
+        if (!container) return;
+        container.innerHTML = '<p style="padding:16px; color:var(--text-muted)">Загрузка уведомлений...</p>';
+
+        const notifs = await this.apiFetch('notifications');
+        if (Array.isArray(notifs) && notifs.length > 0) {
+            container.innerHTML = notifs.map(n => `
+                <div style="padding:12px; border-bottom:1px solid var(--border-color); background-color:var(--bg-card); margin-bottom:8px; border-radius:var(--radius-sm);">
+                    <div style="font-weight:bold; color:var(--primary);">${this.escapeHtml(n.title)}</div>
+                    <div style="font-size:13px; margin:4px 0;">${this.escapeHtml(n.message)}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${n.created_at}</div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<p style="padding:16px; color:var(--text-muted)">У вас нет новых уведомлений</p>';
+        }
+    }
+
+    async loadAnalytics() {
+        const container = document.getElementById('analyticsContainer');
+        if (!container) return;
+        container.innerHTML = 'Загрузка аналитики...';
+
+        const stats = await this.apiFetch('statistics');
+        if (stats && !stats.error) {
+            container.innerHTML = `
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-top:16px;">
+                    <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center;">
+                        <div style="font-size:32px; font-weight:bold; color:var(--primary);">${stats.total || 0}</div>
+                        <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Всего заявок</div>
+                    </div>
+                    <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center;">
+                        <div style="font-size:32px; font-weight:bold; color:#f59e0b;">${stats.in_progress || 0}</div>
+                        <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">В работе</div>
+                    </div>
+                    <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center;">
+                        <div style="font-size:32px; font-weight:bold; color:#10b981;">${stats.completed || 0}</div>
+                        <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Выполнено</div>
+                    </div>
+                    <div style="background-color:var(--bg-card); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center;">
+                        <div style="font-size:32px; font-weight:bold; color:#ef4444;">${stats.emergency || 0}</div>
+                        <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Аварийных</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     openPermissionsModal(empId) {
+        if (!empId) empId = this.currentUser?.id;
         if (!this.cachedEmployees) return;
         const emp = this.cachedEmployees.find(e => e.id == empId);
         if (!emp) return;
@@ -1157,6 +1233,108 @@ class MedServiceApp {
             alert('Настройки системы и графического интерфейса успешно сохранены');
         } else {
             alert(res.error || 'Ошибка при сохранении настроек');
+        }
+    }
+
+    switchSettingsSubtab(tab) {
+        document.querySelectorAll('.settings-subtab-btn').forEach(btn => btn.classList.remove('active', 'btn-primary'));
+        document.querySelectorAll('.settings-subtab-btn').forEach(btn => btn.classList.add('btn-outline'));
+
+        document.querySelectorAll('.settings-subtab-content').forEach(sec => sec.style.display = 'none');
+
+        if (tab === 'general') {
+            document.getElementById('btnSettingsSubtabGeneral')?.classList.add('active', 'btn-primary');
+            document.getElementById('btnSettingsSubtabGeneral')?.classList.remove('btn-outline');
+            document.getElementById('settingsSubtabGeneralSection').style.display = 'block';
+        } else if (tab === 'users') {
+            document.getElementById('btnSettingsSubtabUsers')?.classList.add('active', 'btn-primary');
+            document.getElementById('btnSettingsSubtabUsers')?.classList.remove('btn-outline');
+            document.getElementById('settingsSubtabUsersSection').style.display = 'block';
+            this.loadSettingsUsersList();
+        } else if (tab === 'backup') {
+            document.getElementById('btnSettingsSubtabBackup')?.classList.add('active', 'btn-primary');
+            document.getElementById('btnSettingsSubtabBackup')?.classList.remove('btn-outline');
+            document.getElementById('settingsSubtabBackupSection').style.display = 'block';
+        }
+    }
+
+    async loadSettingsUsersList() {
+        const tbody = document.getElementById('settingsUsersTableBody');
+        if (!tbody) return;
+
+        const search = document.getElementById('settingsUserSearch')?.value || '';
+        const roleFilter = document.getElementById('settingsUserRoleFilter')?.value || '';
+
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:16px; text-align:center;">Загрузка списка пользователей...</td></tr>';
+
+        const employees = await this.apiFetch('employees');
+        if (!Array.isArray(employees)) {
+            tbody.innerHTML = '<tr><td colspan="6" style="padding:16px; text-align:center; color:#ef4444;">Ошибка загрузки пользователей</td></tr>';
+            return;
+        }
+
+        const filtered = employees.filter(emp => {
+            if (roleFilter && emp.role !== roleFilter) return false;
+            if (search) {
+                const s = search.toLowerCase();
+                const nameMatch = (emp.name || '').toLowerCase().includes(s);
+                const phoneMatch = (emp.phone || '').includes(s);
+                if (!nameMatch && !phoneMatch) return false;
+            }
+            return true;
+        });
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="padding:16px; text-align:center; color:var(--text-muted);">Пользователи не найдены</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(u => `
+            <tr style="border-bottom:1px solid var(--border-color);">
+                <td style="padding:10px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:18px;">${u.avatar || '👤'}</span>
+                        <div>
+                            <strong>${this.escapeHtml(u.name)}</strong>
+                            <div style="font-size:11px; color:var(--text-muted);">${this.escapeHtml(u.position || 'Должность не указана')}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding:10px;">${this.escapeHtml(u.phone)}</td>
+                <td style="padding:10px;">${this.escapeHtml(u.department_name || '—')}</td>
+                <td style="padding:10px;">
+                    <select class="form-select" style="font-size:12px; padding:4px 8px;" onchange="app.updateUserRoleQuick(${u.id}, this.value)">
+                        <option value="Employee" ${u.role === 'Employee' || u.role === 'employee' ? 'selected' : ''}>👤 Сотрудник</option>
+                        <option value="Executor" ${u.role === 'Executor' || u.role === 'executor' ? 'selected' : ''}>👷 Исполнитель</option>
+                        <option value="Service Head" ${u.role === 'Service Head' || u.role === 'service_head' ? 'selected' : ''}>👔 Руководитель службы</option>
+                        <option value="Dispatcher" ${u.role === 'Dispatcher' || u.role === 'dispatcher' ? 'selected' : ''}>🎧 Диспетчер</option>
+                        <option value="Admin" ${u.role === 'Admin' || u.role === 'admin' ? 'selected' : ''}>👑 Администратор</option>
+                    </select>
+                </td>
+                <td style="padding:10px;">
+                    ${u.is_blocked ? '<span style="color:#ef4444; font-weight:bold;">🚫 Заблокирован</span>' : '<span style="color:#10b981; font-weight:bold;">🟢 Активен</span>'}
+                </td>
+                <td style="padding:10px; text-align:right;">
+                    <div style="display:flex; gap:6px; justify-content:flex-end;">
+                        <button class="btn btn-outline btn-sm" onclick="app.openPermissionsModal(${u.id})">🔑 Права</button>
+                        <button class="btn btn-secondary btn-sm" onclick="app.openEditEmployeeModal(${u.id})">✏️ Изменить</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async updateUserRoleQuick(userId, newRole) {
+        const res = await this.apiFetch(`employees/${userId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ role: newRole })
+        });
+        if (res && res.success) {
+            alert('Роль пользователя успешно обновлена');
+            this.loadSettingsUsersList();
+        } else {
+            alert(res.error || 'Ошибка при изменении роли');
         }
     }
 

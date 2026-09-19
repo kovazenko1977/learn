@@ -364,8 +364,19 @@
                     <button class="btn btn-outline btn-sm" onclick="app.openAboutModal()">ℹ️ О программе</button>
                 </div>
 
-                <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:850px; width:100%;">
-                    <form id="adminSettingsForm" onsubmit="app.saveAdminSettings(event)">
+                <!-- Sub-tab Navigation for Settings -->
+                <div style="display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:12px; flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm settings-subtab-btn active" id="btnSettingsSubtabGeneral" onclick="app.switchSettingsSubtab('general')">⚙️ Общие настройки</button>
+                    <button class="btn btn-outline btn-sm settings-subtab-btn" id="btnSettingsSubtabUsers" onclick="app.switchSettingsSubtab('users')">👥 Пользователи и роли</button>
+                    <button class="btn btn-outline btn-sm settings-subtab-btn" id="btnSettingsSubtabPermissions" onclick="app.openPermissionsModal()">🔑 Права доступа</button>
+                    <button class="btn btn-outline btn-sm settings-subtab-btn" id="btnSettingsSubtabAudit" onclick="app.loadAuditLogs()">📜 Журнал аудита</button>
+                    <button class="btn btn-outline btn-sm settings-subtab-btn" id="btnSettingsSubtabBackup" onclick="app.switchSettingsSubtab('backup')">💾 Резервные копии</button>
+                </div>
+
+                <!-- SUBTAB 1: GENERAL SETTINGS -->
+                <div id="settingsSubtabGeneralSection" class="settings-subtab-content">
+                    <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:850px; width:100%;">
+                        <form id="adminSettingsForm" onsubmit="app.saveAdminSettings(event)">
 
                         <!-- Section 1: Hospital Metadata -->
                         <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">🏥 1. Реквизиты и контакты учреждения</h3>
@@ -467,20 +478,70 @@
                             <button type="submit" class="btn btn-primary" style="padding:12px 24px; font-size:15px;">💾 Сохранить конфигурацию</button>
                         </div>
                     </form>
+                </div>
+                </div>
 
-                    <hr style="border:none; border-top:1px solid var(--border-color); margin:28px 0;">
+                <!-- SUBTAB 2: USER MANAGEMENT & ROLES -->
+                <div id="settingsSubtabUsersSection" class="settings-subtab-content" style="display:none;">
+                    <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); width:100%;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+                            <div>
+                                <h3 style="color:var(--primary); font-size:18px; margin-bottom:4px;">👥 Управление сотрудниками и ролями</h3>
+                                <p style="font-size:13px; color:var(--text-muted);">Полный контроль: создание учетных записей, назначение ролей, сброс паролей и блокировка</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="app.openAddEmployeeModal()">
+                                ➕ Добавить сотрудника
+                            </button>
+                        </div>
 
-                    <!-- Section 4: Maintenance, Backup & Legal -->
-                    <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">💾 4. Обслуживание, Бэкап и О программе</h3>
-                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-                        Резервное копирование данных, аудиторский журнал и сведения о разработчике
-                    </p>
-                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                        <button class="btn btn-primary" onclick="app.downloadBackup()">💾 Скачать бэкап JSON</button>
-                        <button class="btn btn-secondary" onclick="app.loadAuditLogs()">📜 Журнал аудита</button>
-                        <button class="btn btn-outline" onclick="app.openAboutModal()">ℹ️ О программе и авторские права</button>
+                        <!-- User Filters & Search -->
+                        <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+                            <input type="text" id="settingsUserSearch" class="form-input" style="max-width:300px;" placeholder="🔍 Поиск по ФИО или телефону..." oninput="app.loadSettingsUsersList()">
+                            <select id="settingsUserRoleFilter" class="form-select" style="max-width:220px;" onchange="app.loadSettingsUsersList()">
+                                <option value="">Все роли</option>
+                                <option value="Employee">Сотрудник</option>
+                                <option value="Executor">Исполнитель</option>
+                                <option value="Service Head">Руководитель службы</option>
+                                <option value="Dispatcher">Диспетчер</option>
+                                <option value="Admin">Администратор</option>
+                            </select>
+                        </div>
+
+                        <!-- User List Table -->
+                        <div style="overflow-x:auto;">
+                            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                <thead>
+                                    <tr style="border-bottom:2px solid var(--border-color); text-align:left; color:var(--text-muted);">
+                                        <th style="padding:10px;">Сотрудник</th>
+                                        <th style="padding:10px;">Телефон</th>
+                                        <th style="padding:10px;">Подразделение / Служба</th>
+                                        <th style="padding:10px;">Роль</th>
+                                        <th style="padding:10px;">Статус</th>
+                                        <th style="padding:10px; text-align:right;">Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="settingsUsersTableBody">
+                                    <!-- Dynamic User Rows -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div id="auditLogsContainer" style="margin-top:16px; font-size:12px; max-height:220px; overflow-y:auto; display:none;"></div>
+                </div>
+
+                <!-- SUBTAB 3: BACKUP & MAINTENANCE -->
+                <div id="settingsSubtabBackupSection" class="settings-subtab-content" style="display:none;">
+                    <div style="background-color:var(--bg-card); padding:24px; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:850px; width:100%;">
+                        <h3 style="margin-bottom:14px; color:var(--primary); font-size:16px;">💾 Резервное копирование и Обслуживание</h3>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">
+                            Скачивайте полные бэкапы JSON данных, просматривайте журнал аудита и сведения о разработчике.
+                        </p>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button class="btn btn-primary" onclick="app.downloadBackup()">💾 Скачать бэкап JSON</button>
+                            <button class="btn btn-secondary" onclick="app.loadAuditLogs()">📜 Журнал аудита</button>
+                            <button class="btn btn-outline" onclick="app.openAboutModal()">ℹ️ О программе и авторские права</button>
+                        </div>
+                        <div id="auditLogsContainer" style="margin-top:16px; font-size:12px; max-height:220px; overflow-y:auto; display:none;"></div>
+                    </div>
                 </div>
             </section>
 
