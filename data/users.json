@@ -1,0 +1,46 @@
+[
+    {
+        "id": "user_admin_001",
+        "username": "admin",
+        "password_hash": "$2y$10$zmbXyh51RYI7am8fTGfapeimwNxJ8ApPpaHNdTrgJeJpnurTnOyYa",
+        "full_name": "Администратор Системы",
+        "email": "admin@crm.local",
+        "role": "admin",
+        "department": "Руководство",
+        "status": "active",
+        "created_at": "2026-09-20 01:20:49"
+    },
+    {
+        "id": "user_head_001",
+        "username": "head",
+        "password_hash": "$2y$10$WiKS\/CvbdMVtMRMOwZDOE.gEBvFO\/YzTRUETuJ9jvi70oUtHxlDZC",
+        "full_name": "Иванов Иван (Нач. Отдела)",
+        "email": "head@crm.local",
+        "role": "head",
+        "department": "Отдел ИТ и Ремонта",
+        "status": "active",
+        "created_at": "2026-09-20 01:20:49"
+    },
+    {
+        "id": "user_resp_001",
+        "username": "resp",
+        "password_hash": "$2y$10$PGLgb\/NfuIQIZlxHzpV9ru\/evwe9OKW8E9ggnTbfe3ETeNAqTXnui",
+        "full_name": "Петров Петр (Ответственный)",
+        "email": "resp@crm.local",
+        "role": "responsible",
+        "department": "Отдел Продаж",
+        "status": "active",
+        "created_at": "2026-09-20 01:20:50"
+    },
+    {
+        "id": "user_exec_001",
+        "username": "exec",
+        "password_hash": "$2y$10$V6EqzKZ3TFYhlnIN6EzA9urh.fAwb.3GP98R42eOOxUvAFkpU83oO",
+        "full_name": "Сидоров Алексей (Техник)",
+        "email": "exec@crm.local",
+        "role": "executor",
+        "department": "Отдел ИТ и Ремонта",
+        "status": "active",
+        "created_at": "2026-09-20 01:20:50"
+    }
+]

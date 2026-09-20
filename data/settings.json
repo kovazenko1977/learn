@@ -1,0 +1,39 @@
+{
+    "storage_mode": "json",
+    "mysql_host": "127.0.0.1",
+    "mysql_port": "3306",
+    "mysql_db": "crm_db",
+    "mysql_user": "root",
+    "mysql_pass": "",
+    "sla_low": 72,
+    "sla_medium": 48,
+    "sla_high": 24,
+    "sla_urgent": 8,
+    "categories": [
+        "Оборудование",
+        "ПО \/ ИТ",
+        "Сантехника",
+        "Электрика",
+        "Мебель",
+        "Общее"
+    ],
+    "priorities": [
+        "Низкий",
+        "Средний",
+        "Высокий",
+        "Критический"
+    ],
+    "notifications": {
+        "email": true,
+        "push": true,
+        "telegram": false,
+        "triggers": [
+            "created",
+            "assigned",
+            "status_changed",
+            "comment_added",
+            "sla_alert"
+        ]
+    },
+    "language": "ru"
+}

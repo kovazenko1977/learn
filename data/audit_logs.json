@@ -1,0 +1,50 @@
+[
+    {
+        "id": "log_6aaf354db95a42.59350198",
+        "user_id": "user_admin_001",
+        "user_name": "Администратор Системы",
+        "action": "FORM_FIELD_CREATE",
+        "details": "Добавлено настраиваемое поле: Инвентарный номер",
+        "created_at": "2026-09-20 01:22:21"
+    },
+    {
+        "id": "log_6aaf354db9fac9.43259898",
+        "user_id": "user_admin_001",
+        "user_name": "Администратор Системы",
+        "action": "REQUEST_CREATE",
+        "details": "Создана заявка ID: req_6aaf354db9de57.83617947 (Поломка принтера в офисе 302)",
+        "created_at": "2026-09-20 01:22:21"
+    },
+    {
+        "id": "log_6aaf3569568518.63024976",
+        "user_id": "user_admin_001",
+        "user_name": "Администратор Системы",
+        "action": "FORM_FIELD_CREATE",
+        "details": "Добавлено настраиваемое поле: Инвентарный номер",
+        "created_at": "2026-09-20 01:22:49"
+    },
+    {
+        "id": "log_6aaf3569570bd3.46059573",
+        "user_id": "user_admin_001",
+        "user_name": "Администратор Системы",
+        "action": "REQUEST_CREATE",
+        "details": "Создана заявка ID: req_6aaf356956f344.48192408 (Поломка принтера в офисе 302)",
+        "created_at": "2026-09-20 01:22:49"
+    },
+    {
+        "id": "log_6aaf3569579fb7.16837267",
+        "user_id": "user_admin_001",
+        "user_name": "Администратор Системы",
+        "action": "COMMENT_ADD",
+        "details": "Добавлен комментарий к заявке ID: req_6aaf356956f344.48192408",
+        "created_at": "2026-09-20 01:22:49"
+    },
+    {
+        "id": "log_6aaf3626176312.74945242",
+        "user_id": "user_admin_001",
+        "user_name": "Администратор Системы",
+        "action": "REQUEST_CREATE",
+        "details": "Создана заявка ID: req_6aaf36261747d0.52897971 (Проблема с кондиционером в холле)",
+        "created_at": "2026-09-20 01:25:58"
+    }
+]

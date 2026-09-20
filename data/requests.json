@@ -1,0 +1,69 @@
+[
+    {
+        "id": "req_test_001",
+        "title": "Тестовая заявка",
+        "category": "ПО \/ ИТ",
+        "priority": "Высокий",
+        "status": "new",
+        "author_id": "user_resp_001",
+        "created_at": "2026-09-20 01:20:50"
+    },
+    {
+        "id": "req_6aaf354db9de57.83617947",
+        "title": "Поломка принтера в офисе 302",
+        "description": "Принтер зажёвывает бумагу и выдает ошибку 502",
+        "category": "ПО \/ ИТ",
+        "priority": "Высокий",
+        "status": "new",
+        "author_id": "user_admin_001",
+        "executor_id": null,
+        "department": "Руководство",
+        "custom_fields": {
+            "field_inventory": "INV-9921"
+        },
+        "attachments": [],
+        "created_at": "2026-09-20 01:22:21",
+        "updated_at": "2026-09-20 01:22:21",
+        "due_date": "2026-09-21 01:22:21",
+        "completed_at": null
+    },
+    {
+        "id": "req_6aaf356956f344.48192408",
+        "title": "Поломка принтера в офисе 302",
+        "description": "Принтер зажёвывает бумагу и выдает ошибку 502",
+        "category": "ПО \/ ИТ",
+        "priority": "Высокий",
+        "status": "new",
+        "author_id": "user_admin_001",
+        "executor_id": null,
+        "department": "Руководство",
+        "custom_fields": {
+            "field_inventory": "INV-9921"
+        },
+        "attachments": [],
+        "created_at": "2026-09-20 01:22:49",
+        "updated_at": "2026-09-20 01:22:49",
+        "due_date": "2026-09-21 01:22:49",
+        "completed_at": null
+    },
+    {
+        "id": "req_6aaf36261747d0.52897971",
+        "title": "Проблема с кондиционером в холле",
+        "description": "Кондиционер не включается, горит красная индикация",
+        "category": "Оборудование",
+        "priority": "Низкий",
+        "status": "new",
+        "author_id": "user_admin_001",
+        "executor_id": null,
+        "department": "Руководство",
+        "custom_fields": {
+            "field_6aaf354db943f5.55451102": "",
+            "field_6aaf3569566c57.36540051": ""
+        },
+        "attachments": [],
+        "created_at": "2026-09-20 01:25:58",
+        "updated_at": "2026-09-20 01:25:58",
+        "due_date": "2026-09-23 01:25:58",
+        "completed_at": null
+    }
+]
