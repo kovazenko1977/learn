@@ -549,28 +549,113 @@ class MedServiceApp {
         }
     }
 
+    formatPhoneDisplay(phone) {
+        if (!phone) return '';
+        const digits = phone.replace(/[^0-9]/g, '');
+        if (digits.length === 12 && digits.startsWith('375')) {
+            return `+375 (${digits.slice(3, 5)}) ${digits.slice(5, 8)}-${digits.slice(8, 10)}-${digits.slice(10, 12)}`;
+        }
+        return phone;
+    }
+
     renderDirectoryGrid(services) {
         const grid = document.getElementById('directoryServicesGrid');
-        grid.innerHTML = services.map(s => `
-            <div class="stat-card" style="flex-direction:column; align-items:flex-start; text-align:left;">
-                <div style="display:flex; align-items:center; gap:10px; width:100%; margin-bottom:10px;">
-                    <div style="font-size:28px;">${s.icon || '⚡'}</div>
+        if (!grid) return;
+
+        if (!Array.isArray(services) || services.length === 0) {
+            grid.innerHTML = '<div style="grid-column:1/-1; padding:24px; text-align:center; color:var(--text-muted); background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-color);">Службы не найдены</div>';
+            return;
+        }
+
+        grid.innerHTML = services.map(s => {
+            const formattedMainPhone = this.formatPhoneDisplay(s.phone);
+            const formattedEmergencyPhone = this.formatPhoneDisplay(s.emergency_phone);
+
+            return `
+                <div style="background-color:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-color); padding:20px; display:flex; flex-direction:column; justify-space-between; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
                     <div>
-                        <div style="font-size:16px; font-weight:700;">${s.name}</div>
-                        <div style="font-size:12px; color:var(--text-muted);">${s.work_hours || '24/7'}</div>
+                        <!-- Card Header -->
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="font-size:32px; width:48px; height:48px; background:var(--bg-main); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center;">${s.icon || '🛠'}</div>
+                                <div>
+                                    <h3 style="font-size:16px; font-weight:700; color:var(--text-main); margin-bottom:2px;">${this.escapeHtml(s.name)}</h3>
+                                    <div style="font-size:12px; color:var(--text-muted); font-weight:500;">
+                                        👤 Руководитель: ${this.escapeHtml(s.head_name || 'Не назначен')}
+                                    </div>
+                                </div>
+                            </div>
+                            <span style="font-size:11px; padding:3px 8px; border-radius:12px; background:rgba(16,185,129,0.1); color:#10b981; font-weight:600;">
+                                🟢 ${s.work_hours || '24/7'}
+                            </span>
+                        </div>
+
+                        <!-- Description -->
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px; line-height:1.4;">
+                            ${this.escapeHtml(s.description || 'Обслуживание и устранение неисправностей корпусов больницы.')}
+                        </p>
+                    </div>
+
+                    <!-- Call Actions Block -->
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:auto;">
+                        <!-- Primary Call Button -->
+                        <a href="tel:${s.phone}" class="btn btn-primary" style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 12px; text-decoration:none; text-align:center;">
+                            <span style="font-size:14px; font-weight:700;">📞 ПОЗВОНИТЬ В СЛУЖБУ</span>
+                            <span style="font-size:12px; opacity:0.9; font-weight:600; margin-top:2px;">${formattedMainPhone}</span>
+                        </a>
+
+                        <!-- Emergency Call Button (If present) -->
+                        ${s.emergency_phone ? `
+                            <a href="tel:${s.emergency_phone}" class="btn btn-danger" style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 12px; text-decoration:none; text-align:center;">
+                                <span style="font-size:13px; font-weight:700;">🚨 АВАРИЙНАЯ ЛИНИЯ</span>
+                                <span style="font-size:11px; opacity:0.9; font-weight:600;">${formattedEmergencyPhone}</span>
+                            </a>
+                        ` : ''}
+
+                        <!-- Create Ticket Trigger -->
+                        <button class="btn btn-outline btn-sm" style="width:100%; justify-content:center; margin-top:4px; font-size:12px;" onclick="app.createRequestForService(${s.id})">
+                            📋 Подать заявку в службу
+                        </button>
                     </div>
                 </div>
-                <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">${s.description}</p>
+            `;
+        }).join('');
+    }
 
-                <div style="display:flex; flex-direction:column; gap:6px; width:100%;">
-                    <a class="btn btn-primary" href="tel:${s.phone}" style="width:100%; text-decoration:none;">
-                        📞 ПОЗВОНИТЬ (${s.phone})
-                    </a>
-                    ${s.emergency_phone ? `<a class="btn btn-danger" href="tel:${s.emergency_phone}" style="width:100%; text-decoration:none; padding:6px 12px; font-size:12px;">🚨 АВАРИЙНЫЙ: ${s.emergency_phone}</a>` : ''}
-                    ${s.internal_phone ? `<div style="font-size:12px; color:var(--text-muted); text-align:center;">Внутренний номер: <b>${s.internal_phone}</b></div>` : ''}
-                </div>
-            </div>
-        `).join('');
+    createRequestForService(serviceId) {
+        this.switchView('create-request');
+        const sel = document.getElementById('reqServiceSelect');
+        if (sel) sel.value = serviceId;
+    }
+
+    filterDirectoryCategory(cat, btnElement) {
+        document.querySelectorAll('.dir-chip-btn').forEach(b => {
+            b.classList.remove('active', 'btn-primary');
+            b.classList.add('btn-outline');
+        });
+        if (btnElement) {
+            btnElement.classList.add('active', 'btn-primary');
+            btnElement.classList.remove('btn-outline');
+        }
+
+        if (!this.services) return;
+
+        if (cat === 'all') {
+            this.renderDirectoryGrid(this.services);
+            return;
+        }
+
+        const catMap = {
+            'engineering': [1, 3], // Электрика, Отопление
+            'sanitary': [2],       // Сантехника
+            'cleaning': [4, 5],    // Уборка, Территория
+            'it': [7],             // IT
+            'emergency': [8]       // Дежурная служба
+        };
+
+        const allowedIds = catMap[cat] || [];
+        const filtered = this.services.filter(s => allowedIds.includes(s.id) || (cat === 'emergency' && s.emergency_phone));
+        this.renderDirectoryGrid(filtered);
     }
 
     filterDirectory(term) {
@@ -578,10 +663,11 @@ class MedServiceApp {
             this.renderDirectoryGrid(this.services);
             return;
         }
-        const filtered = this.services.filter(s =>
-            s.name.toLowerCase().includes(term.toLowerCase()) ||
-            s.phone.includes(term) ||
-            (s.internal_phone && s.internal_phone.includes(term))
+        const sTerm = term.toLowerCase();
+        const filtered = (this.services || []).filter(s =>
+            s.name.toLowerCase().includes(sTerm) ||
+            s.phone.includes(sTerm) ||
+            (s.head_name && s.head_name.toLowerCase().includes(sTerm))
         );
         this.renderDirectoryGrid(filtered);
     }

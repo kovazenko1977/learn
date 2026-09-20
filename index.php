@@ -282,15 +282,29 @@
             <!-- VIEW 4: DIRECTORY / PHONEBOOK -->
             <section id="view-directory" class="app-view" style="display:none;">
                 <div class="section-title">
-                    <span>☎ Телефонный справочник служб</span>
+                    <span>☎ Оперативный телефонный справочник больницы</span>
                 </div>
 
-                <div class="form-group">
-                    <input type="text" id="directorySearchInput" class="form-input" placeholder="Введите службу, фамилию или телефон..." oninput="app.filterDirectory(this.value)">
+                <!-- Search & Filter Controls -->
+                <div style="background-color:var(--bg-card); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:20px;">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <input type="text" id="directorySearchInput" class="form-input" placeholder="🔍 Поиск службы, руководителя или телефона..." oninput="app.filterDirectory(this.value)">
+                    </div>
+
+                    <!-- Category Filter Chips -->
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-primary btn-sm dir-chip-btn active" onclick="app.filterDirectoryCategory('all', this)">Все службы</button>
+                        <button class="btn btn-outline btn-sm dir-chip-btn" onclick="app.filterDirectoryCategory('engineering', this)">⚡ Инженерные</button>
+                        <button class="btn btn-outline btn-sm dir-chip-btn" onclick="app.filterDirectoryCategory('sanitary', this)">🚰 Сантехника & Водоканал</button>
+                        <button class="btn btn-outline btn-sm dir-chip-btn" onclick="app.filterDirectoryCategory('cleaning', this)">🧹 Хозслужба & Клининг</button>
+                        <button class="btn btn-outline btn-sm dir-chip-btn" onclick="app.filterDirectoryCategory('it', this)">💻 IT & Связь</button>
+                        <button class="btn btn-outline btn-sm dir-chip-btn" onclick="app.filterDirectoryCategory('emergency', this)">🚨 Дежурные & Аварийные</button>
+                    </div>
                 </div>
 
-                <div id="directoryServicesGrid" class="stats-grid">
-                    <!-- Directory services cards -->
+                <!-- Redesigned Service Directory Grid -->
+                <div id="directoryServicesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
+                    <!-- Directory services cards rendered dynamically -->
                 </div>
             </section>
 
