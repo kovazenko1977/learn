@@ -1,0 +1,18 @@
+[
+    {
+        "id": "field_6aaf354db943f5.55451102",
+        "label": "Инвентарный номер",
+        "type": "text",
+        "required": true,
+        "options": [],
+        "sort_order": 1
+    },
+    {
+        "id": "field_6aaf3569566c57.36540051",
+        "label": "Инвентарный номер",
+        "type": "text",
+        "required": true,
+        "options": [],
+        "sort_order": 1
+    }
+]
