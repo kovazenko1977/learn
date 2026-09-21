@@ -846,10 +846,22 @@ class MedServiceApp {
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
 
-    openEditEmployeeModal(empId) {
-        if (!this.cachedEmployees) return;
-        const emp = this.cachedEmployees.find(e => e.id == empId);
-        if (!emp) return;
+    async openEditEmployeeModal(empId) {
+        if (!this.cachedEmployees || !Array.isArray(this.cachedEmployees)) {
+            this.cachedEmployees = await this.apiFetch('employees');
+        }
+        let emp = (this.cachedEmployees || []).find(e => e.id == empId);
+        if (!emp) {
+            this.cachedEmployees = await this.apiFetch('employees');
+            emp = (this.cachedEmployees || []).find(e => e.id == empId);
+        }
+        if (!emp && this.currentUser && this.currentUser.id == empId) {
+            emp = this.currentUser;
+        }
+        if (!emp) {
+            alert('Сотрудник не найден');
+            return;
+        }
 
         const serviceOpts = (this.services || []).map(s => `
             <option value="${s.id}" ${(emp.service_id ?? 0) == s.id ? 'selected' : ''}>${s.icon || '🛠'} ${s.name}</option>
@@ -1078,11 +1090,23 @@ class MedServiceApp {
         });
     }
 
-    openPermissionsModal(empId) {
+    async openPermissionsModal(empId) {
         if (!empId) empId = this.currentUser?.id;
-        if (!this.cachedEmployees) return;
-        const emp = this.cachedEmployees.find(e => e.id == empId);
-        if (!emp) return;
+        if (!this.cachedEmployees || !Array.isArray(this.cachedEmployees)) {
+            this.cachedEmployees = await this.apiFetch('employees');
+        }
+        let emp = (this.cachedEmployees || []).find(e => e.id == empId);
+        if (!emp) {
+            this.cachedEmployees = await this.apiFetch('employees');
+            emp = (this.cachedEmployees || []).find(e => e.id == empId);
+        }
+        if (!emp && this.currentUser && this.currentUser.id == empId) {
+            emp = this.currentUser;
+        }
+        if (!emp) {
+            alert('Сотрудник не найден');
+            return;
+        }
 
         document.getElementById('permUserId').value = emp.id;
         document.getElementById('permUserName').innerText = `${emp.name} (${emp.position})`;
@@ -1403,6 +1427,7 @@ class MedServiceApp {
             tbody.innerHTML = '<tr><td colspan="6" style="padding:16px; text-align:center; color:#ef4444;">Ошибка загрузки пользователей</td></tr>';
             return;
         }
+        this.cachedEmployees = employees;
 
         const filtered = employees.filter(emp => {
             if (emp.is_superadmin || emp.phone === '1111' || emp.id == 999) return false;
