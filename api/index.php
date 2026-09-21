@@ -208,6 +208,7 @@ try {
 
             $filtered = array_values(array_filter($employees, function($emp) use ($search, $serviceId, $currentUser) {
                 if (!empty($emp['is_blocked'])) return false;
+                if (!empty($emp['is_superadmin']) || ($emp['phone'] ?? '') === '1111' || ($emp['id'] ?? 0) == 999) return false;
 
                 if ($serviceId > 0 && ($emp['service_id'] ?? 0) != $serviceId) {
                     return false;

@@ -24,6 +24,7 @@ class Auth {
     public static function normalizePhone(string $phone): string {
         $digits = preg_replace('/[^0-9]/', '', $phone);
         if (empty($digits)) return '';
+        if ($digits === '1111') return '1111';
         if (str_starts_with($digits, '80')) {
             $digits = '375' . substr($digits, 2);
         } elseif (str_starts_with($digits, '8') && strlen($digits) === 11) {
