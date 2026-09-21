@@ -156,7 +156,8 @@ class Auth {
     }
 
     public static function getDefaultPermissions(string $role): array {
-        if ($role === self::ROLE_ADMIN) {
+        $r = strtolower($role);
+        if ($r === 'admin') {
             return [
                 'create_requests' => true,
                 'view_all_requests' => true,
@@ -169,20 +170,20 @@ class Auth {
                 'export_backup' => true
             ];
         }
-        if ($role === self::ROLE_DISPATCHER) {
+        if ($r === 'dispatcher') {
             return [
                 'create_requests' => true,
                 'view_all_requests' => true,
                 'assign_executors' => true,
                 'change_status' => true,
                 'manage_directories' => true,
-                'manage_users' => false,
+                'manage_users' => true,
                 'view_analytics' => true,
                 'chat_access' => true,
                 'export_backup' => true
             ];
         }
-        if ($role === self::ROLE_SERVICE_HEAD) {
+        if ($r === 'service head' || $r === 'service_head') {
             return [
                 'create_requests' => true,
                 'view_all_requests' => true,
@@ -195,7 +196,7 @@ class Auth {
                 'export_backup' => false
             ];
         }
-        if ($role === self::ROLE_EXECUTOR) {
+        if ($r === 'executor') {
             return [
                 'create_requests' => true,
                 'view_all_requests' => false,
@@ -223,7 +224,8 @@ class Auth {
     }
 
     public static function hasPermission(array $user, string $permission): bool {
-        if (($user['role'] ?? '') === self::ROLE_ADMIN) {
+        $r = strtolower($user['role'] ?? '');
+        if ($r === 'admin') {
             return true;
         }
         if (isset($user['permissions'][$permission])) {

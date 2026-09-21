@@ -113,7 +113,7 @@
             <header class="top-header">
                 <div class="user-greeting">
                     <h2 id="greetingText">Добрый день!</h2>
-                    <p id="greetingSubText">Городская Клиническая Больница</p>
+                    <p id="greetingSubText" style="display:none;"></p>
                 </div>
 
                 <div class="header-actions">
@@ -164,15 +164,6 @@
                         </div>
                         <div class="stat-icon stat-emergency">🔴</div>
                     </div>
-                </div>
-
-                <!-- Fast Services Cards -->
-                <div class="section-title">
-                    <span>Часто используемые службы</span>
-                    <a href="#" style="font-size:13px; color:var(--primary); text-decoration:none;" onclick="app.switchView('directory')">Весь справочник →</a>
-                </div>
-                <div class="services-scroll" id="fastServicesContainer">
-                    <!-- Service cards rendered dynamically -->
                 </div>
 
                 <!-- Recent Requests List -->
@@ -745,6 +736,39 @@
                     <label style="display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer;">
                         <input type="checkbox" id="perm_export_backup"> 💾 Скачивать экспорт и резервные копии
                     </label>
+
+                    <hr style="border:none; border-top:1px solid var(--border-color); margin:10px 0;">
+                    <div style="font-weight:bold; font-size:13px; color:var(--primary); margin-bottom:6px;">📌 Видимость пунктов меню для пользователя:</div>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_dashboard" checked> 🏠 Главная
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_requests" checked> 📋 Заявки
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_chats" checked> 💬 Чаты
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_directory" checked> ☎ Справочник
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_employees" checked> 👥 Сотрудники
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_services" checked> 🏢 Службы
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_notifications" checked> 🔔 Уведомления
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_analytics" checked> 📊 Аналитика
+                        </label>
+                        <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                            <input type="checkbox" id="perm_nav_settings" checked> ⚙ Настройки
+                        </label>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%;">💾 Сохранить права</button>
             </form>

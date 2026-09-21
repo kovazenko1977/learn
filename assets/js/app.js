@@ -146,6 +146,9 @@ class MedServiceApp {
         document.getElementById('greetingText').innerText = `Добрый день, ${this.currentUser.name.split(' ')[0]}!`;
         document.getElementById('headerUserName').innerText = `${this.currentUser.name} (${this.getRoleTitle(this.currentUser.role)})`;
 
+        // Apply user menu visibility permissions
+        this.applyUserPermissions();
+
         // Check onboarding
         if (!localStorage.getItem('medservice_onboarding_done')) {
             document.getElementById('onboardingModal').classList.add('active');
@@ -225,7 +228,6 @@ class MedServiceApp {
     // ==========================================
     async loadDashboardData() {
         this.loadStats();
-        this.loadFastServices();
         this.loadRecentRequests();
     }
 
@@ -1043,6 +1045,38 @@ class MedServiceApp {
         }
     }
 
+    applyUserPermissions() {
+        if (!this.currentUser) return;
+
+        const role = this.currentUser.role;
+        const perms = this.currentUser.permissions || {};
+
+        const navViews = ['dashboard', 'requests', 'chats', 'directory', 'employees', 'services', 'notifications', 'analytics', 'settings'];
+
+        navViews.forEach(view => {
+            const permKey = `nav_${view}`;
+            let isVisible = true;
+
+            if (perms[permKey] !== undefined) {
+                isVisible = !!perms[permKey];
+            } else {
+                if (view === 'employees' || view === 'services' || view === 'settings') {
+                    isVisible = (role === 'Admin' || role === 'Dispatcher');
+                } else if (view === 'analytics') {
+                    isVisible = (role === 'Admin' || role === 'Dispatcher' || role === 'Service Head');
+                }
+            }
+
+            document.querySelectorAll(`.sidebar-nav .nav-item[data-view="${view}"]`).forEach(el => {
+                el.style.display = isVisible ? 'flex' : 'none';
+            });
+
+            document.querySelectorAll(`.mobile-nav .mobile-nav-item[data-view="${view}"]`).forEach(el => {
+                el.style.display = isVisible ? 'flex' : 'none';
+            });
+        });
+    }
+
     openPermissionsModal(empId) {
         if (!empId) empId = this.currentUser?.id;
         if (!this.cachedEmployees) return;
@@ -1053,11 +1087,17 @@ class MedServiceApp {
         document.getElementById('permUserName').innerText = `${emp.name} (${emp.position})`;
 
         const perms = emp.permissions || {};
-        const keys = ['create_requests', 'view_all_requests', 'assign_executors', 'change_status', 'manage_directories', 'manage_users', 'view_analytics', 'chat_access', 'export_backup'];
+        const keys = ['create_requests', 'view_all_requests', 'assign_executors', 'change_status', 'manage_directories', 'manage_users', 'view_analytics', 'chat_access', 'export_backup', 'nav_dashboard', 'nav_requests', 'nav_chats', 'nav_directory', 'nav_employees', 'nav_services', 'nav_notifications', 'nav_analytics', 'nav_settings'];
 
         keys.forEach(k => {
             const el = document.getElementById(`perm_${k}`);
-            if (el) el.checked = perms[k] !== undefined ? !!perms[k] : (emp.role === 'Admin' || emp.role === 'Dispatcher' || k === 'create_requests' || k === 'chat_access');
+            if (el) {
+                if (perms[k] !== undefined) {
+                    el.checked = !!perms[k];
+                } else {
+                    el.checked = k.startsWith('nav_') ? true : (emp.role === 'Admin' || emp.role === 'Dispatcher' || k === 'create_requests' || k === 'chat_access');
+                }
+            }
         });
 
         document.getElementById('permissionsModal').classList.add('active');
@@ -1070,7 +1110,7 @@ class MedServiceApp {
     async saveUserPermissions(e) {
         if (e) e.preventDefault();
         const empId = document.getElementById('permUserId').value;
-        const keys = ['create_requests', 'view_all_requests', 'assign_executors', 'change_status', 'manage_directories', 'manage_users', 'view_analytics', 'chat_access', 'export_backup'];
+        const keys = ['create_requests', 'view_all_requests', 'assign_executors', 'change_status', 'manage_directories', 'manage_users', 'view_analytics', 'chat_access', 'export_backup', 'nav_dashboard', 'nav_requests', 'nav_chats', 'nav_directory', 'nav_employees', 'nav_services', 'nav_notifications', 'nav_analytics', 'nav_settings'];
         const perms = {};
         keys.forEach(k => {
             const el = document.getElementById(`perm_${k}`);
@@ -1086,6 +1126,10 @@ class MedServiceApp {
         if (res && res.success) {
             alert('Права сотрудника успешно обновлены');
             this.hidePermissionsModal();
+            if (empId == this.currentUser.id) {
+                this.currentUser.permissions = perms;
+                this.applyUserPermissions();
+            }
             this.loadEmployees();
         } else {
             alert(res.error || 'Ошибка сохранения прав');
