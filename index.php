@@ -187,36 +187,85 @@
                 </div>
             </section>
 
-            <!-- VIEW 2: REQUESTS LIST -->
+            <!-- VIEW 2: REQUESTS LIST WITH MULTI-VIEW & FILTERS -->
             <section id="view-requests" class="app-view" style="display:none;">
-                <div class="section-title">
-                    <span>📋 Список заявок</span>
-                    <button class="btn btn-primary btn-sm" onclick="app.switchView('create-request')">+ Создать заявку</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <h2 style="font-size:20px; font-weight:800; color:var(--text-main); margin:0;">📋 Заявки и Задачи</h2>
+                        <!-- View Mode Switcher -->
+                        <div style="display:flex; background:var(--bg-card); padding:3px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                            <button class="btn btn-primary btn-sm req-view-btn active" id="btnViewCards" onclick="app.setRequestViewMode('cards')" title="Режим наглядных карточек">📋 Карточки</button>
+                            <button class="btn btn-outline btn-sm req-view-btn" id="btnViewTable" onclick="app.setRequestViewMode('table')" title="Режим компактной таблицы">☰ Таблица</button>
+                            <button class="btn btn-outline btn-sm req-view-btn" id="btnViewKanban" onclick="app.setRequestViewMode('kanban')" title="Режим Канбан-доски">📊 Канбан</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="app.switchView('create-request')">+ Создать заявку</button>
                 </div>
 
-                <!-- Filters -->
-                <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; width:100%;">
-                    <select id="filterStatus" class="form-select" style="width:auto; flex:1; min-width:140px;" onchange="app.loadRequests()">
-                        <option value="">Все статусы</option>
-                        <option value="Новая">🔵 Новые</option>
-                        <option value="Принято">🟡 Принято</option>
-                        <option value="В исполнении">🟠 В исполнении</option>
-                        <option value="Выполнено">🟢 Выполнено</option>
-                    </select>
+                <!-- Advanced Filters & Search Bar -->
+                <div style="background-color:var(--bg-card); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-color); margin-bottom:20px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; align-items:center;">
+                        <!-- Search Input -->
+                        <input type="text" id="reqSearchInput" class="form-input" placeholder="🔍 Поиск по №, описанию, месту..." oninput="app.loadRequests()">
 
-                    <select id="filterPriority" class="form-select" style="width:auto; flex:1; min-width:140px;" onchange="app.loadRequests()">
-                        <option value="">Все приоритеты</option>
-                        <option value="Обычный">Обычный</option>
-                        <option value="Важный">Важный</option>
-                        <option value="Срочный">Срочный</option>
-                        <option value="Аварийный">🚨 Аварийный</option>
-                    </select>
+                        <!-- Status Filter -->
+                        <select id="filterStatus" class="form-select" onchange="app.loadRequests()">
+                            <option value="">Все статусы</option>
+                            <option value="Новая">🔵 Новые</option>
+                            <option value="Принято">🟡 Принято</option>
+                            <option value="В исполнении">🟠 В исполнении</option>
+                            <option value="Выполнено">🟢 Выполнено</option>
+                        </select>
 
-                    <button class="btn btn-outline" onclick="app.exportRequestsCSV()" id="btnExportCSV">📥 Экспорт CSV</button>
+                        <!-- Priority Filter -->
+                        <select id="filterPriority" class="form-select" onchange="app.loadRequests()">
+                            <option value="">Все приоритеты</option>
+                            <option value="Обычный">Обычный</option>
+                            <option value="Важный">Важный</option>
+                            <option value="Срочный">Срочный</option>
+                            <option value="Аварийный">🚨 Аварийный</option>
+                        </select>
+
+                        <!-- Category Filter -->
+                        <select id="filterCategory" class="form-select" onchange="app.loadRequests()">
+                            <option value="">Все категории</option>
+                            <option value="Электрика">Электрика</option>
+                            <option value="Сантехника">Сантехника</option>
+                            <option value="Отопление">Отопление</option>
+                            <option value="Канализация">Канализация</option>
+                            <option value="Вентиляция">Вентиляция</option>
+                            <option value="Уборка">Уборка</option>
+                            <option value="Территория">Территория</option>
+                            <option value="Ремонт помещений">Ремонт помещений</option>
+                            <option value="Мебель">Мебель</option>
+                            <option value="Оборудование">Оборудование</option>
+                            <option value="IT">IT</option>
+                        </select>
+
+                        <!-- Sort Order -->
+                        <select id="reqSortOrder" class="form-select" onchange="app.loadRequests()">
+                            <option value="newest">Сначала новые</option>
+                            <option value="oldest">Сначала старые</option>
+                            <option value="emergency">Сначала аварийные</option>
+                        </select>
+
+                        <button class="btn btn-outline" onclick="app.exportRequestsCSV()" id="btnExportCSV">📥 CSV</button>
+                    </div>
                 </div>
 
-                <div id="requestsListContainer">
-                    <!-- Dynamic requests list -->
+                <!-- 1. CARDS VIEW -->
+                <div id="requestsListContainer" class="req-view-container">
+                    <!-- Cards view rendered dynamically -->
+                </div>
+
+                <!-- 2. COMPACT TABLE VIEW -->
+                <div id="requestsTableContainer" class="req-view-container" style="display:none; overflow-x:auto;">
+                    <!-- Table view rendered dynamically -->
+                </div>
+
+                <!-- 3. KANBAN BOARD VIEW -->
+                <div id="requestsKanbanContainer" class="req-view-container" style="display:none;">
+                    <!-- Kanban view rendered dynamically -->
                 </div>
             </section>
 

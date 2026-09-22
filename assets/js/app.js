@@ -6,6 +6,7 @@ class MedServiceApp {
     constructor() {
         this.currentUser = null;
         this.activeView = 'dashboard';
+        this.currentRequestViewMode = 'cards'; // 'cards', 'table', 'kanban'
         this.services = [];
         this.chats = [];
         this.activeChatId = 1; // 1 = General Chat
@@ -386,21 +387,204 @@ class MedServiceApp {
         }
     }
 
+    setRequestViewMode(mode) {
+        this.currentRequestViewMode = mode;
+
+        // Button active toggles
+        document.querySelectorAll('.req-view-btn').forEach(b => {
+            b.classList.remove('active', 'btn-primary');
+            b.classList.add('btn-outline');
+        });
+
+        const activeBtnMap = {
+            'cards': 'btnViewCards',
+            'table': 'btnViewTable',
+            'kanban': 'btnViewKanban'
+        };
+
+        const btn = document.getElementById(activeBtnMap[mode]);
+        if (btn) {
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline');
+        }
+
+        // Hide/Show view containers
+        document.querySelectorAll('.req-view-container').forEach(c => c.style.display = 'none');
+
+        if (mode === 'cards') {
+            document.getElementById('requestsListContainer').style.display = 'block';
+        } else if (mode === 'table') {
+            document.getElementById('requestsTableContainer').style.display = 'block';
+        } else if (mode === 'kanban') {
+            document.getElementById('requestsKanbanContainer').style.display = 'block';
+        }
+
+        this.renderActiveRequestsView();
+    }
+
     async loadRequests(params = {}) {
-        let path = 'requests?page=1&limit=50';
-        const status = params.status || document.getElementById('filterStatus').value;
-        const priority = params.priority || document.getElementById('filterPriority').value;
+        let path = 'requests?page=1&limit=100';
+        const statusSelect = document.getElementById('filterStatus');
+        const prioritySelect = document.getElementById('filterPriority');
+
+        if (params.status && statusSelect) statusSelect.value = params.status;
+        if (params.priority && prioritySelect) prioritySelect.value = params.priority;
+
+        const status = statusSelect?.value || '';
+        const priority = prioritySelect?.value || '';
 
         if (status) path += `&status=${encodeURIComponent(status)}`;
         if (priority) path += `&priority=${encodeURIComponent(priority)}`;
 
         const data = await this.apiFetch(path);
-        const container = document.getElementById('requestsListContainer');
-        if (!data.data || data.data.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted);">Заявки с выбранными фильтрами не найдены</div>';
+        let reqs = Array.isArray(data.data) ? data.data : [];
+
+        // Client side filtering for search and category
+        const searchTerm = (document.getElementById('reqSearchInput')?.value || '').toLowerCase();
+        const categoryFilter = document.getElementById('filterCategory')?.value || '';
+        const sortOrder = document.getElementById('reqSortOrder')?.value || 'newest';
+
+        if (searchTerm) {
+            reqs = reqs.filter(r =>
+                (r.number || '').toLowerCase().includes(searchTerm) ||
+                (r.description || '').toLowerCase().includes(searchTerm) ||
+                (r.location_text || '').toLowerCase().includes(searchTerm) ||
+                (r.author_name || '').toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (categoryFilter) {
+            reqs = reqs.filter(r => r.category === categoryFilter);
+        }
+
+        // Sorting
+        if (sortOrder === 'newest') {
+            reqs.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+        } else if (sortOrder === 'oldest') {
+            reqs.sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
+        } else if (sortOrder === 'emergency') {
+            reqs.sort((a, b) => (b.priority === 'Аварийный' ? 1 : 0) - (a.priority === 'Аварийный' ? 1 : 0));
+        }
+
+        this.cachedRequestsData = reqs;
+        this.renderActiveRequestsView();
+    }
+
+    renderActiveRequestsView() {
+        const reqs = this.cachedRequestsData || [];
+        const mode = this.currentRequestViewMode || 'cards';
+
+        if (mode === 'cards') {
+            const container = document.getElementById('requestsListContainer');
+            if (reqs.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted); background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-color);">Заявки не найдены</div>';
+                return;
+            }
+            container.innerHTML = reqs.map(r => this.renderRequestCard(r)).join('');
+        } else if (mode === 'table') {
+            this.renderRequestsTable(reqs);
+        } else if (mode === 'kanban') {
+            this.renderRequestsKanban(reqs);
+        }
+    }
+
+    renderRequestsTable(reqs) {
+        const container = document.getElementById('requestsTableContainer');
+        if (!container) return;
+
+        if (reqs.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-muted); background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-color);">Заявки не найдены</div>';
             return;
         }
-        container.innerHTML = data.data.map(r => this.renderRequestCard(r)).join('');
+
+        container.innerHTML = `
+            <table style="width:100%; border-collapse:collapse; background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-color); font-size:13px;">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--border-color); text-align:left; color:var(--text-muted);">
+                        <th style="padding:12px;">№ / Приоритет</th>
+                        <th style="padding:12px;">Категория / Место</th>
+                        <th style="padding:12px;">Описание</th>
+                        <th style="padding:12px;">Статус</th>
+                        <th style="padding:12px;">Исполнитель</th>
+                        <th style="padding:12px; text-align:right;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${reqs.map(r => `
+                        <tr style="border-bottom:1px solid var(--border-color);">
+                            <td style="padding:12px;">
+                                <strong>${r.number}</strong>
+                                <div><span class="priority-badge priority-${r.priority === 'Аварийный' ? 'emergency' : r.priority === 'Срочный' ? 'urgent' : 'normal'}" style="font-size:10px;">${r.priority}</span></div>
+                            </td>
+                            <td style="padding:12px;">
+                                <strong>${this.escapeHtml(r.category)}</strong>
+                                <div style="font-size:11px; color:var(--text-muted);">${this.escapeHtml(r.location_text)}</div>
+                            </td>
+                            <td style="padding:12px; max-width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                ${this.escapeHtml(r.description)}
+                            </td>
+                            <td style="padding:12px;">
+                                <span class="request-status status-${r.status === 'Новая' ? 'new' : r.status === 'Принято' ? 'accepted' : r.status === 'В исполнении' ? 'progress' : 'completed'}">
+                                    ${r.status}
+                                </span>
+                            </td>
+                            <td style="padding:12px;">
+                                👤 ${this.escapeHtml(r.executor_name || 'Не назначен')}
+                            </td>
+                            <td style="padding:12px; text-align:right;">
+                                <button class="btn btn-outline btn-sm" onclick="app.openRequestDetailModal(${r.id})">👁 Детали</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    renderRequestsKanban(reqs) {
+        const container = document.getElementById('requestsKanbanContainer');
+        if (!container) return;
+
+        const statuses = [
+            { id: 'Новая', label: '🔵 Новые', class: 'status-new' },
+            { id: 'Принято', label: '🟡 Принято', class: 'status-accepted' },
+            { id: 'В исполнении', label: '🟠 В исполнении', class: 'status-progress' },
+            { id: 'Выполнено', label: '🟢 Выполнено', class: 'status-completed' }
+        ];
+
+        container.innerHTML = `
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; align-items:flex-start;">
+                ${statuses.map(st => {
+                    const columnReqs = reqs.filter(r => (r.status || 'Новая') === st.id);
+                    return `
+                        <div style="background-color:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-color); padding:14px; min-height:450px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:2px solid var(--border-color); padding-bottom:8px;">
+                                <h3 style="font-size:15px; font-weight:700; margin:0;">${st.label}</h3>
+                                <span class="badge" style="background:var(--bg-main); color:var(--text-main); font-weight:bold;">${columnReqs.length}</span>
+                            </div>
+
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                ${columnReqs.length === 0 ? '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px 0;">Заявок нет</div>' : ''}
+                                ${columnReqs.map(r => `
+                                    <div style="background-color:var(--bg-main); border-radius:var(--radius-sm); padding:12px; border:1px solid var(--border-color); box-shadow:0 1px 3px rgba(0,0,0,0.05); cursor:pointer;" onclick="app.openRequestDetailModal(${r.id})">
+                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                            <strong style="font-size:13px; color:var(--primary);">${r.number}</strong>
+                                            <span class="priority-badge priority-${r.priority === 'Аварийный' ? 'emergency' : r.priority === 'Срочный' ? 'urgent' : 'normal'}" style="font-size:10px;">${r.priority}</span>
+                                        </div>
+                                        <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${this.escapeHtml(r.category)} — ${this.escapeHtml(r.location_text)}</div>
+                                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px; line-clamp:2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${this.escapeHtml(r.description)}</div>
+                                        <div style="font-size:11px; color:var(--text-muted); display:flex; justify-content:space-between; border-top:1px solid var(--border-color); padding-top:6px; margin-top:6px;">
+                                            <span>👤 ${this.escapeHtml(r.executor_name || 'Не назначен')}</span>
+                                            <span>${r.created_at ? r.created_at.split(' ')[1] || '' : ''}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
     }
 
     async assignRequestExecutor(reqId, execId) {
