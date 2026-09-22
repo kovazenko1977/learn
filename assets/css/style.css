@@ -922,7 +922,7 @@ th {
 }
 
 @media print {
-  .sidebar, .mobile-nav, .top-header, .btn, #pwaInstallBanner, #pwaNotificationBanner {
+  .sidebar, .mobile-nav, .top-header, .btn, #pwaInstallBanner, #pwaNotificationBanner, #appPreloader {
     display: none !important;
   }
   .main-content {
@@ -930,4 +930,86 @@ th {
     padding: 0 !important;
     width: 100% !important;
   }
+}
+
+/* ==========================================
+   APP PRELOADER STYLING
+   ========================================== */
+#appPreloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-main, #f8fafc);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+#appPreloader.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+  background-color: var(--bg-card, #ffffff);
+  border-radius: var(--radius-md, 16px);
+  box-shadow: var(--shadow-md, 0 10px 25px -5px rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--border-color, #e2e8f0);
+  max-width: 320px;
+  width: 90%;
+}
+
+.preloader-logo {
+  font-size: 56px;
+  margin-bottom: 12px;
+  animation: pulseLogo 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseLogo {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.preloader-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary, #0284c7);
+  margin-bottom: 4px;
+}
+
+.preloader-subtitle {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 20px;
+}
+
+.preloader-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(2, 132, 199, 0.15);
+  border-top-color: var(--primary, #0284c7);
+  border-radius: 50%;
+  animation: spinSpinner 0.8s infinite linear;
+  margin-bottom: 16px;
+}
+
+@keyframes spinSpinner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.preloader-status {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main, #0f172a);
 }

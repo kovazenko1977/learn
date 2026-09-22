@@ -50,17 +50,37 @@ class MedServiceApp {
         }
     }
 
+    updatePreloader(text) {
+        const el = document.getElementById('preloaderStatus');
+        if (el) el.innerText = text;
+    }
+
+    dismissPreloader() {
+        const preloader = document.getElementById('appPreloader');
+        if (preloader) {
+            preloader.classList.add('fade-out');
+            setTimeout(() => {
+                if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
+            }, 500);
+        }
+    }
+
     async init() {
+        this.updatePreloader('Инициализация интерфейса...');
         this.setupNavigation();
         this.setupPwaInstall();
 
+        this.updatePreloader('Проверка конфигурации сервера...');
         const setup = await this.apiFetch('setup');
         if (setup.installed === false) {
+            this.dismissPreloader();
             document.getElementById('installerModal').classList.add('active');
             return;
         }
 
+        this.updatePreloader('Авторизация и загрузка данных...');
         await this.checkAuth();
+        this.dismissPreloader();
     }
 
     setupPwaInstall() {

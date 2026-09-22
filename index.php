@@ -19,6 +19,17 @@
 </head>
 <body>
 
+    <!-- FULL-SCREEN INITIALIZATION PRELOADER -->
+    <div id="appPreloader">
+        <div class="preloader-content">
+            <div class="preloader-logo">🏥</div>
+            <div class="preloader-title">МедСервис Enterprise</div>
+            <div class="preloader-subtitle">Система автоматизации больницы</div>
+            <div class="preloader-spinner"></div>
+            <div id="preloaderStatus" class="preloader-status">Загрузка приложения...</div>
+        </div>
+    </div>
+
     <!-- Offline Status Indicator -->
     <div id="offlineBanner" class="offline-banner">
         ⚠️ Нет подключения к интернету. Работает в автономном режиме.
