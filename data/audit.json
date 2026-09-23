@@ -1,0 +1,1072 @@
+[
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Сергей Администратор",
+        "timestamp": "2026-09-17 06:38:20",
+        "id": 1,
+        "created_at": "2026-09-17 06:38:20"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Диспетчерская служба",
+        "timestamp": "2026-09-17 06:38:20",
+        "id": 2,
+        "created_at": "2026-09-17 06:38:20"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Сергей Администратор",
+        "timestamp": "2026-09-17 06:38:37",
+        "id": 3,
+        "created_at": "2026-09-17 06:38:37"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Registered new user Диспетчерская служба",
+        "timestamp": "2026-09-17 06:38:37",
+        "id": 4,
+        "created_at": "2026-09-17 06:38:37"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:38:37",
+        "id": 5,
+        "created_at": "2026-09-17 06:38:37"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "",
+        "details": "Created request №000150",
+        "timestamp": "2026-09-17 06:38:57",
+        "id": 6,
+        "created_at": "2026-09-17 06:38:57"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:42:13",
+        "id": 7,
+        "created_at": "2026-09-17 06:42:13"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:43:03",
+        "id": 8,
+        "created_at": "2026-09-17 06:43:03"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000151",
+        "timestamp": "2026-09-17 06:43:05",
+        "id": 9,
+        "created_at": "2026-09-17 06:43:05"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:44:15",
+        "id": 10,
+        "created_at": "2026-09-17 06:44:15"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000152",
+        "timestamp": "2026-09-17 06:44:16",
+        "id": 11,
+        "created_at": "2026-09-17 06:44:16"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:45:03",
+        "id": 12,
+        "created_at": "2026-09-17 06:45:03"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000153",
+        "timestamp": "2026-09-17 06:45:05",
+        "id": 13,
+        "created_at": "2026-09-17 06:45:05"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Администратор",
+        "timestamp": "2026-09-17 06:45:38",
+        "id": 14,
+        "created_at": "2026-09-17 06:45:38"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "curl\/8.5.0",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:23:56",
+        "id": 15,
+        "created_at": "2026-09-17 07:23:56"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 07:24:11",
+        "id": 16,
+        "created_at": "2026-09-17 07:24:11"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000154",
+        "timestamp": "2026-09-17 07:24:13",
+        "id": 17,
+        "created_at": "2026-09-17 07:24:13"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 07:24:39",
+        "id": 18,
+        "created_at": "2026-09-17 07:24:39"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "curl\/8.5.0",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:31:51",
+        "id": 19,
+        "created_at": "2026-09-17 07:31:51"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:33:30",
+        "id": 20,
+        "created_at": "2026-09-17 07:33:30"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 07:33:59",
+        "id": 21,
+        "created_at": "2026-09-17 07:33:59"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:49:22",
+        "id": 22,
+        "created_at": "2026-09-17 07:49:22"
+    },
+    {
+        "action": "USER_REGISTERED",
+        "user_id": 3,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Registered new user Елена Петрова",
+        "timestamp": "2026-09-17 07:49:24",
+        "id": 23,
+        "created_at": "2026-09-17 07:49:24"
+    },
+    {
+        "action": "CREATE_SERVICE",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created service Лабораторная служба",
+        "timestamp": "2026-09-17 07:49:25",
+        "id": 24,
+        "created_at": "2026-09-17 07:49:25"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 07:49:56",
+        "id": 25,
+        "created_at": "2026-09-17 07:49:56"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 07:58:24",
+        "id": 26,
+        "created_at": "2026-09-17 07:58:24"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 08:09:02",
+        "id": 27,
+        "created_at": "2026-09-17 08:09:02"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 08:21:10",
+        "id": 28,
+        "created_at": "2026-09-17 08:21:10"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 08:21:56",
+        "id": 29,
+        "created_at": "2026-09-17 08:21:56"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 08:22:19",
+        "id": 30,
+        "created_at": "2026-09-17 08:22:19"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 08:22:40",
+        "id": 31,
+        "created_at": "2026-09-17 08:22:40"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000155",
+        "timestamp": "2026-09-17 08:22:42",
+        "id": 32,
+        "created_at": "2026-09-17 08:22:42"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 12:42:55",
+        "id": 33,
+        "created_at": "2026-09-17 12:42:55"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 12:43:13",
+        "id": 34,
+        "created_at": "2026-09-17 12:43:13"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000156",
+        "timestamp": "2026-09-17 12:43:15",
+        "id": 35,
+        "created_at": "2026-09-17 12:43:15"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-17 13:30:02",
+        "id": 36,
+        "created_at": "2026-09-17 13:30:02"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000157",
+        "timestamp": "2026-09-17 13:30:04",
+        "id": 37,
+        "created_at": "2026-09-17 13:30:04"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-17 13:30:22",
+        "id": 38,
+        "created_at": "2026-09-17 13:30:22"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-18 12:03:55",
+        "id": 39,
+        "created_at": "2026-09-18 12:03:55"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000158",
+        "timestamp": "2026-09-18 12:03:57",
+        "id": 40,
+        "created_at": "2026-09-18 12:03:57"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-18 12:04:19",
+        "id": 41,
+        "created_at": "2026-09-18 12:04:19"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-18 12:25:05",
+        "id": 42,
+        "created_at": "2026-09-18 12:25:05"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000159",
+        "timestamp": "2026-09-18 12:25:07",
+        "id": 43,
+        "created_at": "2026-09-18 12:25:07"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-18 12:25:30",
+        "id": 44,
+        "created_at": "2026-09-18 12:25:30"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-18 12:59:49",
+        "id": 45,
+        "created_at": "2026-09-18 12:59:49"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000160",
+        "timestamp": "2026-09-18 12:59:51",
+        "id": 46,
+        "created_at": "2026-09-18 12:59:51"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-18 13:00:12",
+        "id": 47,
+        "created_at": "2026-09-18 13:00:12"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Диспетчер Спецслужбы",
+        "timestamp": "2026-09-19 06:29:12",
+        "id": 48,
+        "created_at": "2026-09-19 06:29:12"
+    },
+    {
+        "action": "CREATE_REQUEST",
+        "user_id": 2,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "Created request №000161",
+        "timestamp": "2026-09-19 06:29:14",
+        "id": 49,
+        "created_at": "2026-09-19 06:29:14"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:29:36",
+        "id": 50,
+        "created_at": "2026-09-19 06:29:36"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:53:02",
+        "id": 51,
+        "created_at": "2026-09-19 06:53:02"
+    },
+    {
+        "action": "ASSIGN_EXECUTOR",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "Assigned user Сергей Иванов to request №000161",
+        "timestamp": "2026-09-19 06:53:02",
+        "id": 52,
+        "created_at": "2026-09-19 06:53:02"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:55:44",
+        "id": 53,
+        "created_at": "2026-09-19 06:55:44"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:56:48",
+        "id": 54,
+        "created_at": "2026-09-19 06:56:48"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:56:50",
+        "id": 55,
+        "created_at": "2026-09-19 06:56:50"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:58:12",
+        "id": 56,
+        "created_at": "2026-09-19 06:58:12"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:58:14",
+        "id": 57,
+        "created_at": "2026-09-19 06:58:14"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:59:06",
+        "id": 58,
+        "created_at": "2026-09-19 06:59:06"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 06:59:08",
+        "id": 59,
+        "created_at": "2026-09-19 06:59:08"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:00:21",
+        "id": 60,
+        "created_at": "2026-09-19 07:00:21"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:00:37",
+        "id": 61,
+        "created_at": "2026-09-19 07:00:37"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:44:29",
+        "id": 62,
+        "created_at": "2026-09-19 07:44:29"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:45:08",
+        "id": 63,
+        "created_at": "2026-09-19 07:45:08"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:45:10",
+        "id": 64,
+        "created_at": "2026-09-19 07:45:10"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:45:44",
+        "id": 65,
+        "created_at": "2026-09-19 07:45:44"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:48:05",
+        "id": 66,
+        "created_at": "2026-09-19 07:48:05"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:48:07",
+        "id": 67,
+        "created_at": "2026-09-19 07:48:07"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:55:05",
+        "id": 68,
+        "created_at": "2026-09-19 07:55:05"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:55:29",
+        "id": 69,
+        "created_at": "2026-09-19 07:55:29"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:55:47",
+        "id": 70,
+        "created_at": "2026-09-19 07:55:47"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:55:49",
+        "id": 71,
+        "created_at": "2026-09-19 07:55:49"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:57:20",
+        "id": 72,
+        "created_at": "2026-09-19 07:57:20"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:57:21",
+        "id": 73,
+        "created_at": "2026-09-19 07:57:21"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:59:28",
+        "id": 74,
+        "created_at": "2026-09-19 07:59:28"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-19 07:59:29",
+        "id": 75,
+        "created_at": "2026-09-19 07:59:29"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-20 05:48:02",
+        "id": 76,
+        "created_at": "2026-09-20 05:48:02"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-20 05:48:35",
+        "id": 77,
+        "created_at": "2026-09-20 05:48:35"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-20 05:48:37",
+        "id": 78,
+        "created_at": "2026-09-20 05:48:37"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-20 05:49:14",
+        "id": 79,
+        "created_at": "2026-09-20 05:49:14"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:53:33",
+        "id": 80,
+        "created_at": "2026-09-21 08:53:33"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:54:24",
+        "id": 81,
+        "created_at": "2026-09-21 08:54:24"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:55:09",
+        "id": 82,
+        "created_at": "2026-09-21 08:55:09"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:55:40",
+        "id": 83,
+        "created_at": "2026-09-21 08:55:40"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:55:42",
+        "id": 84,
+        "created_at": "2026-09-21 08:55:42"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:56:36",
+        "id": 85,
+        "created_at": "2026-09-21 08:56:36"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:56:56",
+        "id": 86,
+        "created_at": "2026-09-21 08:56:56"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:56:58",
+        "id": 87,
+        "created_at": "2026-09-21 08:56:58"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 08:57:41",
+        "id": 88,
+        "created_at": "2026-09-21 08:57:41"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 999,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Суперадминистратор",
+        "timestamp": "2026-09-21 14:18:09",
+        "id": 89,
+        "created_at": "2026-09-21 14:18:09"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 14:18:43",
+        "id": 90,
+        "created_at": "2026-09-21 14:18:43"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 14:18:45",
+        "id": 91,
+        "created_at": "2026-09-21 14:18:45"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 999,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Суперадминистратор",
+        "timestamp": "2026-09-21 14:19:22",
+        "id": 92,
+        "created_at": "2026-09-21 14:19:22"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 14:48:04",
+        "id": 93,
+        "created_at": "2026-09-21 14:48:04"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 14:48:40",
+        "id": 94,
+        "created_at": "2026-09-21 14:48:40"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 14:48:42",
+        "id": 95,
+        "created_at": "2026-09-21 14:48:42"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-21 14:49:20",
+        "id": 96,
+        "created_at": "2026-09-21 14:49:20"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "::1",
+        "user_agent": "curl\/8.5.0",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 01:31:16",
+        "id": 97,
+        "created_at": "2026-09-22 01:31:16"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "::1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 01:31:38",
+        "id": 98,
+        "created_at": "2026-09-22 01:31:38"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "::1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 01:33:07",
+        "id": 99,
+        "created_at": "2026-09-22 01:33:07"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "::1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 01:35:27",
+        "id": 100,
+        "created_at": "2026-09-22 01:35:27"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:07:20",
+        "id": 101,
+        "created_at": "2026-09-22 12:07:20"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:07:23",
+        "id": 102,
+        "created_at": "2026-09-22 12:07:23"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:08:00",
+        "id": 103,
+        "created_at": "2026-09-22 12:08:00"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:53:22",
+        "id": 104,
+        "created_at": "2026-09-22 12:53:22"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:53:52",
+        "id": 105,
+        "created_at": "2026-09-22 12:53:52"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Mozilla\/5.0 (X11; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) HeadlessChrome\/145.0.7632.6 Safari\/537.36",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:53:55",
+        "id": 106,
+        "created_at": "2026-09-22 12:53:55"
+    },
+    {
+        "action": "LOGIN_SUCCESS",
+        "user_id": 1,
+        "ip": "127.0.0.1",
+        "user_agent": "Python-urllib\/3.12",
+        "details": "User logged in: Сергей Иванов",
+        "timestamp": "2026-09-22 12:54:30",
+        "id": 107,
+        "created_at": "2026-09-22 12:54:30"
+    }
+]
