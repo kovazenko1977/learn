@@ -1,0 +1,15 @@
+[
+    {
+        "hospital_name": "Больница №1",
+        "app_name": "МедСервис",
+        "primary_color": "#0284c7",
+        "phone": "+375 17 200 00 00",
+        "emergency_phone": "+375 17 200 09 11",
+        "email": "info@medservice-hospital.by",
+        "sla_emergency_minutes": 10,
+        "sla_normal_hours": 2,
+        "file_max_size_mb": 10,
+        "keep_history_days": 365,
+        "installed": true
+    }
+]
