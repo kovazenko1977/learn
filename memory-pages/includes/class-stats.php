@@ -53,6 +53,18 @@ class Memory_Pages_Stats {
         }
     }
 
+    public static function get_totals($memorial_id) {
+        global $wpdb;
+        $row = $wpdb->get_row($wpdb->prepare(
+            "SELECT SUM(flowers_count) as flowers, SUM(candles_count) as candles FROM {$wpdb->prefix}memorial_daily_stats WHERE memorial_id = %d",
+            $memorial_id
+        ), ARRAY_A);
+        return array(
+            'flowers' => intval($row['flowers'] ?? 0),
+            'candles' => intval($row['candles'] ?? 0),
+        );
+    }
+
     public static function get_overall_stats() {
         global $wpdb;
         return $wpdb->get_results(

@@ -16,7 +16,10 @@ if (!defined('ABSPATH')) exit;
     <!-- Header Card -->
     <div class="mp-header-card">
         <?php if (!empty($memorial['main_photo_url'])): ?>
-            <img src="<?php echo esc_url($memorial['main_photo_url']); ?>" alt="<?php echo esc_attr($memorial['full_name']); ?>" class="mp-main-photo" />
+            <div class="mp-photo-frame">
+                <img src="<?php echo esc_url($memorial['main_photo_url']); ?>" alt="<?php echo esc_attr($memorial['full_name']); ?>" class="mp-main-photo" />
+                <span class="mp-ribbon">ПАМЯТЬ</span>
+            </div>
         <?php endif; ?>
 
         <h1 class="mp-full-name"><?php echo esc_html($memorial['full_name']); ?></h1>
@@ -30,16 +33,16 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <?php if (!empty($memorial['birth_place'])): ?>
-            <div style="font-size: 14px; color: #555;">📍 Место рождения: <?php echo esc_html($memorial['birth_place']); ?></div>
+            <div class="mp-birth-place">📍 Место рождения: <?php echo esc_html($memorial['birth_place']); ?></div>
         <?php endif; ?>
 
         <!-- Action Buttons -->
         <div class="mp-actions-bar">
             <button class="mp-btn mp-btn-flower" id="mp-public-flower-btn" data-id="<?php echo esc_attr($memorial['id']); ?>">
-                🌸 Возложить цветок (<span id="mp-flower-count">0</span>)
+                🌸 Возложить цветок (<span id="mp-flower-count"><?php echo esc_html($stats_totals['flowers'] ?? 0); ?></span>)
             </button>
             <button class="mp-btn mp-btn-candle" id="mp-public-candle-btn" data-id="<?php echo esc_attr($memorial['id']); ?>">
-                🕯 Зажечь свечу (<span id="mp-candle-count">0</span>)
+                🕯 Зажечь свечу (<span id="mp-candle-count"><?php echo esc_html($stats_totals['candles'] ?? 0); ?></span>)
             </button>
             <button class="mp-btn mp-btn-share" id="mp-public-share-btn" data-id="<?php echo esc_attr($memorial['id']); ?>">
                 🔗 Поделиться
@@ -50,7 +53,7 @@ if (!defined('ABSPATH')) exit;
     <!-- Biography Section -->
     <?php if (!empty($memorial['biography'])): ?>
     <div class="mp-section">
-        <h2 class="mp-section-title">Биография</h2>
+        <h2 class="mp-section-title">📜 Биография</h2>
         <div class="mp-biography-content">
             <?php echo wp_kses_post(wpautop($memorial['biography'])); ?>
         </div>
@@ -60,18 +63,38 @@ if (!defined('ABSPATH')) exit;
     <!-- Burial Location -->
     <?php if (!empty($memorial['cemetery'])): ?>
     <div class="mp-section">
-        <h2 class="mp-section-title">Место захоронения</h2>
-        <p><strong>Кладбище:</strong> <?php echo esc_html($memorial['cemetery']); ?></p>
-        <?php if ($memorial['plot']): ?><p><strong>Участок:</strong> <?php echo esc_html($memorial['plot']); ?></p><?php endif; ?>
-        <?php if ($memorial['row_number']): ?><p><strong>Ряд:</strong> <?php echo esc_html($memorial['row_number']); ?></p><?php endif; ?>
-        <?php if ($memorial['place_number']): ?><p><strong>Место:</strong> <?php echo esc_html($memorial['place_number']); ?></p><?php endif; ?>
+        <h2 class="mp-section-title">🕯 Место захоронения</h2>
+        <div class="mp-burial-grid">
+            <div class="mp-burial-item">
+                <strong>Кладбище</strong>
+                <span><?php echo esc_html($memorial['cemetery']); ?></span>
+            </div>
+            <?php if ($memorial['plot']): ?>
+            <div class="mp-burial-item">
+                <strong>Участок</strong>
+                <span><?php echo esc_html($memorial['plot']); ?></span>
+            </div>
+            <?php endif; ?>
+            <?php if ($memorial['row_number']): ?>
+            <div class="mp-burial-item">
+                <strong>Ряд</strong>
+                <span><?php echo esc_html($memorial['row_number']); ?></span>
+            </div>
+            <?php endif; ?>
+            <?php if ($memorial['place_number']): ?>
+            <div class="mp-burial-item">
+                <strong>Место</strong>
+                <span><?php echo esc_html($memorial['place_number']); ?></span>
+            </div>
+            <?php endif; ?>
+        </div>
     </div>
     <?php endif; ?>
 
     <!-- Gallery Section -->
     <?php if (!empty($photos)): ?>
     <div class="mp-section">
-        <h2 class="mp-section-title">Галерея памяти</h2>
+        <h2 class="mp-section-title">🖼 Галерея памяти</h2>
         <div class="mp-gallery-grid">
             <?php foreach ($photos as $photo): ?>
                 <div class="mp-gallery-card">
@@ -88,7 +111,7 @@ if (!defined('ABSPATH')) exit;
     <!-- Relatives & Contacts -->
     <?php if (!empty($relatives)): ?>
     <div class="mp-section">
-        <h2 class="mp-section-title">Родственники и близкие</h2>
+        <h2 class="mp-section-title">👥 Родственники и близкие</h2>
         <button class="mp-btn mp-btn-share" id="mp-toggle-contacts-btn" data-id="<?php echo esc_attr($memorial['id']); ?>">📞 Показать контакты родственников</button>
         <div class="mp-contacts-hidden-content" style="display: none; margin-top: 15px;">
             <?php foreach ($relatives as $rel): ?>

@@ -1,123 +1,257 @@
+/* Memorial Pages Public Stylesheet - Elegant Memorial Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap');
+
+body.mp-public-body {
+    background: #111418;
+    background-image: radial-gradient(circle at 50% 0%, #222831 0%, #0d0f12 100%);
+    color: #e0e0e0;
+    font-family: 'Noto Serif', Georgia, serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.7;
+}
+
 .mp-public-container {
-    max-width: 900px;
-    margin: 40px auto;
+    max-width: 960px;
+    margin: 50px auto;
     padding: 0 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    color: #2c3e50;
-    line-height: 1.6;
 }
 
+/* Header Card */
 .mp-header-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    padding: 30px;
+    background: linear-gradient(145deg, #1e222b, #161920);
+    border: 1px solid #333a48;
+    border-top: 3px solid #d4af37;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    padding: 40px 30px;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
+    position: relative;
+    overflow: hidden;
 }
 
-.mp-main-photo {
-    width: 180px;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 3px solid #eaeaea;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin-bottom: 15px;
+.mp-header-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
 }
 
-.mp-full-name {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 10px 0 5px;
-    color: #1a252f;
-}
-
-.mp-dates {
-    font-size: 18px;
-    color: #7f8c8d;
-    font-weight: 500;
+.mp-photo-frame {
+    position: relative;
+    display: inline-block;
     margin-bottom: 20px;
 }
 
+.mp-main-photo {
+    width: 200px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+    display: block;
+}
+
+/* Memorial Ribbon Badge */
+.mp-ribbon {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    background: #000;
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.mp-full-name {
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 15px 0 8px;
+    color: #f5f5f5;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.mp-dates {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: #d4af37;
+    font-weight: 500;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+.mp-birth-place {
+    font-size: 15px;
+    color: #a0aab8;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+/* Actions Bar */
 .mp-actions-bar {
     display: flex;
     justify-content: center;
     gap: 15px;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .mp-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
+    gap: 10px;
+    padding: 12px 24px;
     border-radius: 30px;
     font-size: 14px;
     font-weight: 600;
-    border: none;
+    font-family: 'Cinzel', serif;
+    border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-.mp-btn-flower { background: #e8f5e9; color: #2e7d32; }
-.mp-btn-flower:hover { background: #c8e6c9; }
+.mp-btn-flower {
+    background: linear-gradient(135deg, #1b3823, #0f2415);
+    color: #81c784;
+    border-color: #2e7d32;
+}
+.mp-btn-flower:hover {
+    background: linear-gradient(135deg, #2e7d32, #1b3823);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(46, 125, 50, 0.4);
+}
 
-.mp-btn-candle { background: #fff8e1; color: #f57f17; }
-.mp-btn-candle:hover { background: #ffe082; }
+.mp-btn-candle {
+    background: linear-gradient(135deg, #3e2723, #211513);
+    color: #ffb74d;
+    border-color: #f57f17;
+}
+.mp-btn-candle:hover {
+    background: linear-gradient(135deg, #f57f17, #3e2723);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(245, 127, 23, 0.4);
+}
 
-.mp-btn-share { background: #e3f2fd; color: #1565c0; }
-.mp-btn-share:hover { background: #bbdefb; }
+.mp-btn-share {
+    background: linear-gradient(135deg, #1a237e, #0d1248);
+    color: #90caf9;
+    border-color: #1565c0;
+}
+.mp-btn-share:hover {
+    background: linear-gradient(135deg, #1565c0, #1a237e);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(21, 101, 192, 0.4);
+}
 
+/* Content Sections */
 .mp-section {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-    padding: 25px 30px;
-    margin-bottom: 25px;
+    background: linear-gradient(145deg, #1b1e26, #14161d);
+    border: 1px solid #2d3340;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    padding: 30px;
+    margin-bottom: 30px;
 }
 
 .mp-section-title {
-    font-size: 20px;
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
     font-weight: 700;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+    color: #d4af37;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: 12px;
+    margin-top: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
+.mp-biography-content {
+    color: #d1d5db;
+    font-size: 16px;
+    text-align: justify;
+}
+
+/* Burial Box */
+.mp-burial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px dashed #3a4252;
+}
+
+.mp-burial-item strong {
+    color: #d4af37;
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Gallery Grid */
 .mp-gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
 }
 
 .mp-gallery-card {
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    background: #f9f9f9;
+    background: #111318;
+    border: 1px solid #2c323f;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.mp-gallery-card:hover {
+    transform: scale(1.03);
+    border-color: #d4af37;
 }
 
 .mp-gallery-card img {
     width: 100%;
-    height: 140px;
+    height: 160px;
     object-fit: cover;
     display: block;
 }
 
 .mp-gallery-caption {
-    padding: 8px 10px;
-    font-size: 12px;
-    color: #555;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #9ca3af;
     text-align: center;
 }
 
+/* Contacts Box */
 .mp-contact-box {
-    background: #f8f9fa;
-    border-left: 4px solid #3498db;
-    padding: 15px;
-    border-radius: 4px;
-    margin-top: 10px;
+    background: #14171e;
+    border-left: 4px solid #d4af37;
+    padding: 18px;
+    border-radius: 6px;
+    margin-top: 15px;
+    color: #e0e0e0;
 }

@@ -57,6 +57,7 @@ class Memory_Pages_Public {
         $photos = Memory_Pages_Memorial::get_photos($memorial['id']);
         $relatives = Memory_Pages_Memorial::get_relatives($memorial['id']);
         $qr_url = Memory_Pages_QR::get_or_create_qr($memorial['id'], $memorial['code']);
+        $stats_totals = Memory_Pages_Stats::get_totals($memorial['id']);
 
         require_once MEMORY_PAGES_PATH . 'templates/single-memorial.php';
         exit;
