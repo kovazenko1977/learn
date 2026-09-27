@@ -205,7 +205,11 @@ async function submitLogin(e) {
 
     const res = await App.fetch('auth_login', { phone: phone, password: pass }, { method: 'POST' });
     if (res.success) {
-        checkUserSession();
+        if (res.is_admin) {
+            window.location.href = 'admin.php';
+        } else {
+            checkUserSession();
+        }
     } else {
         alert(res.error || 'Ошибка входа');
     }

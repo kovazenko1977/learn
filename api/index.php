@@ -35,10 +35,20 @@ switch ($action) {
         break;
 
     case 'auth_login':
-        $phone = getParam('phone');
-        $password = getParam('password');
-        $res = Auth::loginUser($phone, $password);
-        jsonResponse($res);
+        $phone = trim(getParam('phone'));
+        $password = trim(getParam('password'));
+
+        // First check if credentials match an Admin user
+        $adminRes = Auth::loginAdmin($phone, $password);
+        if ($adminRes['success']) {
+            $adminRes['is_admin'] = true;
+            jsonResponse($adminRes);
+        }
+
+        // Otherwise check regular user account
+        $userRes = Auth::loginUser($phone, $password);
+        $userRes['is_admin'] = false;
+        jsonResponse($userRes);
         break;
 
     case 'auth_logout':
@@ -514,6 +524,131 @@ switch ($action) {
         }
 
         jsonResponse(['success' => true, 'message' => 'Настройки сохранены']);
+        break;
+
+    case 'admin_export_backup':
+        if (!Auth::isAdmin()) {
+            jsonResponse(['success' => false, 'error' => 'Доступ только для администратора'], 403);
+        }
+
+        $backupData = [
+            'version' => '1.0',
+            'exported_at' => date('Y-m-d H:i:s'),
+            'users' => $pdo->query("SELECT * FROM users")->fetchAll(),
+            'admin_users' => $pdo->query("SELECT id, login, password_hash, updated_at FROM admin_users")->fetchAll(),
+            'pages' => $pdo->query("SELECT * FROM pages")->fetchAll(),
+            'relatives' => $pdo->query("SELECT * FROM relatives")->fetchAll(),
+            'condolences' => $pdo->query("SELECT * FROM condolences")->fetchAll(),
+            'candles' => $pdo->query("SELECT * FROM candles")->fetchAll(),
+            'admin_notifications' => $pdo->query("SELECT * FROM admin_notifications")->fetchAll(),
+            'settings' => $pdo->query("SELECT * FROM settings")->fetchAll()
+        ];
+
+        $filename = 'memory_backup_' . date('Y-m-d_H-i-s') . '.json';
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo json_encode($backupData, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        exit;
+
+    case 'admin_import_backup':
+        if (!Auth::isAdmin()) {
+            jsonResponse(['success' => false, 'error' => 'Доступ только для администратора'], 403);
+        }
+
+        $jsonStr = '';
+        if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
+            $jsonStr = file_get_contents($_FILES['backup_file']['tmp_name']);
+        } else {
+            $jsonStr = getParam('backup_json');
+        }
+
+        if (empty($jsonStr)) {
+            jsonResponse(['success' => false, 'error' => 'Файл резервной копии не передан'], 400);
+        }
+
+        $data = json_decode($jsonStr, true);
+        if (!is_array($data) || empty($data['pages'])) {
+            jsonResponse(['success' => false, 'error' => 'Некорректная структура файла резервной копии'], 400);
+        }
+
+        $pdo->beginTransaction();
+        try {
+            // Clear existing tables
+            $pdo->exec("DELETE FROM admin_notifications");
+            $pdo->exec("DELETE FROM candles");
+            $pdo->exec("DELETE FROM condolences");
+            $pdo->exec("DELETE FROM relatives");
+            $pdo->exec("DELETE FROM pages");
+            $pdo->exec("DELETE FROM users");
+            $pdo->exec("DELETE FROM settings");
+
+            // Restore Users
+            if (!empty($data['users'])) {
+                $stmt = $pdo->prepare("INSERT INTO users (id, phone, password_hash, full_name, created_at) VALUES (?, ?, ?, ?, ?)");
+                foreach ($data['users'] as $u) {
+                    $stmt->execute([$u['id'], $u['phone'], $u['password_hash'], $u['full_name'] ?? '', $u['created_at'] ?? date('Y-m-d H:i:s')]);
+                }
+            }
+
+            // Restore Pages
+            if (!empty($data['pages'])) {
+                $stmt = $pdo->prepare("INSERT INTO pages (id, code, user_id, full_name, birth_date, death_date, photo, epitaph, biography, cemetery, section, grave_num, latitude, longitude, status, rejection_reason, views, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                foreach ($data['pages'] as $p) {
+                    $stmt->execute([
+                        $p['id'], $p['code'], $p['user_id'], $p['full_name'], $p['birth_date'] ?? '', $p['death_date'] ?? '',
+                        $p['photo'] ?? '', $p['epitaph'] ?? '', $p['biography'] ?? '', $p['cemetery'] ?? '', $p['section'] ?? '',
+                        $p['grave_num'] ?? '', $p['latitude'] ?? 0, $p['longitude'] ?? 0, $p['status'] ?? 'approved',
+                        $p['rejection_reason'] ?? '', $p['views'] ?? 0, $p['created_at'] ?? date('Y-m-d H:i:s'), $p['updated_at'] ?? date('Y-m-d H:i:s')
+                    ]);
+                }
+            }
+
+            // Restore Relatives
+            if (!empty($data['relatives'])) {
+                $stmt = $pdo->prepare("INSERT INTO relatives (id, page_id, relation_type, name, phone, email, is_public) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                foreach ($data['relatives'] as $r) {
+                    $stmt->execute([$r['id'], $r['page_id'], $r['relation_type'] ?? '', $r['name'], $r['phone'] ?? '', $r['email'] ?? '', $r['is_public'] ?? 1]);
+                }
+            }
+
+            // Restore Condolences
+            if (!empty($data['condolences'])) {
+                $stmt = $pdo->prepare("INSERT INTO condolences (id, page_id, author_name, message, created_at) VALUES (?, ?, ?, ?, ?)");
+                foreach ($data['condolences'] as $c) {
+                    $stmt->execute([$c['id'], $c['page_id'], $c['author_name'], $c['message'], $c['created_at'] ?? date('Y-m-d H:i:s')]);
+                }
+            }
+
+            // Restore Candles
+            if (!empty($data['candles'])) {
+                $stmt = $pdo->prepare("INSERT INTO candles (id, page_id, author_name, created_at) VALUES (?, ?, ?, ?)");
+                foreach ($data['candles'] as $cd) {
+                    $stmt->execute([$cd['id'], $cd['page_id'], $cd['author_name'] ?? 'Гость', $cd['created_at'] ?? date('Y-m-d H:i:s')]);
+                }
+            }
+
+            // Restore Notifications
+            if (!empty($data['admin_notifications'])) {
+                $stmt = $pdo->prepare("INSERT INTO admin_notifications (id, page_id, message, is_read, created_at) VALUES (?, ?, ?, ?, ?)");
+                foreach ($data['admin_notifications'] as $an) {
+                    $stmt->execute([$an['id'], $an['page_id'], $an['message'], $an['is_read'] ?? 0, $an['created_at'] ?? date('Y-m-d H:i:s')]);
+                }
+            }
+
+            // Restore Settings
+            if (!empty($data['settings'])) {
+                $stmt = $pdo->prepare("INSERT INTO settings (key, value) VALUES (?, ?)");
+                foreach ($data['settings'] as $s) {
+                    $stmt->execute([$s['key'], $s['value']]);
+                }
+            }
+
+            $pdo->commit();
+            jsonResponse(['success' => true, 'message' => 'Данные системы успешно восстановлены из резервной копии']);
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            jsonResponse(['success' => false, 'error' => 'Ошибка при восстановлении данных: ' . $e->getMessage()], 500);
+        }
         break;
 
     default:

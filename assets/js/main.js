@@ -526,11 +526,7 @@ const App = {
 
     if (this.isAdmin) {
       html += `
-        <li><a href="admin.php" class="nav-link ${window.location.pathname.endsWith('admin.php') ? 'active' : ''}" style="color:#fbbf24; font-weight:bold;">⚙️ Админ-панель</a></li>
-      `;
-    } else {
-      html += `
-        <li><a href="admin.php" class="nav-link">Вход Администратора</a></li>
+        <li><a href="admin.php" class="nav-link ${window.location.pathname.endsWith('admin.php') ? 'active' : ''}" style="color:#f5e6b3; font-weight:bold;">⚙️ Панель Управления</a></li>
       `;
     }
 

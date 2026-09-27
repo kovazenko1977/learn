@@ -29,18 +29,29 @@ async def run_tests():
             await page.screenshot(path="verification_index.png")
             print("Main page loaded successfully.")
 
-            # 2. Test Admin Login (default 12345 / 12345)
-            print("2. Testing Admin Panel Login...")
-            await page.goto("http://127.0.0.1:8090/admin.php")
-            await page.fill("#adminLogin", "12345")
-            await page.fill("#adminPass", "12345")
-            await page.click("button[type='submit']")
+            # 2. Test Admin Login via Unified Login Form (12345 / 12345)
+            print("2. Testing Unified Login as Admin (12345/12345)...")
+            await page.goto("http://127.0.0.1:8090/user.php")
+            await page.fill("#loginPhone", "12345")
+            await page.fill("#loginPassword", "12345")
+            await page.click("#loginForm button[type='submit']")
             await page.wait_for_selector("#adminDashboardContainer", state="visible")
             await page.screenshot(path="verification_admin.png")
-            print("Admin login successful.")
+            print("Admin login & auto-redirect successful.")
 
-            # 3. Test User Registration & Login with Phone
-            print("3. Testing User Cabinet Registration...")
+            # 3. Test Admin Backup Tab
+            print("3. Testing Admin Backup & Restore Tab...")
+            await page.click("button:has-text('Резервное Копирование')")
+            await page.wait_for_selector("#tabBackup", state="visible")
+            await page.screenshot(path="verification_backup_tab.png")
+            print("Backup tab opened.")
+
+            # Logout Admin
+            await page.click("button:has-text('Выйти из системы')")
+            await asyncio.sleep(1)
+
+            # 4. Test User Cabinet Registration & Login with Phone
+            print("4. Testing User Cabinet Registration...")
             phone_num = f"+7999{int(time.time()) % 10000000:07d}"
             await page.goto("http://127.0.0.1:8090/user.php")
             await page.click("#tabBtnRegister")
@@ -52,8 +63,8 @@ async def run_tests():
             await page.screenshot(path="verification_user_cabinet.png")
             print("User registered and logged in.")
 
-            # 4. Create a Memorial Page
-            print("4. Creating a new Memorial Page...")
+            # 5. Create a Memorial Page
+            print("5. Creating a new Memorial Page...")
             await page.click("button:has-text('Создать страницу')")
             await page.wait_for_selector("#createPageModal.active")
             await page.fill("#createPageForm input[name='full_name']", "Смирнов Алексей Владимирович")
@@ -75,23 +86,28 @@ async def run_tests():
 
             print("Memorial page submitted.")
 
-            # 5. Approve Page in Admin Panel
-            print("5. Admin approving the page...")
-            await page.goto("http://127.0.0.1:8090/admin.php")
+            # Clear session / Logout User and Login as Admin to Approve Page
+            print("6. Admin approving the page...")
+            await page.goto("http://127.0.0.1:8090/api/index.php?action=auth_logout")
+            await page.goto("http://127.0.0.1:8090/user.php")
+            await page.fill("#loginPhone", "12345")
+            await page.fill("#loginPassword", "12345")
+            await page.click("#loginForm button[type='submit']")
+            await page.wait_for_selector("#adminDashboardContainer", state="visible")
             await page.wait_for_selector("#pendingPagesList button:has-text('Опубликовать')")
             await page.click("#pendingPagesList button:has-text('Опубликовать')")
             await asyncio.sleep(1)
 
-            # 6. Search for published page on main page
-            print("6. Searching for published page...")
+            # 7. Search for published page on main page
+            print("7. Searching for published page...")
             await page.goto("http://127.0.0.1:8090/index.php")
             await page.fill("#searchQuery", "Смирнов")
             await page.click("button:has-text('Найти')")
             await page.wait_for_selector(".memorial-card")
             await page.screenshot(path="verification_search_results.png")
 
-            # 7. Open Memorial Page & QR code plaque
-            print("7. Inspecting Memorial Page and QR Code plaque...")
+            # 8. Open Memorial Page & QR code plaque
+            print("8. Inspecting Memorial Page and QR Code plaque...")
             await page.click(".memorial-card a:has-text('Перейти к мемориалу')")
             await page.wait_for_selector(".single-page-title")
             await page.screenshot(path="verification_memorial_page.png")
@@ -100,8 +116,8 @@ async def run_tests():
             await page.wait_for_selector("#plaqueModal.active")
             await page.screenshot(path="verification_qr_plaque.png")
 
-            # 8. Mobile Viewport Verification
-            print("8. Verifying mobile viewport layout...")
+            # 9. Mobile Viewport Verification
+            print("9. Verifying mobile viewport layout...")
             await page.set_viewport_size({"width": 375, "height": 667})
             await page.screenshot(path="verification_mobile_page.png")
 
