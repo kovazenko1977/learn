@@ -157,6 +157,16 @@ switch ($action) {
         $relStmt->execute([$page['id']]);
         $relatives = $relStmt->fetchAll();
 
+        // Fetch additional photos
+        $photoStmt = $pdo->prepare("SELECT photo_path FROM page_photos WHERE page_id = ? ORDER BY sort_order ASC, id ASC");
+        $photoStmt->execute([$page['id']]);
+        $photosList = $photoStmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // If page has a main photo and it's not in photosList, prepend it
+        if (!empty($page['photo']) && !in_array($page['photo'], $photosList)) {
+            array_unshift($photosList, $page['photo']);
+        }
+
         // Fetch candle count & recent candles
         $candleStmt = $pdo->prepare("SELECT COUNT(*) as total FROM candles WHERE page_id = ?");
         $candleStmt->execute([$page['id']]);
@@ -171,6 +181,7 @@ switch ($action) {
             'success' => true,
             'page' => $page,
             'relatives' => $relatives,
+            'photos' => $photosList,
             'candle_count' => $candleCount,
             'condolences' => $condolences,
             'permalink' => getBaseUrl() . '/page.php?code=' . $page['code']
@@ -198,14 +209,16 @@ switch ($action) {
         $latitude = floatval(getParam('latitude', 0));
         $longitude = floatval(getParam('longitude', 0));
 
-        // Photo upload
-        $photoPath = '';
-        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-            $uploaded = uploadImage($_FILES['photo']);
-            if ($uploaded) {
-                $photoPath = $uploaded;
-            }
+        // Photo uploads (up to 10 photos)
+        $uploadedPhotos = [];
+        if (isset($_FILES['photos'])) {
+            $uploadedPhotos = uploadMultipleImages($_FILES['photos'], 10);
+        } else if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $single = uploadImage($_FILES['photo']);
+            if ($single) $uploadedPhotos[] = $single;
         }
+
+        $photoPath = !empty($uploadedPhotos) ? $uploadedPhotos[0] : '';
 
         // Auto approve setting check
         $stmtSetting = $pdo->prepare("SELECT value FROM settings WHERE key = 'auto_approve'");
@@ -223,6 +236,14 @@ switch ($action) {
             $cemetery, $section, $graveNum, $latitude, $longitude, $status
         ]);
         $pageId = $pdo->lastInsertId();
+
+        // Save multiple photos to page_photos table
+        if (!empty($uploadedPhotos)) {
+            $photoInsertStmt = $pdo->prepare("INSERT INTO page_photos (page_id, photo_path, sort_order) VALUES (?, ?, ?)");
+            foreach ($uploadedPhotos as $order => $path) {
+                $photoInsertStmt->execute([$pageId, $path, $order]);
+            }
+        }
 
         // Process Relatives
         $relativesRaw = getParam('relatives');
@@ -291,11 +312,20 @@ switch ($action) {
         $latitude = floatval(getParam('latitude', $existingPage['latitude']));
         $longitude = floatval(getParam('longitude', $existingPage['longitude']));
 
-        $photoPath = $existingPage['photo'];
-        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-            $uploaded = uploadImage($_FILES['photo']);
-            if ($uploaded) {
-                $photoPath = $uploaded;
+        $uploadedPhotos = [];
+        if (isset($_FILES['photos'])) {
+            $uploadedPhotos = uploadMultipleImages($_FILES['photos'], 10);
+        } else if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+            $single = uploadImage($_FILES['photo']);
+            if ($single) $uploadedPhotos[] = $single;
+        }
+
+        $photoPath = !empty($uploadedPhotos) ? $uploadedPhotos[0] : $existingPage['photo'];
+
+        if (!empty($uploadedPhotos)) {
+            $photoInsertStmt = $pdo->prepare("INSERT INTO page_photos (page_id, photo_path, sort_order) VALUES (?, ?, ?)");
+            foreach ($uploadedPhotos as $order => $path) {
+                $photoInsertStmt->execute([$pageId, $path, $order]);
             }
         }
 

@@ -114,6 +114,16 @@ class Storage {
             FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
         )");
 
+        // Additional Photos Table (up to 10 photos per memorial page)
+        $pdo->exec("CREATE TABLE IF NOT EXISTS page_photos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            page_id INTEGER NOT NULL,
+            photo_path TEXT NOT NULL,
+            sort_order INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE
+        )");
+
         // System Settings
         $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
             key TEXT PRIMARY KEY,

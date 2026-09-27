@@ -71,6 +71,30 @@ function uploadImage(array $file, string $uploadDir = '../uploads/'): ?string {
     return null;
 }
 
+function uploadMultipleImages(array $filesArray, int $maxCount = 10, string $uploadDir = '../uploads/'): array {
+    $uploadedPaths = [];
+    if (empty($filesArray['name']) || !is_array($filesArray['name'])) {
+        return $uploadedPaths;
+    }
+
+    $count = min(count($filesArray['name']), $maxCount);
+    for ($i = 0; $i < $count; $i++) {
+        if ($filesArray['error'][$i] === UPLOAD_ERR_OK && !empty($filesArray['tmp_name'][$i])) {
+            $file = [
+                'name' => $filesArray['name'][$i],
+                'tmp_name' => $filesArray['tmp_name'][$i],
+                'error' => $filesArray['error'][$i]
+            ];
+            $path = uploadImage($file, $uploadDir);
+            if ($path) {
+                $uploadedPaths[] = $path;
+            }
+        }
+    }
+
+    return $uploadedPaths;
+}
+
 function extractYear(?string $dateStr): ?int {
     if (!$dateStr) return null;
     if (preg_match('/(\d{4})/', $dateStr, $matches)) {

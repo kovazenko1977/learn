@@ -115,8 +115,8 @@ Storage::getPDO();
             </div>
 
             <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Обновить фотографию (оставьте пустым, если не нужно менять)</label>
-                <input type="file" name="photo" class="form-control" accept="image/*">
+                <label>Добавить фотографии (до 10 файлов)</label>
+                <input type="file" name="photos[]" multiple class="form-control" accept="image/*">
             </div>
 
             <div class="form-group" style="margin-bottom: 1rem;">

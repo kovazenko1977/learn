@@ -113,6 +113,21 @@ function renderPageDetails(data) {
         ? `<div style="margin-top: 0.5rem;"><a href="https://maps.google.com/?q=${p.latitude},${p.longitude}" target="_blank" class="btn btn-outline btn-sm">🗺️ Открыть на карте Google (${p.latitude}, ${p.longitude})</a></div>`
         : '';
 
+    const galleryHtml = (data.photos && data.photos.length > 1)
+        ? `
+            <div class="content-block">
+                <h3>🖼️ Галерея памятных фотографий (${data.photos.length})</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 1rem;">
+                    ${data.photos.map(ph => `
+                        <a href="${ph}" target="_blank">
+                            <img src="${ph}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold-border); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" alt="Фото усопшего">
+                        </a>
+                    `).join('')}
+                </div>
+            </div>
+        `
+        : '';
+
     document.getElementById('pageContainer').innerHTML = `
         <div class="single-page-header">
             <img src="${photo}" alt="${p.full_name}" class="single-page-photo">
@@ -125,6 +140,8 @@ function renderPageDetails(data) {
                 <button class="btn btn-outline" style="color: #fff; border-color: rgba(255,255,255,0.3);" onclick="openPlaqueModal()">📱 Табличка с QR-кодом</button>
             </div>
         </div>
+
+        ${galleryHtml}
 
         <div class="single-content-grid">
             <div>
