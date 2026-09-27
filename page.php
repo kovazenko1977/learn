@@ -39,13 +39,14 @@ $code = $_GET['code'] ?? '';
         </div>
         <div id="printablePlaqueArea">
             <div class="plaque-box">
+                <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🕯️</div>
                 <h2 id="plaqueName">Имя Фамилия</h2>
                 <div class="dates" id="plaqueDates">01.01.1950 — 01.01.2023</div>
                 <div class="qr-container" id="plaqueQrCode"></div>
                 <div class="notice">
-                    Отсканируйте QR-код смартфоном,<br>чтобы открыть страницу памяти и воспоминаний.
+                    Отсканируйте QR-код смартфоном,<br>чтобы открыть виртуальный мемориал и оставить воспоминание.
                 </div>
-                <div style="margin-top: 10px; font-size: 0.75rem; color: #94a3b8;" id="plaqueUrl">https://memory-site.ru</div>
+                <div style="margin-top: 10px; font-size: 0.75rem; color: var(--gold-light);" id="plaqueUrl">https://memory-site.ru</div>
             </div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
