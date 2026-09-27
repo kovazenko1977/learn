@@ -27,7 +27,7 @@ $code = $_GET['code'] ?? '';
 </nav>
 
 <div class="container" id="pageContainer" style="max-width: 900px;">
-    <div style="text-align: center; padding: 4rem; color: #64748b;">Загрузка данных страницы...</div>
+    <div style="text-align: center; padding: 4rem; color: var(--text-muted);">Загрузка данных страницы...</div>
 </div>
 
 <!-- Modal Print / QR Plaque -->
@@ -99,15 +99,15 @@ function renderPageDetails(data) {
 
     const condolencesHtml = (data.condolences && data.condolences.length > 0)
         ? data.condolences.map(c => `
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.75rem;">
+            <div style="background: rgba(6, 8, 13, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem; margin-bottom: 0.75rem;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                    <strong style="color: #1e293b; font-size: 0.95rem;">${c.author_name}</strong>
-                    <span style="font-size: 0.75rem; color: #94a3b8;">${c.created_at}</span>
+                    <strong style="color: var(--gold-light); font-size: 0.95rem;">${c.author_name}</strong>
+                    <span style="font-size: 0.75rem; color: var(--text-dim);">${c.created_at}</span>
                 </div>
-                <p style="color: #334155; font-size: 0.9rem; white-space: pre-wrap;">${c.message}</p>
+                <p style="color: var(--text-primary); font-size: 0.95rem; white-space: pre-wrap;">${c.message}</p>
             </div>
         `).join('')
-        : '<p style="color: #94a3b8; font-size: 0.9rem;">Пока нет оставленных соболезнований. Будьте первыми.</p>';
+        : '<p style="color: var(--text-muted); font-size: 0.9rem;">Пока нет оставленных соболезнований. Будьте первыми.</p>';
 
     const mapLocationHtml = (p.latitude && p.longitude)
         ? `<div style="margin-top: 0.5rem;"><a href="https://maps.google.com/?q=${p.latitude},${p.longitude}" target="_blank" class="btn btn-outline btn-sm">🗺️ Открыть на карте Google (${p.latitude}, ${p.longitude})</a></div>`
@@ -131,20 +131,20 @@ function renderPageDetails(data) {
                 <!-- Biography -->
                 <div class="content-block">
                     <h3>📖 Биография и память</h3>
-                    <div style="white-space: pre-wrap; color: #334155;">${p.biography ? p.biography : 'Информация о биографии пока не добавлена.'}</div>
+                    <div style="white-space: pre-wrap; color: var(--text-primary); font-size: 1.05rem;">${p.biography ? p.biography : 'Информация о биографии пока не добавлена.'}</div>
                 </div>
 
                 <!-- Condolences Wall -->
                 <div class="content-block">
                     <h3>💬 Слова соболезнования и воспоминания</h3>
-                    <form onsubmit="submitCondolence(event, ${p.id})" style="margin-bottom: 1.5rem; background: #f1f5f9; padding: 1rem; border-radius: 8px;">
+                    <form onsubmit="submitCondolence(event, ${p.id})" style="margin-bottom: 1.5rem; background: rgba(6, 8, 13, 0.7); border: 1px solid var(--gold-border); padding: 1rem; border-radius: 8px;">
                         <div class="form-group" style="margin-bottom: 0.5rem;">
                             <input type="text" id="condAuthor" class="form-control" placeholder="Ваше имя" required>
                         </div>
                         <div class="form-group" style="margin-bottom: 0.5rem;">
                             <textarea id="condMessage" class="form-control" rows="2" placeholder="Напишите слова соболезнования или воспоминание..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-sm">Оставить запись</button>
+                        <button type="submit" class="btn btn-accent btn-sm">Оставить запись</button>
                     </form>
                     <div id="condolencesList">${condolencesHtml}</div>
                 </div>
@@ -170,7 +170,7 @@ function renderPageDetails(data) {
                 <div class="content-block" style="text-align: center;">
                     <h3>📱 Прямая ссылка</h3>
                     <div id="inlineQrCode" style="display: flex; justify-content: center; margin: 1rem 0;"></div>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">Постоянная ссылка для сканирования смартфоном</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">Постоянная ссылка для сканирования смартфоном</p>
                     <button class="btn btn-outline btn-sm" onclick="copyPermalink('${data.permalink}')">📋 Скопировать ссылку</button>
                 </div>
             </div>

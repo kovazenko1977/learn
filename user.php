@@ -30,10 +30,10 @@ Storage::getPDO();
 <div class="container" style="max-width: 900px;">
 
     <!-- Auth forms container (shown when NOT logged in) -->
-    <div id="authContainer" style="display: none; max-width: 420px; margin: 3rem auto; background: #fff; padding: 2rem; border-radius: 12px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color);">
-        <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.75rem; margin-bottom: 1.5rem;">
-            <button id="tabBtnLogin" onclick="switchTab('login')" style="background:none; border:none; font-size:1.1rem; font-weight:bold; cursor:pointer; color:var(--accent);">Вход</button>
-            <button id="tabBtnRegister" onclick="switchTab('register')" style="background:none; border:none; font-size:1.1rem; font-weight:bold; cursor:pointer; color:#94a3b8;">Регистрация</button>
+    <div id="authContainer" class="panel-card" style="display: none; max-width: 460px; margin: 3rem auto;">
+        <div class="auth-tabs-header">
+            <button id="tabBtnLogin" class="auth-tab-btn active" onclick="switchTab('login')">🔑 Вход</button>
+            <button id="tabBtnRegister" class="auth-tab-btn inactive" onclick="switchTab('register')">📝 Регистрация</button>
         </div>
 
         <!-- Login Form -->
@@ -71,16 +71,16 @@ Storage::getPDO();
     <div id="cabinetContainer" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
             <div>
-                <h1 style="font-size: 1.8rem; color: #0f172a;">Личный кабинет пользователя</h1>
-                <p style="color: #64748b;" id="userInfoText">Загрузка данных...</p>
+                <h1 style="font-size: 1.8rem; color: var(--gold-light);">Личный кабинет пользователя</h1>
+                <p style="color: var(--text-muted);" id="userInfoText">Загрузка данных...</p>
             </div>
             <button onclick="App.openCreateModal()" class="btn btn-accent">➕ Создать страницу памяти</button>
         </div>
 
-        <div style="background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: var(--card-shadow); border: 1px solid var(--border-color);">
-            <h3 style="margin-bottom: 1rem; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 0.5rem;">Мои страницы памяти</h3>
+        <div class="panel-card">
+            <h3 style="margin-bottom: 1rem; color: var(--gold-light); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Мои страницы памяти</h3>
             <div id="userPagesList">
-                <div style="text-align: center; color: #94a3b8; padding: 2rem;">Загрузка списка ваших страниц...</div>
+                <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Загрузка списка ваших страниц...</div>
             </div>
         </div>
     </div>
@@ -129,7 +129,7 @@ Storage::getPDO();
                 <textarea name="biography" id="editBiography" class="form-control" rows="4"></textarea>
             </div>
 
-            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; color: #1e293b;">📍 Место захоронения</h4>
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; color: var(--gold-light);">📍 Место захоронения</h4>
             <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
                 <div class="form-group">
                     <label>Кладбище</label>
@@ -156,7 +156,7 @@ Storage::getPDO();
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 1rem;">
                 <button type="button" class="btn btn-outline" onclick="App.closeModal('editPageModal')">Отмена</button>
                 <button type="submit" class="btn btn-accent">Сохранить изменения</button>
             </div>
@@ -171,16 +171,19 @@ Storage::getPDO();
 <script src="assets/js/main.js"></script>
 <script>
 function switchTab(tab) {
+    const loginBtn = document.getElementById('tabBtnLogin');
+    const regBtn = document.getElementById('tabBtnRegister');
+
     if (tab === 'login') {
         document.getElementById('loginForm').style.display = 'block';
         document.getElementById('registerForm').style.display = 'none';
-        document.getElementById('tabBtnLogin').style.color = 'var(--accent)';
-        document.getElementById('tabBtnRegister').style.color = '#94a3b8';
+        loginBtn.className = 'auth-tab-btn active';
+        regBtn.className = 'auth-tab-btn inactive';
     } else {
         document.getElementById('loginForm').style.display = 'none';
         document.getElementById('registerForm').style.display = 'block';
-        document.getElementById('tabBtnLogin').style.color = '#94a3b8';
-        document.getElementById('tabBtnRegister').style.color = 'var(--accent)';
+        loginBtn.className = 'auth-tab-btn inactive';
+        regBtn.className = 'auth-tab-btn active';
     }
 }
 
@@ -234,7 +237,7 @@ async function loadUserPages() {
     const container = document.getElementById('userPagesList');
 
     if (!res.success || !res.pages || res.pages.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 2rem;">У вас пока нет созданных страниц памяти.</div>';
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">У вас пока нет созданных страниц памяти.</div>';
         return;
     }
 
@@ -250,11 +253,11 @@ async function loadUserPages() {
         }
 
         return `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; gap: 10px;">
                 <div>
-                    <div style="font-weight: bold; font-size: 1.05rem; color: #0f172a;">${p.full_name}</div>
-                    <div style="font-size: 0.85rem; color: #64748b;">Дата создания: ${p.created_at} | Просмотров: ${p.views}</div>
-                    ${p.rejection_reason ? `<div style="color: #ef4444; font-size: 0.85rem; margin-top: 4px;">Причина отклонения: ${p.rejection_reason}</div>` : ''}
+                    <div style="font-weight: bold; font-size: 1.1rem; color: var(--gold-light);">${p.full_name}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">Дата создания: ${p.created_at} | Просмотров: ${p.views}</div>
+                    ${p.rejection_reason ? `<div style="color: #fca5a5; font-size: 0.85rem; margin-top: 4px;">Причина отклонения: ${p.rejection_reason}</div>` : ''}
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span class="badge ${badgeClass}">${statusText}</span>

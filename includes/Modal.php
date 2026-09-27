@@ -40,7 +40,7 @@ function renderCreatePageModal(): void {
                 <textarea name="biography" class="form-control" rows="4" placeholder="Подробная информация о жизни и достижениях..."></textarea>
             </div>
 
-            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; color: #1e293b;">📍 Информация о месте захоронения</h4>
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; color: var(--gold-light);">📍 Информация о месте захоронения</h4>
 
             <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
                 <div class="form-group">
@@ -68,7 +68,7 @@ function renderCreatePageModal(): void {
                 </div>
             </div>
 
-            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; color: #1e293b;">👨‍👩‍👧 Контакты родственников</h4>
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; color: var(--gold-light);">👨‍👩‍👧 Контакты родственников</h4>
             <div id="relativesContainer">
                 <div class="relative-input-row" style="display: grid; grid-template-columns: 1fr 1.5fr 1.5fr; gap: 8px; margin-bottom: 8px;">
                     <input type="text" class="form-control rel-type" placeholder="Степень родства (например, Сын)">
