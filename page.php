@@ -132,7 +132,7 @@ function renderPageDetails(data) {
         <div class="single-page-header">
             <img src="${photo}" alt="${p.full_name}" class="single-page-photo">
             <h1 class="single-page-title">${p.full_name}</h1>
-            <div class="single-page-dates">🕯️ ${p.birth_date || '???'} — ${p.death_date || '???'}</div>
+            <div class="single-page-dates">🕯️ ${formatMemorialDates(p.birth_date, p.death_date)}</div>
             ${p.epitaph ? `<div class="single-page-epitaph">"${p.epitaph}"</div>` : ''}
 
             <div style="display: flex; gap: 10px; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center;">
@@ -226,7 +226,7 @@ function openPlaqueModal() {
     if (!currentData) return;
     const p = currentData.page;
     document.getElementById('plaqueName').innerText = p.full_name;
-    document.getElementById('plaqueDates').innerText = `🕯️ ${p.birth_date || '???'} — ${p.death_date || '???'}`;
+    document.getElementById('plaqueDates').innerText = `🕯️ ${formatMemorialDates(p.birth_date, p.death_date)}`;
     document.getElementById('plaqueUrl').innerText = currentData.permalink;
 
     generateQRCode('plaqueQrCode', currentData.permalink, 180);

@@ -136,7 +136,7 @@ function renderCards(pages) {
                 <img src="${photo}" alt="${p.full_name}" class="memorial-card-img">
                 <div class="memorial-card-body">
                     <div class="memorial-card-title">${p.full_name}</div>
-                    <div class="memorial-card-dates">🕯️ ${p.birth_date || '???'} — ${p.death_date || '???'}</div>
+                    <div class="memorial-card-dates">🕯️ ${formatMemorialDates(p.birth_date, p.death_date)}</div>
                     ${p.epitaph ? `<div class="memorial-card-epitaph">"${p.epitaph}"</div>` : ''}
                     <div class="memorial-card-footer">
                         <span class="memorial-card-location">📍 ${p.cemetery || 'Место не указано'}</span>

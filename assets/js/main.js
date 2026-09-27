@@ -420,6 +420,20 @@ var QRCode;
 })();
 
 // Function to render HTML5 Canvas or SVG QR code
+function formatMemorialDates(birthDate, deathDate) {
+  const birth = (birthDate || '').trim();
+  const death = (deathDate || '').trim();
+  if (birth && death) {
+    return `${birth} — ${death}`;
+  } else if (birth) {
+    return `р. ${birth}`;
+  } else if (death) {
+    return `† ${death}`;
+  } else {
+    return 'Вечная память';
+  }
+}
+
 function generateQRCode(elementId, text, size = 180) {
   const container = document.getElementById(elementId);
   if (!container) return;

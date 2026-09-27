@@ -221,7 +221,7 @@ async function loadModerationData() {
     container.innerHTML = res.pages.map(p => `
         <div style="background: rgba(6, 8, 13, 0.7); border: 1px solid var(--gold-border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;">
-                <strong style="font-size: 1.15rem; color: var(--gold-light);">${p.full_name} (${p.birth_date || '???'} — ${p.death_date || '???'})</strong>
+                <strong style="font-size: 1.15rem; color: var(--gold-light);">${p.full_name} (${formatMemorialDates(p.birth_date, p.death_date)})</strong>
                 <span class="badge badge-pending">На проверке</span>
             </div>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Телефон заявителя:</strong> ${p.owner_phone || 'Неизвестно'} | <strong>Кладбище:</strong> ${p.cemetery || 'Не указано'}</p>
