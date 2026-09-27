@@ -12,10 +12,13 @@ Storage::getPDO();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Память - Книга Памяти и Захоронений</title>
+    <title>Память — Вечная Книга Соболезнований и Захоронений</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+
+<!-- Ambient Animated Particles / Embers Container -->
+<div id="particlesContainer" class="particles-bg"></div>
 
 <nav class="navbar">
     <a href="index.php" class="navbar-brand">
@@ -29,14 +32,34 @@ Storage::getPDO();
 </nav>
 
 <div class="container">
+    <!-- Hero Banner with Tragic Atmosphere & Animated Candles -->
     <div class="hero">
-        <h1>🕯️ Электронная Книга Памяти и Вечной Скорби</h1>
-        <p>Сохраните светлую память о близких, историю их жизни, памятные фотографии и точную геопозицию захоронения с QR-кодом для мемориальной плиты.</p>
-        <button class="btn btn-accent" onclick="App.openCreateModal()">➕ Создать Страницу Памяти</button>
+        <div class="hero-candles-side left">🕯️</div>
+        <div class="hero-candles-side right">🕯️</div>
+
+        <div class="hero-subtitle">«Память сильнее времени. Пока мы помним — они живы»</div>
+        <h1 class="shimmer-title">Вечная Книга Памяти и Места Захоронений</h1>
+        <p class="hero-text">Сохраните светлую и нерушимую память о дорогих сердцу людях. История их жизни, памятные галереи и точно зафиксированное место захоронения с памятной QR-табличкой.</p>
+
+        <div class="hero-actions">
+            <button class="btn btn-accent btn-lg" onclick="App.openCreateModal()">➕ Создать Мемориальную Страницу</button>
+        </div>
+    </div>
+
+    <!-- Memorial Ribbon / Quote Ticker -->
+    <div class="memorial-ribbon">
+        <span>🖤 Любовь не умирает...</span>
+        <span>🕯️ Светлая и вечная память...</span>
+        <span>🕊️ Ты навсегда в наших сердцах...</span>
+        <span>🕯️ Никто не забыт, ничто не забыто...</span>
     </div>
 
     <!-- Search Section -->
     <div class="search-card">
+        <div class="search-card-header">
+            <h3>🔍 Поиск мемориала в книге памяти</h3>
+            <p>Введите Фамилию, Имя или годы жизни для поиска захоронения</p>
+        </div>
         <form id="searchForm" onsubmit="performSearch(event)">
             <div class="search-grid">
                 <div class="form-group">
@@ -67,11 +90,28 @@ Storage::getPDO();
 <?php renderCreatePageModal(); ?>
 
 <footer class="footer">
-    <p>&copy; <?php echo date('Y'); ?> Страницы Памяти. Все права защищены. Система электронных мемориалов с QR-кодами.</p>
+    <p>&copy; <?php echo date('Y'); ?> Электронная Книга Памяти. Все права защищены. Постоянное хранение данных и мемориальные QR-коды.</p>
 </footer>
 
 <script src="assets/js/main.js"></script>
 <script>
+// Create floating ember particles in background
+function initEmberParticles() {
+    const container = document.getElementById('particlesContainer');
+    if (!container) return;
+
+    for (let i = 0; i < 25; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'ember-particle';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.animationDuration = (Math.random() * 8 + 6) + 's';
+        particle.style.animationDelay = (Math.random() * 5) + 's';
+        particle.style.width = (Math.random() * 3 + 2) + 'px';
+        particle.style.height = particle.style.width;
+        container.appendChild(particle);
+    }
+}
+
 async function performSearch(e) {
     if (e) e.preventDefault();
     const query = document.getElementById('searchQuery').value;
@@ -85,14 +125,14 @@ async function performSearch(e) {
 function renderCards(pages) {
     const grid = document.getElementById('resultsGrid');
     if (!pages || pages.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: #64748b;">По вашему запросу ничего не найдено. Попробуйте изменить критерии поиска.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 4rem; color: #94a3b8; font-style: italic;">Захоронений по данному запросу не найдено. Вы можете создать новую страницу памяти.</div>';
         return;
     }
 
-    grid.innerHTML = pages.map(p => {
+    grid.innerHTML = pages.map((p, idx) => {
         const photo = p.photo ? p.photo : 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=400&auto=format&fit=crop&q=80';
         return `
-            <div class="memorial-card">
+            <div class="memorial-card" style="animation-delay: ${idx * 0.1}s;">
                 <img src="${photo}" alt="${p.full_name}" class="memorial-card-img">
                 <div class="memorial-card-body">
                     <div class="memorial-card-title">${p.full_name}</div>
@@ -100,7 +140,7 @@ function renderCards(pages) {
                     ${p.epitaph ? `<div class="memorial-card-epitaph">"${p.epitaph}"</div>` : ''}
                     <div class="memorial-card-footer">
                         <span class="memorial-card-location">📍 ${p.cemetery || 'Место не указано'}</span>
-                        <a href="page.php?code=${p.code}" class="btn btn-primary btn-sm">Перейти к странице</a>
+                        <a href="page.php?code=${p.code}" class="btn btn-primary btn-sm">Перейти к мемориалу</a>
                     </div>
                 </div>
             </div>
@@ -108,57 +148,8 @@ function renderCards(pages) {
     }).join('');
 }
 
-function addRelativeRow() {
-    const container = document.getElementById('relativesContainer');
-    const div = document.createElement('div');
-    div.className = 'relative-input-row';
-    div.style = 'display: grid; grid-template-columns: 1fr 1.5fr 1.5fr; gap: 8px; margin-bottom: 8px;';
-    div.innerHTML = `
-        <input type="text" class="form-control rel-type" placeholder="Степень родства">
-        <input type="text" class="form-control rel-name" placeholder="ФИО родственника">
-        <input type="text" class="form-control rel-phone" placeholder="Телефон родственника">
-    `;
-    container.appendChild(div);
-}
-
-async function submitCreatePage(e) {
-    e.preventDefault();
-    const form = document.getElementById('createPageForm');
-    const formData = new FormData(form);
-
-    // Collect relatives array
-    const relatives = [];
-    document.querySelectorAll('#relativesContainer .relative-input-row').forEach(row => {
-        const type = row.querySelector('.rel-type').value.trim();
-        const name = row.querySelector('.rel-name').value.trim();
-        const phone = row.querySelector('.rel-phone').value.trim();
-        if (name) {
-            relatives.push({ relation_type: type, name: name, phone: phone, is_public: 1 });
-        }
-    });
-
-    formData.append('relatives', JSON.stringify(relatives));
-
-    const res = await App.fetch('create_page', {}, {
-        method: 'POST',
-        body: formData
-    });
-
-    if (res.success) {
-        alert(res.message);
-        App.closeModal('createPageModal');
-        form.reset();
-        if (res.status === 'approved') {
-            window.location.href = `page.php?code=${res.code}`;
-        } else {
-            window.location.href = 'user.php';
-        }
-    } else {
-        alert('Ошибка: ' + res.error);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
+    initEmberParticles();
     performSearch();
 });
 </script>

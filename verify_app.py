@@ -92,7 +92,7 @@ async def run_tests():
 
             # 7. Open Memorial Page & QR code plaque
             print("7. Inspecting Memorial Page and QR Code plaque...")
-            await page.click(".memorial-card a:has-text('Перейти к странице')")
+            await page.click(".memorial-card a:has-text('Перейти к мемориалу')")
             await page.wait_for_selector(".single-page-title")
             await page.screenshot(path="verification_memorial_page.png")
 
