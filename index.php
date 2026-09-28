@@ -54,11 +54,55 @@ Storage::getPDO();
         <span>🕯️ Никто не забыт, ничто не забыто...</span>
     </div>
 
+    <!-- Feature Cards Section (Вечная память в цифровом веке) -->
+    <div class="feature-overview-section" style="margin: 2.5rem 0;">
+        <h2 style="text-align: center; color: var(--gold-light); font-size: 1.6rem; margin-bottom: 0.5rem; font-family: 'Cinzel', 'Georgia', serif;">
+            ✨ Вечная память в цифровом веке
+        </h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">
+            Современные цифровые мемориалы для сохранения семейной истории на поколения
+        </p>
+
+        <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+            <div class="feature-card glass-card" style="background: rgba(12, 16, 24, 0.75); border: 1px solid var(--gold-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s ease;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📱</div>
+                <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 0.5rem;">QR-код для мемориала</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                    Компактная металлизированная табличка с QR-кодом устанавливается на памятник или крест.
+                </p>
+            </div>
+
+            <div class="feature-card glass-card" style="background: rgba(12, 16, 24, 0.75); border: 1px solid var(--gold-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s ease;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📖</div>
+                <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 0.5rem;">История жизни и фотогалерея</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                    Подробная биография, яркие моменты, достижения и до 10 фотографий высокого разрешения.
+                </p>
+            </div>
+
+            <div class="feature-card glass-card" style="background: rgba(12, 16, 24, 0.75); border: 1px solid var(--gold-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s ease;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📍</div>
+                <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 0.5rem;">Контакты и геопозиция</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                    Точные GPS-координаты могилы с навигатором и контакты родственников для связи.
+                </p>
+            </div>
+
+            <div class="feature-card glass-card" style="background: rgba(12, 16, 24, 0.75); border: 1px solid var(--gold-border); border-radius: 12px; padding: 1.5rem; text-align: center; transition: all 0.3s ease;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🕯️</div>
+                <h3 style="color: var(--gold-light); font-size: 1.1rem; margin-bottom: 0.5rem;">Поддержка и свечи</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                    Возможность зажечь виртуальную свечу памяти и оставить тёплые слова соболезнования.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Search Section -->
     <div class="search-card">
         <div class="search-card-header">
             <h3>🔍 Поиск мемориала в книге памяти</h3>
-            <p>Введите Фамилию, Имя или годы жизни для поиска захоронения</p>
+            <p>Введите фамилию, имя или годы жизни для поиска захоронения</p>
         </div>
         <form id="searchForm" onsubmit="performSearch(event)">
             <div class="search-grid">

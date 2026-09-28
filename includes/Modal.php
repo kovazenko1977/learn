@@ -27,7 +27,8 @@ function renderCreatePageModal(): void {
 
             <div class="form-group" style="margin-bottom: 1rem;">
                 <label>Фотографии (можно выбрать до 10 файлов)</label>
-                <input type="file" name="photos[]" multiple class="form-control" accept="image/*">
+                <input type="file" name="photos[]" id="modalPhotosInput" multiple class="form-control" accept="image/*" onchange="previewUploadPhotos(this)">
+                <div id="photoPreviewGrid" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;"></div>
             </div>
 
             <div class="form-group" style="margin-bottom: 1rem;">
@@ -86,6 +87,28 @@ function renderCreatePageModal(): void {
     </div>
 </div>
 <script>
+function previewUploadPhotos(input) {
+    const grid = document.getElementById('photoPreviewGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (!input.files || input.files.length === 0) return;
+
+    Array.from(input.files).slice(0, 10).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '60px';
+            img.style.height = '60px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '6px';
+            img.style.border = '1px solid var(--gold-border)';
+            grid.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 function addRelativeRow() {
     const container = document.getElementById('relativesContainer');
     if (!container) return;
