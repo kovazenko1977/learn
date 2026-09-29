@@ -1,0 +1,109 @@
+{
+  "version": "0.4",
+  "title": "Страница Жанны Коваженко - Клуб Мой круг",
+  "type": "page",
+  "content": [
+    {
+      "id": "hero_section",
+      "elType": "section",
+      "settings": {
+        "layout": "full_width",
+        "background_background": "classic",
+        "background_color": "#1e4d3b",
+        "padding": {
+          "unit": "px",
+          "top": "90",
+          "bottom": "90",
+          "left": "20",
+          "right": "20"
+        }
+      },
+      "elements": [
+        {
+          "id": "hero_column",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "hero_title",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "Открывайте Беларусь вместе с Жанной Коваженко",
+                "header_size": "h1",
+                "title_color": "#ffffff",
+                "align": "center",
+                "typography_font_family": "Playfair Display"
+              }
+            },
+            {
+              "id": "hero_subtitle",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p style='text-align: center; color: #fefae0; font-size: 20px;'>Замки, усадьбы, памятники природы и тёплое общение единомышленников в клубе «Мой круг»</p>"
+              }
+            },
+            {
+              "id": "hero_button",
+              "elType": "widget",
+              "widgetType": "button",
+              "settings": {
+                "text": "Присоединиться к поездке",
+                "link": {
+                  "url": "#contact"
+                },
+                "align": "center",
+                "button_type": "success"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "about_section",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "70",
+          "bottom": "70",
+          "left": "20",
+          "right": "20"
+        }
+      },
+      "elements": [
+        {
+          "id": "about_col_text",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "about_heading",
+              "elType": "widget",
+              "widgetType": "heading",
+              "settings": {
+                "title": "О Жанне Коваженко и клубе «Мой круг»",
+                "header_size": "h2",
+                "align": "center"
+              }
+            },
+            {
+              "id": "about_desc",
+              "elType": "widget",
+              "widgetType": "text-editor",
+              "settings": {
+                "editor": "<p>Клуб «Мой круг» под руководством Жанны Людвиговны Коваженко объединяет людей с общими интересами: любовью к истории, культуре и живописным уголкам Беларуси.</p><p>Мы организуем душевные и познавательные поездки по памятникам архитектуры, усадьбам и заповідным местам.</p>"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
