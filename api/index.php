@@ -177,6 +177,17 @@ switch ($action) {
         $condStmt->execute([$page['id']]);
         $condolences = $condStmt->fetchAll();
 
+        // Calculate remembrance dates
+        $remembranceDates = calculateRemembranceDates($page['birth_date'], $page['death_date']);
+
+        // Fetch family links
+        $familyStmt = $pdo->prepare("SELECT fl.*, p.full_name as related_name, p.code as related_code, p.photo as related_photo, p.birth_date as related_birth, p.death_date as related_death
+            FROM family_links fl
+            JOIN pages p ON fl.related_page_id = p.id
+            WHERE fl.page_id = ? AND p.status = 'approved'");
+        $familyStmt->execute([$page['id']]);
+        $familyLinks = $familyStmt->fetchAll();
+
         jsonResponse([
             'success' => true,
             'page' => $page,
@@ -184,6 +195,8 @@ switch ($action) {
             'photos' => $photosList,
             'candle_count' => $candleCount,
             'condolences' => $condolences,
+            'remembrance_dates' => $remembranceDates,
+            'family_links' => $familyLinks,
             'permalink' => getBaseUrl() . '/page.php?code=' . $page['code']
         ]);
         break;
@@ -220,6 +233,12 @@ switch ($action) {
 
         $photoPath = !empty($uploadedPhotos) ? $uploadedPhotos[0] : '';
 
+        // Audio upload
+        $audioPath = '';
+        if (isset($_FILES['audio'])) {
+            $audioPath = uploadAudioFile($_FILES['audio']) ?? '';
+        }
+
         // Auto approve setting check
         $stmtSetting = $pdo->prepare("SELECT value FROM settings WHERE key = 'auto_approve'");
         $stmtSetting->execute();
@@ -229,10 +248,10 @@ switch ($action) {
         $code = generatePageCode(8);
 
         $stmt = $pdo->prepare("INSERT INTO pages
-            (code, user_id, full_name, birth_date, death_date, photo, epitaph, biography, cemetery, section, grave_num, latitude, longitude, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (code, user_id, full_name, birth_date, death_date, photo, audio_path, epitaph, biography, cemetery, section, grave_num, latitude, longitude, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
-            $code, $user['id'], $fullName, $birthDate, $deathDate, $photoPath, $epitaph, $biography,
+            $code, $user['id'], $fullName, $birthDate, $deathDate, $photoPath, $audioPath, $epitaph, $biography,
             $cemetery, $section, $graveNum, $latitude, $longitude, $status
         ]);
         $pageId = $pdo->lastInsertId();
@@ -322,6 +341,14 @@ switch ($action) {
 
         $photoPath = !empty($uploadedPhotos) ? $uploadedPhotos[0] : $existingPage['photo'];
 
+        $audioPath = $existingPage['audio_path'] ?? '';
+        if (isset($_FILES['audio'])) {
+            $uploadedAudio = uploadAudioFile($_FILES['audio']);
+            if ($uploadedAudio) {
+                $audioPath = $uploadedAudio;
+            }
+        }
+
         if (!empty($uploadedPhotos)) {
             $photoInsertStmt = $pdo->prepare("INSERT INTO page_photos (page_id, photo_path, sort_order) VALUES (?, ?, ?)");
             foreach ($uploadedPhotos as $order => $path) {
@@ -333,15 +360,32 @@ switch ($action) {
         $newStatus = $isAdmin ? $existingPage['status'] : 'pending';
 
         $stmt = $pdo->prepare("UPDATE pages SET
-            full_name = ?, birth_date = ?, death_date = ?, photo = ?, epitaph = ?,
+            full_name = ?, birth_date = ?, death_date = ?, photo = ?, audio_path = ?, epitaph = ?,
             biography = ?, cemetery = ?, section = ?, grave_num = ?, latitude = ?, longitude = ?,
             status = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ?");
         $stmt->execute([
-            $fullName, $birthDate, $deathDate, $photoPath, $epitaph,
+            $fullName, $birthDate, $deathDate, $photoPath, $audioPath, $epitaph,
             $biography, $cemetery, $section, $graveNum, $latitude, $longitude,
             $newStatus, $pageId
         ]);
+
+        // Process family links if passed
+        $familyRaw = getParam('family_links');
+        if (!empty($familyRaw)) {
+            if (is_string($familyRaw)) {
+                $familyRaw = json_decode($familyRaw, true) ?: [];
+            }
+            if (is_array($familyRaw)) {
+                $pdo->prepare("DELETE FROM family_links WHERE page_id = ?")->execute([$pageId]);
+                $famStmt = $pdo->prepare("INSERT INTO family_links (page_id, related_page_id, relation_title) VALUES (?, ?, ?)");
+                foreach ($familyRaw as $f) {
+                    if (!empty($f['related_page_id'])) {
+                        $famStmt->execute([$pageId, intval($f['related_page_id']), sanitizeInput($f['relation_title'] ?? 'Родственник')]);
+                    }
+                }
+            }
+        }
 
         // Update relatives
         $relativesRaw = getParam('relatives');

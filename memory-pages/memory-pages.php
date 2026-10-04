@@ -35,6 +35,7 @@ function memory_pages_activate() {
         birth_date varchar(50) DEFAULT '',
         death_date varchar(50) DEFAULT '',
         main_photo varchar(500) DEFAULT '',
+        audio_url varchar(500) DEFAULT '',
         biography text DEFAULT '',
         burial_location varchar(255) DEFAULT '',
         burial_latitude varchar(50) DEFAULT '',

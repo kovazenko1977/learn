@@ -120,6 +120,11 @@ Storage::getPDO();
             </div>
 
             <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Аудиозапись / Голос памяти (mp3, wav, m4a, webm)</label>
+                <input type="file" name="audio" class="form-control" accept="audio/*">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
                 <label>Эпитафия</label>
                 <input type="text" name="epitaph" id="editEpitaph" class="form-control">
             </div>

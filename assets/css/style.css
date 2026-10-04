@@ -491,6 +491,7 @@ select.form-control option {
   text-decoration: none;
   letter-spacing: 0.5px;
   font-family: inherit;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -778,15 +779,29 @@ tr:hover {
   border: 1px solid rgba(239, 68, 68, 0.7);
 }
 
-/* Printable Plaque View */
+/* Printable Plaque & Book of Memory View */
 @media print {
-  body * {
-    visibility: hidden;
+  .no-print, .navbar, .footer, .btn, form {
+    display: none !important;
   }
-  #printablePlaqueArea, #printablePlaqueArea * {
-    visibility: visible;
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
   }
-  #printablePlaqueArea {
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  .single-page-header, .content-block, .relative-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+  .single-page-title, .content-block h3, .relative-card .name {
+    color: #000000 !important;
+  }
+  .modal-backdrop.active #printablePlaqueArea {
     position: absolute;
     left: 0;
     top: 0;

@@ -58,6 +58,7 @@ class Storage {
             birth_date TEXT,
             death_date TEXT,
             photo TEXT DEFAULT '',
+            audio_path TEXT DEFAULT '',
             epitaph TEXT DEFAULT '',
             biography TEXT DEFAULT '',
             cemetery TEXT DEFAULT '',
@@ -71,6 +72,24 @@ class Storage {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )");
+
+        // Ensure audio_path column exists if table was created previously
+        try {
+            $pdo->exec("ALTER TABLE pages ADD COLUMN audio_path TEXT DEFAULT ''");
+        } catch (Exception $e) {
+            // Column already exists
+        }
+
+        // Family Links Table (Connecting related deceased members)
+        $pdo->exec("CREATE TABLE IF NOT EXISTS family_links (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            page_id INTEGER NOT NULL,
+            related_page_id INTEGER NOT NULL,
+            relation_title TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE,
+            FOREIGN KEY (related_page_id) REFERENCES pages(id) ON DELETE CASCADE
         )");
 
         // Relatives contact information

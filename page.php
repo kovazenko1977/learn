@@ -136,10 +136,21 @@ function renderPageDetails(data) {
             ${p.epitaph ? `<div class="single-page-epitaph">"${p.epitaph}"</div>` : ''}
 
             <div style="display: flex; gap: 10px; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center;">
-                <button class="btn btn-accent" onclick="lightCandle(${p.id})">🕯️ Зажечь свечу памяти (<span id="candleCount">${data.candle_count}</span>)</button>
-                <button class="btn btn-outline" style="color: #fff; border-color: rgba(255,255,255,0.3);" onclick="openPlaqueModal()">📱 Табличка с QR-кодом</button>
+                <button class="btn btn-accent" onclick="lightCandle(${p.id})"><span>🕯️ Зажечь свечу памяти (<span id="candleCount">${data.candle_count}</span>)</span></button>
+                <button class="btn btn-outline" style="color: #fff; border-color: rgba(255,255,255,0.3);" onclick="openPlaqueModal()"><span>📱 Табличка с QR-кодом</span></button>
             </div>
         </div>
+
+        ${p.audio_path ? `
+            <div class="content-block" style="background: rgba(212, 175, 55, 0.08); border-color: var(--gold-primary);">
+                <h3>🎵 Голоса памяти / Запись / Музыка</h3>
+                <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 0.75rem;">Аудиозапись, любимая композиция или эпитафия усопшего</p>
+                <audio controls style="width: 100%; outline: none; border-radius: 8px;">
+                    <source src="${p.audio_path}" type="audio/mpeg">
+                    Ваш браузер не поддерживает аудио элемент.
+                </audio>
+            </div>
+        ` : ''}
 
         ${galleryHtml}
 
@@ -147,9 +158,33 @@ function renderPageDetails(data) {
             <div>
                 <!-- Biography -->
                 <div class="content-block">
-                    <h3>📖 Биография и память</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin-bottom: 0;">📖 Биография и память</h3>
+                        <button class="btn btn-outline btn-sm no-print" onclick="window.print()">🖨️ Печать Книги Памяти (A4)</button>
+                    </div>
                     <div style="white-space: pre-wrap; color: var(--text-primary); font-size: 1.05rem;">${p.biography ? p.biography : 'Информация о биографии пока не добавлена.'}</div>
                 </div>
+
+                <!-- Family Lineage Links -->
+                ${(data.family_links && data.family_links.length > 0) ? `
+                    <div class="content-block">
+                        <h3>🌳 Родственные мемориалы</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 0.85rem;">
+                            ${data.family_links.map(f => `
+                                <a href="page.php?code=${f.related_code}" style="text-decoration: none;" class="relative-card">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="${f.related_photo || 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=100'}" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold-border);">
+                                        <div>
+                                            <div class="relation">${f.relation_title || 'Родственник'}</div>
+                                            <div class="name" style="font-size: 0.95rem;">${f.related_name}</div>
+                                            <div style="font-size: 0.75rem; color: var(--gold-primary);">${f.related_birth || ''} — ${f.related_death || ''}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
 
                 <!-- Condolences Wall -->
                 <div class="content-block">
@@ -168,6 +203,21 @@ function renderPageDetails(data) {
             </div>
 
             <div>
+                <!-- Remembrance Calendar -->
+                ${(data.remembrance_dates && data.remembrance_dates.length > 0) ? `
+                    <div class="content-block" style="border-color: var(--gold-border);">
+                        <h3>🗓️ Календарь поминальных дат</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 0.75rem;">
+                            ${data.remembrance_dates.map(rd => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(6, 8, 13, 0.7); border: 1px solid var(--border-color); padding: 0.6rem 0.85rem; border-radius: 6px;">
+                                    <span style="font-size: 0.9rem; color: var(--gold-light); font-weight: 600;">${rd.title}</span>
+                                    <span style="font-size: 0.9rem; color: #ffffff; font-weight: 700; background: rgba(212,175,55,0.2); padding: 2px 8px; border-radius: 4px;">${rd.date}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
                 <!-- Burial Information -->
                 <div class="content-block">
                     <h3>📍 Место захоронения</h3>

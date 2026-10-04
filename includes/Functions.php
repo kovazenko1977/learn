@@ -102,3 +102,94 @@ function extractYear(?string $dateStr): ?int {
     }
     return null;
 }
+
+function uploadAudioFile(array $file, string $uploadDir = '../uploads/audio/'): ?string {
+    if (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $targetDir = __DIR__ . '/' . $uploadDir;
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0755, true);
+    }
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $allowed = ['mp3', 'wav', 'ogg', 'm4a', 'webm', 'aac'];
+    if (!in_array($ext, $allowed)) {
+        return null;
+    }
+
+    $filename = 'audio_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $targetFile = $targetDir . $filename;
+
+    if (move_uploaded_file($file['tmp_name'], $targetFile)) {
+        return 'uploads/audio/' . $filename;
+    }
+
+    return null;
+}
+
+function calculateRemembranceDates(?string $birthDateStr, ?string $deathDateStr): array {
+    $remembrance = [];
+
+    if ($deathDateStr) {
+        $deathTime = strtotime($deathDateStr);
+        if ($deathTime) {
+            // 9th day (orthodox tradition: 9 days including death day = +8 days)
+            $day9 = strtotime('+8 days', $deathTime);
+            $remembrance[] = [
+                'title' => '9 дней (Поминовение)',
+                'date' => date('d.m.Y', $day9),
+                'type' => 'traditional'
+            ];
+
+            // 40th day (+39 days)
+            $day40 = strtotime('+39 days', $deathTime);
+            $remembrance[] = [
+                'title' => '40 дней (Сороковины)',
+                'date' => date('d.m.Y', $day40),
+                'type' => 'traditional'
+            ];
+
+            // 1 Year anniversary (+1 year)
+            $year1 = strtotime('+1 year', $deathTime);
+            $remembrance[] = [
+                'title' => '1 год с даты ухода',
+                'date' => date('d.m.Y', $year1),
+                'type' => 'anniversary'
+            ];
+
+            // Upcoming annual death day
+            $currentYear = (int)date('Y');
+            $deathMonthDay = date('m-d', $deathTime);
+            $nextDeathAnniv = strtotime($currentYear . '-' . $deathMonthDay);
+            if ($nextDeathAnniv < strtotime('today')) {
+                $nextDeathAnniv = strtotime(($currentYear + 1) . '-' . $deathMonthDay);
+            }
+            $remembrance[] = [
+                'title' => 'Годовщина памяти (ближайшая)',
+                'date' => date('d.m.Y', $nextDeathAnniv),
+                'type' => 'annual'
+            ];
+        }
+    }
+
+    if ($birthDateStr) {
+        $birthTime = strtotime($birthDateStr);
+        if ($birthTime) {
+            $currentYear = (int)date('Y');
+            $birthMonthDay = date('m-d', $birthTime);
+            $nextBirthAnniv = strtotime($currentYear . '-' . $birthMonthDay);
+            if ($nextBirthAnniv < strtotime('today')) {
+                $nextBirthAnniv = strtotime(($currentYear + 1) . '-' . $birthMonthDay);
+            }
+            $remembrance[] = [
+                'title' => 'День рождения (ближайший)',
+                'date' => date('d.m.Y', $nextBirthAnniv),
+                'type' => 'birthday'
+            ];
+        }
+    }
+
+    return $remembrance;
+}
