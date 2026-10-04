@@ -225,7 +225,7 @@ async function loadModerationData() {
                 <span class="badge badge-pending">На проверке</span>
             </div>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Телефон заявителя:</strong> ${p.owner_phone || 'Неизвестно'} | <strong>Кладбище:</strong> ${p.cemetery || 'Не указано'}</p>
-            ${p.epitaph ? `<p style="font-style: italic; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">"${p.epitaph}"</p>` : ''}
+            ${p.epitaph ? `<p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 1rem;">"${p.epitaph}"</p>` : ''}
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn btn-success btn-sm" onclick="approvePage(${p.id})">✅ Опубликовать</button>
                 <button class="btn btn-danger btn-sm" onclick="rejectPage(${p.id})">❌ Отклонить</button>

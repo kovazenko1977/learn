@@ -169,7 +169,7 @@ async function performSearch(e) {
 function renderCards(pages) {
     const grid = document.getElementById('resultsGrid');
     if (!pages || pages.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 4rem; color: #94a3b8; font-style: italic;">Захоронений по данному запросу не найдено. Вы можете создать новую страницу памяти.</div>';
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 4rem; color: #a3a3a3;">Захоронений по данному запросу не найдено. Вы можете создать новую страницу памяти.</div>';
         return;
     }
 
