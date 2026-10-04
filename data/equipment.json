@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Аппарат ИВЛ Mindray",
+    "inventory_number": "EQ-2024-001",
+    "location": "Хирургический корпус, Операционная 3",
+    "service_id": 7,
+    "photo": "",
+    "description": "Аппарат искусственной вентиляции легких"
+  },
+  {
+    "id": 2,
+    "name": "Кондиционер Daikin K1-205",
+    "inventory_number": "EQ-2023-088",
+    "location": "Корпус №1 (Главный), Кабинет 205",
+    "service_id": 1,
+    "photo": "",
+    "description": "Сплит-система климат-контроля"
+  }
+]
