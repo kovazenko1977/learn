@@ -1,0 +1,101 @@
+/* Memory Pages WordPress Public CSS Styles */
+:root {
+    --mp-bg-dark: #06080d;
+    --mp-card-bg: rgba(18, 24, 38, 0.9);
+    --mp-gold: #d4af37;
+    --mp-gold-light: #f3e5ab;
+    --mp-gold-glow: rgba(212, 175, 55, 0.4);
+    --mp-text-light: #e2e8f0;
+    --mp-text-muted: #94a3b8;
+}
+
+.mp-public-wrap {
+    background-color: var(--mp-bg-dark);
+    color: var(--mp-text-light);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.mp-card {
+    background: var(--mp-card-bg);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.mp-title {
+    color: var(--mp-gold);
+    font-family: 'Georgia', serif;
+    font-size: 1.6rem;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding-bottom: 8px;
+}
+
+.mp-form-group {
+    margin-bottom: 14px;
+}
+
+.mp-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--mp-gold-light);
+    font-size: 0.9rem;
+}
+
+.mp-input {
+    width: 100%;
+    background: rgba(10, 14, 23, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+}
+
+.mp-input:focus {
+    border-color: var(--mp-gold);
+    outline: none;
+    box-shadow: 0 0 10px var(--mp-gold-glow);
+}
+
+.mp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.mp-btn-gold {
+    background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+    color: #0c1018;
+}
+
+.mp-btn-gold:hover {
+    background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 100%);
+    color: #000;
+}
+
+.mp-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.mp-preview-thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #d4af37;
+}
