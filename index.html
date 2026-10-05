@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Flower Studio — Цветы с доставкой</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff9800">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    /* Dark & Orange Corporate Theme Variables */
+    :root {
+      --primary: #ff9800;
+      --primary-light: #ffb74d;
+      --primary-dark: #f57c00;
+      --bg-dark: #121212;
+      --bg-card: #1e1e1e;
+      --bg-input: #282828;
+      --text-white: #ffffff;
+      --text-gray: #a0a0a0;
+      --success: #25d366;
+      --error: #e53935;
+      --blue: #2196f3;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 16px rgba(255, 152, 0, 0.2);
+      --shadow-lg: 0 8px 30px rgba(255, 152, 0, 0.35);
+      --radius-sm: 14px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-white);
+      overflow: hidden;
+    }
+
+    /* Fixed App Shell Container (Max Width 640px) */
+    #app-shell {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+      height: 100%;
+      margin: 0 auto;
+      background-color: var(--bg-dark);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(255, 152, 0, 0.15);
+    }
+
+    /* Header Bar */
+    .app-header {
+      position: relative;
+      z-index: 50;
+      padding-top: max(12px, var(--safe-top));
+      padding-bottom: 12px;
+      padding-left: 16px;
+      padding-right: 16px;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 152, 0, 0.15);
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      position: relative;
+      background: #282828;
+      border: 1px solid rgba(255, 152, 0, 0.2);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--error);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 2px solid #1a1a1a;
+    }
+
+    /* Screen View Container */
+    #screen-viewport {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      padding-bottom: calc(80px + var(--safe-bottom));
+      display: none;
+      opacity: 0;
+      transition: transform 0.38s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.38s ease;
+    }
+
+    .screen.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .screen.slide-in-right {
+      transform: translateX(100%);
+    }
+
+    .screen.slide-out-left {
+      transform: translateX(-30%);
+      opacity: 0.5;
+    }
+
+    .screen.slide-in-left {
+      transform: translateX(-100%);
+    }
+
+    .screen.slide-out-right {
+      transform: translateX(100%);
+      opacity: 0.5;
+    }
+
+    /* Splash Screen Overlay */
+    #splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      background: linear-gradient(135deg, #121212, #ff9800);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: opacity 0.5s ease;
+    }
+
+    .splash-logo {
+      font-size: 72px;
+      animation: splashRotate 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes splashRotate {
+      0% { transform: scale(1) rotate(0deg); }
+      100% { transform: scale(1.15) rotate(10deg); }
+    }
+
+    .splash-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-top: 16px;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .splash-sub {
+      font-size: 14px;
+      color: #ffb74d;
+      margin-top: 6px;
+    }
+
+    /* Floating Action Button (FAB) */
+    .fab-assistant {
+      position: fixed;
+      bottom: calc(76px + var(--safe-bottom));
+      right: max(20px, calc((100vw - 640px) / 2 + 20px));
+      z-index: 80;
+      background: linear-gradient(135deg, #ff9800, #ffb74d);
+      color: #121212;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .fab-assistant:active {
+      transform: scale(0.94);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      height: calc(64px + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      border-top: 1px solid rgba(255, 152, 0, 0.15);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-gray);
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      position: relative;
+      flex: 1;
+      height: 100%;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .nav-item .nav-icon {
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-cart-badge {
+      position: absolute;
+      top: 6px;
+      right: calc(50% - 20px);
+      background: var(--primary);
+      color: #121212;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    /* Hero Section */
+    .hero-card {
+      background: linear-gradient(135deg, #1e1e1e, #ff9800);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      color: white;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255, 152, 0, 0.2);
+    }
+
+    .hero-text h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #ffffff;
+    }
+
+    .hero-text p {
+      font-size: 13px;
+      color: #fff3e0;
+    }
+
+    .hero-emoji {
+      font-size: 54px;
+      animation: emojiBounce 2s infinite ease-in-out;
+    }
+
+    @keyframes emojiBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Categories Horizontal Scroll */
+    .categories-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+    }
+
+    .categories-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-btn {
+      background: var(--bg-card);
+      color: var(--text-white);
+      border: 1px solid rgba(255, 152, 0, 0.2);
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip-btn.active {
+      background: var(--primary);
+      color: #121212;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Product Grid 2-Columns */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .product-card:active {
+      transform: scale(0.97);
+    }
+
+    .product-img-box {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      background: #282828;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .product-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sale-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: var(--error);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      animation: salePulse 1.6s infinite;
+    }
+
+    @keyframes salePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    .stock-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(0,0,0,0.75);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .product-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .product-desc {
+      font-size: 12px;
+      color: var(--text-gray);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 10px;
+    }
+
+    .product-footer {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .price-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-current {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .price-old {
+      font-size: 11px;
+      text-decoration: line-through;
+      color: var(--text-gray);
+    }
+
+    .add-btn {
+      background: var(--primary);
+      color: #121212;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Modal / Bottom Sheets */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 640px;
+      background: var(--bg-card);
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
+      padding: 24px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border-top: 1px solid rgba(255, 152, 0, 0.2);
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    /* AI Assistant Screen Overlay */
+    #assistant-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1200;
+      background: var(--bg-dark);
+      display: none;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    #assistant-overlay.active {
+      display: flex;
+      transform: translateY(0);
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      line-height: 1.4;
+      animation: msgIn 0.35s ease forwards;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-msg.bot {
+      background: var(--bg-card);
+      color: var(--text-white);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(255, 152, 0, 0.15);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .chat-msg.user {
+      background: var(--primary);
+      color: #121212;
+      font-weight: 600;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      align-self: flex-start;
+      width: fit-content;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: dotPulse 1.2s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* Buttons & Form Elements */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff9800, #ffb74d);
+      color: #121212;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-white);
+      border: 1px solid rgba(255, 152, 0, 0.2);
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 152, 0, 0.2);
+      font-size: 15px;
+      background: var(--bg-input);
+      color: var(--text-white);
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: calc(80px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(30, 30, 30, 0.95);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-md);
+      animation: toastFade 0.3s ease forwards;
+    }
+
+    @keyframes toastFade {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Admin Subtabs */
+    .admin-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+      scrollbar-width: none;
+    }
+
+    .admin-nav::-webkit-scrollbar { display: none; }
+
+    .admin-tab {
+      background: var(--bg-card);
+      color: var(--text-white);
+      padding: 8px 14px;
+      border-radius: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid rgba(255, 152, 0, 0.2);
+    }
+
+    .admin-tab.active {
+      background: var(--primary);
+      color: #121212;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash">
+    <div class="splash-logo">💐</div>
+    <div class="splash-title">Flower Studio Pro</div>
+    <div class="splash-sub">Доставка свежих цветов</div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main App Shell -->
+  <div id="app-shell">
+
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-title" onclick="app.navigateTo('s-main')">
+        <span>💐</span> Flower Studio
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="app.navigateTo('s-notifs')">
+          🔔
+          <span class="notif-badge" id="header-notif-count" style="display:none;">0</span>
+        </button>
+        <button class="icon-btn" id="header-chat-btn" onclick="app.navigateTo('s-chat')">💬</button>
+      </div>
+    </header>
+
+    <!-- Viewport Screens Container -->
+    <div id="screen-viewport">
+
+      <!-- 1. Screen Auth (s-auth) -->
+      <section class="screen" id="s-auth">
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 30px;">
+          <div style="font-size: 64px;">💐</div>
+          <h2 style="font-size: 24px; font-weight: 800; color: var(--primary); margin-top: 10px;" id="auth-title">Вход в аккаунт</h2>
+          <p style="color: var(--text-gray); font-size: 14px; margin-top: 4px;" id="auth-subtitle">Войдите для быстрого оформления заказов</p>
+        </div>
+
+        <form id="auth-form" onsubmit="app.handleAuthSubmit(event)">
+          <div id="auth-name-group" style="display: none;">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Ваше имя</label>
+            <input type="text" id="auth-name" class="input-field" placeholder="Екатерина">
+          </div>
+
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Номер телефона</label>
+          <input type="tel" id="auth-phone" class="input-field" placeholder="+375 (29) 123-45-67" required>
+
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Пароль</label>
+          <input type="password" id="auth-password" class="input-field" placeholder="••••••••" required>
+
+          <button type="submit" class="btn btn-primary" id="auth-submit-btn" style="margin-top: 10px;">Войти</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+          <button class="btn btn-secondary" onclick="app.toggleAuthMode()" id="auth-toggle-btn">Нет аккаунта? Зарегистрироваться</button>
+        </div>
+      </section>
+
+      <!-- 2. Screen Main Catalog (s-main) -->
+      <section class="screen active" id="s-main">
+        <!-- Hero Section -->
+        <div class="hero-card">
+          <div class="hero-text">
+            <h2>Flower Studio 💐</h2>
+            <p>Дарите эмоции с доставкой по Минску</p>
+          </div>
+          <div class="hero-emoji">🌹</div>
+        </div>
+
+        <!-- Promos Section -->
+        <div id="promos-container" style="margin-bottom: 16px;"></div>
+
+        <!-- Categories horizontal chips -->
+        <div class="categories-scroll" id="categories-list">
+          <button class="chip-btn active" onclick="app.filterCategory('all')">Все</button>
+          <button class="chip-btn" onclick="app.filterCategory('Букеты')">🌸 Букеты</button>
+          <button class="chip-btn" onclick="app.filterCategory('Розы')">🌹 Розы</button>
+          <button class="chip-btn" onclick="app.filterCategory('Композиции')">🌻 Композиции</button>
+          <button class="chip-btn" onclick="app.filterCategory('Коробки')">💜 Коробки</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="products-grid"></div>
+      </section>
+
+      <!-- 3. Screen Cart (s-cart) -->
+      <section class="screen" id="s-cart">
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px;">Корзина 🛒</h2>
+        <div id="cart-items-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;"></div>
+
+        <div id="cart-summary-box" style="background: var(--bg-card); border-radius: var(--radius-md); padding: 16px; border: 1px solid rgba(255,152,0,0.15);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+            <span>Товары:</span>
+            <span id="cart-subtotal">0.00 BYN</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-gray);">
+            <span>Доставка:</span>
+            <span id="cart-delivery-fee">0.00 BYN</span>
+          </div>
+          <hr style="border: none; border-top: 1px solid rgba(255,152,0,0.15); margin: 10px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 800;">
+            <span>Итого:</span>
+            <span id="cart-total" style="color: var(--primary);">0.00 BYN</span>
+          </div>
+          <button class="btn btn-primary" style="margin-top: 16px;" onclick="app.navigateTo('s-checkout')">🚚 Перейти к доставке</button>
+        </div>
+      </section>
+
+      <!-- 4. Screen Checkout (s-checkout) -->
+      <section class="screen" id="s-checkout">
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px;">Оформление заказа 📦</h2>
+
+        <!-- Leaflet Map -->
+        <div id="map" style="width: 100%; height: 260px; border-radius: var(--radius-md); margin-bottom: 16px; border: 1px solid rgba(255,152,0,0.2);"></div>
+        <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 12px; text-align: center;">📍 Нажмите или перетащите маркер для выбора адреса</p>
+
+        <form id="checkout-form" onsubmit="app.handleCheckoutSubmit(event)">
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Город</label>
+          <input type="text" class="input-field" value="Минск" readonly style="background: #1e1e1e;">
+
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Адрес доставки</label>
+          <input type="text" id="checkout-address" class="input-field" placeholder="Выберите на карте или введите..." required>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Дата</label>
+              <input type="date" id="checkout-date" class="input-field" required>
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Время</label>
+              <input type="time" id="checkout-time" class="input-field" value="14:00" required>
+            </div>
+          </div>
+
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Комментарий курьеру</label>
+          <textarea id="checkout-comment" class="input-field" rows="2" placeholder="Этаж, домофон, пожелания..."></textarea>
+
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Промокод</label>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <input type="text" id="checkout-promocode" class="input-field" placeholder="FIRST10" style="margin-bottom: 0;">
+            <button type="button" class="btn btn-secondary" style="width: auto; padding: 0 20px;" onclick="app.applyPromocode()">ОК</button>
+          </div>
+          <div id="promocode-status" style="font-size: 12px; font-weight: 700; margin-bottom: 12px;"></div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top: 10px;">✅ Оформить заказ</button>
+        </form>
+      </section>
+
+      <!-- 5. Screen Profile (s-profile) -->
+      <section class="screen" id="s-profile">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div id="profile-avatar" style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ff9800, #ffb74d); color: #121212; font-size: 36px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; box-shadow: var(--shadow-md);">Е</div>
+          <h2 id="profile-name" style="font-size: 20px; font-weight: 800;">Гость</h2>
+          <p id="profile-phone" style="font-size: 14px; color: var(--text-gray); margin-top: 2px;">+375 (29) 000-00-00</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+          <button class="btn btn-secondary" style="justify-content: flex-start;" onclick="app.navigateTo('s-notifs')">🔔 Уведомления</button>
+          <button class="btn btn-secondary" style="justify-content: flex-start;" onclick="app.navigateTo('s-chat')">💬 Чат с администратором</button>
+          <button class="btn btn-secondary" id="admin-panel-btn" style="display: none; justify-content: flex-start; background: #282828; color: var(--primary); border-color: var(--primary);" onclick="app.navigateTo('s-admin')">⚙️ Админ-панель</button>
+          <button class="btn btn-secondary" style="justify-content: flex-start; color: var(--error);" onclick="app.logout()">🚪 Выйти</button>
+        </div>
+
+        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px;">История заказов</h3>
+        <div id="orders-history-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </section>
+
+      <!-- 6. Screen Admin Panel (s-admin) -->
+      <section class="screen" id="s-admin">
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 12px;">Админ-панель ⚙️</h2>
+
+        <div class="admin-nav" id="admin-subtabs">
+          <button class="admin-tab active" onclick="app.switchAdminTab('stats')">📊 Статистика</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('products')">🌸 Товары</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('promos')">🎁 Акции</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('promocodes')">🏷 Промокоды</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('orders')">📦 Заказы</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('chats')">💬 Чаты</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('users')">👥 Клиенты</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('settings')">🔧 Настройки</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('database')">💾 База данных</button>
+        </div>
+
+        <div id="admin-content-area"></div>
+      </section>
+
+      <!-- 7. Screen Chat (s-chat) -->
+      <section class="screen" id="s-chat" style="padding-bottom: calc(70px + var(--safe-bottom));">
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 12px;">Поддержка Flower Studio 💬</h2>
+        <div class="chat-body" id="user-chat-body" style="height: calc(100vh - 220px); background: var(--bg-card); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; border: 1px solid rgba(255,152,0,0.15);"></div>
+
+        <form id="chat-form" onsubmit="app.handleSendChatMessage(event)" style="display: flex; gap: 8px;">
+          <input type="text" id="chat-input" class="input-field" placeholder="Напишите сообщение..." style="margin-bottom: 0;">
+          <button type="submit" class="btn btn-primary" style="width: auto; padding: 0 20px;">➤</button>
+        </form>
+      </section>
+
+      <!-- 8. Screen Notifications (s-notifs) -->
+      <section class="screen" id="s-notifs">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="font-size: 20px; font-weight: 800;">Уведомления 🔔</h2>
+          <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="app.readAllNotifications()">✓✓ Прочитать все</button>
+        </div>
+        <div id="notifications-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+      </section>
+
+    </div>
+
+    <!-- Bottom Floating FAB Button -->
+    <button class="fab-assistant" onclick="app.openAssistant()">
+      ✨ Ассистент
+    </button>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" onclick="app.navigateTo('s-main')">
+        <div class="nav-icon">💐</div>
+        <div>Главная</div>
+      </div>
+      <div class="nav-item" onclick="app.navigateTo('s-cart')">
+        <div class="nav-icon">🛒</div>
+        <div>Корзина</div>
+        <div class="nav-cart-badge" id="nav-cart-badge" style="display:none;">0</div>
+      </div>
+      <div class="nav-item" onclick="app.navigateTo('s-profile')">
+        <div class="nav-icon">👤</div>
+        <div>Профиль</div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- 9. AI Assistant Screen Overlay (assistant) -->
+  <div id="assistant-overlay">
+    <div style="padding: 16px; background: #1a1a1a; border-bottom: 1px solid rgba(255,152,0,0.15); display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-size: 18px; font-weight: 800; color: var(--primary);">✨ Подбор букета</div>
+      <button class="icon-btn" onclick="app.closeAssistant()">✕</button>
+    </div>
+    <div class="chat-body" id="assistant-chat-body"></div>
+    <div id="assistant-options-container" style="padding: 16px; background: #1a1a1a; border-top: 1px solid rgba(255,152,0,0.15); display: flex; flex-direction: column; gap: 8px;"></div>
+  </div>
+
+  <!-- Product Details / Admin Edit Modal -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal-card" id="product-modal-card"></div>
+  </div>
+
+  <!-- Vanilla JS Application Script -->
+  <script>
+    class FlowerStudioApp {
+      constructor() {
+        this.token = localStorage.getItem('fs_token') || null;
+        this.user = JSON.parse(localStorage.getItem('fs_user') || 'null');
+        this.cart = JSON.parse(localStorage.getItem('fs_cart') || '[]');
+        this.products = [];
+        this.promos = [];
+        this.activeCategory = 'all';
+        this.appliedPromocode = null;
+        this.currentScreen = 's-main';
+        this.map = null;
+        this.mapMarker = null;
+        this.isAuthRegister = false;
+        this.assistantState = { step: 0, answers: {} };
+
+        this.init();
+      }
+
+      async init() {
+        this.setupServiceWorker();
+        this.updateCartBadge();
+        this.setupTodayDate();
+
+        if (this.token) {
+          await this.checkAuthMe();
+        }
+
+        await this.loadPublicData();
+        this.setupLeafletMap();
+
+        setTimeout(() => {
+          const splash = document.getElementById('splash');
+          if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 500);
+          }
+        }, 800);
+
+        setInterval(() => this.pollNotifications(), 30000);
+        this.pollNotifications();
+      }
+
+      setupServiceWorker() {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js').catch(console.error);
+        }
+      }
+
+      setupTodayDate() {
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('checkout-date');
+        if (dateInput) dateInput.value = today;
+      }
+
+      async apiFetch(endpoint, options = {}) {
+        const headers = options.headers || {};
+        if (this.token) {
+          headers['Authorization'] = `Bearer ${this.token}`;
+        }
+        if (options.body && !(options.body instanceof FormData)) {
+          headers['Content-Type'] = 'application/json';
+          options.body = typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
+        }
+
+        try {
+          const res = await fetch(`api/${endpoint}`, { ...options, headers });
+          const data = await res.json();
+          if (!res.ok && data.error && res.status === 401) {
+            this.logout();
+          }
+          return data;
+        } catch (e) {
+          console.error('API Error:', e);
+          return { error: 'Ошибка соединения с сервером' };
+        }
+      }
+
+      toast(message) {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.innerText = message;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          setTimeout(() => el.remove(), 300);
+        }, 3000);
+      }
+
+      navigateTo(targetScreenId) {
+        if (targetScreenId === this.currentScreen) return;
+
+        const currentEl = document.getElementById(this.currentScreen);
+        const targetEl = document.getElementById(targetScreenId);
+
+        if (!targetEl) return;
+
+        currentEl.className = 'screen slide-out-left';
+        targetEl.className = 'screen active slide-in-right';
+
+        setTimeout(() => {
+          currentEl.classList.remove('active', 'slide-out-left');
+          targetEl.classList.remove('slide-in-right');
+        }, 380);
+
+        this.currentScreen = targetScreenId;
+
+        this.apiFetch('stats', {
+          method: 'POST',
+          body: { event_type: 'screen_view', screen: targetScreenId }
+        });
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        if (targetScreenId === 's-main') document.querySelectorAll('.nav-item')[0].classList.add('active');
+        if (targetScreenId === 's-cart') document.querySelectorAll('.nav-item')[1].classList.add('active');
+        if (targetScreenId === 's-profile') document.querySelectorAll('.nav-item')[2].classList.add('active');
+
+        if (targetScreenId === 's-profile') this.renderProfileScreen();
+        if (targetScreenId === 's-cart') this.renderCartScreen();
+        if (targetScreenId === 's-checkout') this.renderCheckoutScreen();
+        if (targetScreenId === 's-chat') this.loadChatMessages();
+        if (targetScreenId === 's-notifs') this.loadNotifications();
+        if (targetScreenId === 's-admin') this.switchAdminTab('stats');
+      }
+
+      toggleAuthMode() {
+        this.isAuthRegister = !this.isAuthRegister;
+        document.getElementById('auth-title').innerText = this.isAuthRegister ? 'Регистрация' : 'Вход в аккаунт';
+        document.getElementById('auth-subtitle').innerText = this.isAuthRegister ? 'Создайте профиль для скидок и отслеживания' : 'Войдите для быстрого оформления заказов';
+        document.getElementById('auth-name-group').style.display = this.isAuthRegister ? 'block' : 'none';
+        document.getElementById('auth-submit-btn').innerText = this.isAuthRegister ? 'Зарегистрироваться' : 'Войти';
+        document.getElementById('auth-toggle-btn').innerText = this.isAuthRegister ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться';
+      }
+
+      async handleAuthSubmit(e) {
+        e.preventDefault();
+        const phone = document.getElementById('auth-phone').value.trim();
+        const password = document.getElementById('auth-password').value.trim();
+        const name = document.getElementById('auth-name').value.trim();
+
+        const endpoint = this.isAuthRegister ? 'auth/register' : 'auth/login';
+        const body = this.isAuthRegister ? { name, phone, password } : { phone, password };
+
+        const res = await this.apiFetch(endpoint, { method: 'POST', body });
+        if (res.error) {
+          this.toast(res.error);
+          return;
+        }
+
+        this.token = res.token;
+        this.user = res.user;
+        localStorage.setItem('fs_token', this.token);
+        localStorage.setItem('fs_user', JSON.stringify(this.user));
+
+        this.toast(this.isAuthRegister ? 'Успешная регистрация!' : 'Успешный вход!');
+        this.navigateTo('s-main');
+        this.updateCartBadge();
+      }
+
+      async checkAuthMe() {
+        const res = await this.apiFetch('auth/me');
+        if (res.user) {
+          this.user = res.user;
+          localStorage.setItem('fs_user', JSON.stringify(this.user));
+        }
+      }
+
+      logout() {
+        this.token = null;
+        this.user = null;
+        this.cart = [];
+        localStorage.removeItem('fs_token');
+        localStorage.removeItem('fs_user');
+        localStorage.removeItem('fs_cart');
+        this.updateCartBadge();
+        this.toast('Вы вышли из системы');
+        this.navigateTo('s-auth');
+      }
+
+      async loadPublicData() {
+        const pRes = await this.apiFetch('products');
+        if (pRes.products) {
+          this.products = pRes.products;
+          this.renderProducts();
+        }
+
+        const promoRes = await this.apiFetch('promos');
+        if (promoRes.promos) {
+          this.promos = promoRes.promos;
+          this.renderPromos();
+        }
+      }
+
+      filterCategory(cat) {
+        this.activeCategory = cat;
+        document.querySelectorAll('#categories-list .chip-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.innerText.includes(cat) || (cat === 'all' && btn.innerText.includes('Все')));
+        });
+        this.renderProducts();
+      }
+
+      renderPromos() {
+        const container = document.getElementById('promos-container');
+        if (!this.promos.length) {
+          container.innerHTML = '';
+          return;
+        }
+
+        container.innerHTML = this.promos.map(p => `
+          <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 14px 18px; box-shadow: var(--shadow-sm); margin-bottom: 10px; border-left: 4px solid var(--primary);">
+            <div style="font-weight: 800; font-size: 14px; color: var(--primary);">${p.title}</div>
+            <div style="font-size: 12px; color: var(--text-gray); margin-top: 2px;">${p.text}</div>
+          </div>
+        `).join('');
+      }
+
+      renderProducts() {
+        const grid = document.getElementById('products-grid');
+        let filtered = this.products;
+        if (this.activeCategory !== 'all') {
+          filtered = this.products.filter(p => p.category === this.activeCategory);
+        }
+
+        if (!filtered.length) {
+          grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-gray);">
+            <div style="font-size: 48px;">🥀</div>
+            <div style="margin-top: 8px;">Товары не найдены</div>
+          </div>`;
+          return;
+        }
+
+        grid.innerHTML = filtered.map(p => `
+          <div class="product-card" onclick="app.openProductModal(${p.id})">
+            <div class="product-img-box">
+              ${p.image ? `<img src="${p.image}" alt="${p.title}">` : p.emoji || '💐'}
+              ${p.is_sale ? `<span class="sale-badge">SALE</span>` : ''}
+              ${p.stock <= 5 ? `<span class="stock-badge">осталось ${p.stock}</span>` : ''}
+            </div>
+            <div class="product-title">${p.title}</div>
+            <div class="product-desc">${p.description}</div>
+            <div class="product-footer">
+              <div class="price-box">
+                <span class="price-current">${p.price.toFixed(2)} BYN</span>
+                ${p.old_price ? `<span class="price-old">${p.old_price.toFixed(2)} BYN</span>` : ''}
+              </div>
+              <button class="add-btn" onclick="event.stopPropagation(); app.addToCart(${p.id})">+</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      openProductModal(id) {
+        const product = this.products.find(p => p.id == id);
+        if (!product) return;
+
+        const overlay = document.getElementById('product-modal');
+        const card = document.getElementById('product-modal-card');
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div style="font-size: 20px; font-weight: 800; color: var(--text-white);">${product.title}</div>
+            <button class="icon-btn" onclick="app.closeProductModal()">✕</button>
+          </div>
+          <div class="product-img-box" style="height: 220px; font-size: 90px; margin-bottom: 16px;">
+            ${product.image ? `<img src="${product.image}" alt="${product.title}">` : product.emoji || '💐'}
+          </div>
+          <p style="font-size: 14px; color: var(--text-gray); line-height: 1.5; margin-bottom: 20px;">${product.description}</p>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <div class="price-box">
+              <span class="price-current" style="font-size: 22px;">${product.price.toFixed(2)} BYN</span>
+              ${product.old_price ? `<span class="price-old" style="font-size: 14px;">${product.old_price.toFixed(2)} BYN</span>` : ''}
+            </div>
+            <span style="font-size: 13px; font-weight: 600; color: var(--text-gray);">В наличии: ${product.stock} шт.</span>
+          </div>
+          <button class="btn btn-primary" onclick="app.addToCart(${product.id}); app.closeProductModal();">🛒 Добавить в корзину</button>
+        `;
+
+        overlay.classList.add('active');
+
+        this.apiFetch('stats', {
+          method: 'POST',
+          body: { event_type: 'product_view', product_id: id }
+        });
+      }
+
+      closeProductModal() {
+        document.getElementById('product-modal').classList.remove('active');
+      }
+
+      addToCart(productId) {
+        const product = this.products.find(p => p.id == productId);
+        if (!product) return;
+
+        const existing = this.cart.find(c => c.id == productId);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          this.cart.push({
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            emoji: product.emoji || '💐',
+            image: product.image || '',
+            qty: 1
+          });
+        }
+
+        this.saveCart();
+        this.toast(`"${product.title}" добавлен в корзину!`);
+      }
+
+      updateCartQty(productId, delta) {
+        const item = this.cart.find(c => c.id == productId);
+        if (!item) return;
+
+        item.qty += delta;
+        if (item.qty <= 0) {
+          this.cart = this.cart.filter(c => c.id != productId);
+        }
+
+        this.saveCart();
+        this.renderCartScreen();
+      }
+
+      saveCart() {
+        localStorage.setItem('fs_cart', JSON.stringify(this.cart));
+        this.updateCartBadge();
+      }
+
+      updateCartBadge() {
+        const totalQty = this.cart.reduce((sum, item) => sum + item.qty, 0);
+        const badge = document.getElementById('nav-cart-badge');
+        if (badge) {
+          if (totalQty > 0) {
+            badge.innerText = totalQty;
+            badge.style.display = 'flex';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      }
+
+      renderCartScreen() {
+        const list = document.getElementById('cart-items-list');
+        if (!this.cart.length) {
+          list.innerHTML = `<div style="text-align: center; padding: 50px 20px; color: var(--text-gray);">
+            <div style="font-size: 64px;">🛒</div>
+            <div style="font-size: 18px; font-weight: 700; margin-top: 10px; color: var(--text-white);">Ваша корзина пуста</div>
+            <p style="font-size: 13px; margin-top: 4px;">Выберите подходящий букет в каталоге</p>
+            <button class="btn btn-primary" style="margin-top: 20px; width: auto; padding: 12px 24px;" onclick="app.navigateTo('s-main')">В каталог</button>
+          </div>`;
+          document.getElementById('cart-summary-box').style.display = 'none';
+          return;
+        }
+
+        document.getElementById('cart-summary-box').style.display = 'block';
+
+        list.innerHTML = this.cart.map(item => `
+          <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,152,0,0.15);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="font-size: 32px; width: 48px; height: 48px; background: #282828; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                ${item.image ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : item.emoji}
+              </div>
+              <div>
+                <div style="font-size: 14px; font-weight: 700; color: var(--text-white);">${item.title}</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--primary); margin-top: 2px;">${(item.price * item.qty).toFixed(2)} BYN</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; background: #282828; border-radius: 20px; padding: 4px 10px;">
+              <button style="border:none; background:none; color: white; font-size: 18px; font-weight: 800; cursor:pointer;" onclick="app.updateCartQty(${item.id}, -1)">−</button>
+              <span style="font-size: 14px; font-weight: 700; min-width: 16px; text-align: center;">${item.qty}</span>
+              <button style="border:none; background:none; color: white; font-size: 18px; font-weight: 800; cursor:pointer;" onclick="app.updateCartQty(${item.id}, 1)">+</button>
+            </div>
+          </div>
+        `).join('');
+
+        const subtotal = this.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+        const freeFrom = 100.00;
+        const deliveryFee = subtotal >= freeFrom ? 0.00 : 10.00;
+        const total = subtotal + deliveryFee;
+
+        document.getElementById('cart-subtotal').innerText = subtotal.toFixed(2) + ' BYN';
+        document.getElementById('cart-delivery-fee').innerText = deliveryFee === 0 ? 'Бесплатно 🎉' : deliveryFee.toFixed(2) + ' BYN';
+        document.getElementById('cart-total').innerText = total.toFixed(2) + ' BYN';
+      }
+
+      renderCheckoutScreen() {
+        if (!this.cart.length) {
+          this.navigateTo('s-cart');
+          return;
+        }
+
+        setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+          }
+        }, 200);
+      }
+
+      setupLeafletMap() {
+        const defaultLat = 53.9006;
+        const defaultLng = 27.5590;
+
+        this.map = L.map('map').setView([defaultLat, defaultLng], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+        }).addTo(this.map);
+
+        this.mapMarker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(this.map);
+
+        this.map.on('click', (e) => {
+          this.mapMarker.setLatLng(e.latlng);
+          this.reverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
+
+        this.mapMarker.on('dragend', (e) => {
+          const latlng = e.target.getLatLng();
+          this.reverseGeocode(latlng.lat, latlng.lng);
+        });
+      }
+
+      async reverseGeocode(lat, lng) {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ru`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            const parts = data.display_name.split(',');
+            const shortAddress = parts.slice(0, 3).join(',').trim();
+            document.getElementById('checkout-address').value = shortAddress;
+          }
+        } catch (e) {
+          console.error('Reverse geocode error:', e);
+        }
+      }
+
+      async applyPromocode() {
+        const codeInput = document.getElementById('checkout-promocode');
+        const code = codeInput.value.trim().toUpperCase();
+        const statusEl = document.getElementById('promocode-status');
+
+        if (!code) {
+          statusEl.style.color = 'var(--error)';
+          statusEl.innerText = '❌ Введите промокод';
+          return;
+        }
+
+        const res = await this.apiFetch('promocodes/check', {
+          method: 'POST',
+          body: { code }
+        });
+
+        if (res.valid) {
+          this.appliedPromocode = res;
+          statusEl.style.color = 'var(--success)';
+          statusEl.innerText = `✅ ${res.message}`;
+        } else {
+          this.appliedPromocode = null;
+          statusEl.style.color = 'var(--error)';
+          statusEl.innerText = `❌ ${res.error || 'Промокод недействителен'}`;
+        }
+      }
+
+      async handleCheckoutSubmit(e) {
+        e.preventDefault();
+
+        if (!this.token) {
+          this.toast('Для оформления заказа войдите в аккаунт');
+          this.navigateTo('s-auth');
+          return;
+        }
+
+        const address = document.getElementById('checkout-address').value.trim();
+        const date = document.getElementById('checkout-date').value;
+        const time = document.getElementById('checkout-time').value;
+        const comment = document.getElementById('checkout-comment').value.trim();
+
+        const latlng = this.mapMarker ? this.mapMarker.getLatLng() : null;
+
+        const body = {
+          items: this.cart,
+          address,
+          delivery_date: date,
+          delivery_time: time,
+          comment,
+          promocode: this.appliedPromocode ? this.appliedPromocode.code : '',
+          lat: latlng ? latlng.lat : null,
+          lng: latlng ? latlng.lng : null
+        };
+
+        const res = await this.apiFetch('orders', { method: 'POST', body });
+
+        if (res.error) {
+          this.toast(res.error);
+          return;
+        }
+
+        this.cart = [];
+        this.appliedPromocode = null;
+        this.saveCart();
+
+        const card = document.getElementById('product-modal-card');
+        card.innerHTML = `
+          <div style="text-align: center; padding: 20px 0;">
+            <div style="font-size: 64px; margin-bottom: 12px;">🎉</div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--primary); margin-bottom: 6px;">Заказ ${res.order.order_number} оформлен!</h2>
+            <p style="font-size: 14px; color: var(--text-gray); margin-bottom: 20px;">Сумма к оплате: <strong style="color:white;">${res.order.total.toFixed(2)} BYN</strong><br>Мы отправили курьера с цветами!</p>
+            <button class="btn btn-primary" onclick="app.closeProductModal(); app.navigateTo('s-profile');">Перейти в заказы</button>
+          </div>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+      }
+
+      openAssistant() {
+        this.assistantState = { step: 1, answers: {} };
+        const overlay = document.getElementById('assistant-overlay');
+        overlay.classList.add('active');
+
+        const chatBody = document.getElementById('assistant-chat-body');
+        chatBody.innerHTML = '';
+
+        this.renderAssistantStep();
+      }
+
+      closeAssistant() {
+        document.getElementById('assistant-overlay').classList.remove('active');
+      }
+
+      renderAssistantStep() {
+        const step = this.assistantState.step;
+        const chatBody = document.getElementById('assistant-chat-body');
+        const optionsBox = document.getElementById('assistant-options-container');
+
+        optionsBox.innerHTML = '';
+
+        const typingEl = document.createElement('div');
+        typingEl.className = 'typing-dots';
+        typingEl.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        chatBody.appendChild(typingEl);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        setTimeout(() => {
+          typingEl.remove();
+
+          if (step === 1) {
+            this.appendBotMsg('Здравствуйте! 👋 По какому поводу вы подбираете букет?');
+            optionsBox.innerHTML = [
+              { label: '❤️ Любимому человеку', val: 'love' },
+              { label: '🎂 День рождения', val: 'bday' },
+              { label: '💼 Благодарность / работа', val: 'work' },
+              { label: '🌷 Просто так, порадовать', val: 'just' }
+            ].map(o => `<button class="btn btn-secondary" onclick="app.handleAssistantAnswer('reason', '${o.label}', '${o.val}')">${o.label}</button>`).join('');
+          } else if (step === 2) {
+            this.appendBotMsg('Отлично! Какой у вас планируемый бюджет?');
+            optionsBox.innerHTML = [
+              { label: 'до 80 BYN', max: 80 },
+              { label: '80–120 BYN', max: 120 },
+              { label: '120–180 BYN', max: 180 },
+              { label: 'Без ограничений', max: 9999 }
+            ].map(o => `<button class="btn btn-secondary" onclick="app.handleAssistantAnswer('budget', '${o.label}', ${o.max})">${o.label}</button>`).join('');
+          } else if (step === 3) {
+            this.appendBotMsg('Какая цветовая гамма предпочтительна?');
+            optionsBox.innerHTML = [
+              { label: '🌹 Красные и розовые', cat: 'Розы' },
+              { label: '🤍 Белые и нежные', cat: 'Букеты' },
+              { label: '🌻 Яркие, солнечные', cat: 'Композиции' },
+              { label: '💜 Лавандовые, пастельные', cat: 'Коробки' }
+            ].map(o => `<button class="btn btn-secondary" onclick="app.handleAssistantAnswer('color', '${o.label}', '${o.cat}')">${o.label}</button>`).join('');
+          } else if (step === 4) {
+            this.appendBotMsg('Желаемый размер композиции?');
+            optionsBox.innerHTML = [
+              { label: '🌱 Небольшой' },
+              { label: '🌿 Средний' },
+              { label: '🌳 Большой' }
+            ].map(o => `<button class="btn btn-secondary" onclick="app.handleAssistantAnswer('size', '${o.label}', '${o.label}')">${o.label}</button>`).join('');
+          } else if (step === 5) {
+            this.finishAssistantMatch();
+          }
+        }, 700);
+      }
+
+      handleAssistantAnswer(key, label, val) {
+        this.appendUserMsg(label);
+        this.assistantState.answers[key] = val;
+        this.assistantState.step += 1;
+        this.renderAssistantStep();
+      }
+
+      appendBotMsg(msg) {
+        const chatBody = document.getElementById('assistant-chat-body');
+        const el = document.createElement('div');
+        el.className = 'chat-msg bot';
+        el.innerText = msg;
+        chatBody.appendChild(el);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      appendUserMsg(msg) {
+        const chatBody = document.getElementById('assistant-chat-body');
+        const el = document.createElement('div');
+        el.className = 'chat-msg user';
+        el.innerText = msg;
+        chatBody.appendChild(el);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      finishAssistantMatch() {
+        const answers = this.assistantState.answers;
+        const maxBudget = answers.budget || 9999;
+        const targetCat = answers.color || 'all';
+
+        let candidates = this.products.filter(p => p.price <= maxBudget);
+        let match = candidates.find(p => p.category === targetCat);
+        if (!match && candidates.length > 0) {
+          match = candidates[0];
+        }
+        if (!match) {
+          match = this.products[0];
+        }
+
+        this.appendBotMsg(`✨ Основываясь на ваших ответах, я идеально подобрал этот букет:`);
+
+        const chatBody = document.getElementById('assistant-chat-body');
+        const cardEl = document.createElement('div');
+        cardEl.className = 'chat-msg bot';
+        cardEl.style.width = '100%';
+        cardEl.innerHTML = `
+          <div style="font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">${match.emoji || '💐'} ${match.title}</div>
+          <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">${match.description}</div>
+          <div style="font-size: 18px; font-weight: 800; color: var(--text-white); margin-bottom: 12px;">${match.price.toFixed(2)} BYN</div>
+          <button class="btn btn-primary" onclick="app.addToCart(${match.id}); app.closeAssistant(); app.navigateTo('s-cart');">🛒 Добавить в корзину</button>
+        `;
+        chatBody.appendChild(cardEl);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        const optionsBox = document.getElementById('assistant-options-container');
+        optionsBox.innerHTML = `
+          <button class="btn btn-secondary" onclick="app.openAssistant()">🔄 Начать заново</button>
+        `;
+      }
+
+      async renderProfileScreen() {
+        if (!this.token) {
+          this.navigateTo('s-auth');
+          return;
+        }
+
+        if (this.user) {
+          document.getElementById('profile-name').innerText = this.user.name || 'Пользователь';
+          document.getElementById('profile-phone').innerText = this.user.phone || '';
+          document.getElementById('profile-avatar').innerText = (this.user.name || 'П')[0].toUpperCase();
+
+          const adminBtn = document.getElementById('admin-panel-btn');
+          if (adminBtn) {
+            adminBtn.style.display = (this.user.role === 'admin') ? 'flex' : 'none';
+          }
+        }
+
+        const res = await this.apiFetch('orders');
+        const container = document.getElementById('orders-history-list');
+
+        if (!res.orders || !res.orders.length) {
+          container.innerHTML = `<p style="font-size: 13px; color: var(--text-gray);">У вас пока нет заказов</p>`;
+          return;
+        }
+
+        const statusColors = {
+          'Новый': '#ff9800',
+          'Готовится': '#2196f3',
+          'Доставлен': '#25d366',
+          'Отменён': '#e53935'
+        };
+
+        container.innerHTML = res.orders.map(o => `
+          <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 14px; border: 1px solid rgba(255,152,0,0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-weight: 800; font-size: 14px; color: white;">${o.order_number}</span>
+              <span style="background: ${statusColors[o.status] || '#777'}; color: white; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px;">${o.status}</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">📅 ${o.delivery_date} в ${o.delivery_time}</div>
+            <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px;">📍 ${o.address}</div>
+            <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 14px; color: var(--primary);">
+              <span>Сумма:</span>
+              <span>${o.total.toFixed(2)} BYN</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      async loadChatMessages() {
+        if (!this.token) return;
+        const res = await this.apiFetch('chat');
+        const body = document.getElementById('user-chat-body');
+
+        if (res.messages) {
+          body.innerHTML = res.messages.map(m => `
+            <div class="chat-msg ${m.sender === 'user' ? 'user' : 'bot'}">
+              ${m.message}
+              <div style="font-size: 9px; opacity: 0.7; margin-top: 4px; text-align: right;">${m.created_at ? m.created_at.split(' ')[1].slice(0,5) : ''}</div>
+            </div>
+          `).join('');
+          body.scrollTop = body.scrollHeight;
+        }
+      }
+
+      async handleSendChatMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = '';
+        const res = await this.apiFetch('chat', {
+          method: 'POST',
+          body: { message: text }
+        });
+
+        if (res.success) {
+          await this.loadChatMessages();
+          setTimeout(() => {
+            this.loadChatMessages();
+          }, 1500);
+        }
+      }
+
+      async loadNotifications() {
+        if (!this.token) return;
+        const res = await this.apiFetch('notifications');
+        const list = document.getElementById('notifications-list');
+
+        if (res.notifications) {
+          list.innerHTML = res.notifications.map(n => `
+            <div style="background: ${n.is_read ? 'var(--bg-card)' : '#282828'}; border: 1px solid ${n.is_read ? 'rgba(255,152,0,0.1)' : 'var(--primary)'}; border-radius: var(--radius-md); padding: 12px 16px; box-shadow: var(--shadow-sm); cursor: pointer;" onclick="app.readNotification(${n.id})">
+              <div style="font-weight: 800; font-size: 14px; color: var(--text-white);">${n.title}</div>
+              <div style="font-size: 12px; color: var(--text-gray); margin-top: 2px;">${n.message}</div>
+              <div style="font-size: 10px; color: var(--text-gray); margin-top: 6px;">${n.created_at}</div>
+            </div>
+          `).join('');
+        }
+      }
+
+      async pollNotifications() {
+        if (!this.token) return;
+        const res = await this.apiFetch('notifications');
+        if (res.unread_count !== undefined) {
+          const badge = document.getElementById('header-notif-count');
+          if (badge) {
+            if (res.unread_count > 0) {
+              badge.innerText = res.unread_count;
+              badge.style.display = 'block';
+            } else {
+              badge.style.display = 'none';
+            }
+          }
+        }
+      }
+
+      async readNotification(id) {
+        await this.apiFetch('notifications', { method: 'PUT', body: { id } });
+        this.loadNotifications();
+        this.pollNotifications();
+      }
+
+      async readAllNotifications() {
+        await this.apiFetch('notifications/read-all', { method: 'POST' });
+        this.loadNotifications();
+        this.pollNotifications();
+      }
+
+      switchAdminTab(tab) {
+        document.querySelectorAll('#admin-subtabs .admin-tab').forEach(t => {
+          t.classList.toggle('active', t.innerText.toLowerCase().includes(tab) || t.getAttribute('onclick').includes(tab));
+        });
+
+        if (tab === 'stats') this.renderAdminStats();
+        if (tab === 'products') this.renderAdminProducts();
+        if (tab === 'promos') this.renderAdminPromos();
+        if (tab === 'promocodes') this.renderAdminPromocodes();
+        if (tab === 'orders') this.renderAdminOrders();
+        if (tab === 'chats') this.renderAdminChats();
+        if (tab === 'users') this.renderAdminUsers();
+        if (tab === 'settings') this.renderAdminSettings();
+        if (tab === 'database') this.renderAdminDatabase();
+      }
+
+      async renderAdminStats() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('stats');
+        if (res.error) { area.innerHTML = res.error; return; }
+
+        const m = res.metrics;
+        const daily = res.chart_14_days || {};
+        const maxDaily = Math.max(...Object.values(daily), 1);
+
+        area.innerHTML = `
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 11px; color: var(--text-gray);">Событий</div>
+              <div style="font-size: 20px; font-weight: 800; color: var(--primary);">${m.total_events}</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 11px; color: var(--text-gray);">Клиентов</div>
+              <div style="font-size: 20px; font-weight: 800;">${m.total_users}</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 11px; color: var(--text-gray);">Заказов</div>
+              <div style="font-size: 20px; font-weight: 800;">${m.total_orders}</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 11px; color: var(--text-gray);">Выручка</div>
+              <div style="font-size: 20px; font-weight: 800; color: var(--success);">${m.total_revenue.toFixed(2)} BYN</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 11px; color: var(--text-gray);">Сообщений чата</div>
+              <div style="font-size: 20px; font-weight: 800;">${m.total_chats}</div>
+            </div>
+            <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 11px; color: var(--text-gray);">Активных товаров</div>
+              <div style="font-size: 20px; font-weight: 800;">${m.active_products}</div>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255,152,0,0.15);">
+            <div style="font-size: 14px; font-weight: 800; margin-bottom: 12px;">Посещения за 14 дней (Драйвер: ${m.db_driver.toUpperCase()})</div>
+            <div style="display: flex; align-items: flex-end; gap: 4px; height: 100px; padding-top: 10px;">
+              ${Object.entries(daily).map(([date, val]) => `
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
+                  <div style="margin-top: auto; width: 100%; background: var(--primary); border-radius: 4px; height: ${(val / maxDaily) * 80}%; min-height: 4px;"></div>
+                  <span style="font-size: 8px; color: var(--text-gray); margin-top: 4px;">${date.slice(8)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+            <div style="background: var(--bg-card); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--primary);">Топ Экранов</div>
+              ${(res.top_screens || []).map(s => `<div style="font-size: 11px; display: flex; justify-content: space-between; padding: 3px 0;"><span>${s.screen}</span><b>${s.count}</b></div>`).join('')}
+            </div>
+            <div style="background: var(--bg-card); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+              <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--primary);">Топ Товаров</div>
+              ${(res.top_products || []).map(p => `<div style="font-size: 11px; display: flex; justify-content: space-between; padding: 3px 0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;">${p.title}</span><b>${p.qty} шт</b></div>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      async renderAdminProducts() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('products');
+
+        area.innerHTML = `
+          <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="app.openEditProductModal()">➕ Добавить товар</button>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${(res.products || []).map(p => `
+              <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,152,0,0.15);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="font-size: 24px;">${p.emoji || '💐'}</span>
+                  <div>
+                    <div style="font-weight: 800; font-size: 14px; color: white;">${p.title}</div>
+                    <div style="font-size: 12px; color: var(--text-gray);">${p.price.toFixed(2)} BYN | Склад: ${p.stock}</div>
+                  </div>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="app.openEditProductModal(${p.id})">✏️</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      async openEditProductModal(id = null) {
+        let product = { title: '', description: '', price: '', old_price: '', category: 'Букеты', stock: 10, emoji: '💐', image: '', is_sale: false, active: true };
+        if (id) {
+          const res = await this.apiFetch(`products?id=${id}`);
+          if (res.product) product = res.product;
+        }
+
+        const card = document.getElementById('product-modal-card');
+        card.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; color: white;">${id ? 'Редактировать товар' : 'Новый товар'}</h3>
+          <form onsubmit="app.handleSaveProduct(event, ${id})">
+            <input type="text" id="p-title" class="input-field" placeholder="Название" value="${product.title}" required>
+            <textarea id="p-desc" class="input-field" rows="2" placeholder="Описание">${product.description}</textarea>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <input type="number" step="0.01" id="p-price" class="input-field" placeholder="Цена (BYN)" value="${product.price}" required>
+              <input type="number" step="0.01" id="p-old-price" class="input-field" placeholder="Старая цена" value="${product.old_price || ''}">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <input type="text" id="p-cat" class="input-field" placeholder="Категория" value="${product.category}">
+              <input type="number" id="p-stock" class="input-field" placeholder="Остаток" value="${product.stock}">
+            </div>
+            <input type="text" id="p-emoji" class="input-field" placeholder="Эмодзи (💐)" value="${product.emoji}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Загрузить изображение товара</label>
+            <input type="file" id="p-file-upload" class="input-field" accept="image/*" onchange="app.handleProductFileUpload(event)">
+            <input type="text" id="p-image" class="input-field" placeholder="Или указать URL" value="${product.image}">
+
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; color: white;">
+              <input type="checkbox" id="p-sale" ${product.is_sale ? 'checked' : ''}> Toggle SALE Badge
+            </label>
+            <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+            ${id ? `<button type="button" class="btn btn-secondary" style="margin-top: 8px; color: var(--error);" onclick="app.deleteProduct(${id})">🗑 Удалить</button>` : ''}
+          </form>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+      }
+
+      async handleProductFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const res = await this.apiFetch('upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.url) {
+          document.getElementById('p-image').value = res.url;
+          this.toast('Файл успешно загружен!');
+        } else {
+          this.toast(res.error || 'Ошибка загрузки файла');
+        }
+      }
+
+      async handleSaveProduct(e, id) {
+        e.preventDefault();
+        const body = {
+          id,
+          title: document.getElementById('p-title').value,
+          description: document.getElementById('p-desc').value,
+          price: document.getElementById('p-price').value,
+          old_price: document.getElementById('p-old-price').value,
+          category: document.getElementById('p-cat').value,
+          stock: document.getElementById('p-stock').value,
+          emoji: document.getElementById('p-emoji').value,
+          image: document.getElementById('p-image').value,
+          is_sale: document.getElementById('p-sale').checked
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const res = await this.apiFetch('products', { method, body });
+        if (res.success) {
+          this.toast('Товар сохранён!');
+          this.closeProductModal();
+          this.loadPublicData();
+          this.renderAdminProducts();
+        }
+      }
+
+      async deleteProduct(id) {
+        if (!confirm('Удалить товар?')) return;
+        await this.apiFetch(`products?id=${id}`, { method: 'DELETE' });
+        this.closeProductModal();
+        this.loadPublicData();
+        this.renderAdminProducts();
+      }
+
+      async renderAdminPromos() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('promos');
+        area.innerHTML = `
+          <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="app.openEditPromoModal()">➕ Создать акцию</button>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${(res.promos || []).map(p => `
+              <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: white;">${p.title}</div>
+                  <div style="font-size: 12px; color: var(--text-gray);">${p.text}</div>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 10px; color: var(--error);" onclick="app.deletePromo(${p.id})">🗑</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      openEditPromoModal() {
+        const card = document.getElementById('product-modal-card');
+        card.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; color: white;">Новая акция</h3>
+          <form onsubmit="app.handleSavePromo(event)">
+            <input type="text" id="promo-title" class="input-field" placeholder="Заголовок" required>
+            <textarea id="promo-text" class="input-field" rows="2" placeholder="Текст акции"></textarea>
+            <button type="submit" class="btn btn-primary">Опубликовать</button>
+          </form>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+      }
+
+      async handleSavePromo(e) {
+        e.preventDefault();
+        const body = {
+          title: document.getElementById('promo-title').value,
+          text: document.getElementById('promo-text').value
+        };
+        await this.apiFetch('promos', { method: 'POST', body });
+        this.closeProductModal();
+        this.loadPublicData();
+        this.renderAdminPromos();
+      }
+
+      async deletePromo(id) {
+        await this.apiFetch(`promos?id=${id}`, { method: 'DELETE' });
+        this.loadPublicData();
+        this.renderAdminPromos();
+      }
+
+      async renderAdminPromocodes() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('promocodes');
+        area.innerHTML = `
+          <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="app.openEditPromocodeModal()">➕ Создать промокод</button>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${(res.promocodes || []).map(p => `
+              <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: var(--primary);">${p.code} (-${p.discount_percent}%)</div>
+                  <div style="font-size: 12px; color: var(--text-gray);">Использовано: ${p.uses_count} / ${p.uses_limit}</div>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 10px; color: var(--error);" onclick="app.deletePromocode(${p.id})">🗑</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      openEditPromocodeModal() {
+        const card = document.getElementById('product-modal-card');
+        card.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; color: white;">Новый промокод</h3>
+          <form onsubmit="app.handleSavePromocode(event)">
+            <input type="text" id="pc-code" class="input-field" placeholder="Код (например SUMMER15)" required>
+            <input type="number" id="pc-percent" class="input-field" placeholder="Скидка %" required>
+            <input type="number" id="pc-limit" class="input-field" placeholder="Лимит использований" value="100">
+            <button type="submit" class="btn btn-primary">Создать</button>
+          </form>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+      }
+
+      async handleSavePromocode(e) {
+        e.preventDefault();
+        const body = {
+          code: document.getElementById('pc-code').value,
+          discount_percent: document.getElementById('pc-percent').value,
+          uses_limit: document.getElementById('pc-limit').value
+        };
+        await this.apiFetch('promocodes', { method: 'POST', body });
+        this.closeProductModal();
+        this.renderAdminPromocodes();
+      }
+
+      async deletePromocode(id) {
+        await this.apiFetch(`promocodes?id=${id}`, { method: 'DELETE' });
+        this.renderAdminPromocodes();
+      }
+
+      async renderAdminOrders() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('orders?all=1');
+        area.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            ${(res.orders || []).map(o => `
+              <div style="background: var(--bg-card); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                  <span style="font-weight: 800; color: white;">${o.order_number}</span>
+                  <select onchange="app.updateOrderStatus(${o.id}, this.value)" style="padding: 4px 8px; border-radius: 8px; font-weight: 700; background: #282828; color: white;">
+                    ${['Новый', 'Готовится', 'Доставлен', 'Отменён'].map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                  </select>
+                </div>
+                <div style="font-size: 12px; color: var(--text-gray);">👤 ${o.user_name} (${o.user_phone})</div>
+                <div style="font-size: 12px; color: var(--text-gray);">📍 ${o.address}</div>
+                <div style="font-size: 12px; font-weight: 800; color: var(--primary); margin-top: 6px;">Итого: ${o.total.toFixed(2)} BYN</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      async updateOrderStatus(id, status) {
+        await this.apiFetch(`orders?id=${id}`, { method: 'PUT', body: { status } });
+        this.toast(`Статус заказа ${id} изменён на "${status}"`);
+      }
+
+      async renderAdminChats() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('users');
+        area.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${(res.users || []).map(u => `
+              <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15); display: flex; justify-content: space-between; align-items: center;" onclick="app.openAdminChatWithUser(${u.id}, '${u.name}')">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: white;">${u.name}</div>
+                  <div style="font-size: 12px; color: var(--text-gray);">${u.phone}</div>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px;">💬 Чат</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      async openAdminChatWithUser(userId, userName) {
+        const res = await this.apiFetch(`chat?user_id=${userId}`);
+        const card = document.getElementById('product-modal-card');
+
+        card.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 12px; color: white;">Чат с ${userName}</h3>
+          <div class="chat-body" id="admin-user-chat-body" style="height: 300px; background: #121212; border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            ${(res.messages || []).map(m => `
+              <div class="chat-msg ${m.sender === 'admin' ? 'user' : 'bot'}">
+                ${m.message}
+              </div>
+            `).join('')}
+          </div>
+          <form onsubmit="app.handleSendAdminChatMessage(event, ${userId})">
+            <input type="text" id="admin-chat-input" class="input-field" placeholder="Ваш ответ..." required>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+          </form>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+      }
+
+      async handleSendAdminChatMessage(e, userId) {
+        e.preventDefault();
+        const text = document.getElementById('admin-chat-input').value;
+        await this.apiFetch(`chat?user_id=${userId}`, { method: 'POST', body: { user_id: userId, message: text } });
+        this.openAdminChatWithUser(userId, 'клиентом');
+      }
+
+      async renderAdminUsers() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('users');
+        area.innerHTML = `
+          <button class="btn btn-primary" style="margin-bottom: 16px;" onclick="app.openEditUserModal()">➕ Добавить клиента</button>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${(res.users || []).map(u => `
+              <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: white;">${u.name} ${u.role === 'admin' ? '👑' : ''}</div>
+                  <div style="font-size: 12px; color: var(--text-gray);">${u.phone} | <span style="color: ${u.blocked ? 'var(--error)' : 'var(--success)'};">${u.blocked ? 'Заблокирован' : 'Активен'}</span></div>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 6px 12px;" onclick="app.openEditUserModal(${u.id})">✏️</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      async openEditUserModal(id = null) {
+        let u = { name: '', phone: '', role: 'user', blocked: false };
+        if (id) {
+          const res = await this.apiFetch('users');
+          if (res.users) u = res.users.find(item => item.id == id) || u;
+        }
+
+        const card = document.getElementById('product-modal-card');
+        card.innerHTML = `
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 16px; color: white;">${id ? 'Редактировать клиента' : 'Новый клиент'}</h3>
+          <form onsubmit="app.handleSaveUser(event, ${id})">
+            <input type="text" id="u-name" class="input-field" placeholder="Имя" value="${u.name}" required>
+            <input type="tel" id="u-phone" class="input-field" placeholder="Телефон" value="${u.phone}" required>
+            <input type="password" id="u-pass" class="input-field" placeholder="${id ? 'Новый пароль (опционально)' : 'Пароль'}" ${id ? '' : 'required'}>
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray); margin-bottom: 4px; display: block;">Роль</label>
+            <select id="u-role" class="input-field">
+              <option value="user" ${u.role === 'user' ? 'selected' : ''}>Пользователь</option>
+              <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Администратор</option>
+            </select>
+
+            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 14px; color: white;">
+              <input type="checkbox" id="u-blocked" ${u.blocked ? 'checked' : ''}> Заблокировать аккаунт
+            </label>
+
+            <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+            ${id ? `<button type="button" class="btn btn-secondary" style="margin-top: 8px; color: var(--error);" onclick="app.deleteUser(${id})">🗑 Удалить</button>` : ''}
+          </form>
+        `;
+        document.getElementById('product-modal').classList.add('active');
+      }
+
+      async handleSaveUser(e, id) {
+        e.preventDefault();
+        const body = {
+          id,
+          name: document.getElementById('u-name').value,
+          phone: document.getElementById('u-phone').value,
+          password: document.getElementById('u-pass').value,
+          role: document.getElementById('u-role').value,
+          blocked: document.getElementById('u-blocked').checked
+        };
+
+        const method = id ? 'PUT' : 'POST';
+        const endpoint = id ? 'users' : 'users/create';
+        const res = await this.apiFetch(endpoint, { method, body });
+
+        if (res.error) {
+          this.toast(res.error);
+        } else {
+          this.toast('Клиент сохранён!');
+          this.closeProductModal();
+          this.renderAdminUsers();
+        }
+      }
+
+      async deleteUser(id) {
+        if (!confirm('Удалить клиента?')) return;
+        const res = await this.apiFetch(`users?id=${id}`, { method: 'DELETE' });
+        if (res.error) {
+          this.toast(res.error);
+        } else {
+          this.toast('Удалено');
+          this.closeProductModal();
+          this.renderAdminUsers();
+        }
+      }
+
+      async renderAdminSettings() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('settings');
+        const s = res.settings || {};
+
+        area.innerHTML = `
+          <form onsubmit="app.handleSaveSettings(event)" style="background: var(--bg-card); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,152,0,0.15);">
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Название магазина</label>
+            <input type="text" id="s-name" class="input-field" value="${s.store_name || ''}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Телефон</label>
+            <input type="text" id="s-phone" class="input-field" value="${s.store_phone || ''}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Адрес</label>
+            <input type="text" id="s-address" class="input-field" value="${s.store_address || ''}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Часы работы</label>
+            <input type="text" id="s-hours" class="input-field" value="${s.work_hours || '09:00 - 21:00'}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Валюта</label>
+            <input type="text" id="s-curr" class="input-field" value="${s.currency || 'BYN'}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Стоимость доставки (BYN)</label>
+            <input type="number" step="0.01" id="s-fee" class="input-field" value="${s.delivery_fee || 10}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Бесплатная доставка от (BYN)</label>
+            <input type="number" step="0.01" id="s-free" class="input-field" value="${s.free_delivery_from || 100}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Мин. сумма заказа (BYN)</label>
+            <input type="number" step="0.01" id="s-min" class="input-field" value="${s.min_order_amount || 30}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Текст автоответа чата</label>
+            <textarea id="s-autoreply" class="input-field" rows="2">${s.auto_reply_text || ''}</textarea>
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Instagram URL</label>
+            <input type="text" id="s-insta" class="input-field" value="${s.instagram || ''}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Telegram URL</label>
+            <input type="text" id="s-tg" class="input-field" value="${s.telegram || ''}">
+
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Viber URI</label>
+            <input type="text" id="s-viber" class="input-field" value="${s.viber || ''}">
+
+            <button type="submit" class="btn btn-primary">💾 Сохранить настройки</button>
+          </form>
+        `;
+      }
+
+      async handleSaveSettings(e) {
+        e.preventDefault();
+        const body = {
+          store_name: document.getElementById('s-name').value,
+          store_phone: document.getElementById('s-phone').value,
+          store_address: document.getElementById('s-address').value,
+          work_hours: document.getElementById('s-hours').value,
+          currency: document.getElementById('s-curr').value,
+          delivery_fee: document.getElementById('s-fee').value,
+          free_delivery_from: document.getElementById('s-free').value,
+          min_order_amount: document.getElementById('s-min').value,
+          auto_reply_text: document.getElementById('s-autoreply').value,
+          instagram: document.getElementById('s-insta').value,
+          telegram: document.getElementById('s-tg').value,
+          viber: document.getElementById('s-viber').value
+        };
+        await this.apiFetch('settings', { method: 'PUT', body });
+        this.toast('Настройки сохранены!');
+      }
+
+      async renderAdminDatabase() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('settings');
+        const s = res.settings || {};
+        const mysql = s.mysql_config || {};
+
+        area.innerHTML = `
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,152,0,0.15); margin-bottom: 20px;">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px; color: white;">Текущий драйвер: ${s.db_driver ? s.db_driver.toUpperCase() : 'JSON'}</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+              <button class="btn btn-primary" onclick="app.switchDbDriver('json')">Использовать JSON</button>
+              <button class="btn btn-secondary" onclick="app.switchDbDriver('mysql')">Использовать MySQL</button>
+            </div>
+
+            <h4 style="font-size: 14px; font-weight: 800; margin-bottom: 8px; color: var(--primary);">Параметры MySQL</h4>
+            <input type="text" id="db-host" class="input-field" placeholder="Host" value="${mysql.host || '127.0.0.1'}">
+            <input type="text" id="db-name" class="input-field" placeholder="Database Name" value="${mysql.name || 'flower_studio'}">
+            <input type="text" id="db-user" class="input-field" placeholder="User" value="${mysql.user || 'root'}">
+            <input type="password" id="db-pass" class="input-field" placeholder="Password" value="${mysql.pass || ''}">
+            <button class="btn btn-secondary" onclick="app.testMysql()">🧪 Проверить соединение</button>
+          </div>
+
+          <div style="background: var(--bg-card); padding: 16px; border-radius: 16px; border: 1px solid rgba(255,152,0,0.15);">
+            <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 12px; color: white;">Резервные копии</h3>
+            <button class="btn btn-primary" style="margin-bottom: 12px;" onclick="app.createBackup()">➕ Создать бэкап</button>
+            <div id="backups-list"></div>
+          </div>
+        `;
+
+        this.loadBackupsList();
+      }
+
+      async switchDbDriver(driver) {
+        const body = {
+          db_driver: driver,
+          mysql_config: {
+            host: document.getElementById('db-host').value,
+            name: document.getElementById('db-name').value,
+            user: document.getElementById('db-user').value,
+            pass: document.getElementById('db-pass').value
+          }
+        };
+        const res = await this.apiFetch('settings/switch-driver', { method: 'POST', body });
+        if (res.success) {
+          this.toast(res.message);
+          this.renderAdminDatabase();
+        } else {
+          this.toast(res.error || 'Ошибка смены драйвера');
+        }
+      }
+
+      async testMysql() {
+        const body = {
+          host: document.getElementById('db-host').value,
+          name: document.getElementById('db-name').value,
+          user: document.getElementById('db-user').value,
+          pass: document.getElementById('db-pass').value
+        };
+        const res = await this.apiFetch('settings/test-mysql', { method: 'POST', body });
+        this.toast(res.message || res.error);
+      }
+
+      async loadBackupsList() {
+        const res = await this.apiFetch('backup/list');
+        const container = document.getElementById('backups-list');
+        if (!container) return;
+
+        if (res.backups) {
+          container.innerHTML = res.backups.map(b => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,152,0,0.1);">
+              <div>
+                <div style="font-size: 12px; font-weight: 700; color: white;">${b.filename}</div>
+                <div style="font-size: 10px; color: var(--text-gray);">${b.created_at} (${(b.size / 1024).toFixed(1)} KB)</div>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-secondary" style="width: auto; padding: 4px 8px; font-size: 11px;" onclick="window.open('api/backup/download?file=${b.filename}&token=${this.token}')">⬇️</button>
+                <button class="btn btn-secondary" style="width: auto; padding: 4px 8px; font-size: 11px;" onclick="app.restoreBackup('${b.filename}')">♻️</button>
+                <button class="btn btn-secondary" style="width: auto; padding: 4px 8px; font-size: 11px; color: var(--error);" onclick="app.deleteBackup('${b.filename}')">🗑</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      async createBackup() {
+        await this.apiFetch('backup/create', { method: 'POST' });
+        this.toast('Резервная копия создана!');
+        this.loadBackupsList();
+      }
+
+      async restoreBackup(filename) {
+        if (!confirm(`Восстановить БД из ${filename}?`)) return;
+        const res = await this.apiFetch('backup/restore', { method: 'POST', body: { filename } });
+        this.toast(res.message || 'Восстановлено!');
+        this.loadPublicData();
+      }
+
+      async deleteBackup(filename) {
+        if (!confirm(`Удалить бэкап ${filename}?`)) return;
+        await this.apiFetch(`backup?file=${filename}`, { method: 'DELETE' });
+        this.toast('Бэкап удалён!');
+        this.loadBackupsList();
+      }
+    }
+
+    const app = new FlowerStudioApp();
+  </script>
+</body>
+</html>
