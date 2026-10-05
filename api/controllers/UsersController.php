@@ -30,6 +30,7 @@ class UsersController {
 
         foreach ($users as &$u) {
             unset($u['password']);
+            $u['blocked'] = $u['is_blocked'] ?? $u['blocked'] ?? false;
         }
 
         json_out(['users' => $users]);
@@ -61,6 +62,7 @@ class UsersController {
             'password' => password_hash($password, PASSWORD_BCRYPT),
             'role' => in_array($role, ['admin', 'user']) ? $role : 'user',
             'is_blocked' => false,
+            'blocked' => false,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -86,11 +88,14 @@ class UsersController {
             json_out(['error' => 'Пользователь не найден'], 404);
         }
 
+        $isBlocked = isset($data['blocked']) ? (bool)$data['blocked'] : (isset($data['is_blocked']) ? (bool)$data['is_blocked'] : ($user['is_blocked'] ?? $user['blocked'] ?? false));
+
         $updateData = [
             'name' => clean($data['name'] ?? $user['name']),
             'phone' => clean($data['phone'] ?? $user['phone']),
             'role' => clean($data['role'] ?? $user['role']),
-            'is_blocked' => isset($data['is_blocked']) ? (bool)$data['is_blocked'] : ($user['is_blocked'] ?? false)
+            'is_blocked' => $isBlocked,
+            'blocked' => $isBlocked
         ];
 
         if (!empty($data['password']) && mb_strlen($data['password']) >= 4) {

@@ -35,13 +35,25 @@ class UploadController {
             json_out(['error' => 'Недопустимый формат файла. Разрешены JPG, PNG, WEBP, GIF'], 400);
         }
 
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
+        if (!in_array($extension, $allowedExtensions)) {
+            $mimeMap = [
+                'image/jpeg' => 'jpg',
+                'image/png'  => 'png',
+                'image/webp' => 'webp',
+                'image/gif'  => 'gif'
+            ];
+            $extension = $mimeMap[$mime] ?? 'jpg';
+        }
+
         $uploadDir = __DIR__ . '/../../uploads/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
 
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = 'img_' . uniqid() . '.' . strtolower($extension);
+        $filename = 'img_' . uniqid() . '.' . $extension;
         $targetPath = $uploadDir . $filename;
 
         if (move_uploaded_file($file['tmp_name'], $targetPath)) {

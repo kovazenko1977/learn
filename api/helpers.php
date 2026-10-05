@@ -91,6 +91,9 @@ function get_bearer_token(): ?string {
             return $matches[1];
         }
     }
+    if (!empty($_GET['token'])) {
+        return trim($_GET['token']);
+    }
     return null;
 }
 

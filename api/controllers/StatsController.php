@@ -32,7 +32,7 @@ class StatsController {
             return !isset($p['active']) || $p['active'] == true;
         }));
 
-        $currentDriver = STORAGE_DRIVER;
+        $currentDriver = defined('STORAGE_DRIVER') ? STORAGE_DRIVER : 'json';
 
         // visits last 14 days
         $visits14 = [];
@@ -63,10 +63,13 @@ class StatsController {
                 'total_users' => count($users),
                 'total_orders' => count($orders),
                 'total_revenue' => $totalRevenue,
+                'total_chats' => count($chats),
                 'total_chat_messages' => count($chats),
                 'active_products' => $activeProducts,
+                'db_driver' => strtoupper($currentDriver),
                 'driver' => strtoupper($currentDriver)
             ],
+            'chart_14_days' => $visits14,
             'visits' => $visits14,
             'top_screens' => $topScreens,
             'top_products' => $topProducts

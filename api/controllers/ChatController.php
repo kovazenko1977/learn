@@ -29,6 +29,11 @@ class ChatController {
             return isset($c['user_id']) && $c['user_id'] == $userId;
         }));
 
+        foreach ($userChats as &$c) {
+            $c['message'] = $c['message'] ?? $c['text'] ?? '';
+            $c['text'] = $c['text'] ?? $c['message'] ?? '';
+        }
+
         json_out(['messages' => $userChats]);
     }
 
@@ -51,6 +56,7 @@ class ChatController {
             'user_id' => $targetUserId,
             'sender' => $isAdmin ? 'admin' : 'user',
             'text' => $text,
+            'message' => $text,
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -61,13 +67,13 @@ class ChatController {
         if (!$isAdmin) {
             $settingsList = $db->get('settings');
             $settings = array_values($settingsList)[0] ?? [];
-            $autoReplyText = $settings['auto_reply'] ?? 'Спасибо за обращение! Менеджер ответит вам в ближайшее время.';
+            $autoReplyText = $settings['auto_reply'] ?? $settings['auto_reply_text'] ?? 'Спасибо за обращение! Менеджер ответит вам в ближайшее время.';
 
-            // Schedule or immediate insert auto-reply
             $autoMsg = [
                 'user_id' => $targetUserId,
                 'sender' => 'admin',
                 'text' => $autoReplyText,
+                'message' => $autoReplyText,
                 'created_at' => date('Y-m-d H:i:s', time() + 1)
             ];
             $db->insert('chats', $autoMsg);

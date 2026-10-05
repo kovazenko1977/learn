@@ -821,6 +821,15 @@
         <!-- Promos Section -->
         <div id="promos-container" style="margin-bottom: 16px;"></div>
 
+        <!-- News Section -->
+        <div style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 800; font-size: 15px; color: white;">📰 Новости магазина</span>
+            <button class="btn btn-outline" style="width: auto; padding: 4px 10px; font-size: 11px;" onclick="app.openSurpriseModal()">🎲 Мне повезёт</button>
+          </div>
+          <div id="news-container" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px;"></div>
+        </div>
+
         <!-- Categories horizontal chips -->
         <div class="categories-scroll" id="categories-list">
           <button class="chip-btn active" onclick="app.filterCategory('all')">Все</button>
@@ -924,6 +933,7 @@
           <button class="admin-tab active" onclick="app.switchAdminTab('stats')">📊 Статистика</button>
           <button class="admin-tab" onclick="app.switchAdminTab('products')">🌸 Товары</button>
           <button class="admin-tab" onclick="app.switchAdminTab('promos')">🎁 Акции</button>
+          <button class="admin-tab" onclick="app.switchAdminTab('news')">📰 Новости</button>
           <button class="admin-tab" onclick="app.switchAdminTab('promocodes')">🏷 Промокоды</button>
           <button class="admin-tab" onclick="app.switchAdminTab('orders')">📦 Заказы</button>
           <button class="admin-tab" onclick="app.switchAdminTab('chats')">💬 Чаты</button>
@@ -1190,6 +1200,12 @@
           this.promos = promoRes.promos;
           this.renderPromos();
         }
+
+        const newsRes = await this.apiFetch('news');
+        if (newsRes.news) {
+          this.news = newsRes.news;
+          this.renderNews();
+        }
       }
 
       filterCategory(cat) {
@@ -1211,6 +1227,26 @@
           <div style="background: var(--bg-card); border-radius: var(--radius-md); padding: 14px 18px; box-shadow: var(--shadow-sm); margin-bottom: 10px; border-left: 4px solid var(--primary);">
             <div style="font-weight: 800; font-size: 14px; color: var(--primary);">${p.title}</div>
             <div style="font-size: 12px; color: var(--text-gray); margin-top: 2px;">${p.text}</div>
+          </div>
+        `).join('');
+      }
+
+      renderNews() {
+        const container = document.getElementById('news-container');
+        if (!container) return;
+        if (!this.news || !this.news.length) {
+          container.innerHTML = '<div style="font-size:12px; color:var(--text-gray);">Новостей пока нет</div>';
+          return;
+        }
+
+        container.innerHTML = this.news.map(n => `
+          <div style="min-width: 200px; background: var(--bg-card); border-radius: var(--radius-md); padding: 12px; border: 1px solid rgba(255,152,0,0.15); flex-shrink: 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+              <span style="font-size: 20px;">${n.image || '📰'}</span>
+              <span style="font-size: 10px; color: var(--primary); font-weight:700;">${n.date || ''}</span>
+            </div>
+            <div style="font-weight: 800; font-size: 13px; color: white; margin-bottom: 4px; line-height: 1.2;">${n.title}</div>
+            <div style="font-size: 11px; color: var(--text-gray); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${n.text}</div>
           </div>
         `).join('');
       }
@@ -1452,10 +1488,10 @@
           body: { code }
         });
 
-        if (res.valid) {
+        if (res.valid || res.success) {
           this.appliedPromocode = res;
           statusEl.style.color = 'var(--success)';
-          statusEl.innerText = `✅ ${res.message}`;
+          statusEl.innerText = `✅ Скидка ${res.discount}% применена!`;
         } else {
           this.appliedPromocode = null;
           statusEl.style.color = 'var(--error)';
@@ -1777,6 +1813,7 @@
         if (tab === 'stats') this.renderAdminStats();
         if (tab === 'products') this.renderAdminProducts();
         if (tab === 'promos') this.renderAdminPromos();
+        if (tab === 'news') this.renderAdminNews();
         if (tab === 'promocodes') this.renderAdminPromocodes();
         if (tab === 'orders') this.renderAdminOrders();
         if (tab === 'chats') this.renderAdminChats();
@@ -2002,6 +2039,95 @@
         this.closeProductModal();
         this.loadPublicData();
         this.renderAdminPromos();
+      }
+
+      async renderAdminNews() {
+        const area = document.getElementById('admin-content-area');
+        const res = await this.apiFetch('news');
+
+        area.innerHTML = `
+          <div style="background: var(--bg-card); padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(255,152,0,0.15); margin-bottom: 16px;">
+            <div style="font-weight: 800; color: var(--primary); margin-bottom: 12px;">➕ Опубликовать новость</div>
+            <input type="text" id="adm-news-title" class="input-field" placeholder="Заголовок новости">
+            <textarea id="adm-news-text" class="input-field" placeholder="Текст новости..." style="height:70px;"></textarea>
+            <div style="display:flex; gap:10px;">
+              <input type="text" id="adm-news-image" class="input-field" placeholder="Эмодзи или иконка (напр. 📰)" style="width: 50%;">
+              <input type="date" id="adm-news-date" class="input-field" style="width: 50%;">
+            </div>
+            <button class="btn btn-primary" onclick="app.saveNews()">Опубликовать</button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            ${(res.news || []).map(n => `
+              <div style="background: var(--bg-card); padding: 12px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,152,0,0.15);">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: white;">${n.image || '📰'} ${n.title}</div>
+                  <div style="font-size: 12px; color: var(--text-gray); margin-top:2px;">${n.text} (${n.date})</div>
+                </div>
+                <button class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 12px; border-color: var(--danger); color: var(--danger);" onclick="app.deleteNews(${n.id})">🗑</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        document.getElementById('adm-news-date').value = new Date().toISOString().split('T')[0];
+      }
+
+      async saveNews() {
+        const title = document.getElementById('adm-news-title').value.trim();
+        const text = document.getElementById('adm-news-text').value.trim();
+        const image = document.getElementById('adm-news-image').value.trim() || '📰';
+        const date = document.getElementById('adm-news-date').value || new Date().toISOString().split('T')[0];
+
+        if (!title) {
+          this.toast('Укажите заголовок новости', true);
+          return;
+        }
+
+        await this.apiFetch('news', { method: 'POST', body: { title, text, image, date } });
+        this.toast('Новость опубликована!');
+        this.loadPublicData();
+        this.renderAdminNews();
+      }
+
+      async deleteNews(id) {
+        if (!confirm('Удалить новость?')) return;
+        await this.apiFetch(`news?id=${id}`, { method: 'DELETE' });
+        this.loadPublicData();
+        this.renderAdminNews();
+      }
+
+      openSurpriseModal() {
+        if (!this.products.length) {
+          this.toast('Товары еще не загрузились', true);
+          return;
+        }
+
+        const card = document.getElementById('product-modal-card');
+        const randomIndex = Math.floor(Math.random() * this.products.length);
+        const randomProduct = this.products[randomIndex];
+
+        card.innerHTML = `
+          <div style="text-align: center; padding: 10px 0;">
+            <div style="font-size: 54px; margin-bottom: 8px; animation: bounce 1s infinite;">🎲</div>
+            <h3 style="font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 6px;">Букет-Сюрприз!</h3>
+            <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 16px;">Вам выпал секретный вариант со специальной скидкой!</p>
+
+            <div style="background: var(--bg-card); border-radius: 16px; padding: 16px; border: 2px solid var(--primary); margin-bottom: 20px; text-align: center;">
+              <div style="font-size: 60px; margin-bottom: 10px;">${randomProduct.emoji || '💐'}</div>
+              <div style="font-size: 18px; font-weight: 800; color: white;">${randomProduct.title}</div>
+              <div style="font-size: 13px; color: var(--text-gray); margin-top: 4px;">${randomProduct.description}</div>
+              <div style="font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 10px;">${(randomProduct.price * 0.9).toFixed(2)} BYN <span style="font-size:14px; color:var(--text-gray); text-decoration:line-through;">${randomProduct.price} BYN</span></div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-outline" onclick="app.openSurpriseModal()">🔄 Испытать снова</button>
+              <button class="btn btn-primary" onclick="app.addToCart(${randomProduct.id}); app.closeProductModal(); app.navigateTo('s-cart');">🛒 В корзину</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('product-modal').classList.add('active');
       }
 
       async deletePromo(id) {
@@ -2254,6 +2380,9 @@
             <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Текст автоответа чата</label>
             <textarea id="s-autoreply" class="input-field" rows="2">${s.auto_reply_text || ''}</textarea>
 
+            <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Скидка для Рандомного букета (%)</label>
+            <input type="number" id="s-surprise" class="input-field" value="${s.surprise_discount || 10}">
+
             <label style="font-size: 12px; font-weight: 700; color: var(--text-gray);">Instagram URL</label>
             <input type="text" id="s-insta" class="input-field" value="${s.instagram || ''}">
 
@@ -2280,6 +2409,7 @@
           free_delivery_from: document.getElementById('s-free').value,
           min_order_amount: document.getElementById('s-min').value,
           auto_reply_text: document.getElementById('s-autoreply').value,
+          surprise_discount: document.getElementById('s-surprise').value,
           instagram: document.getElementById('s-insta').value,
           telegram: document.getElementById('s-tg').value,
           viber: document.getElementById('s-viber').value

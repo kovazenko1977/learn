@@ -111,6 +111,15 @@ class MysqlDriver {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
+            "CREATE TABLE IF NOT EXISTS news (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                text TEXT,
+                date VARCHAR(50),
+                image VARCHAR(255) DEFAULT '📰',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
             "CREATE TABLE IF NOT EXISTS chats (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NOT NULL,
@@ -147,6 +156,7 @@ class MysqlDriver {
                 free_delivery_from DECIMAL(10,2),
                 min_order DECIMAL(10,2),
                 auto_reply TEXT,
+                surprise_discount INT DEFAULT 10,
                 instagram VARCHAR(255),
                 telegram VARCHAR(255),
                 viber VARCHAR(255)
@@ -258,7 +268,7 @@ class MysqlDriver {
                 if (json_last_error() === JSON_ERROR_NONE) {
                     $row[$k] = $decoded;
                 }
-            } elseif (in_array($k, ['id', 'user_id', 'stock', 'used', 'limit'])) {
+            } elseif (in_array($k, ['id', 'user_id', 'stock', 'used', 'limit', 'surprise_discount'])) {
                 if (is_numeric($v)) $row[$k] = (int)$v;
             } elseif (in_array($k, ['price', 'old_price', 'subtotal', 'delivery_fee', 'discount', 'total'])) {
                 if ($v !== null) $row[$k] = (float)$v;

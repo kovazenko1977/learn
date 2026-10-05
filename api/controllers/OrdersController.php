@@ -38,6 +38,8 @@ class OrdersController {
 
         foreach ($userOrders as &$o) {
             $o['order_number'] = $o['id'] ?? $o['order_number'] ?? 'ORD-000000';
+            $o['delivery_date'] = $o['date'] ?? $o['delivery_date'] ?? date('Y-m-d');
+            $o['delivery_time'] = $o['time'] ?? $o['delivery_time'] ?? '12:00';
         }
 
         json_out(['orders' => $userOrders]);
@@ -49,6 +51,8 @@ class OrdersController {
 
         foreach ($orders as &$o) {
             $o['order_number'] = $o['id'] ?? $o['order_number'] ?? 'ORD-000000';
+            $o['delivery_date'] = $o['date'] ?? $o['delivery_date'] ?? date('Y-m-d');
+            $o['delivery_time'] = $o['time'] ?? $o['delivery_time'] ?? '12:00';
         }
 
         json_out(['orders' => $orders]);
@@ -64,7 +68,7 @@ class OrdersController {
         $db = get_storage();
         $settingsList = $db->get('settings');
         $settings = array_values($settingsList)[0] ?? [];
-        $minOrderSum = floatval($settings['min_order'] ?? 0);
+        $minOrderSum = floatval($settings['min_order'] ?? $settings['min_order_amount'] ?? 0);
 
         $items = $data['items'];
         $subtotal = 0;
@@ -76,7 +80,7 @@ class OrdersController {
             json_out(['error' => "Минимальная сумма заказа {$minOrderSum} BYN"], 400);
         }
 
-        $deliveryFee = floatval($settings['delivery_price'] ?? 10);
+        $deliveryFee = floatval($settings['delivery_price'] ?? $settings['delivery_fee'] ?? 10);
         $freeDeliveryFrom = floatval($settings['free_delivery_from'] ?? 100);
 
         if ($subtotal >= $freeDeliveryFrom) {
@@ -88,6 +92,9 @@ class OrdersController {
 
         $orderId = 'ORD-' . strtoupper(substr(md5(uniqid()), 0, 6));
 
+        $dateVal = clean($data['date'] ?? $data['delivery_date'] ?? date('Y-m-d'));
+        $timeVal = clean($data['time'] ?? $data['delivery_time'] ?? '12:00');
+
         $newOrder = [
             'id' => $orderId,
             'order_number' => $orderId,
@@ -95,8 +102,10 @@ class OrdersController {
             'user_name' => clean($data['user_name'] ?? $user['phone']),
             'user_phone' => clean($data['user_phone'] ?? $user['phone']),
             'address' => clean($data['address'] ?? 'Минск'),
-            'date' => clean($data['date'] ?? date('Y-m-d')),
-            'time' => clean($data['time'] ?? '12:00'),
+            'date' => $dateVal,
+            'delivery_date' => $dateVal,
+            'time' => $timeVal,
+            'delivery_time' => $timeVal,
             'comment' => clean($data['comment'] ?? ''),
             'promocode' => clean($data['promocode'] ?? ''),
             'items' => $items,
