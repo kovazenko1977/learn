@@ -14,6 +14,48 @@ foreach ($dirs as $dir) {
     }
 }
 
+// Ensure .htaccess is created if it does not exist (e.g. if file manager blocks dot-files)
+$htaccessTarget = __DIR__ . '/.htaccess';
+$htaccessTxt = __DIR__ . '/htaccess.txt';
+
+if (!file_exists($htaccessTarget)) {
+    if (file_exists($htaccessTxt)) {
+        copy($htaccessTxt, $htaccessTarget);
+    } else {
+        $htaccessContent = <<<HTACCESS
+# Apache Configuration for Flower Studio Pro
+
+Options -Indexes
+FollowSymLinks On
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Block direct access to data JSON files
+    RewriteRule ^data/.*\.json$ - [F,L]
+
+    # Block direct access to driver classes and core helpers
+    RewriteRule ^api/drivers/ - [F,L]
+    RewriteRule ^api/(config|helpers|storage)\.php$ - [F,L]
+
+    # Route API requests to router
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^api/(.*)$ api/router.php [QSA,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+HTACCESS;
+        file_put_contents($htaccessTarget, $htaccessContent);
+    }
+}
+
 // Initial Data Files
 $defaultUsers = [
     [
