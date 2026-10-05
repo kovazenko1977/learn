@@ -58,6 +58,7 @@ class MysqlDriver {
                 password VARCHAR(255) NOT NULL,
                 role VARCHAR(20) DEFAULT 'user',
                 is_blocked TINYINT(1) DEFAULT 0,
+                blocked TINYINT(1) DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
@@ -78,12 +79,15 @@ class MysqlDriver {
 
             "CREATE TABLE IF NOT EXISTS orders (
                 id VARCHAR(100) PRIMARY KEY,
+                order_number VARCHAR(100),
                 user_id INT NOT NULL,
                 user_name VARCHAR(255),
                 user_phone VARCHAR(50),
                 address VARCHAR(255),
                 date VARCHAR(50),
+                delivery_date VARCHAR(50),
                 time VARCHAR(50),
+                delivery_time VARCHAR(50),
                 comment TEXT,
                 promocode VARCHAR(50) DEFAULT '',
                 items JSON,
@@ -106,8 +110,11 @@ class MysqlDriver {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 code VARCHAR(50) NOT NULL UNIQUE,
                 discount DECIMAL(10,2) NOT NULL,
+                discount_percent DECIMAL(10,2) DEFAULT 0,
                 used INT DEFAULT 0,
+                uses_count INT DEFAULT 0,
                 `limit` INT DEFAULT 100,
+                uses_limit INT DEFAULT 100,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
@@ -125,6 +132,7 @@ class MysqlDriver {
                 user_id INT NOT NULL,
                 sender VARCHAR(20) NOT NULL,
                 text TEXT NOT NULL,
+                message TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
@@ -150,11 +158,15 @@ class MysqlDriver {
                 store_name VARCHAR(255),
                 store_phone VARCHAR(50),
                 store_address VARCHAR(255),
+                work_hours VARCHAR(100),
                 working_hours VARCHAR(100),
                 currency VARCHAR(20),
+                delivery_fee DECIMAL(10,2),
                 delivery_price DECIMAL(10,2),
                 free_delivery_from DECIMAL(10,2),
+                min_order_amount DECIMAL(10,2),
                 min_order DECIMAL(10,2),
+                auto_reply_text TEXT,
                 auto_reply TEXT,
                 surprise_discount INT DEFAULT 10,
                 instagram VARCHAR(255),
@@ -268,11 +280,11 @@ class MysqlDriver {
                 if (json_last_error() === JSON_ERROR_NONE) {
                     $row[$k] = $decoded;
                 }
-            } elseif (in_array($k, ['id', 'user_id', 'stock', 'used', 'limit', 'surprise_discount'])) {
+            } elseif (in_array($k, ['id', 'user_id', 'stock', 'used', 'uses_count', 'limit', 'uses_limit', 'surprise_discount'])) {
                 if (is_numeric($v)) $row[$k] = (int)$v;
-            } elseif (in_array($k, ['price', 'old_price', 'subtotal', 'delivery_fee', 'discount', 'total'])) {
+            } elseif (in_array($k, ['price', 'old_price', 'subtotal', 'delivery_fee', 'delivery_price', 'discount', 'discount_percent', 'total'])) {
                 if ($v !== null) $row[$k] = (float)$v;
-            } elseif (in_array($k, ['is_sale', 'active', 'is_blocked', 'is_read'])) {
+            } elseif (in_array($k, ['is_sale', 'active', 'is_blocked', 'blocked', 'is_read'])) {
                 if ($v !== null) $row[$k] = (bool)$v;
             }
         }

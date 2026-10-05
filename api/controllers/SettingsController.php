@@ -20,10 +20,10 @@ class SettingsController {
         require_auth(true);
         $data = json_in();
 
-        $host = clean($data['host'] ?? 'localhost');
-        $name = clean($data['name'] ?? '');
-        $user = clean($data['user'] ?? '');
-        $pass = $data['pass'] ?? '';
+        $host = clean($data['host'] ?? $data['mysql_config']['host'] ?? 'localhost');
+        $name = clean($data['name'] ?? $data['mysql_config']['name'] ?? '');
+        $user = clean($data['user'] ?? $data['mysql_config']['user'] ?? '');
+        $pass = $data['pass'] ?? $data['mysql_config']['pass'] ?? '';
 
         try {
             $dsn = "mysql:host={$host};dbname={$name};charset=utf8mb4";
@@ -46,6 +46,12 @@ class SettingsController {
             json_out(['error' => 'Некорректный драйвер'], 400);
         }
 
+        $mysqlConfig = $data['mysql_config'] ?? [];
+        $host = clean($data['mysql_host'] ?? $mysqlConfig['host'] ?? '127.0.0.1');
+        $name = clean($data['mysql_name'] ?? $mysqlConfig['name'] ?? 'flower_studio');
+        $user = clean($data['mysql_user'] ?? $mysqlConfig['user'] ?? 'root');
+        $pass = $data['mysql_pass'] ?? $mysqlConfig['pass'] ?? '';
+
         $configPath = __DIR__ . '/../config.php';
         $configContent = file_get_contents($configPath);
 
@@ -55,16 +61,32 @@ class SettingsController {
             $configContent
         );
 
-        if (isset($data['mysql_host'])) {
-            $newConfig = preg_replace("/define\('DB_HOST',\s*'.*?'\);/", "define('DB_HOST', '" . clean($data['mysql_host']) . "');", $newConfig);
-            $newConfig = preg_replace("/define\('DB_NAME',\s*'.*?'\);/", "define('DB_NAME', '" . clean($data['mysql_name']) . "');", $newConfig);
-            $newConfig = preg_replace("/define\('DB_USER',\s*'.*?'\);/", "define('DB_USER', '" . clean($data['mysql_user']) . "');", $newConfig);
-            $newConfig = preg_replace("/define\('DB_PASS',\s*'.*?'\);/", "define('DB_PASS', '" . clean($data['mysql_pass']) . "');", $newConfig);
-        }
+        $newConfig = preg_replace("/define\('DB_HOST',\s*'.*?'\);/", "define('DB_HOST', '{$host}');", $newConfig);
+        $newConfig = preg_replace("/define\('DB_NAME',\s*'.*?'\);/", "define('DB_NAME', '{$name}');", $newConfig);
+        $newConfig = preg_replace("/define\('DB_USER',\s*'.*?'\);/", "define('DB_USER', '{$user}');", $newConfig);
+        $newConfig = preg_replace("/define\('DB_PASS',\s*'.*?'\);/", "define('DB_PASS', '{$pass}');", $newConfig);
 
         file_put_contents($configPath, $newConfig);
 
-        json_out(['success' => true, 'driver' => strtoupper($targetDriver)]);
+        // Also update settings.json
+        $db = get_storage();
+        $settingsList = $db->get('settings');
+        $existingId = !empty($settingsList) ? array_keys($settingsList)[0] : 1;
+        $currentSettings = array_values($settingsList)[0] ?? [];
+
+        $currentSettings['db_driver'] = $targetDriver;
+        $currentSettings['mysql_host'] = $host;
+        $currentSettings['mysql_name'] = $name;
+        $currentSettings['mysql_user'] = $user;
+        $currentSettings['mysql_pass'] = $pass;
+
+        if (!empty($settingsList)) {
+            $db->update('settings', $existingId, $currentSettings);
+        } else {
+            $db->insert('settings', $currentSettings);
+        }
+
+        json_out(['success' => true, 'message' => 'Драйвер успешно переключён на ' . strtoupper($targetDriver), 'driver' => strtoupper($targetDriver)]);
     }
 
     private function getSettings($isPublic) {

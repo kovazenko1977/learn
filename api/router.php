@@ -38,13 +38,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 // Handle action based routing or default REST handle
 if (!empty($actionName)) {
-    // Action method name mapping e.g. check -> checkAction or actionCheck
-    $actionMethod = 'action' . ucfirst($actionName);
+    $camelName = str_replace(' ', '', ucwords(str_replace('-', ' ', $actionName)));
+    $actionMethod = 'action' . $camelName;
+
     if (!method_exists($controller, $actionMethod)) {
-        // Fallback to method camelCase e.g. testMysql -> testMysql
-        $camelMethod = lcfirst(str_replace(' ', '', ucwords(str_replace('-', ' ', $actionName))));
-        if (method_exists($controller, $camelMethod)) {
-            $actionMethod = $camelMethod;
+        $rawCamel = lcfirst($camelName);
+        if (method_exists($controller, $rawCamel)) {
+            $actionMethod = $rawCamel;
         } else {
             json_out(['error' => "Action '$actionName' not found on '$controllerName'"], 404);
         }
