@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flower Studio Pro - Офлайн</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #fff5f8;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    .offline-card {
+      background: #ffffff;
+      padding: 30px 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(233, 30, 99, 0.1);
+      max-width: 360px;
+      width: 90%;
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 22px;
+      color: #e91e63;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 14px;
+      color: #6b6b6b;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .btn {
+      background: linear-gradient(135deg, #e91e63, #ff6090);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-card">
+    <div class="icon">🥀</div>
+    <h1>Нет соединения</h1>
+    <p>Похоже, у вас отсутствует подключение к интернету. Проверьте сеть и повторите попытку.</p>
+    <button class="btn" onclick="window.location.reload()">Обновить страницу</button>
+  </div>
+</body>
+</html>

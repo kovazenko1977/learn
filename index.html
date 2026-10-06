@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Flower Studio Pro — Доставка цветов</title>
+
+  <!-- PWA & Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#e91e63">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/icon-180.png">
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    /* Global Styles & Variables */
+    :root {
+      --primary: #e91e63;
+      --primary-light: #ff6090;
+      --primary-dark: #b0003a;
+      --bg-cream: #fff5f8;
+      --card-bg: #ffffff;
+      --text-main: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --border-color: #fce4ec;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-main);
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Container & Slide Screens */
+    #app {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      max-width: 500px;
+      margin: 0 auto;
+      width: 100%;
+      background-color: var(--bg-cream);
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding-bottom: 90px;
+      display: none;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .screen.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Header & Navigation Bar */
+    .top-bar {
+      sticky: top;
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn-icon {
+      background: #fce4ec;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .badge-dot {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0 calc(8px + var(--safe-bottom));
+      z-index: 200;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      flex: 1;
+      position: relative;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .nav-item .icon {
+      font-size: 20px;
+    }
+
+    /* Cards & Components */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin: 12px 16px;
+      box-shadow: 0 4px 15px rgba(233, 30, 99, 0.05);
+      border: 1px solid rgba(252, 228, 236, 0.6);
+    }
+
+    /* PWA Install Banner */
+    #pwa-install-banner {
+      display: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 12px 16px;
+      margin: 12px 16px 0;
+      border-radius: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Hero Banner */
+    .hero-box {
+      background: linear-gradient(135deg, #e91e63, #ff6090);
+      color: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-box h2 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .hero-box p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .hero-emoji {
+      position: absolute;
+      right: 10px;
+      bottom: -10px;
+      font-size: 80px;
+      opacity: 0.25;
+    }
+
+    /* Promos Carousel */
+    .promos-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 0 16px;
+      scrollbar-width: none;
+    }
+
+    .promo-card {
+      min-width: 240px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* News Horizontal Scroll */
+    .news-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 0 16px;
+      scrollbar-width: none;
+    }
+
+    .news-item {
+      min-width: 180px;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 12px;
+    }
+
+    /* Roulette / Surprise Bouquet Widget */
+    .roulette-box {
+      background: linear-gradient(135deg, #fff0f5, #ffe4ec);
+      border: 2px dashed var(--primary-light);
+      border-radius: 16px;
+      padding: 16px;
+      margin: 16px;
+      text-align: center;
+    }
+
+    /* Category Chips */
+    .categories-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 16px;
+      scrollbar-width: none;
+    }
+
+    .chip {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--text-main);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Product Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px 16px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .product-img-box {
+      height: 120px;
+      background: var(--bg-cream);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 54px;
+      margin-bottom: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .product-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .badge-sale {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 8px;
+      animation: pulse 1.5s infinite;
+    }
+
+    .badge-stock {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .product-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .product-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-bottom {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .price-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-current {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .price-old {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .btn-add-cart {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Floating Assistant FAB */
+    .fab-assistant {
+      position: fixed;
+      bottom: 75px;
+      right: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+      cursor: pointer;
+      z-index: 150;
+      border: none;
+    }
+
+    /* Selection Assistant Overlay */
+    .assistant-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .assistant-panel {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 20px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    /* Typing Dots Animation */
+    .typing-indicator {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      padding: 8px 12px;
+      background: var(--bg-cream);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Forms, Buttons & Inputs */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      background: #ffffff;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: #fce4ec;
+      color: var(--primary-dark);
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Modal Windows */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-card {
+      background: white;
+      width: 90%;
+      max-width: 440px;
+      border-radius: 20px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* Map Box */
+    #leaflet-map {
+      height: 250px;
+      width: 100%;
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-new { background: #fff3e0; color: #e65100; }
+    .status-prep { background: #e3f2fd; color: #1565c0; }
+    .status-done { background: #e8f5e9; color: #2e7d32; }
+    .status-cancel { background: #ffebee; color: #c62828; }
+
+    /* Admin Sub-Tabs */
+    .admin-nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 8px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      scrollbar-width: none;
+    }
+
+    .admin-nav-item {
+      padding: 8px 12px;
+      font-size: 12px;
+      white-space: nowrap;
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--bg-cream);
+    }
+
+    .admin-nav-item.active {
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- PWA Installation Request Banner -->
+    <div id="pwa-install-banner">
+      <div>
+        <div style="font-weight:bold; font-size:13px;">Установите Flower Studio Pro</div>
+        <div style="font-size:11px; opacity:0.9;">Быстрый доступ прямо с экрана вашего смартфона</div>
+      </div>
+      <button onclick="installPWA()" style="background:white; color:var(--primary); border:none; padding:6px 12px; border-radius:20px; font-weight:bold; font-size:12px; cursor:pointer;">Установить</button>
+    </div>
+
+    <!-- ================= 3.1 AUTH SCREEN (s-auth) ================= -->
+    <div id="s-auth" class="screen">
+      <div style="padding: 40px 20px; text-align: center;">
+        <div style="font-size: 64px; margin-bottom: 12px;">🌹</div>
+        <h2 style="color: var(--primary); font-size: 24px; font-weight: 800;">Flower Studio Pro</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">Премиум доставка цветов и подарков</p>
+
+        <div class="card" style="margin: 0; text-align: left;">
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button id="auth-tab-login" class="btn-primary" style="flex: 1; padding: 10px;" onclick="setAuthMode('login')">Вход</button>
+            <button id="auth-tab-reg" class="btn-secondary" style="flex: 1; padding: 10px;" onclick="setAuthMode('register')">Регистрация</button>
+          </div>
+
+          <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+            <div id="group-name" class="form-group" style="display: none;">
+              <label>Ваше Имя</label>
+              <input type="text" id="auth-name" class="form-control" placeholder="Например, Анна">
+            </div>
+
+            <div class="form-group">
+              <label>Номер телефона</label>
+              <input type="text" id="auth-phone" class="form-control" placeholder="+375291234567 или 1111" required>
+            </div>
+
+            <div class="form-group">
+              <label>Пароль</label>
+              <input type="password" id="auth-password" class="form-control" placeholder="Минимум 4 символа" required>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 10px;">Продолжить ➔</button>
+          </form>
+
+          <div style="margin-top: 14px; text-align: center; font-size: 11px; color: var(--text-muted);">
+            Тестовый админ: телефон <b>1111</b> / пароль <b>1111</b>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 3.2 MAIN CATALOG SCREEN (s-main) ================= -->
+    <div id="s-main" class="screen">
+      <div class="top-bar">
+        <div class="brand-title">🌹 Flower Studio</div>
+        <div style="display: flex; gap: 8px;">
+          <button class="nav-btn-icon" onclick="switchScreen('s-notifs')">
+            🔔
+            <span id="notif-badge" class="badge-dot" style="display:none;">0</span>
+          </button>
+          <button class="nav-btn-icon" onclick="switchScreen('s-chat')">💬</button>
+        </div>
+      </div>
+
+      <!-- Hero Banner -->
+      <div class="hero-box">
+        <h2>Дарите эмоции 💐</h2>
+        <p>Свежие букеты с круглосуточной доставкой от 30 минут</p>
+        <div class="hero-emoji">🌹</div>
+      </div>
+
+      <!-- Promo Banners Carousel -->
+      <div style="margin-bottom: 12px;">
+        <div style="padding: 0 16px 6px; font-weight: 700; font-size: 14px;">🔥 Акции и спецпредложения</div>
+        <div class="promos-scroll" id="promos-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Shop News Horizontal Scroll -->
+      <div style="margin-bottom: 12px;">
+        <div style="padding: 0 16px 6px; font-weight: 700; font-size: 14px;">📰 Новости магазина</div>
+        <div class="news-scroll" id="news-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Interactive Surprise Bouquet Roulette Widget -->
+      <div class="roulette-box">
+        <div style="font-size: 22px; margin-bottom: 4px;">🎲 Мне повезёт</div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--primary);">Букет-сюрприз со скидкой!</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin: 4px 0 10px;">Доверьте выбор флористу и получите доп. скидку</div>
+        <button class="btn-primary" style="padding: 8px 16px; font-size: 13px; width: auto; margin: 0 auto;" onclick="spinRoulette()">Испытать удачу 🎰</button>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="categories-chips">
+        <div class="chip active" onclick="filterCategory('Все', this)">Все</div>
+        <div class="chip" onclick="filterCategory('Букеты', this)">💐 Букеты</div>
+        <div class="chip" onclick="filterCategory('Розы', this)">🌹 Розы</div>
+        <div class="chip" onclick="filterCategory('Композиции', this)">🌸 Композиции</div>
+        <div class="chip" onclick="filterCategory('Коробки', this)">🎁 Коробки</div>
+      </div>
+
+      <!-- 2-Column Product Grid -->
+      <div class="products-grid" id="products-container">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- Floating Assistant FAB Button -->
+    <button class="fab-assistant" onclick="toggleAssistantOverlay(true)">✨</button>
+
+    <!-- ================= 3.3 SELECTION ASSISTANT OVERLAY ================= -->
+    <div id="assistant-overlay" class="assistant-overlay" onclick="if(event.target===this) toggleAssistantOverlay(false)">
+      <div class="assistant-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-weight: 800; font-size: 16px; color: var(--primary);">✨ Ассистент подбора букета</div>
+          <button onclick="toggleAssistantOverlay(false)" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+        </div>
+
+        <div id="assistant-content">
+          <!-- Step Wizard loaded via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 3.4 CART SCREEN (s-cart) ================= -->
+    <div id="s-cart" class="screen">
+      <div class="top-bar">
+        <div class="brand-title">🛒 Корзина</div>
+      </div>
+
+      <div id="cart-items-container" style="padding-top: 8px;">
+        <!-- Cart items rendered here -->
+      </div>
+
+      <div class="card" id="cart-summary-card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px;">
+          <span>Сумма товаров:</span>
+          <span id="cart-subtotal">0 BYN</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; color: var(--primary);">
+          <span>Скидка по промокоду / рулетке:</span>
+          <span id="cart-discount">-0 BYN</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px;">
+          <span>Доставка:</span>
+          <span id="cart-delivery">10 BYN</span>
+        </div>
+        <hr style="border: none; border-top: 1px dashed var(--border-color); margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 17px; margin-bottom: 14px;">
+          <span>Итого:</span>
+          <span id="cart-total" style="color: var(--primary);">0 BYN</span>
+        </div>
+
+        <button class="btn-primary" onclick="switchScreen('s-checkout')">Оформить заказ ➔</button>
+      </div>
+    </div>
+
+    <!-- ================= CHECKOUT SCREEN (s-checkout) ================= -->
+    <div id="s-checkout" class="screen">
+      <div class="top-bar">
+        <button class="nav-btn-icon" onclick="switchScreen('s-cart')">←</button>
+        <div class="brand-title">Оформление заказа</div>
+        <div style="width: 38px;"></div>
+      </div>
+
+      <div style="padding: 12px 16px;">
+        <div class="card" style="margin: 0 0 12px 0;">
+          <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px;">📍 Адрес доставки на карте</div>
+          <div id="leaflet-map"></div>
+          <div class="form-group">
+            <label>Адрес (автозаполнение с карты)</label>
+            <input type="text" id="checkout-address" class="form-control" placeholder="Кликните по карте или введите адрес" required>
+          </div>
+        </div>
+
+        <div class="card" style="margin: 0 0 12px 0;">
+          <div class="form-group">
+            <label>Промокод</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="checkout-promocode" class="form-control" placeholder="Например, FIRST15" style="text-transform: uppercase;">
+              <button class="btn-secondary" style="width: auto; padding: 0 16px;" onclick="applyPromocode()">Применить</button>
+            </div>
+            <div id="promocode-status" style="font-size: 11px; margin-top: 4px;"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Комментарий флористу / курьеру</label>
+            <textarea id="checkout-comment" class="form-control" rows="2" placeholder="Текст для открытки или пожелания"></textarea>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="submitOrder()">✅ Подтвердить и оформить</button>
+      </div>
+    </div>
+
+    <!-- ================= 3.5 PROFILE SCREEN (s-profile) ================= -->
+    <div id="s-profile" class="screen">
+      <div class="top-bar">
+        <div class="brand-title">👤 Профиль</div>
+        <button class="nav-btn-icon" onclick="logout()">🚪</button>
+      </div>
+
+      <div style="padding: 16px;">
+        <div class="card" style="margin: 0 0 16px 0; text-align: center;">
+          <div id="profile-avatar" style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; margin: 0 auto 10px;">A</div>
+          <div id="profile-name" style="font-weight: 800; font-size: 18px;">Имя пользователя</div>
+          <div id="profile-phone" style="font-size: 13px; color: var(--text-muted);">+375 (29) 000-00-00</div>
+          <div id="admin-badge" style="display: none; margin-top: 8px;">
+            <span style="background: #e91e63; color: white; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 12px;">АДМИНИСТРАТОР</span>
+          </div>
+        </div>
+
+        <div id="admin-panel-btn-card" class="card" style="margin: 0 0 16px 0; display: none; background: linear-gradient(135deg, #fff0f5, #ffe4ec);">
+          <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: var(--primary-dark);">Панель администратора</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Управление товарами, заказами, чатами и статистикой</div>
+          <button class="btn-primary" onclick="switchScreen('s-admin')">Открыть админку ➔</button>
+        </div>
+
+        <div style="font-weight: 800; font-size: 15px; margin-bottom: 8px;">📜 История заказов</div>
+        <div id="orders-history-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= NOTIFICATIONS SCREEN (s-notifs) ================= -->
+    <div id="s-notifs" class="screen">
+      <div class="top-bar">
+        <button class="nav-btn-icon" onclick="switchScreen('s-main')">←</button>
+        <div class="brand-title">🔔 Уведомления</div>
+        <button onclick="markAllNotificationsRead()" style="background: none; border: none; font-size: 12px; color: var(--primary); font-weight: bold; cursor: pointer;">✓✓ Прочитать</button>
+      </div>
+
+      <div style="padding: 12px 16px;" id="notifications-container">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- ================= SUPPORT CHAT SCREEN (s-chat) ================= -->
+    <div id="s-chat" class="screen">
+      <div class="top-bar">
+        <button class="nav-btn-icon" onclick="switchScreen('s-main')">←</button>
+        <div class="brand-title">💬 Чат с поддержкой</div>
+        <div style="width: 38px;"></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; height: calc(100% - 60px);">
+        <div id="chat-messages" style="flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+          <!-- Chat messages rendered dynamically -->
+        </div>
+
+        <div style="padding: 10px 16px; background: white; border-top: 1px solid var(--border-color); display: flex; gap: 8px; position: sticky; bottom: 0;">
+          <input type="text" id="chat-input" class="form-control" placeholder="Задайте вопрос флористу..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+          <button class="btn-primary" style="width: auto; padding: 0 18px;" onclick="sendChatMessage()">➔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 4. ADMIN PANEL SCREEN (s-admin) ================= -->
+    <div id="s-admin" class="screen">
+      <div class="top-bar">
+        <button class="nav-btn-icon" onclick="switchScreen('s-profile')">←</button>
+        <div class="brand-title">⚙️ Админ-панель</div>
+        <div style="width: 38px;"></div>
+      </div>
+
+      <!-- 10 Admin Sub-Tabs Navigation -->
+      <div class="admin-nav">
+        <div class="admin-nav-item active" onclick="switchAdminSubtab('stats', this)">📊 Статистика</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('products', this)">🌸 Товары</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('promos', this)">🎁 Акции</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('news', this)">📰 Новости</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('promocodes', this)">🏷 Промокоды</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('orders', this)">📦 Заказы</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('chats', this)">💬 Чаты</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('users', this)">👥 Клиенты</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('settings', this)">🔧 Настройки</div>
+        <div class="admin-nav-item" onclick="switchAdminSubtab('db', this)">💾 База данных</div>
+      </div>
+
+      <div style="padding: 12px 16px;" id="admin-content">
+        <!-- Subtab contents rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Global Product Detail Modal -->
+    <div id="product-modal" class="modal-overlay" onclick="if(event.target===this) closeModal('product-modal')">
+      <div class="modal-card">
+        <div id="product-modal-content"></div>
+      </div>
+    </div>
+
+    <!-- Global Order Created Success Modal -->
+    <div id="order-success-modal" class="modal-overlay">
+      <div class="modal-card" style="text-align: center;">
+        <div style="font-size: 54px; margin-bottom: 10px;">🎉</div>
+        <h3 style="color: var(--primary); font-size: 20px; font-weight: 800; margin-bottom: 6px;">Заказ принят!</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Номер вашего заказа: <b id="success-order-id" style="color:var(--text-main);">#FS-00000</b></p>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">Наш менеджер свяжется с вами для подтверждения доставки.</p>
+        <button class="btn-primary" onclick="closeModal('order-success-modal'); switchScreen('s-profile');">Посмотреть в профиле</button>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item active" onclick="switchScreen('s-main')">
+        <span class="icon">🌹</span>
+        <span>Главная</span>
+      </div>
+      <div class="nav-item" onclick="switchScreen('s-cart')">
+        <span class="icon">🛒</span>
+        <span>Корзина</span>
+        <span id="cart-badge" class="badge-dot" style="top:-2px; right:20%; display:none;">0</span>
+      </div>
+      <div class="nav-item" onclick="switchScreen('s-profile')">
+        <span class="icon">👤</span>
+        <span>Профиль</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ================= GLOBAL STATE ================= */
+    let currentUser = JSON.parse(localStorage.getItem('fs_user')) || null;
+    let authToken = localStorage.getItem('fs_token') || null;
+    let cart = JSON.parse(localStorage.getItem('fs_cart')) || [];
+    let activeCategory = 'Все';
+    let deferredPrompt = null;
+    let leafletMap = null;
+    let leafletMarker = null;
+    let appliedPromocode = null;
+    let rouletteDiscountActive = 0;
+    let currentAdminTab = 'stats';
+
+    /* ================= INITIALIZATION & PWA ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW reg error:', err));
+      }
+
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('pwa-install-banner').style.display = 'flex';
+      });
+
+      if (authToken && currentUser) {
+        switchScreen('s-main');
+        updateProfileUI();
+      } else {
+        switchScreen('s-auth');
+      }
+
+      loadMainCatalogData();
+      updateCartBadge();
+      startNotifPolling();
+    });
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+          document.getElementById('pwa-install-banner').style.display = 'none';
+        });
+      }
+    }
+
+    /* ================= API FETCH HELPER ================= */
+    async function apiFetch(endpoint, method = 'GET', body = null) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+
+      const options = { method, headers };
+      if (body) {
+        if (body instanceof FormData) {
+          delete headers['Content-Type'];
+          options.body = body;
+        } else {
+          options.body = JSON.stringify(body);
+        }
+      }
+
+      try {
+        const res = await fetch(`/api/${endpoint}`, options);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Ошибка запроса к серверу');
+        }
+        return data;
+      } catch (err) {
+        console.error('API error:', err);
+        throw err;
+      }
+    }
+
+    /* ================= NAVIGATION ================= */
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+      }
+
+      // Bottom nav highlighting
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+      if (screenId === 's-main') document.querySelectorAll('.bottom-nav .nav-item')[0].classList.add('active');
+      if (screenId === 's-cart' || screenId === 's-checkout') document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
+      if (screenId === 's-profile' || screenId === 's-admin') document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
+
+      // Screen view event logging
+      apiFetch('stats/log', 'POST', { event: 'screen_view', screen: screenId }).catch(() => {});
+
+      if (screenId === 's-cart') renderCartScreen();
+      if (screenId === 's-checkout') initLeafletMap();
+      if (screenId === 's-profile') loadOrdersHistory();
+      if (screenId === 's-notifs') loadNotifications();
+      if (screenId === 's-chat') loadChatMessages();
+      if (screenId === 's-admin') loadAdminTabContent(currentAdminTab);
+    }
+
+    /* ================= 3.1 AUTHENTICATION ================= */
+    function setAuthMode(mode) {
+      if (mode === 'login') {
+        document.getElementById('group-name').style.display = 'none';
+        document.getElementById('auth-tab-login').className = 'btn-primary';
+        document.getElementById('auth-tab-reg').className = 'btn-secondary';
+      } else {
+        document.getElementById('group-name').style.display = 'block';
+        document.getElementById('auth-tab-login').className = 'btn-secondary';
+        document.getElementById('auth-tab-reg').className = 'btn-primary';
+      }
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('auth-name').value;
+      const phone = document.getElementById('auth-phone').value;
+      const password = document.getElementById('auth-password').value;
+
+      const isReg = document.getElementById('group-name').style.display !== 'none';
+      const endpoint = isReg ? 'auth/register' : 'auth/login';
+
+      try {
+        const res = await apiFetch(endpoint, 'POST', { name, phone, password });
+        authToken = res.token;
+        currentUser = res.user;
+
+        localStorage.setItem('fs_token', authToken);
+        localStorage.setItem('fs_user', JSON.stringify(currentUser));
+
+        updateProfileUI();
+        switchScreen('s-main');
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('fs_token');
+      localStorage.removeItem('fs_user');
+      authToken = null;
+      currentUser = null;
+      switchScreen('s-auth');
+    }
+
+    function updateProfileUI() {
+      if (!currentUser) return;
+      document.getElementById('profile-name').textContent = currentUser.name || 'Клиент';
+      document.getElementById('profile-phone').textContent = currentUser.phone || '';
+      document.getElementById('profile-avatar').textContent = (currentUser.name || 'C')[0].toUpperCase();
+
+      if (currentUser.role === 'admin') {
+        document.getElementById('admin-badge').style.display = 'block';
+        document.getElementById('admin-panel-btn-card').style.display = 'block';
+      } else {
+        document.getElementById('admin-badge').style.display = 'none';
+        document.getElementById('admin-panel-btn-card').style.display = 'none';
+      }
+    }
+
+    /* ================= 3.2 CATALOG & MAIN SCREEN ================= */
+    async function loadMainCatalogData() {
+      try {
+        const [products, promos, news] = await Promise.all([
+          apiFetch('products'),
+          apiFetch('promos'),
+          apiFetch('news')
+        ]);
+
+        renderProducts(products);
+        renderPromos(promos);
+        renderNews(news);
+      } catch (err) {
+        console.error('Catalog load error:', err);
+      }
+    }
+
+    function renderPromos(promos) {
+      const container = document.getElementById('promos-container');
+      if (!promos || promos.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Акций пока нет</div>';
+        return;
+      }
+      container.innerHTML = promos.map(p => `
+        <div class="promo-card">
+          <div style="font-size: 32px;">${p.image || '🎉'}</div>
+          <div>
+            <div style="font-size: 10px; font-weight: bold; color: var(--primary);">${p.badge || 'АКЦИЯ'}</div>
+            <div style="font-weight: 700; font-size: 13px;">${p.title}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${p.description}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderNews(news) {
+      const container = document.getElementById('news-container');
+      if (!news || news.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Новостей нет</div>';
+        return;
+      }
+      container.innerHTML = news.map(n => `
+        <div class="news-item">
+          <div style="font-weight:700; color:var(--primary);">${n.image || '📢'} ${n.title}</div>
+          <div style="color:var(--text-muted); margin-top:4px;">${n.content}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderProducts(products) {
+      const container = document.getElementById('products-container');
+      const filtered = products.filter(p => activeCategory === 'Все' || p.category === activeCategory);
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 20px; color: var(--text-muted);">В этой категории товаров пока нет</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => `
+        <div class="product-card" onclick="openProductModal('${p.id}')">
+          <div class="product-img-box">
+            ${p.image.startsWith('/') || p.image.startsWith('http') ? `<img src="${p.image}" alt="${p.title}">` : p.image}
+            ${p.is_sale ? '<span class="badge-sale">SALE</span>' : ''}
+            ${p.stock <= 5 ? `<span class="badge-stock">Осталось: ${p.stock}</span>` : ''}
+          </div>
+          <div class="product-title">${p.title}</div>
+          <div class="product-desc">${p.description || ''}</div>
+          <div class="product-bottom">
+            <div class="price-box">
+              <span class="price-current">${p.price} BYN</span>
+              ${p.old_price ? `<span class="price-old">${p.old_price} BYN</span>` : ''}
+            </div>
+            <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${p.id}', '${p.title.replace(/'/g, "\\'")}', ${p.price}, '${p.image}')">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCategory(cat, el) {
+      activeCategory = cat;
+      document.querySelectorAll('.categories-chips .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      apiFetch('products').then(renderProducts);
+    }
+
+    async function openProductModal(id) {
+      try {
+        const product = await apiFetch(`products/show/${id}`);
+        const modalContent = document.getElementById('product-modal-content');
+        modalContent.innerHTML = `
+          <div style="text-align: center; margin-bottom: 12px;">
+            <div style="font-size: 72px; background: var(--bg-cream); border-radius: 16px; padding: 20px;">
+              ${product.image.startsWith('/') ? `<img src="${product.image}" style="max-height:160px; border-radius:12px;">` : product.image}
+            </div>
+          </div>
+          <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 6px;">${product.title}</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">${product.description}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <div style="font-size: 20px; font-weight: 800; color: var(--primary);">${product.price} BYN</div>
+              ${product.old_price ? `<div style="font-size: 12px; color: var(--text-muted); text-decoration: line-through;">${product.old_price} BYN</div>` : ''}
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">В наличии: ${product.stock} шт</div>
+          </div>
+          <button class="btn-primary" onclick="addToCart('${product.id}', '${product.title.replace(/'/g, "\\'")}', ${product.price}, '${product.image}'); closeModal('product-modal');">🛒 Добавить в корзину</button>
+        `;
+        document.getElementById('product-modal').style.display = 'flex';
+      } catch (err) {
+        alert('Не удалось загрузить данные товара');
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    /* Roulette / Surprise Bouquet */
+    function spinRoulette() {
+      const discounts = [10, 15, 20, 25];
+      const winDiscount = discounts[Math.floor(Math.random() * discounts.length)];
+      rouletteDiscountActive = winDiscount;
+
+      alert(`🎉 Поздравляем! Рулетка выпала на сюрприз-букет со скидкой ${winDiscount}%! Скидка автоматически добавлена в вашу корзину.`);
+
+      // Auto add surprise bouquet to cart
+      addToCart('prod_surprise', `Букет-сюрприз (скидка ${winDiscount}%)`, 75.00, '🎲');
+      switchScreen('s-cart');
+    }
+
+    /* ================= 3.3 SELECTION ASSISTANT ================= */
+    let assistantStep = 1;
+    let assistantAnswers = {};
+
+    function toggleAssistantOverlay(open) {
+      const el = document.getElementById('assistant-overlay');
+      if (open) {
+        el.style.display = 'flex';
+        assistantStep = 1;
+        assistantAnswers = {};
+        renderAssistantStep();
+      } else {
+        el.style.display = 'none';
+      }
+    }
+
+    function renderAssistantStep() {
+      const container = document.getElementById('assistant-content');
+      if (assistantStep === 1) {
+        container.innerHTML = `
+          <div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+          <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Шаг 1 из 4: Для какого повода ищем букет?</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-secondary" onclick="selectAssistantAnswer('povod', 'День рождения')">🎂 День рождения</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('povod', 'Романтика')">❤️ Романтика / Свидание</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('povod', 'Юбилей')">👑 Юбилей / Торжество</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('povod', 'Просто так')">🌸 Просто порадовать</button>
+          </div>
+        `;
+      } else if (assistantStep === 2) {
+        container.innerHTML = `
+          <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Шаг 2 из 4: Каков ваш планируемый бюджет?</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-secondary" onclick="selectAssistantAnswer('budget', 'до 70 BYN')">💵 До 70 BYN</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('budget', '70 - 120 BYN')">💶 70 - 120 BYN</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('budget', 'более 120 BYN')">💷 Премиум (от 120 BYN)</button>
+          </div>
+        `;
+      } else if (assistantStep === 3) {
+        container.innerHTML = `
+          <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Шаг 3 из 4: Предпочтительная цветовая гамма?</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-secondary" onclick="selectAssistantAnswer('color', 'Нежная / Пастельная')">🌸 Нежная / Пастельная</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('color', 'Яркая / Страстная')">🔴 Страстная красная</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('color', 'Белая / Безупречная')">🤍 Белоснежная</button>
+          </div>
+        `;
+      } else if (assistantStep === 4) {
+        container.innerHTML = `
+          <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Шаг 4 из 4: Размер букета?</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-secondary" onclick="selectAssistantAnswer('size', 'Компактный')">💐 Компактный и милый</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('size', 'Средний')">💐 Средний пышный</button>
+            <button class="btn-secondary" onclick="selectAssistantAnswer('size', 'Огромный')">💐 Роскошный огромный</button>
+          </div>
+        `;
+      } else if (assistantStep === 5) {
+        // Typing delay 700ms simulation
+        container.innerHTML = `
+          <div style="text-align:center; padding: 20px 0;">
+            <div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">Ассистент подбирает лучший вариант...</div>
+          </div>
+        `;
+        setTimeout(() => showAssistantRecommendation(), 700);
+      }
+    }
+
+    function selectAssistantAnswer(key, value) {
+      assistantAnswers[key] = value;
+      assistantStep++;
+      renderAssistantStep();
+    }
+
+    async function showAssistantRecommendation() {
+      const container = document.getElementById('assistant-content');
+      try {
+        const products = await apiFetch('products');
+        const recommended = products[Math.floor(Math.random() * products.length)] || { id: 'prod_1', title: 'Розовый каприз', price: 85.00, image: '🌸' };
+
+        container.innerHTML = `
+          <div style="text-align: center;">
+            <div style="font-size: 14px; font-weight: 800; color: var(--primary); margin-bottom: 4px;">🎉 Подходящий букет найден!</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">Параметры: ${assistantAnswers.povod}, ${assistantAnswers.budget}</div>
+
+            <div class="card" style="margin: 0 0 16px 0;">
+              <div style="font-size: 54px; margin-bottom: 8px;">${recommended.image}</div>
+              <div style="font-weight: 800; font-size: 16px;">${recommended.title}</div>
+              <div style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 6px 0;">${recommended.price} BYN</div>
+              <div style="font-size: 12px; color: var(--text-muted);">${recommended.description || ''}</div>
+            </div>
+
+            <button class="btn-primary" style="margin-bottom: 8px;" onclick="addToCart('${recommended.id}', '${recommended.title.replace(/'/g, "\\'")}', ${recommended.price}, '${recommended.image}'); toggleAssistantOverlay(false); switchScreen('s-cart');">🛒 В корзину</button>
+            <button class="btn-secondary" onclick="toggleAssistantOverlay(true)">🔄 Начать заново</button>
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = '<div style="font-size:12px; color:red;">Ошибка подбора букета</div>';
+      }
+    }
+
+    /* ================= 3.4 CART & CHECKOUT ================= */
+    function addToCart(id, title, price, image) {
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ id, title, price, image, qty: 1 });
+      }
+      localStorage.setItem('fs_cart', JSON.stringify(cart));
+      updateCartBadge();
+    }
+
+    function updateCartQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(i => i.id !== id);
+      }
+      localStorage.setItem('fs_cart', JSON.stringify(cart));
+      renderCartScreen();
+      updateCartBadge();
+    }
+
+    function updateCartBadge() {
+      const count = cart.reduce((sum, item) => sum + item.qty, 0);
+      const badge = document.getElementById('cart-badge');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderCartScreen() {
+      const container = document.getElementById('cart-items-container');
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 64px; margin-bottom: 12px;">🛒</div>
+            <div style="font-weight: 700; font-size: 16px;">Ваша корзина пуста</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin: 6px 0 16px;">Выберите понравившиеся цветы из каталога</div>
+            <button class="btn-primary" style="width: auto; margin: 0 auto; padding: 10px 20px;" onclick="switchScreen('s-main')">В каталог</button>
+          </div>
+        `;
+        document.getElementById('cart-summary-card').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('cart-summary-card').style.display = 'block';
+      container.innerHTML = cart.map(item => `
+        <div class="card" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 32px; width: 44px; height: 44px; background: var(--bg-cream); border-radius: 10px; display: flex; align-items: center; justify-content: center;">${item.image}</div>
+            <div>
+              <div style="font-weight: 700; font-size: 13px;">${item.title}</div>
+              <div style="font-size: 12px; color: var(--primary); font-weight: bold;">${item.price} BYN</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; background: var(--bg-cream); padding: 4px 8px; border-radius: 20px;">
+            <button onclick="updateCartQty('${item.id}', -1)" style="border: none; background: none; font-weight: bold; width: 20px; cursor: pointer;">-</button>
+            <span style="font-size: 13px; font-weight: bold;">${item.qty}</span>
+            <button onclick="updateCartQty('${item.id}', 1)" style="border: none; background: none; font-weight: bold; width: 20px; cursor: pointer;">+</button>
+          </div>
+        </div>
+      `).join('');
+
+      let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      let discountPct = appliedPromocode ? appliedPromocode.discount_percent : 0;
+      if (rouletteDiscountActive > 0) discountPct += rouletteDiscountActive;
+
+      let discountAmount = Math.round((subtotal * (discountPct / 100)) * 100) / 100;
+      let deliveryCost = subtotal >= 100 ? 0 : 10;
+      let total = Math.max(0, subtotal - discountAmount + deliveryCost);
+
+      document.getElementById('cart-subtotal').textContent = `${subtotal.toFixed(2)} BYN`;
+      document.getElementById('cart-discount').textContent = `-${discountAmount.toFixed(2)} BYN`;
+      document.getElementById('cart-delivery').textContent = deliveryCost === 0 ? 'Бесплатно 🎉' : `${deliveryCost.toFixed(2)} BYN`;
+      document.getElementById('cart-total').textContent = `${total.toFixed(2)} BYN`;
+    }
+
+    /* Leaflet Interactive Map & Nominatim Geocoding */
+    function initLeafletMap() {
+      setTimeout(() => {
+        if (!leafletMap) {
+          // Default center: Minsk 53.9006, 27.5590
+          const minskCoords = [53.9006, 27.5590];
+          leafletMap = L.map('leaflet-map').setView(minskCoords, 13);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+          }).addTo(leafletMap);
+
+          leafletMarker = L.marker(minskCoords, { draggable: true }).addTo(leafletMap);
+
+          leafletMarker.on('dragend', function (e) {
+            const coord = e.target.getLatLng();
+            geocodeCoordinates(coord.lat, coord.lng);
+          });
+
+          leafletMap.on('click', function (e) {
+            leafletMarker.setLatLng(e.latlng);
+            geocodeCoordinates(e.latlng.lat, e.latlng.lng);
+          });
+        } else {
+          leafletMap.invalidateSize();
+        }
+      }, 200);
+    }
+
+    async function geocodeCoordinates(lat, lng) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ru`);
+        const data = await res.json();
+        if (data && data.display_name) {
+          document.getElementById('checkout-address').value = data.display_name;
+        }
+      } catch (err) {
+        document.getElementById('checkout-address').value = `Широта: ${lat.toFixed(5)}, Долгота: ${lng.toFixed(5)}`;
+      }
+    }
+
+    async function applyPromocode() {
+      const codeInput = document.getElementById('checkout-promocode').value;
+      const statusEl = document.getElementById('promocode-status');
+
+      if (!codeInput) {
+        statusEl.innerHTML = '<span style="color:red;">❌ Введите код</span>';
+        return;
+      }
+
+      try {
+        const res = await apiFetch('promocodes/check', 'POST', { code: codeInput });
+        if (res.valid) {
+          appliedPromocode = res;
+          statusEl.innerHTML = `<span style="color:green;">✅ ${res.message}</span>`;
+          renderCartScreen();
+        } else {
+          statusEl.innerHTML = `<span style="color:red;">❌ ${res.error}</span>`;
+        }
+      } catch (err) {
+        statusEl.innerHTML = `<span style="color:red;">❌ ${err.message}</span>`;
+      }
+    }
+
+    async function submitOrder() {
+      if (!currentUser) {
+        alert('Пожалуйста, авторизуйтесь для оформления заказа');
+        switchScreen('s-auth');
+        return;
+      }
+
+      const address = document.getElementById('checkout-address').value;
+      const comment = document.getElementById('checkout-comment').value;
+
+      if (!address) {
+        alert('Пожалуйста, укажите адрес доставки');
+        return;
+      }
+
+      let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      let discountPct = appliedPromocode ? appliedPromocode.discount_percent : 0;
+      if (rouletteDiscountActive > 0) discountPct += rouletteDiscountActive;
+      let discountAmount = Math.round((subtotal * (discountPct / 100)) * 100) / 100;
+      let deliveryCost = subtotal >= 100 ? 0 : 10;
+      let totalPrice = Math.max(0, subtotal - discountAmount + deliveryCost);
+
+      const markerPos = leafletMarker ? leafletMarker.getLatLng() : null;
+
+      try {
+        const orderData = {
+          items: cart,
+          total_price: totalPrice,
+          discount: discountAmount,
+          address: address,
+          lat: markerPos ? markerPos.lat : null,
+          lng: markerPos ? markerPos.lng : null,
+          comment: comment,
+          promocode: appliedPromocode ? appliedPromocode.code : null
+        };
+
+        const res = await apiFetch('orders/create', 'POST', orderData);
+
+        // Clear local cart state
+        cart = [];
+        localStorage.removeItem('fs_cart');
+        updateCartBadge();
+        appliedPromocode = null;
+        rouletteDiscountActive = 0;
+
+        document.getElementById('success-order-id').textContent = `#${res.id}`;
+        document.getElementById('order-success-modal').style.display = 'flex';
+      } catch (err) {
+        alert('Ошибка при создании заказа: ' + err.message);
+      }
+    }
+
+    /* ================= 3.5 PROFILE, NOTIFICATIONS & CHAT ================= */
+    async function loadOrdersHistory() {
+      const container = document.getElementById('orders-history-container');
+      try {
+        const orders = await apiFetch('orders');
+        if (!orders || orders.length === 0) {
+          container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); padding:10px 0;">У вас пока нет заказов</div>';
+          return;
+        }
+
+        container.innerHTML = orders.map(o => {
+          let statusClass = 'status-new';
+          if (o.status === 'Готовится') statusClass = 'status-prep';
+          if (o.status === 'Доставлен') statusClass = 'status-done';
+          if (o.status === 'Отменён') statusClass = 'status-cancel';
+
+          return `
+            <div class="card" style="margin: 0 0 10px 0;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <span style="font-weight: 800; font-size: 14px;">Заказ #${o.id}</span>
+                <span class="status-badge ${statusClass}">${o.status}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">${o.created_at}</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--primary);">${o.total_price} BYN</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Адрес: ${o.address}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = '<div style="font-size:12px; color:red;">Не удалось загрузить историю</div>';
+      }
+    }
+
+    async function loadNotifications() {
+      const container = document.getElementById('notifications-container');
+      try {
+        const res = await apiFetch('notifications');
+        const list = res.notifications || [];
+
+        if (list.length === 0) {
+          container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:20px;">Нет уведомлений</div>';
+          return;
+        }
+
+        container.innerHTML = list.map(n => `
+          <div class="card" style="margin: 0 0 8px 0; ${n.is_read ? 'opacity: 0.7;' : 'border-left: 4px solid var(--primary);'}">
+            <div style="font-weight: 700; font-size: 13px; margin-bottom: 2px;">${n.title}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">${n.message}</div>
+            <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">${n.created_at}</div>
+          </div>
+        `).join('');
+
+        document.getElementById('notif-badge').style.display = res.unread_count > 0 ? 'flex' : 'none';
+        document.getElementById('notif-badge').textContent = res.unread_count;
+      } catch (err) {
+        console.error('Notifs error:', err);
+      }
+    }
+
+    async function markAllNotificationsRead() {
+      try {
+        await apiFetch('notifications/markAllRead', 'POST');
+        loadNotifications();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function startNotifPolling() {
+      setInterval(() => {
+        if (authToken) {
+          apiFetch('notifications').then(res => {
+            const badge = document.getElementById('notif-badge');
+            if (res.unread_count > 0) {
+              badge.textContent = res.unread_count;
+              badge.style.display = 'flex';
+            } else {
+              badge.style.display = 'none';
+            }
+          }).catch(() => {});
+        }
+      }, 30000); // Poll every 30s
+    }
+
+    /* Support Chat */
+    async function loadChatMessages() {
+      const container = document.getElementById('chat-messages');
+      try {
+        const chat = await apiFetch('chat/get');
+        const msgs = chat.messages || [];
+
+        container.innerHTML = msgs.map(m => {
+          const isAdmin = m.sender === 'admin';
+          return `
+            <div style="align-self: ${isAdmin ? 'flex-start' : 'flex-end'}; max-width: 80%;">
+              <div style="background: ${isAdmin ? '#ffffff' : 'var(--primary)'}; color: ${isAdmin ? 'var(--text-main)' : '#ffffff'}; padding: 10px 14px; border-radius: 16px; font-size: 13px; border: ${isAdmin ? '1px solid var(--border-color)' : 'none'}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                ${m.text}
+              </div>
+              <div style="font-size: 9px; color: var(--text-muted); text-align: ${isAdmin ? 'left' : 'right'}; margin-top: 2px;">${m.created_at ? m.created_at.substr(11,5) : ''}</div>
+            </div>
+          `;
+        }).join('');
+
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        container.innerHTML = '<div style="font-size:12px; color:red;">Ошибка чата</div>';
+      }
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = '';
+      try {
+        const res = await apiFetch('chat/send', 'POST', { text });
+        loadChatMessages();
+
+        // Handle client side auto-reply timer
+        if (res.auto_reply) {
+          setTimeout(() => {
+            loadChatMessages();
+          }, res.auto_reply.delay_ms || 1500);
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    /* ================= 4. ADMIN PANEL (10 SECTIONS) ================= */
+    function switchAdminSubtab(tab, el) {
+      currentAdminTab = tab;
+      document.querySelectorAll('.admin-nav-item').forEach(item => item.classList.remove('active'));
+      if (el) el.classList.add('active');
+      loadAdminTabContent(tab);
+    }
+
+    async function loadAdminTabContent(tab) {
+      const container = document.getElementById('admin-content');
+      container.innerHTML = '<div style="text-align:center; padding: 20px; color:var(--text-muted);">Загрузка...</div>';
+
+      try {
+        if (tab === 'stats') {
+          const data = await apiFetch('stats/summary');
+          const m = data.metrics;
+          container.innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+              <div class="card" style="margin:0;"><div style="font-size:11px; color:var(--text-muted);">Выручка</div><div style="font-size:18px; font-weight:800; color:var(--primary);">${m.total_revenue} BYN</div></div>
+              <div class="card" style="margin:0;"><div style="font-size:11px; color:var(--text-muted);">Заказы</div><div style="font-size:18px; font-weight:800;">${m.total_orders}</div></div>
+              <div class="card" style="margin:0;"><div style="font-size:11px; color:var(--text-muted);">Клиенты</div><div style="font-size:18px; font-weight:800;">${m.total_users}</div></div>
+              <div class="card" style="margin:0;"><div style="font-size:11px; color:var(--text-muted);">БД Драйвер</div><div style="font-size:14px; font-weight:800; text-transform:uppercase; color:var(--primary);">${m.current_driver}</div></div>
+            </div>
+
+            <div class="card" style="margin:0 0 12px 0;">
+              <div style="font-weight:700; font-size:13px; margin-bottom:8px;">📈 Посещения за 14 дней</div>
+              <div style="display:flex; align-items:flex-end; gap:4px; height:80px; padding-top:10px;">
+                ${data.daily_visits.map(v => `
+                  <div style="flex:1; background:var(--primary); height:${Math.max(10, v.count * 10)}%; border-radius:4px;" title="${v.date}: ${v.count}"></div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="card" style="margin:0 0 12px 0;">
+              <div style="font-weight:700; font-size:13px; margin-bottom:6px;">🔥 Топ продаваемых товаров</div>
+              ${data.top_products.map(p => `<div style="display:flex; justify-content:space-between; font-size:12px; padding:4px 0;"><span>${p.title}</span><b style="color:var(--primary);">${p.sold_count} шт</b></div>`).join('')}
+            </div>
+          `;
+        } else if (tab === 'products') {
+          const products = await apiFetch('products?include_deleted=1');
+          container.innerHTML = `
+            <button class="btn-primary" style="margin-bottom:12px;" onclick="openAdminProductModal()">+ Добавить товар</button>
+            <div>
+              ${products.map(p => `
+                <div class="card" style="margin:0 0 8px 0; display:flex; justify-content:space-between; align-items:center; ${p.deleted ? 'opacity:0.5; background:#f5f5f5;' : ''}">
+                  <div>
+                    <div style="font-weight:700; font-size:13px;">${p.title} ${p.deleted ? '(Удален)' : ''}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${p.category} • ${p.price} BYN</div>
+                  </div>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="toggleAdminSale('${p.id}')">${p.is_sale ? 'SALE ON' : 'SALE OFF'}</button>
+                    <button class="btn-secondary" style="padding:4px 8px; font-size:11px; color:red;" onclick="deleteAdminProduct('${p.id}')">🗑</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (tab === 'orders') {
+          const orders = await apiFetch('orders');
+          container.innerHTML = orders.map(o => `
+            <div class="card" style="margin:0 0 10px 0;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="font-weight:800; font-size:14px;">Заказ #${o.id}</span>
+                <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding:4px; border-radius:8px; font-size:12px;">
+                  <option value="Новый" ${o.status==='Новый'?'selected':''}>Новый</option>
+                  <option value="Готовится" ${o.status==='Готовится'?'selected':''}>Готовится</option>
+                  <option value="Доставлен" ${o.status==='Доставлен'?'selected':''}>Доставлен</option>
+                  <option value="Отменён" ${o.status==='Отменён'?'selected':''}>Отменён</option>
+                </select>
+              </div>
+              <div style="font-size:12px;"><b>Клиент:</b> ${o.user_name || ''} (${o.user_phone || ''})</div>
+              <div style="font-size:12px;"><b>Адрес:</b> ${o.address}</div>
+              <div style="font-size:13px; font-weight:bold; color:var(--primary); margin-top:4px;">Сумма: ${o.total_price} BYN</div>
+            </div>
+          `).join('');
+        } else if (tab === 'promos') {
+          const promos = await apiFetch('promos');
+          container.innerHTML = `
+            <button class="btn-primary" style="margin-bottom:12px;" onclick="addAdminPromo()">+ Добавить акцию</button>
+            ${promos.map(p => `
+              <div class="card" style="margin:0 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700;">${p.title}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">${p.description}</div>
+                </div>
+                <button class="btn-secondary" style="padding:4px 8px; color:red;" onclick="deleteAdminPromo('${p.id}')">🗑</button>
+              </div>
+            `).join('')}
+          `;
+        } else if (tab === 'news') {
+          const news = await apiFetch('news');
+          container.innerHTML = `
+            <button class="btn-primary" style="margin-bottom:12px;" onclick="addAdminNews()">+ Опубликовать новость</button>
+            ${news.map(n => `
+              <div class="card" style="margin:0 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700;">${n.title}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">${n.content}</div>
+                </div>
+                <button class="btn-secondary" style="padding:4px 8px; color:red;" onclick="deleteAdminNews('${n.id}')">🗑</button>
+              </div>
+            `).join('')}
+          `;
+        } else if (tab === 'promocodes') {
+          const promocodes = await apiFetch('promocodes');
+          container.innerHTML = `
+            <button class="btn-primary" style="margin-bottom:12px;" onclick="addAdminPromocode()">+ Создать промокод</button>
+            ${promocodes.map(pc => `
+              <div class="card" style="margin:0 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700; color:var(--primary);">${pc.code} (${pc.discount_percent}% скидка)</div>
+                  <div style="font-size:11px; color:var(--text-muted);">Осталось использований: ${pc.uses_left}</div>
+                </div>
+                <button class="btn-secondary" style="padding:4px 8px; color:red;" onclick="deleteAdminPromocode('${pc.id}')">🗑</button>
+              </div>
+            `).join('')}
+          `;
+        } else if (tab === 'chats') {
+          const chats = await apiFetch('chat/list');
+          container.innerHTML = chats.map(c => `
+            <div class="card" style="margin:0 0 8px 0; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700;">Чат с ${c.user_name || c.user_id}</div>
+                <div style="font-size:11px; color:var(--text-muted);">Сообщений: ${(c.messages||[]).length}</div>
+              </div>
+              <button class="btn-primary" style="width:auto; padding:6px 12px; font-size:12px;" onclick="openAdminReplyChat('${c.user_id}')">Ответить</button>
+            </div>
+          `).join('');
+        } else if (tab === 'users') {
+          const users = await apiFetch('users');
+          container.innerHTML = users.map(u => `
+            <div class="card" style="margin:0 0 8px 0;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700;">${u.name} (${u.phone})</div>
+                  <div style="font-size:11px; color:var(--text-muted);">Роль: ${u.role} | ${u.blocked ? '<b style="color:red;">Заблокирован</b>' : 'Активен'}</div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="toggleAdminUserBlock('${u.id}')">${u.blocked ? 'Разблок' : 'Блок'}</button>
+                  <button class="btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="resetAdminUserPassword('${u.id}')">Сброс пароля</button>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        } else if (tab === 'settings') {
+          const s = await apiFetch('settings/get');
+          container.innerHTML = `
+            <div class="card" style="margin:0;">
+              <div class="form-group"><label>Телефон магазина</label><input type="text" id="set-phone" class="form-control" value="${s.phone||''}"></div>
+              <div class="form-group"><label>Адрес магазина</label><input type="text" id="set-address" class="form-control" value="${s.address||''}"></div>
+              <div class="form-group"><label>Часы работы</label><input type="text" id="set-hours" class="form-control" value="${s.working_hours||''}"></div>
+              <div class="form-group"><label>Стоимость доставки (BYN)</label><input type="number" id="set-del-cost" class="form-control" value="${s.delivery_cost||10}"></div>
+              <div class="form-group"><label>Порог бесплатной доставки (BYN)</label><input type="number" id="set-free-del" class="form-control" value="${s.free_delivery_threshold||100}"></div>
+              <div class="form-group"><label>Текст автоответа в чате</label><textarea id="set-autoreply" class="form-control" rows="2">${s.auto_reply_text||''}</textarea></div>
+              <button class="btn-primary" onclick="saveAdminSettings()">Сохранить настройки</button>
+            </div>
+          `;
+        } else if (tab === 'db') {
+          const s = await apiFetch('settings/get');
+          const backups = await apiFetch('backup/list');
+          container.innerHTML = `
+            <div class="card" style="margin:0 0 12px 0;">
+              <div style="font-weight:700; margin-bottom:8px;">Переключение хранилища БД</div>
+              <div class="form-group">
+                <label>Режим работы</label>
+                <select id="db-driver-select" class="form-control" onchange="toggleMysqlConfigFields(this.value)">
+                  <option value="json" ${s.driver==='json'?'selected':''}>JSON-файлы (по умолчанию)</option>
+                  <option value="mysql" ${s.driver==='mysql'?'selected':''}>MySQL PDO (Авто-таблицы)</option>
+                </select>
+              </div>
+
+              <div id="mysql-config-box" style="display:${s.driver==='mysql'?'block':'none'};">
+                <div class="form-group"><label>Хост MySQL</label><input type="text" id="m-host" class="form-control" value="${(s.mysql_config||{}).host||'127.0.0.1'}"></div>
+                <div class="form-group"><label>База данных</label><input type="text" id="m-db" class="form-control" value="${(s.mysql_config||{}).dbname||'flower_studio'}"></div>
+                <div class="form-group"><label>Пользователь</label><input type="text" id="m-user" class="form-control" value="${(s.mysql_config||{}).user||'root'}"></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="m-pass" class="form-control" value="${(s.mysql_config||{}).password||''}"></div>
+                <button class="btn-secondary" style="margin-bottom:8px;" onclick="testMysqlConnection()">🧪 Проверить подключение MySQL</button>
+              </div>
+
+              <button class="btn-primary" onclick="switchDbDriver()">Применить драйвер</button>
+            </div>
+
+            <div class="card" style="margin:0;">
+              <div style="font-weight:700; margin-bottom:8px;">💾 Резервные копии (Бэкапы)</div>
+              <button class="btn-primary" style="margin-bottom:10px;" onclick="createAdminBackup()">+ Создать бэкап</button>
+              ${backups.map(b => `
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; padding:6px 0; border-bottom:1px solid var(--border-color);">
+                  <div><b>${b.filename}</b><br><span style="color:var(--text-muted);">${b.created_at} (${Math.round(b.size/1024)} KB)</span></div>
+                  <div style="display:flex; gap:4px;">
+                    <button class="btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="restoreAdminBackup('${b.filename}')">Восстановить</button>
+                    <button class="btn-secondary" style="padding:2px 6px; font-size:10px; color:red;" onclick="deleteAdminBackup('${b.filename}')">🗑</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+      } catch (err) {
+        container.innerHTML = `<div style="font-size:12px; color:red; padding:10px;">Ошибка загрузки раздела: ${err.message}</div>`;
+      }
+    }
+
+    /* Admin Action Handlers */
+    async function updateOrderStatus(id, status) {
+      try {
+        await apiFetch(`orders/updateStatus/${id}`, 'POST', { status });
+        alert('Статус заказа обновлен');
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function toggleAdminSale(id) {
+      try {
+        await apiFetch(`products/toggleSale/${id}`, 'POST');
+        loadAdminTabContent('products');
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function deleteAdminProduct(id) {
+      if (confirm('Вы уверены, что хотите пометить товар как удаленный?')) {
+        try {
+          await apiFetch(`products/delete/${id}`, 'DELETE');
+          loadAdminTabContent('products');
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+    }
+
+    async function addAdminPromo() {
+      const title = prompt('Заголовок акции:');
+      if (!title) return;
+      const description = prompt('Описание акции:');
+      try {
+        await apiFetch('promos/create', 'POST', { title, description, image: '🎉', badge: 'АКЦИЯ' });
+        loadAdminTabContent('promos');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function deleteAdminPromo(id) {
+      if (confirm('Удалить акцию?')) {
+        try {
+          await apiFetch(`promos/delete/${id}`, 'DELETE');
+          loadAdminTabContent('promos');
+        } catch (err) { alert(err.message); }
+      }
+    }
+
+    async function addAdminNews() {
+      const title = prompt('Заголовок новости:');
+      if (!title) return;
+      const content = prompt('Текст новости:');
+      try {
+        await apiFetch('news/create', 'POST', { title, content, image: '📢' });
+        loadAdminTabContent('news');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function deleteAdminNews(id) {
+      if (confirm('Удалить новость?')) {
+        try {
+          await apiFetch(`news/delete/${id}`, 'DELETE');
+          loadAdminTabContent('news');
+        } catch (err) { alert(err.message); }
+      }
+    }
+
+    async function addAdminPromocode() {
+      const code = prompt('Промокод (например: SUMMER20):');
+      if (!code) return;
+      const discount_percent = prompt('Процент скидки (1-100):');
+      try {
+        await apiFetch('promocodes/create', 'POST', { code, discount_percent });
+        loadAdminTabContent('promocodes');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function deleteAdminPromocode(id) {
+      if (confirm('Удалить промокод?')) {
+        try {
+          await apiFetch(`promocodes/delete/${id}`, 'DELETE');
+          loadAdminTabContent('promocodes');
+        } catch (err) { alert(err.message); }
+      }
+    }
+
+    function openAdminReplyChat(userId) {
+      switchScreen('s-chat');
+    }
+
+    async function toggleAdminUserBlock(id) {
+      try {
+        await apiFetch(`users/toggleBlock/${id}`, 'POST');
+        loadAdminTabContent('users');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function resetAdminUserPassword(id) {
+      const password = prompt('Введите новый пароль (мин. 4 символа):', '1111');
+      if (!password) return;
+      try {
+        await apiFetch(`users/resetPassword/${id}`, 'POST', { password });
+        alert('Пароль успешно сброшен!');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function saveAdminSettings() {
+      const body = {
+        phone: document.getElementById('set-phone').value,
+        address: document.getElementById('set-address').value,
+        working_hours: document.getElementById('set-hours').value,
+        delivery_cost: parseFloat(document.getElementById('set-del-cost').value),
+        free_delivery_threshold: parseFloat(document.getElementById('set-free-del').value),
+        auto_reply_text: document.getElementById('set-autoreply').value
+      };
+      try {
+        await apiFetch('settings/update', 'POST', body);
+        alert('Настройки успешно сохранены');
+      } catch (err) { alert(err.message); }
+    }
+
+    function toggleMysqlConfigFields(val) {
+      document.getElementById('mysql-config-box').style.display = val === 'mysql' ? 'block' : 'none';
+    }
+
+    async function testMysqlConnection() {
+      const mc = {
+        host: document.getElementById('m-host').value,
+        dbname: document.getElementById('m-db').value,
+        user: document.getElementById('m-user').value,
+        password: document.getElementById('m-pass').value
+      };
+      try {
+        const res = await apiFetch('settings/testMysql', 'POST', { mysql_config: mc });
+        alert(res.message);
+      } catch (err) { alert(err.message); }
+    }
+
+    async function switchDbDriver() {
+      const driver = document.getElementById('db-driver-select').value;
+      const mc = {
+        host: document.getElementById('m-host').value,
+        dbname: document.getElementById('m-db').value,
+        user: document.getElementById('m-user').value,
+        password: document.getElementById('m-pass').value
+      };
+      try {
+        const res = await apiFetch('settings/switchDriver', 'POST', { driver, mysql_config: mc });
+        alert(res.message);
+        loadAdminTabContent('db');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function createAdminBackup() {
+      try {
+        await apiFetch('backup/create', 'POST');
+        alert('Резервная копия создана');
+        loadAdminTabContent('db');
+      } catch (err) { alert(err.message); }
+    }
+
+    async function restoreAdminBackup(filename) {
+      if (confirm(`Восстановить данные из бэкапа ${filename}?`)) {
+        try {
+          await apiFetch('backup/restore', 'POST', { filename });
+          alert('Данные успешно восстановлены');
+          loadAdminTabContent('db');
+        } catch (err) { alert(err.message); }
+      }
+    }
+
+    async function deleteAdminBackup(filename) {
+      if (confirm('Удалить бэкап?')) {
+        try {
+          await apiFetch(`backup/delete?file=${filename}`, 'DELETE');
+          loadAdminTabContent('db');
+        } catch (err) { alert(err.message); }
+      }
+    }
+
+    async function openAdminProductModal() {
+      const title = prompt('Название товара:');
+      if (!title) return;
+      const price = prompt('Цена (BYN):');
+      const category = prompt('Категория (Букеты, Розы, Композиции, Коробки):', 'Букеты');
+      const description = prompt('Описание:');
+
+      try {
+        await apiFetch('products/create', 'POST', { title, price, category, description, image: '🌸' });
+        loadAdminTabContent('products');
+      } catch (err) { alert(err.message); }
+    }
+  </script>
+</body>
+</html>

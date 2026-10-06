@@ -1,0 +1,27 @@
+[
+    {
+        "id": "setting_default",
+        "phone": "+375 (29) 111-22-33",
+        "address": "г. Минск, ул. Цветочная, д. 10",
+        "working_hours": "08:00 - 22:00 ежедневно",
+        "delivery_cost": 10,
+        "free_delivery_threshold": 100,
+        "min_order_amount": 25,
+        "roulette_discount": 15,
+        "auto_reply_text": "Спасибо за ваше сообщение! Наш флорист свяжется с вами в течение 5 минут. 💐",
+        "driver": "json",
+        "mysql_config": {
+            "host": "127.0.0.1",
+            "port": 3306,
+            "dbname": "flower_studio",
+            "user": "root",
+            "password": ""
+        },
+        "social_links": {
+            "instagram": "https:\/\/instagram.com",
+            "telegram": "https:\/\/t.me",
+            "viber": "viber:\/\/chat"
+        },
+        "created_at": "2026-10-06 12:11:13"
+    }
+]
