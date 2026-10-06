@@ -27,9 +27,26 @@ class UploadController {
         }
 
         $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        $mime = null;
+
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo) {
+                $mime = finfo_file($finfo, $file['tmp_name']);
+                finfo_close($finfo);
+            }
+        }
+
+        if (!$mime && function_exists('getimagesize')) {
+            $imageInfo = @getimagesize($file['tmp_name']);
+            if ($imageInfo && isset($imageInfo['mime'])) {
+                $mime = $imageInfo['mime'];
+            }
+        }
+
+        if (!$mime) {
+            $mime = strtolower($file['type'] ?? '');
+        }
 
         if (!in_array($mime, $allowedMimes)) {
             json_out(['error' => 'Недопустимый формат файла. Разрешены JPG, PNG, WEBP, GIF'], 400);
