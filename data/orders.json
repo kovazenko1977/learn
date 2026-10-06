@@ -1,0 +1,25 @@
+[
+    {
+        "id": "FS-23991",
+        "user_id": "user_admin_seed",
+        "user_name": "Администратор",
+        "user_phone": "1111",
+        "items": [
+            {
+                "id": "prod_1",
+                "title": "Розовый каприз",
+                "price": 85,
+                "qty": 1
+            }
+        ],
+        "total_price": 85,
+        "discount": 0,
+        "address": "г. Минск, ул. Ленина, 10",
+        "lat": null,
+        "lng": null,
+        "status": "Новый",
+        "comment": "",
+        "promocode": null,
+        "created_at": "2026-10-06 12:17:34"
+    }
+]

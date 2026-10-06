@@ -1,0 +1,49 @@
+[Tue Oct  6 12:15:37 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8080) started
+[Tue Oct  6 12:16:17 2026] 127.0.0.1:52622 Accepted
+[Tue Oct  6 12:16:17 2026] 127.0.0.1:52622 Closing
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48328 Accepted
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48328 Closing
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48338 Accepted
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48338 Closing
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48350 Accepted
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48350 Closing
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48356 Accepted
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48356 Closing
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48360 Accepted
+[Tue Oct  6 12:17:34 2026] 127.0.0.1:48360 Closing
+[Tue Oct  6 12:18:21 2026] 127.0.0.1:50740 Accepted
+[Tue Oct  6 12:18:21 2026] 127.0.0.1:50740 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50750 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50750 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50756 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50760 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50766 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50756 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50760 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50766 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50768 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50768 [200]: GET /sw.js
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50768 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50776 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50790 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50800 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50776 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50790 [200]: GET /index.html
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50800 [200]: GET /manifest.json
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50790 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50800 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50804 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50804 [200]: GET /offline.html
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50804 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50820 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50820 Closing
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50824 Accepted
+[Tue Oct  6 12:18:22 2026] 127.0.0.1:50824 Closing
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47872 Accepted
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47872 Closing
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47886 Accepted
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47886 Closing
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47896 Accepted
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47904 Accepted
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47896 Closing
+[Tue Oct  6 12:18:24 2026] 127.0.0.1:47904 Closing

@@ -1,0 +1,43 @@
+[
+    {
+        "id": "stat_6ac4e6ded7c26",
+        "event": "order_created",
+        "data": {
+            "order_id": "FS-23991",
+            "amount": 85
+        },
+        "created_at": "2026-10-06 12:17:34"
+    },
+    {
+        "id": "stat_6ac4e70e50235",
+        "event": "screen_view",
+        "screen": "s-auth",
+        "product_id": null,
+        "data": null,
+        "created_at": "2026-10-06 12:18:22"
+    },
+    {
+        "id": "stat_6ac4e70ed6e1d",
+        "event": "screen_view",
+        "screen": "s-main",
+        "product_id": null,
+        "data": null,
+        "created_at": "2026-10-06 12:18:22"
+    },
+    {
+        "id": "stat_6ac4e71013a8b",
+        "event": "screen_view",
+        "screen": "s-profile",
+        "product_id": null,
+        "data": null,
+        "created_at": "2026-10-06 12:18:24"
+    },
+    {
+        "id": "stat_6ac4e7109dee4",
+        "event": "screen_view",
+        "screen": "s-admin",
+        "product_id": null,
+        "data": null,
+        "created_at": "2026-10-06 12:18:24"
+    }
+]

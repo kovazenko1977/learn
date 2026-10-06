@@ -1,0 +1,54 @@
+[
+    {
+        "id": "prod_1",
+        "title": "Розовый каприз",
+        "category": "Букеты",
+        "price": 85,
+        "old_price": 100,
+        "description": "Нежный букет из розовых пионовидных роз и эвкалипта",
+        "image": "🌸",
+        "is_sale": 1,
+        "stock": 4,
+        "deleted": 0,
+        "created_at": "2026-10-06 12:11:13"
+    },
+    {
+        "id": "prod_2",
+        "title": "Красная страсть (15 роз)",
+        "category": "Розы",
+        "price": 120,
+        "old_price": null,
+        "description": "Элитные эквадорские красные розы с бархатными лепестками",
+        "image": "🌹",
+        "is_sale": 0,
+        "stock": 12,
+        "deleted": 0,
+        "created_at": "2026-10-06 12:11:13"
+    },
+    {
+        "id": "prod_3",
+        "title": "Весенняя свежесть",
+        "category": "Композиции",
+        "price": 65,
+        "old_price": 75,
+        "description": "Композиция из белых тюльпанов и хризантем в стильной коробке",
+        "image": "💐",
+        "is_sale": 1,
+        "stock": 3,
+        "deleted": 0,
+        "created_at": "2026-10-06 12:11:13"
+    },
+    {
+        "id": "prod_4",
+        "title": "Шляпная коробка \"Амур\"",
+        "category": "Коробки",
+        "price": 140,
+        "old_price": null,
+        "description": "Премиальные розы в шляпной коробке с атласной лентой",
+        "image": "🎁",
+        "is_sale": 0,
+        "stock": 8,
+        "deleted": 0,
+        "created_at": "2026-10-06 12:11:13"
+    }
+]
