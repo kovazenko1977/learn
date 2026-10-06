@@ -1106,8 +1106,20 @@
 
         try {
           const res = await fetch(`api/${endpoint}`, { ...options, headers });
-          const data = await res.json();
-          if (!res.ok && data.error && res.status === 401) {
+          const contentType = res.headers.get('content-type') || '';
+          let data = {};
+          if (contentType.includes('application/json')) {
+            data = await res.json();
+          } else {
+            const rawText = await res.text();
+            try {
+              data = JSON.parse(rawText);
+            } catch (jsonErr) {
+              data = { error: 'Неверный ответ сервера' };
+            }
+          }
+
+          if (!res.ok && res.status === 401 && !endpoint.includes('auth/login') && !endpoint.includes('auth/register')) {
             this.logout();
           }
           return data;
