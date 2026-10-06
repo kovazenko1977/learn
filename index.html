@@ -1919,11 +1919,11 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
             <div style="background: var(--bg-card); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
               <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--primary);">Топ Экранов</div>
-              ${(res.top_screens || []).map(s => `<div style="font-size: 11px; display: flex; justify-content: space-between; padding: 3px 0;"><span>${s.screen}</span><b>${s.count}</b></div>`).join('')}
+              ${(res.top_screens || []).map(s => `<div style="font-size: 11px; display: flex; justify-content: space-between; padding: 3px 0;"><span>${s.screen}</span><b>${s.count || s.views}</b></div>`).join('')}
             </div>
             <div style="background: var(--bg-card); padding: 14px; border-radius: 14px; border: 1px solid rgba(255,152,0,0.15);">
               <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; color: var(--primary);">Топ Товаров</div>
-              ${(res.top_products || []).map(p => `<div style="font-size: 11px; display: flex; justify-content: space-between; padding: 3px 0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;">${p.title}</span><b>${p.qty} шт</b></div>`).join('')}
+              ${(res.top_products || []).map(p => `<div style="font-size: 11px; display: flex; justify-content: space-between; padding: 3px 0;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px;">${p.title}</span><b>${p.qty || p.sales} шт</b></div>`).join('')}
             </div>
           </div>
         `;
