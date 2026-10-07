@@ -175,7 +175,7 @@ class Storage {
         return $this->readJson('settings.json', [
             'interval_days' => 30,
             'interval_mode' => 'days', // 'days' or 'calendar_month'
-            'technician_name' => 'Иванов Алексей Петрович',
+            'technician_name' => 'Старовойтов Алексей Михайлович',
             'company_name' => 'ООО «СпецПожОхрана»',
             'theme' => 'dark'
         ]);

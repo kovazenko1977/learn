@@ -72,7 +72,7 @@
                             <span class="full-title">ПОЖ-ОХРАН <span>ТО</span></span>
                             <span class="short-title">ПОТ</span>
                         </h1>
-                        <div class="technician-badge" id="technicianNameDisplay">Инженер ТО</div>
+                        <div class="technician-badge" id="technicianNameDisplay">Старовойтов Алексей Михайлович</div>
                     </div>
                 </div>
                 <div class="header-actions">

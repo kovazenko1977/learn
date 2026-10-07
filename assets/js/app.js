@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
             settings: {
                 interval_days: 30,
                 interval_mode: 'days',
-                technician_name: 'Иванов Алексей Петрович',
+                technician_name: 'Старовойтов Алексей Михайлович',
                 company_name: 'ООО «СпецПожОхрана»'
             },
             currentTab: 'unvisited',
@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateHeaderStats() {
             const technicianDisplay = document.getElementById('technicianNameDisplay');
-            if (technicianDisplay) technicianDisplay.textContent = this.state.settings.technician_name || 'Инженер ТО';
+            if (technicianDisplay) technicianDisplay.textContent = this.state.settings.technician_name || 'Старовойтов Алексей Михайлович';
 
             const intervalDisplay = document.getElementById('intervalDisplay');
             if (intervalDisplay) {
@@ -581,12 +581,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-actions">
                         <button class="btn success-btn mark-visit-btn" data-id="${point.id}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span class="btn-text-full">${isVisited ? 'Повторно отметить визит' : 'Отметить посещение объекта'}</span>
-                            <span class="btn-text-short">${isVisited ? 'Повторно' : 'Отметить'}</span>
+                            ${isVisited ? 'Повторно отметить визит' : 'Отметить посещение объекта'}
                         </button>
                         ${isVisited ? `
                             <button class="btn danger-btn cancel-visit-btn" data-id="${point.id}" title="Отменить посещение">
-                                ↩️ <span class="btn-text-full">Отменить посещение</span>
+                                ↩️ Отменить посещение
                             </button>
                         ` : ''}
                         <button class="btn secondary-btn edit-point-btn" data-id="${point.id}" title="Редактировать">
