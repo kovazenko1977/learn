@@ -229,7 +229,7 @@ body {
 }
 
 .app-title {
-    font-size: 1.25rem;
+    font-size: 0.85rem;
     font-weight: 800;
     line-height: 1.1;
     color: var(--text-primary);
@@ -241,13 +241,13 @@ body {
 
 .app-title .short-title {
     display: none;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: var(--accent-red);
 }
 
 .technician-badge {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--text-secondary);
     font-weight: 500;
 }
@@ -255,29 +255,7 @@ body {
 .header-actions {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 6px;
-}
-
-@media (max-width: 580px) {
-    .header-top {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    .brand {
-        justify-content: center;
-    }
-    .header-actions {
-        width: 100%;
-        justify-content: center;
-    }
-    .btn-voice-label {
-        display: none;
-    }
-    .voice-report-btn {
-        padding: 0 10px;
-    }
 }
 
 .icon-btn {
