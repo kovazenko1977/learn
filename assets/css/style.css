@@ -1370,42 +1370,64 @@ body {
     gap: 6px;
 }
 
+.btn-text-short {
+    display: none;
+}
+
 /* Compact Mobile View Mode */
 body.compact-mode .section-banner {
     display: none !important;
 }
 
 body.compact-mode .cards-grid {
-    gap: 6px;
+    gap: 4px;
 }
 
 body.compact-mode .point-card {
-    padding: 8px 12px;
-    border-radius: var(--radius-md);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 42px;
 }
 
 body.compact-mode .card-header {
-    margin-bottom: 4px;
-    gap: 8px;
+    margin-bottom: 0;
+    gap: 6px;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
 }
 
 body.compact-mode .sim-badge {
-    padding: 2px 6px;
-    font-size: 0.8rem;
+    padding: 2px 5px;
+    font-size: 0.75rem;
+    box-shadow: none;
+    border-radius: 4px;
 }
 
 body.compact-mode .point-title {
-    font-size: 0.92rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
 }
 
 body.compact-mode .point-address {
-    margin-bottom: 4px;
-    font-size: 0.78rem;
+    margin-bottom: 0;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: none; /* Hide address in single-row mode for extreme density */
 }
 
 body.compact-mode .point-address svg {
-    width: 14px;
-    height: 14px;
+    display: none;
 }
 
 body.compact-mode .point-details,
@@ -1415,18 +1437,30 @@ body.compact-mode .point-notes-preview {
 }
 
 body.compact-mode .card-actions {
-    margin-top: 6px;
-    gap: 6px;
+    margin-top: 0;
+    gap: 4px;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 body.compact-mode .card-actions .btn {
-    padding: 6px 10px;
-    font-size: 0.78rem;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    white-space: nowrap;
 }
 
 body.compact-mode .card-actions .btn svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
+}
+
+body.compact-mode .btn-text-full {
+    display: none !important;
+}
+
+body.compact-mode .btn-text-short {
+    display: inline-block !important;
 }
 
 body.compact-mode #compactViewToggleBtn {

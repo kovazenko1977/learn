@@ -581,11 +581,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-actions">
                         <button class="btn success-btn mark-visit-btn" data-id="${point.id}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                            ${isVisited ? 'Повторно отметить визит' : 'Отметить посещение объекта'}
+                            <span class="btn-text-full">${isVisited ? 'Повторно отметить визит' : 'Отметить посещение объекта'}</span>
+                            <span class="btn-text-short">${isVisited ? 'Повторно' : 'Отметить'}</span>
                         </button>
                         ${isVisited ? `
                             <button class="btn danger-btn cancel-visit-btn" data-id="${point.id}" title="Отменить посещение">
-                                ↩️ Отменить посещение
+                                ↩️ <span class="btn-text-full">Отменить посещение</span>
                             </button>
                         ` : ''}
                         <button class="btn secondary-btn edit-point-btn" data-id="${point.id}" title="Редактировать">
