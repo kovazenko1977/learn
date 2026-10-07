@@ -25,55 +25,33 @@ def run_test():
             page.wait_for_selector("#appContainer:not(.hidden)", timeout=5000)
             print("App loaded and preloader dismissed.")
 
-            # Take screenshot of Unvisited list
             os.makedirs("verification", exist_ok=True)
-            page.screenshot(path="verification/01_unvisited_list.png")
-            print("Captured screenshot: verification/01_unvisited_list.png")
 
-            # Verify SIM card number rendering
-            sim_badge = page.locator(".sim-badge").first
-            assert sim_badge.is_visible(), "SIM badge not found!"
-            sim_text = sim_badge.text_content().strip()
-            print(f"Verified SIM badge text: {sim_text}")
+            # Test "Что сегодня?" Voice summary button
+            voice_btn = page.locator("#voiceTodayBtn")
+            assert voice_btn.is_visible(), "Voice today button not found!"
+            voice_btn.click()
+            print("Voice summary button clicked.")
+            page.screenshot(path="verification/07_voice_today.png")
 
-            # Mark a visit on the first card
-            first_card_btn = page.locator(".mark-visit-btn").first
-            first_card_btn.click()
-
-            page.wait_for_selector("#visitModal:not(.hidden)", timeout=3000)
-            print("Visit modal opened.")
-
-            # Click custom checkbox label
-            page.click(".custom-checkbox")
-            page.fill("#visitDefectsText", "Заменен резервный АКБ 12V 7Ah в РИП-12")
-            page.fill("#visitNotesText", "Проверена работоспособность шлейфов ШС-1 и ШС-2")
-            page.screenshot(path="verification/02_visit_modal.png")
-
-            # Submit visit form
-            page.click("#visitForm button[type='submit']")
-            page.wait_for_selector("#visitModal", state="hidden", timeout=3000)
-            print("Visit recorded and modal closed.")
-
-            page.wait_for_timeout(500)
-            page.screenshot(path="verification/03_after_visit_marked.png")
-
-            # Switch to 'Visited' tab
-            page.click("button[data-tab='visited']")
-            page.wait_for_selector("#tabVisited.active")
-            page.screenshot(path="verification/04_visited_tab.png")
-            print("Switched to Visited tab.")
-
-            # Switch to 'History' tab
-            page.click("button[data-tab='history']")
-            page.wait_for_selector("#tabHistory.active")
-            page.screenshot(path="verification/05_history_tab.png")
-            print("Switched to History tab.")
-
-            # Switch to 'Settings' tab
+            # Go to Settings tab and test "Сбросить все интервалы"
             page.click("button[data-tab='settings']")
             page.wait_for_selector("#tabSettings.active")
-            page.screenshot(path="verification/06_settings_tab.png")
-            print("Switched to Settings tab.")
+            page.screenshot(path="verification/08_settings_new_reset.png")
+
+            # Handle confirm dialog for resetting intervals
+            page.on("dialog", lambda dialog: dialog.accept())
+            page.click("#resetIntervalsBtn")
+            page.wait_for_timeout(1000)
+            print("Reset all intervals clicked.")
+
+            # Verify unvisited count is now total points (73)
+            page.click("button[data-tab='unvisited']")
+            page.wait_for_selector("#tabUnvisited.active")
+            unvisited_badge = page.locator("#unvisitedBadge").text_content().strip()
+            print(f"Unvisited count after reset: {unvisited_badge}")
+            assert unvisited_badge == "73", f"Expected 73 unvisited points, got {unvisited_badge}"
+            page.screenshot(path="verification/09_after_reset_all_intervals.png")
 
             browser.close()
             print("Playwright test completed successfully!")

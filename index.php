@@ -41,6 +41,19 @@
         </div>
     </div>
 
+    <!-- PWA Install Banner Overlay (Automatic Offer if not installed) -->
+    <div id="pwaInstallBanner" class="pwa-install-banner hidden">
+        <div class="pwa-banner-content">
+            <div class="pwa-banner-icon">📱</div>
+            <div class="pwa-banner-text">
+                <strong>Установить приложение PWA?</strong>
+                <span>Быстрый доступ без интернета на вашем телефоне.</span>
+            </div>
+            <button id="pwaBannerInstallBtn" class="btn primary-btn small">Установить</button>
+            <button id="pwaBannerCloseBtn" class="pwa-banner-close">&times;</button>
+        </div>
+    </div>
+
     <!-- App Container -->
     <div id="appContainer" class="app-container hidden">
 
@@ -60,6 +73,9 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    <button class="icon-btn voice-report-btn" id="voiceTodayBtn" title="Голосовой отчет о визитах за сегодня">
+                        🔊 <span class="btn-voice-label">Что сегодня?</span>
+                    </button>
                     <button class="icon-btn" id="themeToggleBtn" title="Сменить тему">
                         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
                         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -94,6 +110,7 @@
             <div class="search-box">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="text" id="searchInput" placeholder="Поиск по названию, адресу или SIM..." autocomplete="off">
+                <button class="voice-dictate-btn" data-target="searchInput" title="Голосовой ввод поиска">🎤</button>
                 <button class="clear-search-btn hidden" id="clearSearchBtn">&times;</button>
             </div>
         </section>
@@ -213,7 +230,10 @@
 
                         <div class="form-actions">
                             <button type="submit" class="btn primary-btn">Сохранить настройки</button>
-                            <button type="button" class="btn secondary-btn" id="resetDemoBtn">Сбросить к демо-данным</button>
+                            <!-- Red button to reset all point intervals -->
+                            <button type="button" class="btn danger-btn-solid" id="resetIntervalsBtn">
+                                🔄 Сбросить все интервалы
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -259,12 +279,18 @@
                     </div>
 
                     <div class="form-group hidden" id="defectsDescriptionGroup">
-                        <label for="visitDefectsText">Описание недостатков / Замечания</label>
+                        <div class="label-with-voice">
+                            <label for="visitDefectsText">Описание недостатков / Замечания</label>
+                            <button type="button" class="voice-dictate-btn inline" data-target="visitDefectsText" title="Надиктовать голосом">🎤 Голос</button>
+                        </div>
                         <textarea id="visitDefectsText" class="form-control" rows="3" placeholder="Укажите, что именно требует ремонта или замены (например: сел АКБ в РИП, запылен шлейф №3)..."></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="visitNotesText">Дополнительная информация / Проведенные работы</label>
+                        <div class="label-with-voice">
+                            <label for="visitNotesText">Дополнительная информация / Проведенные работы</label>
+                            <button type="button" class="voice-dictate-btn inline" data-target="visitNotesText" title="Надиктовать голосом">🎤 Голос</button>
+                        </div>
                         <textarea id="visitNotesText" class="form-control" rows="2" placeholder="Например: Проведена продувка извещателей, сработка в норме..."></textarea>
                     </div>
 
@@ -292,7 +318,10 @@
                     <input type="hidden" id="pointFormId">
 
                     <div class="form-group">
-                        <label for="pointFormName">Наименование точки / объекта *</label>
+                        <div class="label-with-voice">
+                            <label for="pointFormName">Наименование точки / объекта *</label>
+                            <button type="button" class="voice-dictate-btn inline" data-target="pointFormName">🎤 Голос</button>
+                        </div>
                         <input type="text" id="pointFormName" class="form-control" required placeholder="Например: ТЦ «Гранит» — Главный вент узел">
                     </div>
 
@@ -306,7 +335,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="pointFormAddress">Адрес расположения *</label>
+                        <div class="label-with-voice">
+                            <label for="pointFormAddress">Адрес расположения *</label>
+                            <button type="button" class="voice-dictate-btn inline" data-target="pointFormAddress">🎤 Голос</button>
+                        </div>
                         <input type="text" id="pointFormAddress" class="form-control" required placeholder="ул. Ленина, д. 45, этаж 2">
                     </div>
 
@@ -327,7 +359,10 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="pointFormNotes">Примечание / Инструкция доступа</label>
+                        <div class="label-with-voice">
+                            <label for="pointFormNotes">Примечание / Инструкция доступа</label>
+                            <button type="button" class="voice-dictate-btn inline" data-target="pointFormNotes">🎤 Голос</button>
+                        </div>
                         <textarea id="pointFormNotes" class="form-control" rows="2" placeholder="Ключи у охраны, правила прохода..."></textarea>
                     </div>
 

@@ -128,6 +128,16 @@ try {
             echo json_encode(['success' => true, 'settings' => $storage->getSettings()], JSON_UNESCAPED_UNICODE);
             break;
 
+        case 'reset_intervals':
+            $storage->clearAllVisits();
+            echo json_encode([
+                'success' => true,
+                'points' => $storage->getPoints(),
+                'visits' => $storage->getVisits(),
+                'settings' => $storage->getSettings()
+            ], JSON_UNESCAPED_UNICODE);
+            break;
+
         case 'reset_demo':
             unlink(__DIR__ . '/../data/points.json');
             unlink(__DIR__ . '/../data/visits.json');

@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.loadTheme();
             this.fetchData();
             this.setupPWA();
+            this.setupVoiceControls();
         },
 
         initPreloader() {
@@ -49,9 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const preloader = document.getElementById('appPreloader');
             const appContainer = document.getElementById('appContainer');
             if (appContainer) appContainer.classList.remove('hidden');
-            if (preloader) {
-                preloader.style.display = 'none';
-            }
+            if (preloader) preloader.style.display = 'none';
         },
 
         async fetchData() {
@@ -140,7 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Settings Form
             document.getElementById('settingsForm')?.addEventListener('submit', (e) => this.handleSettingsSubmit(e));
-            document.getElementById('resetDemoBtn')?.addEventListener('click', () => this.handleResetDemo());
+
+            // Red "Reset all intervals" button
+            document.getElementById('resetIntervalsBtn')?.addEventListener('click', () => this.handleResetIntervals());
 
             const intervalModeSelect = document.getElementById('intervalModeSelect');
             intervalModeSelect?.addEventListener('change', (e) => {
@@ -151,6 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (daysGroup) daysGroup.style.opacity = '1';
                 }
             });
+
+            // Voice today report button
+            document.getElementById('voiceTodayBtn')?.addEventListener('click', () => this.speakTodaySummary());
         },
 
         switchTab(tabName) {
@@ -185,22 +189,18 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.setAttribute('data-theme', savedTheme);
         },
 
-        // Calculation if point is visited within the interval
         isPointVisited(pointId) {
             const visitsForPoint = this.state.visits.filter(v => v.point_id === pointId);
             if (visitsForPoint.length === 0) return false;
 
-            // Sort newest first
             visitsForPoint.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
             const lastVisit = visitsForPoint[0];
             const lastVisitDate = new Date(lastVisit.visited_at);
             const now = new Date();
 
             if (this.state.settings.interval_mode === 'calendar_month') {
-                // Point is considered visited if last visit was in current month and year
                 return lastVisitDate.getMonth() === now.getMonth() && lastVisitDate.getFullYear() === now.getFullYear();
             } else {
-                // Fixed days mode
                 const daysDiff = (now - lastVisitDate) / (1000 * 60 * 60 * 24);
                 return daysDiff <= (this.state.settings.interval_days || 30);
             }
@@ -336,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="point-card ${isVisited ? 'status-done' : 'status-urgent'}" data-id="${point.id}">
                     <div class="card-header">
                         <div class="point-title">${this.escapeHtml(point.name)}</div>
-                        <!-- SIM Card Number Badge - Mandatory Requirement -->
                         <div class="sim-badge" title="Привязанный номер SIM-карты">
                             <svg class="sim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="8.01" y2="6"/><line x1="16" y1="6" x2="16.01" y2="6"/><line x1="12" y1="6" x2="12.01" y2="6"/></svg>
                             SIM: ${this.escapeHtml(point.sim_number)}
@@ -631,39 +630,140 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        async handleResetDemo() {
-            if (!confirm('Сбросить все точки и историю проверок к начальным демо-данным?')) return;
+        // Red button action: resets all intervals by clearing visit history
+        async handleResetIntervals() {
+            if (!confirm('Вы действительно хотите сбросить все интервалы посещений?\nВсе точки перейдут в статус "Не посещены" (Требуют ТО).')) {
+                return;
+            }
 
             try {
-                const response = await fetch('api/index.php?action=reset_demo');
+                const response = await fetch('api/index.php?action=reset_intervals');
                 const result = await response.json();
                 if (result.success) {
                     this.state.points = result.points;
                     this.state.visits = result.visits;
                     this.state.settings = result.settings;
                     this.renderAll();
-                    this.showToast('База данных сброшена до демо-состояния.', 'info');
+                    this.showToast('Все интервалы посещений сброшены!', 'info');
+                } else {
+                    this.showToast('Ошибка при сбросе интервалов: ' + result.error, 'error');
                 }
             } catch (err) {
                 console.error(err);
+                this.showToast('Ошибка сервера', 'error');
             }
         },
 
+        // Voice today summary report using SpeechSynthesis
+        speakTodaySummary() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayVisits = this.state.visits.filter(v => v.visited_at && v.visited_at.startsWith(todayStr));
+            const totalCount = todayVisits.length;
+            const defectsCount = todayVisits.filter(v => v.has_defects).length;
+
+            let reportText = '';
+            if (totalCount === 0) {
+                reportText = 'Сегодня посещений точек пока не зарегистрировано.';
+            } else {
+                reportText = `Сегодня посетили ${totalCount} ${this.pluralize(totalCount, ['точку', 'точки', 'точек'])}. `;
+                if (defectsCount > 0) {
+                    reportText += `Из них в ${defectsCount} ${this.pluralize(defectsCount, ['объекте', 'объектах', 'объектах'])} выявлены неисправности.`;
+                } else {
+                    reportText += 'Все зафиксированные объекты без замечаний.';
+                }
+            }
+
+            this.showToast(`📢 ${reportText}`, 'info');
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any active speech
+                const utterance = new SpeechSynthesisUtterance(reportText);
+                utterance.lang = 'ru-RU';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                this.showToast('Синтез речи не поддерживается браузером.', 'error');
+            }
+        },
+
+        // Speech Recognition for 🎤 voice dictation buttons
+        setupVoiceControls() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            document.querySelectorAll('.voice-dictate-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = btn.getAttribute('data-target');
+                    const targetInput = document.getElementById(targetId);
+                    if (!targetInput) return;
+
+                    if (!SpeechRecognition) {
+                        this.showToast('Голосовой ввод не поддерживается вашим браузером.', 'error');
+                        return;
+                    }
+
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'ru-RU';
+                    recognition.interimResults = false;
+
+                    btn.classList.add('listening');
+                    this.showToast('🎤 Говорите...', 'info');
+
+                    recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        if (targetInput.value) {
+                            targetInput.value += ' ' + transcript;
+                        } else {
+                            targetInput.value = transcript;
+                        }
+                        targetInput.dispatchEvent(new Event('input'));
+                        this.showToast(`Распознано: "${transcript}"`, 'success');
+                    };
+
+                    recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.showToast('Ошибка голосового ввода.', 'error');
+                    };
+
+                    recognition.onend = () => {
+                        btn.classList.remove('listening');
+                    };
+
+                    recognition.start();
+                });
+            });
+        },
+
         setupPWA() {
+            const pwaBanner = document.getElementById('pwaInstallBanner');
+            const pwaBannerInstallBtn = document.getElementById('pwaBannerInstallBtn');
+            const pwaBannerCloseBtn = document.getElementById('pwaBannerCloseBtn');
+
+            pwaBannerCloseBtn?.addEventListener('click', () => {
+                pwaBanner?.classList.add('hidden');
+            });
+
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 this.state.deferredPrompt = e;
+
+                // Show automatic banner overlay at launch if not installed
+                if (pwaBanner) pwaBanner.classList.remove('hidden');
+
                 const installBtn = document.getElementById('pwaInstallBtn');
-                if (installBtn) {
-                    installBtn.classList.remove('hidden');
-                    installBtn.addEventListener('click', () => {
-                        installBtn.classList.add('hidden');
-                        this.state.deferredPrompt.prompt();
-                        this.state.deferredPrompt.userChoice.then(() => {
-                            this.state.deferredPrompt = null;
-                        });
+                if (installBtn) installBtn.classList.remove('hidden');
+
+                const handleInstall = () => {
+                    pwaBanner?.classList.add('hidden');
+                    if (installBtn) installBtn.classList.add('hidden');
+                    this.state.deferredPrompt.prompt();
+                    this.state.deferredPrompt.userChoice.then(() => {
+                        this.state.deferredPrompt = null;
                     });
-                }
+                };
+
+                installBtn?.addEventListener('click', handleInstall);
+                pwaBannerInstallBtn?.addEventListener('click', handleInstall);
             });
 
             if ('serviceWorker' in navigator) {
@@ -671,6 +771,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(reg => console.log('SW Registered', reg))
                     .catch(err => console.error('SW Fail', err));
             }
+        },
+
+        pluralize(number, titles) {
+            const cases = [2, 0, 1, 1, 1, 2];
+            return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
         },
 
         showToast(message, type = 'info') {
@@ -685,7 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 3500);
         },
 
         escapeHtml(str) {
