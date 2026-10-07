@@ -233,7 +233,14 @@ body {
     color: var(--text-primary);
 }
 
-.app-title span {
+.app-title .full-title span {
+    color: var(--accent-red);
+}
+
+.app-title .short-title {
+    display: none;
+    font-size: 0.95rem;
+    font-weight: 800;
     color: var(--accent-red);
 }
 
@@ -1426,4 +1433,83 @@ body.compact-mode #compactViewToggleBtn {
     background-color: var(--accent-blue);
     color: #ffffff;
     border-color: var(--accent-blue);
+}
+
+/* Compact header elements to maximize visible organization cards */
+body.compact-mode .full-title {
+    display: none !important;
+}
+
+body.compact-mode .short-title {
+    display: inline-block !important;
+}
+
+body.compact-mode .app-container {
+    padding-top: 6px;
+    padding-bottom: 20px;
+}
+
+body.compact-mode .app-header {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+
+body.compact-mode .header-top {
+    margin-bottom: 8px;
+}
+
+body.compact-mode .brand-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+}
+
+body.compact-mode .brand-icon {
+    width: 18px;
+    height: 18px;
+}
+
+body.compact-mode .technician-badge {
+    font-size: 0.65rem;
+}
+
+body.compact-mode .stats-card {
+    padding: 6px 8px;
+}
+
+body.compact-mode .stat-number {
+    font-size: 1.1rem;
+}
+
+body.compact-mode .stat-label {
+    font-size: 0.62rem;
+}
+
+body.compact-mode .stat-divider {
+    height: 20px;
+}
+
+body.compact-mode .controls-bar {
+    margin-bottom: 8px;
+}
+
+body.compact-mode .search-box input {
+    padding: 8px 32px 8px 36px;
+    font-size: 0.82rem;
+}
+
+body.compact-mode .search-icon {
+    left: 10px;
+    width: 16px;
+    height: 16px;
+}
+
+body.compact-mode .main-tabs {
+    padding: 4px;
+    margin-bottom: 10px;
+}
+
+body.compact-mode .tab-btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
 }
