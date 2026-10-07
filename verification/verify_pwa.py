@@ -76,9 +76,15 @@ def run_test():
 
             page.click("#forceRefreshBtn")
             page.wait_for_timeout(800)
-            page.screenshot(path="verification/16_after_force_refresh.png")
 
-            print("Force refresh button verified successfully!")
+            # Go to Unvisited tab and click on an organization title to open history modal
+            page.click("button[data-tab='unvisited']")
+            page.wait_for_selector("#tabUnvisited.active")
+            page.locator(".point-title").first.click()
+            page.wait_for_selector("#pointHistoryModal:not(.hidden)", timeout=3000)
+            page.screenshot(path="verification/17_point_history_modal_open.png")
+
+            print("Organization history modal verified successfully!")
 
             browser.close()
             print("Playwright verification completed successfully!")

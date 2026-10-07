@@ -186,6 +186,83 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('closeCalendarModalBtn')?.addEventListener('click', () => this.closeCalendarModal());
             document.getElementById('calPrevMonthBtn')?.addEventListener('click', () => this.changeCalendarMonth(-1));
             document.getElementById('calNextMonthBtn')?.addEventListener('click', () => this.changeCalendarMonth(1));
+
+            // Point History Modal Triggers
+            document.getElementById('closePointHistoryModalBtn')?.addEventListener('click', () => this.closePointHistoryModal());
+            document.getElementById('closePointHistoryModalBottomBtn')?.addEventListener('click', () => this.closePointHistoryModal());
+        },
+
+        openPointHistoryModal(pointId) {
+            const point = this.state.points.find(p => p.id === pointId);
+            if (!point) return;
+
+            document.getElementById('pointHistoryModalName').textContent = point.name;
+            document.getElementById('pointHistoryModalAddress').textContent = point.address;
+            document.getElementById('pointHistoryModalSim').textContent = `SIM: ${point.sim_number}`;
+
+            const pointVisits = this.state.visits.filter(v => v.point_id === pointId);
+            pointVisits.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
+
+            const totalVisits = pointVisits.length;
+            const totalDefects = pointVisits.filter(v => v.has_defects).length;
+
+            document.getElementById('pointHistoryModalTotalVisits').textContent = totalVisits;
+            document.getElementById('pointHistoryModalTotalDefects').textContent = totalDefects;
+
+            const timelineEl = document.getElementById('pointHistoryModalTimeline');
+            if (timelineEl) {
+                if (pointVisits.length === 0) {
+                    timelineEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <h4>История проверок пуста</h4>
+                            <p>По данной организации еще не было зафиксировано ни одного визита.</p>
+                        </div>
+                    `;
+                } else {
+                    timelineEl.innerHTML = pointVisits.map(v => {
+                        const visitDate = new Date(v.visited_at);
+                        const dateFormatted = visitDate.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        const timeFormatted = visitDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+                        return `
+                            <div class="history-item">
+                                <div class="history-header">
+                                    <div>
+                                        <div style="font-size:0.82rem; color:var(--text-muted);">
+                                            Инженер: <b>${this.escapeHtml(v.technician || 'Инженер ТО')}</b>
+                                        </div>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <span class="history-date">${dateFormatted}</span>
+                                        <div style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono); font-weight:700;">
+                                            ⏱️ ${timeFormatted}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                ${v.has_defects ? `
+                                    <div class="history-defects-tag">
+                                        ⚠️ Зафиксированы недостатки: ${this.escapeHtml(v.defects_description || 'Без описания')}
+                                    </div>
+                                ` : '<div style="font-size:0.8rem; color:var(--accent-green); margin-top:4px;">✓ Замечаний нет</div>'}
+
+                                ${v.notes ? `
+                                    <div class="history-notes">
+                                        📝 ${this.escapeHtml(v.notes)}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            document.getElementById('pointHistoryModal')?.classList.remove('hidden');
+        },
+
+        closePointHistoryModal() {
+            document.getElementById('pointHistoryModal')?.classList.add('hidden');
         },
 
         openCalendarModal() {
@@ -500,6 +577,16 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         attachCardEventListeners() {
+            document.querySelectorAll('.point-title').forEach(titleEl => {
+                titleEl.addEventListener('click', (e) => {
+                    const card = e.currentTarget.closest('.point-card');
+                    if (card) {
+                        const pointId = card.getAttribute('data-id');
+                        if (pointId) this.openPointHistoryModal(pointId);
+                    }
+                });
+            });
+
             document.querySelectorAll('.mark-visit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const pointId = e.currentTarget.getAttribute('data-id');

@@ -532,6 +532,35 @@ body {
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.3;
+    cursor: pointer;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.point-title:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
+.history-modal-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.stat-pill {
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-pill.urgent {
+    border-color: rgba(239, 68, 68, 0.4);
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
 }
 
 .sim-badge {

@@ -262,6 +262,36 @@
         </main>
     </div>
 
+    <!-- Modal: Point History & Defects -->
+    <div id="pointHistoryModal" class="modal-backdrop hidden">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-header">
+                <h3>📜 История проверок и замечаний</h3>
+                <button class="modal-close" id="closePointHistoryModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="point-summary-box">
+                    <h4 id="pointHistoryModalName">Название организации</h4>
+                    <p id="pointHistoryModalAddress" class="summary-address">Адрес объекта</p>
+                    <div class="sim-badge-container">
+                        <span class="sim-badge" id="pointHistoryModalSim">SIM: +7 (900) 000-00-00</span>
+                    </div>
+                </div>
+
+                <div class="history-modal-stats">
+                    <div class="stat-pill"><span id="pointHistoryModalTotalVisits">0</span> посещений</div>
+                    <div class="stat-pill urgent"><span id="pointHistoryModalTotalDefects">0</span> замечаний</div>
+                </div>
+
+                <div id="pointHistoryModalTimeline" class="history-timeline" style="margin-top: 16px;"></div>
+
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="button" class="btn secondary-btn" id="closePointHistoryModalBottomBtn">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Mark Visit -->
     <div id="visitModal" class="modal-backdrop hidden">
         <div class="modal-dialog">
