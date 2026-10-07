@@ -44,12 +44,23 @@ def run_test():
             date_picker = page.locator("#historyDatePicker")
             assert date_picker.is_visible(), "History date picker not found!"
 
-            # Filter by today's date using 'Сегодня' button
-            page.click("#historyTodayBtn")
-            page.wait_for_timeout(500)
-            page.screenshot(path="verification/11_history_filtered_today.png")
+            # Test graphical calendar modal
+            page.click("#openCalendarModalBtn")
+            page.wait_for_selector("#calendarModal:not(.hidden)", timeout=3000)
+            page.screenshot(path="verification/11_calendar_modal_open.png")
 
-            print("History calendar filtering verified.")
+            # Click prev/next month
+            page.click("#calPrevMonthBtn")
+            page.wait_for_timeout(300)
+            page.click("#calNextMonthBtn")
+            page.wait_for_timeout(300)
+
+            # Select a day cell
+            page.locator(".cal-day-cell:not(.empty-day)").first.click()
+            page.wait_for_selector("#calendarModal", state="hidden", timeout=3000)
+            page.screenshot(path="verification/12_calendar_day_selected.png")
+
+            print("Graphical calendar modal tested successfully!")
 
             browser.close()
             print("Playwright verification completed successfully!")

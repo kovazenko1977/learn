@@ -193,6 +193,7 @@
                         <p class="history-subtitle">Выберите дату в календаре для просмотра посещений за день</p>
                     </div>
                     <div class="history-date-picker-box">
+                        <button type="button" class="btn primary-btn small" id="openCalendarModalBtn">📆 Графический календарь</button>
                         <label for="historyDatePicker">📅 Выбор даты:</label>
                         <input type="date" id="historyDatePicker" class="form-control date-picker-input">
                         <button type="button" class="btn secondary-btn small" id="historyTodayBtn">Сегодня</button>
@@ -310,6 +311,34 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Graphical Calendar -->
+    <div id="calendarModal" class="modal-backdrop hidden">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-header">
+                <h3>📆 Графический календарь посещений</h3>
+                <button class="modal-close" id="closeCalendarModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="calendar-header-nav">
+                    <button type="button" class="btn secondary-btn small" id="calPrevMonthBtn">&larr; Предыдущий</button>
+                    <h4 id="calMonthYearTitle" class="calendar-month-title">Март 2025</h4>
+                    <button type="button" class="btn secondary-btn small" id="calNextMonthBtn">Следующий &rarr;</button>
+                </div>
+                <div class="calendar-grid-container">
+                    <div class="calendar-weekdays">
+                        <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+                    </div>
+                    <div id="calendarDaysGrid" class="calendar-days-grid"></div>
+                </div>
+                <div class="calendar-legend">
+                    <span class="legend-item"><span class="dot dot-success"></span> Есть посещения</span>
+                    <span class="legend-item"><span class="dot dot-danger"></span> Были недостатки</span>
+                    <span class="legend-item"><span class="dot dot-today"></span> Сегодня</span>
+                </div>
             </div>
         </div>
     </div>

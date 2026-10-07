@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
             searchQuery: '',
             historyFilter: 'all',
             historySelectedDate: '', // Filter history by selected date (YYYY-MM-DD)
+            calendarViewYear: new Date().getFullYear(),
+            calendarViewMonth: new Date().getMonth(),
             deferredPrompt: null
         },
 
@@ -175,6 +177,104 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Voice today report button
             document.getElementById('voiceTodayBtn')?.addEventListener('click', () => this.speakTodaySummary());
+
+            // Graphical Calendar Modal
+            document.getElementById('openCalendarModalBtn')?.addEventListener('click', () => this.openCalendarModal());
+            document.getElementById('closeCalendarModalBtn')?.addEventListener('click', () => this.closeCalendarModal());
+            document.getElementById('calPrevMonthBtn')?.addEventListener('click', () => this.changeCalendarMonth(-1));
+            document.getElementById('calNextMonthBtn')?.addEventListener('click', () => this.changeCalendarMonth(1));
+        },
+
+        openCalendarModal() {
+            document.getElementById('calendarModal')?.classList.remove('hidden');
+            this.renderCalendarGrid();
+        },
+
+        closeCalendarModal() {
+            document.getElementById('calendarModal')?.classList.add('hidden');
+        },
+
+        changeCalendarMonth(offset) {
+            this.state.calendarViewMonth += offset;
+            if (this.state.calendarViewMonth < 0) {
+                this.state.calendarViewMonth = 11;
+                this.state.calendarViewYear -= 1;
+            } else if (this.state.calendarViewMonth > 11) {
+                this.state.calendarViewMonth = 0;
+                this.state.calendarViewYear += 1;
+            }
+            this.renderCalendarGrid();
+        },
+
+        renderCalendarGrid() {
+            const gridEl = document.getElementById('calendarDaysGrid');
+            const titleEl = document.getElementById('calMonthYearTitle');
+            if (!gridEl || !titleEl) return;
+
+            const year = this.state.calendarViewYear;
+            const month = this.state.calendarViewMonth;
+
+            const monthNames = [
+                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ];
+
+            titleEl.textContent = `${monthNames[month]} ${year}`;
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Monday = 0
+
+            let cellsHtml = '';
+
+            // Empty cells before 1st day of month
+            for (let i = 0; i < firstDayIndex; i++) {
+                cellsHtml += `<div class="cal-day-cell empty-day"></div>`;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayVisits = this.state.visits.filter(v => v.visited_at && v.visited_at.startsWith(dateStr));
+                const count = dayVisits.length;
+                const hasDefects = dayVisits.some(v => v.has_defects);
+
+                const isToday = dateStr === todayStr;
+                const isSelected = dateStr === this.state.historySelectedDate;
+
+                let indicatorHtml = '';
+                if (count > 0) {
+                    indicatorHtml = `
+                        <div class="cal-day-dots">
+                            <span class="dot ${hasDefects ? 'dot-danger' : 'dot-success'}"></span>
+                        </div>
+                        <span class="cal-count-badge ${hasDefects ? 'has-defects' : 'clean-visits'}">${count}</span>
+                    `;
+                } else if (isToday) {
+                    indicatorHtml = `<div class="cal-day-dots"><span class="dot dot-today"></span></div>`;
+                }
+
+                cellsHtml += `
+                    <div class="cal-day-cell ${isToday ? 'is-today' : ''} ${isSelected ? 'is-selected' : ''}" data-date="${dateStr}">
+                        <span class="cal-day-num">${day}</span>
+                        ${indicatorHtml}
+                    </div>
+                `;
+            }
+
+            gridEl.innerHTML = cellsHtml;
+
+            // Day click listener
+            gridEl.querySelectorAll('.cal-day-cell:not(.empty-day)').forEach(cell => {
+                cell.addEventListener('click', (e) => {
+                    const dateStr = e.currentTarget.getAttribute('data-date');
+                    this.state.historySelectedDate = dateStr;
+                    const historyDatePicker = document.getElementById('historyDatePicker');
+                    if (historyDatePicker) historyDatePicker.value = dateStr;
+                    this.closeCalendarModal();
+                    this.switchTab('history');
+                });
+            });
         },
 
         switchTab(tabName) {
