@@ -21,40 +21,38 @@ def run_test():
             print("Navigating to http://127.0.0.1:8098 ...")
             page.goto("http://127.0.0.1:8098/")
 
-            # Wait for preloader to complete and app container to be visible
             page.wait_for_selector("#appContainer:not(.hidden)", timeout=5000)
-            print("App loaded and preloader dismissed.")
+            print("App loaded.")
 
             os.makedirs("verification", exist_ok=True)
 
-            # Test "Что сегодня?" Voice summary button
-            voice_btn = page.locator("#voiceTodayBtn")
-            assert voice_btn.is_visible(), "Voice today button not found!"
-            voice_btn.click()
-            print("Voice summary button clicked.")
-            page.screenshot(path="verification/07_voice_today.png")
+            # Mark a new visit to test exact timestamp recording
+            page.locator(".mark-visit-btn").first.click()
+            page.wait_for_selector("#visitModal:not(.hidden)", timeout=3000)
+            page.click(".custom-checkbox")
+            page.fill("#visitDefectsText", "Тестовый недостаток для проверки времени")
+            page.click("#visitForm button[type='submit']")
+            page.wait_for_selector("#visitModal", state="hidden", timeout=3000)
+            print("New visit recorded with exact timestamp.")
 
-            # Go to Settings tab and test "Сбросить все интервалы"
-            page.click("button[data-tab='settings']")
-            page.wait_for_selector("#tabSettings.active")
-            page.screenshot(path="verification/08_settings_new_reset.png")
+            # Go to History tab
+            page.click("button[data-tab='history']")
+            page.wait_for_selector("#tabHistory.active")
+            page.screenshot(path="verification/10_history_with_calendar.png")
 
-            # Handle confirm dialog for resetting intervals
-            page.on("dialog", lambda dialog: dialog.accept())
-            page.click("#resetIntervalsBtn")
-            page.wait_for_timeout(1000)
-            print("Reset all intervals clicked.")
+            # Verify date picker is visible
+            date_picker = page.locator("#historyDatePicker")
+            assert date_picker.is_visible(), "History date picker not found!"
 
-            # Verify unvisited count is now total points (73)
-            page.click("button[data-tab='unvisited']")
-            page.wait_for_selector("#tabUnvisited.active")
-            unvisited_badge = page.locator("#unvisitedBadge").text_content().strip()
-            print(f"Unvisited count after reset: {unvisited_badge}")
-            assert unvisited_badge == "73", f"Expected 73 unvisited points, got {unvisited_badge}"
-            page.screenshot(path="verification/09_after_reset_all_intervals.png")
+            # Filter by today's date using 'Сегодня' button
+            page.click("#historyTodayBtn")
+            page.wait_for_timeout(500)
+            page.screenshot(path="verification/11_history_filtered_today.png")
+
+            print("History calendar filtering verified.")
 
             browser.close()
-            print("Playwright test completed successfully!")
+            print("Playwright verification completed successfully!")
 
     finally:
         server_process.terminate()

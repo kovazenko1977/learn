@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTab: 'unvisited',
             searchQuery: '',
             historyFilter: 'all',
+            historySelectedDate: '', // Filter history by selected date (YYYY-MM-DD)
             deferredPrompt: null
         },
 
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.renderLists();
             });
 
-            // History filter pills
+            // History filter pills & date picker
             document.querySelectorAll('.pill-btn').forEach(pill => {
                 pill.addEventListener('click', (e) => {
                     document.querySelectorAll('.pill-btn').forEach(p => p.classList.remove('active'));
@@ -112,6 +113,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.state.historyFilter = e.currentTarget.getAttribute('data-filter');
                     this.renderHistory();
                 });
+            });
+
+            const historyDatePicker = document.getElementById('historyDatePicker');
+            historyDatePicker?.addEventListener('change', (e) => {
+                this.state.historySelectedDate = e.target.value;
+                this.renderHistory();
+            });
+
+            document.getElementById('historyTodayBtn')?.addEventListener('click', () => {
+                const today = new Date().toISOString().split('T')[0];
+                if (historyDatePicker) historyDatePicker.value = today;
+                this.state.historySelectedDate = today;
+                this.renderHistory();
+            });
+
+            document.getElementById('historyResetDateBtn')?.addEventListener('click', () => {
+                if (historyDatePicker) historyDatePicker.value = '';
+                this.state.historySelectedDate = '';
+                this.renderHistory();
             });
 
             // Add Point Modal triggers
@@ -337,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-header">
                         <div class="point-title">${this.escapeHtml(point.name)}</div>
                         <div class="sim-badge" title="Привязанный номер SIM-карты">
-                            <svg class="sim-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="8.01" y2="6"/><line x1="16" y1="6" x2="16.01" y2="6"/><line x1="12" y1="6" x2="12.01" y2="6"/></svg>
                             SIM: ${this.escapeHtml(point.sim_number)}
                         </div>
                     </div>
@@ -547,25 +566,35 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!historyListEl) return;
 
             let visits = [...this.state.visits];
+
+            // Filter by selected date if set (YYYY-MM-DD)
+            if (this.state.historySelectedDate) {
+                visits = visits.filter(v => v.visited_at && v.visited_at.startsWith(this.state.historySelectedDate));
+            }
+
             if (this.state.historyFilter === 'defects') {
                 visits = visits.filter(v => v.has_defects);
             }
 
             if (visits.length === 0) {
+                const dateMsg = this.state.historySelectedDate
+                    ? `За ${new Date(this.state.historySelectedDate).toLocaleDateString('ru-RU')} посещений не зафиксировано.`
+                    : 'Записи проверок не найдены.';
                 historyListEl.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📖</div>
-                        <h4>История пустовала</h4>
-                        <p>Записи проверок не найдены.</p>
+                        <div class="empty-state-icon">📅</div>
+                        <h4>Нет записей за выбранную дату</h4>
+                        <p>${dateMsg}</p>
                     </div>
                 `;
                 return;
             }
 
             historyListEl.innerHTML = visits.map(v => {
-                const dateStr = new Date(v.visited_at).toLocaleString('ru-RU', {
-                    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-                });
+                const visitDate = new Date(v.visited_at);
+                const dateFormatted = visitDate.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const timeFormatted = visitDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
                 return `
                     <div class="history-item">
                         <div class="history-header">
@@ -575,7 +604,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     SIM: <b style="color:var(--accent-blue);">${this.escapeHtml(v.sim_number)}</b> | Инженер: ${this.escapeHtml(v.technician || 'Инженер ТО')}
                                 </div>
                             </div>
-                            <span class="history-date">${dateStr}</span>
+                            <div style="text-align:right;">
+                                <span class="history-date">${dateFormatted}</span>
+                                <div style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono); font-weight:700;">
+                                    ⏱️ ${timeFormatted}
+                                </div>
+                            </div>
                         </div>
 
                         ${v.has_defects ? `

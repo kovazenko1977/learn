@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "id": "v_1791377647_536",
+        "point_id": "pt_001",
+        "sim_number": "5005766",
+        "point_name": "Экрум",
+        "visited_at": "2026-10-07 12:54:07",
+        "has_defects": true,
+        "defects_description": "Тестовый недостаток для проверки времени",
+        "notes": "",
+        "technician": "Иванов Алексей Петрович"
+    }
+]

@@ -188,11 +188,20 @@
             <!-- Visit History Log -->
             <section id="tabHistory" class="tab-panel">
                 <div class="history-controls">
-                    <h3>Журнал проверок и заметок</h3>
-                    <div class="filter-pills">
-                        <button class="pill-btn active" data-filter="all">Все записи</button>
-                        <button class="pill-btn" data-filter="defects">⚠️ С недостатками</button>
+                    <div>
+                        <h3>Журнал проверок и заметок</h3>
+                        <p class="history-subtitle">Выберите дату в календаре для просмотра посещений за день</p>
                     </div>
+                    <div class="history-date-picker-box">
+                        <label for="historyDatePicker">📅 Выбор даты:</label>
+                        <input type="date" id="historyDatePicker" class="form-control date-picker-input">
+                        <button type="button" class="btn secondary-btn small" id="historyTodayBtn">Сегодня</button>
+                        <button type="button" class="btn secondary-btn small" id="historyResetDateBtn">Все даты</button>
+                    </div>
+                </div>
+                <div class="filter-pills">
+                    <button class="pill-btn active" data-filter="all">Все записи</button>
+                    <button class="pill-btn" data-filter="defects">⚠️ С недостатками</button>
                 </div>
                 <div id="historyList" class="history-timeline"></div>
             </section>
@@ -261,7 +270,6 @@
                     <p id="visitModalPointAddress" class="summary-address">Адрес объекта</p>
                     <div class="sim-badge-container">
                         <span class="sim-chip">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="8.01" y2="6"/><line x1="16" y1="6" x2="16.01" y2="6"/><line x1="12" y1="6" x2="12.01" y2="6"/><line x1="8" y1="10" x2="8.01" y2="10"/><line x1="16" y1="10" x2="16.01" y2="10"/><line x1="12" y1="10" x2="12.01" y2="10"/></svg>
                             <span id="visitModalSimNumber">SIM: +7 (900) 000-00-00</span>
                         </span>
                     </div>
