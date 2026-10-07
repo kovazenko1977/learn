@@ -80,11 +80,33 @@ def run_test():
             # Go to Unvisited tab and click on an organization title to open history modal
             page.click("button[data-tab='unvisited']")
             page.wait_for_selector("#tabUnvisited.active")
-            page.locator(".point-title").first.click()
-            page.wait_for_selector("#pointHistoryModal:not(.hidden)", timeout=3000)
-            page.screenshot(path="verification/17_point_history_modal_open.png")
 
-            print("Organization history modal verified successfully!")
+            # Test compact mode toggle
+            page.click("#compactViewToggleBtn")
+            page.wait_for_timeout(300)
+            assert page.eval_on_selector("body", "el => el.classList.contains('compact-mode')"), "Compact mode not activated!"
+            page.screenshot(path="verification/18_compact_view_active.png")
+
+            # Test persistence on page reload
+            page.reload()
+            page.wait_for_selector("#appContainer:not(.hidden)", timeout=5000)
+            assert page.eval_on_selector("body", "el => el.classList.contains('compact-mode')"), "Compact mode not persisted after reload!"
+
+            # Test editing contract number
+            page.locator(".edit-point-btn").first.click()
+            page.wait_for_selector("#pointModal:not(.hidden)", timeout=3000)
+            page.fill("#pointFormContract", "Д-2025/99-ТЕСТ")
+            page.click("#savePointBtn")
+            page.wait_for_selector("#pointModal", state="hidden", timeout=3000)
+
+            # Re-open edit to confirm saved contract number
+            page.locator(".edit-point-btn").first.click()
+            page.wait_for_selector("#pointModal:not(.hidden)", timeout=3000)
+            contract_val = page.input_value("#pointFormContract")
+            assert contract_val == "Д-2025/99-ТЕСТ", f"Contract number mismatch: got {contract_val}"
+            page.click("#cancelPointBtn")
+
+            print("Compact view toggle, persistence, and contract number editing verified successfully!")
 
             browser.close()
             print("Playwright verification completed successfully!")

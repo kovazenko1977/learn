@@ -76,6 +76,9 @@
                     <button class="icon-btn voice-report-btn" id="voiceTodayBtn" title="Голосовой отчет о визитах за сегодня">
                         🔊 <span class="btn-voice-label">Что сегодня?</span>
                     </button>
+                    <button class="icon-btn" id="compactViewToggleBtn" title="Компактный мобильный вид (Скрыть детали для вместимости)">
+                        📱
+                    </button>
                     <button class="icon-btn" id="themeToggleBtn" title="Сменить тему">
                         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
                         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -396,13 +399,18 @@
                         <input type="text" id="pointFormName" class="form-control" required placeholder="Например: ТЦ «Гранит» — Главный вент узел">
                     </div>
 
-                    <div class="form-group">
-                        <label for="pointFormSim">Номер SIM-карты (Идентификатор) *</label>
-                        <div class="input-with-icon">
-                            <span class="input-icon">📱</span>
-                            <input type="text" id="pointFormSim" class="form-control" required placeholder="+7 (901) 123-45-67">
+                    <div class="form-row">
+                        <div class="form-group col-6">
+                            <label for="pointFormSim">Номер SIM-карты *</label>
+                            <div class="input-with-icon">
+                                <span class="input-icon">📱</span>
+                                <input type="text" id="pointFormSim" class="form-control" required placeholder="+7 (901) 123-45-67">
+                            </div>
                         </div>
-                        <small class="form-help">Привязанный номер SIM-карты, установленной в приборе/передатчике точки.</small>
+                        <div class="form-group col-6">
+                            <label for="pointFormContract">Номер договора</label>
+                            <input type="text" id="pointFormContract" class="form-control" placeholder="Д-2025/01-А">
+                        </div>
                     </div>
 
                     <div class="form-group">

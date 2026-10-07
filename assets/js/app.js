@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.initPreloader();
             this.bindEvents();
             this.loadTheme();
+            this.loadCompactMode();
             this.fetchData();
             this.setupPWA();
             this.setupVoiceControls();
@@ -86,6 +87,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Theme toggle
             document.getElementById('themeToggleBtn')?.addEventListener('click', () => this.toggleTheme());
+
+            // Compact view toggle
+            document.getElementById('compactViewToggleBtn')?.addEventListener('click', () => this.toggleCompactMode());
 
             // Search input
             const searchInput = document.getElementById('searchInput');
@@ -389,6 +393,21 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.setAttribute('data-theme', savedTheme);
         },
 
+        toggleCompactMode() {
+            const isCompact = document.body.classList.toggle('compact-mode');
+            localStorage.setItem('pwa_compact_mode', isCompact ? 'true' : 'false');
+            this.showToast(isCompact ? '📱 Компактный вид включен' : '📱 Стандартный вид включен', 'info');
+        },
+
+        loadCompactMode() {
+            const isCompact = localStorage.getItem('pwa_compact_mode') === 'true';
+            if (isCompact) {
+                document.body.classList.add('compact-mode');
+            } else {
+                document.body.classList.remove('compact-mode');
+            }
+        },
+
         isPointVisited(pointId) {
             const visitsForPoint = this.state.visits.filter(v => v.point_id === pointId);
             if (visitsForPoint.length === 0) return false;
@@ -547,6 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     <div class="point-details">
+                        ${point.contract_number ? `<span class="detail-tag">📄 Договор: ${this.escapeHtml(point.contract_number)}</span>` : ''}
                         ${point.equipment_type ? `<span class="detail-tag">⚙️ ${this.escapeHtml(point.equipment_type)}</span>` : ''}
                         ${point.contact_person ? `<span class="detail-tag">👤 ${this.escapeHtml(point.contact_person)} ${point.contact_phone ? '(' + this.escapeHtml(point.contact_phone) + ')' : ''}</span>` : ''}
                     </div>
@@ -556,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>${statusBadge}</div>
                     </div>
 
-                    ${point.notes ? `<div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">💡 ${this.escapeHtml(point.notes)}</div>` : ''}
+                    ${point.notes ? `<div class="point-notes-preview" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">💡 ${this.escapeHtml(point.notes)}</div>` : ''}
 
                     <div class="card-actions">
                         <button class="btn success-btn mark-visit-btn" data-id="${point.id}">
@@ -708,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('pointFormId').value = point.id;
                 document.getElementById('pointFormName').value = point.name || '';
                 document.getElementById('pointFormSim').value = point.sim_number || '';
+                document.getElementById('pointFormContract').value = point.contract_number || '';
                 document.getElementById('pointFormAddress').value = point.address || '';
                 document.getElementById('pointFormEquipment').value = point.equipment_type || '';
                 document.getElementById('pointFormContactPerson').value = point.contact_person || '';
@@ -735,6 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 id: id,
                 name: document.getElementById('pointFormName').value,
                 sim_number: document.getElementById('pointFormSim').value,
+                contract_number: document.getElementById('pointFormContract').value,
                 address: document.getElementById('pointFormAddress').value,
                 equipment_type: document.getElementById('pointFormEquipment').value,
                 contact_person: document.getElementById('pointFormContactPerson').value,

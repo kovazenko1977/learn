@@ -1362,3 +1362,68 @@ body {
     align-items: center;
     gap: 6px;
 }
+
+/* Compact Mobile View Mode */
+body.compact-mode .section-banner {
+    display: none !important;
+}
+
+body.compact-mode .cards-grid {
+    gap: 6px;
+}
+
+body.compact-mode .point-card {
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+}
+
+body.compact-mode .card-header {
+    margin-bottom: 4px;
+    gap: 8px;
+}
+
+body.compact-mode .sim-badge {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+}
+
+body.compact-mode .point-title {
+    font-size: 0.92rem;
+}
+
+body.compact-mode .point-address {
+    margin-bottom: 4px;
+    font-size: 0.78rem;
+}
+
+body.compact-mode .point-address svg {
+    width: 14px;
+    height: 14px;
+}
+
+body.compact-mode .point-details,
+body.compact-mode .last-visit-info,
+body.compact-mode .point-notes-preview {
+    display: none !important;
+}
+
+body.compact-mode .card-actions {
+    margin-top: 6px;
+    gap: 6px;
+}
+
+body.compact-mode .card-actions .btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+}
+
+body.compact-mode .card-actions .btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+body.compact-mode #compactViewToggleBtn {
+    background-color: var(--accent-blue);
+    color: #ffffff;
+    border-color: var(--accent-blue);
+}

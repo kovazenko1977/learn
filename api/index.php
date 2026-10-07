@@ -46,10 +46,13 @@ try {
                 exit;
             }
 
+            $contract_number = trim($input['contract_number'] ?? '');
+
             $pointData = [
                 'name' => $name,
                 'address' => $address,
                 'sim_number' => $sim_number,
+                'contract_number' => $contract_number,
                 'equipment_type' => $equipment_type,
                 'contact_person' => $contact_person,
                 'contact_phone' => $contact_phone,
