@@ -1,62 +1,732 @@
 [
-    {
-        "id": "pt_001",
-        "name": "ТЦ «Гранит» — Главный вент узел",
-        "address": "ул. Центральная, д. 15",
-        "sim_number": "+7 (901) 100-20-01",
-        "equipment_type": "Пожарная сигнализация (АПС)",
-        "contact_person": "Петров В.С.",
-        "contact_phone": "+7 (911) 222-33-44",
-        "notes": "Доступ через пост охраны, ключ №12"
-    },
-    {
-        "id": "pt_002",
-        "name": "Складской комплекс «Логистик-Юг»",
-        "address": "Промзона №3, проезд Индустриальный, д. 8",
-        "sim_number": "+7 (901) 100-20-02",
-        "equipment_type": "Охранная сигнализация и КТС",
-        "contact_person": "Сидоров М.И.",
-        "contact_phone": "+7 (921) 333-44-55",
-        "notes": "При въезде предьявить удостоверение"
-    },
-    {
-        "id": "pt_003",
-        "name": "Аптечная сеть «Здоровье» — Офис",
-        "address": "просп. Мира, д. 102",
-        "sim_number": "+7 (901) 100-20-03",
-        "equipment_type": "Комплекс АПС и СОУЭ",
-        "contact_person": "Егорова Н.В.",
-        "contact_phone": "+7 (931) 444-55-66",
-        "notes": "Рабочее время: 08:00 - 20:00"
-    },
-    {
-        "id": "pt_004",
-        "name": "Детский сад №42 «Сказка»",
-        "address": "ул. Лесная, д. 24",
-        "sim_number": "+7 (901) 100-20-04",
-        "equipment_type": "Пожарная сигнализация и молниезащита",
-        "contact_person": "Завхоз Анна Павловна",
-        "contact_phone": "+7 (941) 555-66-77",
-        "notes": "Посещение во время тихого часа недопустимо (13:00-15:00)"
-    },
-    {
-        "id": "pt_005",
-        "name": "Бизнес Центр «Авангард»",
-        "address": "ул. Советская, д. 50, корпус 2",
-        "sim_number": "+7 (901) 100-20-05",
-        "equipment_type": "Охранно-пожарная система (ОПС)",
-        "contact_person": "Диспетчер БЦ",
-        "contact_phone": "+7 (951) 666-77-88",
-        "notes": "Главный пульт на 1 этаже"
-    },
-    {
-        "id": "pt_006",
-        "name": "Автосервис «Форсаж»",
-        "address": "Шоссе Энтузиастов, д. 77",
-        "sim_number": "+7 (901) 100-20-06",
-        "equipment_type": "КТС (Кнопка тревожной сигнализации)",
-        "contact_person": "Мастер цеха Сергей",
-        "contact_phone": "+7 (961) 777-88-99",
-        "notes": "Проверка КТС с согласованием с дежурным ПЦО"
-    }
+  {
+    "id": "pt_001",
+    "name": "Экрум",
+    "address": "Борисов",
+    "sim_number": "5005766",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_002",
+    "name": "Рбу",
+    "address": "Борисов",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_003",
+    "name": "Гараж",
+    "address": "Пруды",
+    "sim_number": "5003903",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_004",
+    "name": "Лесничество",
+    "address": "Пруды",
+    "sim_number": "5006253",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_005",
+    "name": "Технокорм",
+    "address": "Борисов",
+    "sim_number": "5006232",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_006",
+    "name": "Полимерторг",
+    "address": "Борисов",
+    "sim_number": "37944",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_007",
+    "name": "Мастак",
+    "address": "Борисов,Демина",
+    "sim_number": "33115",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_008",
+    "name": "Дм.Мебель",
+    "address": "Борисов",
+    "sim_number": "5005943",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_009",
+    "name": "Светофор",
+    "address": "Борисов",
+    "sim_number": "5003049",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_010",
+    "name": "Лесхоз",
+    "address": "Неманица",
+    "sim_number": "29735",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_011",
+    "name": "Мдф",
+    "address": "Неманица",
+    "sim_number": "5005929",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_012",
+    "name": "Дрсу122",
+    "address": "Борисов",
+    "sim_number": "5003300",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_013",
+    "name": "Асфальт.Дрсу122",
+    "address": "Неманица",
+    "sim_number": "17878",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Договор: 29.08"
+  },
+  {
+    "id": "pt_014",
+    "name": "Пивной",
+    "address": "Борисов,Чапаева",
+    "sim_number": "29559",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_015",
+    "name": "Ажур.шторы",
+    "address": "Борисов",
+    "sim_number": "37343",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_016",
+    "name": "Аршин,шторы",
+    "address": "Борисов",
+    "sim_number": "5002837",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_017",
+    "name": "Людмила",
+    "address": "Борисов",
+    "sim_number": "5005685",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_018",
+    "name": "Овощной",
+    "address": "Борисов",
+    "sim_number": "5003283",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_019",
+    "name": "Лотос",
+    "address": "Борисов",
+    "sim_number": "5004641",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_020",
+    "name": "Белмедстекло",
+    "address": "Борисов",
+    "sim_number": "5003915",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_021",
+    "name": "Евроопт",
+    "address": "Лошница",
+    "sim_number": "5005494",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_022",
+    "name": "Мила",
+    "address": "Лошница",
+    "sim_number": "5001223",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_023",
+    "name": "Копеечка,WB",
+    "address": "Лошница",
+    "sim_number": "5004701",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_024",
+    "name": "АБК",
+    "address": "Велятичи",
+    "sim_number": "5005206",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_025",
+    "name": "Убойн.",
+    "address": "Велятичи",
+    "sim_number": "5038263",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_026",
+    "name": "АФТАБ",
+    "address": "Велятичи",
+    "sim_number": "5002657",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_027",
+    "name": "Лесничество",
+    "address": "Пчельник",
+    "sim_number": "5005079",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_028",
+    "name": "Лесхоз",
+    "address": "Борисов",
+    "sim_number": "5006229",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_029",
+    "name": "Лесхоз,гараж",
+    "address": "Борисов",
+    "sim_number": "35934",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_030",
+    "name": "Сладкоежка",
+    "address": "Борисов",
+    "sim_number": "5006060",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_031",
+    "name": "Доброцен,Гармония",
+    "address": "Борисов",
+    "sim_number": "5002236",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_032",
+    "name": "Дентаклиник",
+    "address": "Борисов",
+    "sim_number": "5004240",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_033",
+    "name": "Борисовгазстрой",
+    "address": "Борисов",
+    "sim_number": "5003933",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_034",
+    "name": "Региональная",
+    "address": "Борисов",
+    "sim_number": "12735",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_035",
+    "name": "Кофейня",
+    "address": "Борисов",
+    "sim_number": "5035953",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_036",
+    "name": "Рыбкины,НтФ",
+    "address": "Борисов",
+    "sim_number": "38164",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_037",
+    "name": "Веранда",
+    "address": "Борисов",
+    "sim_number": "5003651",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Договор: Ипр веранда вход"
+  },
+  {
+    "id": "pt_038",
+    "name": "Свинокомл.",
+    "address": "Негновичи",
+    "sim_number": "5000391",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Договор: 15.09"
+  },
+  {
+    "id": "pt_039",
+    "name": "Глеков",
+    "address": "Борисов",
+    "sim_number": "5006777",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Договор: 33-25П-ТО от20.10.2025"
+  },
+  {
+    "id": "pt_040",
+    "name": "Евроопт",
+    "address": "Ухолода",
+    "sim_number": "5005594",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_041",
+    "name": "Стоматолог.",
+    "address": "Минск",
+    "sim_number": "42903",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_042",
+    "name": "Мастак",
+    "address": "Минск",
+    "sim_number": "25972",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_043",
+    "name": "Магаз.северн.",
+    "address": "Борисов",
+    "sim_number": "5006891",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_044",
+    "name": "Евроопт",
+    "address": "Борисов,Ватути.",
+    "sim_number": "20708",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_045",
+    "name": "Евроопт",
+    "address": "Борисов,Пирог.",
+    "sim_number": "32539",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_046",
+    "name": "Евроопт",
+    "address": "Жодино",
+    "sim_number": "32329",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_047",
+    "name": "Мастак",
+    "address": "Могилев",
+    "sim_number": "7040499",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_048",
+    "name": "М1 мол.,транспортн",
+    "address": "Минск",
+    "sim_number": "46132",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_049",
+    "name": "СТБ",
+    "address": "Борисов",
+    "sim_number": "5002735",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_050",
+    "name": "Алеся",
+    "address": "Жодино",
+    "sim_number": "5001775",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_051",
+    "name": "Серверная",
+    "address": "Жодино",
+    "sim_number": "32017",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_052",
+    "name": "Магия вкуса",
+    "address": "Жодино",
+    "sim_number": "3910",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_053",
+    "name": "Мастак",
+    "address": "Жодино",
+    "sim_number": "5002584",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_054",
+    "name": "Виндовуд.оф",
+    "address": "Углы",
+    "sim_number": "5004502",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_055",
+    "name": "Виндовуд.произ",
+    "address": "Углы",
+    "sim_number": "5000775",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_056",
+    "name": "Тур,парик,7пятн.",
+    "address": "Борисов",
+    "sim_number": "5000525",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_057",
+    "name": "Цветы",
+    "address": "Борисов",
+    "sim_number": "5003244",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_058",
+    "name": "СУ153",
+    "address": "Борисов",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_059",
+    "name": "Церковь",
+    "address": "Плиса",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_060",
+    "name": "Лесхоз,камеры",
+    "address": "Неманица",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_061",
+    "name": "Дет.сад камер.",
+    "address": "Борисов",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_062",
+    "name": "Воен.лесничес.кам.",
+    "address": "Борисов",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_063",
+    "name": "Док\"камеры",
+    "address": "Борисов",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_064",
+    "name": "Лесхоз\"кам.",
+    "address": "Приямино",
+    "sim_number": "Б/Н (Интегрированная)",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_065",
+    "name": "Стадион",
+    "address": "Борисов",
+    "sim_number": "5005774",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_066",
+    "name": "Пуговка",
+    "address": "Жодино",
+    "sim_number": "5006599",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_067",
+    "name": "Бьюти коворкинг",
+    "address": "Жодино",
+    "sim_number": "5007014",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_068",
+    "name": "7пятниц",
+    "address": "Жодино",
+    "sim_number": "5006633",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Договор: 12-26пто 23.03.26"
+  },
+  {
+    "id": "pt_069",
+    "name": "Пом.3",
+    "address": "Жодино",
+    "sim_number": "5006600",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_070",
+    "name": "Рувд проспект",
+    "address": "г. Борисов",
+    "sim_number": "5006161",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_071",
+    "name": "Трояновка",
+    "address": "г. Борисов",
+    "sim_number": "5004924",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_072",
+    "name": "Солви плюс",
+    "address": "Углы",
+    "sim_number": "5007080",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  },
+  {
+    "id": "pt_073",
+    "name": "Стоянка М1",
+    "address": "г. Борисов",
+    "sim_number": "5005645",
+    "equipment_type": "АПС / ОПС / КТС",
+    "contact_person": "Ответственный по объекту",
+    "contact_phone": "",
+    "notes": "Объект на регламентном ТО"
+  }
 ]
