@@ -68,9 +68,17 @@ def run_test():
             page.on("dialog", lambda dialog: dialog.accept())
             page.locator(".cancel-visit-btn").first.click()
             page.wait_for_timeout(800)
-            page.screenshot(path="verification/14_after_visit_canceled.png")
 
-            print("SIM card position and Cancel Visit features verified successfully!")
+            # Go to Settings tab and test "Принудительно обновить данные"
+            page.click("button[data-tab='settings']")
+            page.wait_for_selector("#tabSettings.active")
+            page.screenshot(path="verification/15_settings_with_refresh_btn.png")
+
+            page.click("#forceRefreshBtn")
+            page.wait_for_timeout(800)
+            page.screenshot(path="verification/16_after_force_refresh.png")
+
+            print("Force refresh button verified successfully!")
 
             browser.close()
             print("Playwright verification completed successfully!")

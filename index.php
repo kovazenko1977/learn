@@ -238,8 +238,12 @@
                             <input type="text" id="companyNameInput" class="form-control" placeholder="Например: ООО «СпецПожСервис»">
                         </div>
 
-                        <div class="form-actions">
+                        <div class="form-actions" style="flex-wrap: wrap;">
                             <button type="submit" class="btn primary-btn">Сохранить настройки</button>
+                            <!-- Force refresh button to sync directly from server, bypassing local cache -->
+                            <button type="button" class="btn secondary-btn" id="forceRefreshBtn" title="Принудительно обновить данные с сервера, не взирая на локальный кэш">
+                                🔄 Принудительно обновить данные
+                            </button>
                             <!-- Red button to reset all point intervals -->
                             <button type="button" class="btn danger-btn-solid" id="resetIntervalsBtn">
                                 🔄 Сбросить все интервалы

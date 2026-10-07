@@ -162,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Settings Form
             document.getElementById('settingsForm')?.addEventListener('submit', (e) => this.handleSettingsSubmit(e));
 
+            // Force refresh button (bypasses local cache)
+            document.getElementById('forceRefreshBtn')?.addEventListener('click', () => this.handleForceRefresh());
+
             // Red "Reset all intervals" button
             document.getElementById('resetIntervalsBtn')?.addEventListener('click', () => this.handleResetIntervals());
 
@@ -800,6 +803,41 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 console.error(err);
                 this.showToast('Ошибка сервера', 'error');
+            }
+        },
+
+        // Force refresh button: clears browser cache and re-fetches latest server data bypassing local storage/cache
+        async handleForceRefresh() {
+            try {
+                this.showToast('🔄 Обновление данных с сервера...', 'info');
+
+                // Clear CacheStorage if supported
+                if ('caches' in window) {
+                    const cacheKeys = await caches.keys();
+                    await Promise.all(cacheKeys.map(key => caches.delete(key)));
+                }
+
+                // Fetch fresh points bypassing HTTP cache with timestamp query parameter
+                const cacheBuster = Date.now();
+                const response = await fetch(`api/index.php?action=get_points&_t=${cacheBuster}`, {
+                    cache: 'no-store'
+                });
+
+                if (!response.ok) throw new Error('Ошибка сети при обновлении');
+                const result = await response.json();
+
+                if (result.success) {
+                    this.state.points = result.points || [];
+                    this.state.visits = result.visits || [];
+                    this.state.settings = result.settings || this.state.settings;
+                    this.renderAll();
+                    this.showToast('Данные успешно принудительно обновлены!', 'success');
+                } else {
+                    this.showToast('Ошибка при получении данных: ' + result.error, 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                this.showToast('Ошибка принудительного обновления: ' + err.message, 'error');
             }
         },
 
