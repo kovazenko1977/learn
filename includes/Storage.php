@@ -130,6 +130,29 @@ class Storage {
         return $this->writeJson('visits.json', []);
     }
 
+    public function cancelLatestVisit(string $pointId): bool {
+        $visits = $this->getVisits();
+        $targetIndex = null;
+        $latestTime = null;
+
+        foreach ($visits as $index => $v) {
+            if (($v['point_id'] ?? '') === $pointId) {
+                $vTime = strtotime($v['visited_at'] ?? '');
+                if ($latestTime === null || $vTime > $latestTime) {
+                    $latestTime = $vTime;
+                    $targetIndex = $index;
+                }
+            }
+        }
+
+        if ($targetIndex !== null) {
+            array_splice($visits, $targetIndex, 1);
+            return $this->writeJson('visits.json', $visits);
+        }
+
+        return false;
+    }
+
     public function addVisit(array $visit): array {
         $visits = $this->getVisits();
         $record = [

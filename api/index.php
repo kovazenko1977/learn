@@ -77,6 +77,22 @@ try {
             echo json_encode(['success' => $success], JSON_UNESCAPED_UNICODE);
             break;
 
+        case 'cancel_visit':
+            $point_id = $input['point_id'] ?? $_GET['point_id'] ?? '';
+            if (!$point_id) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Не указан ID точки']);
+                exit;
+            }
+
+            $success = $storage->cancelLatestVisit($point_id);
+            echo json_encode([
+                'success' => $success,
+                'points' => $storage->getPoints(),
+                'visits' => $storage->getVisits()
+            ], JSON_UNESCAPED_UNICODE);
+            break;
+
         case 'record_visit':
             $point_id = $input['point_id'] ?? '';
             $point = $storage->getPoint($point_id);

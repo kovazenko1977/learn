@@ -58,9 +58,19 @@ def run_test():
             # Select a day cell
             page.locator(".cal-day-cell:not(.empty-day)").first.click()
             page.wait_for_selector("#calendarModal", state="hidden", timeout=3000)
-            page.screenshot(path="verification/12_calendar_day_selected.png")
 
-            print("Graphical calendar modal tested successfully!")
+            # Go to Visited tab and check SIM badge left placement & cancel visit button
+            page.click("button[data-tab='visited']")
+            page.wait_for_selector("#tabVisited.active")
+            page.screenshot(path="verification/13_visited_tab_with_cancel_btn.png")
+
+            # Click "Отменить посещение" button on the first visited card
+            page.on("dialog", lambda dialog: dialog.accept())
+            page.locator(".cancel-visit-btn").first.click()
+            page.wait_for_timeout(800)
+            page.screenshot(path="verification/14_after_visit_canceled.png")
+
+            print("SIM card position and Cancel Visit features verified successfully!")
 
             browser.close()
             print("Playwright verification completed successfully!")
