@@ -109,6 +109,7 @@ try {
             $visitRecord = [
                 'point_id' => $point['id'],
                 'sim_number' => $point['sim_number'],
+                'contract_number' => $point['contract_number'] ?? '',
                 'point_name' => $point['name'],
                 'visited_at' => date('Y-m-d H:i:s'),
                 'has_defects' => !empty($input['has_defects']),

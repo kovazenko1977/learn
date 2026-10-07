@@ -281,6 +281,7 @@
                     <p id="pointHistoryModalAddress" class="summary-address">Адрес объекта</p>
                     <div class="sim-badge-container">
                         <span class="sim-badge" id="pointHistoryModalSim">SIM: +7 (900) 000-00-00</span>
+                        <span class="detail-tag" id="pointHistoryModalContract" style="font-size:0.85rem; font-weight:600;">📄 Договор: —</span>
                     </div>
                 </div>
 
@@ -313,6 +314,7 @@
                         <span class="sim-chip">
                             <span id="visitModalSimNumber">SIM: +7 (900) 000-00-00</span>
                         </span>
+                        <span class="detail-tag" id="visitModalContractNumber" style="font-size:0.85rem; font-weight:600;">📄 Договор: —</span>
                     </div>
                 </div>
 

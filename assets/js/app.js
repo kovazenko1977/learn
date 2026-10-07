@@ -203,6 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('pointHistoryModalName').textContent = point.name;
             document.getElementById('pointHistoryModalAddress').textContent = point.address;
             document.getElementById('pointHistoryModalSim').textContent = `SIM: ${point.sim_number}`;
+            const contractEl = document.getElementById('pointHistoryModalContract');
+            if (contractEl) {
+                contractEl.textContent = point.contract_number ? `📄 Договор: ${point.contract_number}` : '📄 Договор: Б/Н';
+            }
 
             const pointVisits = this.state.visits.filter(v => v.point_id === pointId);
             pointVisits.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
@@ -664,6 +668,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('visitModalPointName').textContent = point.name;
             document.getElementById('visitModalPointAddress').textContent = point.address;
             document.getElementById('visitModalSimNumber').textContent = `SIM: ${point.sim_number}`;
+            const visitContractEl = document.getElementById('visitModalContractNumber');
+            if (visitContractEl) {
+                visitContractEl.textContent = point.contract_number ? `📄 Договор: ${point.contract_number}` : '📄 Договор: Б/Н';
+            }
 
             document.getElementById('visitDefectsCheckbox').checked = false;
             document.getElementById('defectsDescriptionGroup').classList.add('hidden');
@@ -852,7 +860,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div>
                                 <span class="history-title">${this.escapeHtml(v.point_name)}</span>
                                 <div style="font-size:0.8rem; color:var(--text-muted);">
-                                    SIM: <b style="color:var(--accent-blue);">${this.escapeHtml(v.sim_number)}</b> | Инженер: ${this.escapeHtml(v.technician || 'Инженер ТО')}
+                                    SIM: <b style="color:var(--accent-blue);">${this.escapeHtml(v.sim_number)}</b>
+                                    ${v.contract_number ? ` | Договор: <b style="color:var(--accent-cyan);">${this.escapeHtml(v.contract_number)}</b>` : ''}
+                                    | Инженер: ${this.escapeHtml(v.technician || 'Инженер ТО')}
                                 </div>
                             </div>
                             <div style="text-align:right;">
