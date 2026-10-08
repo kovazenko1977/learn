@@ -1,0 +1,66 @@
+[
+    {
+        "id": 1,
+        "name": "Супер Администратор",
+        "phone": "1111",
+        "password": "$2y$10$rllUCwsPBoeeaf01u27jS.OpJ5peQCKbksqIEt.tniMhVf31IMXaa",
+        "role": "Admin",
+        "is_superadmin": true,
+        "department_id": 1,
+        "department_name": "Администрация",
+        "position": "Главный Администратор",
+        "service_id": 0,
+        "is_blocked": false,
+        "token": "fcbe17f64bea306f2869bef5ac3702af8b9aeb09c2d90f653caaded21aea3308",
+        "last_active": "2026-10-08 01:23:07",
+        "updated_at": "2026-10-08 01:23:07"
+    },
+    {
+        "id": 2,
+        "name": "Иванов Иван Иванович",
+        "phone": "+375291234567",
+        "password": "$2y$10$rllUCwsPBoeeaf01u27jS.OpJ5peQCKbksqIEt.tniMhVf31IMXaa",
+        "role": "Admin",
+        "department_id": 1,
+        "department_name": "Администрация",
+        "position": "Администратор системы",
+        "service_id": 0,
+        "is_blocked": false
+    },
+    {
+        "id": 3,
+        "name": "Петров Петр Петрович",
+        "phone": "+375292222222",
+        "password": "$2y$10$rllUCwsPBoeeaf01u27jS.OpJ5peQCKbksqIEt.tniMhVf31IMXaa",
+        "role": "Service Head",
+        "department_id": 2,
+        "department_name": "ИТ Отдел",
+        "position": "Начальник IT службы",
+        "service_id": 1,
+        "is_blocked": false
+    },
+    {
+        "id": 4,
+        "name": "Сидоров Сидор Сидорович",
+        "phone": "+375293333333",
+        "password": "$2y$10$rllUCwsPBoeeaf01u27jS.OpJ5peQCKbksqIEt.tniMhVf31IMXaa",
+        "role": "Executor",
+        "department_id": 2,
+        "department_name": "ИТ Отдел",
+        "position": "Инженер-техник",
+        "service_id": 1,
+        "is_blocked": false
+    },
+    {
+        "id": 5,
+        "name": "Алексеев Алексей Алексеевич",
+        "phone": "+375294444444",
+        "password": "$2y$10$rllUCwsPBoeeaf01u27jS.OpJ5peQCKbksqIEt.tniMhVf31IMXaa",
+        "role": "Employee",
+        "department_id": 3,
+        "department_name": "Терапевтическое отделение",
+        "position": "Врач-терапевт",
+        "service_id": 0,
+        "is_blocked": false
+    }
+]
