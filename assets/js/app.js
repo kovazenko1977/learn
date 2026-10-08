@@ -590,7 +590,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </button>
                         ${isVisited ? `
                             <button class="btn danger-btn cancel-visit-btn" data-id="${point.id}" title="Отменить посещение">
-                                ↩️ Отменить посещение
+                                ↩️
                             </button>
                         ` : ''}
                         <button class="btn secondary-btn edit-point-btn" data-id="${point.id}" title="Редактировать">
