@@ -1,0 +1,21 @@
+{
+  "storageMode": "JSON",
+  "categories": [
+    "IT",
+    "Plumbing",
+    "Electrical",
+    "Hardware"
+  ],
+  "priorities": [
+    "Low",
+    "Medium",
+    "High",
+    "Critical"
+  ],
+  "sla": {
+    "Low": 48,
+    "Medium": 24,
+    "High": 8,
+    "Critical": 2
+  }
+}
