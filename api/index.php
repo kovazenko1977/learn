@@ -158,6 +158,25 @@ try {
             ], JSON_UNESCAPED_UNICODE);
             break;
 
+        case 'sync_all':
+            if (isset($input['points']) && is_array($input['points'])) {
+                $storage->savePoints($input['points']);
+            }
+            if (isset($input['visits']) && is_array($input['visits'])) {
+                $storage->saveVisits($input['visits']);
+            }
+            if (isset($input['settings']) && is_array($input['settings'])) {
+                $storage->saveSettings($input['settings']);
+            }
+            echo json_encode([
+                'success' => true,
+                'message' => 'Все данные успешно синхронизированы на сервер!',
+                'points' => $storage->getPoints(),
+                'visits' => $storage->getVisits(),
+                'settings' => $storage->getSettings()
+            ], JSON_UNESCAPED_UNICODE);
+            break;
+
         case 'reset_demo':
             unlink(__DIR__ . '/../data/points.json');
             unlink(__DIR__ . '/../data/visits.json');

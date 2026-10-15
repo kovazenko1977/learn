@@ -76,6 +76,9 @@
                     </div>
                 </div>
                 <div class="header-actions">
+                    <button class="btn primary-btn sync-btn" id="syncServerBtn" title="Сохранить локальные данные телефона на хостинг">
+                        ☁️ <span id="syncBtnText">Выгрузить на сервер</span>
+                    </button>
                     <button class="icon-btn voice-report-btn" id="voiceTodayBtn" title="Голосовой отчет о визитах за сегодня">
                         🔊 <span class="btn-voice-label">Что сегодня?</span>
                     </button>

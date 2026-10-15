@@ -1,5 +1,65 @@
 [
     {
+        "id": "v_1792073546177",
+        "point_id": "pt_007",
+        "sim_number": "33115",
+        "contract_number": "Д-2025\/07-ТО",
+        "point_name": "Мастак",
+        "visited_at": "2026-10-15 14:12:26",
+        "has_defects": true,
+        "defects_description": "Тестовый недостаток для проверки времени",
+        "notes": "",
+        "technician": "Старовойтов Алексей Михайлович"
+    },
+    {
+        "id": "v_1792073450429",
+        "point_id": "pt_006",
+        "sim_number": "37944",
+        "contract_number": "Д-2025\/06-ТО",
+        "point_name": "Полимерторг",
+        "visited_at": "2026-10-15 14:10:50",
+        "has_defects": true,
+        "defects_description": "Тестовый недостаток для проверки времени",
+        "notes": "",
+        "technician": "Старовойтов Алексей Михайлович"
+    },
+    {
+        "id": "v_1792073204500",
+        "point_id": "pt_005",
+        "sim_number": "5006232",
+        "contract_number": "Д-2025\/05-ТО",
+        "point_name": "Технокорм",
+        "visited_at": "2026-10-15 14:06:44",
+        "has_defects": true,
+        "defects_description": "Тестовый недостаток для проверки времени",
+        "notes": "",
+        "technician": "Старовойтов Алексей Михайлович"
+    },
+    {
+        "id": "v_1792073116100",
+        "point_id": "pt_004",
+        "sim_number": "5006253",
+        "contract_number": "Д-2025\/04-ТО",
+        "point_name": "Лесничество",
+        "visited_at": "2026-10-15 14:05:16",
+        "has_defects": true,
+        "defects_description": "Тестовый недостаток для проверки времени",
+        "notes": "",
+        "technician": "Старовойтов Алексей Михайлович"
+    },
+    {
+        "id": "v_1792073029315",
+        "point_id": "pt_001",
+        "sim_number": "5005766",
+        "contract_number": "Д-2025\/99-ТЕСТ",
+        "point_name": "Экрум",
+        "visited_at": "2026-10-15 14:03:49",
+        "has_defects": true,
+        "defects_description": "Тестовый недостаток для проверки времени",
+        "notes": "",
+        "technician": "Старовойтов Алексей Михайлович"
+    },
+    {
         "id": "v_1791394230_421",
         "point_id": "pt_003",
         "sim_number": "5003903",

@@ -126,6 +126,10 @@ class Storage {
         return $this->readJson('visits.json', []);
     }
 
+    public function saveVisits(array $visits): bool {
+        return $this->writeJson('visits.json', $visits);
+    }
+
     public function clearAllVisits(): bool {
         return $this->writeJson('visits.json', []);
     }

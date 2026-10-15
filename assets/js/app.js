@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 technician_name: 'Старовойтов Алексей Михайлович',
                 company_name: 'ООО «СпецПожОхрана»'
             },
+            pendingSync: false,
             currentTab: 'unvisited',
             searchQuery: '',
             historyFilter: 'all',
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.bindEvents();
             this.loadTheme();
             this.loadCompactMode();
-            this.fetchData();
+            this.loadLocalDataOrFetch();
             this.setupPWA();
             this.setupVoiceControls();
         },
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     if (statusText) {
                         if (progress > 30) statusText.textContent = 'Проверка настроек интервалов...';
-                        if (progress > 60) statusText.textContent = 'Расчет статусов объектов...';
+                        if (progress > 60) statusText.textContent = 'Загрузка телефонных данных...';
                     }
                 }
                 if (progressBar) progressBar.style.width = `${progress}%`;
@@ -57,7 +58,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (preloader) preloader.style.display = 'none';
         },
 
-        async fetchData() {
+        // Local Storage Management
+        saveToLocalStorage(markPendingSync = true) {
+            localStorage.setItem('pwa_local_points', JSON.stringify(this.state.points));
+            localStorage.setItem('pwa_local_visits', JSON.stringify(this.state.visits));
+            localStorage.setItem('pwa_local_settings', JSON.stringify(this.state.settings));
+            if (markPendingSync) {
+                this.state.pendingSync = true;
+                localStorage.setItem('pwa_pending_sync', 'true');
+            }
+            this.updateSyncButtonState();
+        },
+
+        async loadLocalDataOrFetch() {
+            const localPoints = localStorage.getItem('pwa_local_points');
+            const localVisits = localStorage.getItem('pwa_local_visits');
+            const localSettings = localStorage.getItem('pwa_local_settings');
+            const pendingSync = localStorage.getItem('pwa_pending_sync');
+
+            this.state.pendingSync = pendingSync === 'true';
+
+            if (localPoints && localVisits && localSettings) {
+                try {
+                    this.state.points = JSON.parse(localPoints);
+                    this.state.visits = JSON.parse(localVisits);
+                    this.state.settings = JSON.parse(localSettings);
+                    this.renderAll();
+                    this.updateSyncButtonState();
+                    return;
+                } catch (e) {
+                    console.error('Error parsing local storage:', e);
+                }
+            }
+
+            // Fallback: fetch initial data baseline from server
+            await this.fetchDataFromServer(false);
+        },
+
+        async fetchDataFromServer(notifyUser = true) {
             try {
                 const response = await fetch('api/index.php?action=get_points');
                 if (!response.ok) throw new Error('Ошибка сети при загрузке данных');
@@ -66,13 +104,65 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.state.points = result.points || [];
                     this.state.visits = result.visits || [];
                     this.state.settings = result.settings || this.state.settings;
+                    this.state.pendingSync = false;
+                    localStorage.setItem('pwa_pending_sync', 'false');
+                    this.saveToLocalStorage(false);
                     this.renderAll();
+                    if (notifyUser) {
+                        this.showToast('Данные успешно загружены с хостинга!', 'success');
+                    }
                 } else {
                     this.showToast('Ошибка загрузки данных: ' + result.error, 'error');
                 }
             } catch (err) {
                 console.error(err);
-                this.showToast('Ошибка обращения к API. Проверьте соединение.', 'error');
+                if (notifyUser) {
+                    this.showToast('Ошибка обращения к API. Проверьте соединение.', 'error');
+                }
+            }
+        },
+
+        updateSyncButtonState() {
+            const syncBtnText = document.getElementById('syncBtnText');
+            const syncBtn = document.getElementById('syncServerBtn');
+            if (!syncBtn || !syncBtnText) return;
+
+            if (this.state.pendingSync) {
+                syncBtnText.textContent = 'Выгрузить (есть изм.)';
+                syncBtn.style.backgroundColor = 'var(--accent-orange, #ff9800)';
+                syncBtn.style.borderColor = 'var(--accent-orange, #ff9800)';
+                syncBtn.style.color = '#ffffff';
+            } else {
+                syncBtnText.textContent = 'Выгрузить на сервер';
+                syncBtn.style.backgroundColor = '';
+                syncBtn.style.borderColor = '';
+                syncBtn.style.color = '';
+            }
+        },
+
+        async handleSyncToServer() {
+            try {
+                const response = await fetch('api/index.php?action=sync_all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        points: this.state.points,
+                        visits: this.state.visits,
+                        settings: this.state.settings
+                    })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    this.state.pendingSync = false;
+                    localStorage.setItem('pwa_pending_sync', 'false');
+                    this.updateSyncButtonState();
+                    this.showToast('☁️ Все локальные данные успешно выгружены на сервер!', 'success');
+                } else {
+                    this.showToast('Ошибка выгрузки на сервер: ' + result.error, 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                this.showToast('Ошибка соединения с сервером. Выгрузка выполнится при наличии сети.', 'error');
             }
         },
 
@@ -91,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Compact view toggle
             document.getElementById('compactViewToggleBtn')?.addEventListener('click', () => this.toggleCompactMode());
 
+            // Sync to server button
+            document.getElementById('syncServerBtn')?.addEventListener('click', () => this.handleSyncToServer());
+
             // Search input
             const searchInput = document.getElementById('searchInput');
             const clearSearchBtn = document.getElementById('clearSearchBtn');
@@ -101,47 +194,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     clearSearchBtn?.classList.add('hidden');
                 }
-                this.renderLists();
+                this.renderAll();
             });
 
             clearSearchBtn?.addEventListener('click', () => {
                 if (searchInput) searchInput.value = '';
                 this.state.searchQuery = '';
                 clearSearchBtn.classList.add('hidden');
-                this.renderLists();
-            });
-
-            // History filter pills & date picker
-            document.querySelectorAll('.pill-btn').forEach(pill => {
-                pill.addEventListener('click', (e) => {
-                    document.querySelectorAll('.pill-btn').forEach(p => p.classList.remove('active'));
-                    e.currentTarget.classList.add('active');
-                    this.state.historyFilter = e.currentTarget.getAttribute('data-filter');
-                    this.renderHistory();
-                });
-            });
-
-            const historyDatePicker = document.getElementById('historyDatePicker');
-            historyDatePicker?.addEventListener('change', (e) => {
-                this.state.historySelectedDate = e.target.value;
-                this.renderHistory();
-            });
-
-            document.getElementById('historyTodayBtn')?.addEventListener('click', () => {
-                const today = new Date().toISOString().split('T')[0];
-                if (historyDatePicker) historyDatePicker.value = today;
-                this.state.historySelectedDate = today;
-                this.renderHistory();
-            });
-
-            document.getElementById('historyResetDateBtn')?.addEventListener('click', () => {
-                if (historyDatePicker) historyDatePicker.value = '';
-                this.state.historySelectedDate = '';
-                this.renderHistory();
+                this.renderAll();
             });
 
             // Add Point Modal triggers
             document.getElementById('addPointBtn')?.addEventListener('click', () => this.openPointModal());
+            document.getElementById('addPointHeaderBtn')?.addEventListener('click', () => this.openPointModal());
             document.getElementById('closePointModalBtn')?.addEventListener('click', () => this.closePointModal());
             document.getElementById('cancelPointBtn')?.addEventListener('click', () => this.closePointModal());
             document.getElementById('pointForm')?.addEventListener('submit', (e) => this.handlePointSubmit(e));
@@ -191,210 +256,74 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('calPrevMonthBtn')?.addEventListener('click', () => this.changeCalendarMonth(-1));
             document.getElementById('calNextMonthBtn')?.addEventListener('click', () => this.changeCalendarMonth(1));
 
-            // Point History Modal Triggers
+            // Point History Modal
             document.getElementById('closePointHistoryModalBtn')?.addEventListener('click', () => this.closePointHistoryModal());
             document.getElementById('closePointHistoryModalBottomBtn')?.addEventListener('click', () => this.closePointHistoryModal());
-        },
 
-        openPointHistoryModal(pointId) {
-            const point = this.state.points.find(p => p.id === pointId);
-            if (!point) return;
-
-            document.getElementById('pointHistoryModalName').textContent = point.name;
-            document.getElementById('pointHistoryModalAddress').textContent = point.address;
-            document.getElementById('pointHistoryModalSim').textContent = `SIM: ${point.sim_number}`;
-            const contractEl = document.getElementById('pointHistoryModalContract');
-            if (contractEl) {
-                contractEl.textContent = point.contract_number ? `📄 Договор: ${point.contract_number}` : '📄 Договор: Б/Н';
-            }
-
-            const pointVisits = this.state.visits.filter(v => v.point_id === pointId);
-            pointVisits.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
-
-            const totalVisits = pointVisits.length;
-            const totalDefects = pointVisits.filter(v => v.has_defects).length;
-
-            document.getElementById('pointHistoryModalTotalVisits').textContent = totalVisits;
-            document.getElementById('pointHistoryModalTotalDefects').textContent = totalDefects;
-
-            const timelineEl = document.getElementById('pointHistoryModalTimeline');
-            if (timelineEl) {
-                if (pointVisits.length === 0) {
-                    timelineEl.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📋</div>
-                            <h4>История проверок пуста</h4>
-                            <p>По данной организации еще не было зафиксировано ни одного визита.</p>
-                        </div>
-                    `;
-                } else {
-                    timelineEl.innerHTML = pointVisits.map(v => {
-                        const visitDate = new Date(v.visited_at);
-                        const dateFormatted = visitDate.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                        const timeFormatted = visitDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-                        return `
-                            <div class="history-item">
-                                <div class="history-header">
-                                    <div>
-                                        <div style="font-size:0.82rem; color:var(--text-muted);">
-                                            Инженер: <b>${this.escapeHtml(v.technician || 'Инженер ТО')}</b>
-                                        </div>
-                                    </div>
-                                    <div style="text-align:right;">
-                                        <span class="history-date">${dateFormatted}</span>
-                                        <div style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono); font-weight:700;">
-                                            ⏱️ ${timeFormatted}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                ${v.has_defects ? `
-                                    <div class="history-defects-tag">
-                                        ⚠️ Зафиксированы недостатки: ${this.escapeHtml(v.defects_description || 'Без описания')}
-                                    </div>
-                                ` : '<div style="font-size:0.8rem; color:var(--accent-green); margin-top:4px;">✓ Замечаний нет</div>'}
-
-                                ${v.notes ? `
-                                    <div class="history-notes">
-                                        📝 ${this.escapeHtml(v.notes)}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('');
-                }
-            }
-
-            document.getElementById('pointHistoryModal')?.classList.remove('hidden');
-        },
-
-        closePointHistoryModal() {
-            document.getElementById('pointHistoryModal')?.classList.add('hidden');
-        },
-
-        openCalendarModal() {
-            document.getElementById('calendarModal')?.classList.remove('hidden');
-            this.renderCalendarGrid();
-        },
-
-        closeCalendarModal() {
-            document.getElementById('calendarModal')?.classList.add('hidden');
-        },
-
-        changeCalendarMonth(offset) {
-            this.state.calendarViewMonth += offset;
-            if (this.state.calendarViewMonth < 0) {
-                this.state.calendarViewMonth = 11;
-                this.state.calendarViewYear -= 1;
-            } else if (this.state.calendarViewMonth > 11) {
-                this.state.calendarViewMonth = 0;
-                this.state.calendarViewYear += 1;
-            }
-            this.renderCalendarGrid();
-        },
-
-        renderCalendarGrid() {
-            const gridEl = document.getElementById('calendarDaysGrid');
-            const titleEl = document.getElementById('calMonthYearTitle');
-            if (!gridEl || !titleEl) return;
-
-            const year = this.state.calendarViewYear;
-            const month = this.state.calendarViewMonth;
-
-            const monthNames = [
-                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
-            ];
-
-            titleEl.textContent = `${monthNames[month]} ${year}`;
-
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Monday = 0
-
-            let cellsHtml = '';
-
-            // Empty cells before 1st day of month
-            for (let i = 0; i < firstDayIndex; i++) {
-                cellsHtml += `<div class="cal-day-cell empty-day"></div>`;
-            }
-
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayVisits = this.state.visits.filter(v => v.visited_at && v.visited_at.startsWith(dateStr));
-                const count = dayVisits.length;
-                const hasDefects = dayVisits.some(v => v.has_defects);
-
-                const isToday = dateStr === todayStr;
-                const isSelected = dateStr === this.state.historySelectedDate;
-
-                let indicatorHtml = '';
-                if (count > 0) {
-                    indicatorHtml = `
-                        <div class="cal-day-dots">
-                            <span class="dot ${hasDefects ? 'dot-danger' : 'dot-success'}"></span>
-                        </div>
-                        <span class="cal-count-badge ${hasDefects ? 'has-defects' : 'clean-visits'}">${count}</span>
-                    `;
-                } else if (isToday) {
-                    indicatorHtml = `<div class="cal-day-dots"><span class="dot dot-today"></span></div>`;
-                }
-
-                cellsHtml += `
-                    <div class="cal-day-cell ${isToday ? 'is-today' : ''} ${isSelected ? 'is-selected' : ''}" data-date="${dateStr}">
-                        <span class="cal-day-num">${day}</span>
-                        ${indicatorHtml}
-                    </div>
-                `;
-            }
-
-            gridEl.innerHTML = cellsHtml;
-
-            // Day click listener
-            gridEl.querySelectorAll('.cal-day-cell:not(.empty-day)').forEach(cell => {
-                cell.addEventListener('click', (e) => {
-                    const dateStr = e.currentTarget.getAttribute('data-date');
-                    this.state.historySelectedDate = dateStr;
-                    const historyDatePicker = document.getElementById('historyDatePicker');
-                    if (historyDatePicker) historyDatePicker.value = dateStr;
-                    this.closeCalendarModal();
-                    this.switchTab('history');
+            // History Filter buttons
+            document.querySelectorAll('#tab-history .filter-chip').forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    document.querySelectorAll('#tab-history .filter-chip').forEach(c => c.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    this.state.historyFilter = e.currentTarget.getAttribute('data-filter');
+                    this.renderHistory();
                 });
             });
+
+            // History Date Picker
+            const historyDatePicker = document.getElementById('historyDatePicker');
+            historyDatePicker?.addEventListener('change', (e) => {
+                this.state.historySelectedDate = e.target.value; // YYYY-MM-DD
+                this.renderHistory();
+            });
+
+            document.getElementById('historyTodayBtn')?.addEventListener('click', () => {
+                const todayStr = new Date().toISOString().split('T')[0];
+                if (historyDatePicker) historyDatePicker.value = todayStr;
+                this.state.historySelectedDate = todayStr;
+                this.renderHistory();
+            });
+
+            document.getElementById('historyResetDateBtn')?.addEventListener('click', () => {
+                if (historyDatePicker) historyDatePicker.value = '';
+                this.state.historySelectedDate = '';
+                this.renderHistory();
+            });
         },
 
-        switchTab(tabName) {
-            this.state.currentTab = tabName;
+        switchTab(tab) {
+            this.state.currentTab = tab;
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
+                btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
             });
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-            const targetPanel = document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-            if (targetPanel) targetPanel.classList.add('active');
 
-            if (tabName === 'history') {
+            document.querySelectorAll('.tab-panel').forEach(content => {
+                const targetId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+                content.classList.toggle('active', content.id === targetId);
+            });
+
+            if (tab === 'history') {
                 this.renderHistory();
-            } else if (tabName === 'settings') {
+            } else if (tab === 'settings') {
                 this.populateSettingsForm();
-            } else {
-                this.renderLists();
             }
         },
 
         toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const currentTheme = document.body.getAttribute('data-theme') || 'dark';
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
+            document.body.setAttribute('data-theme', newTheme);
             localStorage.setItem('pwa_theme', newTheme);
+
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) btn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
         },
 
         loadTheme() {
             const savedTheme = localStorage.getItem('pwa_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.body.setAttribute('data-theme', savedTheme);
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) btn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
         },
 
         toggleCompactMode() {
@@ -404,147 +333,147 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         loadCompactMode() {
-            const isCompact = localStorage.getItem('pwa_compact_mode') === 'true';
-            if (isCompact) {
+            const savedCompact = localStorage.getItem('pwa_compact_mode') === 'true';
+            if (savedCompact) {
                 document.body.classList.add('compact-mode');
-            } else {
-                document.body.classList.remove('compact-mode');
             }
         },
 
-        isPointVisited(pointId) {
-            const visitsForPoint = this.state.visits.filter(v => v.point_id === pointId);
-            if (visitsForPoint.length === 0) return false;
+        // Inspection Status Logic
+        isPointVisitedInInterval(point) {
+            const visits = this.state.visits.filter(v => v.point_id === point.id);
+            if (visits.length === 0) return false;
 
-            visitsForPoint.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
-            const lastVisit = visitsForPoint[0];
-            const lastVisitDate = new Date(lastVisit.visited_at);
+            // Sort visits descending
+            visits.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
+            const lastVisitDate = new Date(visits[0].visited_at);
             const now = new Date();
 
             if (this.state.settings.interval_mode === 'calendar_month') {
-                return lastVisitDate.getMonth() === now.getMonth() && lastVisitDate.getFullYear() === now.getFullYear();
+                // Return true if visited in current calendar month and year
+                return lastVisitDate.getMonth() === now.getMonth() &&
+                       lastVisitDate.getFullYear() === now.getFullYear();
             } else {
-                const daysDiff = (now - lastVisitDate) / (1000 * 60 * 60 * 24);
-                return daysDiff <= (this.state.settings.interval_days || 30);
+                // Return true if visit happened within interval_days
+                const diffDays = (now - lastVisitDate) / (1000 * 60 * 60 * 24);
+                return diffDays <= (this.state.settings.interval_days || 30);
             }
         },
 
         getLastVisit(pointId) {
-            const visitsForPoint = this.state.visits.filter(v => v.point_id === pointId);
-            if (visitsForPoint.length === 0) return null;
-            visitsForPoint.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
-            return visitsForPoint[0];
+            const visits = this.state.visits.filter(v => v.point_id === pointId);
+            if (visits.length === 0) return null;
+            visits.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
+            return visits[0];
         },
 
         renderAll() {
             this.updateHeaderStats();
-            this.renderLists();
-            this.renderHistory();
-            this.populateSettingsForm();
+            this.renderPointsGrid();
+            if (this.state.currentTab === 'history') {
+                this.renderHistory();
+            }
+            this.updateSyncButtonState();
         },
 
         updateHeaderStats() {
-            const technicianDisplay = document.getElementById('technicianNameDisplay');
-            if (technicianDisplay) technicianDisplay.textContent = this.state.settings.technician_name || 'Старовойтов Алексей Михайлович';
-
-            const intervalDisplay = document.getElementById('intervalDisplay');
-            if (intervalDisplay) {
-                if (this.state.settings.interval_mode === 'calendar_month') {
-                    intervalDisplay.textContent = '1 мес.';
-                } else {
-                    intervalDisplay.textContent = `${this.state.settings.interval_days || 30} дн.`;
-                }
-            }
-
             let unvisitedCount = 0;
             let visitedCount = 0;
 
-            this.state.points.forEach(point => {
-                if (this.isPointVisited(point.id)) {
+            this.state.points.forEach(p => {
+                if (this.isPointVisitedInInterval(p)) {
                     visitedCount++;
                 } else {
                     unvisitedCount++;
                 }
             });
 
-            document.getElementById('pendingCount').textContent = unvisitedCount;
-            document.getElementById('completedCount').textContent = visitedCount;
-            document.getElementById('unvisitedBadge').textContent = unvisitedCount;
-            document.getElementById('visitedBadge').textContent = visitedCount;
+            const pendingEl = document.getElementById('pendingCount');
+            if (pendingEl) pendingEl.textContent = unvisitedCount;
+            const completedEl = document.getElementById('completedCount');
+            if (completedEl) completedEl.textContent = visitedCount;
+
+            const modeText = this.state.settings.interval_mode === 'calendar_month'
+                ? 'Месяц'
+                : `${this.state.settings.interval_days || 30} дн.`;
+            const intervalEl = document.getElementById('intervalDisplay');
+            if (intervalEl) intervalEl.textContent = modeText;
+
+            const countUnvisitedEl = document.getElementById('countUnvisitedBadge');
+            if (countUnvisitedEl) countUnvisitedEl.textContent = unvisitedCount;
+            const countVisitedEl = document.getElementById('countVisitedBadge');
+            if (countVisitedEl) countVisitedEl.textContent = visitedCount;
+            const countAllEl = document.getElementById('countAllBadge');
+            if (countAllEl) countAllEl.textContent = this.state.points.length;
+
+            const companyEl = document.getElementById('companyNameDisplay');
+            if (companyEl) companyEl.textContent = this.state.settings.company_name || 'Пож-Охран ТО';
+            const techEl = document.getElementById('technicianNameDisplay');
+            if (techEl) techEl.textContent = this.state.settings.technician_name || 'Инженер ТО';
         },
 
-        filterPoints(pointsList) {
-            if (!this.state.searchQuery) return pointsList;
-            const q = this.state.searchQuery;
-            return pointsList.filter(p =>
-                (p.name && p.name.toLowerCase().includes(q)) ||
-                (p.address && p.address.toLowerCase().includes(q)) ||
-                (p.sim_number && p.sim_number.toLowerCase().includes(q)) ||
-                (p.equipment_type && p.equipment_type.toLowerCase().includes(q))
-            );
+        getFilteredPoints(filterType) {
+            let list = [...this.state.points];
+
+            if (this.state.searchQuery) {
+                const q = this.state.searchQuery;
+                list = list.filter(p =>
+                    (p.name && p.name.toLowerCase().includes(q)) ||
+                    (p.address && p.address.toLowerCase().includes(q)) ||
+                    (p.sim_number && p.sim_number.toLowerCase().includes(q)) ||
+                    (p.contract_number && p.contract_number.toLowerCase().includes(q))
+                );
+            }
+
+            if (filterType === 'unvisited') {
+                list = list.filter(p => !this.isPointVisitedInInterval(p));
+            } else if (filterType === 'visited') {
+                list = list.filter(p => this.isPointVisitedInInterval(p));
+            }
+
+            return list;
         },
 
-        renderLists() {
-            const unvisitedListEl = document.getElementById('unvisitedList');
-            const visitedListEl = document.getElementById('visitedList');
-            const allListEl = document.getElementById('allList');
+        renderPointsGrid() {
+            const grids = {
+                unvisited: document.getElementById('unvisitedList'),
+                visited: document.getElementById('visitedList'),
+                all: document.getElementById('allList')
+            };
 
-            const unvisitedPoints = this.filterPoints(this.state.points.filter(p => !this.isPointVisited(p.id)));
-            const visitedPoints = this.filterPoints(this.state.points.filter(p => this.isPointVisited(p.id)));
-            const allPoints = this.filterPoints(this.state.points);
+            ['unvisited', 'visited', 'all'].forEach(type => {
+                const gridEl = grids[type];
+                if (!gridEl) return;
 
-            if (unvisitedListEl) {
-                if (unvisitedPoints.length === 0) {
-                    unvisitedListEl.innerHTML = `
+                const points = this.getFilteredPoints(type);
+
+                if (points.length === 0) {
+                    let msg = 'В этом разделе нет точек.';
+                    if (this.state.searchQuery) msg = 'Ничего не найдено по вашему запросу.';
+                    else if (type === 'unvisited') msg = '🎉 Отлично! Все точки обслужены в текущем интервале.';
+                    else if (type === 'visited') msg = 'В текущем месяце/интервале еще не было посещений.';
+
+                    gridEl.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-state-icon">🎉</div>
-                            <h4>Все объекты обслужены!</h4>
-                            <p>В текущем интервале не осталось объектов, требующих визита.</p>
+                            <div class="empty-state-icon">🔔</div>
+                            <h4>Список пуст</h4>
+                            <p>${msg}</p>
                         </div>
                     `;
-                } else {
-                    unvisitedListEl.innerHTML = unvisitedPoints.map(p => this.createPointCardHtml(p, false)).join('');
+                    return;
                 }
-            }
 
-            if (visitedListEl) {
-                if (visitedPoints.length === 0) {
-                    visitedListEl.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📋</div>
-                            <h4>Нет посещенных объектов</h4>
-                            <p>В текущем интервале отметки о посещении еще не вносились.</p>
-                        </div>
-                    `;
-                } else {
-                    visitedListEl.innerHTML = visitedPoints.map(p => this.createPointCardHtml(p, true)).join('');
-                }
-            }
-
-            if (allListEl) {
-                if (allPoints.length === 0) {
-                    allListEl.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">🔍</div>
-                            <h4>Объекты не найдены</h4>
-                            <p>По вашему запросу ничего не найдено или список пуст.</p>
-                        </div>
-                    `;
-                } else {
-                    allListEl.innerHTML = allPoints.map(p => this.createPointCardHtml(p, this.isPointVisited(p.id))).join('');
-                }
-            }
+                gridEl.innerHTML = points.map(p => this.renderPointCard(p)).join('');
+            });
 
             this.attachCardEventListeners();
         },
 
-        createPointCardHtml(point, isVisited) {
+        renderPointCard(point) {
+            const isVisited = this.isPointVisitedInInterval(point);
             const lastVisit = this.getLastVisit(point.id);
-            let lastVisitText = 'Еще не было визитов';
-            let statusBadge = isVisited
-                ? `<span class="visit-time-text success-text">✓ Обслужен</span>`
-                : `<span class="visit-time-text urgent-text">⚠️ Требует ТО</span>`;
 
+            let lastVisitText = 'Еще не посещалась';
             if (lastVisit) {
                 const dateFormatted = new Date(lastVisit.visited_at).toLocaleString('ru-RU', {
                     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -570,14 +499,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     <div class="point-details">
-                        ${point.contract_number ? `<span class="detail-tag">📄 Договор: ${this.escapeHtml(point.contract_number)}</span>` : ''}
-                        ${point.equipment_type ? `<span class="detail-tag">⚙️ ${this.escapeHtml(point.equipment_type)}</span>` : ''}
-                        ${point.contact_person ? `<span class="detail-tag">👤 ${this.escapeHtml(point.contact_person)} ${point.contact_phone ? '(' + this.escapeHtml(point.contact_phone) + ')' : ''}</span>` : ''}
+                        ${point.contract_number ? `<span class="detail-pill" title="Номер договора"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Договор: ${this.escapeHtml(point.contract_number)}</span>` : ''}
+                        ${point.equipment ? `<span class="detail-pill" title="Оборудование"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> ${this.escapeHtml(point.equipment)}</span>` : ''}
+                        ${point.contact_person ? `<span class="detail-pill" title="Ответственный"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${this.escapeHtml(point.contact_person)} ${point.contact_phone ? '(' + this.escapeHtml(point.contact_phone) + ')' : ''}</span>` : ''}
                     </div>
 
                     <div class="last-visit-info">
-                        <div>${lastVisitText}</div>
-                        <div>${statusBadge}</div>
+                        <span>${lastVisitText}</span>
+                        <span>${isVisited ? '✓ Обслужен' : '⚠️ Требует ТО'}</span>
                     </div>
 
                     ${point.notes ? `<div class="point-notes-preview" style="font-size:0.78rem; color:var(--text-muted); margin-bottom:10px;">💡 ${this.escapeHtml(point.notes)}</div>` : ''}
@@ -634,166 +563,114 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
-        async handleCancelVisit(pointId) {
+        handleCancelVisit(pointId) {
             const point = this.state.points.find(p => p.id === pointId);
             if (!confirm(`Отменить последнее посещение для точки "${point ? point.name : ''}"?`)) {
                 return;
             }
 
-            try {
-                const response = await fetch('api/index.php?action=cancel_visit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ point_id: pointId })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    this.state.points = result.points || this.state.points;
-                    this.state.visits = result.visits || this.state.visits;
-                    this.renderAll();
-                    this.showToast('Посещение точки отменено.', 'info');
-                } else {
-                    this.showToast('Ошибка при отмене посещения: ' + (result.error || 'Неизвестная ошибка'), 'error');
+            // Find latest visit for this point and remove locally
+            let targetIndex = -1;
+            let latestTime = -1;
+            this.state.visits.forEach((v, index) => {
+                if (v.point_id === pointId) {
+                    const t = new Date(v.visited_at).getTime();
+                    if (t > latestTime) {
+                        latestTime = t;
+                        targetIndex = index;
+                    }
                 }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка сервера при отмене посещения', 'error');
+            });
+
+            if (targetIndex !== -1) {
+                this.state.visits.splice(targetIndex, 1);
+                this.saveToLocalStorage(true);
+                this.renderAll();
+                this.showToast('Посещение точки отменено (сохранено в телефоне).', 'info');
             }
         },
 
-        openVisitModal(pointId) {
-            const point = this.state.points.find(p => p.id === pointId);
-            if (!point) return;
-
-            document.getElementById('visitPointId').value = point.id;
-            document.getElementById('visitModalPointName').textContent = point.name;
-            document.getElementById('visitModalPointAddress').textContent = point.address;
-            document.getElementById('visitModalSimNumber').textContent = `SIM: ${point.sim_number}`;
-            const visitContractEl = document.getElementById('visitModalContractNumber');
-            if (visitContractEl) {
-                visitContractEl.textContent = point.contract_number ? `📄 Договор: ${point.contract_number}` : '📄 Договор: Б/Н';
-            }
-
-            document.getElementById('visitDefectsCheckbox').checked = false;
-            document.getElementById('defectsDescriptionGroup').classList.add('hidden');
-            document.getElementById('visitDefectsText').value = '';
-            document.getElementById('visitNotesText').value = '';
-
-            document.getElementById('visitModal').classList.remove('hidden');
-        },
-
-        closeVisitModal() {
-            document.getElementById('visitModal').classList.add('hidden');
-        },
-
-        async handleVisitSubmit(e) {
-            e.preventDefault();
-            const pointId = document.getElementById('visitPointId').value;
-            const hasDefects = document.getElementById('visitDefectsCheckbox').checked;
-            const defectsDescription = document.getElementById('visitDefectsText').value;
-            const notes = document.getElementById('visitNotesText').value;
-
-            try {
-                const response = await fetch('api/index.php?action=record_visit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        point_id: pointId,
-                        has_defects: hasDefects,
-                        defects_description: defectsDescription,
-                        notes: notes,
-                        technician: this.state.settings.technician_name
-                    })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    this.state.points = result.points || this.state.points;
-                    this.state.visits = result.visits || this.state.visits;
-                    this.closeVisitModal();
-                    this.renderAll();
-                    this.showToast('Посещение точки успешно отмечено!', 'success');
-                } else {
-                    this.showToast('Ошибка при записи: ' + result.error, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка обращения к серверу', 'error');
-            }
-        },
-
+        // Point Modal (Add / Edit)
         openPointModal(pointId = null) {
             const modal = document.getElementById('pointModal');
-            const title = document.getElementById('pointModalTitle');
+            const titleEl = document.getElementById('pointModalTitle');
             const deleteBtn = document.getElementById('deletePointBtn');
+
+            document.getElementById('pointForm').reset();
+            document.getElementById('pointFormId').value = '';
 
             if (pointId) {
                 const point = this.state.points.find(p => p.id === pointId);
-                if (!point) return;
-
-                title.textContent = 'Редактирование объекта';
-                deleteBtn.classList.remove('hidden');
-
-                document.getElementById('pointFormId').value = point.id;
-                document.getElementById('pointFormName').value = point.name || '';
-                document.getElementById('pointFormSim').value = point.sim_number || '';
-                document.getElementById('pointFormContract').value = point.contract_number || '';
-                document.getElementById('pointFormAddress').value = point.address || '';
-                document.getElementById('pointFormEquipment').value = point.equipment_type || '';
-                document.getElementById('pointFormContactPerson').value = point.contact_person || '';
-                document.getElementById('pointFormContactPhone').value = point.contact_phone || '';
-                document.getElementById('pointFormNotes').value = point.notes || '';
+                if (point) {
+                    titleEl.textContent = 'Редактировать объект';
+                    document.getElementById('pointFormId').value = point.id;
+                    document.getElementById('pointNameInput').value = point.name || '';
+                    document.getElementById('pointSimInput').value = point.sim_number || '';
+                    document.getElementById('pointContractInput').value = point.contract_number || '';
+                    document.getElementById('pointAddressInput').value = point.address || '';
+                    document.getElementById('pointEquipmentInput').value = point.equipment || '';
+                    document.getElementById('pointContactPersonInput').value = point.contact_person || '';
+                    document.getElementById('pointContactPhoneInput').value = point.contact_phone || '';
+                    document.getElementById('pointNotesInput').value = point.notes || '';
+                    if (deleteBtn) deleteBtn.classList.remove('hidden');
+                }
             } else {
-                title.textContent = 'Добавление нового объекта';
-                deleteBtn.classList.add('hidden');
-
-                document.getElementById('pointForm').reset();
-                document.getElementById('pointFormId').value = '';
+                titleEl.textContent = 'Добавить новый объект';
+                if (deleteBtn) deleteBtn.classList.add('hidden');
             }
 
-            modal.classList.remove('hidden');
+            if (modal) modal.classList.remove('hidden');
         },
 
         closePointModal() {
-            document.getElementById('pointModal').classList.add('hidden');
+            const modal = document.getElementById('pointModal');
+            if (modal) modal.classList.add('hidden');
         },
 
-        async handlePointSubmit(e) {
+        handlePointSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('pointFormId').value;
-            const data = {
-                id: id,
-                name: document.getElementById('pointFormName').value,
-                sim_number: document.getElementById('pointFormSim').value,
-                contract_number: document.getElementById('pointFormContract').value,
-                address: document.getElementById('pointFormAddress').value,
-                equipment_type: document.getElementById('pointFormEquipment').value,
-                contact_person: document.getElementById('pointFormContactPerson').value,
-                contact_phone: document.getElementById('pointFormContactPhone').value,
-                notes: document.getElementById('pointFormNotes').value
-            };
+            const name = document.getElementById('pointNameInput').value.trim();
+            const sim = document.getElementById('pointSimInput').value.trim();
+            const contract = document.getElementById('pointContractInput').value.trim();
+            const address = document.getElementById('pointAddressInput').value.trim();
+            const equipment = document.getElementById('pointEquipmentInput').value.trim();
+            const person = document.getElementById('pointContactPersonInput').value.trim();
+            const phone = document.getElementById('pointContactPhoneInput').value.trim();
+            const notes = document.getElementById('pointNotesInput').value.trim();
 
-            try {
-                const response = await fetch('api/index.php?action=save_point', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (result.success) {
-                    this.closePointModal();
-                    await this.fetchData();
-                    this.showToast('Объект успешно сохранен!', 'success');
-                } else {
-                    this.showToast('Ошибка сохранения: ' + result.error, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка соединения с сервером', 'error');
+            if (!name || !sim || !address) {
+                this.showToast('Заполните обязательные поля (Название, SIM, Адрес)', 'error');
+                return;
             }
+
+            if (id) {
+                // Update existing point locally
+                const index = this.state.points.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    this.state.points[index] = {
+                        ...this.state.points[index],
+                        name, sim_number: sim, contract_number: contract,
+                        address, equipment, contact_person: person, contact_phone: phone, notes
+                    };
+                }
+            } else {
+                // Create new point locally
+                const newPoint = {
+                    id: 'pt_' + Date.now(),
+                    name, sim_number: sim, contract_number: contract,
+                    address, equipment, contact_person: person, contact_phone: phone, notes
+                };
+                this.state.points.unshift(newPoint);
+            }
+
+            this.saveToLocalStorage(true);
+            this.closePointModal();
+            this.renderAll();
+            this.showToast('Объект сохранен в памяти телефона!', 'success');
         },
 
-        async handlePointDelete() {
+        handlePointDelete() {
             const id = document.getElementById('pointFormId').value;
             if (!id) return;
 
@@ -801,24 +678,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            try {
-                const response = await fetch('api/index.php?action=delete_point', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    this.closePointModal();
-                    await this.fetchData();
-                    this.showToast('Точка удалена.', 'info');
-                } else {
-                    this.showToast('Ошибка удаления: ' + result.error, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка сервера', 'error');
+            this.state.points = this.state.points.filter(p => p.id !== id);
+            this.saveToLocalStorage(true);
+            this.closePointModal();
+            this.renderAll();
+            this.showToast('Точка удалена локально.', 'info');
+        },
+
+        // Visit Modal (Mark Visit)
+        openVisitModal(pointId) {
+            const point = this.state.points.find(p => p.id === pointId);
+            if (!point) return;
+
+            document.getElementById('visitPointId').value = point.id;
+            const nameEl = document.getElementById('visitModalPointName');
+            if (nameEl) nameEl.textContent = point.name;
+            const addressEl = document.getElementById('visitModalPointAddress');
+            if (addressEl) addressEl.textContent = point.address || 'Адрес не указан';
+            const simEl = document.getElementById('visitModalSimNumber');
+            if (simEl) simEl.textContent = `SIM: ${point.sim_number}`;
+
+            const contractEl = document.getElementById('visitModalContractNumber');
+            if (contractEl) {
+                contractEl.textContent = point.contract_number ? `📄 Договор: ${point.contract_number}` : '📄 Договор: —';
             }
+
+            document.getElementById('visitDefectsCheckbox').checked = false;
+            document.getElementById('visitDefectsText').value = '';
+            document.getElementById('visitNotesText').value = '';
+
+            const defectsGroup = document.getElementById('defectsDescriptionGroup');
+            if (defectsGroup) defectsGroup.classList.add('hidden');
+
+            const modal = document.getElementById('visitModal');
+            if (modal) modal.classList.remove('hidden');
+        },
+
+        closeVisitModal() {
+            const modal = document.getElementById('visitModal');
+            if (modal) modal.classList.add('hidden');
+        },
+
+        handleVisitSubmit(e) {
+            e.preventDefault();
+            const pointId = document.getElementById('visitPointId').value;
+            const point = this.state.points.find(p => p.id === pointId);
+            const hasDefects = document.getElementById('visitDefectsCheckbox').checked;
+            const defectsDescription = document.getElementById('visitDefectsText').value;
+            const notes = document.getElementById('visitNotesText').value;
+
+            // Generate visit record with exact local timestamp YYYY-MM-DD HH:mm:ss
+            const now = new Date();
+            const formattedTimestamp = now.getFullYear() + '-' +
+                String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                String(now.getDate()).padStart(2, '0') + ' ' +
+                String(now.getHours()).padStart(2, '0') + ':' +
+                String(now.getMinutes()).padStart(2, '0') + ':' +
+                String(now.getSeconds()).padStart(2, '0');
+
+            const newVisit = {
+                id: 'v_' + Date.now(),
+                point_id: pointId,
+                sim_number: point ? point.sim_number : '',
+                contract_number: point ? point.contract_number : '',
+                point_name: point ? point.name : '',
+                visited_at: formattedTimestamp,
+                has_defects: hasDefects,
+                defects_description: defectsDescription,
+                notes: notes,
+                technician: this.state.settings.technician_name || 'Инженер ТО'
+            };
+
+            this.state.visits.unshift(newVisit);
+            this.saveToLocalStorage(true);
+
+            this.closeVisitModal();
+            this.renderAll();
+            this.showToast('Посещение точки успешно отмечено в памяти телефона!', 'success');
         },
 
         renderHistory() {
@@ -851,32 +787,33 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             historyListEl.innerHTML = visits.map(v => {
-                const visitDate = new Date(v.visited_at);
-                const dateFormatted = visitDate.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                const timeFormatted = visitDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const dateFormatted = new Date(v.visited_at).toLocaleDateString('ru-RU', {
+                    day: '2-digit', month: '2-digit', year: 'numeric'
+                });
+                const timeFormatted = new Date(v.visited_at).toLocaleTimeString('ru-RU', {
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                });
 
                 return `
-                    <div class="history-item">
+                    <div class="history-item ${v.has_defects ? 'has-defects' : ''}">
                         <div class="history-header">
                             <div>
-                                <span class="history-title">${this.escapeHtml(v.point_name)}</span>
-                                <div style="font-size:0.8rem; color:var(--text-muted);">
+                                <span class="history-point-name">${this.escapeHtml(v.point_name)}</span>
+                                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top:2px;">
                                     SIM: <b style="color:var(--accent-blue);">${this.escapeHtml(v.sim_number)}</b>
-                                    ${v.contract_number ? ` | Договор: <b style="color:var(--accent-cyan);">${this.escapeHtml(v.contract_number)}</b>` : ''}
-                                    | Инженер: ${this.escapeHtml(v.technician || 'Инженер ТО')}
+                                    ${v.contract_number ? ` | Договор: <b>${this.escapeHtml(v.contract_number)}</b>` : ''}
+                                    ${v.technician ? ` | Инженер: ${this.escapeHtml(v.technician)}` : ''}
                                 </div>
                             </div>
-                            <div style="text-align:right;">
-                                <span class="history-date">${dateFormatted}</span>
-                                <div style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono); font-weight:700;">
-                                    ⏱️ ${timeFormatted}
-                                </div>
+                            <div style="text-align: right;">
+                                <div class="history-date">${dateFormatted}</div>
+                                <div style="font-size:0.75rem; color:var(--accent-green); font-weight:bold;">⏱ ${timeFormatted}</div>
                             </div>
                         </div>
 
                         ${v.has_defects ? `
-                            <div class="history-defects-tag">
-                                ⚠️ Зафиксированы недостатки: ${this.escapeHtml(v.defects_description || 'Без подробного описания')}
+                            <div class="history-defect-box">
+                                ⚠️ <b>Зафиксированы недостатки:</b> ${this.escapeHtml(v.defects_description || 'Детали не указаны')}
                             </div>
                         ` : ''}
 
@@ -897,106 +834,53 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('companyNameInput').value = this.state.settings.company_name || '';
         },
 
-        async handleSettingsSubmit(e) {
+        handleSettingsSubmit(e) {
             e.preventDefault();
-            const data = {
+            this.state.settings = {
                 interval_mode: document.getElementById('intervalModeSelect').value,
                 interval_days: parseInt(document.getElementById('intervalDaysInput').value, 10),
                 technician_name: document.getElementById('technicianNameInput').value,
                 company_name: document.getElementById('companyNameInput').value
             };
 
-            try {
-                const response = await fetch('api/index.php?action=save_settings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                if (result.success) {
-                    this.state.settings = result.settings;
-                    this.renderAll();
-                    this.showToast('Настройки ТО успешно обновлены!', 'success');
-                } else {
-                    this.showToast('Ошибка сохранения настроек: ' + result.error, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка сервера', 'error');
-            }
+            this.saveToLocalStorage(true);
+            this.renderAll();
+            this.showToast('Настройки ТО обновлены в телефоне!', 'success');
         },
 
-        // Force refresh button: clears browser cache and re-fetches latest server data bypassing local storage/cache
         async handleForceRefresh() {
-            try {
-                this.showToast('🔄 Обновление данных с сервера...', 'info');
-
-                // Clear CacheStorage if supported
-                if ('caches' in window) {
-                    const cacheKeys = await caches.keys();
-                    await Promise.all(cacheKeys.map(key => caches.delete(key)));
-                }
-
-                // Fetch fresh points bypassing HTTP cache with timestamp query parameter
-                const cacheBuster = Date.now();
-                const response = await fetch(`api/index.php?action=get_points&_t=${cacheBuster}`, {
-                    cache: 'no-store'
-                });
-
-                if (!response.ok) throw new Error('Ошибка сети при обновлении');
-                const result = await response.json();
-
-                if (result.success) {
-                    this.state.points = result.points || [];
-                    this.state.visits = result.visits || [];
-                    this.state.settings = result.settings || this.state.settings;
-                    this.renderAll();
-                    this.showToast('Данные успешно принудительно обновлены!', 'success');
-                } else {
-                    this.showToast('Ошибка при получении данных: ' + result.error, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка принудительного обновления: ' + err.message, 'error');
+            if (confirm('Принудительно обновить локальные данные с хостинга? Несохраненные локальные изменения могут быть перезаписаны.')) {
+                await this.fetchDataFromServer(true);
             }
         },
 
-        // Red button action: resets all intervals by clearing visit history
-        async handleResetIntervals() {
-            if (!confirm('Вы действительно хотите сбросить все интервалы посещений?\nВсе точки перейдут в статус "Не посещены" (Требуют ТО).')) {
+        handleResetIntervals() {
+            if (!confirm('Вы уверены, что хотите сбросить ВСЕ зафиксированные визиты? Все точки моментально вернутся в список требующих ТО.')) {
                 return;
             }
 
-            try {
-                const response = await fetch('api/index.php?action=reset_intervals');
-                const result = await response.json();
-                if (result.success) {
-                    this.state.points = result.points;
-                    this.state.visits = result.visits;
-                    this.state.settings = result.settings;
-                    this.renderAll();
-                    this.showToast('Все интервалы посещений сброшены!', 'info');
-                } else {
-                    this.showToast('Ошибка при сбросе интервалов: ' + result.error, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                this.showToast('Ошибка сервера', 'error');
-            }
+            this.state.visits = [];
+            this.saveToLocalStorage(true);
+            this.renderAll();
+            this.showToast('Интервалы ТО сброшены. Все объекты требуют обслуживания.', 'info');
         },
 
-        // Voice today summary report using SpeechSynthesis
+        // Voice summary synthesis ("Что сегодня?")
         speakTodaySummary() {
             const todayStr = new Date().toISOString().split('T')[0];
             const todayVisits = this.state.visits.filter(v => v.visited_at && v.visited_at.startsWith(todayStr));
-            const totalCount = todayVisits.length;
-            const defectsCount = todayVisits.filter(v => v.has_defects).length;
+
+            let unvisitedCount = 0;
+            this.state.points.forEach(p => {
+                if (!this.isPointVisitedInInterval(p)) unvisitedCount++;
+            });
 
             let reportText = '';
-            if (totalCount === 0) {
-                reportText = 'Сегодня посещений точек пока не зарегистрировано.';
+            if (todayVisits.length === 0) {
+                reportText = `Сегодня вы еще не посетили ни одного объекта. Осталось обслужить ${unvisitedCount} ${this.pluralize(unvisitedCount, ['объект', 'объекта', 'объектов'])}.`;
             } else {
-                reportText = `Сегодня посетили ${totalCount} ${this.pluralize(totalCount, ['точку', 'точки', 'точек'])}. `;
+                const defectsCount = todayVisits.filter(v => v.has_defects).length;
+                reportText = `За сегодня успешно обслужено ${todayVisits.length} ${this.pluralize(todayVisits.length, ['объект', 'объекта', 'объектов'])}. `;
                 if (defectsCount > 0) {
                     reportText += `Из них в ${defectsCount} ${this.pluralize(defectsCount, ['объекте', 'объектах', 'объектах'])} выявлены неисправности.`;
                 } else {
@@ -1007,7 +891,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.showToast(`📢 ${reportText}`, 'info');
 
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Stop any active speech
+                window.speechSynthesis.cancel(); // Stop active speech
                 const utterance = new SpeechSynthesisUtterance(reportText);
                 utterance.lang = 'ru-RU';
                 utterance.rate = 1.0;
@@ -1017,28 +901,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        // Speech Recognition for 🎤 voice dictation buttons
+        // Speech Recognition for dictation
         setupVoiceControls() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                document.querySelectorAll('.voice-input-btn').forEach(b => b.style.display = 'none');
+                return;
+            }
 
-            document.querySelectorAll('.voice-dictate-btn').forEach(btn => {
+            document.querySelectorAll('.voice-input-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = btn.getAttribute('data-target');
+                    const targetId = e.currentTarget.getAttribute('data-target');
                     const targetInput = document.getElementById(targetId);
                     if (!targetInput) return;
-
-                    if (!SpeechRecognition) {
-                        this.showToast('Голосовой ввод не поддерживается вашим браузером.', 'error');
-                        return;
-                    }
 
                     const recognition = new SpeechRecognition();
                     recognition.lang = 'ru-RU';
                     recognition.interimResults = false;
 
-                    btn.classList.add('listening');
-                    this.showToast('🎤 Говорите...', 'info');
+                    btn.classList.add('pulse');
+                    this.showToast('🎙️ Говорите... идет распознавание речи', 'info');
 
                     recognition.onresult = (event) => {
                         const transcript = event.results[0][0].transcript;
@@ -1047,17 +929,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else {
                             targetInput.value = transcript;
                         }
-                        targetInput.dispatchEvent(new Event('input'));
-                        this.showToast(`Распознано: "${transcript}"`, 'success');
+                        this.showToast('✓ Речь распознана!', 'success');
                     };
 
-                    recognition.onerror = (event) => {
-                        console.error('Speech recognition error:', event.error);
-                        this.showToast('Ошибка голосового ввода.', 'error');
+                    recognition.onerror = () => {
+                        this.showToast('Не удалось распознать речь.', 'error');
                     };
 
                     recognition.onend = () => {
-                        btn.classList.remove('listening');
+                        btn.classList.remove('pulse');
                     };
 
                     recognition.start();
@@ -1065,48 +945,210 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
-        setupPWA() {
-            const pwaBanner = document.getElementById('pwaInstallBanner');
-            const pwaBannerInstallBtn = document.getElementById('pwaBannerInstallBtn');
-            const pwaBannerCloseBtn = document.getElementById('pwaBannerCloseBtn');
+        // Graphical Calendar Modal
+        openCalendarModal() {
+            this.state.calendarViewYear = new Date().getFullYear();
+            this.state.calendarViewMonth = new Date().getMonth();
+            this.renderCalendarGrid();
+            const modal = document.getElementById('calendarModal');
+            if (modal) modal.classList.remove('hidden');
+        },
 
-            pwaBannerCloseBtn?.addEventListener('click', () => {
-                pwaBanner?.classList.add('hidden');
+        closeCalendarModal() {
+            const modal = document.getElementById('calendarModal');
+            if (modal) modal.classList.add('hidden');
+        },
+
+        changeCalendarMonth(delta) {
+            this.state.calendarViewMonth += delta;
+            if (this.state.calendarViewMonth < 0) {
+                this.state.calendarViewMonth = 11;
+                this.state.calendarViewYear -= 1;
+            } else if (this.state.calendarViewMonth > 11) {
+                this.state.calendarViewMonth = 0;
+                this.state.calendarViewYear += 1;
+            }
+            this.renderCalendarGrid();
+        },
+
+        renderCalendarGrid() {
+            const monthNames = [
+                'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+            ];
+
+            const year = this.state.calendarViewYear;
+            const month = this.state.calendarViewMonth;
+
+            const calTitleEl = document.getElementById('calMonthYearTitle') || document.getElementById('calendarMonthTitle');
+            if (calTitleEl) calTitleEl.textContent = `${monthNames[month]} ${year}`;
+
+            const calendarGrid = document.getElementById('calendarDaysGrid');
+            if (!calendarGrid) return;
+
+            const firstDay = new Date(year, month, 1);
+            let startingDay = firstDay.getDay() - 1; // Mon = 0, Sun = 6
+            if (startingDay === -1) startingDay = 6;
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let html = '';
+
+            for (let i = 0; i < startingDay; i++) {
+                html += `<div class="calendar-day empty"></div>`;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const visitsForDay = this.state.visits.filter(v => v.visited_at && v.visited_at.startsWith(dateStr));
+
+                const hasVisits = visitsForDay.length > 0;
+                const hasDefects = visitsForDay.some(v => v.has_defects);
+                const isToday = dateStr === todayStr;
+
+                let dayClass = 'calendar-day';
+                if (isToday) dayClass += ' is-today';
+                if (hasVisits) dayClass += hasDefects ? ' has-defects' : ' has-visits';
+
+                html += `
+                    <div class="${dayClass}" data-date="${dateStr}">
+                        <div class="day-number">${day}</div>
+                        ${hasVisits ? `
+                            <div class="day-badge">
+                                ${visitsForDay.length} ${hasDefects ? '⚠️' : '✓'}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            calendarGrid.innerHTML = html;
+
+            calendarGrid.querySelectorAll('.calendar-day[data-date]').forEach(dayEl => {
+                dayEl.addEventListener('click', (e) => {
+                    const dateSelected = e.currentTarget.getAttribute('data-date');
+                    const historyDatePicker = document.getElementById('historyDatePicker');
+                    if (historyDatePicker) historyDatePicker.value = dateSelected;
+                    this.state.historySelectedDate = dateSelected;
+                    this.closeCalendarModal();
+                    this.switchTab('history');
+                    this.showToast(`Выбрана дата: ${new Date(dateSelected).toLocaleDateString('ru-RU')}`, 'info');
+                });
             });
+        },
 
+        // Per-Point History Modal
+        openPointHistoryModal(pointId) {
+            const point = this.state.points.find(p => p.id === pointId);
+            if (!point) return;
+
+            const nameEl = document.getElementById('pointHistoryModalName') || document.getElementById('pointHistoryTitle');
+            if (nameEl) nameEl.textContent = point.name;
+
+            const simEl = document.getElementById('pointHistoryModalSim') || document.getElementById('pointHistorySimBadge');
+            if (simEl) simEl.textContent = `SIM: ${point.sim_number}`;
+
+            const addrEl = document.getElementById('pointHistoryModalAddress') || document.getElementById('pointHistoryAddress');
+            if (addrEl) addrEl.textContent = point.address || 'Адрес не указан';
+
+            const contractBadge = document.getElementById('pointHistoryModalContract') || document.getElementById('pointHistoryContractBadge');
+            if (contractBadge) {
+                if (point.contract_number) {
+                    contractBadge.textContent = `📄 Договор: ${point.contract_number}`;
+                    contractBadge.classList.remove('hidden');
+                } else {
+                    contractBadge.textContent = `📄 Договор: —`;
+                }
+            }
+
+            const visits = this.state.visits.filter(v => v.point_id === pointId);
+            visits.sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at));
+
+            const totalVisitsEl = document.getElementById('pointHistoryModalTotalVisits');
+            if (totalVisitsEl) totalVisitsEl.textContent = visits.length;
+
+            const totalDefectsEl = document.getElementById('pointHistoryModalTotalDefects');
+            if (totalDefectsEl) totalDefectsEl.textContent = visits.filter(v => v.has_defects).length;
+
+            const listEl = document.getElementById('pointHistoryModalTimeline') || document.getElementById('pointHistoryList');
+            if (listEl) {
+                if (visits.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <h4>История проверок пуста</h4>
+                            <p>Данный объект еще не проходил регулярное ТО.</p>
+                        </div>
+                    `;
+                } else {
+                    listEl.innerHTML = visits.map(v => {
+                        const dateFormatted = new Date(v.visited_at).toLocaleString('ru-RU', {
+                            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                        return `
+                            <div class="timeline-item ${v.has_defects ? 'has-defects' : ''}">
+                                <div class="timeline-date">
+                                    📅 ${dateFormatted} ${v.technician ? `(${this.escapeHtml(v.technician)})` : ''}
+                                </div>
+                                <div style="font-weight:600; margin-bottom:4px; color:${v.has_defects ? 'var(--accent-red)' : 'var(--accent-green)'}">
+                                    ${v.has_defects ? '⚠️ Внимание: Выявлены недостатки' : '✓ Проверка проведена успешно'}
+                                </div>
+                                ${v.defects_description ? `<div style="font-size:0.82rem; margin-bottom:4px;"><b>Замечания:</b> ${this.escapeHtml(v.defects_description)}</div>` : ''}
+                                ${v.notes ? `<div style="font-size:0.82rem; color:var(--text-muted);"><b>Заметка:</b> ${this.escapeHtml(v.notes)}</div>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            const modal = document.getElementById('pointHistoryModal');
+            if (modal) modal.classList.remove('hidden');
+        },
+
+        closePointHistoryModal() {
+            const modal = document.getElementById('pointHistoryModal');
+            if (modal) modal.classList.add('hidden');
+        },
+
+        pluralize(n, text_forms) {
+            n = Math.abs(n) % 100;
+            var n1 = n % 10;
+            if (n > 10 && n < 20) { return text_forms[2]; }
+            if (n1 > 1 && n1 < 5) { return text_forms[1]; }
+            if (n1 == 1) { return text_forms[0]; }
+            return text_forms[2];
+        },
+
+        setupPWA() {
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 this.state.deferredPrompt = e;
-
-                // Show automatic banner overlay at launch if not installed
-                if (pwaBanner) pwaBanner.classList.remove('hidden');
-
-                const installBtn = document.getElementById('pwaInstallBtn');
-                if (installBtn) installBtn.classList.remove('hidden');
-
-                const handleInstall = () => {
-                    pwaBanner?.classList.add('hidden');
-                    if (installBtn) installBtn.classList.add('hidden');
-                    this.state.deferredPrompt.prompt();
-                    this.state.deferredPrompt.userChoice.then(() => {
-                        this.state.deferredPrompt = null;
-                    });
-                };
-
-                installBtn?.addEventListener('click', handleInstall);
-                pwaBannerInstallBtn?.addEventListener('click', handleInstall);
+                const banner = document.getElementById('pwaInstallBanner');
+                if (banner) banner.classList.remove('hidden');
+                const btnSettings = document.getElementById('pwaInstallBtn');
+                if (btnSettings) btnSettings.classList.remove('hidden');
             });
 
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('SW Registered', reg))
-                    .catch(err => console.error('SW Fail', err));
-            }
-        },
+            const triggerInstall = async () => {
+                const banner = document.getElementById('pwaInstallBanner');
+                if (banner) banner.classList.add('hidden');
+                if (this.state.deferredPrompt) {
+                    this.state.deferredPrompt.prompt();
+                    const { outcome } = await this.state.deferredPrompt.userChoice;
+                    console.log(`PWA install choice: ${outcome}`);
+                    this.state.deferredPrompt = null;
+                }
+            };
 
-        pluralize(number, titles) {
-            const cases = [2, 0, 1, 1, 1, 2];
-            return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+            document.getElementById('pwaBannerInstallBtn')?.addEventListener('click', triggerInstall);
+            document.getElementById('pwaInstallBtn')?.addEventListener('click', triggerInstall);
+
+            document.getElementById('pwaBannerCloseBtn')?.addEventListener('click', () => {
+                const banner = document.getElementById('pwaInstallBanner');
+                if (banner) banner.classList.add('hidden');
+            });
         },
 
         showToast(message, type = 'info') {
