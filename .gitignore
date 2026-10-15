@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+android_app/node_modules/
+
+# Build and web artifacts
+android_app/www/
+android_app/android/.gradle/
+android_app/android/build/
+android_app/android/app/build/
+android_app/android/app/src/main/assets/public/
+
+# APK / Bundle outputs
+*.apk
+*.aab
+
+# Temp files
+.DS_Store
+*.log
+node_modules/
+android_build/
