@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Нет сети — Flower Studio Pro</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Roboto, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #ff9800;
+      margin: 0 0 10px 0;
+      font-size: 24px;
+    }
+    p {
+      color: #a0a0a0;
+      margin: 0 0 30px 0;
+      font-size: 15px;
+      max-width: 300px;
+      line-height: 1.4;
+    }
+    button {
+      background: linear-gradient(135deg, #ff9800, #ffb74d);
+      color: #121212;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+    }
+    button:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+  <div class="icon">🥀</div>
+  <h1>Отсутствует подключение</h1>
+  <p>Похоже, ваше устройство не подключено к интернету. Проверьте сеть и попробуйте снова.</p>
+  <button onclick="window.location.reload()">🔄 Обновить страницу</button>
+</body>
+</html>

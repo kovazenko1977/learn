@@ -1,0 +1,42 @@
+{
+  "name": "Flower Studio — Цветы с доставкой",
+  "short_name": "Flower Studio",
+  "description": "Заказ и доставка свежих цветов по Минску",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#e91e63",
+  "background_color": "#fff5f8",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Каталог",
+      "url": "/#catalog"
+    },
+    {
+      "name": "Корзина",
+      "url": "/#cart"
+    },
+    {
+      "name": "Ассистент",
+      "url": "/#assistant"
+    }
+  ]
+}

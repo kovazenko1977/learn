@@ -1,0 +1,32 @@
+# Apache Configuration for Flower Studio Pro
+
+Options -Indexes
+FollowSymLinks On
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # HTTPS Redirect
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Block direct access to data JSON files
+    RewriteRule ^data/.*\.json$ - [F,L]
+
+    # Block direct access to driver classes and core helpers
+    RewriteRule ^api/drivers/ - [F,L]
+    RewriteRule ^api/(config|helpers|storage)\.php$ - [F,L]
+
+    # Route API requests to router
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^api/(.*)$ api/router.php [QSA,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
