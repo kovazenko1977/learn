@@ -1,0 +1,115 @@
+[Sun Oct 25 01:14:46 2026] PHP 8.3.6 Development Server (http://127.0.0.1:8088) started
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53050 Accepted
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53050 [200]: POST /api/auth.php?action=login
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53050 Closing
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53056 Accepted
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53056 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53056 Closing
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53072 Accepted
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53072 [200]: GET /api/tickets.php
+[Sun Oct 25 01:14:48 2026] 127.0.0.1:53072 Closing
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44412 Accepted
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44412 [200]: GET /
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44412 Closing
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44416 Accepted
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44426 Accepted
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44416 [200]: GET /assets/css/style.css
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44426 [200]: GET /assets/js/app.js
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44416 Closing
+[Sun Oct 25 01:15:14 2026] 127.0.0.1:44426 Closing
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44432 Accepted
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44432 [200]: POST /api/auth.php?action=login
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44432 Closing
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44440 Accepted
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44440 [200]: GET /api/settings.php
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44440 Closing
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44444 Accepted
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44444 [200]: GET /api/analytics.php?action=dashboard
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44444 Closing
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44460 Accepted
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44460 [200]: GET /api/tickets.php
+[Sun Oct 25 01:15:15 2026] 127.0.0.1:44460 Closing
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44476 Accepted
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44476 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44476 Closing
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44490 Accepted
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44490 [200]: POST /api/form-fields.php
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44490 Closing
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44504 Accepted
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44504 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:15:16 2026] 127.0.0.1:44504 Closing
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44506 Accepted
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44506 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44506 Closing
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44508 Accepted
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44508 [200]: POST /api/tickets.php?action=create
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44508 Closing
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44524 Accepted
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44524 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:15:17 2026] 127.0.0.1:44524 Closing
+[Sun Oct 25 01:15:18 2026] 127.0.0.1:44532 Accepted
+[Sun Oct 25 01:15:18 2026] 127.0.0.1:44532 [200]: GET /api/tickets.php?status=&category_id=&priority_id=&archived=0&search=
+[Sun Oct 25 01:15:18 2026] 127.0.0.1:44532 Closing
+[Sun Oct 25 01:15:19 2026] 127.0.0.1:47452 Accepted
+[Sun Oct 25 01:15:19 2026] 127.0.0.1:47452 [200]: GET /api/tickets.php
+[Sun Oct 25 01:15:19 2026] 127.0.0.1:47452 Closing
+[Sun Oct 25 01:15:19 2026] 127.0.0.1:47456 Accepted
+[Sun Oct 25 01:15:19 2026] 127.0.0.1:47456 [200]: GET /api/analytics.php?action=dashboard
+[Sun Oct 25 01:15:19 2026] 127.0.0.1:47456 Closing
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54250 Accepted
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54250 [200]: POST /api/auth.php?action=login
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54250 Closing
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54262 Accepted
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54262 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54262 Closing
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54274 Accepted
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54274 [200]: GET /api/tickets.php
+[Sun Oct 25 01:16:55 2026] 127.0.0.1:54274 Closing
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60250 Accepted
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60250 [200]: GET /
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60250 Closing
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60252 Accepted
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60258 Accepted
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60252 [200]: GET /assets/css/style.css
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60258 [200]: GET /assets/js/app.js
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60252 Closing
+[Sun Oct 25 01:17:18 2026] 127.0.0.1:60258 Closing
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33210 Accepted
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33210 [200]: POST /api/auth.php?action=login
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33210 Closing
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33214 Accepted
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33214 [200]: GET /api/settings.php
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33214 Closing
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33226 Accepted
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33226 [200]: GET /api/analytics.php?action=dashboard
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33226 Closing
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33242 Accepted
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33242 [200]: GET /api/tickets.php
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33242 Closing
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33256 Accepted
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33256 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:17:19 2026] 127.0.0.1:33256 Closing
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33266 Accepted
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33266 [200]: POST /api/form-fields.php
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33266 Closing
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33282 Accepted
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33282 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33282 Closing
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33288 Accepted
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33288 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:17:20 2026] 127.0.0.1:33288 Closing
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33302 Accepted
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33302 [200]: POST /api/tickets.php?action=create
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33302 Closing
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33310 Accepted
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33310 [200]: GET /api/form-fields.php
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33310 Closing
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33322 Accepted
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33322 [200]: GET /api/tickets.php?status=&category_id=&priority_id=&archived=0&search=
+[Sun Oct 25 01:17:21 2026] 127.0.0.1:33322 Closing
+[Sun Oct 25 01:17:22 2026] 127.0.0.1:33326 Accepted
+[Sun Oct 25 01:17:22 2026] 127.0.0.1:33326 [200]: GET /api/tickets.php
+[Sun Oct 25 01:17:22 2026] 127.0.0.1:33326 Closing
+[Sun Oct 25 01:17:23 2026] 127.0.0.1:33340 Accepted
+[Sun Oct 25 01:17:23 2026] 127.0.0.1:33340 [200]: GET /api/analytics.php?action=dashboard
+[Sun Oct 25 01:17:23 2026] 127.0.0.1:33340 Closing
