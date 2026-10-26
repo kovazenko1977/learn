@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "ticket_id": 2,
+    "user_id": 4,
+    "user_name": "Сидоров Алексей Владимирович",
+    "role": "executor",
+    "comment": "Приступил к диагностике сетевого модуля принтера.",
+    "attachments": [],
+    "is_completion_report": false,
+    "created_at": "2026-03-18 10:30:00"
+  }
+]
