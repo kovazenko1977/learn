@@ -1,0 +1,24 @@
+{
+  "system_title": "CRM Service Fix",
+  "company_name": "ООО «ТехноОбслуживание»",
+  "storage_mode": "json",
+  "mysql": {
+    "host": "localhost",
+    "port": 3306,
+    "dbname": "crm_maintenance",
+    "username": "root",
+    "password": ""
+  },
+  "default_language": "ru",
+  "default_theme": "light",
+  "jwt_secret": "crm_secret_key_2026_super_secure_hash_892374829",
+  "notifications": {
+    "email_enabled": true,
+    "smtp_host": "smtp.mail.ru",
+    "smtp_port": 465,
+    "smtp_user": "notif@crm-service.local",
+    "telegram_enabled": false,
+    "telegram_bot_token": ""
+  },
+  "sla_warning_threshold_pct": 20
+}
