@@ -1,0 +1,87 @@
+[
+    {
+        "name": "Тестовый раздел",
+        "id": "6a08b46dcfc39"
+    },
+    {
+        "id": "render-test",
+        "name": "Render Test"
+    },
+    {
+        "id": "news-test",
+        "name": "News Test"
+    },
+    {
+        "id": "6a09ff1be789f",
+        "name": "Feature Test Section 1779040027",
+        "view_type": "cards",
+        "items_per_page": 10,
+        "sort_by": "date_desc",
+        "custom_css": "",
+        "lang_read_more": "Читать далее",
+        "lang_search_placeholder": "Поиск новостей...",
+        "show_date": true,
+        "show_title": true,
+        "show_views": true,
+        "show_author": false,
+        "show_reading_time": true,
+        "show_tags": true,
+        "show_search": true,
+        "show_reactions": true,
+        "show_share": true
+    },
+    {
+        "id": "test_adv",
+        "name": "Adv Test"
+    },
+    {
+        "id": "6a0af5587671f",
+        "name": "Important Info",
+        "mode": "info",
+        "view_type": "cards",
+        "items_per_page": 10,
+        "sort_by": "date_desc",
+        "custom_css": "",
+        "lang_read_more": "Читать далее",
+        "lang_search_placeholder": "Поиск новостей...",
+        "show_date": true,
+        "show_title": true,
+        "show_views": true,
+        "show_author": false,
+        "show_reading_time": true,
+        "show_tags": true,
+        "show_search": true,
+        "show_reactions": true,
+        "show_share": true,
+        "animation": "zoom",
+        "bg_type": "none",
+        "bg_color": "#ffffff",
+        "bg_gradient": "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        "text_color": "#333333",
+        "container_shadow": false,
+        "border_radius": 15,
+        "font_family": "inherit",
+        "show_toc": true,
+        "show_progress_bar": false,
+        "password_protection": "",
+        "show_accessibility": true,
+        "allow_theme_toggle": false,
+        "show_qr": false,
+        "show_copy_link": false,
+        "show_breadcrumbs": false,
+        "show_scroll_top": false,
+        "custom_header": "",
+        "custom_footer": "",
+        "related_count": 0,
+        "webhook_url": "",
+        "lazy_load": true
+    },
+    {
+        "id": "s1",
+        "name": "Section 1"
+    },
+    {
+        "id": "s2",
+        "name": "Section 2"
+    }
+]
