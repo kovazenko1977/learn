@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom styles for dnd and animations */
+.ghost-ticket {
+  opacity: 0.4;
+  border-style: dashed;
+}
+
+/* Print/PDF Export Optimization CSS Rules */
+@media print {
+  /* Hide interactive layout elements like sidebars, headers, and navigation bars */
+  aside,
+  header,
+  nav,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Expand main content container to take full width and avoid margins/paddings */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Style adjustment for paper */
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt !important;
+  }
+
+  /* Hide filtering toolbars, buttons, select-dropdowns, close buttons */
+  select,
+  input[type="text"],
+  input[type="checkbox"],
+  button,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
+  }
+
+  /* Hide columns and headers meant for interaction inside tables */
+  th:last-child,
+  td:last-child,
+  th:first-child,
+  td:first-child {
+    /* Hide the checkbox column and actions (open/edit/delete) column */
+    display: none !important;
+  }
+
+  /* If a ticket details modal/dialog is open, center and optimize it for print */
+  .fixed.inset-0 {
+    position: relative !important;
+    background: none !important;
+    padding: 0 !important;
+    border: none !important;
+    z-index: auto !important;
+  }
+
+  /* Remove backdrop blur */
+  .backdrop-blur-sm {
+    backdrop-filter: none !important;
+  }
+
+  /* Force modals to expand and hide background elements when modal is printed */
+  .fixed.inset-0 > div {
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide close button of modal */
+  .absolute.top-4.right-4 {
+    display: none !important;
+  }
+
+  /* Hide commenting input fields and comment action buttons */
+  form,
+  input,
+  textarea {
+    display: none !important;
+  }
+
+  /* Hide drag-and-drop column helper text and technician assign panels */
+  .bg-slate-100 {
+    background-color: transparent !important;
+  }
+}
