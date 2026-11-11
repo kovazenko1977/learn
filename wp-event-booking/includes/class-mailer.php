@@ -15,8 +15,11 @@ class WPEB_Mailer {
             return false;
         }
 
-        $adminEmail = $db->get_setting('email_to', get_option('admin_email', 'admin@example.com'));
-        $fromName = $db->get_setting('email_from_name', get_bloginfo('name', 'WP Event Booking'));
+        $defaultAdminEmail = function_exists('get_option') ? get_option('admin_email', 'admin@example.com') : 'admin@example.com';
+        $defaultBlogName = function_exists('get_bloginfo') ? get_bloginfo('name', 'WP Event Booking') : 'WP Event Booking';
+
+        $adminEmail = $db->get_setting('email_to', $defaultAdminEmail);
+        $fromName = $db->get_setting('email_from_name', $defaultBlogName);
         $subject = $db->get_setting('email_subject', 'Подтверждение записи на мероприятие #{code}');
         $template = $db->get_setting('email_template', '');
 

@@ -211,7 +211,8 @@ $page = $_GET['page'] ?? 'booking';
         </div>
         <nav class="wp-site-nav">
             <a href="/preview.php?page=booking" class="<?php echo $page === 'booking' ? 'active' : ''; ?>">Стандартная форма [event_booking]</a>
-            <a href="/preview.php?page=vip_form" class="<?php echo $page === 'vip_form' ? 'active' : ''; ?>">VIP-форма [event_booking form="vip-business-session"]</a>
+            <a href="/preview.php?page=vip_form" class="<?php echo $page === 'vip_form' ? 'active' : ''; ?>">VIP-сессия [event_booking form="vip-business-session"]</a>
+            <a href="/preview.php?page=consultation" class="<?php echo $page === 'consultation' ? 'active' : ''; ?>">Консультация [event_booking form="consultation-reception"]</a>
             <a href="/preview.php?page=catalog" class="<?php echo $page === 'catalog' ? 'active' : ''; ?>">Каталог [event_booking_catalog]</a>
             <a href="/preview.php?page=lookup" class="<?php echo $page === 'lookup' ? 'active' : ''; ?>">Проверка брони [event_booking_lookup]</a>
             <a href="/preview.php?page=admin" class="<?php echo $page === 'admin' ? 'active' : ''; ?>" style="background:#3b82f6; color:#ffffff;">🔒 Админка (PIN: 222120)</a>
@@ -229,9 +230,16 @@ $page = $_GET['page'] ?? 'booking';
         <?php elseif ($page === 'vip_form'): ?>
             <div style="text-align:center; margin-bottom: 24px;">
                 <h1 style="margin-bottom:8px; font-size:26px;">Демонстрация VIP-формы <code>[event_booking form="vip-business-session"]</code></h1>
-                <p style="color:#64748b;">Форма с выбором категории билета, диеты питания, трансфера и контактов ассистента</p>
+                <p style="color:#64748b;">Форма с выбором категории билета, банкетного меню, трансфера и контактов ассистента</p>
             </div>
             <?php echo do_shortcode('[event_booking form="vip-business-session"]'); ?>
+
+        <?php elseif ($page === 'consultation'): ?>
+            <div style="text-align:center; margin-bottom: 24px;">
+                <h1 style="margin-bottom:8px; font-size:26px;">Демонстрация формы <code>[event_booking form="consultation-reception"]</code></h1>
+                <p style="color:#64748b;">Форма онлайн-записи на консультацию с датой рождения, темой и мессенджером</p>
+            </div>
+            <?php echo do_shortcode('[event_booking form="consultation-reception"]'); ?>
 
         <?php elseif ($page === 'catalog'): ?>
             <?php echo do_shortcode('[event_booking_catalog]'); ?>

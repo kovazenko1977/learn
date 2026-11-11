@@ -140,12 +140,32 @@ class WPEB_Booking_Engine {
             }
         }
 
-        // Validate custom fields
+        // Validate custom fields and map human-readable labels
         $cfValues = [];
+        // Map labels from forms if available
+        $labelMap = [];
+        $forms = $this->db->get_forms();
+        foreach ($forms as $f) {
+            if (!empty($f['fields_json'])) {
+                $decoded = json_decode($f['fields_json'], true);
+                if (is_array($decoded)) {
+                    foreach ($decoded as $fld) {
+                        if (!empty($fld['field_key']) && !empty($fld['field_label'])) {
+                            $labelMap[$fld['field_key']] = $fld['field_label'];
+                        }
+                    }
+                }
+            }
+        }
+
         if (is_array($customFields)) {
             foreach ($customFields as $k => $v) {
                 if ($v !== '' && $v !== null) {
-                    $cfValues[$k] = $v;
+                    $lbl = $labelMap[$k] ?? $k;
+                    if (is_array($v)) {
+                        $v = implode(', ', $v);
+                    }
+                    $cfValues[$lbl] = $v;
                 }
             }
         }

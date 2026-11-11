@@ -446,6 +446,41 @@ class WPEB_Database {
                     ['field_key' => 'rent_gear', 'field_label' => 'Необходима аренда экипировки (коврик, пояс, перчатки)', 'field_type' => 'switch', 'placeholder' => '', 'is_required' => 0, 'width' => '50'],
                     ['field_key' => 'locker_room', 'field_label' => 'Тип раздевалки', 'field_type' => 'select', 'field_options' => "Стандартная раздевалка\nVIP-раздевалка с сауной", 'placeholder' => '', 'is_required' => 0, 'width' => '50']
                 ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'IT Митап и Хакатон разработчиков',
+                'slug' => 'it-meetup-hackathon',
+                'description' => 'Регистрация специалистов и команд на технологическую конференцию или хакатон.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'tech_stack', 'field_label' => 'Основной стек технологий', 'field_type' => 'select', 'field_options' => "Python / Data Science\nPHP / WordPress / Laravel\nJavaScript / TypeScript / React\nMobile (Flutter / iOS / Android)\nDevOps / Cloud Architecture", 'placeholder' => '', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'github_profile', 'field_label' => 'Ссылка на GitHub / GitLab портфолио', 'field_type' => 'text', 'placeholder' => 'https://github.com/username', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'participate_role', 'field_label' => 'Формат участия в хакатоне', 'field_type' => 'radio', 'field_options' => "Участник в составе команды\nИщу команду на месте\nЗритель / Слушатель докладов", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'tshirt_size', 'field_label' => 'Размер фирменной футболки', 'field_type' => 'select', 'field_options' => "S\nM\nL\nXL\nXXL", 'placeholder' => '', 'is_required' => 1, 'width' => '50']
+                ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'Салон красоты, SPA и косметология',
+                'slug' => 'beauty-salon-spa',
+                'description' => 'Онлайн-запись клиентов на процедуры красоты, массаж и косметологический уход.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'service_selection', 'field_label' => 'Желаемая процедура', 'field_type' => 'select', 'field_options' => "Стрижка и стильная укладка\nАппаратный маникюр и педикюр\nРасслабляющий SPA-массаж (60 мин)\nКомплексный уход за лицом", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'master_preference', 'field_label' => 'Пожелания к мастеру', 'field_type' => 'radio', 'field_options' => "Любой свободный топ-мастер\nКонкретный специалист (укажите в комментарии)", 'placeholder' => '', 'is_required' => 0, 'width' => '100'],
+                    ['field_key' => 'reminder_sms', 'field_label' => 'Напомнить за 2 часа по SMS / WhatsApp', 'field_type' => 'switch', 'placeholder' => '', 'is_required' => 0, 'width' => '50']
+                ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'Корпоративное обучение и тимбилдинг',
+                'slug' => 'corporate-training',
+                'description' => 'Бронирование корпоративных бизнес-тренингов для отделов продаж и руководителей.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'company_name', 'field_label' => 'Название компании', 'field_type' => 'text', 'placeholder' => 'ПАО «Корпорация»', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'inn_kpp', 'field_label' => 'ИНН организации для выставления счета', 'field_type' => 'text', 'placeholder' => '7700000000', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'group_size', 'field_label' => 'Примерная численность сотрудников', 'field_type' => 'select', 'field_options' => "До 15 человек\n15 - 30 человек\nБолее 30 сотрудников", 'placeholder' => '', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'training_goal', 'field_label' => 'Ключевая цель корпоративного обучения', 'field_type' => 'radio', 'field_options' => "Рост конверсии отдела продаж\nЭффективные переговоры и деловой этикет\nТимбилдинг и командная синергия", 'placeholder' => '', 'is_required' => 1, 'width' => '100']
+                ], JSON_UNESCAPED_UNICODE)
             ]
         ];
 
@@ -462,7 +497,7 @@ class WPEB_Database {
             if ($status) {
                 $sql .= $wpdb->prepare(" WHERE status = %s", $status);
             }
-            $sql .= " ORDER BY id DESC";
+            $sql .= " ORDER BY id ASC";
             return $wpdb->get_results($sql, ARRAY_A);
         } else {
             $sql = "SELECT * FROM forms";
@@ -471,7 +506,7 @@ class WPEB_Database {
                 $sql .= " WHERE status = ?";
                 $params[] = $status;
             }
-            $sql .= " ORDER BY id DESC";
+            $sql .= " ORDER BY id ASC";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
