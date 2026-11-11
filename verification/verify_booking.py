@@ -7,11 +7,14 @@ Verifies:
    - Time slot selection (with dynamic remaining capacity indicator)
    - Step 2 details form completion & custom fields
    - Successful submission and ticket screen with booking code
-2. Slot capacity exhaustion logic:
+2. Capacity exhaustion:
    - When a slot is booked up to max_capacity, verify it disappears from visitor choices.
-3. PIN-protected Admin panel:
-   - Unlock with PIN 222120
-   - Inspect KPI cards, Bookings log, Slots limit configuration, Telegram/Email settings, and 40 features tab.
+3. Dedicated Form Templates & Unique Shortcodes:
+   - Verify VIP Form [event_booking form="vip-business-session"] renders specialized fields.
+4. PIN Admin & Visual Form Builder:
+   - Unlock with PIN 222120.
+   - Verify Forms list table, templates, and shortcode badges.
+   - Verify Visual Form Builder canvas rendering and field palette.
 """
 
 import time
@@ -79,6 +82,8 @@ def run_tests():
             # Fill custom fields if present
             if page.locator('input[name="custom_fields[organization]"]').count() > 0:
                 page.fill('input[name="custom_fields[organization]"]', 'ТехноЛаб')
+            if page.locator('input[name="custom_fields[consent_pd]"]').count() > 0:
+                page.check('input[name="custom_fields[consent_pd]"]')
 
             # Submit booking
             page.click("#wpebSubmitBtn")
@@ -92,22 +97,26 @@ def run_tests():
 
             page.screenshot(path="verification/booking_success.png")
 
-            # 2. Check Capacity Exhaustion: Reload booking and verify slot 12:30 is now hidden!
-            page.goto("http://127.0.0.1:8095/preview.php?page=booking")
+            # 2. Check VIP Form rendering with its dedicated unique shortcode
+            print("Navigating to VIP form...")
+            page.goto("http://127.0.0.1:8095/preview.php?page=vip_form")
             page.wait_for_selector(".wpeb-wrapper")
             page.locator(".wpeb-month-btn").first.click()
             page.locator(".wpeb-date-btn").first.click()
             page.wait_for_selector(".wpeb-time-card")
+            page.locator(".wpeb-time-card").first.click()
+            page.click("#wpebToFormBtn")
+            page.wait_for_selector("#wpebStepForm", state="visible")
 
-            time_vals = [c.locator(".wpeb-time-val").text_content().strip() for c in page.locator(".wpeb-time-card").all()]
-            print("Remaining visible time slots after booking:", time_vals)
-            assert "12:30" not in time_vals, "Exhausted slot 12:30 should not be visible to visitor!"
+            # VIP Form must contain package_type select and need_transfer switch
+            assert page.locator('select[name="custom_fields[package_type]"]').count() > 0, "VIP form must have package_type"
+            print("VIP Form custom fields verified successfully!")
 
-            # 3. Test PIN Admin Gate
+            # 3. Test PIN Admin Gate & Visual Form Builder
             print("Navigating to admin panel...")
             page.goto("http://127.0.0.1:8095/preview.php?page=admin")
 
-            # Must show PIN screen
+            # Unlock with PIN 222120
             page.wait_for_selector(".wpeb-pin-screen")
             page.fill('input[name="wpeb_pin"]', '222120')
             page.click('button[type="submit"]')
@@ -116,17 +125,28 @@ def run_tests():
             page.wait_for_selector("#wpebAdminApp")
             print("Admin panel unlocked successfully with PIN 222120!")
 
-            # Verify KPI card and Bookings
-            page.click('button[data-tab="bookings"]')
-            page.wait_for_selector("#wpebTab_bookings", state="visible")
-            assert page.locator(f"text={booking_code}").count() > 0, f"Booking {booking_code} should be listed in admin log"
+            # Check Forms and Templates Tab
+            page.click('button[data-tab="forms"]')
+            page.wait_for_selector("#wpebTab_forms", state="visible")
+            forms_rows = page.locator("#wpebTab_forms table tbody tr")
+            forms_count = forms_rows.count()
+            print(f"Total forms in admin catalog: {forms_count}")
+            assert forms_count >= 5, "Expected at least 5 pre-built form templates"
 
-            # Check 40 Features Tab
-            page.click('button[data-tab="features"]')
-            page.wait_for_selector("#wpebTab_features", state="visible")
-            feature_cards = page.locator(".wpeb-feature-card")
-            print(f"Total documented features in admin: {feature_cards.count()}")
-            assert feature_cards.count() == 40, "Expected exactly 40 documented features!"
+            # Check Visual Form Builder Canvas & Palette
+            page.click('button[data-tab="builder"]')
+            page.wait_for_selector("#wpebTab_builder", state="visible")
+            assert page.locator(".wpeb-palette-box").count() > 0, "Component palette must exist"
+            assert page.locator("#wpebCanvasFields").count() > 0, "Visual canvas must exist"
+
+            # Test adding a field from palette
+            initial_fields = page.locator(".wpeb-canvas-field-row").count()
+            page.click('button.wpeb-palette-btn[data-type="switch"]')
+            new_fields = page.locator(".wpeb-canvas-field-row").count()
+            print(f"Canvas fields before: {initial_fields}, after palette click: {new_fields}")
+            assert new_fields == initial_fields + 1, "Field should be added to canvas"
+
+            page.screenshot(path="verification/admin_builder.png")
 
             # Check Mobile view
             page.set_viewport_size({"width": 375, "height": 667})

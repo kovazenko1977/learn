@@ -155,10 +155,25 @@ $customCss = $settings['custom_css'] ?? '';
                                     <input type="text" name="<?php echo $key; ?>" class="wpeb-input" placeholder="<?php echo esc_attr($field['placeholder']); ?>" <?php echo $req ? 'required' : ''; ?> />
 
                                 <?php elseif ($field['field_type'] === 'number'): ?>
-                                    <input type="number" name="<?php echo $key; ?>" class="wpeb-input" placeholder="<?php echo esc_attr($field['placeholder']); ?>" <?php echo $req ? 'required' : ''; ?> />
+                                    <input type="number" name="<?php echo $key; ?>" class="wpeb-input" placeholder="<?php echo esc_attr($field['placeholder'] ?? ''); ?>" <?php echo $req ? 'required' : ''; ?> />
+
+                                <?php elseif ($field['field_type'] === 'date'): ?>
+                                    <input type="date" name="<?php echo $key; ?>" class="wpeb-input" <?php echo $req ? 'required' : ''; ?> />
+
+                                <?php elseif ($field['field_type'] === 'switch'): ?>
+                                    <label class="wpeb-choice-label" style="font-weight:600; cursor:pointer;">
+                                        <input type="checkbox" name="<?php echo $key; ?>" value="Да" style="width:18px; height:18px;" />
+                                        <span><?php echo esc_html($field['placeholder'] ?: 'Включить'); ?></span>
+                                    </label>
+
+                                <?php elseif ($field['field_type'] === 'consent'): ?>
+                                    <label class="wpeb-choice-label" style="font-size:13px; color:#475569;">
+                                        <input type="checkbox" name="<?php echo $key; ?>" value="Согласен" required />
+                                        <span>Я подтверждаю свое согласие с условиями проведения мероприятия и политикой обработки персональных данных <span class="wpeb-required">*</span></span>
+                                    </label>
 
                                 <?php elseif ($field['field_type'] === 'textarea'): ?>
-                                    <textarea name="<?php echo $key; ?>" class="wpeb-textarea" placeholder="<?php echo esc_attr($field['placeholder']); ?>" <?php echo $req ? 'required' : ''; ?>></textarea>
+                                    <textarea name="<?php echo $key; ?>" class="wpeb-textarea" placeholder="<?php echo esc_attr($field['placeholder'] ?? ''); ?>" <?php echo $req ? 'required' : ''; ?>></textarea>
 
                                 <?php elseif ($field['field_type'] === 'select'):
                                     $opts = array_filter(array_map('trim', explode("\n", $field['field_options'] ?? '')));

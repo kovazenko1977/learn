@@ -195,22 +195,184 @@
   color: #dc2626;
 }
 
-/* Form Builder Draggable List */
-.wpeb-builder-item {
-  background: #f8fafc;
+/* Advanced Visual Form Builder Layout */
+.wpeb-builder-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .wpeb-builder-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Palette on Left */
+.wpeb-palette-box {
+  background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 14px;
+  border-radius: 10px;
+  padding: 16px;
+  position: sticky;
+  top: 40px;
+}
+
+.wpeb-palette-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
   margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.wpeb-palette-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wpeb-palette-btn {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.wpeb-palette-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateX(4px);
+}
+
+.wpeb-palette-icon {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+}
+
+/* Visual Canvas in Center */
+.wpeb-canvas-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+}
+
+.wpeb-canvas-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.wpeb-canvas-fields {
+  min-height: 200px;
+  background: #f8fafc;
+  border: 2px dashed #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
 }
 
-.wpeb-drag-handle {
+.wpeb-canvas-field-row {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.wpeb-canvas-field-row:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59,130,246,0.1);
+}
+
+.wpeb-canvas-drag-handle {
   cursor: grab;
   color: #94a3b8;
-  font-size: 18px;
+  font-size: 20px;
+  user-select: none;
+}
+
+.wpeb-field-info {
+  flex: 1;
+}
+
+.wpeb-field-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.wpeb-field-badge {
+  font-size: 11px;
+  background: #e2e8f0;
+  color: #475569;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.wpeb-field-badge.req {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.wpeb-field-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Forms List Table & Badges */
+.wpeb-shortcode-badge {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wpeb-copy-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.wpeb-copy-btn:hover {
+  background: #e2e8f0;
 }
 
 /* 40 Features Grid */

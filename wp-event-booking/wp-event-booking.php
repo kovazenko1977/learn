@@ -60,6 +60,7 @@ class WP_Event_Booking_Plugin {
 
         // Shortcodes
         add_shortcode('event_booking', [$this, 'render_booking_shortcode']);
+        add_shortcode('event_form', [$this, 'render_event_form_shortcode']);
         add_shortcode('event_booking_catalog', [$this, 'render_catalog_shortcode']);
         add_shortcode('event_booking_lookup', [$this, 'render_lookup_shortcode']);
 
@@ -100,11 +101,34 @@ class WP_Event_Booking_Plugin {
     public function render_booking_shortcode($atts) {
         $atts = shortcode_atts([
             'id' => 0,
+            'form' => '',
             'title' => '',
             'theme' => 'default'
         ], $atts, 'event_booking');
 
-        $eventId = (int)$atts['id'];
+        return $this->render_form_view($atts);
+    }
+
+    public function render_event_form_shortcode($atts) {
+        $atts = shortcode_atts([
+            'id' => 0,
+            'form' => '',
+            'event' => 0
+        ], $atts, 'event_form');
+
+        // Allow [event_form id="standard-event"] or [event_form id="1"]
+        if (!empty($atts['id']) && empty($atts['form'])) {
+            $atts['form'] = $atts['id'];
+        }
+        if (!empty($atts['event'])) {
+            $atts['id'] = $atts['event'];
+        }
+
+        return $this->render_form_view($atts);
+    }
+
+    private function render_form_view($atts) {
+        $eventId = (int)($atts['id'] ?? 0);
         if (!$eventId) {
             $events = $this->db->get_events('active');
             if (!empty($events)) {
@@ -117,7 +141,34 @@ class WP_Event_Booking_Plugin {
             return '<div class="wpeb-notice wpeb-error">Мероприятие не найдено или снято с публикации.</div>';
         }
 
-        $fields = $this->db->get_form_fields($eventId);
+        // Determine which form config to render
+        $formSlugOrId = $atts['form'] ?? '';
+        $formConfig = null;
+        if (!empty($formSlugOrId)) {
+            $formConfig = $this->db->get_form($formSlugOrId);
+        }
+
+        // If no form specified, use the first active form from database
+        if (!$formConfig) {
+            $allForms = $this->db->get_forms('active');
+            if (!empty($allForms)) {
+                $formConfig = $allForms[0];
+            }
+        }
+
+        $fields = [];
+        if ($formConfig && !empty($formConfig['fields_json'])) {
+            $decoded = json_decode($formConfig['fields_json'], true);
+            if (is_array($decoded)) {
+                $fields = $decoded;
+            }
+        }
+
+        // Fallback to legacy form_fields table if form is empty
+        if (empty($fields)) {
+            $fields = $this->db->get_form_fields($eventId);
+        }
+
         $settings = $this->db->get_all_settings();
 
         ob_start();

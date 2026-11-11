@@ -141,15 +141,13 @@ class WPEB_Booking_Engine {
         }
 
         // Validate custom fields
-        $fieldsConfig = $this->db->get_form_fields($eventId);
         $cfValues = [];
-        foreach ($fieldsConfig as $field) {
-            $key = $field['field_key'];
-            $val = $customFields[$key] ?? '';
-            if (!empty($field['is_required']) && ($val === '' || $val === null || (is_array($val) && empty($val)))) {
-                return ['success' => false, 'error' => "Поле «{$field['field_label']}» обязательно для заполнения."];
+        if (is_array($customFields)) {
+            foreach ($customFields as $k => $v) {
+                if ($v !== '' && $v !== null) {
+                    $cfValues[$k] = $v;
+                }
             }
-            $cfValues[$field['field_label']] = $val;
         }
 
         // Generate unique booking code

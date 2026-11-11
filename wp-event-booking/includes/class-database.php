@@ -97,12 +97,25 @@ class WPEB_Database {
                 UNIQUE KEY booking_code (booking_code)
             ) $charset_collate;
 
+            CREATE TABLE IF NOT EXISTS {$this->prefix}forms (
+                id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                title VARCHAR(255) NOT NULL,
+                slug VARCHAR(255) NOT NULL,
+                description TEXT NULL,
+                fields_json LONGTEXT NULL,
+                settings_json LONGTEXT NULL,
+                status VARCHAR(50) DEFAULT 'active',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id),
+                UNIQUE KEY slug (slug)
+            ) $charset_collate;
+
             CREATE TABLE IF NOT EXISTS {$this->prefix}form_fields (
                 id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
                 event_id BIGINT(20) UNSIGNED DEFAULT 0,
                 field_key VARCHAR(100) NOT NULL,
                 field_label VARCHAR(255) NOT NULL,
-                field_type VARCHAR(50) NOT NULL, -- text, email, phone, number, select, textarea, checkbox, radio
+                field_type VARCHAR(50) NOT NULL,
                 field_options TEXT NULL,
                 placeholder VARCHAR(255) NULL,
                 is_required TINYINT(1) DEFAULT 0,
@@ -170,6 +183,17 @@ class WPEB_Database {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
 
+            CREATE TABLE IF NOT EXISTS forms (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                slug TEXT NOT NULL UNIQUE,
+                description TEXT,
+                fields_json TEXT,
+                settings_json TEXT,
+                status TEXT DEFAULT 'active',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+
             CREATE TABLE IF NOT EXISTS form_fields (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 event_id INTEGER DEFAULT 0,
@@ -225,6 +249,9 @@ class WPEB_Database {
                 $this->update_setting($key, $val);
             }
         }
+
+        // Check if forms exist, seed pre-built ready templates
+        $this->seed_default_forms();
 
         // Check if events exist
         $events = $this->get_events();
@@ -349,6 +376,208 @@ class WPEB_Database {
             $res[$r['setting_key']] = $r['setting_value'];
         }
         return $res;
+    }
+
+    // Pre-built Form Templates Seeding
+    public function seed_default_forms() {
+        $forms = $this->get_forms();
+        if (!empty($forms)) {
+            return;
+        }
+
+        $templates = [
+            [
+                'title' => 'Стандартная запись на мероприятие',
+                'slug' => 'standard-event',
+                'description' => 'Универсальный шаблон для конференций, вебинаров, мастер-классов и открытых уроков.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'organization', 'field_label' => 'Компания / Организация', 'field_type' => 'text', 'placeholder' => 'ООО «Вектор»', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'job_title', 'field_label' => 'Должность', 'field_type' => 'text', 'placeholder' => 'Руководитель проекта', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'format_preference', 'field_label' => 'Формат участия', 'field_type' => 'radio', 'field_options' => "Очно в зале\nОнлайн трансляция (Zoom)", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'comment', 'field_label' => 'Вопросы к спикеру или пожелания', 'field_type' => 'textarea', 'placeholder' => 'Напишите, что для вас особенно важно...', 'is_required' => 0, 'width' => '100'],
+                    ['field_key' => 'consent_pd', 'field_label' => 'Согласен на обработку персональных данных', 'field_type' => 'consent', 'placeholder' => '', 'is_required' => 1, 'width' => '100']
+                ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'VIP / Бизнес-сессия с кейтерингом',
+                'slug' => 'vip-business-session',
+                'description' => 'Расширенная анкета для премиум-гостей с выбором меню питания, трансфера и статуса участника.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'package_type', 'field_label' => 'Категория билета', 'field_type' => 'select', 'field_options' => "Бизнес (первые ряды)\nVIP All-Inclusive (банкет + нетворкинг)\nПартнерский пакет", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'dietary_needs', 'field_label' => 'Предпочтения по кофе-брейку / банкету', 'field_type' => 'checkbox', 'field_options' => "Классическое европейское меню\nВегетарианское меню\nБезглютеновое питание\nХаляль", 'placeholder' => '', 'is_required' => 0, 'width' => '100'],
+                    ['field_key' => 'need_transfer', 'field_label' => 'Необходим трансфер из аэропорта / вокзала', 'field_type' => 'switch', 'placeholder' => '', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'telegram_username', 'field_label' => 'Ваш Telegram (@username)', 'field_type' => 'text', 'placeholder' => '@alex_smith', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'personal_assistant', 'field_label' => 'Контакты личного ассистента (телефон / email)', 'field_type' => 'text', 'placeholder' => '+7 (999) 000-00-00, assist@co.ru', 'is_required' => 0, 'width' => '100']
+                ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'Запись на консультацию и прием',
+                'slug' => 'consultation-reception',
+                'description' => 'Форма предварительной записи к специалисту, юристу, врачу или эксперту.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'consultation_topic', 'field_label' => 'Тематика обращения', 'field_type' => 'select', 'field_options' => "Первичная консультация\nПовторный аудит\nСрочный правовой вопрос\nИндивидуальное сопровождение", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'birth_date', 'field_label' => 'Дата рождения', 'field_type' => 'date', 'placeholder' => 'ДД.ММ.ГГГГ', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'preferred_messenger', 'field_label' => 'Предпочитаемый способ связи', 'field_type' => 'radio', 'field_options' => "Звонок по телефону\nWhatsApp\nTelegram", 'placeholder' => '', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'situation_description', 'field_label' => 'Краткое описание вашей ситуации', 'field_type' => 'textarea', 'placeholder' => 'Опишите предысторию или текущую задачу...', 'is_required' => 1, 'width' => '100']
+                ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'Детские праздники и творческие мастер-классы',
+                'slug' => 'kids-masterclass',
+                'description' => 'Удобная форма бронирования для родителей и детей с указанием возраста и аниматора.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'child_name_age', 'field_label' => 'Имя и возраст ребенка', 'field_type' => 'text', 'placeholder' => 'Максим, 8 лет', 'is_required' => 1, 'width' => '50'],
+                    ['field_key' => 'parents_count', 'field_label' => 'Количество сопровождающих взрослых', 'field_type' => 'number', 'placeholder' => '1', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'program_choice', 'field_label' => 'Выбор творческой программы', 'field_type' => 'radio', 'field_options' => "Гончарное дело и лепка\nРисование на холсте маслом\nРобототехника и LEGO\nКулинарный мастер-класс (Пицца)", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'allergies_notes', 'field_label' => 'Особенности здоровья или аллергии', 'field_type' => 'text', 'placeholder' => 'Аллергия на орехи, пыльцу...', 'is_required' => 0, 'width' => '100']
+                ], JSON_UNESCAPED_UNICODE)
+            ],
+            [
+                'title' => 'Спортивные тренировки и фитнес',
+                'slug' => 'fitness-training',
+                'description' => 'Запись на групповые и индивидуальные спортивные занятия, йогу или кроссфит.',
+                'status' => 'active',
+                'fields_json' => json_encode([
+                    ['field_key' => 'fitness_level', 'field_label' => 'Ваш уровень подготовки', 'field_type' => 'radio', 'field_options' => "Начинающий (первый раз)\nСредний (занимаюсь регулярно)\nПродвинутый / Атлет", 'placeholder' => '', 'is_required' => 1, 'width' => '100'],
+                    ['field_key' => 'rent_gear', 'field_label' => 'Необходима аренда экипировки (коврик, пояс, перчатки)', 'field_type' => 'switch', 'placeholder' => '', 'is_required' => 0, 'width' => '50'],
+                    ['field_key' => 'locker_room', 'field_label' => 'Тип раздевалки', 'field_type' => 'select', 'field_options' => "Стандартная раздевалка\nVIP-раздевалка с сауной", 'placeholder' => '', 'is_required' => 0, 'width' => '50']
+                ], JSON_UNESCAPED_UNICODE)
+            ]
+        ];
+
+        foreach ($templates as $tpl) {
+            $this->insert_form($tpl);
+        }
+    }
+
+    // Forms CRUD & Duplication
+    public function get_forms($status = null) {
+        if ($this->is_wp) {
+            global $wpdb;
+            $sql = "SELECT * FROM {$this->prefix}forms";
+            if ($status) {
+                $sql .= $wpdb->prepare(" WHERE status = %s", $status);
+            }
+            $sql .= " ORDER BY id DESC";
+            return $wpdb->get_results($sql, ARRAY_A);
+        } else {
+            $sql = "SELECT * FROM forms";
+            $params = [];
+            if ($status) {
+                $sql .= " WHERE status = ?";
+                $params[] = $status;
+            }
+            $sql .= " ORDER BY id DESC";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+    }
+
+    public function get_form($idOrSlug) {
+        if (is_numeric($idOrSlug)) {
+            $whereCol = 'id';
+            $val = (int)$idOrSlug;
+        } else {
+            $whereCol = 'slug';
+            $val = trim((string)$idOrSlug);
+        }
+
+        if ($this->is_wp) {
+            global $wpdb;
+            $sql = $wpdb->prepare("SELECT * FROM {$this->prefix}forms WHERE {$whereCol} = %s", $val);
+            return $wpdb->get_row($sql, ARRAY_A);
+        } else {
+            $stmt = $this->pdo->prepare("SELECT * FROM forms WHERE {$whereCol} = ?");
+            $stmt->execute([$val]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+    }
+
+    public function insert_form($data) {
+        $slug = !empty($data['slug']) ? $data['slug'] : 'form-' . substr(md5(uniqid()), 0, 6);
+        $fieldsJson = is_array($data['fields_json']) ? json_encode($data['fields_json'], JSON_UNESCAPED_UNICODE) : ($data['fields_json'] ?? '[]');
+        $settingsJson = is_array($data['settings_json']) ? json_encode($data['settings_json'], JSON_UNESCAPED_UNICODE) : ($data['settings_json'] ?? '{}');
+
+        if ($this->is_wp) {
+            global $wpdb;
+            $wpdb->insert($this->prefix . 'forms', [
+                'title' => $data['title'],
+                'slug' => $slug,
+                'description' => $data['description'] ?? '',
+                'fields_json' => $fieldsJson,
+                'settings_json' => $settingsJson,
+                'status' => $data['status'] ?? 'active'
+            ]);
+            return $wpdb->insert_id;
+        } else {
+            $stmt = $this->pdo->prepare("
+                INSERT INTO forms (title, slug, description, fields_json, settings_json, status)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $data['title'],
+                $slug,
+                $data['description'] ?? '',
+                $fieldsJson,
+                $settingsJson,
+                $data['status'] ?? 'active'
+            ]);
+            return (int)$this->pdo->lastInsertId();
+        }
+    }
+
+    public function update_form($id, $data) {
+        $fields = [];
+        $values = [];
+        foreach ($data as $k => $v) {
+            if ($k === 'fields_json' && is_array($v)) $v = json_encode($v, JSON_UNESCAPED_UNICODE);
+            if ($k === 'settings_json' && is_array($v)) $v = json_encode($v, JSON_UNESCAPED_UNICODE);
+            $fields[] = "$k = ?";
+            $values[] = $v;
+        }
+        $values[] = (int)$id;
+
+        if ($this->is_wp) {
+            global $wpdb;
+            $wpdb->update($this->prefix . 'forms', $data, ['id' => $id]);
+            return true;
+        } else {
+            $sql = "UPDATE forms SET " . implode(', ', $fields) . " WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute($values);
+        }
+    }
+
+    public function duplicate_form($id) {
+        $form = $this->get_form($id);
+        if (!$form) return false;
+
+        $newTitle = $form['title'] . ' (Копия)';
+        $newSlug = $form['slug'] . '-copy-' . substr(md5(uniqid()), 0, 4);
+
+        return $this->insert_form([
+            'title' => $newTitle,
+            'slug' => $newSlug,
+            'description' => $form['description'] ?? '',
+            'fields_json' => $form['fields_json'],
+            'settings_json' => $form['settings_json'] ?? '{}',
+            'status' => 'active'
+        ]);
+    }
+
+    public function delete_form($id) {
+        if ($this->is_wp) {
+            global $wpdb;
+            $wpdb->delete($this->prefix . 'forms', ['id' => $id]);
+        } else {
+            $this->pdo->prepare("DELETE FROM forms WHERE id = ?")->execute([(int)$id]);
+        }
+        return true;
     }
 
     // Events

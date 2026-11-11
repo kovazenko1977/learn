@@ -37,7 +37,8 @@ $pin = $settings['admin_pin'] ?? '222120';
         <button type="button" class="wpeb-tab-btn active" data-tab="dashboard">📊 Обзор</button>
         <button type="button" class="wpeb-tab-btn" data-tab="slots">⏰ Сеансы и лимиты мест</button>
         <button type="button" class="wpeb-tab-btn" data-tab="bookings">👥 Записи (<?php echo count($bookings); ?>)</button>
-        <button type="button" class="wpeb-tab-btn" data-tab="builder">🛠 Конструктор форм</button>
+        <button type="button" class="wpeb-tab-btn" data-tab="forms">📋 Формы и Шаблоны (<?php echo count($forms); ?>)</button>
+        <button type="button" class="wpeb-tab-btn" data-tab="builder">🛠 Визуальный конструктор</button>
         <button type="button" class="wpeb-tab-btn" data-tab="notifications">✈️ Telegram и Email</button>
         <button type="button" class="wpeb-tab-btn" data-tab="appearance">🎨 Внешний вид и Mobile</button>
         <button type="button" class="wpeb-tab-btn" data-tab="settings">⚙️ Настройки и PIN</button>
@@ -185,47 +186,98 @@ $pin = $settings['admin_pin'] ?? '222120';
         </div>
     </div>
 
-    <!-- TAB 4: FORM BUILDER -->
-    <div class="wpeb-tab-panel" id="wpebTab_builder" style="display:none;">
+    <!-- TAB 4: FORMS MANAGER & PRE-BUILT TEMPLATES -->
+    <div class="wpeb-tab-panel" id="wpebTab_forms" style="display:none;">
         <div class="wpeb-card">
-            <h3 class="wpeb-card-title">
-                <span>Конструктор дополнительных полей анкеты</span>
-                <button type="button" class="button button-primary" id="wpebAddFieldBtn">+ Добавить поле в форму</button>
-            </h3>
-            <p style="color:#64748b; font-size:13px;">Настройте дополнительные поля, которые пользователь заполняет при записи (выпадающие списки, радио-кнопки, текстовые строки, комментарии).</p>
+            <div class="wpeb-card-title">
+                <span>Список форм записи и готовых шаблонов</span>
+                <button type="button" class="button button-primary" id="wpebCreateNewFormBtn">+ Создать новую форму</button>
+            </div>
+            <p style="color:#64748b; font-size:13px;">Для каждой формы генерируется персональный шорткод. Вы можете редактировать поля в визуальном конструкторе, дублировать в 1 клик или использовать готовые шаблоны.</p>
 
-            <div id="wpebBuilderList">
-                <?php foreach ($formFields as $field): ?>
-                    <div class="wpeb-builder-item" data-key="<?php echo esc_attr($field['field_key']); ?>">
-                        <span class="wpeb-drag-handle">☰</span>
-                        <div style="flex:1;">
-                            <strong><?php echo esc_html($field['field_label']); ?></strong>
-                            <span style="font-size:12px; color:#64748b; margin-left:8px;">[key: <?php echo esc_html($field['field_key']); ?>]</span>
-                            <div style="margin-top:6px; display:flex; gap:10px; align-items:center;">
-                                <select class="wpeb-input wpeb-builder-type" style="width:140px; padding:4px 8px;">
-                                    <option value="text" <?php selected($field['field_type'], 'text'); ?>>Текст</option>
-                                    <option value="number" <?php selected($field['field_type'], 'number'); ?>>Число</option>
-                                    <option value="select" <?php selected($field['field_type'], 'select'); ?>>Выпадающий список</option>
-                                    <option value="radio" <?php selected($field['field_type'], 'radio'); ?>>Радио-кнопки</option>
-                                    <option value="checkbox" <?php selected($field['field_type'], 'checkbox'); ?>>Чекбоксы</option>
-                                    <option value="textarea" <?php selected($field['field_type'], 'textarea'); ?>>Многострочный текст</option>
-                                </select>
-                                <input type="text" class="wpeb-input wpeb-builder-placeholder" placeholder="Плейсхолдер" value="<?php echo esc_attr($field['placeholder']); ?>" style="flex:1; padding:4px 8px;" />
-                                <label style="font-size:13px; display:flex; align-items:center; gap:4px;">
-                                    <input type="checkbox" class="wpeb-builder-required" <?php checked(!empty($field['is_required'])); ?> /> Обязательное
-                                </label>
-                            </div>
-                            <div class="wpeb-builder-options-box" style="margin-top:6px; display:<?php echo in_array($field['field_type'], ['select', 'radio', 'checkbox']) ? 'block' : 'none'; ?>;">
-                                <textarea class="wpeb-textarea wpeb-builder-options" placeholder="Опции выбора (каждая с новой строки)" style="font-size:12px; height:60px;"><?php echo esc_textarea($field['field_options']); ?></textarea>
-                            </div>
-                        </div>
-                        <button type="button" class="button wpeb-del-field-btn" style="color:#ef4444;" onclick="this.closest('.wpeb-builder-item').remove()">Удалить</button>
-                    </div>
-                <?php endforeach; ?>
+            <table class="wpeb-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название формы</th>
+                        <th>Уникальный шорткод</th>
+                        <th>Полей</th>
+                        <th>Статус</th>
+                        <th style="text-align:right;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($forms as $f):
+                        $fCount = 0;
+                        if (!empty($f['fields_json'])) {
+                            $decoded = json_decode($f['fields_json'], true);
+                            if (is_array($decoded)) $fCount = count($decoded);
+                        }
+                    ?>
+                        <tr>
+                            <td>#<?php echo $f['id']; ?></td>
+                            <td>
+                                <strong><?php echo esc_html($f['title']); ?></strong>
+                                <?php if (!empty($f['description'])): ?>
+                                    <div style="font-size:12px; color:#64748b;"><?php echo esc_html($f['description']); ?></div>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <span class="wpeb-shortcode-badge">
+                                    [event_booking form="<?php echo esc_attr($f['slug']); ?>"]
+                                    <button type="button" class="wpeb-copy-btn" onclick="navigator.clipboard.writeText('[event_booking form=\'<?php echo esc_attr($f['slug']); ?>\']'); alert('Шорткод скопирован!');">Копировать</button>
+                                </span>
+                            </td>
+                            <td><strong><?php echo $fCount; ?></strong></td>
+                            <td><span class="wpeb-tag wpeb-tag-active">Активна</span></td>
+                            <td style="text-align:right;">
+                                <a href="?page=admin&form_id=<?php echo $f['id']; ?>" class="button button-small" onclick="window.wpebEditForm && window.wpebEditForm(<?php echo $f['id']; ?>); return false;">🛠 Редактировать</a>
+                                <button type="button" class="button button-small" onclick="window.wpebDuplicateForm && window.wpebDuplicateForm(<?php echo $f['id']; ?>)">📋 Дублировать</button>
+                                <button type="button" class="button button-small" style="color:#ef4444;" onclick="window.wpebDeleteForm && window.wpebDeleteForm(<?php echo $f['id']; ?>)">✕</button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB 5: ADVANCED VISUAL FORM BUILDER -->
+    <div class="wpeb-tab-panel" id="wpebTab_builder" style="display:none;">
+        <div class="wpeb-builder-layout">
+            <!-- Palette on Left -->
+            <div class="wpeb-palette-box">
+                <div class="wpeb-palette-title">Палитра компонентов</div>
+                <div class="wpeb-palette-grid">
+                    <button type="button" class="wpeb-palette-btn" data-type="text"><span class="wpeb-palette-icon">🔤</span> Текстовая строка</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="number"><span class="wpeb-palette-icon">🔢</span> Числовое поле</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="select"><span class="wpeb-palette-icon">▾</span> Выпадающий список</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="radio"><span class="wpeb-palette-icon">🔘</span> Радио-кнопки</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="checkbox"><span class="wpeb-palette-icon">☑️</span> Чекбоксы</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="textarea"><span class="wpeb-palette-icon">📝</span> Многострочный текст</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="date"><span class="wpeb-palette-icon">📅</span> Выбор даты</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="switch"><span class="wpeb-palette-icon">🔛</span> Переключатель (Switch)</button>
+                    <button type="button" class="wpeb-palette-btn" data-type="consent"><span class="wpeb-palette-icon">🛡</span> Согласие с офертой/ПД</button>
+                </div>
             </div>
 
-            <div style="margin-top:16px;">
-                <button type="button" class="button button-primary button-large" id="wpebSaveBuilderBtn">Сохранить форму конструктора</button>
+            <!-- Canvas in Center -->
+            <div class="wpeb-canvas-card">
+                <div class="wpeb-canvas-header">
+                    <div>
+                        <div style="font-size:12px; color:#64748b;">Редактирование формы:</div>
+                        <input type="text" id="wpebFormTitleInput" value="<?php echo esc_attr($activeForm['title'] ?? 'Новая форма записи'); ?>" style="font-size:18px; font-weight:700; border:1px solid #cbd5e1; border-radius:6px; padding:6px 10px; width:340px;" />
+                        <input type="hidden" id="wpebActiveFormId" value="<?php echo esc_attr($activeForm['id'] ?? 1); ?>" />
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button type="button" class="button" id="wpebClearCanvasBtn">Очистить</button>
+                        <button type="button" class="button button-primary button-large" id="wpebSaveBuilderBtn">💾 Сохранить форму</button>
+                    </div>
+                </div>
+
+                <div class="wpeb-canvas-fields" id="wpebCanvasFields">
+                    <!-- Populated dynamically via JS from activeForm['fields_json'] -->
+                </div>
             </div>
         </div>
     </div>
@@ -418,3 +470,8 @@ $pin = $settings['admin_pin'] ?? '222120';
         </div>
     </div>
 </div>
+
+<script>
+window.wpebInitialFormData = <?php echo !empty($activeForm['fields_json']) ? $activeForm['fields_json'] : '[]'; ?>;
+window.wpebAllForms = <?php echo json_encode($forms, JSON_UNESCAPED_UNICODE); ?>;
+</script>

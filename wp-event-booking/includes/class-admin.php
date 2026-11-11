@@ -25,6 +25,9 @@ class WPEB_Admin {
             add_action('admin_menu', [$this, 'register_admin_menu']);
             add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
             add_action('wp_ajax_wpeb_save_form_builder', [$this, 'ajax_save_form_builder']);
+            add_action('wp_ajax_wpeb_duplicate_form', [$this, 'ajax_duplicate_form']);
+            add_action('wp_ajax_wpeb_delete_form', [$this, 'ajax_delete_form']);
+            add_action('wp_ajax_wpeb_create_form', [$this, 'ajax_create_form']);
             add_action('wp_ajax_wpeb_test_telegram', [$this, 'ajax_test_telegram']);
         }
     }
@@ -116,7 +119,11 @@ class WPEB_Admin {
         $selectedEventId = isset($_GET['event_id']) ? (int)$_GET['event_id'] : (!empty($events) ? (int)$events[0]['id'] : 0);
         $slots = $selectedEventId ? $this->db->get_slots_by_event($selectedEventId) : [];
         $bookings = $this->db->get_bookings($selectedEventId ? ['event_id' => $selectedEventId] : []);
-        $formFields = $selectedEventId ? $this->db->get_form_fields($selectedEventId) : [];
+
+        $forms = $this->db->get_forms();
+        $selectedFormId = isset($_GET['form_id']) ? (int)$_GET['form_id'] : (!empty($forms) ? (int)$forms[0]['id'] : 0);
+        $activeForm = $selectedFormId ? $this->db->get_form($selectedFormId) : (!empty($forms) ? $forms[0] : null);
+
         $settings = $this->db->get_all_settings();
         $analytics = $this->db->get_analytics();
 
@@ -201,7 +208,9 @@ class WPEB_Admin {
     }
 
     public function ajax_save_form_builder() {
-        $eventId = (int)($_POST['event_id'] ?? 0);
+        $formId = (int)($_POST['form_id'] ?? 0);
+        $title = sanitize_text_field($_POST['title'] ?? '');
+        $description = sanitize_textarea_field($_POST['description'] ?? '');
         $raw = stripslashes($_POST['fields_json'] ?? '[]');
         $fields = json_decode($raw, true);
 
@@ -209,8 +218,66 @@ class WPEB_Admin {
             wp_send_json_error(['error' => 'Некорректный формат данных полей']);
         }
 
-        $this->db->clear_and_save_form_fields($eventId, $fields);
-        wp_send_json_success(['message' => 'Поля успешно сохранены']);
+        if ($formId > 0) {
+            $data = ['fields_json' => $fields];
+            if (!empty($title)) $data['title'] = $title;
+            if ($description !== '') $data['description'] = $description;
+            $this->db->update_form($formId, $data);
+            wp_send_json_success(['message' => 'Форма успешно сохранена!', 'form_id' => $formId]);
+        } else {
+            $newId = $this->db->insert_form([
+                'title' => !empty($title) ? $title : 'Новая форма записи',
+                'description' => $description,
+                'fields_json' => $fields,
+                'status' => 'active'
+            ]);
+            wp_send_json_success(['message' => 'Новая форма создана!', 'form_id' => $newId]);
+        }
+    }
+
+    public function ajax_duplicate_form() {
+        $formId = (int)($_POST['form_id'] ?? 0);
+        if (!$formId) {
+            wp_send_json_error(['error' => 'Не указан ID формы']);
+        }
+
+        $newId = $this->db->duplicate_form($formId);
+        if ($newId) {
+            wp_send_json_success(['message' => 'Форма успешно сдублирована!', 'new_id' => $newId]);
+        } else {
+            wp_send_json_error(['error' => 'Не удалось сдублировать форму']);
+        }
+    }
+
+    public function ajax_delete_form() {
+        $formId = (int)($_POST['form_id'] ?? 0);
+        if (!$formId) {
+            wp_send_json_error(['error' => 'Не указан ID формы']);
+        }
+
+        $this->db->delete_form($formId);
+        wp_send_json_success(['message' => 'Форма удалена']);
+    }
+
+    public function ajax_create_form() {
+        $title = sanitize_text_field($_POST['title'] ?? 'Новая форма');
+        $slug = sanitize_text_field($_POST['slug'] ?? ('form-' . substr(md5(uniqid()), 0, 6)));
+        $templateKey = sanitize_text_field($_POST['template'] ?? '');
+
+        $defaultFields = [
+            ['field_key' => 'organization', 'field_label' => 'Организация / Компания', 'field_type' => 'text', 'placeholder' => '', 'is_required' => 0, 'width' => '50'],
+            ['field_key' => 'comment', 'field_label' => 'Комментарий к записи', 'field_type' => 'textarea', 'placeholder' => '', 'is_required' => 0, 'width' => '100']
+        ];
+
+        $newId = $this->db->insert_form([
+            'title' => $title,
+            'slug' => $slug,
+            'description' => '',
+            'fields_json' => $defaultFields,
+            'status' => 'active'
+        ]);
+
+        wp_send_json_success(['message' => 'Форма создана', 'form_id' => $newId]);
     }
 
     public function ajax_test_telegram() {

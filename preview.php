@@ -123,6 +123,12 @@ if (isset($_GET['ajax']) || isset($_GET['admin_ajax']) || (isset($_REQUEST['acti
         $plugin->ajax_lookup_booking();
     } elseif ($action === 'wpeb_save_form_builder') {
         $admin->ajax_save_form_builder();
+    } elseif ($action === 'wpeb_duplicate_form') {
+        $admin->ajax_duplicate_form();
+    } elseif ($action === 'wpeb_delete_form') {
+        $admin->ajax_delete_form();
+    } elseif ($action === 'wpeb_create_form') {
+        $admin->ajax_create_form();
     } elseif ($action === 'wpeb_test_telegram') {
         $admin->ajax_test_telegram();
     }
@@ -204,7 +210,8 @@ $page = $_GET['page'] ?? 'booking';
             <span>🎟 WordPress Event Booking</span>
         </div>
         <nav class="wp-site-nav">
-            <a href="/preview.php?page=booking" class="<?php echo $page === 'booking' ? 'active' : ''; ?>">Форма записи [event_booking]</a>
+            <a href="/preview.php?page=booking" class="<?php echo $page === 'booking' ? 'active' : ''; ?>">Стандартная форма [event_booking]</a>
+            <a href="/preview.php?page=vip_form" class="<?php echo $page === 'vip_form' ? 'active' : ''; ?>">VIP-форма [event_booking form="vip-business-session"]</a>
             <a href="/preview.php?page=catalog" class="<?php echo $page === 'catalog' ? 'active' : ''; ?>">Каталог [event_booking_catalog]</a>
             <a href="/preview.php?page=lookup" class="<?php echo $page === 'lookup' ? 'active' : ''; ?>">Проверка брони [event_booking_lookup]</a>
             <a href="/preview.php?page=admin" class="<?php echo $page === 'admin' ? 'active' : ''; ?>" style="background:#3b82f6; color:#ffffff;">🔒 Админка (PIN: 222120)</a>
@@ -218,6 +225,13 @@ $page = $_GET['page'] ?? 'booking';
                 <p style="color:#64748b;">Каскадный выбор месяца, даты, свободных сеансов и оформление билета</p>
             </div>
             <?php echo do_shortcode('[event_booking]'); ?>
+
+        <?php elseif ($page === 'vip_form'): ?>
+            <div style="text-align:center; margin-bottom: 24px;">
+                <h1 style="margin-bottom:8px; font-size:26px;">Демонстрация VIP-формы <code>[event_booking form="vip-business-session"]</code></h1>
+                <p style="color:#64748b;">Форма с выбором категории билета, диеты питания, трансфера и контактов ассистента</p>
+            </div>
+            <?php echo do_shortcode('[event_booking form="vip-business-session"]'); ?>
 
         <?php elseif ($page === 'catalog'): ?>
             <?php echo do_shortcode('[event_booking_catalog]'); ?>

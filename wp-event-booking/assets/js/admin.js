@@ -1,6 +1,5 @@
 /**
- * WP Event Booking - Admin Panel Logic
- * Tab navigation, PIN submission, form builder manipulation, slot generator
+ * WP Event Booking - Admin Panel Logic & Visual Form Builder
  */
 
 (function() {
@@ -16,109 +15,180 @@
     const tabBtns = adminContainer.querySelectorAll('.wpeb-tab-btn');
     const tabPanels = adminContainer.querySelectorAll('.wpeb-tab-panel');
 
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetTab = btn.dataset.tab;
-        tabBtns.forEach(b => b.classList.remove('active'));
-        tabPanels.forEach(p => p.style.display = 'none');
+    function switchTab(targetTab) {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.style.display = 'none');
 
-        btn.classList.add('active');
-        const panel = adminContainer.querySelector(`#wpebTab_${targetTab}`);
-        if (panel) panel.style.display = 'block';
-      });
+      const activeBtn = adminContainer.querySelector(`.wpeb-tab-btn[data-tab="${targetTab}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const panel = adminContainer.querySelector(`#wpebTab_${targetTab}`);
+      if (panel) panel.style.display = 'block';
+    }
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
 
-    // Form Builder - Add New Field
-    const addFieldBtn = adminContainer.querySelector('#wpebAddFieldBtn');
-    const builderList = adminContainer.querySelector('#wpebBuilderList');
+    // --- VISUAL FORM BUILDER STATE & ENGINE ---
+    let currentFields = Array.isArray(window.wpebInitialFormData) ? window.wpebInitialFormData : [];
+    const canvasContainer = adminContainer.querySelector('#wpebCanvasFields');
+    const formTitleInput = adminContainer.querySelector('#wpebFormTitleInput');
+    const formIdInput = adminContainer.querySelector('#wpebActiveFormId');
+    const saveBuilderBtn = adminContainer.querySelector('#wpebSaveBuilderBtn');
+    const clearCanvasBtn = adminContainer.querySelector('#wpebClearCanvasBtn');
+    const createNewFormBtn = adminContainer.querySelector('#wpebCreateNewFormBtn');
 
-    if (addFieldBtn && builderList) {
-      addFieldBtn.addEventListener('click', () => {
-        const fieldKey = prompt('Введите системное имя поля (латиницей, например company или telegram):');
-        if (!fieldKey) return;
+    function renderCanvas() {
+      if (!canvasContainer) return;
+      canvasContainer.innerHTML = '';
 
-        const fieldLabel = prompt('Введите подпись поля для посетителя (например «Ваша компания»):', 'Новое поле');
-        if (!fieldLabel) return;
+      if (!currentFields.length) {
+        canvasContainer.innerHTML = '<div style="text-align:center; padding:40px 20px; color:#94a3b8;">Поля еще не добавлены. Кликните по компоненту в палитре слева, чтобы добавить его в форму.</div>';
+        return;
+      }
 
+      currentFields.forEach((field, index) => {
         const row = document.createElement('div');
-        row.className = 'wpeb-builder-item';
-        row.dataset.key = fieldKey.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+        row.className = 'wpeb-canvas-field-row';
+        row.dataset.index = index;
+
+        const typeLabels = {
+          text: 'Текст',
+          number: 'Число',
+          select: 'Выпадающий список',
+          radio: 'Радио-кнопки',
+          checkbox: 'Чекбоксы',
+          textarea: 'Многострочный',
+          date: 'Дата',
+          switch: 'Переключатель',
+          consent: 'Согласие'
+        };
 
         row.innerHTML = `
-          <span class="wpeb-drag-handle">☰</span>
-          <div style="flex:1;">
-            <strong>${fieldLabel}</strong>
-            <span style="font-size:12px; color:#64748b; margin-left:8px;">[key: ${row.dataset.key}]</span>
-            <div style="margin-top:6px; display:flex; gap:10px; align-items:center;">
-              <select class="wpeb-input wpeb-builder-type" style="width:140px; padding:4px 8px;">
-                <option value="text">Текст</option>
-                <option value="number">Число</option>
-                <option value="select">Выпадающий список</option>
-                <option value="radio">Радио-кнопки</option>
-                <option value="checkbox">Чекбоксы</option>
-                <option value="textarea">Многострочный текст</option>
-              </select>
-              <input type="text" class="wpeb-input wpeb-builder-placeholder" placeholder="Плейсхолдер" style="flex:1; padding:4px 8px;" />
-              <label style="font-size:13px; display:flex; align-items:center; gap:4px;">
-                <input type="checkbox" class="wpeb-builder-required" /> Обязательное
-              </label>
+          <span class="wpeb-canvas-drag-handle">☰</span>
+          <div class="wpeb-field-info">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong class="wpeb-field-label-text">${field.field_label || 'Без подписи'}</strong>
+              <span class="wpeb-field-badge">${typeLabels[field.field_type] || field.field_type}</span>
             </div>
-            <div class="wpeb-builder-options-box" style="margin-top:6px; display:none;">
-              <textarea class="wpeb-textarea wpeb-builder-options" placeholder="Опции выбора (каждая с новой строки)" style="font-size:12px; height:60px;"></textarea>
+            <div class="wpeb-field-badges">
+              <span class="wpeb-field-badge">key: ${field.field_key}</span>
+              ${field.is_required ? '<span class="wpeb-field-badge req">Обязательное</span>' : ''}
+              <span class="wpeb-field-badge">Ширина: ${field.width || 100}%</span>
             </div>
           </div>
-          <button type="button" class="button wpeb-del-field-btn" style="color:#ef4444;">Удалить</button>
+          <div class="wpeb-field-actions">
+            <button type="button" class="button button-small wpeb-edit-field-btn">⚙ Ред.</button>
+            <button type="button" class="button button-small wpeb-up-field-btn" ${index === 0 ? 'disabled' : ''}>↑</button>
+            <button type="button" class="button button-small wpeb-down-field-btn" ${index === currentFields.length - 1 ? 'disabled' : ''}>↓</button>
+            <button type="button" class="button button-small" style="color:#ef4444;" onclick="window.wpebRemoveField(${index})">✕</button>
+          </div>
         `;
 
-        const typeSelect = row.querySelector('.wpeb-builder-type');
-        const optionsBox = row.querySelector('.wpeb-builder-options-box');
-        typeSelect.addEventListener('change', () => {
-          if (['select', 'radio', 'checkbox'].includes(typeSelect.value)) {
-            optionsBox.style.display = 'block';
-          } else {
-            optionsBox.style.display = 'none';
-          }
-        });
+        // Field action events
+        row.querySelector('.wpeb-edit-field-btn').addEventListener('click', () => editFieldSettings(index));
+        const upBtn = row.querySelector('.wpeb-up-field-btn');
+        if (upBtn) {
+          upBtn.addEventListener('click', () => {
+            if (index > 0) {
+              const temp = currentFields[index];
+              currentFields[index] = currentFields[index - 1];
+              currentFields[index - 1] = temp;
+              renderCanvas();
+            }
+          });
+        }
+        const downBtn = row.querySelector('.wpeb-down-field-btn');
+        if (downBtn) {
+          downBtn.addEventListener('click', () => {
+            if (index < currentFields.length - 1) {
+              const temp = currentFields[index];
+              currentFields[index] = currentFields[index + 1];
+              currentFields[index + 1] = temp;
+              renderCanvas();
+            }
+          });
+        }
 
-        row.querySelector('.wpeb-del-field-btn').addEventListener('click', () => {
-          row.remove();
-        });
-
-        builderList.appendChild(row);
+        canvasContainer.appendChild(row);
       });
     }
 
-    // Save Form Builder
-    const saveBuilderBtn = adminContainer.querySelector('#wpebSaveBuilderBtn');
-    if (saveBuilderBtn && builderList) {
+    window.wpebRemoveField = function(idx) {
+      currentFields.splice(idx, 1);
+      renderCanvas();
+    };
+
+    function addFieldFromPalette(type) {
+      const defaultLabels = {
+        text: 'Новая текстовая строка',
+        number: 'Числовое значение',
+        select: 'Выберите вариант',
+        radio: 'Выберите один вариант',
+        checkbox: 'Выберите несколько вариантов',
+        textarea: 'Подробный комментарий',
+        date: 'Укажите дату',
+        switch: 'Дополнительная опция',
+        consent: 'Согласие на обработку данных'
+      };
+
+      const key = 'field_' + Math.random().toString(36).substring(2, 8);
+      const newField = {
+        field_key: key,
+        field_label: defaultLabels[type] || 'Новое поле',
+        field_type: type,
+        placeholder: '',
+        field_options: (['select', 'radio', 'checkbox'].includes(type)) ? "Вариант 1\nВариант 2\nВариант 3" : '',
+        is_required: (type === 'consent') ? 1 : 0,
+        width: '100'
+      };
+
+      currentFields.push(newField);
+      renderCanvas();
+    }
+
+    // Palette Buttons Click Handlers
+    adminContainer.querySelectorAll('.wpeb-palette-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        addFieldFromPalette(btn.dataset.type);
+      });
+    });
+
+    // Edit Field Details Dialog
+    function editFieldSettings(idx) {
+      const f = currentFields[idx];
+      const newLabel = prompt('Подпись поля (Label):', f.field_label);
+      if (newLabel === null) return;
+      f.field_label = newLabel;
+
+      const newKey = prompt('Системное имя (field_key):', f.field_key);
+      if (newKey) f.field_key = newKey.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+
+      f.placeholder = prompt('Подсказка в поле (Placeholder):', f.placeholder || '') || '';
+      f.is_required = confirm('Сделать это поле обязательным для заполнения?') ? 1 : 0;
+
+      if (['select', 'radio', 'checkbox'].includes(f.field_type)) {
+        const opts = prompt('Опции выбора (через точку с запятой ;):', (f.field_options || '').replace(/\n/g, '; '));
+        if (opts !== null) {
+          f.field_options = opts.split(';').map(s => s.trim()).filter(Boolean).join('\n');
+        }
+      }
+
+      renderCanvas();
+    }
+
+    // Save Form to Backend
+    if (saveBuilderBtn) {
       saveBuilderBtn.addEventListener('click', () => {
         saveBuilderBtn.disabled = true;
         saveBuilderBtn.textContent = 'Сохранение...';
 
-        const fields = [];
-        const items = builderList.querySelectorAll('.wpeb-builder-item');
-        items.forEach((it, idx) => {
-          const typeSelect = it.querySelector('.wpeb-builder-type');
-          const placeholderInput = it.querySelector('.wpeb-builder-placeholder');
-          const requiredCheckbox = it.querySelector('.wpeb-builder-required');
-          const optionsText = it.querySelector('.wpeb-builder-options');
-          const labelEl = it.querySelector('strong');
-
-          fields.push({
-            field_key: it.dataset.key,
-            field_label: labelEl ? labelEl.textContent : it.dataset.key,
-            field_type: typeSelect ? typeSelect.value : 'text',
-            field_options: optionsText ? optionsText.value : '',
-            placeholder: placeholderInput ? placeholderInput.value : '',
-            is_required: (requiredCheckbox && requiredCheckbox.checked) ? 1 : 0,
-            sort_order: idx
-          });
-        });
-
         const formData = new FormData();
         formData.append('action', 'wpeb_save_form_builder');
-        formData.append('event_id', adminContainer.querySelector('#wpebBuilderEventSelect') ? adminContainer.querySelector('#wpebBuilderEventSelect').value : 0);
-        formData.append('fields_json', JSON.stringify(fields));
+        formData.append('form_id', formIdInput ? formIdInput.value : 0);
+        formData.append('title', formTitleInput ? formTitleInput.value : 'Форма записи');
+        formData.append('fields_json', JSON.stringify(currentFields));
 
         fetch(ajaxUrl, {
           method: 'POST',
@@ -127,20 +197,106 @@
           .then(res => res.json())
           .then(res => {
             saveBuilderBtn.disabled = false;
-            saveBuilderBtn.textContent = 'Сохранить форму конструктора';
+            saveBuilderBtn.textContent = '💾 Сохранить форму';
             if (res.success) {
-              alert('Поля формы успешно сохранены!');
+              alert('Форма и поля успешно сохранены!');
+              window.location.reload();
             } else {
-              alert('Ошибка сохранения: ' + (res.data ? res.data.error : 'Неизвестная ошибка'));
+              alert('Ошибка: ' + (res.data ? res.data.error : 'Неизвестная ошибка'));
             }
           })
-          .catch(err => {
+          .catch(() => {
             saveBuilderBtn.disabled = false;
-            saveBuilderBtn.textContent = 'Сохранить форму конструктора';
+            saveBuilderBtn.textContent = '💾 Сохранить форму';
             alert('Сетевая ошибка при сохранении');
           });
       });
     }
+
+    if (clearCanvasBtn) {
+      clearCanvasBtn.addEventListener('click', () => {
+        if (confirm('Очистить все поля в конструкторе?')) {
+          currentFields = [];
+          renderCanvas();
+        }
+      });
+    }
+
+    // Create New Form Button
+    if (createNewFormBtn) {
+      createNewFormBtn.addEventListener('click', () => {
+        const title = prompt('Введите название новой формы:', 'Онлайн-запись на событие');
+        if (!title) return;
+
+        const formData = new FormData();
+        formData.append('action', 'wpeb_create_form');
+        formData.append('title', title);
+
+        fetch(ajaxUrl, { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(res => {
+            if (res.success) {
+              alert('Форма успешно создана!');
+              window.location.href = `?page=admin&form_id=${res.data.form_id}`;
+            } else {
+              alert('Ошибка: ' + (res.data ? res.data.error : 'Не удалось создать форму'));
+            }
+          });
+      });
+    }
+
+    // Global Export Handlers for Forms Table
+    window.wpebEditForm = function(formId) {
+      const forms = window.wpebAllForms || [];
+      const target = forms.find(f => parseInt(f.id, 10) === parseInt(formId, 10));
+      if (target) {
+        if (formIdInput) formIdInput.value = target.id;
+        if (formTitleInput) formTitleInput.value = target.title;
+        try {
+          currentFields = typeof target.fields_json === 'string' ? JSON.parse(target.fields_json) : (target.fields_json || []);
+        } catch(e) {
+          currentFields = [];
+        }
+        renderCanvas();
+        switchTab('builder');
+      }
+    };
+
+    window.wpebDuplicateForm = function(formId) {
+      if (!confirm('Создать копию этой формы с уникальным шорткодом?')) return;
+      const formData = new FormData();
+      formData.append('action', 'wpeb_duplicate_form');
+      formData.append('form_id', formId);
+
+      fetch(ajaxUrl, { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            alert('Форма успешно сдублирована!');
+            window.location.reload();
+          } else {
+            alert('Ошибка дублирования: ' + (res.data ? res.data.error : ''));
+          }
+        });
+    };
+
+    window.wpebDeleteForm = function(formId) {
+      if (!confirm('Вы уверены, что хотите удалить эту форму?')) return;
+      const formData = new FormData();
+      formData.append('action', 'wpeb_delete_form');
+      formData.append('form_id', formId);
+
+      fetch(ajaxUrl, { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            alert('Форма удалена');
+            window.location.reload();
+          } else {
+            alert('Ошибка удаления: ' + (res.data ? res.data.error : ''));
+          }
+        });
+    };
 
     // Test Telegram notification
     const testTgBtn = adminContainer.querySelector('#wpebTestTgBtn');
@@ -162,10 +318,7 @@
         formData.append('token', token);
         formData.append('chat_id', chatId);
 
-        fetch(ajaxUrl, {
-          method: 'POST',
-          body: formData
-        })
+        fetch(ajaxUrl, { method: 'POST', body: formData })
           .then(res => res.json())
           .then(res => {
             testTgBtn.disabled = false;
@@ -184,15 +337,8 @@
       });
     }
 
-    // Color Live Preview
-    const primaryColorInput = adminContainer.querySelector('#wpebPrimaryColorInput');
-    if (primaryColorInput) {
-      primaryColorInput.addEventListener('input', (e) => {
-        const color = e.target.value;
-        const previewBtn = adminContainer.querySelector('#wpebColorPreviewBtn');
-        if (previewBtn) previewBtn.style.backgroundColor = color;
-      });
-    }
+    // Initial render of Visual Canvas
+    renderCanvas();
   }
 
   document.addEventListener('DOMContentLoaded', initAdmin);
