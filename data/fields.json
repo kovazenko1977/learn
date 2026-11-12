@@ -1,0 +1,62 @@
+[
+    {
+        "id": "field_room",
+        "name": "room_number",
+        "label": "Номер кабинета / помещения",
+        "type": "text",
+        "required": true,
+        "placeholder": "Например: Кабинет 305, Склад №2",
+        "options": [],
+        "order": 1,
+        "active": true
+    },
+    {
+        "id": "field_equipment_id",
+        "name": "equipment_code",
+        "label": "Инвентарный номер оборудования",
+        "type": "text",
+        "required": false,
+        "placeholder": "INV-2025-098",
+        "options": [],
+        "order": 2,
+        "active": true
+    },
+    {
+        "id": "field_urgent_contact",
+        "name": "urgent_contact",
+        "label": "Срочный контакт на месте",
+        "type": "text",
+        "required": false,
+        "placeholder": "+7 (999) 000-00-00",
+        "options": [],
+        "order": 3,
+        "active": true
+    },
+    {
+        "id": "field_maintenance_type",
+        "name": "maintenance_type",
+        "label": "Тип обслуживания",
+        "type": "select",
+        "required": true,
+        "placeholder": "Выберите тип",
+        "options": [
+            "Аварийный ремонт",
+            "Плановое ТО",
+            "Диагностика",
+            "Модернизация"
+        ],
+        "order": 4,
+        "active": true
+    },
+    {
+        "id": "field_work_permit",
+        "name": "work_permit",
+        "label": "Требуется допуск / наряд",
+        "type": "checkbox",
+        "required": false,
+        "placeholder": "",
+        "options": [],
+        "order": 5,
+        "active": true
+    }
+]
