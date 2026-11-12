@@ -1,0 +1,53 @@
+{
+  "system": {
+    "app_name": "CRM Сервис & Ремонт",
+    "storage_mode": "json",
+    "language": "ru",
+    "theme": "light",
+    "allow_registration": false
+  },
+  "mysql_config": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "database": "crm_maintenance",
+    "username": "root",
+    "password": ""
+  },
+  "categories": [
+    { "id": "cat_plumbing", "name": "Сантехника и водоснабжение", "icon": "fa-faucet-drip", "color": "#0284c7" },
+    { "id": "cat_electric", "name": "Электрика и освещение", "icon": "fa-bolt", "color": "#eab308" },
+    { "id": "cat_hvac", "name": "Вентиляция и кондиционирование", "icon": "fa-fan", "color": "#06b6d4" },
+    { "id": "cat_doors_windows", "name": "Двери, окна, замки", "icon": "fa-door-open", "color": "#8b5cf6" },
+    { "id": "cat_furniture", "name": "Мебель и интерьер", "icon": "fa-chair", "color": "#f97316" },
+    { "id": "cat_it_office", "name": "ИТ-оборудование и сети", "icon": "fa-network-wired", "color": "#3b82f6" },
+    { "id": "cat_safety", "name": "Пожарная и охранная безопасность", "icon": "fa-shield-halved", "color": "#ef4444" }
+  ],
+  "priorities": [
+    { "id": "low", "name": "Низкий", "color": "#10b981", "sla_hours": 48 },
+    { "id": "medium", "name": "Средний", "color": "#3b82f6", "sla_hours": 24 },
+    { "id": "high", "name": "Высокий", "color": "#f59e0b", "sla_hours": 8 },
+    { "id": "critical", "name": "Критический", "color": "#ef4444", "sla_hours": 2 }
+  ],
+  "statuses": [
+    { "id": "new", "name": "Новая", "color": "#64748b" },
+    { "id": "assigned", "name": "Назначена", "color": "#3b82f6" },
+    { "id": "in_progress", "name": "В работе", "color": "#f59e0b" },
+    { "id": "completed", "name": "Выполнено", "color": "#10b981" },
+    { "id": "rejected", "name": "Отклонено", "color": "#ef4444" }
+  ],
+  "notifications": {
+    "channels": {
+      "email": { "enabled": true, "name": "Email" },
+      "push": { "enabled": true, "name": "Web Push" },
+      "telegram": { "enabled": true, "bot_token": "", "chat_id": "", "name": "Telegram" }
+    },
+    "triggers": {
+      "ticket_created": true,
+      "ticket_assigned": true,
+      "status_changed": true,
+      "comment_added": true,
+      "sla_breached": true
+    },
+    "frequency": "instant"
+  }
+}

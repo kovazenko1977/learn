@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password": "$2y$10$apJUOLwDm6qQrnzrUQvPe.s4n5UWEEiooOupFvjvG3c/c1bPNliDu",
+    "name": "Александр Смирнов",
+    "email": "admin@crm-service.local",
+    "phone": "+7 (999) 111-22-33",
+    "role": "admin",
+    "status": "active",
+    "department": "ИТ и Автоматизация",
+    "avatar": "",
+    "created_at": "2025-01-01 10:00:00"
+  },
+  {
+    "id": 2,
+    "username": "manager",
+    "password": "$2y$10$r.uz/w7.mf1/LmTkwn8OlesfEJB93Cdo6u./Soo7zJ/vSMQ9lROde",
+    "name": "Дмитрий Ковалев",
+    "email": "manager@crm-service.local",
+    "phone": "+7 (999) 222-33-44",
+    "role": "manager",
+    "status": "active",
+    "department": "Служба Главного Инженера",
+    "avatar": "",
+    "created_at": "2025-01-02 11:00:00"
+  },
+  {
+    "id": 3,
+    "username": "executor",
+    "password": "$2y$10$hgJ2Am.utkylfux5c2Ly2OGE/fMITE0THAU7J0XZAXkoZ.lhZ5l8u",
+    "name": "Иван Сидоров",
+    "email": "executor@crm-service.local",
+    "phone": "+7 (999) 333-44-55",
+    "role": "executor",
+    "status": "active",
+    "department": "Техническая служба (Слесарь-сантехник)",
+    "avatar": "",
+    "created_at": "2025-01-03 09:30:00"
+  },
+  {
+    "id": 4,
+    "username": "executor2",
+    "password": "$2y$10$hgJ2Am.utkylfux5c2Ly2OGE/fMITE0THAU7J0XZAXkoZ.lhZ5l8u",
+    "name": "Сергей Васильев",
+    "email": "executor2@crm-service.local",
+    "phone": "+7 (999) 333-44-66",
+    "role": "executor",
+    "status": "active",
+    "department": "Электротехническая служба (Электрик)",
+    "avatar": "",
+    "created_at": "2025-01-03 09:45:00"
+  },
+  {
+    "id": 5,
+    "username": "requester",
+    "password": "$2y$10$2yUna0hqy9M3CFbtxBhKnO0m1l8FBJs9owN9lNudvPr8yMFWbGaWG",
+    "name": "Елена Новикова",
+    "email": "requester@crm-service.local",
+    "phone": "+7 (999) 444-55-66",
+    "role": "requester",
+    "status": "active",
+    "department": "Бухгалтерия и Кадры",
+    "avatar": "",
+    "created_at": "2025-01-04 12:00:00"
+  }
+]
